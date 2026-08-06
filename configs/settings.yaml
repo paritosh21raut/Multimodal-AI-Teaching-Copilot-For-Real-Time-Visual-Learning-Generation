@@ -1,0 +1,22 @@
+project:
+  name: AI Multimodal Teaching Copilot
+  version: 1.0.0
+
+audio:
+  sample_rate: 16000
+  channels: 1
+  chunk_size: 1024
+  chunk_duration: 5
+
+speech:
+  whisper_model: base
+  language: en
+
+ppt:
+  output_directory: outputs/ppt
+
+images:
+  output_directory: outputs/images
+
+logging:
+  level: INFO
