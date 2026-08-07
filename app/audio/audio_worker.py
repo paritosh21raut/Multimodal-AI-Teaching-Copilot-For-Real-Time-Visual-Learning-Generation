@@ -6,6 +6,7 @@ from app.audio.audio_recorder import AudioRecorder
 from app.speech.speech_segment_builder import SpeechSegmentBuilder
 from app.speech.whisper_worker import WhisperWorker
 from app.utils.logger import app_logger
+from app.lecture.lecture_pipeline import lecture_pipeline
 
 
 class AudioWorker(threading.Thread):
@@ -98,6 +99,8 @@ class AudioWorker(threading.Thread):
                             print("=" * 60)
                             print(transcript)
                             print("=" * 60 + "\n")
+
+                            lecture_pipeline.process_transcript(transcript)
 
                         except Exception as e:
 
