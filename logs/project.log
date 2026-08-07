@@ -537,3 +537,196 @@
 2026-08-08 02:39:50.193 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
 2026-08-08 02:39:50.193 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
 2026-08-08 02:39:56.270 | WARNING  | app.audio.audio_stream:start:46 - Audio Stream Stopped
+2026-08-08 03:45:41.812 | INFO     | app.application:__init__:14 - Initializing Application
+2026-08-08 03:45:41.812 | INFO     | app.speech.whisper_model:__init__:8 - Loading Whisper Model...
+2026-08-08 03:45:42.787 | SUCCESS  | app.speech.whisper_model:__init__:16 - Whisper Ready
+2026-08-08 03:45:42.830 | SUCCESS  | app.application:__init__:37 - Lecture Pipeline Ready
+2026-08-08 03:45:42.830 | SUCCESS  | app.application:start:41 - Application Started
+2026-08-08 03:45:42.830 | SUCCESS  | app.audio.audio_worker:run:36 - Audio Worker Started
+2026-08-08 03:45:42.843 | INFO     | app.audio.audio_stream:start:30 - Starting Audio Stream...
+2026-08-08 03:45:42.844 | INFO     | app.audio.microphone:open_stream:16 - Opening Microphone...
+2026-08-08 03:45:43.245 | SUCCESS  | app.audio.microphone:open_stream:24 - Microphone Ready
+2026-08-08 03:45:43.245 | SUCCESS  | app.audio.audio_stream:start:34 - Audio Stream Running
+2026-08-08 03:45:45.106 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 03:46:00.226 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 03:46:00.268 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 03:46:00.268 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 03:46:00.268 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 03:46:00.268 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 03:46:01.612 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 03:46:01.614 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 03:46:01.614 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 03:46:01.615 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 03:46:15.507 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 03:46:17.823 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 03:46:17.823 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 03:46:17.823 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 03:46:17.823 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 03:46:17.823 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 03:46:18.078 | WARNING  | app.audio.audio_stream:callback:19 - input overflow
+2026-08-08 03:46:18.469 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 03:46:18.469 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 03:46:18.469 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 03:46:18.469 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 03:46:22.247 | WARNING  | app.audio.audio_stream:start:46 - Audio Stream Stopped
+2026-08-08 03:53:50.467 | INFO     | app.application:__init__:14 - Initializing Application
+2026-08-08 03:53:50.467 | INFO     | app.speech.whisper_model:__init__:8 - Loading Whisper Model...
+2026-08-08 03:53:51.150 | SUCCESS  | app.speech.whisper_model:__init__:16 - Whisper Ready
+2026-08-08 03:53:51.186 | SUCCESS  | app.application:__init__:37 - Lecture Pipeline Ready
+2026-08-08 03:53:51.186 | SUCCESS  | app.application:start:41 - Application Started
+2026-08-08 03:53:51.186 | SUCCESS  | app.audio.audio_worker:run:36 - Audio Worker Started
+2026-08-08 03:53:51.186 | INFO     | app.audio.audio_stream:start:30 - Starting Audio Stream...
+2026-08-08 03:53:51.186 | INFO     | app.audio.microphone:open_stream:16 - Opening Microphone...
+2026-08-08 03:53:51.665 | SUCCESS  | app.audio.microphone:open_stream:24 - Microphone Ready
+2026-08-08 03:53:51.665 | SUCCESS  | app.audio.audio_stream:start:34 - Audio Stream Running
+2026-08-08 03:53:54.378 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 03:54:11.590 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 03:54:11.596 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 03:54:11.596 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 03:54:11.597 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 03:54:11.597 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 03:54:12.977 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 03:54:12.979 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 03:54:12.979 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 03:54:12.979 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 03:54:18.950 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 03:54:42.588 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 03:54:42.593 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 03:54:42.593 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 03:54:42.593 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 03:54:42.593 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 03:54:42.831 | WARNING  | app.audio.audio_stream:callback:19 - input overflow
+2026-08-08 03:54:44.178 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 03:54:44.178 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 03:54:44.178 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 03:54:44.178 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 03:54:51.876 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 03:54:53.238 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 03:54:53.240 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 03:54:53.240 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 03:54:53.240 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 03:54:53.240 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 03:54:53.471 | WARNING  | app.audio.audio_stream:callback:19 - input overflow
+2026-08-08 03:54:53.991 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 03:54:53.991 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 03:54:53.991 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 03:54:53.991 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 03:54:55.048 | WARNING  | app.audio.audio_stream:start:46 - Audio Stream Stopped
+2026-08-08 03:58:03.384 | INFO     | app.application:__init__:14 - Initializing Application
+2026-08-08 03:58:03.384 | INFO     | app.speech.whisper_model:__init__:8 - Loading Whisper Model...
+2026-08-08 03:58:04.046 | SUCCESS  | app.speech.whisper_model:__init__:16 - Whisper Ready
+2026-08-08 03:58:04.084 | SUCCESS  | app.application:__init__:37 - Lecture Pipeline Ready
+2026-08-08 03:58:04.084 | SUCCESS  | app.application:start:41 - Application Started
+2026-08-08 03:58:04.086 | SUCCESS  | app.audio.audio_worker:run:36 - Audio Worker Started
+2026-08-08 03:58:04.087 | INFO     | app.audio.audio_stream:start:30 - Starting Audio Stream...
+2026-08-08 03:58:04.094 | INFO     | app.audio.microphone:open_stream:16 - Opening Microphone...
+2026-08-08 03:58:04.522 | SUCCESS  | app.audio.microphone:open_stream:24 - Microphone Ready
+2026-08-08 03:58:04.522 | SUCCESS  | app.audio.audio_stream:start:34 - Audio Stream Running
+2026-08-08 03:58:05.781 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 03:58:27.742 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 03:58:27.746 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 03:58:27.746 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 03:58:27.746 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 03:58:27.746 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 03:58:28.067 | WARNING  | app.audio.audio_stream:callback:19 - input overflow
+2026-08-08 03:58:29.477 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 03:58:29.477 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 03:58:29.477 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 03:58:29.477 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 03:58:35.858 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 03:58:42.312 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 03:58:42.317 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 03:58:42.317 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 03:58:42.317 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 03:58:42.317 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 03:58:43.199 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 03:58:43.199 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 03:58:43.199 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 03:58:43.199 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 03:58:51.212 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 03:58:51.216 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 03:58:51.220 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 03:58:51.220 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 03:58:51.220 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 03:58:51.220 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 03:58:51.456 | WARNING  | app.audio.audio_stream:callback:19 - input overflow
+2026-08-08 03:58:51.957 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 03:58:51.957 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 03:58:51.957 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 03:58:51.957 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 03:58:55.179 | WARNING  | app.audio.audio_stream:start:46 - Audio Stream Stopped
+2026-08-08 04:01:22.037 | INFO     | app.application:__init__:14 - Initializing Application
+2026-08-08 04:01:22.037 | INFO     | app.speech.whisper_model:__init__:8 - Loading Whisper Model...
+2026-08-08 04:01:22.637 | SUCCESS  | app.speech.whisper_model:__init__:16 - Whisper Ready
+2026-08-08 04:01:22.669 | SUCCESS  | app.application:__init__:37 - Lecture Pipeline Ready
+2026-08-08 04:01:22.669 | SUCCESS  | app.application:start:41 - Application Started
+2026-08-08 04:01:22.670 | SUCCESS  | app.audio.audio_worker:run:36 - Audio Worker Started
+2026-08-08 04:01:22.670 | INFO     | app.audio.audio_stream:start:30 - Starting Audio Stream...
+2026-08-08 04:01:22.670 | INFO     | app.audio.microphone:open_stream:16 - Opening Microphone...
+2026-08-08 04:01:23.105 | SUCCESS  | app.audio.microphone:open_stream:24 - Microphone Ready
+2026-08-08 04:01:23.105 | SUCCESS  | app.audio.audio_stream:start:34 - Audio Stream Running
+2026-08-08 04:01:24.331 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 04:01:53.447 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 04:01:53.449 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 04:01:53.449 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 04:01:53.449 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 04:01:53.449 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 04:01:55.249 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 04:01:55.249 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 04:01:55.249 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 04:01:55.249 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 04:02:01.374 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 04:02:25.723 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 04:02:25.727 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 04:02:25.727 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 04:02:25.727 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 04:02:25.727 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 04:02:27.403 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 04:02:27.403 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 04:02:27.403 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 04:02:27.403 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 04:02:33.005 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 04:02:33.007 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 04:02:33.011 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 04:02:33.011 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 04:02:33.015 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 04:02:33.015 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 04:02:33.249 | WARNING  | app.audio.audio_stream:callback:19 - input overflow
+2026-08-08 04:02:33.680 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 04:02:33.682 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 04:02:33.682 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 04:02:33.682 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 04:02:36.304 | WARNING  | app.audio.audio_stream:start:46 - Audio Stream Stopped
+2026-08-08 04:06:22.376 | INFO     | app.application:__init__:14 - Initializing Application
+2026-08-08 04:06:22.376 | INFO     | app.speech.whisper_model:__init__:8 - Loading Whisper Model...
+2026-08-08 04:06:23.000 | SUCCESS  | app.speech.whisper_model:__init__:16 - Whisper Ready
+2026-08-08 04:06:23.032 | SUCCESS  | app.application:__init__:37 - Lecture Pipeline Ready
+2026-08-08 04:06:23.032 | SUCCESS  | app.application:start:41 - Application Started
+2026-08-08 04:06:23.033 | SUCCESS  | app.audio.audio_worker:run:36 - Audio Worker Started
+2026-08-08 04:06:23.033 | INFO     | app.audio.audio_stream:start:30 - Starting Audio Stream...
+2026-08-08 04:06:23.033 | INFO     | app.audio.microphone:open_stream:16 - Opening Microphone...
+2026-08-08 04:06:23.470 | SUCCESS  | app.audio.microphone:open_stream:24 - Microphone Ready
+2026-08-08 04:06:23.470 | SUCCESS  | app.audio.audio_stream:start:34 - Audio Stream Running
+2026-08-08 04:06:25.473 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 04:07:59.790 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 04:07:59.806 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 04:07:59.806 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 04:07:59.806 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 04:07:59.806 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 04:08:00.134 | WARNING  | app.audio.audio_stream:callback:19 - input overflow
+2026-08-08 04:08:05.377 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 04:08:05.377 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 04:08:05.377 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 04:08:05.377 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 04:08:12.831 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 04:08:44.375 | SUCCESS  | app.audio.audio_worker:run:79 - Speech Finished
+2026-08-08 04:08:44.384 | SUCCESS  | app.audio.audio_recorder:save:19 - Audio Saved -> outputs/temp.wav
+2026-08-08 04:08:44.384 | SUCCESS  | app.audio.audio_worker:run:87 - Audio Saved : outputs/temp.wav
+2026-08-08 04:08:44.384 | INFO     | app.audio.audio_worker:run:91 - Starting Whisper...
+2026-08-08 04:08:44.384 | INFO     | app.speech.whisper_worker:transcribe:12 - Starting Whisper Transcription...
+2026-08-08 04:08:46.543 | INFO     | app.speech.whisper_model:transcribe:37 - Detected Language : en
+2026-08-08 04:08:46.543 | INFO     | app.speech.whisper_model:transcribe:38 - Language Probability : 1.00
+2026-08-08 04:08:46.543 | SUCCESS  | app.speech.whisper_worker:transcribe:16 - Transcription Completed
+2026-08-08 04:08:46.543 | SUCCESS  | app.audio.audio_worker:run:95 - Transcription Completed
+2026-08-08 04:08:58.233 | SUCCESS  | app.audio.audio_worker:run:58 - Speech Started
+2026-08-08 04:09:00.282 | WARNING  | app.audio.audio_stream:start:46 - Audio Stream Stopped

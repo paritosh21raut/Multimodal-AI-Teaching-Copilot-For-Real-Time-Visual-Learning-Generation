@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from app.ai.gemini_client import GeminiClient
+from app.config import GEMINI_API_KEY
 from app.slides.slide_models import (
     BulletPoint,
     SlideContent,
@@ -7,11 +9,10 @@ from app.slides.slide_models import (
 
 
 class ContentGenerator:
-    """
-    Temporary content generator.
 
-    Later this will call Gemini/OpenAI.
-    """
+    def __init__(self):
+
+        self.ai = GeminiClient(GEMINI_API_KEY)
 
     def generate(
         self,
@@ -19,31 +20,25 @@ class ContentGenerator:
         context: str,
     ) -> SlideContent:
 
-        bullets = []
+        result = self.ai.generate_slide(
+            topic=topic,
+            context=context,
+        )
 
-        sentences = [
-            sentence.strip()
-            for sentence in context.split(".")
-            if sentence.strip()
+        bullets = [
+            BulletPoint(text=item)
+            for item in result["bullets"]
         ]
 
-        for sentence in sentences[:5]:
-            bullets.append(
-                BulletPoint(
-                    text=sentence
-                )
-            )
-
-        if not bullets:
-            bullets.append(
-                BulletPoint(
-                    text="No content available."
-                )
-            )
+        print("=" * 60)
+        print(result)
+        print("=" * 60)
 
         return SlideContent(
-            title=topic,
+            title=result["title"],
             bullets=bullets,
+            summary=result.get("summary"),
+            keywords=result.get("keywords", []),
         )
 
 

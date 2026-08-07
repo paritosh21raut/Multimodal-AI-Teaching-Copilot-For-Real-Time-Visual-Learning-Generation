@@ -66,45 +66,68 @@ class SlideRenderer:
         bullets,
     ):
 
-        slide.shapes.title.text = title
+        # -------------------------------
+        # Title
+        # -------------------------------
 
-        title_para = slide.shapes.title.text_frame.paragraphs[0]
+        title_shape = slide.shapes.title
+        title_shape.text = title
 
+        title_para = title_shape.text_frame.paragraphs[0]
         title_para.font.size = Pt(self.TITLE_FONT_SIZE)
-
         title_para.font.bold = True
-
         title_para.font.color.rgb = self.TITLE_COLOR
+
+        # -------------------------------
+        # Find body placeholder
+        # -------------------------------
 
         body = None
 
         for shape in slide.placeholders:
 
-            if shape.placeholder_format.type == PP_PLACEHOLDER.BODY:
-                body = shape.text_frame
+            if not hasattr(shape, "text_frame"):
+                continue
+
+            print(
+                "[PPT]",
+                shape.placeholder_format.idx,
+                shape.placeholder_format.type,
+                shape.name,
+            )
+
+            body = shape.text_frame
+
+            if shape != title_shape:
                 break
 
         if body is None:
-            return
+            raise RuntimeError("No body placeholder found")
+
+        # -------------------------------
+        # Clear existing text
+        # -------------------------------
 
         body.clear()
 
-        for index, bullet in enumerate(bullets):
+        # -------------------------------
+        # Add bullets
+        # -------------------------------
 
-            if index == 0:
-                paragraph = body.paragraphs[0]
+        for i, bullet in enumerate(bullets):
+
+            if i == 0:
+                p = body.paragraphs[0]
             else:
-                paragraph = body.add_paragraph()
+                p = body.add_paragraph()
 
-            paragraph.text = bullet
+            p.text = bullet
+            p.level = 0
+            p.font.size = Pt(self.BODY_FONT_SIZE)
+            p.font.color.rgb = self.BODY_COLOR
+            p.space_after = Pt(8)
 
-            paragraph.level = 0
-
-            paragraph.font.size = Pt(self.BODY_FONT_SIZE)
-
-            paragraph.font.color.rgb = self.BODY_COLOR
-
-            paragraph.space_after = Pt(8)
+        print("[PPT] Added", len(bullets), "bullets")
 
 
 slide_renderer = SlideRenderer()

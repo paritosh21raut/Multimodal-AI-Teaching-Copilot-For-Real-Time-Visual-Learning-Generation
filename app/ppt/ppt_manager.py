@@ -124,6 +124,9 @@ class PPTManager:
 
                 self.slide_map[slide_id] = slide
 
+                print(title)
+                print(bullets)
+                
                 self._update_slide(
                     slide,
                     title,

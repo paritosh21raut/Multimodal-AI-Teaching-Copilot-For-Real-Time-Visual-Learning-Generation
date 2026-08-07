@@ -54,6 +54,12 @@ class SlideManager:
 
         try:
 
+            print(request.content.title)
+
+            print(request.content.bullets)
+
+            print([b.text for b in request.content.bullets])
+
             ppt_manager.create_or_update_slide(
                 slide_id=request.slide_number,
                 title=request.content.title,
