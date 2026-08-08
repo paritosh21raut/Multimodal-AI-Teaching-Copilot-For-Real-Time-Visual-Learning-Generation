@@ -6,7 +6,6 @@ from app.topics.topic_intelligence import topic_intelligence
 from app.utils.logger import app_logger
 from app.ppt.ppt_manager import ppt_manager
 
-
 class Application:
 
     def __init__(self):

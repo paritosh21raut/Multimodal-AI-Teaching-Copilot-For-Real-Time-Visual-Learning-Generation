@@ -47,6 +47,8 @@ class SlideContent:
 
     diagram: Optional[DiagramAsset] = None
 
+    image_query: Optional[str] = None
+
     keywords: List[str] = field(default_factory=list)
 
     metadata: Dict[str, str] = field(default_factory=dict)

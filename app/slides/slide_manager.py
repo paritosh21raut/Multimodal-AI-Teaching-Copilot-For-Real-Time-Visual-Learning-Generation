@@ -7,7 +7,7 @@ from app.slides.slide_models import (
     SlideRequest,
     SlideResult,
 )
-
+from app.images.image_manager import image_manager
 
 class SlideManager:
     """
@@ -23,20 +23,40 @@ class SlideManager:
         content: SlideContent,
     ) -> SlideResult:
 
-        request = SlideRequest(
-        action=SlideAction.CREATE,
-        slide_number=slide.slide_number,
-        topic=slide.topic,
-        content=content,
-    )
+        print("=" * 60)
+        print("IMAGE QUERY:")
+        print(content.image_query)
+        print("=" * 60)
 
-        return self.process_request(request)
+        image_path = image_manager.get_image(
+            content.image_query
+        )
+
+        print("IMAGE PATH:", image_path)
+
+        request = SlideRequest(
+            action=SlideAction.CREATE,
+            slide_number=slide.slide_number,
+            topic=slide.topic,
+            content=content,
+        )
+
+        return self.process_request(
+            request,
+            image_path=image_path,
+        )
 
     def update_slide(
         self,
         slide,
         content: SlideContent,
     ) -> SlideResult:
+
+        image_path = image_manager.get_image(
+            content.image_query
+        )
+
+        print("IMAGE PATH:", image_path)
 
         request = SlideRequest(
         action=SlideAction.UPDATE,
@@ -45,11 +65,15 @@ class SlideManager:
         content=content,
     )
 
-        return self.process_request(request)
+        return self.process_request(
+            request,
+            image_path=image_path,
+        )
 
     def process_request(
-        self,
-        request: SlideRequest,
+    self,
+    request: SlideRequest,
+    image_path: str | None = None,
     ) -> SlideResult:
 
         try:
@@ -61,13 +85,14 @@ class SlideManager:
             print([b.text for b in request.content.bullets])
 
             ppt_manager.create_or_update_slide(
-                slide_id=request.slide_number,
-                title=request.content.title,
-                bullets=[
-                    bullet.text
-                    for bullet in request.content.bullets
-                ],
-            )
+            slide_id=request.slide_number,
+            title=request.content.title,
+            bullets=[
+                bullet.text
+                for bullet in request.content.bullets
+            ],
+            image_path=image_path,
+        )
 
             return SlideResult(
                 success=True,

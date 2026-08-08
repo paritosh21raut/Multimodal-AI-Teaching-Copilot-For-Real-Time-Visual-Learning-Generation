@@ -4,6 +4,7 @@ from pptx.enum.shapes import PP_PLACEHOLDER
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Pt
 from pptx.dml.color import RGBColor
+from pptx.util import Inches
 
 
 class SlideRenderer:
@@ -60,11 +61,12 @@ class SlideRenderer:
             paragraph.alignment = PP_ALIGN.CENTER
 
     def render_content_slide(
-        self,
-        slide,
-        title: str,
-        bullets,
-    ):
+    self,
+    slide,
+    title: str,
+    bullets,
+    image_path=None,
+):
 
         # -------------------------------
         # Title
@@ -128,6 +130,27 @@ class SlideRenderer:
             p.space_after = Pt(8)
 
         print("[PPT] Added", len(bullets), "bullets")
+
+        # ---------------------------------
+        # Insert Image
+        # ---------------------------------
+
+        if image_path:
+
+            try:
+
+                slide.shapes.add_picture(
+                    image_path,
+                    left=Inches(7.0),
+                    top=Inches(1.3),
+                    width=Inches(2.4),
+                )
+
+                print("[PPT] Image inserted")
+
+            except Exception as e:
+
+                print("[PPT] Image insertion failed:", e)
 
 
 slide_renderer = SlideRenderer()

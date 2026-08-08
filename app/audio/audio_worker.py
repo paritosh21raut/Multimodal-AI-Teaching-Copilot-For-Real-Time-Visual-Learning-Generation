@@ -7,7 +7,7 @@ from app.speech.speech_segment_builder import SpeechSegmentBuilder
 from app.speech.whisper_worker import WhisperWorker
 from app.utils.logger import app_logger
 from app.lecture.lecture_pipeline import lecture_pipeline
-
+import traceback
 
 class AudioWorker(threading.Thread):
 
@@ -103,8 +103,8 @@ class AudioWorker(threading.Thread):
                             lecture_pipeline.process_transcript(transcript)
 
                         except Exception as e:
-
-                            app_logger.error(f"Whisper Error : {e}")
+                            traceback.print_exc()
+                            app_logger.error(e)
 
                     self.builder.clear()
 

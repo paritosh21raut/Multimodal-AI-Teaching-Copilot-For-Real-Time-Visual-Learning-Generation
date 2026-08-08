@@ -95,11 +95,12 @@ class PPTManager:
     # ============================================================
 
     def create_or_update_slide(
-        self,
-        slide_id: int,
-        title: str,
-        bullets: List[str],
-    ) -> None:
+    self,
+    slide_id: int,
+    title: str,
+    bullets: List[str],
+    image_path: str | None = None,
+):
         
         print("[PPT] presentation =", self.presentation)
         print("[PPT] path =", self.presentation_path)
@@ -126,11 +127,12 @@ class PPTManager:
 
                 print(title)
                 print(bullets)
-                
+
                 self._update_slide(
                     slide,
                     title,
                     bullets,
+                    image_path,
                 )
 
                 print(f"[PPT] Created Slide {slide_id}")
@@ -142,20 +144,22 @@ class PPTManager:
     # ============================================================
 
     def _update_slide(
-        self,
-        slide: Slide,
-        title: str,
-        bullets: List[str],
-    ) -> None:
+    self,
+    slide,
+    title,
+    bullets,
+    image_path=None,
+):
         """
         Update an existing slide using SlideRenderer.
         """
 
         slide_renderer.render_content_slide(
-            slide=slide,
-            title=title,
-            bullets=bullets,
-        )
+        slide=slide,
+        title=title,
+        bullets=bullets,
+        image_path=image_path,
+    )
 
     # ============================================================
     # Save

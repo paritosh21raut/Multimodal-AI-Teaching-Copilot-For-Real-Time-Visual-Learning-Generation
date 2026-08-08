@@ -5,6 +5,7 @@ from threading import Lock
 from app.lecture.context_buffer import context_buffer
 from app.lecture.lecture_state import lecture_state
 from app.ppt.ppt_manager import ppt_manager
+from app.dashboard.dashboard_state import dashboard_state
 
 class LecturePipeline:
 
@@ -114,6 +115,23 @@ class LecturePipeline:
             topic=decision.topic,
             context=context_buffer.rolling_context(),
         )
+
+        with dashboard_state.lock:
+
+            dashboard_state.topic = (
+                decision.topic.name
+                if hasattr(decision.topic, "name")
+                else str(decision.topic)
+            )
+    
+            dashboard_state.transcript = transcript
+
+            dashboard_state.title = content.title
+
+            dashboard_state.bullets = [
+                bullet.text
+                for bullet in content.bullets
+]
 
         print("[Pipeline] Sending to SlideManager")
 

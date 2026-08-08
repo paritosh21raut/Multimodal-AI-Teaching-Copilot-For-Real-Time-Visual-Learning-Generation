@@ -5,6 +5,8 @@ from app.config import GEMINI_API_KEY
 from app.slides.slide_models import (
     BulletPoint,
     SlideContent,
+    ImageAsset,
+    DiagramAsset,
 )
 
 
@@ -38,6 +40,7 @@ class ContentGenerator:
             title=result["title"],
             bullets=bullets,
             summary=result.get("summary"),
+            image_query=result.get("image_query"),
             keywords=result.get("keywords", []),
         )
 
