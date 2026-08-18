@@ -115,6 +115,7 @@ class PPTManager:
                     slide,
                     title,
                     bullets,
+                    image_path,
                 )
 
                 print(f"[PPT] Updated Slide {slide_id}")

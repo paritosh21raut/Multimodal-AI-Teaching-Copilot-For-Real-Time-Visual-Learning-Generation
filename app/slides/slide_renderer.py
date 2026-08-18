@@ -1,22 +1,13 @@
 from __future__ import annotations
 
-from pptx.enum.shapes import PP_PLACEHOLDER
 from pptx.enum.text import PP_ALIGN
-from pptx.util import Pt
+from pptx.util import Pt, Inches
 from pptx.dml.color import RGBColor
-from pptx.util import Inches
 
 
 class SlideRenderer:
     """
     Responsible only for formatting slides.
-
-    This class DOES NOT:
-        - Create presentations
-        - Save presentations
-        - Detect topics
-
-    It ONLY styles slides.
     """
 
     TITLE_FONT_SIZE = 28
@@ -31,48 +22,44 @@ class SlideRenderer:
         title: str,
         subtitle: str,
     ):
-
         title_box = slide.shapes.title
 
         title_box.text = title
 
         paragraph = title_box.text_frame.paragraphs[0]
-
         paragraph.font.size = Pt(self.TITLE_FONT_SIZE)
-
         paragraph.font.bold = True
-
         paragraph.font.color.rgb = self.TITLE_COLOR
-
         paragraph.alignment = PP_ALIGN.CENTER
 
         if len(slide.placeholders) > 1:
-
             subtitle_box = slide.placeholders[1]
 
             subtitle_box.text = subtitle
 
             paragraph = subtitle_box.text_frame.paragraphs[0]
-
             paragraph.font.size = Pt(16)
-
             paragraph.font.color.rgb = RGBColor(120, 120, 120)
-
             paragraph.alignment = PP_ALIGN.CENTER
 
     def render_content_slide(
-    self,
-    slide,
-    title: str,
-    bullets,
-    image_path=None,
-):
-
-        # -------------------------------
-        # Title
-        # -------------------------------
+        self,
+        slide,
+        title: str,
+        bullets,
+        image_path=None,
+    ):
+        # =====================================================
+        # TITLE
+        # =====================================================
 
         title_shape = slide.shapes.title
+
+        title_shape.left = Inches(0.6)
+        title_shape.top = Inches(0.25)
+        title_shape.width = Inches(8.8)
+        title_shape.height = Inches(0.7)
+
         title_shape.text = title
 
         title_para = title_shape.text_frame.paragraphs[0]
@@ -80,77 +67,75 @@ class SlideRenderer:
         title_para.font.bold = True
         title_para.font.color.rgb = self.TITLE_COLOR
 
-        # -------------------------------
-        # Find body placeholder
-        # -------------------------------
+        # =====================================================
+        # BODY PLACEHOLDER
+        # =====================================================
 
-        body = None
+        body_shape = None
 
         for shape in slide.placeholders:
-
-            if not hasattr(shape, "text_frame"):
+            if shape == title_shape:
                 continue
 
-            print(
-                "[PPT]",
-                shape.placeholder_format.idx,
-                shape.placeholder_format.type,
-                shape.name,
-            )
-
-            body = shape.text_frame
-
-            if shape != title_shape:
+            if hasattr(shape, "text_frame"):
+                body_shape = shape
                 break
 
-        if body is None:
+        if body_shape is None:
             raise RuntimeError("No body placeholder found")
 
-        # -------------------------------
-        # Clear existing text
-        # -------------------------------
+        # LEFT SIDE = BULLETS
+        body_shape.left = Inches(0.7)
+        body_shape.top = Inches(1.35)
+        body_shape.width = Inches(5.0)
+        body_shape.height = Inches(5.4)
 
+        body = body_shape.text_frame
         body.clear()
 
-        # -------------------------------
-        # Add bullets
-        # -------------------------------
+        # =====================================================
+        # BULLETS
+        # =====================================================
 
         for i, bullet in enumerate(bullets):
 
             if i == 0:
-                p = body.paragraphs[0]
+                paragraph = body.paragraphs[0]
             else:
-                p = body.add_paragraph()
+                paragraph = body.add_paragraph()
 
-            p.text = bullet
-            p.level = 0
-            p.font.size = Pt(self.BODY_FONT_SIZE)
-            p.font.color.rgb = self.BODY_COLOR
-            p.space_after = Pt(8)
+            paragraph.text = bullet
+            paragraph.level = 0
+
+            paragraph.font.size = Pt(self.BODY_FONT_SIZE)
+            paragraph.font.color.rgb = self.BODY_COLOR
+
+            paragraph.space_after = Pt(10)
 
         print("[PPT] Added", len(bullets), "bullets")
 
-        # ---------------------------------
-        # Insert Image
-        # ---------------------------------
+        # =====================================================
+        # IMAGE
+        # =====================================================
 
         if image_path:
 
             try:
-
                 slide.shapes.add_picture(
                     image_path,
-                    left=Inches(7.0),
-                    top=Inches(1.3),
-                    width=Inches(2.4),
+                    left=Inches(6.0),
+                    top=Inches(1.35),
+                    width=Inches(3.3),
+                    height=Inches(5.0),
                 )
 
                 print("[PPT] Image inserted")
 
-            except Exception as e:
-
-                print("[PPT] Image insertion failed:", e)
+            except Exception as error:
+                print(
+                    "[PPT] Image insertion failed:",
+                    error,
+                )
 
 
 slide_renderer = SlideRenderer()
