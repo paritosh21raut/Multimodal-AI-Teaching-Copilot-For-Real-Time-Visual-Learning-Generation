@@ -2,28 +2,34 @@
   "running": false,
   "microphone_status": "Ready",
   "pipeline_stage": "Slide Generated",
-  "transcript": "Let's learn about the solar system. In the solar system, at the center of the solar system, we have the sun around which the planets revolve. It planets revolve. The first four planets are the inner planets. They are the rocket planets. They are the four planets are the outer planets. They are the gaseous planets. Mercury is the smallest planet. Venus is the hottest planet. Jupiter is the largest planet. We have natural satellites that is the humans which revolve around this planet.",
+  "transcript": "I don't know.",
   "transcript_history": [
-    "Photos in this is the process we have plants, algae and some bacteria use sunlight, water and carbon dioxide to make food and release energy, how it works, sunlight, leaves catch light using a green stuff called chlorophyll, water, roots pour water from the coils, soil, carbon dioxide, leaves, take the air through tiny holes, light turns water and gas into sugar and food, the product glucose, oxygen, water, waste, let's push.",
-    "Photos in this is the process we have plants, algae and some bacteria use sunlight, water and carbon dioxide to make food and release energy, how it works, sunlight, leaves catch light using a green stuff called chlorophyll, water, roots pour water from the coils, soil, carbon dioxide, leaves, take the air through tiny holes, light turns water and gas into sugar and food, the product glucose, oxygen, water, waste, let's push.",
-    "Let's learn about the solar system. In the solar system, at the center of the solar system, we have the sun around which the planets revolve. It planets revolve. The first four planets are the inner planets. They are the rocket planets. They are the four planets are the outer planets. They are the gaseous planets. Mercury is the smallest planet. Venus is the hottest planet. Jupiter is the largest planet. We have natural satellites that is the humans which revolve around this planet.",
-    "Let's learn about the solar system. In the solar system, at the center of the solar system, we have the sun around which the planets revolve. It planets revolve. The first four planets are the inner planets. They are the rocket planets. They are the four planets are the outer planets. They are the gaseous planets. Mercury is the smallest planet. Venus is the hottest planet. Jupiter is the largest planet. We have natural satellites that is the humans which revolve around this planet."
+    "Let's learn about free atos. In free atos, a task is a small independent program that runs in own loop. You can inspect individual task details using vtask getinfo apf function, which retrifts data like the task handle name, priority, state and stake usage, task method, running ready, blocked and suspended.",
+    "Let's learn about free atos. In free atos, a task is a small independent program that runs in own loop. You can inspect individual task details using vtask getinfo apf function, which retrifts data like the task handle name, priority, state and stake usage, task method, running ready, blocked and suspended.",
+    "Let's learn about cloud computing. So cloud computing is the delivery of computing services, including data storage, servers, databases, networking, and software over the internet. Instead of buying physical hardware devices or local servers, users rent access to programs and storage from large data centers, manage web providers like Amazon Web Services or Microsoft Azure. Service model, IAS, PASS, SASS.",
+    "Let's learn about cloud computing. So cloud computing is the delivery of computing services, including data storage, servers, databases, networking, and software over the internet. Instead of buying physical hardware devices or local servers, users rent access to programs and storage from large data centers, manage web providers like Amazon Web Services or Microsoft Azure. Service model, IAS, PASS, SASS.",
+    "So, let's learn about photosynthesis. Let's learn about photosynthesis. Easy process with plants, Algae and some bacteria uses sunlight, water and carbon dioxide to make food, sugar and daily oxygen. It keeps plants alive and provides most of the air and food needed by living things on Earth.",
+    "So, let's learn about photosynthesis. Let's learn about photosynthesis. Easy process with plants, Algae and some bacteria uses sunlight, water and carbon dioxide to make food, sugar and daily oxygen. It keeps plants alive and provides most of the air and food needed by living things on Earth.",
+    "a little bit of weight",
+    "a little bit of weight",
+    "I don't know.",
+    "I don't know."
   ],
-  "topic": "Let's learn about the solar system. In the solar system, at the center of the solar system, we have the sun around which the planets revolve. It planets revolve. The first four planets are the inner planets. They are the rocket planets. They are the four planets are the outer planets. They are the gaseous planets. Mercury is the smallest planet. Venus is the hottest planet. Jupiter is the largest planet. We have natural satellites that is the humans which revolve around this planet.",
+  "topic": "I don't know.",
   "topic_confidence": null,
-  "title": "Architecture of the Solar System",
+  "title": "Survey of Fundamental Engineering and Biological Concepts",
   "bullets": [
-    "The Sun occupies the center, orbited by revolving planets.",
-    "Four inner planets are small, dense, and rocky terrestrial worlds.",
-    "Four outer planets are massive, hydrogen-rich gas giants.",
-    "Mercury is the smallest, Venus the hottest, and Jupiter the largest.",
-    "Natural satellites, such as moons, orbit around their primary planets."
+    "FPGAs: Reconfigurable integrated circuits enabling custom digital hardware post-manufacturing.",
+    "FreeRTOS: Real-time OS managing independent tasks across multiple execution states.",
+    "Cloud Computing: Internet-based delivery of hardware, storage, and software services.",
+    "Service Models: Cloud computing operates via IaaS, PaaS, and SaaS architectures.",
+    "Photosynthesis: Biological process converting sunlight, water, and carbon dioxide into energy."
   ],
-  "image": "assets\\images\\3D_diagram_of_the_solar_system_showing_the_sun,_inner_rocky_planets,_and_outer_gas_giants_orbiting.jpg",
-  "slide_number": 1,
-  "slide_count": 1,
-  "ppt_path": "outputs\\presentations\\Live_Lecture_20260820_215005.pptx",
+  "image": "assets\\images\\microchip_circuit_plant_photosynthesis_abstract_split_featuring_digital_cloud_computing_green_leaf_u.jpg",
+  "slide_number": 6,
+  "slide_count": 6,
+  "ppt_path": "outputs\\presentations\\Live_Lecture_20260820_223734.pptx",
   "generation_status": "Ready",
   "error": "",
-  "last_update": 1787242854.253981
+  "last_update": 1787245923.6586053
 }
