@@ -11,6 +11,9 @@ SAVE_DIR.mkdir(parents=True, exist_ok=True)
 
 def download_image(query: str):
 
+    # Pixabay allows a maximum of 100 characters for the search query.
+    query = str(query).strip()[:100]
+
     url = (
         "https://pixabay.com/api/"
         f"?key={PIXABAY_API_KEY}"

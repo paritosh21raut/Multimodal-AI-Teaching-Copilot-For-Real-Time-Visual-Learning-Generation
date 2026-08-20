@@ -116,22 +116,36 @@ class LecturePipeline:
             context=context_buffer.rolling_context(),
         )
 
-        with dashboard_state.lock:
+        dashboard_state.update_transcript(
+    transcript
+)
 
-            dashboard_state.topic = (
+        dashboard_state.update_topic(
+            (
                 decision.topic.name
                 if hasattr(decision.topic, "name")
                 else str(decision.topic)
-            )
-    
-            dashboard_state.transcript = transcript
+            ),
+            getattr(
+                decision,
+                "confidence",
+                None,
+            ),
+        )
 
-            dashboard_state.title = content.title
-
-            dashboard_state.bullets = [
+        dashboard_state.update_slide(
+            content.title,
+            [
                 bullet.text
                 for bullet in content.bullets
-]
+            ],
+            slide.slide_number,
+        )
+
+        dashboard_state.set_pipeline(
+            "Content Generated",
+            "Generating",
+        )
 
         print("[Pipeline] Sending to SlideManager")
 

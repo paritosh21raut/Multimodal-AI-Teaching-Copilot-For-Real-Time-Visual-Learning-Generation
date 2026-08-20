@@ -7,6 +7,7 @@ from app.speech.speech_segment_builder import SpeechSegmentBuilder
 from app.speech.whisper_worker import WhisperWorker
 from app.utils.logger import app_logger
 from app.lecture.lecture_pipeline import lecture_pipeline
+from app.dashboard.dashboard_state import dashboard_state
 import traceback
 
 class AudioWorker(threading.Thread):
@@ -93,6 +94,8 @@ class AudioWorker(threading.Thread):
                             transcript = self.whisper.transcribe(filename)
 
                             app_logger.success("Transcription Completed")
+
+                            dashboard_state.update_transcript(transcript)
 
                             print("\n" + "=" * 60)
                             print("TRANSCRIPT")
