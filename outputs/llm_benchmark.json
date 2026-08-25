@@ -1,0 +1,736 @@
+[
+  {
+    "scenario": {
+      "name": "definition",
+      "topic": "Microcontroller",
+      "context": "A microcontroller is a small computer on a single chip. It contains a CPU, memory and input/output peripherals. It is commonly used in embedded systems."
+    },
+    "gemini": {
+      "success": true,
+      "latency_seconds": 3.101,
+      "provider": "GEMINI",
+      "result": {
+        "title": "What is a Microcontroller?",
+        "bullets": [
+          "A compact integrated circuit designed to govern a specific operation in an embedded system.",
+          "Functions as a small, self-contained computer on a single chip.",
+          "Integrates processing, storage, and interfacing components together."
+        ],
+        "summary": "A microcontroller is a single-chip computer comprising a CPU, memory, and I/O peripherals, primarily used to control embedded systems.",
+        "keywords": [
+          "Microcontroller",
+          "CPU",
+          "Memory",
+          "I/O Peripherals",
+          "Embedded Systems"
+        ],
+        "content_type": "definition",
+        "visual_type": "diagram",
+        "visual_reason": "A diagram effectively illustrates how the CPU, memory, and I/O peripherals are integrated together on a single chip. Component relationships detected; repaired to diagram. Architecture/components validated.",
+        "image_query": "",
+        "visual_spec": {
+          "center": "Microcontroller (Single Chip)",
+          "components": [
+            "CPU (Central Processing Unit)",
+            "Memory",
+            "I/O Peripherals"
+          ],
+          "relationships": [
+            "CPU connects to Memory for data and instructions",
+            "CPU connects to I/O Peripherals to interact with embedded systems"
+          ]
+        },
+        "diagram": ""
+      },
+      "evaluation": {
+        "score": 9,
+        "max_score": 9,
+        "reasons": [
+          "Correct visual category",
+          "Correct content category",
+          "Reasonable bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    },
+    "ollama": {
+      "success": true,
+      "latency_seconds": 20.155,
+      "provider": "OLLAMA",
+      "result": {
+        "title": "Microcontroller",
+        "bullets": [
+          "A microcontroller is a small computer on a single chip.",
+          "It contains a CPU, memory and input/output peripherals.",
+          "It is commonly used in embedded systems."
+        ],
+        "summary": "A microcontroller is a compact integrated circuit that combines a central processing unit (CPU), memory, and input/output peripherals on a single chip. It serves as the control system for embedded systems, where it manages the interaction between hardware components and executes specific tasks with minimal power consumption and space requirements.",
+        "keywords": [
+          "microcontroller",
+          "central processing unit (CPU)",
+          "memory",
+          "input/output peripherals",
+          "embedded systems"
+        ],
+        "content_type": "explanation",
+        "visual_type": "diagram",
+        "visual_reason": "The topic is textual and requires a textual explanation without visual elements. Component relationships detected; repaired to diagram. Architecture/components validated.",
+        "image_query": "",
+        "visual_spec": {
+          "center": "Microcontroller",
+          "components": [
+            "CPU",
+            "memory",
+            "input/output peripherals"
+          ],
+          "relationships": [
+            [
+              "Microcontroller",
+              "CPU"
+            ],
+            [
+              "Microcontroller",
+              "memory"
+            ],
+            [
+              "Microcontroller",
+              "input/output peripherals"
+            ]
+          ]
+        },
+        "diagram": "N/A"
+      },
+      "evaluation": {
+        "score": 9,
+        "max_score": 9,
+        "reasons": [
+          "Correct visual category",
+          "Correct content category",
+          "Reasonable bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    }
+  },
+  {
+    "scenario": {
+      "name": "comparison",
+      "topic": "Microcontroller vs Microprocessor",
+      "context": "A microcontroller combines the CPU, memory and peripherals on one chip. A microprocessor mainly contains the CPU and usually depends on external memory and peripherals."
+    },
+    "gemini": {
+      "success": true,
+      "latency_seconds": 2.996,
+      "provider": "GEMINI",
+      "result": {
+        "title": "Microcontroller vs Microprocessor",
+        "bullets": [
+          "Microcontroller combines CPU, memory, and peripherals on a single chip",
+          "Microprocessor primarily contains the CPU core itself",
+          "Microprocessor relies on external memory and peripheral components"
+        ],
+        "summary": "Microcontrollers integrate memory and peripherals onto one chip, whereas microprocessors consist mainly of the CPU and require external components.",
+        "keywords": [
+          "Microcontroller",
+          "Microprocessor",
+          "CPU",
+          "Peripherals",
+          "Memory"
+        ],
+        "content_type": "comparison",
+        "visual_type": "comparison_table",
+        "visual_reason": "A comparison table clearly contrasts the single-chip integration of a microcontroller with the external component dependencies of a microprocessor. Comparison specification normalized. Comparison data validated.",
+        "image_query": "",
+        "visual_spec": {
+          "columns": [
+            "Feature",
+            "Microcontroller",
+            "Microprocessor"
+          ],
+          "rows": [
+            {
+              "label": "Core Component",
+              "values": [
+                "CPU integrated on-chip",
+                "Mainly contains the CPU"
+              ]
+            },
+            {
+              "label": "Memory & Peripherals",
+              "values": [
+                "Integrated on the same chip",
+                "Requires external memory and peripherals"
+              ]
+            },
+            {
+              "label": "Integration",
+              "values": [
+                "All-in-one single chip",
+                "Multi-chip system setup"
+              ]
+            }
+          ]
+        },
+        "diagram": ""
+      },
+      "evaluation": {
+        "score": 9,
+        "max_score": 9,
+        "reasons": [
+          "Correct visual category",
+          "Correct content category",
+          "Reasonable bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    },
+    "ollama": {
+      "success": true,
+      "latency_seconds": 19.106,
+      "provider": "OLLAMA",
+      "result": {
+        "title": "Microcontroller vs Microprocessor",
+        "bullets": [
+          "A microcontroller combines the CPU, memory and peripherals on one chip.",
+          "A microprocessor mainly contains the CPU and usually depends on external memory and peripherals."
+        ],
+        "summary": "Microcontrollers integrate the CPU, memory, and peripherals into a single chip, making them ideal for embedded systems where cost and space are critical. Microprocessors, in contrast, focus on the CPU and require external components for memory and peripherals, making them more suitable for general-purpose computing applications like desktops and servers.",
+        "keywords": [
+          "microcontroller",
+          "microprocessor",
+          "embedded systems",
+          "CPU",
+          "peripherals",
+          "memory"
+        ],
+        "content_type": "explanation",
+        "visual_type": "diagram",
+        "visual_reason": "The comparison is textual and does not require visual elements for clarity. Component relationships detected; repaired to diagram. Architecture/components validated.",
+        "image_query": "",
+        "visual_spec": {
+          "center": "Microcontroller",
+          "components": [
+            "CPU",
+            "memory",
+            "usually depends on external memory",
+            "peripherals"
+          ],
+          "relationships": [
+            [
+              "Microcontroller",
+              "CPU"
+            ],
+            [
+              "Microcontroller",
+              "memory"
+            ],
+            [
+              "Microcontroller",
+              "usually depends on external memory"
+            ],
+            [
+              "Microcontroller",
+              "peripherals"
+            ]
+          ]
+        },
+        "diagram": "N/A"
+      },
+      "evaluation": {
+        "score": 4,
+        "max_score": 9,
+        "reasons": [
+          "Expected {'comparison_table'}, got diagram",
+          "Content category mismatch",
+          "Reasonable bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    }
+  },
+  {
+    "scenario": {
+      "name": "process",
+      "topic": "Sensor Data Processing",
+      "context": "First the sensor captures the physical signal. The ADC converts the analog signal into digital data. The CPU processes the digital data. Finally the system sends the result to the actuator."
+    },
+    "gemini": {
+      "success": true,
+      "latency_seconds": 3.541,
+      "provider": "GEMINI",
+      "result": {
+        "title": "Sensor Data Processing Pipeline",
+        "bullets": [
+          "Physical Signal: Sensor captures environmental physical inputs",
+          "Analog-to-Digital Conversion: ADC converts physical signals into digital data",
+          "Digital Processing: CPU processes and analyzes the digital data",
+          "Execution: System transmits final processed output to the actuator"
+        ],
+        "summary": "Sensor data processing moves sequentially from physical signal capture to digital conversion, CPU execution, and output actuation.",
+        "keywords": [
+          "Sensor",
+          "ADC",
+          "CPU",
+          "Actuator",
+          "Data Processing"
+        ],
+        "content_type": "process",
+        "visual_type": "flowchart",
+        "visual_reason": "The lecture describes a clear step-by-step linear sequence of signal flow through hardware hardware components. Sequential content repaired to flowchart. Ordered process validated.",
+        "image_query": "",
+        "visual_spec": {
+          "nodes": [
+            "Physical Signal",
+            "Sensor",
+            "ADC (Analog-to-Digital Converter)",
+            "CPU Processing",
+            "Actuator Output"
+          ],
+          "edges": [
+            "Captured by",
+            "Converted by",
+            "Processed by",
+            "Sent to"
+          ]
+        },
+        "diagram": ""
+      },
+      "evaluation": {
+        "score": 9,
+        "max_score": 9,
+        "reasons": [
+          "Correct visual category",
+          "Correct content category",
+          "Reasonable bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    },
+    "ollama": {
+      "success": true,
+      "latency_seconds": 30.638,
+      "provider": "OLLAMA",
+      "result": {
+        "title": "Sensor Data Processing",
+        "bullets": [
+          "The sensor captures the physical signal",
+          "The ADC converts the analog signal into digital data",
+          "The CPU processes the digital data",
+          "Finally the system sends the result to the actuator"
+        ],
+        "summary": "This process describes the flow of data from a physical signal through conversion to digital data, processing by a CPU, and finally acting on the result via an actuator.",
+        "keywords": [
+          "sensor",
+          "ADC",
+          "CPU",
+          "actuator",
+          "digital data",
+          "analog signal",
+          "data processing"
+        ],
+        "content_type": "explanation",
+        "visual_type": "flowchart",
+        "visual_reason": "The process involves sequential steps that can be visually represented as a flowchart to show the data flow from sensor to actuator. Flowchart specification validated. Ordered process validated.",
+        "image_query": "",
+        "visual_spec": {
+          "nodes": [
+            "{'id': 'sensor', 'label': 'Sensor', 'type': 'start'}",
+            "{'id': 'adc', 'label': ': ADC', 'type': 'process'}",
+            "{'id': 'cpu', 'label': 'CPU', 'type': 'process'}",
+            "{'id': 'actuator', 'label': 'Actuator', 'type': 'end'}"
+          ],
+          "edges": [
+            {
+              "from": "sensor",
+              "to": "adc"
+            },
+            {
+              "from": "adc",
+              "to": "cpu"
+            },
+            {
+              "from": "cpu",
+              "to": "actuator"
+            }
+          ]
+        },
+        "diagram": "flowchart LR\nsensor -->|Analog Signal| adc\nadc -->|Digital Data| cpu\ncpu -->|Processed Data| actuator"
+      },
+      "evaluation": {
+        "score": 7,
+        "max_score": 9,
+        "reasons": [
+          "Correct visual category",
+          "Content category mismatch",
+          "Reasonable bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    }
+  },
+  {
+    "scenario": {
+      "name": "architecture",
+      "topic": "Microcontroller Architecture",
+      "context": "A microcontroller contains a CPU, RAM, program memory, input/output ports, timers and communication peripherals. These components work together inside the microcontroller."
+    },
+    "gemini": {
+      "success": true,
+      "latency_seconds": 3.586,
+      "provider": "GEMINI",
+      "result": {
+        "title": "Microcontroller Architecture",
+        "bullets": [],
+        "summary": "A microcontroller integrates a central processing unit with memory and hardware peripherals onto a single integrated circuit to execute embedded tasks.",
+        "keywords": [
+          "microcontroller",
+          "CPU",
+          "RAM",
+          "program memory",
+          "I/O ports",
+          "peripherals"
+        ],
+        "content_type": "explanation",
+        "visual_type": "diagram",
+        "visual_reason": "The topic explains how multiple hardware components are arranged and work together inside a single microcontroller architecture, which is best represented as a diagram. Component relationships detected; repaired to diagram. Architecture/components validated.",
+        "image_query": "",
+        "visual_spec": {
+          "center": "CPU (Central Processing Unit)",
+          "components": [
+            "CPU",
+            "RAM",
+            "Program Memory",
+            "I/O Ports",
+            "Timers",
+            "Communication Peripherals"
+          ],
+          "relationships": [
+            "CPU interacts directly with RAM for data storage",
+            "CPU fetches instructions from Program Memory",
+            "CPU controls Input/Output Ports",
+            "CPU interfaces with Timers and Communication Peripherals"
+          ]
+        },
+        "diagram": "flowchart LR\n  CPU[CPU - Central Processing Unit]\n  RAM[RAM - Data Memory]\n  PM[Program Memory - Flash/ROM]\n  IO[Input / Output Ports]\n  TIM[Timers]\n  COMM[Communication Peripherals]\n  CPU --- RAM\n  CPU --- PM\n  CPU --- IO\n  CPU --- TIM\n  CPU --- COMM"
+      },
+      "evaluation": {
+        "score": 8,
+        "max_score": 9,
+        "reasons": [
+          "Correct visual category",
+          "Correct content category",
+          "Poor bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    },
+    "ollama": {
+      "success": true,
+      "latency_seconds": 29.853,
+      "provider": "OLLAMA",
+      "result": {
+        "title": "Microcontroller Architecture",
+        "bullets": [
+          "A microcontroller is an integrated circuit that combines a CPU, RAM, program memory, input/output ports, timers, and communication peripherals into a single chip.",
+          "The CPU is the central processing unit that executes instructions and controls the flow of data within the microcontroller.",
+          "RAM (Random Access Memory) is used for temporary data storage during program execution, allowing the microcontroller to hold variables and intermediate results.",
+          "Program memory (often flash memory) stores the firmware or software instructions that the microcontroller executes.",
+          "Input/output (I/O) ports allow the microcontroller to interact with external devices such as sensors, actuators, and other peripherals.",
+          "Timers are hardware modules that measure time intervals and can be used for tasks like generating precise delays, controlling PWM signals, or synchronizing events with external signals."
+        ],
+        "summary": "Microcontrollers are designed to be compact, cost-effective solutions for embedded systems. They integrate essential components like a CPU, memory, and I/O interfaces into a single chip, enabling them to control hardware and interact with the external world efficiently. This architecture makes microcontrollers ideal for applications ranging from simple consumer electronics to complex industrial systems.",
+        "keywords": [
+          "microcontroller",
+          "CPU",
+          "RAM",
+          "program memory",
+          "I/O ports",
+          "timers",
+          "communication peripherals",
+          "embedded systems",
+          "firmware",
+          "peripherals"
+        ],
+        "content_type": "explanation",
+        "visual_type": "diagram",
+        "visual_reason": "The content is textual and does not require visual elements for understanding. The explanation is clear and concise, focusing on the core components and their roles without needing diagrams or images. Component relationships detected; repaired to diagram. Architecture/components validated.",
+        "image_query": "",
+        "visual_spec": {
+          "center": "Microcontroller",
+          "components": [
+            "CPU",
+            "RAM",
+            "program memory",
+            "memory",
+            "input/output ports",
+            "timers",
+            "communication peripherals"
+          ],
+          "relationships": [
+            [
+              "Microcontroller",
+              "CPU"
+            ],
+            [
+              "Microcontroller",
+              "RAM"
+            ],
+            [
+              "Microcontroller",
+              "program memory"
+            ],
+            [
+              "Microcontroller",
+              "memory"
+            ],
+            [
+              "Microcontroller",
+              "input/output ports"
+            ],
+            [
+              "Microcontroller",
+              "timers"
+            ],
+            [
+              "Microcontroller",
+              "communication peripherals"
+            ]
+          ]
+        },
+        "diagram": "N/A"
+      },
+      "evaluation": {
+        "score": 9,
+        "max_score": 9,
+        "reasons": [
+          "Correct visual category",
+          "Correct content category",
+          "Reasonable bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    }
+  },
+  {
+    "scenario": {
+      "name": "examples",
+      "topic": "Examples of Microcontrollers",
+      "context": "Examples include Arduino Uno, ESP32, STM32, PIC and AVR microcontrollers."
+    },
+    "gemini": {
+      "success": true,
+      "latency_seconds": 2.898,
+      "provider": "GEMINI",
+      "result": {
+        "title": "Examples of Microcontrollers",
+        "bullets": [
+          "Arduino Uno: Popular open-source board widely used for beginner projects and prototyping.",
+          "ESP32: Feature-rich microcontroller with built-in Wi-Fi and Bluetooth capabilities.",
+          "STM32: Powerful 32-bit microcontroller family based on ARM Cortex-M processors.",
+          "PIC: Microchip technology series known for industrial and embedded control applications.",
+          "AVR: Atmel 8-bit RISC architecture powering many traditional microcontroller boards."
+        ],
+        "summary": "Key microcontroller platforms commonly used in embedded systems range from beginner prototyping boards like Arduino to connected chips like ESP32 and industrial hardware like STM32, PIC, and AVR.",
+        "keywords": [
+          "Microcontroller",
+          "Arduino Uno",
+          "ESP32",
+          "STM32",
+          "PIC",
+          "AVR"
+        ],
+        "content_type": "examples",
+        "visual_type": "example_grid",
+        "visual_reason": "An example grid effectively categorizes and presents distinct instances of microcontrollers clearly for educational review. Multiple concrete examples detected; repaired to example grid. Concrete examples validated.",
+        "image_query": "",
+        "visual_spec": {
+          "examples": [
+            "Arduino Uno",
+            "ESP32",
+            "STM32",
+            "PIC",
+            "AVR"
+          ]
+        },
+        "diagram": ""
+      },
+      "evaluation": {
+        "score": 9,
+        "max_score": 9,
+        "reasons": [
+          "Correct visual category",
+          "Correct content category",
+          "Reasonable bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    },
+    "ollama": {
+      "success": true,
+      "latency_seconds": 19.413,
+      "provider": "OLLAMA",
+      "result": {
+        "title": "Examples of Microcontrollers",
+        "bullets": [
+          "Arduino Uno",
+          "ESP3:2",
+          "STM32",
+          "PIC",
+          "AVR"
+        ],
+        "summary": "Microcontrollers are integrated circuits that control electronic devices. Examples include Arduino Uno, ESP32, STM32, PIC, and AVR microcontrollers. These devices are widely used in embedded systems for tasks such as sensor data processing, motor control, and communication protocols.",
+        "keywords": [
+          "Microcontrollers",
+          "Arduino Uno",
+          "ESP32",
+          "STM32",
+          "PIC",
+          "AVR"
+        ],
+        "content_type": "explanation",
+        "visual_type": "example_grid",
+        "visual_reason": "The content is textual and does not require visual elements for understanding. Multiple concrete examples detected; repaired to example grid. Concrete examples validated.",
+        "image_query": "",
+        "visual_spec": {
+          "examples": [
+            "Arduino Uno",
+            "ESP32",
+            "STM32",
+            "PIC",
+            "AVR microcontrollers"
+          ]
+        },
+        "diagram": ""
+      },
+      "evaluation": {
+        "score": 7,
+        "max_score": 9,
+        "reasons": [
+          "Correct visual category",
+          "Content category mismatch",
+          "Reasonable bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    }
+  },
+  {
+    "scenario": {
+      "name": "numeric_data",
+      "topic": "Microcontroller Performance",
+      "context": "Controller A operates at 16 MHz, controller B operates at 32 MHz, and controller C operates at 80 MHz."
+    },
+    "gemini": {
+      "success": true,
+      "latency_seconds": 3.227,
+      "provider": "GEMINI",
+      "result": {
+        "title": "Microcontroller Clock Speed Comparison",
+        "bullets": [
+          "Clock speed determines the processing frequency of each microcontroller",
+          "Controller A operates at the lowest frequency of 16 MHz",
+          "Controller B operates at double the frequency of A at 32 MHz",
+          "Controller C offers the highest performance operating at 80 MHz"
+        ],
+        "summary": "Comparing the operating clock frequencies of three distinct microcontrollers to evaluate performance capacity.",
+        "keywords": [
+          "microcontroller",
+          "clock speed",
+          "frequency",
+          "MHz",
+          "performance"
+        ],
+        "content_type": "comparison",
+        "visual_type": "chart",
+        "visual_reason": "Numeric values (16 MHz, 32 MHz, 80 MHz) are present for three distinct items, making a bar chart the best structure to visually contrast their relative speeds. Actual numeric measurements detected; repaired to chart. Real numeric data validated.",
+        "image_query": "",
+        "visual_spec": {
+          "chart_type": "bar",
+          "x": [
+            "Controller A",
+            "controller B",
+            "and controller C"
+          ],
+          "y": [
+            16.0,
+            32.0,
+            80.0
+          ]
+        },
+        "diagram": ""
+      },
+      "evaluation": {
+        "score": 9,
+        "max_score": 9,
+        "reasons": [
+          "Correct visual category",
+          "Correct content category",
+          "Reasonable bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    },
+    "ollama": {
+      "success": true,
+      "latency_seconds": 19.465,
+      "provider": "OLLAMA",
+      "result": {
+        "title": "Microcontroller Performance Comparison",
+        "bullets": [
+          "Controller A: 16 MHz clock speed",
+          "Controller B: 32 MHz clock speed",
+          "Controller C: 80 MHz clock speed"
+        ],
+        "summary": "The microcontrollers operate at different clock speeds: A (16 MHz), B (32 MHz), and C (8.0 MHz). This difference in clock speed directly impacts their processing capabilities and performance metrics.",
+        "keywords": [
+          "microcontroller",
+          "clock speed",
+          "performance",
+          "16 MHz",
+          "32 MHz",
+          "80 MHz"
+        ],
+        "content_type": "explanation",
+        "visual_type": "chart",
+        "visual_reason": "The visual representation is text-based to clearly list the clock speeds and provide a concise summary of the performance implications without visual elements. Actual numeric measurements detected; repaired to chart. Real numeric data validated.",
+        "image_query": "",
+        "visual_spec": {
+          "chart_type": "bar",
+          "x": [
+            "Controller A",
+            "controller B",
+            "and controller C"
+          ],
+          "y": [
+            16.0,
+            32.0,
+            80.0
+          ]
+        },
+        "diagram": ""
+      },
+      "evaluation": {
+        "score": 7,
+        "max_score": 9,
+        "reasons": [
+          "Correct visual category",
+          "Content category mismatch",
+          "Reasonable bullet count",
+          "Structured visual specification present",
+          "Title present"
+        ]
+      }
+    }
+  }
+]

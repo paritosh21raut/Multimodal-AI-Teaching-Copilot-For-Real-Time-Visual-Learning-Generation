@@ -173,10 +173,9 @@ class TopicIntelligence:
             )
 
         # ------------------------------------------------------
-        # Keep only the topic phrase before explanation.
+        # Keep only first sentence/clause.
         # ------------------------------------------------------
 
-        # First sentence/clause only.
         text = re.split(
             r"[.!?]",
             text,
@@ -190,9 +189,62 @@ class TopicIntelligence:
             flags=re.IGNORECASE,
         )[0]
 
-        # Remove leading "the".
+        # ------------------------------------------------------
+        # IMPORTANT:
+        #
+        # Definition-style lecture openings often look like:
+        #
+        # "A microcontroller is a compact computer..."
+        # "Microcontroller is a compact computer..."
+        #
+        # We want:
+        #
+        # "Microcontroller"
+        #
+        # instead of the whole sentence becoming the topic.
+        # ------------------------------------------------------
+
+        definition_match = re.match(
+            r"^(?:a|an|the)?\s*"
+            r"([A-Za-z][A-Za-z0-9-]*"
+            r"(?:\s+[A-Za-z][A-Za-z0-9-]*){0,2})"
+            r"\s+"
+            r"(?:is|are|was|were|"
+            r"refers\s+to|means|"
+            r"consists\s+of|contains|"
+            r"includes|has|have)\b",
+            text,
+            flags=re.IGNORECASE,
+        )
+
+        if definition_match:
+
+            topic = (
+                definition_match
+                .group(1)
+                .strip()
+            )
+
+            topic = re.sub(
+                r"^(?:a|an|the)\s+",
+                "",
+                topic,
+                flags=re.IGNORECASE,
+            )
+
+            if topic:
+
+                return (
+                    topic[0].upper()
+                    + topic[1:]
+                )
+
+        # ------------------------------------------------------
+        # Remove leading articles.
+        # ------------------------------------------------------
+
         text = re.sub(
-            r"^the\s+",
+            r"^(?:the|a|an)\s+",
             "",
             text,
             flags=re.IGNORECASE,

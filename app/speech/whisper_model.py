@@ -29,11 +29,12 @@ class WhisperModel:
     ):
 
         segments, info = self.model.transcribe(
-            audio_path,
-            language="en",
-            beam_size=5,
-            vad_filter=True
-        )
+        audio_path,
+        language="en",
+        beam_size=5,
+        vad_filter=True,
+        condition_on_previous_text=False,
+    )
 
         transcript_parts = []
 
@@ -101,7 +102,8 @@ class WhisperModel:
             audio,
             language="en",
             beam_size=5,
-            vad_filter=True
+            vad_filter=True,
+            condition_on_previous_text=False,
         )
 
         transcript_parts = []

@@ -1,0 +1,255 @@
+[
+  {
+    "scenario": {
+      "name": "definition",
+      "topic": "Microcontroller",
+      "context": "A microcontroller is a small computer on a single chip. It contains a CPU, memory and input/output peripherals. It is commonly used in embedded systems."
+    },
+    "latency_seconds": 22.253,
+    "provider": "OLLAMA",
+    "content_type": "explanation",
+    "visual_type": "diagram",
+    "title": "Microcontroller Basics",
+    "bullets": [
+      "A microcontroller is a small computer integrated onto a single chip",
+      "It includes a central processing unit (CPU), memory, and input/output peripherals",
+      "Commonly used in embedded systems for controlling electronic devices"
+    ],
+    "visual_spec": {
+      "center": "Microcontroller",
+      "components": [
+        "CPU",
+        "memory",
+        "input/output peripherals"
+      ],
+      "relationships": [
+        [
+          "Microcontroller",
+          "CPU"
+        ],
+        [
+          "Microcontroller",
+          "memory"
+        ],
+        [
+          "Microcontroller",
+          "input/output peripherals"
+        ]
+      ]
+    },
+    "score": 6
+  },
+  {
+    "scenario": {
+      "name": "comparison",
+      "topic": "Microcontroller vs Microprocessor",
+      "context": "A microcontroller combines the CPU, memory and peripherals on one chip. A microprocessor mainly contains the CPU and usually depends on external memory and peripherals."
+    },
+    "latency_seconds": 17.537,
+    "provider": "OLLAMA",
+    "content_type": "comparison",
+    "visual_type": "comparison_table",
+    "title": "Microcontroller vs Microprocessor: Core Differences",
+    "bullets": [
+      "Microcontroller: Integrates CPU, memory, and peripherals on a single chip",
+      "Microprocessor: Contains only CPU and requires external memory/peripherals",
+      "Microcontrollers are self-contained systems for embedded applications",
+      "Microprocessors are used in general-purpose computing systems"
+    ],
+    "visual_spec": {
+      "columns": [
+        "Feature",
+        "Microcontroller",
+        "Microprocessor"
+      ],
+      "rows": [
+        {
+          "label": "Main Integration",
+          "values": [
+            "CPU + memory + peripherals",
+            "Primarily CPU"
+          ]
+        },
+        {
+          "label": "Memory",
+          "values": [
+            "Integrated",
+            "Usually external"
+          ]
+        },
+        {
+          "label": "Peripherals",
+          "values": [
+            "Integrated",
+            "Usually external"
+          ]
+        }
+      ]
+    },
+    "score": 6
+  },
+  {
+    "scenario": {
+      "name": "process",
+      "topic": "Sensor Data Processing",
+      "context": "First the sensor captures the physical signal. The ADC converts the analog signal into digital data. The CPU processes the digital data. Finally the system sends the result to the actuator."
+    },
+    "latency_seconds": 14.584,
+    "provider": "OLLAMA",
+    "content_type": "process",
+    "visual_type": "flowchart",
+    "title": "Sensor Data Processing Workflow",
+    "bullets": [
+      "Physical signal captured by sensor",
+      "Analog signal converted to digital data via ADC",
+      "CPU processes the digital data",
+      "System sends processed result to actuator"
+    ],
+    "visual_spec": {
+      "nodes": [
+        "Sensor",
+        "ADC",
+        "CPU",
+        "Actuator"
+      ],
+      "edges": [
+        [
+          "Sensor",
+          "ADC"
+        ],
+        [
+          "ADC",
+          "CPU"
+        ],
+        [
+          "CPU",
+          "Actuator"
+        ]
+      ]
+    },
+    "score": 6
+  },
+  {
+    "scenario": {
+      "name": "architecture",
+      "topic": "Microcontroller Architecture",
+      "context": "A microcontroller contains a CPU, RAM, program memory, input/output ports, timers and communication peripherals. These components work together inside the microcontroller."
+    },
+    "latency_seconds": 17.416,
+    "provider": "OLLAMA",
+    "content_type": "explanation",
+    "visual_type": "diagram",
+    "title": "Microcontroller Architecture Overview",
+    "bullets": [
+      "A microcontroller integrates a CPU for processing instructions",
+      "RAM provides temporary storage for data during operation",
+      "Program memory stores the firmware or software code",
+      "Input/output ports enable interaction with external devices",
+      "Timers manage time-based operations and intervals",
+      "Communication peripherals facilitate data exchange with other systems"
+    ],
+    "visual_spec": {
+      "center": "Microcontroller",
+      "components": [
+        "CPU",
+        "RAM",
+        "program memory",
+        "memory",
+        "input/output ports",
+        "timers",
+        "communication peripherals"
+      ],
+      "relationships": [
+        [
+          "Microcontroller",
+          "CPU"
+        ],
+        [
+          "Microcontroller",
+          "RAM"
+        ],
+        [
+          "Microcontroller",
+          "program memory"
+        ],
+        [
+          "Microcontroller",
+          "memory"
+        ],
+        [
+          "Microcontroller",
+          "input/output ports"
+        ],
+        [
+          "Microcontroller",
+          "timers"
+        ],
+        [
+          "Microcontroller",
+          "communication peripherals"
+        ]
+      ]
+    },
+    "score": 6
+  },
+  {
+    "scenario": {
+      "name": "examples",
+      "topic": "Examples of Microcontrollers",
+      "context": "Examples include Arduino Uno, ESP32, STM32, PIC and AVR microcontrollers."
+    },
+    "latency_seconds": 17.478,
+    "provider": "OLLAMA",
+    "content_type": "examples",
+    "visual_type": "example_grid",
+    "title": "Common Microcontroller Examples",
+    "bullets": [
+      "Arduino Uno: Popular open-source platform for beginners",
+      "ESP32: Dual-core processor with Wi-Fi and Bluetooth capabilities",
+      "STM3: 32: High-performance microcontroller for industrial applications",
+      "PIC: Family of microcontrollers with simple architecture",
+      "AVR: Microcontrollers with 8-bit and 32-bit variants"
+    ],
+    "visual_spec": {
+      "examples": [
+        "Arduino Uno",
+        "ESP32",
+        "STM32",
+        "PIC",
+        "AVR microcontrollers"
+      ]
+    },
+    "score": 6
+  },
+  {
+    "scenario": {
+      "name": "numeric_data",
+      "topic": "Microcontroller Performance",
+      "context": "Controller A operates at 16 MHz, controller B operates at 32 MHz, and controller C operates at 80 MHz."
+    },
+    "latency_seconds": 14.916,
+    "provider": "OLLAMA",
+    "content_type": "data",
+    "visual_type": "chart",
+    "title": "Microcontroller Clock Speed Comparison",
+    "bullets": [
+      "Controller A: 16 MHz clock speed",
+      "Controller B: 32 MHz clock speed",
+      "Controller C: 80 MHz clock: 80 MHz clock speed"
+    ],
+    "visual_spec": {
+      "chart_type": "bar",
+      "x": [
+        "Controller A",
+        "controller B",
+        "and controller C"
+      ],
+      "y": [
+        16.0,
+        32.0,
+        80.0
+      ]
+    },
+    "score": 6
+  }
+]

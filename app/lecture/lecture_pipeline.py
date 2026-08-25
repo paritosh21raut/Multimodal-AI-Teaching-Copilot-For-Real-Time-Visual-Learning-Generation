@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from threading import Lock
 
 from app.lecture.context_buffer import (
@@ -8,6 +9,11 @@ from app.lecture.context_buffer import (
 
 from app.lecture.lecture_state import (
     lecture_state,
+)
+
+from app.lecture.slide_decision_engine import (
+    SlideAction,
+    SlideDecisionEngine,
 )
 
 from app.ppt.ppt_manager import (
@@ -32,6 +38,28 @@ class LecturePipeline:
         self.slide_manager = None
 
         self.started = False
+
+        self.slide_decision_engine = (
+            SlideDecisionEngine(
+                max_slide_source_words=120,
+                max_updates_per_slide=4,
+                min_meaningful_words=4,
+            )
+        )
+
+        # ==========================================================
+        # LLM GENERATION AGGREGATION
+        # ==========================================================
+
+        self.pending_generation_chunks: list[str] = []
+
+        self.pending_generation_words = 0
+
+        self.pending_generation_sentences = 0
+
+        self.generation_min_words = 35
+
+        self.generation_min_sentences = 2
 
     # ==========================================================
     # REGISTRATION
@@ -69,6 +97,10 @@ class LecturePipeline:
 
         lecture_state.start_new_lecture()
 
+        self.slide_decision_engine.reset()
+
+        self._clear_generation_buffer()
+
         if ppt_manager.presentation is None:
 
             ppt_manager.create_new_presentation(
@@ -89,6 +121,86 @@ class LecturePipeline:
         )
 
     # ==========================================================
+    # GENERATION BUFFER
+    # ==========================================================
+
+    def _clear_generation_buffer(self):
+
+        self.pending_generation_chunks = []
+
+        self.pending_generation_words = 0
+
+        self.pending_generation_sentences = 0
+
+    @staticmethod
+    def _count_words(
+        text: str,
+    ) -> int:
+
+        return len(
+            re.findall(
+                r"\b\w+(?:[-']\w+)*\b",
+                text,
+            )
+        )
+
+    @staticmethod
+    def _count_completed_sentences(
+        text: str,
+    ) -> int:
+
+        return len(
+            re.findall(
+                r"[^.!?]+[.!?]+",
+                text,
+            )
+        )
+
+    def _add_to_generation_buffer(
+        self,
+        transcript: str,
+    ):
+
+        text = " ".join(
+            transcript.strip().split()
+        )
+
+        if not text:
+            return
+
+        self.pending_generation_chunks.append(
+            text
+        )
+
+        self.pending_generation_words += (
+            self._count_words(text)
+        )
+
+        self.pending_generation_sentences += (
+            self._count_completed_sentences(text)
+        )
+
+    def _generation_buffer_text(
+        self,
+    ) -> str:
+
+        return " ".join(
+            self.pending_generation_chunks
+        ).strip()
+
+    def _generation_buffer_ready(
+        self,
+    ) -> bool:
+
+        return (
+            self.pending_generation_words
+            >= self.generation_min_words
+            or
+            self.pending_generation_sentences
+            >= self.generation_min_sentences
+        )
+
+    # ==========================================================
     # PROCESS
     # ==========================================================
 
@@ -105,9 +217,9 @@ class LecturePipeline:
         if not self.started:
             self.start()
 
-        # ----------------------------------------------------------
-        # Semantic topic analysis
-        # ----------------------------------------------------------
+        # ======================================================
+        # SEMANTIC TOPIC ANALYSIS
+        # ======================================================
 
         decision = (
             self.topic_detector.process(
@@ -128,9 +240,9 @@ class LecturePipeline:
             )
         )
 
-        # ----------------------------------------------------------
-        # Irrelevant speech
-        # ----------------------------------------------------------
+        # ======================================================
+        # IRRELEVANT SPEECH
+        # ======================================================
 
         if (
             hasattr(
@@ -144,18 +256,24 @@ class LecturePipeline:
             print(
                 "ANALYSIS RESULT"
             )
+
             print(
                 "-" * 70
             )
+
             print(
                 "Relevant      : NO"
             )
+
             print(
                 "Action        : KEEP CURRENT SLIDE"
             )
+
             print(
-                f"Reason        : {decision.reason}"
+                f"Reason        : "
+                f"{decision.reason}"
             )
+
             print(
                 "-" * 70
             )
@@ -168,19 +286,26 @@ class LecturePipeline:
                 ),
                 "confidence": 0.0,
                 "reason": decision.reason,
+                "slide_action": "IGNORE",
+                "slide_number": (
+                    lecture_state.current_slide_number
+                    if lecture_state.has_slides()
+                    else None
+                ),
+                "content_generated": False,
             }
 
-        # ----------------------------------------------------------
-        # Add only relevant speech to lecture context
-        # ----------------------------------------------------------
+        # ======================================================
+        # ADD RELEVANT SPEECH TO CONTEXT
+        # ======================================================
 
         context_buffer.add(
             transcript
         )
 
-        # ----------------------------------------------------------
-        # Confidence
-        # ----------------------------------------------------------
+        # ======================================================
+        # CONFIDENCE
+        # ======================================================
 
         if (
             lecture_state.get_current_topic()
@@ -195,7 +320,8 @@ class LecturePipeline:
                 0.0,
                 min(
                     1.0,
-                    1.0 - float(
+                    1.0
+                    - float(
                         decision.similarity
                     ),
                 ),
@@ -213,15 +339,221 @@ class LecturePipeline:
                 ),
             )
 
-        # ----------------------------------------------------------
-        # Slide decision
-        # ----------------------------------------------------------
+        # ======================================================
+        # SLIDE DECISION
+        # ======================================================
 
-        if decision.is_new_topic:
+        current_slide_exists = (
+            lecture_state.has_slides()
+        )
 
-            slide_action = (
-                "NEW SLIDE"
+        slide_decision = (
+            self.slide_decision_engine.decide(
+
+                transcript=transcript,
+
+                is_new_topic=(
+                    decision.is_new_topic
+                ),
+
+                current_slide_exists=(
+                    current_slide_exists
+                ),
             )
+        )
+
+        # ======================================================
+        # REPORT DECISION
+        # ======================================================
+
+        print()
+        print(
+            "SLIDE DECISION"
+        )
+
+        print(
+            "-" * 70
+        )
+
+        print(
+            f"Action        : "
+            f"{slide_decision.action.value.upper()}"
+        )
+
+        print(
+            f"Reason        : "
+            f"{slide_decision.reason}"
+        )
+
+        print(
+            f"Chunk Words   : "
+            f"{slide_decision.estimated_words}"
+        )
+
+        print(
+            f"Slide Words   : "
+            f"{slide_decision.slide_word_count}"
+        )
+
+        print(
+            f"Slide Updates : "
+            f"{slide_decision.update_count}"
+        )
+
+        print(
+            "-" * 70
+        )
+
+        # ======================================================
+        # IGNORE
+        # ======================================================
+
+        if (
+            slide_decision.action
+            == SlideAction.IGNORE
+        ):
+
+            print(
+                "Action        : KEEP CURRENT SLIDE"
+            )
+
+            return {
+                "is_relevant": True,
+                "is_new_topic": False,
+                "topic": (
+                    lecture_state.get_current_topic()
+                ),
+                "confidence": confidence,
+                "reason": (
+                    slide_decision.reason
+                ),
+                "slide_action": "IGNORE",
+                "slide_number": (
+                    lecture_state.current_slide_number
+                    if lecture_state.has_slides()
+                    else None
+                ),
+                "content_generated": False,
+            }
+
+        # ======================================================
+        # NEW TOPIC / EXPLICIT SLIDE
+        # Always generate immediately.
+        # ======================================================
+
+        force_generation = (
+            slide_decision.action
+            == SlideAction.CREATE
+        )
+
+        # ======================================================
+        # SAME TOPIC
+        # Accumulate before calling the LLM.
+        # ======================================================
+
+        if (
+            slide_decision.action
+            == SlideAction.UPDATE
+        ):
+
+            self._add_to_generation_buffer(
+                transcript
+            )
+
+            print(
+                f"[Pipeline] Pending generation "
+                f"words: "
+                f"{self.pending_generation_words}"
+            )
+
+            print(
+                f"[Pipeline] Pending sentences: "
+                f"{self.pending_generation_sentences}"
+            )
+
+            if not self._generation_buffer_ready():
+
+                lecture_state.set_current_topic(
+                    decision.topic,
+                    decision.embedding,
+                )
+
+                dashboard_state.update_topic(
+                    str(
+                        decision.topic
+                    ),
+                    confidence,
+                )
+
+                current_slide_number = (
+                    lecture_state.current_slide_number
+                    if lecture_state.has_slides()
+                    else None
+                )
+
+                print(
+                    "[Pipeline] "
+                    "Same-topic content accumulated. "
+                    "Waiting for more meaningful content "
+                    "before LLM generation."
+                )
+
+                return {
+                    "is_relevant": True,
+                    "is_new_topic": False,
+                    "topic": str(
+                        decision.topic
+                    ),
+                    "confidence": confidence,
+                    "reason": slide_decision.reason,
+                    "slide_action": "ACCUMULATE",
+                    "slide_number": current_slide_number,
+                    "content_generated": False,
+                    "generation_pending": True,
+                    "pending_words": (
+                        self.pending_generation_words
+                    ),
+                    "pending_sentences": (
+                        self.pending_generation_sentences
+                    ),
+                }
+
+        # ======================================================
+        # BUILD GENERATION CONTEXT
+        # ======================================================
+
+        if force_generation:
+
+            if decision.is_new_topic:
+
+                generation_text = transcript
+
+            else:
+
+                generation_text = (
+                    self._generation_buffer_text()
+                    or transcript
+                )
+
+        else:
+
+            generation_text = (
+                self._generation_buffer_text()
+            )
+
+        if not generation_text:
+
+            generation_text = transcript
+
+        # ======================================================
+        # CREATE / UPDATE SLIDE
+        # ======================================================
+
+        if force_generation:
+
+            slide_action = "NEW SLIDE"
+
+            self._clear_generation_buffer()
 
             slide = (
                 lecture_state.create_slide(
@@ -235,34 +567,54 @@ class LecturePipeline:
                 "SAME SLIDE - UPDATE"
             )
 
-            lecture_state.update_current_slide()
-
             slide = (
                 lecture_state.get_current_slide()
             )
+
+            if slide is None:
+
+                slide_action = "NEW SLIDE"
+
+                self._clear_generation_buffer()
+
+                slide = (
+                    lecture_state.create_slide(
+                        decision.topic
+                    )
+                )
+
+                force_generation = True
 
         lecture_state.set_current_topic(
             decision.topic,
             decision.embedding,
         )
 
-        # ----------------------------------------------------------
-        # Analysis report
-        # ----------------------------------------------------------
+        # ======================================================
+        # ANALYSIS REPORT
+        # ======================================================
 
         print()
         print(
             "=" * 70
         )
+
         print(
             "LECTURE ANALYSIS REPORT"
         )
+
         print(
             "=" * 70
         )
 
         print(
-            f"Input Chunk    : {transcript}"
+            f"Input Chunk    : "
+            f"{transcript}"
+        )
+
+        print(
+            f"Generation Text: "
+            f"{generation_text}"
         )
 
         print(
@@ -291,13 +643,13 @@ class LecturePipeline:
         )
 
         print(
-            f"Slide Number   : "
-            f"{slide.slide_number}"
+            f"Decision Reason: "
+            f"{slide_decision.reason}"
         )
 
         print(
-            f"Reason         : "
-            f"{decision.reason}"
+            f"Slide Number   : "
+            f"{slide.slide_number}"
         )
 
         print(
@@ -311,9 +663,9 @@ class LecturePipeline:
             confidence,
         )
 
-        # ----------------------------------------------------------
-        # Generate structured slide content
-        # ----------------------------------------------------------
+        # ======================================================
+        # LLM GENERATION
+        # ======================================================
 
         print(
             "Generating educational content..."
@@ -342,7 +694,8 @@ class LecturePipeline:
             )
 
             print(
-                f"Error              : {error}"
+                f"Error              : "
+                f"{error}"
             )
 
             dashboard_state.set_error(
@@ -366,12 +719,28 @@ class LecturePipeline:
                 "slide_number": (
                     slide.slide_number
                 ),
+                "slide_action": slide_action,
                 "content_generated": False,
             }
 
-        # ----------------------------------------------------------
-        # Content intelligence report
-        # ----------------------------------------------------------
+        # ======================================================
+        # RECORD SUCCESS
+        # ======================================================
+
+        self.slide_decision_engine.record_success(
+            generation_text,
+            (
+                SlideAction.CREATE
+                if force_generation
+                else SlideAction.UPDATE
+            ),
+        )
+
+        self._clear_generation_buffer()
+
+        # ======================================================
+        # CONTENT REPORT
+        # ======================================================
 
         print(
             f"Content Type   : "
@@ -403,9 +772,9 @@ class LecturePipeline:
             f"{len(content.bullets)}"
         )
 
-        # ----------------------------------------------------------
-        # Dashboard
-        # ----------------------------------------------------------
+        # ======================================================
+        # DASHBOARD
+        # ======================================================
 
         dashboard_state.update_slide(
             content.title,
@@ -422,11 +791,11 @@ class LecturePipeline:
             "Generating",
         )
 
-        # ----------------------------------------------------------
-        # Existing PPT/SlideManager
-        # ----------------------------------------------------------
+        # ======================================================
+        # SLIDE MANAGER
+        # ======================================================
 
-        if decision.is_new_topic:
+        if force_generation:
 
             result = (
                 self.slide_manager.create_slide(
@@ -444,6 +813,10 @@ class LecturePipeline:
                 )
             )
 
+        # ======================================================
+        # RESULT
+        # ======================================================
+
         print(
             f"Slide Generation : "
             f"{'SUCCESS' if result.success else 'FAILED'}"
@@ -460,33 +833,49 @@ class LecturePipeline:
 
         return {
             "is_relevant": True,
+
             "is_new_topic": (
                 decision.is_new_topic
             ),
+
             "topic": str(
                 decision.topic
             ),
+
             "confidence": confidence,
+
             "slide_action": slide_action,
+
+            "slide_decision_reason": (
+                slide_decision.reason
+            ),
+
             "slide_number": (
                 slide.slide_number
             ),
+
             "content_generated": True,
+
             "title": content.title,
+
             "bullets": [
                 bullet.text
                 for bullet
                 in content.bullets
             ],
+
             "content_type": (
                 content.content_type
             ),
+
             "visual_type": (
                 content.visual_type
             ),
+
             "visual_reason": (
                 content.visual_reason
             ),
+
             "visual_spec": (
                 content.visual_spec
             ),
