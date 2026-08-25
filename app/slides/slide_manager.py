@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from app.ppt.ppt_manager import ppt_manager
+from app.ppt.ppt_manager import (
+    ppt_manager,
+)
 
 from app.slides.slide_models import (
     SlideAction,
@@ -9,7 +11,9 @@ from app.slides.slide_models import (
     SlideResult,
 )
 
-from app.images.image_manager import image_manager
+from app.images.image_manager import (
+    image_manager,
+)
 
 from app.dashboard.dashboard_state import (
     dashboard_state,
@@ -18,16 +22,36 @@ from app.dashboard.dashboard_state import (
 
 class SlideManager:
     """
-    Handles slide creation and updates.
+    Converts SlideContent into dashboard and PPT output.
 
-    Receives SlideContent from the LecturePipeline,
-    updates the live dashboard, and forwards the
-    content to PPTManager.
+    Visual routing:
+
+    image
+        -> image manager
+
+    diagram / flowchart / comparison_table /
+    chart / hierarchy / example_grid / formula /
+    concept_map
+        -> native PPT renderer
     """
 
-    # ========================================================
-    # CREATE SLIDE
-    # ========================================================
+    # ============================================================
+    # IMAGE DECISION
+    # ============================================================
+
+    @staticmethod
+    def _needs_external_image(
+        content: SlideContent,
+    ) -> bool:
+
+        return (
+            content.visual_type
+            == "image"
+        )
+
+    # ============================================================
+    # CREATE
+    # ============================================================
 
     def create_slide(
         self,
@@ -35,41 +59,64 @@ class SlideManager:
         content: SlideContent,
     ) -> SlideResult:
 
-        print("=" * 60)
+        image_path = None
 
-        print("IMAGE QUERY:")
-        print(content.image_query)
-
-        print("=" * 60)
-
-        # ----------------------------------------------------
-        # Generate / retrieve image
-        # ----------------------------------------------------
-
-        image_path = image_manager.get_image(
-            content.image_query
+        print(
+            "=" * 60
         )
+
+        print(
+            "VISUAL TYPE:",
+            content.visual_type,
+        )
+
+        print(
+            "VISUAL REASON:",
+            content.visual_reason,
+        )
+
+        # --------------------------------------------------------
+        # Fetch image ONLY when the planner selected "image".
+        # --------------------------------------------------------
+
+        if (
+            self._needs_external_image(
+                content
+            )
+            and content.image_query
+        ):
+
+            print(
+                "IMAGE QUERY:"
+            )
+
+            print(
+                content.image_query
+            )
+
+            image_path = (
+                image_manager.get_image(
+                    content.image_query
+                )
+            )
 
         print(
             "IMAGE PATH:",
             image_path,
         )
 
-        # ----------------------------------------------------
-        # Update dashboard image
-        # ----------------------------------------------------
+        print(
+            "=" * 60
+        )
 
         dashboard_state.update_image(
             image_path or ""
         )
 
-        # ----------------------------------------------------
-        # Update dashboard slide content
-        # ----------------------------------------------------
-
         bullets = [
             bullet.text
-            for bullet in content.bullets
+            for bullet
+            in content.bullets
         ]
 
         dashboard_state.update_slide(
@@ -78,29 +125,21 @@ class SlideManager:
             slide_number=slide.slide_number,
         )
 
-        # ----------------------------------------------------
-        # Create PPT request
-        # ----------------------------------------------------
-
         request = SlideRequest(
-
             action=SlideAction.CREATE,
-
             slide_number=slide.slide_number,
-
             topic=slide.topic,
-
             content=content,
         )
 
         return self.process_request(
-            request,
+            request=request,
             image_path=image_path,
         )
 
-    # ========================================================
-    # UPDATE SLIDE
-    # ========================================================
+    # ============================================================
+    # UPDATE
+    # ============================================================
 
     def update_slide(
         self,
@@ -108,34 +147,43 @@ class SlideManager:
         content: SlideContent,
     ) -> SlideResult:
 
-        # ----------------------------------------------------
-        # Generate / retrieve image
-        # ----------------------------------------------------
+        image_path = None
 
-        image_path = image_manager.get_image(
-            content.image_query
-        )
+        # --------------------------------------------------------
+        # Fetch image ONLY when required.
+        # --------------------------------------------------------
+
+        if (
+            self._needs_external_image(
+                content
+            )
+            and content.image_query
+        ):
+
+            print(
+                "IMAGE QUERY:",
+                content.image_query,
+            )
+
+            image_path = (
+                image_manager.get_image(
+                    content.image_query
+                )
+            )
 
         print(
             "IMAGE PATH:",
             image_path,
         )
 
-        # ----------------------------------------------------
-        # Update dashboard image
-        # ----------------------------------------------------
-
         dashboard_state.update_image(
             image_path or ""
         )
 
-        # ----------------------------------------------------
-        # Update dashboard content
-        # ----------------------------------------------------
-
         bullets = [
             bullet.text
-            for bullet in content.bullets
+            for bullet
+            in content.bullets
         ]
 
         dashboard_state.update_slide(
@@ -144,29 +192,21 @@ class SlideManager:
             slide_number=slide.slide_number,
         )
 
-        # ----------------------------------------------------
-        # Update PPT request
-        # ----------------------------------------------------
-
         request = SlideRequest(
-
             action=SlideAction.UPDATE,
-
             slide_number=slide.slide_number,
-
             topic=slide.topic,
-
             content=content,
         )
 
         return self.process_request(
-            request,
+            request=request,
             image_path=image_path,
         )
 
-    # ========================================================
+    # ============================================================
     # PROCESS REQUEST
-    # ========================================================
+    # ============================================================
 
     def process_request(
         self,
@@ -176,56 +216,59 @@ class SlideManager:
 
         try:
 
-            print(
-                request.content.title
-            )
-
-            print(
-                request.content.bullets
-            )
+            content = request.content
 
             bullets = [
                 bullet.text
-                for bullet in request.content.bullets
+                for bullet
+                in content.bullets
             ]
 
             print(
-                bullets
+                "[SlideManager] Title:",
+                content.title,
             )
 
-            # ------------------------------------------------
-            # Update PPT
-            # ------------------------------------------------
+            print(
+                "[SlideManager] Visual:",
+                content.visual_type,
+            )
+
+            print(
+                "[SlideManager] Content:",
+                content.content_type,
+            )
+
+            # ----------------------------------------------------
+            # PPT
+            # ----------------------------------------------------
 
             ppt_manager.create_or_update_slide(
-
                 slide_id=request.slide_number,
-
-                title=request.content.title,
-
+                title=content.title,
                 bullets=bullets,
-
                 image_path=image_path,
+                visual_type=content.visual_type,
+                visual_spec=content.visual_spec,
+                content_type=content.content_type,
+                visual_reason=(
+                    content.visual_reason
+                    or ""
+                ),
             )
 
-            # ------------------------------------------------
-            # Update dashboard PPT information
-            # ------------------------------------------------
+            # ----------------------------------------------------
+            # Dashboard
+            # ----------------------------------------------------
 
             ppt_path = str(
                 ppt_manager.get_path()
             )
 
             dashboard_state.update_ppt(
-
                 ppt_path=ppt_path,
-
                 slide_count=request.slide_number,
             )
-
-            # ------------------------------------------------
-            # Pipeline status
-            # ------------------------------------------------
 
             dashboard_state.set_pipeline(
                 stage="Slide Generated",
@@ -233,11 +276,8 @@ class SlideManager:
             )
 
             return SlideResult(
-
                 success=True,
-
                 slide_number=request.slide_number,
-
                 presentation_path=ppt_path,
             )
 
@@ -253,17 +293,10 @@ class SlideManager:
             )
 
             return SlideResult(
-
                 success=False,
-
                 slide_number=request.slide_number,
-
                 message=str(error),
             )
 
-
-# ============================================================
-# GLOBAL INSTANCE
-# ============================================================
 
 slide_manager = SlideManager()
