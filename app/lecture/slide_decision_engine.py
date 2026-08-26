@@ -1,32 +1,46 @@
 from __future__ import annotations
 
 import re
+
 from dataclasses import dataclass
+
 from enum import Enum
+
 from typing import Optional
 
 
 class SlideAction(str, Enum):
+
     IGNORE = "ignore"
+
     CREATE = "create"
+
     UPDATE = "update"
 
 
 @dataclass(frozen=True)
 class SlideDecision:
+
     action: SlideAction
+
     reason: str
+
     meaningful: bool
+
     estimated_words: int
+
     slide_word_count: int
+
     update_count: int
 
 
 class SlideDecisionEngine:
+
     """
     Deterministic pre-LLM decision layer.
 
     It decides whether a meaningful lecture chunk should:
+
     - be ignored,
     - create a new slide,
     - update the current slide.
@@ -36,10 +50,15 @@ class SlideDecisionEngine:
 
     _FILLER_PATTERNS = (
         r"^(okay|ok|alright|right|yes|yeah|hmm|um|uh|so|well)\.?$",
+
         r"^(let me see|let me check|give me a second|one second)\.?$",
+
         r"^(i don't know|i am not sure|i'm not sure)\.?$",
+
         r"^(sorry|i'm sorry|excuse me)\.?$",
+
         r"^(can you hear me|is this working)\.?$",
+
         r"^(as i said|as we said|you know|you see)\.?$",
     )
 
@@ -79,8 +98,8 @@ class SlideDecisionEngine:
 
     def __init__(
         self,
-        max_slide_source_words: int = 120,
-        max_updates_per_slide: int = 4,
+        max_slide_source_words: int = 110,
+        max_updates_per_slide: int = 3,
         min_meaningful_words: int = 4,
     ) -> None:
 
@@ -108,7 +127,9 @@ class SlideDecisionEngine:
 
         self.update_count = 0
 
-        self.last_chunk_key: Optional[str] = None
+        self.last_chunk_key: Optional[
+            str
+        ] = None
 
     # ==========================================================
     # HELPERS
@@ -166,11 +187,13 @@ class SlideDecisionEngine:
         )
 
         if not normalized:
+
             return True
 
         if self._is_filler(
             normalized
         ):
+
             return True
 
         if (
@@ -179,6 +202,7 @@ class SlideDecisionEngine:
             )
             < self.min_meaningful_words
         ):
+
             return True
 
         return normalized.startswith(
@@ -209,6 +233,8 @@ class SlideDecisionEngine:
         transcript: str,
         is_new_topic: bool,
         current_slide_exists: bool,
+        force_create: bool = False,
+        force_reason: str = "",
     ) -> SlideDecision:
 
         text = " ".join(
@@ -226,6 +252,20 @@ class SlideDecisionEngine:
                 reason="empty_chunk",
                 meaningful=False,
                 estimated_words=0,
+                slide_word_count=self.slide_word_count,
+                update_count=self.update_count,
+            )
+
+        if force_create:
+
+            return SlideDecision(
+                action=SlideAction.CREATE,
+                reason=(
+                    force_reason
+                    or "forced_structural_slide"
+                ),
+                meaningful=True,
+                estimated_words=words,
                 slide_word_count=self.slide_word_count,
                 update_count=self.update_count,
             )
@@ -355,7 +395,9 @@ class SlideDecisionEngine:
             return
 
         self.last_chunk_key = (
-            self._normalize(text)
+            self._normalize(
+                text
+            )
         )
 
         words = self._word_count(

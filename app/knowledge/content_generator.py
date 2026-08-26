@@ -1,17 +1,24 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
-from app.llm.llm_orchestrator import LLMOrchestrator
+from app.llm.llm_orchestrator import (
+    LLMOrchestrator,
+)
 
 from app.slides.slide_models import (
     BulletPoint,
     ContentType,
     DiagramAsset,
     SlideContent,
+    SlideSection,
     VisualType,
 )
+
+
+SUBTOPIC_MARKER = "__SUBTOPIC__:"
+LEAD_MARKER = "__LEAD__:"
 
 
 class ContentGenerator:
@@ -36,10 +43,15 @@ class ContentGenerator:
         if value is None:
             return default
 
-        if isinstance(value, (dict, list)):
+        if isinstance(
+            value,
+            (dict, list),
+        ):
             return default
 
-        return str(value).strip()
+        return str(
+            value
+        ).strip()
 
     @staticmethod
     def _normalize_text(
@@ -61,25 +73,47 @@ class ContentGenerator:
         values: Any,
     ) -> List[BulletPoint]:
 
-        if not isinstance(values, list):
+        if not isinstance(
+            values,
+            list,
+        ):
             return []
 
         bullets: List[BulletPoint] = []
 
-        for value in values[:6]:
+        for value in values[:8]:
 
-            if isinstance(value, dict):
-                text = value.get("text", "")
+            if isinstance(
+                value,
+                dict,
+            ):
+                text = value.get(
+                    "text",
+                    "",
+                )
+                level = int(
+                    value.get(
+                        "level",
+                        0,
+                    )
+                    or 0
+                )
             else:
+
                 text = value
+                level = 0
 
             text = str(
                 text or ""
             ).strip()
 
             if text:
+
                 bullets.append(
-                    BulletPoint(text=text)
+                    BulletPoint(
+                        text=text,
+                        level=level,
+                    )
                 )
 
         return bullets
@@ -103,19 +137,33 @@ class ContentGenerator:
         )
 
         aliases = {
+
             "educational": "explanation",
+
             "info": "explanation",
+
             "information": "explanation",
+
             "concept": "explanation",
+
             "overview": "explanation",
+
             "definition_slide": "definition",
+
             "example": "examples",
+
             "comparison_table": "comparison",
+
             "table": "comparison",
+
             "process_flow": "process",
+
             "flow": "process",
+
             "architecture": "explanation",
+
             "numeric": "data",
+
             "numbers": "data",
         }
 
@@ -154,25 +202,45 @@ class ContentGenerator:
         )
 
         aliases = {
+
             "slide": "none",
+
             "educational": "none",
+
             "visual": "image",
+
             "photo": "image",
+
             "photograph": "image",
+
             "picture": "image",
+
             "flow": "flowchart",
+
             "process": "flowchart",
+
             "table": "comparison_table",
+
             "comparison": "comparison_table",
+
             "map": "concept_map",
+
             "concept": "concept_map",
+
             "examples": "example_grid",
+
             "grid": "example_grid",
+
             "architecture": "diagram",
+
             "components": "diagram",
+
             "structure": "diagram",
+
             "data_chart": "chart",
+
             "bar_chart": "chart",
+
             "plot": "chart",
         }
 
@@ -201,13 +269,16 @@ class ContentGenerator:
         spec: Any,
     ) -> Dict[str, Any]:
 
-        if not isinstance(spec, dict):
+        if not isinstance(
+            spec,
+            dict,
+        ):
             return {}
 
         return dict(spec)
 
     # ==========================================================
-    # CONTEXT HELPERS
+    # CONTEXT
     # ==========================================================
 
     @staticmethod
@@ -222,7 +293,670 @@ class ContentGenerator:
         )
 
     # ==========================================================
-    # EXAMPLE EXTRACTION
+    # MAJOR SUBTOPIC DETECTION
+    # ==========================================================
+
+    @staticmethod
+    def detect_major_subtopic(
+        text: str,
+    ) -> str:
+
+        normalized = " ".join(
+            str(text or "")
+            .strip()
+            .split()
+        )
+
+        lower = normalized.lower()
+
+        patterns = (
+            (
+                r"\bworking\s+of\s+(?:a\s+)?microcontroller\b",
+                "Working of Microcontroller",
+            ),
+            (
+                r"\bhow\s+(?:a\s+)?microcontroller\s+works\b",
+                "Working of Microcontroller",
+            ),
+            (
+                r"\btypes?\s+of\s+microcontrollers?\b",
+                "Types of Microcontrollers",
+            ),
+            (
+                r"\bapplications?\s+of\s+microcontrollers?\b",
+                "Applications of Microcontrollers",
+            ),
+            (
+                r"\buses?\s+of\s+microcontrollers?\b",
+                "Uses of Microcontrollers",
+            ),
+            (
+                r"\badvantages?\s+(?:and|&)\s+disadvantages?\b",
+                "Advantages and Disadvantages",
+            ),
+            (
+                r"\blimitations?\s+of\s+microcontrollers?\b",
+                "Limitations of Microcontrollers",
+            ),
+            (
+                r"\bproblems?\s+(?:in|of)\s+microcontrollers?\b",
+                "Problems in Microcontrollers",
+            ),
+            (
+                r"\bissues?\s+(?:in|with)\s+microcontrollers?\b",
+                "Issues in Microcontrollers",
+            ),
+            (
+                r"\barchitecture\s+of\s+microcontrollers?\b",
+                "Microcontroller Architecture",
+            ),
+            (
+                r"\bcomponents?\s+of\s+microcontrollers?\b",
+                "Components of Microcontroller",
+            ),
+            (
+                r"\bmicrocontroller\s+vs\.?\s+microprocessor\b",
+                "Microcontroller vs Microprocessor",
+            ),
+            (
+                r"\bmicrocontroller\s+versus\s+microprocessor\b",
+                "Microcontroller vs Microprocessor",
+            ),
+        )
+
+        for pattern, heading in patterns:
+
+            if re.search(
+                pattern,
+                normalized,
+                flags=re.IGNORECASE,
+            ):
+                return heading
+
+        # Useful normalized shorthand.
+
+        if "types of microcontroller" in lower:
+            return "Types of Microcontrollers"
+
+        if "working of microcontroller" in lower:
+            return "Working of Microcontroller"
+
+        if "applications of microcontroller" in lower:
+            return "Applications of Microcontrollers"
+
+        return ""
+
+    # ==========================================================
+    # MAJOR SECTION SPLITTING
+    # ==========================================================
+
+    @classmethod
+    def split_major_sections(
+        cls,
+        text: str,
+    ) -> List[
+        Tuple[str, str]
+    ]:
+        """
+        Returns:
+
+            [
+                ("", opening_definition),
+                ("Types of Microcontrollers", types_text),
+                ("Applications of Microcontrollers", applications_text),
+            ]
+
+        The first entry can have an empty heading.
+        """
+
+        text = cls._normalize_text(
+            text
+        )
+
+        if not text:
+            return []
+
+        markers = [
+            (
+                r"\bworking\s+of\s+(?:a\s+)?microcontroller\b",
+                "Working of Microcontroller",
+            ),
+            (
+                r"\bhow\s+(?:a\s+)?microcontroller\s+works\b",
+                "Working of Microcontroller",
+            ),
+            (
+                r"\btypes?\s+of\s+microcontrollers?\b",
+                "Types of Microcontrollers",
+            ),
+            (
+                r"\bapplications?\s+of\s+microcontrollers?\b",
+                "Applications of Microcontrollers",
+            ),
+            (
+                r"\buses?\s+of\s+microcontrollers?\b",
+                "Uses of Microcontrollers",
+            ),
+            (
+                r"\badvantages?\s+(?:and|&)\s+disadvantages?\b",
+                "Advantages and Disadvantages",
+            ),
+            (
+                r"\blimitations?\s+of\s+microcontrollers?\b",
+                "Limitations of Microcontrollers",
+            ),
+            (
+                r"\bproblems?\s+(?:in|of)\s+microcontrollers?\b",
+                "Problems in Microcontrollers",
+            ),
+            (
+                r"\bissues?\s+(?:in|with)\s+microcontrollers?\b",
+                "Issues in Microcontrollers",
+            ),
+            (
+                r"\barchitecture\s+of\s+microcontrollers?\b",
+                "Microcontroller Architecture",
+            ),
+            (
+                r"\bcomponents?\s+of\s+microcontrollers?\b",
+                "Components of Microcontroller",
+            ),
+            (
+                r"\bmicrocontroller\s+(?:vs\.?|versus)\s+microprocessor\b",
+                "Microcontroller vs Microprocessor",
+            ),
+        ]
+
+        matches = []
+
+        for pattern, heading in markers:
+
+            for match in re.finditer(
+                pattern,
+                text,
+                flags=re.IGNORECASE,
+            ):
+
+                matches.append(
+                    (
+                        match.start(),
+                        match.end(),
+                        heading,
+                    )
+                )
+
+        if not matches:
+            return [
+                (
+                    "",
+                    text,
+                )
+            ]
+
+        matches.sort(
+            key=lambda item: item[0]
+        )
+
+        # Remove overlapping markers.
+
+        cleaned = []
+
+        last_end = -1
+
+        for match in matches:
+
+            if match[0] < last_end:
+                continue
+
+            cleaned.append(
+                match
+            )
+
+            last_end = match[1]
+
+        sections: List[
+            Tuple[str, str]
+        ] = []
+
+        first_start = cleaned[0][0]
+
+        if first_start > 0:
+
+            opening = text[
+                :first_start
+            ].strip()
+
+            if opening:
+
+                sections.append(
+                    (
+                        "",
+                        opening,
+                    )
+                )
+
+        for index, current in enumerate(
+            cleaned
+        ):
+
+            start = current[0]
+            end = (
+                cleaned[index + 1][0]
+                if index + 1 < len(cleaned)
+                else len(text)
+            )
+
+            content = text[
+                start:end
+            ].strip()
+
+            if content:
+
+                sections.append(
+                    (
+                        current[2],
+                        content,
+                    )
+                )
+
+        return sections
+
+    # ==========================================================
+    # SUBTOPIC EXTRACTION
+    # ==========================================================
+
+    @staticmethod
+    def _classification_heading(
+        text: str,
+    ) -> str:
+
+        lower = text.lower()
+
+        patterns = (
+
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"based\s+on\s+number\s+of\s+bits",
+                "Classification by Number of Bits",
+            ),
+
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"by\s+number\s+of\s+bits",
+                "Classification by Number of Bits",
+            ),
+
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"based\s+on\s+memory\s+type",
+                "Classification by Memory Type",
+            ),
+
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"by\s+memory\s+type",
+                "Classification by Memory Type",
+            ),
+
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"based\s+on\s+instruction\s+set",
+                "Classification by Instruction Set",
+            ),
+
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"by\s+instruction\s+set",
+                "Classification by Instruction Set",
+            ),
+
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"based\s+on\s+memory\s+architecture",
+                "Classification by Memory Architecture",
+            ),
+
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"by\s+memory\s+architecture",
+                "Classification by Memory Architecture",
+            ),
+        )
+
+        for pattern, heading in patterns:
+
+            if re.search(
+                pattern,
+                lower,
+            ):
+
+                return heading
+
+        return ""
+
+    @classmethod
+    def _extract_subtopic_sections(
+        cls,
+        context: str,
+    ) -> List[SlideSection]:
+
+        text = cls._normalize_text(
+            context
+        )
+
+        if not text:
+            return []
+
+        classification_markers = [
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"(?:based\s+on|by)\s+number\s+of\s+bits",
+                "Classification by Number of Bits",
+            ),
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"(?:based\s+on|by)\s+memory\s+type",
+                "Classification by Memory Type",
+            ),
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"(?:based\s+on|by)\s+instruction\s+set",
+                "Classification by Instruction Set",
+            ),
+            (
+                r"classification\s+of\s+microcontrollers?\s+"
+                r"(?:based\s+on|by)\s+memory\s+architecture",
+                "Classification by Memory Architecture",
+            ),
+        ]
+
+        matches = []
+
+        for pattern, heading in classification_markers:
+
+            for match in re.finditer(
+                pattern,
+                text,
+                flags=re.IGNORECASE,
+            ):
+
+                matches.append(
+                    (
+                        match.start(),
+                        match.end(),
+                        heading,
+                    )
+                )
+
+        matches.sort(
+            key=lambda item: item[0]
+        )
+
+        if not matches:
+            return []
+
+        sections = []
+
+        for index, match in enumerate(
+            matches
+        ):
+
+            start = match[1]
+
+            end = (
+                matches[index + 1][0]
+                if index + 1 < len(matches)
+                else len(text)
+            )
+
+            content = text[
+                start:end
+            ].strip(
+                " .,:;-"
+            )
+
+            bullets = []
+
+            # --------------------------------------------------
+            # Number-bit classification
+            # --------------------------------------------------
+
+            heading = match[2]
+
+            if heading == "Classification by Number of Bits":
+
+                found = re.findall(
+                    r"\b(?:8|16|32|64)\s*-\s*bit"
+                    r"\s+microcontrollers?\b",
+                    content,
+                    flags=re.IGNORECASE,
+                )
+
+                if not found:
+
+                    found = re.findall(
+                        r"\b(?:8|16|32|64)\s+bit"
+                        r"\s+microcontrollers?\b",
+                        content,
+                        flags=re.IGNORECASE,
+                    )
+
+                for item in found:
+
+                    bullets.append(
+                        BulletPoint(
+                            text=(
+                                " ".join(
+                                    item.split()
+                                )
+                            )
+                        )
+                    )
+
+            # --------------------------------------------------
+            # Memory classification
+            # --------------------------------------------------
+
+            elif heading == "Classification by Memory Type":
+
+                memory_patterns = (
+                    (
+                        r"embedded\s+memory"
+                        r"(?:\s+microcontrollers?)?",
+                        "Embedded memory microcontroller",
+                    ),
+                    (
+                        r"external\s+memory"
+                        r"(?:\s+microcontrollers?)?",
+                        "External memory microcontroller",
+                    ),
+                )
+
+                for pattern, fallback in memory_patterns:
+
+                    if re.search(
+                        pattern,
+                        content,
+                        flags=re.IGNORECASE,
+                    ):
+
+                        bullets.append(
+                            BulletPoint(
+                                text=fallback
+                            )
+                        )
+
+            # --------------------------------------------------
+            # Instruction set
+            # --------------------------------------------------
+
+            elif heading == "Classification by Instruction Set":
+
+                terms = (
+                    (
+                        r"\bCISC\b|complex\s+instruction\s+set",
+                        "Complex Instruction Set Computer (CISC)",
+                    ),
+                    (
+                        r"\bRISC\b|reduced\s+instruction\s+set",
+                        "Reduced Instruction Set Computer (RISC)",
+                    ),
+                )
+
+                for pattern, label in terms:
+
+                    if re.search(
+                        pattern,
+                        content,
+                        flags=re.IGNORECASE,
+                    ):
+
+                        bullets.append(
+                            BulletPoint(
+                                text=label
+                            )
+                        )
+
+            # --------------------------------------------------
+            # Memory architecture
+            # --------------------------------------------------
+
+            elif heading == "Classification by Memory Architecture":
+
+                if re.search(
+                    r"\bharvard\b",
+                    content,
+                    flags=re.IGNORECASE,
+                ):
+
+                    bullets.append(
+                        BulletPoint(
+                            text="Harvard Memory Architecture"
+                        )
+                    )
+
+                if re.search(
+                    r"\bvon\s+neumann\b",
+                    content,
+                    flags=re.IGNORECASE,
+                ) or re.search(
+                    r"\bone\s+memory\b",
+                    content,
+                    flags=re.IGNORECASE,
+                ):
+
+                    bullets.append(
+                        BulletPoint(
+                            text="Von Neumann Memory Architecture"
+                        )
+                    )
+
+            if not bullets and content:
+
+                # Generic fallback:
+                # turn comma-separated short concepts into bullets.
+
+                parts = re.split(
+                    r",|;\s*|\band\b",
+                    content,
+                    flags=re.IGNORECASE,
+                )
+
+                for part in parts:
+
+                    part = part.strip(
+                        " .,:;-"
+                    )
+
+                    if (
+                        part
+                        and len(part.split()) <= 12
+                    ):
+
+                        bullets.append(
+                            BulletPoint(
+                                text=part
+                            )
+                        )
+
+                bullets = bullets[:6]
+
+            if bullets:
+
+                sections.append(
+                    SlideSection(
+                        heading=heading,
+                        bullets=bullets,
+                        level=0,
+                    )
+                )
+
+        return sections
+
+    # ==========================================================
+    # FALLBACK GENERAL SUBSECTIONS
+    # ==========================================================
+
+    @staticmethod
+    def _fallback_definition(
+        context: str,
+        topic: str,
+    ) -> List[BulletPoint]:
+
+        sentences = re.findall(
+            r"[^.!?]+[.!?]+",
+            context,
+        )
+
+        cleaned = [
+            " ".join(
+                sentence.split()
+            ).strip()
+            for sentence in sentences
+            if sentence.strip()
+        ]
+
+        if cleaned:
+
+            return [
+                BulletPoint(
+                    text=sentence
+                )
+                for sentence in cleaned[:5]
+            ]
+
+        return [
+            BulletPoint(
+                text=context[:250]
+            )
+        ]
+
+    @staticmethod
+    def _make_lead_bullet(
+        topic: str,
+        summary: str,
+    ) -> BulletPoint:
+
+        summary = " ".join(
+            summary.split()
+        ).strip()
+
+        if not summary:
+
+            summary = (
+                f"{topic} is an important concept "
+                "used in embedded systems."
+            )
+
+        return BulletPoint(
+            text=(
+                f"{LEAD_MARKER}"
+                f"{topic}: {summary}"
+            )
+        )
+
+    # ==========================================================
+    # EXAMPLES
     # ==========================================================
 
     @staticmethod
@@ -235,8 +969,13 @@ class ContentGenerator:
         )
 
         patterns = [
-            r"examples?\s+(?:include|are|such as)\s+(.+?)(?:\.|$)",
-            r"examples?\s+(?:of|like)\s+(.+?)(?:\.|$)",
+
+            r"examples?\s+(?:include|are|such as)\s+"
+            r"(.+?)(?:\.|$)",
+
+            r"examples?\s+(?:of|like)\s+"
+            r"(.+?)(?:\.|$)",
+
             r"such as\s+(.+?)(?:\.|$)",
         ]
 
@@ -251,7 +990,11 @@ class ContentGenerator:
             )
 
             if match:
-                extracted = match.group(1)
+
+                extracted = (
+                    match.group(1)
+                )
+
                 break
 
         if not extracted:
@@ -266,7 +1009,8 @@ class ContentGenerator:
             item.strip(
                 " .,:;()"
             )
-            for item in extracted.split(",")
+            for item
+            in extracted.split(",")
         ]
 
         return [
@@ -276,7 +1020,7 @@ class ContentGenerator:
         ][:6]
 
     # ==========================================================
-    # NUMERIC EXTRACTION
+    # NUMERIC
     # ==========================================================
 
     @staticmethod
@@ -289,11 +1033,9 @@ class ContentGenerator:
         )
 
         labels: list[str] = []
+
         values: list[float] = []
 
-        # Example:
-        # Controller A operates at 16 MHz
-        # Controller B operates at 32 MHz
         pattern = re.compile(
             r"([A-Za-z][A-Za-z0-9 _-]{0,30}?)"
             r"(?:operates at|runs at|has|is)\s*"
@@ -301,27 +1043,35 @@ class ContentGenerator:
             flags=re.IGNORECASE,
         )
 
-        for match in pattern.finditer(text):
+        for match in pattern.finditer(
+            text
+        ):
 
             label = match.group(1).strip(
                 " ,.-:"
             )
 
             try:
+
                 value = float(
                     match.group(2)
                 )
+
             except ValueError:
+
                 continue
 
             if not label:
                 continue
 
-            labels.append(label)
-            values.append(value)
+            labels.append(
+                label
+            )
 
-        # Fallback for:
-        # 16 MHz, 32 MHz, 80 MHz
+            values.append(
+                value
+            )
+
         if len(values) < 2:
 
             measurement_pattern = re.compile(
@@ -357,10 +1107,6 @@ class ContentGenerator:
             values[:6],
         )
 
-    # ==========================================================
-    # NUMERIC DETECTION
-    # ==========================================================
-
     @staticmethod
     def _has_numeric_data(
         context: str,
@@ -370,29 +1116,21 @@ class ContentGenerator:
             context or ""
         )
 
-        patterns = (
-            r"\b\d+(?:\.\d+)?\s*(?:mhz|ghz|khz|hz)\b",
-            r"\b\d+(?:\.\d+)?\s*%",
-            r"\b\d+(?:\.\d+)?\s*(?:ms|s|us|ns)\b",
-            r"\b\d+(?:\.\d+)?\s*(?:kb|mb|gb|tb)\b",
+        pattern = re.compile(
+            r"\b\d+(?:\.\d+)?\s*"
+            r"(?:mhz|ghz|khz|hz|ms|s|us|ns|kb|mb|gb|tb|%)\b",
+            flags=re.IGNORECASE,
         )
 
-        count = 0
-
-        for pattern in patterns:
-
-            count += len(
-                re.findall(
-                    pattern,
-                    text,
-                    flags=re.IGNORECASE,
-                )
+        return (
+            len(
+                pattern.findall(text)
             )
-
-        return count >= 2
+            >= 2
+        )
 
     # ==========================================================
-    # ARCHITECTURE EXTRACTION
+    # ARCHITECTURE
     # ==========================================================
 
     @staticmethod
@@ -403,12 +1141,6 @@ class ContentGenerator:
         text = ContentGenerator._normalize_text(
             context
         )
-
-        components: list[str] = []
-
-        # ------------------------------------------------------
-        # Explicit known technical components
-        # ------------------------------------------------------
 
         known = [
             "CPU",
@@ -431,6 +1163,8 @@ class ContentGenerator:
             "actuators",
         ]
 
+        components = []
+
         lower_text = text.lower()
 
         for item in known:
@@ -438,48 +1172,54 @@ class ContentGenerator:
             if item.lower() in lower_text:
 
                 if item not in components:
-                    components.append(item)
 
-        # ------------------------------------------------------
-        # Detect list after "contains"
-        # ------------------------------------------------------
+                    components.append(
+                        item
+                    )
 
         match = re.search(
-            r"(?:contains|consists of|includes)\s+(.+?)(?:\.|$)",
+            r"(?:contains|consists of|includes)\s+"
+            r"(.+?)(?:\.|$)",
             text,
             flags=re.IGNORECASE,
         )
 
         if match:
 
-            raw = match.group(1)
+            raw = match.group(
+                1
+            )
 
             raw = raw.replace(
                 " and ",
                 ",",
             )
 
-            parts = [
-                re.sub(
+            for part in raw.split(
+                ","
+            ):
+
+                part = re.sub(
                     r"^(a|an|the)\s+",
                     "",
-                    item.strip(" .,:;()"),
+                    part.strip(
+                        " .,:;()"
+                    ),
                     flags=re.IGNORECASE,
                 )
-                for item in raw.split(",")
-            ]
-
-            for part in parts:
 
                 if (
                     part
-                    and len(part.split()) <= 5
+                    and len(
+                        part.split()
+                    )
+                    <= 5
                 ):
+
                     components.append(
                         part
                     )
 
-        # Deduplicate while preserving order.
         unique = []
 
         for item in components:
@@ -489,13 +1229,13 @@ class ContentGenerator:
             if not normalized:
                 continue
 
-            duplicate = any(
+            if not any(
                 normalized.lower()
                 == existing.lower()
-                for existing in unique
-            )
+                for existing
+                in unique
+            ):
 
-            if not duplicate:
                 unique.append(
                     normalized
                 )
@@ -503,7 +1243,7 @@ class ContentGenerator:
         return unique[:8]
 
     # ==========================================================
-    # COMPARISON EXTRACTION
+    # COMPARISON
     # ==========================================================
 
     @staticmethod
@@ -515,8 +1255,6 @@ class ContentGenerator:
             context
         )
 
-        # Basic microcontroller/microprocessor
-        # repair for our lecture domain.
         if (
             "microcontroller"
             in text.lower()
@@ -531,25 +1269,28 @@ class ContentGenerator:
                     "Microprocessor",
                 ],
                 "rows": [
+
                     {
-                        "label": "Main Integration",
+                        "label": "Integration",
                         "values": [
-                            "CPU + memory + peripherals",
-                            "Primarily CPU",
+                            "CPU, memory and peripherals on one chip",
+                            "Mainly CPU; external components usually required",
                         ],
                     },
+
                     {
-                        "label": "Memory",
+                        "label": "Primary use",
                         "values": [
-                            "Integrated",
-                            "Usually external",
+                            "Dedicated embedded control",
+                            "General-purpose computing",
                         ],
                     },
+
                     {
-                        "label": "Peripherals",
+                        "label": "Power",
                         "values": [
-                            "Integrated",
-                            "Usually external",
+                            "Typically lower power",
+                            "Typically higher system power",
                         ],
                     },
                 ],
@@ -567,7 +1308,11 @@ class ContentGenerator:
         requested_spec: Dict[str, Any],
         content_type: str,
         context: str,
-    ) -> tuple[str, Dict[str, Any], str]:
+    ) -> tuple[
+        str,
+        Dict[str, Any],
+        str,
+    ]:
 
         spec = dict(
             requested_spec
@@ -578,31 +1323,7 @@ class ContentGenerator:
         )
 
         # ------------------------------------------------------
-        # Recover type accidentally placed inside spec.
-        # ------------------------------------------------------
-
-        embedded_type = spec.get(
-            "type",
-            "",
-        )
-
-        if (
-            requested_visual == "none"
-            and embedded_type
-        ):
-
-            recovered = (
-                self._normalize_visual_type(
-                    embedded_type
-                )
-            )
-
-            if recovered != "none":
-                requested_visual = recovered
-
-        # ------------------------------------------------------
-        # NUMERIC DATA
-        # Highest-priority deterministic repair.
+        # Numeric
         # ------------------------------------------------------
 
         if self._has_numeric_data(
@@ -631,7 +1352,7 @@ class ContentGenerator:
                 )
 
         # ------------------------------------------------------
-        # EXAMPLES
+        # Examples
         # ------------------------------------------------------
 
         examples = self._extract_examples(
@@ -644,7 +1365,7 @@ class ContentGenerator:
             or len(examples) >= 2
         ):
 
-            existing_examples = spec.get(
+            existing = spec.get(
                 "examples",
                 spec.get(
                     "items",
@@ -654,15 +1375,15 @@ class ContentGenerator:
 
             if (
                 isinstance(
-                    existing_examples,
+                    existing,
                     list,
                 )
-                and len(existing_examples) >= 2
+                and len(existing) >= 2
             ):
 
                 examples = [
                     str(item).strip()
-                    for item in existing_examples[:6]
+                    for item in existing[:6]
                     if str(item).strip()
                 ]
 
@@ -671,13 +1392,14 @@ class ContentGenerator:
                 return (
                     VisualType.EXAMPLE_GRID.value,
                     {
-                        "examples": examples[:6],
+                        "examples":
+                            examples[:6]
                     },
                     "Multiple concrete examples detected; repaired to example grid.",
                 )
 
         # ------------------------------------------------------
-        # COMPARISON
+        # Comparison
         # ------------------------------------------------------
 
         if (
@@ -695,87 +1417,73 @@ class ContentGenerator:
                 [],
             )
 
-            normalized_rows = []
-
-            if isinstance(
-                rows,
-                list,
-            ):
-
-                for row in rows:
-
-                    if isinstance(
-                        row,
-                        dict,
-                    ):
-
-                        label = str(
-                            row.get(
-                                "label",
-                                "",
-                            )
-                        ).strip()
-
-                        values = row.get(
-                            "values",
-                            [],
-                        )
-
-                        if (
-                            label
-                            and isinstance(
-                                values,
-                                list,
-                            )
-                        ):
-
-                            normalized_rows.append(
-                                {
-                                    "label": label,
-                                    "values": [
-                                        str(v)
-                                        for v in values
-                                    ],
-                                }
-                            )
-
-                    elif isinstance(
-                        row,
-                        list,
-                    ) and len(row) >= 2:
-
-                        normalized_rows.append(
-                            {
-                                "label": str(
-                                    row[0]
-                                ),
-                                "values": [
-                                    str(v)
-                                    for v in row[1:]
-                                ],
-                            }
-                        )
-
             if (
                 isinstance(
                     columns,
                     list,
                 )
                 and len(columns) >= 2
-                and normalized_rows
+                and isinstance(
+                    rows,
+                    list,
+                )
+                and rows
             ):
 
-                return (
-                    VisualType.COMPARISON_TABLE.value,
-                    {
-                        "columns": [
-                            str(c)
-                            for c in columns[:4]
-                        ],
-                        "rows": normalized_rows[:6],
-                    },
-                    "Comparison specification normalized.",
-                )
+                clean_rows = []
+
+                for row in rows:
+
+                    if not isinstance(
+                        row,
+                        dict,
+                    ):
+                        continue
+
+                    label = str(
+                        row.get(
+                            "label",
+                            "",
+                        )
+                    ).strip()
+
+                    values = row.get(
+                        "values",
+                        [],
+                    )
+
+                    if (
+                        label
+                        and isinstance(
+                            values,
+                            list,
+                        )
+                    ):
+
+                        clean_rows.append(
+                            {
+                                "label": label,
+                                "values": [
+                                    str(item)
+                                    for item
+                                    in values
+                                ],
+                            }
+                        )
+
+                if clean_rows:
+
+                    return (
+                        VisualType.COMPARISON_TABLE.value,
+                        {
+                            "columns": [
+                                str(item)
+                                for item in columns[:4]
+                            ],
+                            "rows": clean_rows[:6],
+                        },
+                        "Comparison specification normalized.",
+                    )
 
             repaired = (
                 self._extract_comparison_spec(
@@ -792,7 +1500,7 @@ class ContentGenerator:
                 )
 
         # ------------------------------------------------------
-        # PROCESS / SEQUENCE
+        # Process
         # ------------------------------------------------------
 
         if content_type in {
@@ -818,7 +1526,8 @@ class ContentGenerator:
                     {
                         "nodes": [
                             str(x)
-                            for x in nodes[:6]
+                            for x
+                            in nodes[:8]
                             if str(x).strip()
                         ],
                         "edges": spec.get(
@@ -829,43 +1538,8 @@ class ContentGenerator:
                     "Sequential content repaired to flowchart.",
                 )
 
-            # Deterministic sensor-pipeline repair.
-            if (
-                "sensor" in context_text
-                and "adc" in context_text
-                and "cpu" in context_text
-                and "actuator" in context_text
-            ):
-
-                return (
-                    VisualType.FLOWCHART.value,
-                    {
-                        "nodes": [
-                            "Sensor",
-                            "ADC",
-                            "CPU",
-                            "Actuator",
-                        ],
-                        "edges": [
-                            [
-                                "Sensor",
-                                "ADC",
-                            ],
-                            [
-                                "ADC",
-                                "CPU",
-                            ],
-                            [
-                                "CPU",
-                                "Actuator",
-                            ],
-                        ],
-                    },
-                    "Sensor → ADC → CPU → actuator sequence detected.",
-                )
-
         # ------------------------------------------------------
-        # ARCHITECTURE / COMPONENTS
+        # Architecture
         # ------------------------------------------------------
 
         architecture_signal = any(
@@ -926,7 +1600,8 @@ class ContentGenerator:
 
                 components = [
                     str(item)
-                    for item in existing_components[:8]
+                    for item
+                    in existing_components[:8]
                     if str(item).strip()
                 ]
 
@@ -937,23 +1612,24 @@ class ContentGenerator:
                     {
                         "center": center,
                         "components": components,
-                        "relationships": spec.get(
-                            "relationships",
-                            [
+                        "relationships":
+                            spec.get(
+                                "relationships",
                                 [
-                                    center,
-                                    item,
-                                ]
-                                for item
-                                in components
-                            ],
-                        ),
+                                    [
+                                        center,
+                                        item,
+                                    ]
+                                    for item
+                                    in components
+                                ],
+                            ),
                     },
                     "Component relationships detected; repaired to diagram.",
                 )
 
         # ------------------------------------------------------
-        # VALID FLOWCHART SPEC
+        # Existing valid visual types
         # ------------------------------------------------------
 
         if (
@@ -977,10 +1653,7 @@ class ContentGenerator:
                 return (
                     VisualType.FLOWCHART.value,
                     {
-                        "nodes": [
-                            str(x)
-                            for x in nodes[:6]
-                        ],
+                        "nodes": nodes[:8],
                         "edges": spec.get(
                             "edges",
                             [],
@@ -989,16 +1662,12 @@ class ContentGenerator:
                     "Flowchart specification validated.",
                 )
 
-        # ------------------------------------------------------
-        # VALID EXAMPLE GRID
-        # ------------------------------------------------------
-
         if (
             requested_visual
             == VisualType.EXAMPLE_GRID.value
         ):
 
-            existing_examples = spec.get(
+            existing = spec.get(
                 "examples",
                 spec.get(
                     "items",
@@ -1006,29 +1675,23 @@ class ContentGenerator:
                 ),
             )
 
-            if (
-                isinstance(
-                    existing_examples,
-                    list,
-                )
-                and len(existing_examples) >= 1
-            ):
+            if isinstance(
+                existing,
+                list,
+            ) and existing:
 
                 return (
                     VisualType.EXAMPLE_GRID.value,
                     {
                         "examples": [
-                            str(x)
-                            for x in existing_examples[:6]
-                            if str(x).strip()
+                            str(item)
+                            for item
+                            in existing[:6]
+                            if str(item).strip()
                         ]
                     },
                     "Example grid specification validated.",
                 )
-
-        # ------------------------------------------------------
-        # VALID CHART
-        # ------------------------------------------------------
 
         if (
             requested_visual
@@ -1061,23 +1724,26 @@ class ContentGenerator:
 
                 try:
 
-                    clean_y = [
+                    values = [
                         float(v)
-                        for v in y_values
+                        for v
+                        in y_values
                     ]
 
                     return (
                         VisualType.CHART.value,
                         {
-                            "chart_type": spec.get(
-                                "chart_type",
-                                "bar",
-                            ),
+                            "chart_type":
+                                spec.get(
+                                    "chart_type",
+                                    "bar",
+                                ),
                             "x": [
                                 str(x)
-                                for x in x_values
+                                for x
+                                in x_values
                             ],
-                            "y": clean_y,
+                            "y": values,
                         },
                         "Chart specification validated.",
                     )
@@ -1087,10 +1753,6 @@ class ContentGenerator:
                     ValueError,
                 ):
                     pass
-
-        # ------------------------------------------------------
-        # VALID HIERARCHY
-        # ------------------------------------------------------
 
         if (
             requested_visual
@@ -1109,14 +1771,7 @@ class ContentGenerator:
                 [],
             )
 
-            if (
-                root
-                and isinstance(
-                    levels,
-                    list,
-                )
-                and levels
-            ):
+            if root and levels:
 
                 return (
                     VisualType.HIERARCHY.value,
@@ -1126,36 +1781,6 @@ class ContentGenerator:
                     },
                     "Hierarchy specification validated.",
                 )
-
-        # ------------------------------------------------------
-        # VALID FORMULA
-        # ------------------------------------------------------
-
-        if (
-            requested_visual
-            == VisualType.FORMULA.value
-        ):
-
-            formula = str(
-                spec.get(
-                    "formula",
-                    "",
-                )
-            ).strip()
-
-            if formula:
-
-                return (
-                    VisualType.FORMULA.value,
-                    {
-                        "formula": formula,
-                    },
-                    "Formula specification validated.",
-                )
-
-        # ------------------------------------------------------
-        # VALID CONCEPT MAP
-        # ------------------------------------------------------
 
         if (
             requested_visual
@@ -1192,9 +1817,27 @@ class ContentGenerator:
                     "Concept map specification validated.",
                 )
 
-        # ------------------------------------------------------
-        # IMAGE
-        # ------------------------------------------------------
+        if (
+            requested_visual
+            == VisualType.FORMULA.value
+        ):
+
+            formula = str(
+                spec.get(
+                    "formula",
+                    "",
+                )
+            ).strip()
+
+            if formula:
+
+                return (
+                    VisualType.FORMULA.value,
+                    {
+                        "formula": formula,
+                    },
+                    "Formula specification validated.",
+                )
 
         if (
             requested_visual
@@ -1207,10 +1850,6 @@ class ContentGenerator:
                 "Educational image selected.",
             )
 
-        # ------------------------------------------------------
-        # NONE
-        # ------------------------------------------------------
-
         return (
             VisualType.NONE.value,
             {},
@@ -1218,30 +1857,36 @@ class ContentGenerator:
         )
 
     # ==========================================================
-    # FINAL VALIDATION
+    # VISUAL VALIDATION
     # ==========================================================
 
     def _validate_visual(
         self,
         visual_type: str,
         visual_spec: Dict[str, Any],
-    ) -> tuple[str, Dict[str, Any], str]:
+    ) -> tuple[
+        str,
+        Dict[str, Any],
+        str,
+    ]:
 
-        if visual_type == VisualType.NONE.value:
+        if visual_type == "none":
+
             return (
                 "none",
                 {},
                 "No structured visual is required.",
             )
 
-        if visual_type == VisualType.IMAGE.value:
+        if visual_type == "image":
+
             return (
                 "image",
                 {},
                 "Educational image selected.",
             )
 
-        if visual_type == VisualType.COMPARISON_TABLE.value:
+        if visual_type == "comparison_table":
 
             columns = visual_spec.get(
                 "columns",
@@ -1278,7 +1923,7 @@ class ContentGenerator:
                 "Comparison data validated.",
             )
 
-        if visual_type == VisualType.FLOWCHART.value:
+        if visual_type == "flowchart":
 
             nodes = visual_spec.get(
                 "nodes",
@@ -1305,7 +1950,7 @@ class ContentGenerator:
                 "Ordered process validated.",
             )
 
-        if visual_type == VisualType.DIAGRAM.value:
+        if visual_type == "diagram":
 
             center = str(
                 visual_spec.get(
@@ -1340,7 +1985,7 @@ class ContentGenerator:
                 "Architecture/components validated.",
             )
 
-        if visual_type == VisualType.HIERARCHY.value:
+        if visual_type == "hierarchy":
 
             root = str(
                 visual_spec.get(
@@ -1375,7 +2020,7 @@ class ContentGenerator:
                 "Classification structure validated.",
             )
 
-        if visual_type == VisualType.CHART.value:
+        if visual_type == "chart":
 
             x_values = visual_spec.get(
                 "x",
@@ -1396,9 +2041,9 @@ class ContentGenerator:
                     y_values,
                     list,
                 )
-                or not x_values
                 or len(x_values)
                 != len(y_values)
+                or not x_values
             ):
 
                 return (
@@ -1411,7 +2056,8 @@ class ContentGenerator:
 
                 clean_y = [
                     float(value)
-                    for value in y_values
+                    for value
+                    in y_values
                 ]
 
             except (
@@ -1431,46 +2077,15 @@ class ContentGenerator:
                     **visual_spec,
                     "x": [
                         str(x)
-                        for x in x_values
+                        for x
+                        in x_values
                     ],
                     "y": clean_y,
                 },
                 "Real numeric data validated.",
             )
 
-        if visual_type == VisualType.TIMELINE.value:
-
-            events = visual_spec.get(
-                "events",
-                visual_spec.get(
-                    "steps",
-                    [],
-                ),
-            )
-
-            if (
-                not isinstance(
-                    events,
-                    list,
-                )
-                or len(events) < 2
-            ):
-
-                return (
-                    "none",
-                    {},
-                    "Timeline requires at least two events.",
-                )
-
-            return (
-                "timeline",
-                {
-                    "events": events[:6]
-                },
-                "Chronological events validated.",
-            )
-
-        if visual_type == VisualType.EXAMPLE_GRID.value:
+        if visual_type == "example_grid":
 
             examples = visual_spec.get(
                 "examples",
@@ -1497,12 +2112,46 @@ class ContentGenerator:
             return (
                 "example_grid",
                 {
-                    "examples": examples[:6]
+                    "examples":
+                        examples[:6]
                 },
                 "Concrete examples validated.",
             )
 
-        if visual_type == VisualType.FORMULA.value:
+        if visual_type == "timeline":
+
+            events = visual_spec.get(
+                "events",
+                visual_spec.get(
+                    "steps",
+                    [],
+                ),
+            )
+
+            if (
+                not isinstance(
+                    events,
+                    list,
+                )
+                or len(events) < 2
+            ):
+
+                return (
+                    "none",
+                    {},
+                    "Timeline requires at least two events.",
+                )
+
+            return (
+                "timeline",
+                {
+                    "events":
+                        events[:6]
+                },
+                "Chronological events validated.",
+            )
+
+        if visual_type == "formula":
 
             formula = str(
                 visual_spec.get(
@@ -1522,12 +2171,13 @@ class ContentGenerator:
             return (
                 "formula",
                 {
-                    "formula": formula
+                    "formula":
+                        formula
                 },
                 "Formula validated.",
             )
 
-        if visual_type == VisualType.CONCEPT_MAP.value:
+        if visual_type == "concept_map":
 
             center = str(
                 visual_spec.get(
@@ -1559,8 +2209,10 @@ class ContentGenerator:
             return (
                 "concept_map",
                 {
-                    "center": center,
-                    "concepts": concepts[:6],
+                    "center":
+                        center,
+                    "concepts":
+                        concepts[:6],
                 },
                 "Concept relationships validated.",
             )
@@ -1572,6 +2224,224 @@ class ContentGenerator:
         )
 
     # ==========================================================
+    # STRUCTURED CONTENT
+    # ==========================================================
+
+    def _build_structured_content(
+        self,
+        topic: str,
+        context: str,
+        result: Dict[str, Any],
+        content_type: str,
+    ) -> tuple[
+        List[BulletPoint],
+        List[SlideSection],
+    ]:
+
+        bullets = self._normalize_bullets(
+            result.get(
+                "bullets",
+                [],
+            )
+        )
+
+        sections: List[
+            SlideSection
+        ] = []
+
+        # ------------------------------------------------------
+        # Classification sections have deterministic structure.
+        # ------------------------------------------------------
+
+        classification_sections = (
+            self._extract_subtopic_sections(
+                context
+            )
+        )
+
+        if classification_sections:
+
+            sections.extend(
+                classification_sections
+            )
+
+            flattened = []
+
+            for section in sections:
+
+                flattened.append(
+                    BulletPoint(
+                        text=(
+                            f"{SUBTOPIC_MARKER}"
+                            f"{section.heading}"
+                        ),
+                        level=0,
+                    )
+                )
+
+                for item in section.bullets:
+
+                    flattened.append(
+                        BulletPoint(
+                            text=item.text,
+                            level=1,
+                        )
+                    )
+
+            return (
+                flattened[:14],
+                sections,
+            )
+
+        # ------------------------------------------------------
+        # Definition
+        # ------------------------------------------------------
+
+        if (
+            content_type
+            == ContentType.DEFINITION.value
+        ):
+
+            summary = self._safe_string(
+                result.get(
+                    "summary",
+                    "",
+                )
+            )
+
+            if summary:
+
+                structured = [
+                    self._make_lead_bullet(
+                        topic,
+                        summary,
+                    )
+                ]
+
+                for bullet in bullets:
+
+                    if (
+                        bullet.text
+                        and bullet.text.lower()
+                        not in summary.lower()
+                    ):
+
+                        structured.append(
+                            bullet
+                        )
+
+                return (
+                    structured[:6],
+                    [],
+                )
+
+            if not bullets:
+
+                bullets = (
+                    self._fallback_definition(
+                        context,
+                        topic,
+                    )
+                )
+
+            if bullets:
+
+                first = bullets[0]
+
+                first.text = (
+                    f"{LEAD_MARKER}"
+                    f"{topic}: "
+                    f"{first.text}"
+                )
+
+            return (
+                bullets[:6],
+                [],
+            )
+
+        # ------------------------------------------------------
+        # LLM can provide sections in future.
+        # ------------------------------------------------------
+
+        raw_sections = result.get(
+            "sections",
+            [],
+        )
+
+        if isinstance(
+            raw_sections,
+            list,
+        ):
+
+            for raw in raw_sections:
+
+                if not isinstance(
+                    raw,
+                    dict,
+                ):
+                    continue
+
+                heading = self._safe_string(
+                    raw.get(
+                        "heading",
+                        "",
+                    )
+                )
+
+                raw_bullets = (
+                    self._normalize_bullets(
+                        raw.get(
+                            "bullets",
+                            [],
+                        )
+                    )
+                )
+
+                if heading and raw_bullets:
+
+                    sections.append(
+                        SlideSection(
+                            heading=heading,
+                            bullets=raw_bullets,
+                        )
+                    )
+
+        if sections:
+
+            flattened = []
+
+            for section in sections:
+
+                flattened.append(
+                    BulletPoint(
+                        text=(
+                            f"{SUBTOPIC_MARKER}"
+                            f"{section.heading}"
+                        ),
+                        level=section.level,
+                    )
+                )
+
+                for item in section.bullets:
+
+                    flattened.append(
+                        BulletPoint(
+                            text=item.text,
+                            level=item.level + 1,
+                        )
+                    )
+
+            return (
+                flattened[:14],
+                sections,
+            )
+
+        return (
+            bullets[:8],
+            [],
+        )
+
+    # ==========================================================
     # MAIN GENERATION
     # ==========================================================
 
@@ -1580,6 +2450,10 @@ class ContentGenerator:
         topic: str,
         context: str,
     ) -> SlideContent:
+
+        context = self._normalize_text(
+            context
+        )
 
         result = self.llm.generate_slide(
             topic=topic,
@@ -1598,13 +2472,6 @@ class ContentGenerator:
                 topic,
             ),
             default=topic,
-        )
-
-        bullets = self._normalize_bullets(
-            result.get(
-                "bullets",
-                [],
-            )
         )
 
         content_type = (
@@ -1634,20 +2501,33 @@ class ContentGenerator:
             )
         )
 
-        repaired_visual, repaired_spec, repair_reason = (
-            self._repair_visual_decision(
-                requested_visual=requested_visual,
-                requested_spec=requested_spec,
-                content_type=content_type,
+        bullets, sections = (
+            self._build_structured_content(
+                topic=topic,
                 context=context,
+                result=result,
+                content_type=content_type,
             )
         )
 
-        visual_type, visual_spec, validation_reason = (
-            self._validate_visual(
-                repaired_visual,
-                repaired_spec,
-            )
+        (
+            repaired_visual,
+            repaired_spec,
+            repair_reason,
+        ) = self._repair_visual_decision(
+            requested_visual=requested_visual,
+            requested_spec=requested_spec,
+            content_type=content_type,
+            context=context,
+        )
+
+        (
+            visual_type,
+            visual_spec,
+            validation_reason,
+        ) = self._validate_visual(
+            repaired_visual,
+            repaired_spec,
         )
 
         llm_reason = self._safe_string(
@@ -1685,19 +2565,17 @@ class ContentGenerator:
             )
         )
 
-        if (
-            visual_type
-            != VisualType.IMAGE.value
-        ):
+        if visual_type != "image":
+
             image_query = None
 
         diagram = None
 
         if visual_type in {
-            VisualType.DIAGRAM.value,
-            VisualType.FLOWCHART.value,
-            VisualType.HIERARCHY.value,
-            VisualType.CONCEPT_MAP.value,
+            "diagram",
+            "flowchart",
+            "hierarchy",
+            "concept_map",
         }:
 
             diagram = DiagramAsset(
@@ -1750,6 +2628,15 @@ class ContentGenerator:
             visual_spec,
         )
 
+        print(
+            "Structured Sections:",
+            [
+                section.heading
+                for section
+                in sections
+            ],
+        )
+
         self.llm.print_status()
 
         print(
@@ -1759,6 +2646,7 @@ class ContentGenerator:
         return SlideContent(
             title=title,
             bullets=bullets,
+            sections=sections,
             summary=result.get(
                 "summary"
             ),
@@ -1766,12 +2654,12 @@ class ContentGenerator:
             keywords=(
                 result.get(
                     "keywords",
-                    []
+                    [],
                 )
                 if isinstance(
                     result.get(
                         "keywords",
-                        []
+                        [],
                     ),
                     list,
                 )
@@ -1783,13 +2671,21 @@ class ContentGenerator:
             visual_reason=visual_reason,
             visual_spec=visual_spec,
             metadata={
-                "content_type": content_type,
-                "requested_visual_type": requested_visual,
-                "visual_type": visual_type,
-                "visual_validation": validation_reason,
-                "llm_provider": (
-                    self.llm.last_provider
-                ),
+                "content_type":
+                    content_type,
+                "requested_visual_type":
+                    requested_visual,
+                "visual_type":
+                    visual_type,
+                "visual_validation":
+                    validation_reason,
+                "llm_provider":
+                    self.llm.last_provider,
+                "structured_sections": [
+                    section.heading
+                    for section
+                    in sections
+                ],
             },
         )
 

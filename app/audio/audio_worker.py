@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import threading
 import time
 import traceback
@@ -36,6 +37,10 @@ class AudioWorker(threading.Thread):
             daemon=True
         )
 
+        # ==========================================================
+        # AUDIO
+        # ==========================================================
+
         self.audio_queue = audio_queue
 
         self.detector = VoiceDetector()
@@ -58,13 +63,53 @@ class AudioWorker(threading.Thread):
 
         self.running = True
 
+        # Incrementing segment id.
+        self.segment_number = 0
+
         # ==========================================================
-        # LIVE WHISPER PREVIEW
+        # SEGMENTATION
         # ==========================================================
 
         self.sample_rate = 16000
 
-        self.live_interval_seconds = 4.0
+        # ----------------------------------------------------------
+        # Natural pause:
+        #
+        # 80 audio callbacks ~= 2 seconds with the current
+        # sounddevice configuration.
+        # ----------------------------------------------------------
+
+        self.pause_limit = 80
+
+        # ----------------------------------------------------------
+        # Hard maximum:
+        #
+        # We do not wait forever if the teacher talks continuously.
+        #
+        # 30 seconds keeps the segment large enough for Whisper
+        # context while preventing extremely long processing.
+        # ----------------------------------------------------------
+
+        self.max_segment_seconds = 30.0
+
+        self.max_segment_samples = int(
+            self.sample_rate
+            * self.max_segment_seconds
+        )
+
+        # ==========================================================
+        # LIVE PREVIEW
+        # ==========================================================
+
+        # Preview is intentionally independent from the final
+        # transcription.
+        #
+        # It is for immediate dashboard / terminal feedback only.
+        # The final Whisper pass is responsible for the authoritative
+        # transcript used by lecture analysis.
+        #
+
+        self.live_interval_seconds = 6.0
 
         self.live_interval_samples = int(
             self.sample_rate
@@ -72,12 +117,6 @@ class AudioWorker(threading.Thread):
         )
 
         self.last_live_sample_count = 0
-
-        # ----------------------------------------------------------
-        # Live previews are intentionally serialized.
-        #
-        # They are NOT used for backend analysis.
-        # ----------------------------------------------------------
 
         self.live_executor = (
             ThreadPoolExecutor(
@@ -90,14 +129,15 @@ class AudioWorker(threading.Thread):
 
         # ==========================================================
         # FINAL WHISPER
-        #
-        # IMPORTANT:
-        #
-        # Final transcription gets the ENTIRE speech segment.
-        #
-        # This restores the old Dashboard V2 behavior where Whisper
-        # had the complete context of what the teacher said.
         # ==========================================================
+
+        # Final transcription is allowed to run independently from
+        # microphone capture.
+        #
+        # This executor must NOT block the audio loop.
+        #
+        # max_workers=1 preserves segment ordering.
+        #
 
         self.final_executor = (
             ThreadPoolExecutor(
@@ -112,6 +152,13 @@ class AudioWorker(threading.Thread):
         # BACKEND ANALYSIS
         # ==========================================================
 
+        # One analysis worker preserves lecture order.
+        #
+        # IMPORTANT:
+        # We NEVER reject a new analysis just because this worker
+        # is busy. ThreadPoolExecutor already gives us a FIFO queue.
+        #
+
         self.analysis_executor = (
             ThreadPoolExecutor(
                 max_workers=1,
@@ -122,140 +169,81 @@ class AudioWorker(threading.Thread):
         self.analysis_lock = threading.Lock()
 
         # ==========================================================
-        # TRANSCRIPT MANAGER
+        # TRANSCRIPT MANAGEMENT
         # ==========================================================
 
         self.transcript_manager = (
             LiveTranscriptManager()
         )
 
-        # ==========================================================
-        # LECTURE TRANSCRIPT STATE
-        # ==========================================================
-
-        # One entry per speech segment.
-        #
-        # Live Whisper temporarily fills the segment.
-        # Final Whisper replaces it with the accurate full-segment
-        # transcript.
-        #
-        # This prevents duplicate text.
-        # ==========================================================
-
-        self.segment_lock = threading.RLock()
-
-        self.segment_counter = 0
-
-        self.active_segment_id = None
-
-        self.segment_transcripts = {}
-
-        self.segment_order = []
-
+        # Authoritative transcript accumulated during the lecture.
         self.current_transcript = ""
 
+        # Lock protecting current_transcript.
+        self.transcript_lock = threading.Lock()
+
     # ==========================================================
-    # SEGMENT STATE
+    # NORMALIZATION
     # ==========================================================
 
-    def _start_new_segment(self):
-
-        with self.segment_lock:
-
-            self.segment_counter += 1
-
-            segment_id = (
-                self.segment_counter
-            )
-
-            self.active_segment_id = (
-                segment_id
-            )
-
-            self.segment_transcripts[
-                segment_id
-            ] = ""
-
-            self.segment_order.append(
-                segment_id
-            )
-
-            return segment_id
-
-    def _set_segment_transcript(
-        self,
-        segment_id,
-        transcript,
-    ):
-
-        transcript = (
-            self.transcript_manager
-            .normalize(
-                transcript
-            )
-        )
-
-        with self.segment_lock:
-
-            if segment_id not in (
-                self.segment_transcripts
-            ):
-                return
-
-            self.segment_transcripts[
-                segment_id
-            ] = transcript
-
-            self.current_transcript = (
-                self._build_full_transcript()
-            )
-
-    def _build_full_transcript(
-        self,
+    @staticmethod
+    def _normalize_text(
+        text: str,
     ) -> str:
 
-        with self.segment_lock:
-
-            texts = []
-
-            for segment_id in (
-                self.segment_order
-            ):
-
-                text = (
-                    self.segment_transcripts
-                    .get(
-                        segment_id,
-                        "",
-                    )
-                    .strip()
-                )
-
-                if text:
-                    texts.append(
-                        text
-                    )
-
-            return " ".join(
-                texts
-            ).strip()
-
-    def _get_active_segment_id(
-        self,
-    ):
-
-        with self.segment_lock:
-
-            return self.active_segment_id
+        return " ".join(
+            text.strip().split()
+        )
 
     # ==========================================================
-    # LIVE WHISPER SUBMISSION
+    # SPEECH STATE
     # ==========================================================
 
-    def _submit_live_transcription(
+    def _start_recording(self):
+
+        if self.recording:
+            return
+
+        self.recording = True
+
+        self.segment_number += 1
+
+        self.builder.clear()
+
+        self.silence_counter = 0
+
+        self.last_live_sample_count = 0
+
+        dashboard_state.set_microphone(
+            "Speaking"
+        )
+
+        app_logger.success(
+            "Speech Started "
+            f"(segment {self.segment_number})"
+        )
+
+    def _reset_speech_state(self):
+
+        self.builder.clear()
+
+        self.recording = False
+
+        self.silence_counter = 0
+
+        self.last_live_sample_count = 0
+
+        dashboard_state.set_microphone(
+            "Ready"
+        )
+
+    # ==========================================================
+    # LIVE PREVIEW
+    # ==========================================================
+
+    def _submit_live_preview(
         self,
         audio,
-        segment_id,
     ):
 
         if audio is None:
@@ -272,9 +260,8 @@ class AudioWorker(threading.Thread):
             try:
 
                 self.live_executor.submit(
-                    self._live_transcribe,
+                    self._run_live_preview,
                     audio,
-                    segment_id,
                 )
 
             except RuntimeError:
@@ -284,18 +271,13 @@ class AudioWorker(threading.Thread):
             except Exception as error:
 
                 app_logger.error(
-                    "Live transcription submit failed: "
+                    "Live preview submit failed: "
                     f"{error}"
                 )
 
-    # ==========================================================
-    # LIVE WHISPER
-    # ==========================================================
-
-    def _live_transcribe(
+    def _run_live_preview(
         self,
         audio,
-        segment_id,
     ):
 
         try:
@@ -306,12 +288,8 @@ class AudioWorker(threading.Thread):
                 )
             )
 
-            if not transcript:
-                return
-
             transcript = (
-                self.transcript_manager
-                .normalize(
+                self._normalize_text(
                     transcript
                 )
             )
@@ -319,31 +297,17 @@ class AudioWorker(threading.Thread):
             if not transcript:
                 return
 
-            # ------------------------------------------------------
-            # IMPORTANT:
-            #
-            # Live Whisper is only a PREVIEW.
-            #
-            # It never triggers Topic Intelligence,
-            # Gemini, Ollama or PPT generation.
-            # ------------------------------------------------------
-
-            self._set_segment_transcript(
-                segment_id,
-                transcript,
-            )
-
-            full_transcript = (
-                self.current_transcript
-            )
-
-            self.transcript_manager.update(
-                full_transcript
+            print()
+            print(
+                f"[Live Preview] "
+                f"{transcript}"
             )
 
             dashboard_state.update_transcript(
-                full_transcript
+                transcript
             )
+
+            sys.stdout.flush()
 
         except Exception as error:
 
@@ -352,18 +316,18 @@ class AudioWorker(threading.Thread):
                 traceback.print_exc()
 
                 app_logger.error(
-                    "Live transcription error: "
+                    "Live preview error: "
                     f"{error}"
                 )
 
     # ==========================================================
-    # FINAL WHISPER SUBMISSION
+    # FINAL SEGMENT SUBMISSION
     # ==========================================================
 
-    def _submit_final_transcription(
+    def _submit_final_segment(
         self,
         audio,
-        segment_id,
+        segment_number: int,
     ):
 
         if audio is None:
@@ -380,19 +344,20 @@ class AudioWorker(threading.Thread):
             try:
 
                 # --------------------------------------------------
-                # IMPORTANT:
+                # IMPORTANT
                 #
-                # Every completed speech segment gets its own final
-                # Whisper job.
+                # Every finalized audio segment is submitted.
                 #
-                # Nothing is discarded because another final job
-                # may already be running.
+                # Never discard it because another final Whisper
+                # job is still processing.
+                #
+                # The single-worker executor preserves order.
                 # --------------------------------------------------
 
                 self.final_executor.submit(
-                    self._final_transcribe,
+                    self._run_final_whisper,
                     audio,
-                    segment_id,
+                    segment_number,
                 )
 
             except RuntimeError:
@@ -400,6 +365,8 @@ class AudioWorker(threading.Thread):
                 return
 
             except Exception as error:
+
+                traceback.print_exc()
 
                 app_logger.error(
                     "Final transcription submit failed: "
@@ -410,16 +377,17 @@ class AudioWorker(threading.Thread):
     # FINAL WHISPER
     # ==========================================================
 
-    def _final_transcribe(
+    def _run_final_whisper(
         self,
         audio,
-        segment_id,
+        segment_number: int,
     ):
 
         try:
 
             app_logger.info(
-                "Starting FINAL full-segment Whisper..."
+                "Starting FINAL Whisper for "
+                f"segment {segment_number}..."
             )
 
             transcript = (
@@ -429,8 +397,7 @@ class AudioWorker(threading.Thread):
             )
 
             transcript = (
-                self.transcript_manager
-                .normalize(
+                self._normalize_text(
                     transcript
                 )
             )
@@ -438,30 +405,70 @@ class AudioWorker(threading.Thread):
             if not transcript:
 
                 app_logger.warning(
-                    "Final Whisper returned empty transcript."
+                    "Final Whisper returned empty "
+                    f"transcript for segment "
+                    f"{segment_number}."
                 )
 
                 return
 
             app_logger.success(
-                "Final full-segment transcription completed"
+                "Final full-segment transcription "
+                "completed"
+            )
+
+            print()
+            print(
+                "=" * 70
+            )
+            print(
+                f"FINAL TRANSCRIPT - SEGMENT "
+                f"{segment_number}"
+            )
+            print(
+                "=" * 70
+            )
+            print(
+                transcript
+            )
+            print(
+                "=" * 70
             )
 
             # ------------------------------------------------------
-            # Replace the live preview with the accurate
-            # full-segment transcript.
-            #
-            # This is the critical part.
+            # Append to authoritative lecture transcript.
             # ------------------------------------------------------
 
-            self._set_segment_transcript(
-                segment_id,
-                transcript,
-            )
+            with self.transcript_lock:
 
-            full_transcript = (
-                self.current_transcript
-            )
+                if self.current_transcript:
+
+                    self.current_transcript = (
+                        self.current_transcript
+                        + " "
+                        + transcript
+                    )
+
+                else:
+
+                    self.current_transcript = (
+                        transcript
+                    )
+
+                self.current_transcript = (
+                    self._normalize_text(
+                        self.current_transcript
+                    )
+                )
+
+                full_transcript = (
+                    self.current_transcript
+                )
+
+            # ------------------------------------------------------
+            # Update dashboard with the complete accumulated
+            # transcript.
+            # ------------------------------------------------------
 
             self.transcript_manager.update(
                 full_transcript
@@ -471,35 +478,23 @@ class AudioWorker(threading.Thread):
                 full_transcript
             )
 
-            print()
-            print(
-                "=" * 70
-            )
-
-            print(
-                "FINAL TRANSCRIPT"
-            )
-
-            print(
-                "=" * 70
-            )
-
-            print(
-                transcript
-            )
-
-            print(
-                "=" * 70
-            )
+            sys.stdout.flush()
 
             # ------------------------------------------------------
-            # ONLY FINAL TRANSCRIPT GOES TO BACKEND ANALYSIS.
+            # FINAL SEGMENT -> BACKEND ANALYSIS
             #
-            # This is what restores the old accurate behavior.
+            # IMPORTANT:
+            #
+            # Every final segment is sent to the analysis queue.
+            # The analysis executor serializes the work.
+            #
+            # No segment is dropped because Gemini/Ollama is busy.
             # ------------------------------------------------------
 
             self._queue_backend_analysis(
-                transcript
+                full_transcript,
+                force=True,
+                segment_number=segment_number,
             )
 
         except Exception as error:
@@ -509,27 +504,42 @@ class AudioWorker(threading.Thread):
                 traceback.print_exc()
 
                 app_logger.error(
-                    "Final Whisper error: "
+                    "Final Whisper error for "
+                    f"segment {segment_number}: "
                     f"{error}"
                 )
 
     # ==========================================================
-    # BACKEND ANALYSIS
+    # BACKEND ANALYSIS QUEUE
     # ==========================================================
 
     def _queue_backend_analysis(
         self,
         transcript,
+        force: bool = False,
+        segment_number: int | None = None,
     ):
 
         transcript = (
-            self.transcript_manager
-            .normalize(
+            self._normalize_text(
                 transcript
             )
+            if transcript
+            else ""
         )
 
         if not transcript:
+            return
+
+        chunk = (
+            self.transcript_manager
+            .get_new_analysis_text(
+                transcript,
+                force=force,
+            )
+        )
+
+        if not chunk:
             return
 
         with self.analysis_lock:
@@ -540,21 +550,54 @@ class AudioWorker(threading.Thread):
             try:
 
                 # --------------------------------------------------
-                # DO NOT DROP ANALYSIS because another analysis is
+                # IMPORTANT
+                #
+                # DO NOT CHECK whether another analysis is already
                 # running.
                 #
-                # ThreadPoolExecutor queues completed speech
-                # segments automatically.
+                # The executor itself is the queue.
+                #
+                # Example:
+                #
+                # segment 1 -> running
+                # segment 2 -> queued
+                # segment 3 -> queued
+                # segment 4 -> queued
+                #
+                # Nothing is dropped.
                 # --------------------------------------------------
 
                 self.analysis_executor.submit(
                     self._analyze_chunk,
-                    transcript,
+                    chunk,
+                    segment_number,
                 )
+
+                if segment_number is not None:
+
+                    app_logger.info(
+                        "Lecture analysis queued for "
+                        f"segment {segment_number}"
+                    )
+
+                else:
+
+                    app_logger.info(
+                        "Lecture analysis queued"
+                    )
 
             except RuntimeError:
 
                 return
+
+            except Exception as error:
+
+                traceback.print_exc()
+
+                app_logger.error(
+                    "Lecture analysis submit failed: "
+                    f"{error}"
+                )
 
     # ==========================================================
     # BACKEND ANALYSIS WORKER
@@ -563,12 +606,12 @@ class AudioWorker(threading.Thread):
     def _analyze_chunk(
         self,
         transcript,
+        segment_number: int | None = None,
     ):
 
         try:
 
             print()
-
             print(
                 "\n"
                 + "=" * 70
@@ -577,6 +620,13 @@ class AudioWorker(threading.Thread):
             print(
                 "LECTURE ANALYSIS"
             )
+
+            if segment_number is not None:
+
+                print(
+                    f"Segment       : "
+                    f"{segment_number}"
+                )
 
             print(
                 "=" * 70
@@ -598,7 +648,7 @@ class AudioWorker(threading.Thread):
             )
 
             # ------------------------------------------------------
-            # Record that this finalized speech segment was handled.
+            # Mark successful analysis.
             # ------------------------------------------------------
 
             if isinstance(
@@ -616,7 +666,7 @@ class AudioWorker(threading.Thread):
                     )
 
                 # --------------------------------------------------
-                # Topic transition
+                # New topic
                 # --------------------------------------------------
 
                 if result.get(
@@ -648,26 +698,61 @@ class AudioWorker(threading.Thread):
             )
 
     # ==========================================================
-    # RESET SPEECH DETECTION STATE
+    # FINALIZE CURRENT SEGMENT
     # ==========================================================
 
-    def _reset_speech_state(
+    def _finalize_current_segment(
         self,
+        reason: str,
     ):
 
-        self.builder.clear()
+        if not self.recording:
+            return
 
-        self.recording = False
-
-        self.silence_counter = 0
-
-        self.last_live_sample_count = 0
-
-        self.active_segment_id = None
-
-        dashboard_state.set_microphone(
-            "Ready"
+        current_samples = (
+            self.builder.sample_count()
         )
+
+        if current_samples <= 0:
+
+            self._reset_speech_state()
+
+            return
+
+        audio = (
+            self.builder.snapshot()
+        )
+
+        segment_number = (
+            self.segment_number
+        )
+
+        app_logger.success(
+            "Speech Segment Finished "
+            f"({reason})"
+        )
+
+        # ------------------------------------------------------
+        # Submit final Whisper asynchronously.
+        #
+        # Recording can immediately begin again.
+        # ------------------------------------------------------
+
+        self._submit_final_segment(
+            audio,
+            segment_number,
+        )
+
+        # ------------------------------------------------------
+        # IMPORTANT:
+        #
+        # Reset only segmentation state.
+        #
+        # The actual audio data is already owned by the final
+        # Whisper executor.
+        # ------------------------------------------------------
+
+        self._reset_speech_state()
 
     # ==========================================================
     # AUDIO LOOP
@@ -703,35 +788,12 @@ class AudioWorker(threading.Thread):
                     chunk
                 ):
 
-                    # ------------------------------------------------
-                    # Speech begins.
-                    # ------------------------------------------------
-
                     if not self.recording:
 
-                        self.recording = True
-
-                        self.builder.clear()
-
-                        self.silence_counter = 0
-
-                        self.last_live_sample_count = 0
-
-                        segment_id = (
-                            self._start_new_segment()
-                        )
-
-                        dashboard_state.set_microphone(
-                            "Speaking"
-                        )
-
-                        app_logger.success(
-                            f"Speech Started "
-                            f"(segment {segment_id})"
-                        )
+                        self._start_recording()
 
                     # ------------------------------------------------
-                    # Every incoming chunk is preserved.
+                    # Store every incoming audio chunk.
                     # ------------------------------------------------
 
                     self.builder.add_chunk(
@@ -745,11 +807,7 @@ class AudioWorker(threading.Thread):
                     )
 
                     # ------------------------------------------------
-                    # LIVE PREVIEW
-                    #
-                    # Every ~4 seconds.
-                    # These windows are NON-OVERLAPPING and are only
-                    # for immediate transcript display.
+                    # LIVE PREVIEW WINDOW
                     # ------------------------------------------------
 
                     if (
@@ -780,9 +838,21 @@ class AudioWorker(threading.Thread):
                             end
                         )
 
-                        self._submit_live_transcription(
-                            audio_window,
-                            segment_id,
+                        self._submit_live_preview(
+                            audio_window
+                        )
+
+                    # ------------------------------------------------
+                    # HARD MAXIMUM
+                    # ------------------------------------------------
+
+                    if (
+                        current_samples
+                        >= self.max_segment_samples
+                    ):
+
+                        self._finalize_current_segment(
+                            reason="hard_max_duration"
                         )
 
                 # ==================================================
@@ -796,7 +866,7 @@ class AudioWorker(threading.Thread):
                         continue
 
                     # ------------------------------------------------
-                    # Preserve trailing silence.
+                    # Keep trailing silence inside the segment.
                     # ------------------------------------------------
 
                     self.builder.add_chunk(
@@ -806,59 +876,17 @@ class AudioWorker(threading.Thread):
                     self.silence_counter += 1
 
                     # ------------------------------------------------
-                    # Around 2 seconds of silence.
+                    # NATURAL PAUSE
                     # ------------------------------------------------
 
-                    if self.silence_counter >= 80:
+                    if (
+                        self.silence_counter
+                        >= self.pause_limit
+                    ):
 
-                        app_logger.success(
-                            "Speech Finished"
+                        self._finalize_current_segment(
+                            reason="natural_pause"
                         )
-
-                        segment_id = (
-                            self._get_active_segment_id()
-                        )
-
-                        current_samples = (
-                            self.builder.sample_count()
-                        )
-
-                        # ------------------------------------------------
-                        # CRITICAL:
-                        #
-                        # Capture the ENTIRE speech segment.
-                        #
-                        # Do NOT send only the remaining 2-4 seconds.
-                        # ------------------------------------------------
-
-                        full_audio = (
-                            self.builder.snapshot()
-                        )
-
-                        # ------------------------------------------------
-                        # Queue final full-segment Whisper before clearing
-                        # the speech state.
-                        # ------------------------------------------------
-
-                        if (
-                            full_audio is not None
-                            and len(full_audio) > 0
-                            and segment_id is not None
-                        ):
-
-                            self._submit_final_transcription(
-                                full_audio,
-                                segment_id,
-                            )
-
-                        # ------------------------------------------------
-                        # We can immediately start accepting new speech.
-                        #
-                        # Final Whisper runs independently.
-                        # No audio is lost while it processes.
-                        # ------------------------------------------------
-
-                        self._reset_speech_state()
 
             except Exception as error:
 
@@ -878,7 +906,6 @@ class AudioWorker(threading.Thread):
     def stop(self):
 
         if not self.running:
-
             return
 
         self.running = False
@@ -887,11 +914,16 @@ class AudioWorker(threading.Thread):
             "Stopping"
         )
 
+        # ----------------------------------------------------------
+        # Stop accepting new jobs.
+        # Existing queued jobs are allowed to finish.
+        # ----------------------------------------------------------
+
         try:
 
             self.live_executor.shutdown(
                 wait=False,
-                cancel_futures=True,
+                cancel_futures=False,
             )
 
         except Exception:
@@ -901,7 +933,7 @@ class AudioWorker(threading.Thread):
 
             self.final_executor.shutdown(
                 wait=False,
-                cancel_futures=True,
+                cancel_futures=False,
             )
 
         except Exception:
@@ -911,7 +943,7 @@ class AudioWorker(threading.Thread):
 
             self.analysis_executor.shutdown(
                 wait=False,
-                cancel_futures=True,
+                cancel_futures=False,
             )
 
         except Exception:

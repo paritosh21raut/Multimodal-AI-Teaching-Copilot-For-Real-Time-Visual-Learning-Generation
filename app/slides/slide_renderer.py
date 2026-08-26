@@ -371,6 +371,18 @@ class SlideRenderer:
         text_frame,
         bullets: Iterable[str],
     ):
+        """
+        Renders normal bullets plus structured subsection headings.
+
+        Supported markers:
+
+            __SUBTOPIC__:Classification by Number of Bits
+            __LEAD__:Microcontroller: A microcontroller is...
+
+        Subtopics are rendered as bold non-bullet paragraphs.
+
+        Lead paragraphs render the text before ':' in bold.
+        """
 
         bullets = list(
             bullets or []
@@ -382,32 +394,197 @@ class SlideRenderer:
 
             return
 
-        for index, bullet in enumerate(
-            bullets
-        ):
+        text_frame.clear()
+
+        first_paragraph = True
+
+        for raw_bullet in bullets:
+
+            text = str(
+                raw_bullet or ""
+            ).strip()
+
+            if not text:
+                continue
+
+            # ======================================================
+            # SUBTOPIC
+            # ======================================================
+
+            if text.startswith(
+                "__SUBTOPIC__:"
+            ):
+
+                heading = text[
+                    len("__SUBTOPIC__:"):
+                ].strip()
+
+                paragraph = (
+                    text_frame.paragraphs[0]
+                    if first_paragraph
+                    else text_frame.add_paragraph()
+                )
+
+                first_paragraph = False
+
+                paragraph.text = heading
+
+                # No bullet marker.
+                paragraph.level = 0
+
+                paragraph.font.size = Pt(
+                    15
+                )
+
+                paragraph.font.bold = True
+
+                paragraph.font.color.rgb = (
+                    self.TITLE_COLOR
+                )
+
+                paragraph.space_before = Pt(
+                    12
+                )
+
+                paragraph.space_after = Pt(
+                    5
+                )
+
+                paragraph.line_spacing = 1.0
+
+                continue
+
+            # ======================================================
+            # LEAD
+            # ======================================================
+
+            if text.startswith(
+                "__LEAD__:"
+            ):
+
+                lead = text[
+                    len("__LEAD__:"):
+                ].strip()
+
+                paragraph = (
+                    text_frame.paragraphs[0]
+                    if first_paragraph
+                    else text_frame.add_paragraph()
+                )
+
+                first_paragraph = False
+
+                # Split at first colon.
+                if ":" in lead:
+
+                    prefix, remainder = (
+                        lead.split(
+                            ":",
+                            1,
+                        )
+                    )
+
+                    paragraph.text = ""
+
+                    run = (
+                        paragraph
+                        .add_run()
+                    )
+
+                    run.text = (
+                        prefix.strip()
+                        + ": "
+                    )
+
+                    run.font.size = Pt(
+                        self.BODY_FONT_SIZE
+                    )
+
+                    run.font.bold = True
+
+                    run.font.color.rgb = (
+                        self.TITLE_COLOR
+                    )
+
+                    run2 = (
+                        paragraph
+                        .add_run()
+                    )
+
+                    run2.text = (
+                        remainder.strip()
+                    )
+
+                    run2.font.size = Pt(
+                        self.BODY_FONT_SIZE
+                    )
+
+                    run2.font.bold = False
+
+                    run2.font.color.rgb = (
+                        self.BODY_COLOR
+                    )
+
+                else:
+
+                    paragraph.text = lead
+
+                    paragraph.font.size = Pt(
+                        self.BODY_FONT_SIZE
+                    )
+
+                    paragraph.font.bold = True
+
+                    paragraph.font.color.rgb = (
+                        self.TITLE_COLOR
+                    )
+
+                paragraph.level = 0
+
+                paragraph.space_before = Pt(
+                    3
+                )
+
+                paragraph.space_after = Pt(
+                    8
+                )
+
+                paragraph.line_spacing = 1.08
+
+                continue
+
+            # ======================================================
+            # NORMAL BULLET
+            # ======================================================
 
             paragraph = (
                 text_frame.paragraphs[0]
-                if index == 0
+                if first_paragraph
                 else text_frame.add_paragraph()
             )
 
-            paragraph.text = str(
-                bullet
-            )
+            first_paragraph = False
+
+            paragraph.text = text
 
             paragraph.level = 0
 
             paragraph.font.size = Pt(
                 self.BODY_FONT_SIZE
             )
+
             paragraph.font.color.rgb = (
                 self.BODY_COLOR
             )
+
             paragraph.space_after = Pt(
-                10
+                8
             )
+
             paragraph.line_spacing = 1.08
+
+            # PowerPoint bullet formatting.
+            paragraph.text = text
 
     # ==========================================================
     # SHAPES

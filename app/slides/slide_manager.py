@@ -24,20 +24,13 @@ class SlideManager:
     """
     Converts SlideContent into dashboard and PPT output.
 
-    Visual routing:
+    Structured content markers are intentionally passed into
+    the PPT renderer so it can render:
 
-    image
-        -> image manager
+        __SUBTOPIC__: Heading
 
-    diagram / flowchart / comparison_table /
-    chart / hierarchy / example_grid / formula /
-    concept_map
-        -> native PPT renderer
+    as a bold subsection heading.
     """
-
-    # ============================================================
-    # IMAGE DECISION
-    # ============================================================
 
     @staticmethod
     def _needs_external_image(
@@ -49,15 +42,49 @@ class SlideManager:
             == "image"
         )
 
-    # ============================================================
+    @staticmethod
+    def _clean_dashboard_text(
+        text: str,
+    ) -> str:
+
+        text = str(
+            text or ""
+        )
+
+        text = text.replace(
+            "__SUBTOPIC__:",
+            "",
+        )
+
+        text = text.replace(
+            "__LEAD__:",
+            "",
+        )
+
+        return text.strip()
+
+    def _dashboard_bullets(
+        self,
+        content: SlideContent,
+    ):
+
+        return [
+            self._clean_dashboard_text(
+                bullet.text
+            )
+            for bullet
+            in content.bullets
+        ]
+
+    # ==========================================================
     # CREATE
-    # ============================================================
+    # ==========================================================
 
     def create_slide(
         self,
         slide,
         content: SlideContent,
-    ) -> SlideResult:
+    ):
 
         image_path = None
 
@@ -74,10 +101,6 @@ class SlideManager:
             "VISUAL REASON:",
             content.visual_reason,
         )
-
-        # --------------------------------------------------------
-        # Fetch image ONLY when the planner selected "image".
-        # --------------------------------------------------------
 
         if (
             self._needs_external_image(
@@ -113,15 +136,11 @@ class SlideManager:
             image_path or ""
         )
 
-        bullets = [
-            bullet.text
-            for bullet
-            in content.bullets
-        ]
-
         dashboard_state.update_slide(
             title=content.title,
-            bullets=bullets,
+            bullets=self._dashboard_bullets(
+                content
+            ),
             slide_number=slide.slide_number,
         )
 
@@ -137,21 +156,17 @@ class SlideManager:
             image_path=image_path,
         )
 
-    # ============================================================
+    # ==========================================================
     # UPDATE
-    # ============================================================
+    # ==========================================================
 
     def update_slide(
         self,
         slide,
         content: SlideContent,
-    ) -> SlideResult:
+    ):
 
         image_path = None
-
-        # --------------------------------------------------------
-        # Fetch image ONLY when required.
-        # --------------------------------------------------------
 
         if (
             self._needs_external_image(
@@ -180,15 +195,11 @@ class SlideManager:
             image_path or ""
         )
 
-        bullets = [
-            bullet.text
-            for bullet
-            in content.bullets
-        ]
-
         dashboard_state.update_slide(
             title=content.title,
-            bullets=bullets,
+            bullets=self._dashboard_bullets(
+                content
+            ),
             slide_number=slide.slide_number,
         )
 
@@ -204,9 +215,9 @@ class SlideManager:
             image_path=image_path,
         )
 
-    # ============================================================
-    # PROCESS REQUEST
-    # ============================================================
+    # ==========================================================
+    # PROCESS
+    # ==========================================================
 
     def process_request(
         self,
@@ -239,10 +250,6 @@ class SlideManager:
                 content.content_type,
             )
 
-            # ----------------------------------------------------
-            # PPT
-            # ----------------------------------------------------
-
             ppt_manager.create_or_update_slide(
                 slide_id=request.slide_number,
                 title=content.title,
@@ -256,10 +263,6 @@ class SlideManager:
                     or ""
                 ),
             )
-
-            # ----------------------------------------------------
-            # Dashboard
-            # ----------------------------------------------------
 
             ppt_path = str(
                 ppt_manager.get_path()
