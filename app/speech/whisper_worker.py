@@ -5,10 +5,20 @@ from app.utils.logger import app_logger
 
 
 class WhisperWorker:
+    """
+    Thin serialized interface around the production
+    Faster-Whisper small model.
+    """
 
     def __init__(self):
 
-        self.model = WhisperModel()
+        self.model = WhisperModel(
+            model_size="small",
+            device="cpu",
+            compute_type="int8",
+            language="en",
+            beam_size=5,
+        )
 
     def transcribe(
         self,

@@ -1,0 +1,6 @@
+Deep learning has been applied successfully to automatic speech recognition, where the main focus of research has been designing better network architectures. For example, DNNs, CNNs, RNNs and end-to-end models. However, these models tend to overfit easily and require large amounts of training data. Data augmentation has been proposed for a method to generate additional training data for ESR. For example, in 9 comma 10 artificial data work.
+data was augmented for low resource speech recognition such vocal tract length normalization has been adapted for data augmentation in 11th. audio has been synthesized via superimposing clean audio with the noisy audio
+in 12. Speed pertubation has been applied to a raw audio for LVSCR task in 13th. The use of an acoustic room simulator has been explored in 14th. Data augmentation for keyword spotting has been studied. Feature dropouts have been employed for training multi-stream ASI systems. More generally, learn augmentation techniques have been explored. Different sequence of of augmentation transformations have been achieved, state-of-the-art performance.
+performance in the image domain.
+Hello, this is the test speech recognition artificial intelligence.
+Whisper, Speck Augment, Neural Network, Frequency Maskings, Sign Masking, Automatic Speech Recognition, Transformer, Beam Search, Word Error Rate.

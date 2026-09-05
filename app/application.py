@@ -1,18 +1,59 @@
+from __future__ import annotations
+
+from concurrent.futures import ThreadPoolExecutor
+
 from app.audio.audio_pipeline import AudioPipeline
+from app.dashboard.dashboard_state import dashboard_state
 from app.knowledge.content_generator import content_generator
 from app.lecture.lecture_pipeline import lecture_pipeline
+from app.ppt.ppt_manager import ppt_manager
 from app.slides.slide_manager import slide_manager
+from app.speech.live_transcript_manager import LiveTranscriptManager
 from app.topics.topic_intelligence import topic_intelligence
 from app.utils.logger import app_logger
-from app.ppt.ppt_manager import ppt_manager
+
 
 class Application:
 
     def __init__(self):
 
-        app_logger.info("Initializing Application")
+        app_logger.info(
+            "Initializing Application"
+        )
 
-        self.pipeline = AudioPipeline()
+        # ----------------------------------------------------------
+        # Downstream state lives here, outside the audio subsystem.
+        # ----------------------------------------------------------
+
+        self.transcript_manager = (
+            LiveTranscriptManager()
+        )
+
+        self.analysis_executor = (
+            ThreadPoolExecutor(
+                max_workers=1,
+                thread_name_prefix="LectureAnalysis",
+            )
+        )
+
+        self.analysis_future = None
+
+        # ----------------------------------------------------------
+        # Audio/STT.
+        # ----------------------------------------------------------
+
+        self.pipeline = AudioPipeline(
+            on_preview_transcript=(
+                self._handle_preview_transcript
+            ),
+            on_final_transcript=(
+                self._handle_final_transcript
+            ),
+        )
+
+        # ----------------------------------------------------------
+        # Lecture pipeline integration.
+        # ----------------------------------------------------------
 
         lecture_pipeline.register_topic_detector(
             topic_intelligence
@@ -26,17 +67,264 @@ class Application:
             slide_manager
         )
 
-        # NEW
-        ppt_manager.create_new_presentation("Live Lecture")
-        ppt_manager.add_title_slide(
-            title="Live Lecture",
-            subtitle="AI Teaching Copilot"
+        # ----------------------------------------------------------
+        # Presentation initialization.
+        # ----------------------------------------------------------
+
+        ppt_manager.create_new_presentation(
+            "Live Lecture"
         )
 
-        app_logger.success("Lecture Pipeline Ready")
+        ppt_manager.add_title_slide(
+            title="Live Lecture",
+            subtitle="AI Teaching Copilot",
+        )
+
+        app_logger.success(
+            "Lecture Pipeline Ready"
+        )
+
+    # ==========================================================
+    # LIVE PREVIEW
+    # ==========================================================
+
+    def _handle_preview_transcript(
+        self,
+        preview_text: str,
+        authoritative_transcript: str,
+    ):
+
+        preview_text = (
+            preview_text.strip()
+        )
+
+        authoritative_transcript = (
+            authoritative_transcript.strip()
+        )
+
+        if not preview_text:
+            return
+
+        if authoritative_transcript:
+
+            display_text = (
+                authoritative_transcript
+                + " "
+                + preview_text
+            )
+
+        else:
+
+            display_text = preview_text
+
+        try:
+
+            dashboard_state.update_transcript(
+                display_text
+            )
+
+        except Exception as error:
+
+            app_logger.error(
+                "Dashboard preview update failed: "
+                f"{error}"
+            )
+
+    # ==========================================================
+    # FINAL TRANSCRIPT
+    # ==========================================================
+
+    def _handle_final_transcript(
+        self,
+        segment_text: str,
+        full_transcript: str,
+        segment_id: int,
+    ):
+
+        if not full_transcript.strip():
+            return
+
+        # ----------------------------------------------------------
+        # Authoritative transcript only.
+        # Preview text never enters this state.
+        # ----------------------------------------------------------
+
+        try:
+
+            self.transcript_manager.update(
+                full_transcript
+            )
+
+        except Exception as error:
+
+            app_logger.error(
+                "Transcript manager update failed: "
+                f"{error}"
+            )
+
+        try:
+
+            dashboard_state.update_transcript(
+                full_transcript
+            )
+
+        except Exception as error:
+
+            app_logger.error(
+                "Dashboard transcript update failed: "
+                f"{error}"
+            )
+
+        # ----------------------------------------------------------
+        # Backend analysis is downstream and asynchronous.
+        # It cannot block microphone capture.
+        # ----------------------------------------------------------
+
+        self._queue_backend_analysis(
+            full_transcript
+        )
+
+    # ==========================================================
+    # BACKEND ANALYSIS
+    # ==========================================================
+
+    def _queue_backend_analysis(
+        self,
+        transcript: str,
+    ):
+
+        chunk = (
+            self.transcript_manager
+            .get_new_analysis_text(
+                transcript
+            )
+        )
+
+        if not chunk:
+            return
+
+        if (
+            self.analysis_future is not None
+            and not self.analysis_future.done()
+        ):
+            return
+
+        try:
+
+            self.analysis_future = (
+                self.analysis_executor.submit(
+                    self._analyze_chunk,
+                    chunk,
+                )
+            )
+
+        except RuntimeError:
+
+            pass
+
+    # ==========================================================
+    # ANALYSIS WORKER
+    # ==========================================================
+
+    def _analyze_chunk(
+        self,
+        transcript: str,
+    ):
+
+        try:
+
+            print()
+
+            print(
+                "\n"
+                + "=" * 70
+            )
+
+            print(
+                "LECTURE ANALYSIS"
+            )
+
+            print(
+                "=" * 70
+            )
+
+            print(
+                f"Analyzing: {transcript}"
+            )
+
+            print(
+                "-" * 70
+            )
+
+            result = (
+                lecture_pipeline
+                .process_transcript(
+                    transcript
+                )
+            )
+
+            if isinstance(
+                result,
+                dict,
+            ):
+
+                if result.get(
+                    "is_relevant",
+                    False,
+                ):
+
+                    self.transcript_manager.mark_analyzed(
+                        transcript
+                    )
+
+                if result.get(
+                    "is_new_topic",
+                    False,
+                ):
+
+                    topic = result.get(
+                        "topic",
+                        "",
+                    )
+
+                    self.transcript_manager.start_new_topic(
+                        topic=topic,
+                        boundary_text=transcript,
+                    )
+
+            print(
+                "=" * 70
+            )
+
+        except Exception as error:
+
+            app_logger.error(
+                "Backend analysis error: "
+                f"{error}"
+            )
+
+    # ==========================================================
+    # START
+    # ==========================================================
 
     def start(self):
 
-        app_logger.success("Application Started")
+        app_logger.success(
+            "Application Started"
+        )
 
-        self.pipeline.start()
+        try:
+
+            self.pipeline.start()
+
+        finally:
+
+            try:
+
+                self.analysis_executor.shutdown(
+                    wait=False,
+                    cancel_futures=True,
+                )
+
+            except Exception:
+                pass
