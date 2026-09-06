@@ -1,0 +1,170 @@
+WHISPER SMALL VAD COMPARISON
+======================================================================
+
+Model: small
+Device: cpu
+Compute type: int8
+Beam size: 5
+Audio duration: 59.760s
+Model load time: 1.571s
+
+======================================================================
+VAD ON
+======================================================================
+
+Transcription time: 8.374s
+Real-time factor: 0.1401x
+WER: 17.59%
+Substitutions: 9
+Deletions: 26
+Insertions: 0
+Whisper segments: 17
+Language: en
+Language probability: 1
+
+TRANSCRIPT
+----------------------------------------------------------------------
+Today we are testing the 32nd boundary of the real-time speech recognition pipeline. The system continuously captures microphone audio and sends the voice activity detection. The first part of the test is deliberately long so that the production worker must create a hard segment boundary. At the boundary, the worker should preserve one second of overlapping audio before continuing with the next segment. This overlap is important because our work can begin close to the segmentation point and must not be lost. The second segment continues the same lecture without restarting the sentence or changing the topic. The system must preserve original order of the words while combining the two final transcriptions. There should be no missing word calls by the 30-second split and there should be no repeated words calls by the one-second overlap. After the boundary, we continue discussing automatic specific recognition, neural networks, transformer models, attention mechanisms and speech transcription. The final authoritative transcript should contain the complete lecture in the same order in which it was.
+
+SEGMENTS
+----------------------------------------------------------------------
+[1] 0.590s -> 5.590s
+Today we are testing the 32nd boundary of the real-time speech recognition pipeline.
+
+[2] 5.590s -> 11.670s
+The system continuously captures microphone audio and sends the voice activity detection.
+
+[3] 11.670s -> 15.470s
+The first part of the test is deliberately long so that the production worker must create
+
+[4] 15.470s -> 17.030s
+a hard segment boundary.
+
+[5] 17.030s -> 21.030s
+At the boundary, the worker should preserve one second of overlapping audio before continuing
+
+[6] 21.030s -> 22.950s
+with the next segment.
+
+[7] 22.950s -> 27.430s
+This overlap is important because our work can begin close to the segmentation
+
+[8] 27.430s -> 29.590s
+point and must not be lost.
+
+[9] 29.590s -> 34.430s
+The second segment continues the same lecture without restarting the sentence or changing
+
+[10] 34.430s -> 35.430s
+the topic.
+
+[11] 35.430s -> 40.430s
+The system must preserve original order of the words while combining the two final transcriptions.
+
+[12] 40.430s -> 44.430s
+There should be no missing word calls by the 30-second split and there should be no repeated
+
+[13] 44.430s -> 47.270s
+words calls by the one-second overlap.
+
+[14] 47.270s -> 50.870s
+After the boundary, we continue discussing automatic specific recognition, neural networks,
+
+[15] 50.870s -> 54.270s
+transformer models, attention mechanisms and speech transcription.
+
+[16] 54.270s -> 58.350s
+The final authoritative transcript should contain the complete lecture in the same
+
+[17] 58.350s -> 59.750s
+order in which it was.
+
+======================================================================
+VAD OFF
+======================================================================
+
+Transcription time: 7.840s
+Real-time factor: 0.1312x
+WER: 17.09%
+Substitutions: 10
+Deletions: 24
+Insertions: 0
+Whisper segments: 18
+Language: en
+Language probability: 1
+
+TRANSCRIPT
+----------------------------------------------------------------------
+Today we are testing the 32nd boundary of the real-time species recognition pipeline. The system continuously captures microphone audio and sends the feed through voice activity detection. The first part of the test is deliberately long so that the production worker must create a hard segment boundary. At the boundary, the worker should preserve one second of overlapping audio before continuing with the next segment. This overlap is important because a word can begin close to the segmentation point and must not be lost. The second segment continues the same lecture without restarting the sentence or changing the topic. The system must preserve original order of the words while combining the two final transcriptions. There should be no missing word calls by the 30-second split and there should be no repeated words calls by the one-second overlap. After the boundary, we continue discussing automatic specific recognition, neural networks, transformer models, attention mechanisms, and speech transcription. The final authoritative transcripts should contain the complete lecture in the same order in which it was.
+
+SEGMENTS
+----------------------------------------------------------------------
+[1] 0.000s -> 5.600s
+Today we are testing the 32nd boundary of the real-time species recognition pipeline.
+
+[2] 5.600s -> 10.800s
+The system continuously captures microphone audio and sends the feed through voice activity
+
+[3] 10.800s -> 11.800s
+detection.
+
+[4] 11.800s -> 15.480s
+The first part of the test is deliberately long so that the production worker must create
+
+[5] 15.480s -> 17.080s
+a hard segment boundary.
+
+[6] 17.080s -> 21.000s
+At the boundary, the worker should preserve one second of overlapping audio before continuing
+
+[7] 21.000s -> 23.000s
+with the next segment.
+
+[8] 23.000s -> 27.440s
+This overlap is important because a word can begin close to the segmentation
+
+[9] 27.440s -> 29.600s
+point and must not be lost.
+
+[10] 29.600s -> 34.440s
+The second segment continues the same lecture without restarting the sentence or changing
+
+[11] 34.440s -> 35.440s
+the topic.
+
+[12] 35.440s -> 40.440s
+The system must preserve original order of the words while combining the two final transcriptions.
+
+[13] 40.440s -> 44.040s
+There should be no missing word calls by the 30-second split and there should be no
+
+[14] 44.040s -> 47.280s
+repeated words calls by the one-second overlap.
+
+[15] 47.280s -> 50.880s
+After the boundary, we continue discussing automatic specific recognition, neural networks,
+
+[16] 50.880s -> 54.280s
+transformer models, attention mechanisms, and speech transcription.
+
+[17] 54.280s -> 58.400s
+The final authoritative transcripts should contain the complete lecture in the same
+
+[18] 58.400s -> 59.800s
+order in which it was.
+
+======================================================================
+REFERENCE SPEECH
+======================================================================
+
+Today we are testing the thirty second boundary of the real time speech recognition pipeline.
+The system continuously captures microphone audio and sends the speech through voice activity detection.
+The first part of this test is deliberately long so that the production worker must create a hard segment boundary.
+At the boundary the worker should preserve one second of overlapping audio before continuing with the next segment.
+This overlap is important because a word can begin close to the segmentation point and must not be lost.
+The second segment continues the same lecture without restarting the sentence or changing the topic.
+The system must preserve the original order of the words while combining the two final transcriptions.
+There should be no missing words caused by the thirty second split and there should be no repeated words caused by the one second overlap.
+After the boundary we continue discussing automatic speech recognition, neural networks, transformer models, attention mechanisms, and speech transcription.
+The final authoritative transcript should contain the complete lecture in the same order in which it was spoken.
+This test is designed to verify that continuous speech remains reliable when one long recording is divided into multiple transcription segments.

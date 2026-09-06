@@ -10,22 +10,36 @@ class LiveTranscriptManager:
     """
     Maintains one live lecture transcript.
 
-    Behavior:
+    Responsibilities:
 
-    - Live Whisper updates one continuously growing paragraph.
-    - Backend analyzes only completed meaningful sentences.
-    - When a new topic is detected, the current paragraph is frozen.
-    - The new topic starts a new paragraph.
+    - Maintain the authoritative Whisper transcript.
+    - Maintain the currently displayed paragraph.
+    - Extract newly completed sentences for backend analysis.
+    - Provide bounded transcript context for Transcript Intelligence.
+    - Track sentences already analyzed.
+    - Handle topic boundaries.
+
+    This class does not perform AI inference or semantic correction.
     """
+
+    # Maximum amount of recent transcript text exposed as
+    # context to Transcript Intelligence.
+    DEFAULT_CONTEXT_WORDS = 120
 
     def __init__(
         self,
         analysis_callback: Optional = None,
+        context_words: int = DEFAULT_CONTEXT_WORDS,
     ) -> None:
 
         self.analysis_callback = analysis_callback
 
         self.lock = threading.RLock()
+
+        self.context_words = max(
+            20,
+            int(context_words),
+        )
 
         # Current Whisper output for the current speech segment.
         self.current_segment_transcript = ""
@@ -53,8 +67,11 @@ class LiveTranscriptManager:
         text: str,
     ) -> str:
 
+        if not text:
+            return ""
+
         return " ".join(
-            text.strip().split()
+            str(text).strip().split()
         )
 
     # ==========================================================
@@ -81,7 +98,10 @@ class LiveTranscriptManager:
         if not boundary:
             return transcript
 
+        # ------------------------------------------------------
         # Exact boundary.
+        # ------------------------------------------------------
+
         index = transcript.lower().find(
             boundary.lower()
         )
@@ -92,8 +112,14 @@ class LiveTranscriptManager:
                 index:
             ].strip()
 
-        # Fallback: find the longest matching
-        # suffix/prefix of the boundary.
+        # ------------------------------------------------------
+        # Fallback:
+        #
+        # Find the longest matching suffix/prefix relationship
+        # between the boundary and the continuously growing
+        # Whisper transcript.
+        # ------------------------------------------------------
+
         boundary_words = boundary.split()
         transcript_words = transcript.split()
 
@@ -204,7 +230,6 @@ class LiveTranscriptManager:
         if not text:
             return
 
-        # One continuously changing terminal paragraph.
         sys.stdout.write(
             "\r\033[2K"
             + text
@@ -249,7 +274,10 @@ class LiveTranscriptManager:
 
         with self.lock:
 
+            # --------------------------------------------------
             # Freeze previous topic paragraph.
+            # --------------------------------------------------
+
             if self.current_paragraph.strip():
 
                 self.all_paragraphs.append(
@@ -289,7 +317,7 @@ class LiveTranscriptManager:
     def extract_complete_sentences(
         self,
         transcript: str,
-    ):
+    ) -> list[str]:
 
         transcript = self.normalize(
             transcript
@@ -321,7 +349,7 @@ class LiveTranscriptManager:
         self,
         transcript: str,
         force: bool = False,
-    ):
+    ) -> Optional[str]:
 
         transcript = self.normalize(
             transcript
@@ -360,27 +388,116 @@ class LiveTranscriptManager:
         if not new_sentences:
             return None
 
-        # --------------------------------------------------
+        # ------------------------------------------------------
         # Don't send tiny fragments to semantic analysis.
-        # --------------------------------------------------
+        # ------------------------------------------------------
 
         word_count = sum(
             len(
                 sentence.split()
             )
-            for sentence
-            in new_sentences
+            for sentence in new_sentences
         )
 
         if not force and word_count < 20:
             return None
 
-        # Maximum 4 complete sentences per analysis.
+        # ------------------------------------------------------
+        # Maximum four complete sentences per analysis.
+        # ------------------------------------------------------
+
         chunk = " ".join(
             new_sentences[:4]
         ).strip()
 
         return chunk or None
+
+    # ==========================================================
+    # GET CONTEXT FOR ANALYSIS
+    # ==========================================================
+
+    def get_analysis_context(
+        self,
+        transcript: Optional[str] = None,
+        analysis_text: Optional[str] = None,
+    ) -> str:
+        """
+        Return bounded authoritative transcript context.
+
+        The context is intentionally topic-agnostic. It contains
+        recent lecture text and does not perform any correction.
+
+        If an analysis chunk is supplied, the returned context
+        includes the surrounding recent transcript but excludes
+        the current chunk when it appears as the exact suffix.
+
+        This prevents Transcript Intelligence from treating the
+        current potentially corrupted text as evidence for itself.
+        """
+
+        with self.lock:
+
+            if transcript is None:
+
+                transcript = (
+                    self.current_segment_transcript
+                )
+
+                if not transcript:
+
+                    transcript = (
+                        self.get_full_transcript()
+                    )
+
+            transcript = self.normalize(
+                transcript
+            )
+
+            if not transcript:
+                return ""
+
+            words = transcript.split()
+
+            if (
+                analysis_text
+                and self.normalize(
+                    analysis_text
+                )
+            ):
+
+                analysis_normalized = (
+                    self.normalize(
+                        analysis_text
+                    )
+                )
+
+                analysis_words = (
+                    analysis_normalized.split()
+                )
+
+                if (
+                    len(words)
+                    >= len(analysis_words)
+                    and " ".join(
+                        words[
+                            -len(analysis_words):
+                        ]
+                    ).lower()
+                    == analysis_normalized.lower()
+                ):
+
+                    words = words[
+                        :-len(analysis_words)
+                    ]
+
+            if not words:
+                return ""
+
+            return " ".join(
+                words[
+                    -self.context_words:
+                ]
+            )
 
     # ==========================================================
     # MARK ANALYZED
@@ -402,16 +519,22 @@ class LiveTranscriptManager:
 
         with self.lock:
 
+            existing = {
+                item.lower()
+                for item
+                in self.completed_sentences
+            }
+
             for sentence in sentences:
 
-                if sentence.lower() not in [
-                    item.lower()
-                    for item
-                    in self.completed_sentences
-                ]:
+                if sentence.lower() not in existing:
 
                     self.completed_sentences.append(
                         sentence
+                    )
+
+                    existing.add(
+                        sentence.lower()
                     )
 
             self.completed_sentences = (

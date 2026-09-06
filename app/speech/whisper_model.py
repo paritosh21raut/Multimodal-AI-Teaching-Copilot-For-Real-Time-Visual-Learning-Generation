@@ -208,7 +208,7 @@ class WhisperModel:
 
             # VAD prevents obvious silence regions from being
             # interpreted as speech.
-            vad_filter=True,
+            vad_filter=False,
 
             # Prevent Whisper from repeatedly carrying old
             # decoding context into a new transcription call.

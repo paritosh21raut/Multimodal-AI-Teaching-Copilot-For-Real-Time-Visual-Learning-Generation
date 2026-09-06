@@ -3,12 +3,13 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 
 from app.audio.audio_pipeline import AudioPipeline
+from app.audio.live_transcript_manager import LiveTranscriptManager
 from app.dashboard.dashboard_state import dashboard_state
 from app.knowledge.content_generator import content_generator
 from app.lecture.lecture_pipeline import lecture_pipeline
 from app.ppt.ppt_manager import ppt_manager
+from app.speech.transcript_intelligence import transcript_intelligence
 from app.slides.slide_manager import slide_manager
-from app.speech.live_transcript_manager import LiveTranscriptManager
 from app.topics.topic_intelligence import topic_intelligence
 from app.utils.logger import app_logger
 
@@ -22,12 +23,24 @@ class Application:
         )
 
         # ----------------------------------------------------------
-        # Downstream state lives here, outside the audio subsystem.
+        # Live transcript state.
         # ----------------------------------------------------------
 
         self.transcript_manager = (
             LiveTranscriptManager()
         )
+
+        # ----------------------------------------------------------
+        # Transcript intelligence.
+        # ----------------------------------------------------------
+
+        self.transcript_intelligence = (
+            transcript_intelligence
+        )
+
+        # ----------------------------------------------------------
+        # Backend analysis executor.
+        # ----------------------------------------------------------
 
         self.analysis_executor = (
             ThreadPoolExecutor(
@@ -39,7 +52,7 @@ class Application:
         self.analysis_future = None
 
         # ----------------------------------------------------------
-        # Audio/STT.
+        # Audio / STT.
         # ----------------------------------------------------------
 
         self.pipeline = AudioPipeline(
@@ -95,12 +108,12 @@ class Application:
     ):
 
         preview_text = (
-            preview_text.strip()
-        )
+            preview_text or ""
+        ).strip()
 
         authoritative_transcript = (
-            authoritative_transcript.strip()
-        )
+            authoritative_transcript or ""
+        ).strip()
 
         if not preview_text:
             return
@@ -145,8 +158,10 @@ class Application:
             return
 
         # ----------------------------------------------------------
-        # Authoritative transcript only.
-        # Preview text never enters this state.
+        # Authoritative Whisper transcript.
+        #
+        # Preview text never enters transcript intelligence or
+        # lecture analysis.
         # ----------------------------------------------------------
 
         try:
@@ -162,6 +177,10 @@ class Application:
                 f"{error}"
             )
 
+        # ----------------------------------------------------------
+        # Dashboard always receives authoritative STT output.
+        # ----------------------------------------------------------
+
         try:
 
             dashboard_state.update_transcript(
@@ -176,8 +195,7 @@ class Application:
             )
 
         # ----------------------------------------------------------
-        # Backend analysis is downstream and asynchronous.
-        # It cannot block microphone capture.
+        # Backend analysis.
         # ----------------------------------------------------------
 
         self._queue_backend_analysis(
@@ -188,19 +206,9 @@ class Application:
     # BACKEND ANALYSIS
     # ==========================================================
 
-    def _queue_backend_analysis(
-        self,
-        transcript: str,
-    ):
-
-        chunk = (
-            self.transcript_manager
-            .get_new_analysis_text(
-                transcript
-            )
-        )
-
-        if not chunk:
+    def _queue_backend_analysis(self, transcript):
+        raw_chunk = self.transcript_manager.get_new_analysis_text(transcript)
+        if not raw_chunk:
             return
 
         if (
@@ -209,17 +217,33 @@ class Application:
         ):
             return
 
+        context = self.transcript_manager.get_analysis_context(
+            transcript=transcript,
+            analysis_text=raw_chunk,
+        )
+
         try:
-
-            self.analysis_future = (
-                self.analysis_executor.submit(
-                    self._analyze_chunk,
-                    chunk,
-                )
+            refinement = self.transcript_intelligence.refine(
+                raw_chunk,
+                context=context,
             )
+            refined_chunk = refinement.refined_text.strip()
+        except Exception as error:
+            app_logger.error(
+                "Transcript refinement failed: " + f"{error}"
+            )
+            refined_chunk = raw_chunk
 
+        if not refined_chunk:
+            return
+
+        try:
+            self.analysis_future = self.analysis_executor.submit(
+                self._analyze_chunk,
+                raw_chunk,
+                refined_chunk,
+            )
         except RuntimeError:
-
             pass
 
     # ==========================================================
@@ -228,7 +252,8 @@ class Application:
 
     def _analyze_chunk(
         self,
-        transcript: str,
+        raw_chunk: str,
+        refined_chunk: str,
     ):
 
         try:
@@ -249,17 +274,25 @@ class Application:
             )
 
             print(
-                f"Analyzing: {transcript}"
+                f"Raw chunk: {raw_chunk}"
+            )
+
+            print(
+                f"Refined chunk: {refined_chunk}"
             )
 
             print(
                 "-" * 70
             )
 
+            # ------------------------------------------------------
+            # Refined transcript enters the lecture pipeline.
+            # ------------------------------------------------------
+
             result = (
                 lecture_pipeline
                 .process_transcript(
-                    transcript
+                    refined_chunk
                 )
             )
 
@@ -268,14 +301,26 @@ class Application:
                 dict,
             ):
 
+                # --------------------------------------------------
+                # Mark the ORIGINAL authoritative sentences as
+                # analyzed.
+                #
+                # This is important because the manager tracks
+                # authoritative Whisper text, not refined text.
+                # --------------------------------------------------
+
                 if result.get(
                     "is_relevant",
                     False,
                 ):
 
                     self.transcript_manager.mark_analyzed(
-                        transcript
+                        raw_chunk
                     )
+
+                # --------------------------------------------------
+                # New topic boundary.
+                # --------------------------------------------------
 
                 if result.get(
                     "is_new_topic",
@@ -289,7 +334,7 @@ class Application:
 
                     self.transcript_manager.start_new_topic(
                         topic=topic,
-                        boundary_text=transcript,
+                        boundary_text=refined_chunk,
                     )
 
             print(

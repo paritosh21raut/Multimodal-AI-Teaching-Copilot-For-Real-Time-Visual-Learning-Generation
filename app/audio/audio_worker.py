@@ -20,7 +20,7 @@ class AudioWorker(threading.Thread):
     """
     Continuous production audio/STT worker.
 
-    Pipeline:
+    Handles:
 
         microphone
             ↓
@@ -28,34 +28,15 @@ class AudioWorker(threading.Thread):
             ↓
         VAD
             ↓
-        speech accumulation
+        speech segmentation
             ↓
-        endpointing
+        Whisper preview/final inference
             ↓
-        preview / final Whisper scheduling
-            ↓
-        authoritative ordered transcript
+        authoritative transcript
 
-    This class intentionally has no dependency on:
-
-        Gemini
-        Ollama
-        Lecture Pipeline
-        Dashboard
-        Slides
-        PPT generation
-
-    Design priorities:
-
-        1. Do not deadlock.
-        2. Do not intentionally discard finalized speech.
-        3. Preserve final transcript ordering.
-        4. Keep Whisper execution serialized.
-        5. Keep preview work replaceable.
-        6. Support continuous speech with hard boundaries.
-        7. Preserve a small overlap at hard boundaries.
-        8. Drain already-captured audio during shutdown.
-        9. Persist the authoritative transcript atomically.
+    Hard-split segments retain a small audio overlap. Because Whisper
+    independently transcribes the overlapping audio, final transcripts
+    require boundary reconciliation.
     """
 
     def __init__(
@@ -76,7 +57,6 @@ class AudioWorker(threading.Thread):
             "outputs/transcripts/live_transcript.txt"
         ),
     ):
-
         super().__init__(
             daemon=True,
             name="AudioWorker",
@@ -162,13 +142,11 @@ class AudioWorker(threading.Thread):
         # ----------------------------------------------------------
 
         self.detector = VoiceDetector()
-
         self.builder = SpeechSegmentBuilder()
-
         self.whisper = WhisperWorker()
 
         # ----------------------------------------------------------
-        # Worker lifecycle.
+        # Lifecycle.
         # ----------------------------------------------------------
 
         self.running = True
@@ -190,27 +168,14 @@ class AudioWorker(threading.Thread):
         self.pre_roll_sample_count = 0
 
         # ----------------------------------------------------------
-        # Segment ordering.
-        #
-        # segment_id is assigned when a final segment is created.
-        # Final jobs are always processed in this order.
+        # Transcript state.
         # ----------------------------------------------------------
 
         self.segment_id = 0
-
         self.authoritative_transcript = ""
 
         # ----------------------------------------------------------
         # Whisper execution.
-        #
-        # IMPORTANT:
-        #
-        # RLock is intentional.
-        #
-        # _submit_final() / _request_preview() may call
-        # _pump_inference() while already holding this lock.
-        #
-        # A normal Lock would deadlock.
         # ----------------------------------------------------------
 
         self.inference_executor = ThreadPoolExecutor(
@@ -226,22 +191,12 @@ class AudioWorker(threading.Thread):
 
         # ----------------------------------------------------------
         # Final jobs.
-        #
-        # Do NOT use deque(maxlen=...) here.
-        #
-        # A bounded deque silently evicts an older final job when
-        # full, which means speech can disappear.
-        #
-        # The configured limit is used as a diagnostic threshold,
-        # not as a data-loss mechanism.
         # ----------------------------------------------------------
 
         self.pending_final_jobs = deque()
 
         # ----------------------------------------------------------
-        # Preview:
-        #
-        # Only the newest preview matters.
+        # Preview.
         # ----------------------------------------------------------
 
         self.pending_preview_audio = None
@@ -281,16 +236,16 @@ class AudioWorker(threading.Thread):
 
             "hard_split_overlap_samples": 0,
             "shutdown_queue_drained": 0,
+
+            "hard_split_sentence_reconciliations": 0,
+            "hard_split_sentence_fallbacks": 0,
         }
 
     # ==========================================================
-    # QUEUE / PRE-ROLL HELPERS
+    # PRE-ROLL
     # ==========================================================
 
     def _remember_pre_roll(self, chunk):
-        """
-        Keep only the latest pre-roll audio while not recording.
-        """
 
         if chunk is None:
             return
@@ -309,15 +264,17 @@ class AudioWorker(threading.Thread):
             self.pre_roll_sample_count -= len(old)
 
     def _clear_pre_roll(self):
+
         self.pre_roll.clear()
         self.pre_roll_sample_count = 0
 
     # ==========================================================
-    # TRANSCRIPT MERGING
+    # TEXT HELPERS
     # ==========================================================
 
     @staticmethod
     def _normalize_text(text: str) -> str:
+
         if not text:
             return ""
 
@@ -327,6 +284,7 @@ class AudioWorker(threading.Thread):
 
     @staticmethod
     def _tokens(text: str):
+
         if not text:
             return []
 
@@ -334,6 +292,120 @@ class AudioWorker(threading.Thread):
             r"\S+",
             text,
         )
+
+    @staticmethod
+    def _normalize_token(token: str):
+
+        return token.lower().strip(
+            ".,!?;:\"'()[]{}"
+        )
+
+    @classmethod
+    def _normalized_tokens(cls, text: str):
+
+        result = []
+
+        for token in cls._tokens(text):
+
+            normalized = (
+                cls._normalize_token(token)
+            )
+
+            if normalized:
+                result.append(
+                    normalized
+                )
+
+        return result
+
+    @staticmethod
+    def _word_count(text: str):
+
+        if not text:
+            return 0
+
+        return len(
+            text.split()
+        )
+
+    # ==========================================================
+    # SENTENCE HELPERS
+    # ==========================================================
+
+    @staticmethod
+    def _sentence_end_positions(text: str):
+
+        if not text:
+            return []
+
+        return [
+            match.end()
+            for match in re.finditer(
+                r"[.!?](?=\s|$)",
+                text,
+            )
+        ]
+
+    # ==========================================================
+    # TOKEN COMPATIBILITY
+    # ==========================================================
+
+    @staticmethod
+    def _tokens_compatible(
+        first: str,
+        second: str,
+    ) -> bool:
+
+        if not first or not second:
+            return False
+
+        if first == second:
+            return True
+
+        # Conservative morphological compatibility.
+        #
+        # process / processes
+        # model / models
+        # method / methods
+        if (
+            len(first) >= 4
+            and len(second) >= 4
+            and (
+                first.startswith(second)
+                or second.startswith(first)
+            )
+        ):
+            return True
+
+        return False
+
+    @classmethod
+    def _compatible_count(
+        cls,
+        first_tokens,
+        second_tokens,
+    ) -> int:
+
+        size = min(
+            len(first_tokens),
+            len(second_tokens),
+        )
+
+        count = 0
+
+        for index in range(size):
+
+            if cls._tokens_compatible(
+                first_tokens[index],
+                second_tokens[index],
+            ):
+                count += 1
+
+        return count
+
+    # ==========================================================
+    # EXACT TOKEN OVERLAP
+    # ==========================================================
 
     @classmethod
     def _find_boundary_overlap(
@@ -343,26 +415,17 @@ class AudioWorker(threading.Thread):
         maximum_words: int = 20,
         minimum_words: int = 3,
     ):
-        """
-        Find an exact token overlap at the previous/current boundary.
 
-        Example:
-
-            previous:
-                ... neural networks use
-
-            current:
-                neural networks use transformer models
-
-        Returns 3.
-        """
-
-        previous_tokens = cls._tokens(
-            previous
+        previous_tokens = (
+            cls._normalized_tokens(
+                previous
+            )
         )
 
-        current_tokens = cls._tokens(
-            current
+        current_tokens = (
+            cls._normalized_tokens(
+                current
+            )
         )
 
         if (
@@ -379,42 +442,415 @@ class AudioWorker(threading.Thread):
             len(current_tokens),
         )
 
-        previous_lower = [
-            token.lower().strip(
-                ".,!?;:\"'()[]{}"
-            )
-            for token in previous_tokens
-        ]
-
-        current_lower = [
-            token.lower().strip(
-                ".,!?;:\"'()[]{}"
-            )
-            for token in current_tokens
-        ]
-
         for size in range(
             maximum,
             minimum_words - 1,
             -1,
         ):
+
             if (
-                previous_lower[-size:]
-                == current_lower[:size]
+                previous_tokens[-size:]
+                == current_tokens[:size]
             ):
                 return size
 
         return 0
 
+    # ==========================================================
+    # HARD-SPLIT BOUNDARY MATCH
+    # ==========================================================
+
     @classmethod
-    def _merge_transcript(
+    def _find_hard_boundary_match(
         cls,
         previous: str,
         current: str,
-    ) -> str:
+        maximum_words: int = 8,
+        minimum_words: int = 2,
+    ):
         """
-        Merge a new authoritative final transcript into the existing
-        transcript while removing exact boundary duplication.
+        Finds a local suffix/prefix match across a hard split.
+
+        Example:
+
+            previous:
+                ... a complex process.
+
+            current:
+                complex processes requiring...
+
+        Returns:
+
+            (match_size, current_start)
+
+        current_start allows the match to begin slightly inside
+        the current segment.
+        """
+
+        previous_tokens = (
+            cls._normalized_tokens(
+                previous
+            )
+        )
+
+        current_tokens = (
+            cls._normalized_tokens(
+                current
+            )
+        )
+
+        if (
+            len(previous_tokens)
+            < minimum_words
+            or len(current_tokens)
+            < minimum_words
+        ):
+            return None
+
+        previous_limit = min(
+            maximum_words,
+            len(previous_tokens),
+        )
+
+        current_limit = min(
+            maximum_words,
+            len(current_tokens),
+        )
+
+        previous_suffix = (
+            previous_tokens[
+                -previous_limit:
+            ]
+        )
+
+        best = None
+
+        # Only permit a very small leading region in current.
+        for current_start in range(
+            min(3, current_limit)
+        ):
+
+            remaining = (
+                current_limit
+                - current_start
+            )
+
+            maximum = min(
+                maximum_words,
+                len(previous_suffix),
+                remaining,
+            )
+
+            for size in range(
+                maximum,
+                minimum_words - 1,
+                -1,
+            ):
+
+                previous_part = (
+                    previous_suffix[-size:]
+                )
+
+                current_part = (
+                    current_tokens[
+                        current_start:
+                        current_start + size
+                    ]
+                )
+
+                compatible = (
+                    cls._compatible_count(
+                        previous_part,
+                        current_part,
+                    )
+                )
+
+                if compatible != size:
+                    continue
+
+                candidate = (
+                    size,
+                    current_start,
+                )
+
+                if (
+                    best is None
+                    or candidate[0] > best[0]
+                    or (
+                        candidate[0] == best[0]
+                        and candidate[1] < best[1]
+                    )
+                ):
+                    best = candidate
+
+        return best
+
+    # ==========================================================
+    # HARD-SPLIT SENTENCE REPAIR
+    # ==========================================================
+
+    @classmethod
+    def _repair_hard_split_sentence(
+        cls,
+        previous: str,
+        current: str,
+    ):
+        """
+        Repairs the special case where Whisper independently
+        transcribes the same boundary sentence in both hard-split
+        segments.
+
+        Example:
+
+            previous:
+                ... can still be a complex process.
+
+            current:
+                complex processes requiring a skilled practitioner.
+                There is an additional risk...
+
+        The boundary suffix from the previous transcript is replaced
+        with the complete first sentence from the current transcript.
+
+        Result:
+
+            ... can still be a complex processes requiring a skilled
+            practitioner. There is an additional risk...
+        """
+
+        previous = cls._normalize_text(
+            previous
+        )
+
+        current = cls._normalize_text(
+            current
+        )
+
+        if not previous or not current:
+            return None
+
+        previous_boundaries = (
+            cls._sentence_end_positions(
+                previous
+            )
+        )
+
+        current_boundaries = (
+            cls._sentence_end_positions(
+                current
+            )
+        )
+
+        # Segment 1 must end at a complete sentence.
+        if not previous_boundaries:
+            return None
+
+        # Segment 2 must contain a complete first sentence.
+        if not current_boundaries:
+            return None
+
+        previous_end = (
+            previous_boundaries[-1]
+        )
+
+        current_first_end = (
+            current_boundaries[0]
+        )
+
+        if previous_end != len(previous):
+            return None
+
+        current_first_sentence = (
+            current[
+                :current_first_end
+            ].strip()
+        )
+
+        if not current_first_sentence:
+            return None
+
+        match = (
+            cls._find_hard_boundary_match(
+                previous,
+                current_first_sentence,
+                maximum_words=8,
+                minimum_words=2,
+            )
+        )
+
+        if match is None:
+            return None
+
+        match_size, current_start = match
+
+        if match_size < 2:
+            return None
+
+        previous_words = cls._tokens(
+            previous
+        )
+
+        current_first_words = cls._tokens(
+            current_first_sentence
+        )
+
+        previous_normalized = (
+            cls._normalized_tokens(
+                previous
+            )
+        )
+
+        current_normalized = (
+            cls._normalized_tokens(
+                current_first_sentence
+            )
+        )
+
+        # ----------------------------------------------------------
+        # Find the exact boundary suffix in previous.
+        # ----------------------------------------------------------
+
+        previous_suffix_start = (
+            len(previous_normalized)
+            - match_size
+        )
+
+        if previous_suffix_start <= 0:
+            return None
+
+        # ----------------------------------------------------------
+        # CASE 1
+        #
+        # Current starts directly with the repeated boundary.
+        #
+        # Example:
+        #
+        # previous:
+        #   ... a complex process.
+        #
+        # current:
+        #   complex processes requiring...
+        # ----------------------------------------------------------
+
+        if current_start == 0:
+
+            # Keep every previous word before the duplicated suffix.
+            previous_prefix_words = (
+                previous_words[
+                    :previous_suffix_start
+                ]
+            )
+
+            # Add the complete current sentence.
+            merged_words = (
+                previous_prefix_words
+                + current_first_words
+            )
+
+            # Add the remainder of current after its first sentence.
+            if (
+                current_first_end
+                < len(current)
+            ):
+
+                remainder = (
+                    current[
+                        current_first_end:
+                    ].strip()
+                )
+
+                if remainder:
+
+                    merged_words.extend(
+                        remainder.split()
+                    )
+
+            return cls._normalize_text(
+                " ".join(merged_words)
+            )
+
+        # ----------------------------------------------------------
+        # CASE 2
+        #
+        # Current has a tiny leading fragment before the overlap.
+        #
+        # Example:
+        #
+        # previous:
+        #   ... improved the state of the
+        #
+        # current:
+        #   improve the state of the art...
+        # ----------------------------------------------------------
+
+        if current_start <= 2:
+
+            previous_prefix_words = (
+                previous_words[
+                    :previous_suffix_start
+                ]
+            )
+
+            current_leading_words = (
+                current_first_words[
+                    :current_start
+                ]
+            )
+
+            current_after_match = (
+                current_first_words[
+                    current_start + match_size:
+                ]
+            )
+
+            merged_words = (
+                previous_prefix_words
+                + current_leading_words
+                + current_after_match
+            )
+
+            if (
+                current_first_end
+                < len(current)
+            ):
+
+                remainder = (
+                    current[
+                        current_first_end:
+                    ].strip()
+                )
+
+                if remainder:
+
+                    merged_words.extend(
+                        remainder.split()
+                    )
+
+            return cls._normalize_text(
+                " ".join(merged_words)
+            )
+
+        return None
+
+    # ==========================================================
+    # HARD-SPLIT RECONCILIATION
+    # ==========================================================
+
+    @classmethod
+    def _reconcile_hard_split(
+        cls,
+        previous: str,
+        current: str,
+    ):
+        """
+        Reconcile transcripts created by a hard audio split.
+
+        Priority:
+
+            1. Complete sentence boundary repair.
+            2. Exact token overlap.
+            3. Conservative fuzzy overlap.
+            4. Return None for normal fallback handling.
         """
 
         previous = cls._normalize_text(
@@ -431,27 +867,175 @@ class AudioWorker(threading.Thread):
         if not current:
             return previous
 
-        previous_tokens = cls._tokens(
+        # ----------------------------------------------------------
+        # 1. Sentence-level boundary repair.
+        # ----------------------------------------------------------
+
+        repaired = (
+            cls._repair_hard_split_sentence(
+                previous,
+                current,
+            )
+        )
+
+        if repaired:
+            return repaired
+
+        # ----------------------------------------------------------
+        # 2. Exact overlap.
+        # ----------------------------------------------------------
+
+        exact_overlap = (
+            cls._find_boundary_overlap(
+                previous,
+                current,
+                maximum_words=20,
+                minimum_words=2,
+            )
+        )
+
+        if exact_overlap >= 2:
+
+            previous_words = cls._tokens(
+                previous
+            )
+
+            current_words = cls._tokens(
+                current
+            )
+
+            merged = (
+                previous_words
+                + current_words[
+                    exact_overlap:
+                ]
+            )
+
+            return cls._normalize_text(
+                " ".join(merged)
+            )
+
+        # ----------------------------------------------------------
+        # 3. Conservative fuzzy overlap.
+        # ----------------------------------------------------------
+
+        fuzzy_match = (
+            cls._find_hard_boundary_match(
+                previous,
+                current,
+                maximum_words=8,
+                minimum_words=2,
+            )
+        )
+
+        if fuzzy_match is None:
+            return None
+
+        match_size, current_start = (
+            fuzzy_match
+        )
+
+        if match_size < 2:
+            return None
+
+        previous_words = cls._tokens(
             previous
         )
 
-        current_tokens = cls._tokens(
+        current_words = cls._tokens(
+            current
+        )
+
+        # Current starts exactly at the repeated boundary.
+        if current_start == 0:
+
+            merged = (
+                previous_words
+                + current_words[
+                    match_size:
+                ]
+            )
+
+            return cls._normalize_text(
+                " ".join(merged)
+            )
+
+        # Current contains a very small leading fragment.
+        if current_start <= 2:
+
+            merged = (
+                previous_words
+                + current_words[
+                    current_start + match_size:
+                ]
+            )
+
+            return cls._normalize_text(
+                " ".join(merged)
+            )
+
+        return None
+
+    # ==========================================================
+    # TRANSCRIPT MERGE
+    # ==========================================================
+
+    @classmethod
+    def _merge_transcript(
+        cls,
+        previous: str,
+        current: str,
+        hard_split: bool = False,
+    ):
+
+        previous = cls._normalize_text(
+            previous
+        )
+
+        current = cls._normalize_text(
+            current
+        )
+
+        if not previous:
+            return current
+
+        if not current:
+            return previous
+
+        if hard_split:
+
+            reconciled = (
+                cls._reconcile_hard_split(
+                    previous,
+                    current,
+                )
+            )
+
+            if reconciled:
+                return reconciled
+
+        previous_words = cls._tokens(
+            previous
+        )
+
+        current_words = cls._tokens(
             current
         )
 
         overlap = cls._find_boundary_overlap(
             previous,
             current,
+            maximum_words=20,
+            minimum_words=3,
         )
 
         if overlap > 0:
-            merged_tokens = (
-                previous_tokens
-                + current_tokens[overlap:]
-            )
 
             return " ".join(
-                merged_tokens
+                previous_words
+                + current_words[
+                    overlap:
+                ]
             )
 
         return (
@@ -465,11 +1049,6 @@ class AudioWorker(threading.Thread):
     # ==========================================================
 
     def _persist_transcript(self):
-        """
-        Atomically persist the authoritative transcript.
-
-        Write temporary file → flush → fsync → replace.
-        """
 
         path = os.path.abspath(
             self.transcript_path
@@ -524,10 +1103,13 @@ class AudioWorker(threading.Thread):
                         temporary_path
                     )
                 ):
+
                     try:
+
                         os.remove(
                             temporary_path
                         )
+
                     except Exception:
                         pass
 
@@ -537,7 +1119,7 @@ class AudioWorker(threading.Thread):
                 )
 
     # ==========================================================
-    # FINAL TRANSCRIPTION
+    # WHISPER FINAL
     # ==========================================================
 
     def _run_final_transcription(
@@ -546,12 +1128,11 @@ class AudioWorker(threading.Thread):
         segment_id: int,
         hard_split: bool,
     ):
-        """
-        Worker-thread Whisper execution for final audio.
-        """
 
-        transcript = self.whisper.transcribe_audio(
-            audio
+        transcript = (
+            self.whisper.transcribe_audio(
+                audio
+            )
         )
 
         return {
@@ -562,19 +1143,18 @@ class AudioWorker(threading.Thread):
         }
 
     # ==========================================================
-    # PREVIEW TRANSCRIPTION
+    # WHISPER PREVIEW
     # ==========================================================
 
     def _run_preview_transcription(
         self,
         audio,
     ):
-        """
-        Worker-thread Whisper execution for preview audio.
-        """
 
-        transcript = self.whisper.transcribe_audio(
-            audio
+        transcript = (
+            self.whisper.transcribe_audio(
+                audio
+            )
         )
 
         return {
@@ -587,25 +1167,11 @@ class AudioWorker(threading.Thread):
     # ==========================================================
 
     def _pump_inference(self):
-        """
-        Start the next Whisper job if no job is currently running.
-
-        Priority:
-
-            1. final
-            2. newest preview
-
-        Only one Whisper job is executed at a time.
-        """
 
         with self.inference_lock:
 
             if self.inference_future is not None:
                 return
-
-            # --------------------------------------------------
-            # Final jobs always have priority.
-            # --------------------------------------------------
 
             if self.pending_final_jobs:
 
@@ -626,9 +1192,6 @@ class AudioWorker(threading.Thread):
 
                 except RuntimeError as error:
 
-                    # Executor has already been shut down.
-                    #
-                    # Put the job back so it is not silently lost.
                     self.pending_final_jobs.appendleft(
                         job
                     )
@@ -653,10 +1216,6 @@ class AudioWorker(threading.Thread):
                 )
 
                 return
-
-            # --------------------------------------------------
-            # Only newest preview is retained.
-            # --------------------------------------------------
 
             if self.pending_preview_audio is not None:
 
@@ -706,9 +1265,6 @@ class AudioWorker(threading.Thread):
         self,
         future: Future,
     ):
-        """
-        Called by the Whisper executor when a transcription finishes.
-        """
 
         with self.inference_lock:
 
@@ -770,12 +1326,59 @@ class AudioWorker(threading.Thread):
 
                 if transcript:
 
-                    self.authoritative_transcript = (
-                        self._merge_transcript(
-                            self.authoritative_transcript,
-                            transcript,
+                    hard_split = bool(
+                        result.get(
+                            "hard_split",
+                            False,
                         )
                     )
+
+                    previous_transcript = (
+                        self.authoritative_transcript
+                    )
+
+                    if hard_split:
+
+                        reconciled = (
+                            self._reconcile_hard_split(
+                                previous_transcript,
+                                transcript,
+                            )
+                        )
+
+                        if reconciled:
+
+                            self.authoritative_transcript = (
+                                reconciled
+                            )
+
+                            self.metrics[
+                                "hard_split_sentence_reconciliations"
+                            ] += 1
+
+                        else:
+
+                            self.authoritative_transcript = (
+                                self._merge_transcript(
+                                    previous_transcript,
+                                    transcript,
+                                    hard_split=True,
+                                )
+                            )
+
+                            self.metrics[
+                                "hard_split_sentence_fallbacks"
+                            ] += 1
+
+                    else:
+
+                        self.authoritative_transcript = (
+                            self._merge_transcript(
+                                previous_transcript,
+                                transcript,
+                                hard_split=False,
+                            )
+                        )
 
                     self.metrics[
                         "transcript_characters"
@@ -825,12 +1428,6 @@ class AudioWorker(threading.Thread):
 
         finally:
 
-            # --------------------------------------------------
-            # The current job is finished.
-            #
-            # Immediately schedule the next final/preview job.
-            # --------------------------------------------------
-
             self._pump_inference()
 
     # ==========================================================
@@ -838,12 +1435,6 @@ class AudioWorker(threading.Thread):
     # ==========================================================
 
     def _request_preview(self):
-        """
-        Request a preview of the most recent speech window.
-
-        Preview jobs are intentionally replaceable.
-        Final jobs are never replaced by previews.
-        """
 
         if not self.recording:
             return
@@ -861,16 +1452,7 @@ class AudioWorker(threading.Thread):
 
         with self.inference_lock:
 
-            # --------------------------------------------------
-            # Replace old preview with newest preview.
-            # --------------------------------------------------
-
             self.pending_preview_audio = audio
-
-            # --------------------------------------------------
-            # If final inference is currently running, leave the
-            # preview pending. It will run after final jobs.
-            # --------------------------------------------------
 
             if self.inference_kind == "final":
 
@@ -879,12 +1461,6 @@ class AudioWorker(threading.Thread):
                 ] += 1
 
                 return
-
-            # --------------------------------------------------
-            # Otherwise immediately pump inference.
-            #
-            # RLock prevents deadlock here.
-            # --------------------------------------------------
 
             self._pump_inference()
 
@@ -897,14 +1473,6 @@ class AudioWorker(threading.Thread):
         audio,
         hard_split: bool,
     ):
-        """
-        Queue a final Whisper job.
-
-        Final jobs are never silently dropped.
-
-        max_pending_final_jobs is treated as a pressure threshold
-        rather than a hard data-loss limit.
-        """
 
         if audio is None or len(audio) == 0:
             return False
@@ -940,7 +1508,6 @@ class AudioWorker(threading.Thread):
                 job
             )
 
-            # RLock prevents deadlock.
             self._pump_inference()
 
         return True
@@ -954,25 +1521,6 @@ class AudioWorker(threading.Thread):
         reason: str,
         retain_overlap: bool = False,
     ):
-        """
-        Finalize the current speech segment.
-
-        For a hard split:
-
-            segment A
-                ↓
-            final Whisper job
-                +
-            retain last overlap window
-                ↓
-            continue recording as segment B
-
-        For a natural endpoint:
-
-            finalize
-                ↓
-            completely reset speech state
-        """
 
         audio = self.builder.snapshot()
 
@@ -981,10 +1529,6 @@ class AudioWorker(threading.Thread):
             self._reset_segment_state()
 
             return False
-
-        # ------------------------------------------------------
-        # Do not send extremely short segments to Whisper.
-        # ------------------------------------------------------
 
         if (
             self.speech_sample_count
@@ -1034,16 +1578,10 @@ class AudioWorker(threading.Thread):
 
             return False
 
-        # ------------------------------------------------------
-        # Hard split:
-        #
-        # Retain only the tail of the segment.
-        #
-        # The retained overlap is NOT treated as new speech.
-        # New speech must arrive before another finalization.
-        # ------------------------------------------------------
-
-        if retain_overlap and self.overlap_samples > 0:
+        if (
+            retain_overlap
+            and self.overlap_samples > 0
+        ):
 
             overlap_samples = min(
                 self.overlap_samples,
@@ -1058,28 +1596,16 @@ class AudioWorker(threading.Thread):
                 "hard_split_overlap_samples"
             ] += overlap_samples
 
-            # --------------------------------------------------
-            # Important:
-            #
-            # The overlap itself must not satisfy the minimum
-            # speech requirement for a future standalone segment.
-            #
-            # New speech after the boundary will increase this
-            # counter.
-            # --------------------------------------------------
-
+            # The retained overlap is intentionally not counted
+            # as fresh speech. Otherwise the overlap-only tail could
+            # immediately trigger another hard split.
             self.speech_sample_count = 0
-
             self.silence_sample_count = 0
             self.preview_sample_count = 0
 
             self.recording = True
 
             return True
-
-        # ------------------------------------------------------
-        # Natural endpoint / shutdown.
-        # ------------------------------------------------------
 
         self._reset_segment_state()
 
@@ -1109,9 +1635,6 @@ class AudioWorker(threading.Thread):
         self,
         chunk,
     ):
-        """
-        Process exactly one microphone chunk.
-        """
 
         if chunk is None:
             return
@@ -1129,22 +1652,11 @@ class AudioWorker(threading.Thread):
             chunk
         )
 
-        # ------------------------------------------------------
-        # Not currently recording.
-        #
-        # Maintain pre-roll so initial phonemes are less likely
-        # to be cut off.
-        # ------------------------------------------------------
-
         if not self.recording:
 
             self._remember_pre_roll(
                 chunk
             )
-
-        # ======================================================
-        # SPEECH
-        # ======================================================
 
         if is_speech:
 
@@ -1157,10 +1669,6 @@ class AudioWorker(threading.Thread):
                 self.recording = True
 
                 self.builder.clear()
-
-                # --------------------------------------------------
-                # Add pre-roll before the first speech chunk.
-                # --------------------------------------------------
 
                 if self.pre_roll:
 
@@ -1192,10 +1700,6 @@ class AudioWorker(threading.Thread):
                 chunk_samples
             )
 
-        # ======================================================
-        # SILENCE
-        # ======================================================
-
         else:
 
             self.metrics[
@@ -1204,10 +1708,6 @@ class AudioWorker(threading.Thread):
 
             if not self.recording:
                 return
-
-            # --------------------------------------------------
-            # Keep trailing silence so endpointing has context.
-            # --------------------------------------------------
 
             self.builder.add_chunk(
                 chunk
@@ -1221,17 +1721,9 @@ class AudioWorker(threading.Thread):
                 chunk_samples
             )
 
-        # ------------------------------------------------------
-        # Current segment length.
-        # ------------------------------------------------------
-
         current_samples = (
             self.builder.sample_count()
         )
-
-        # ======================================================
-        # LIVE PREVIEW
-        # ======================================================
 
         if (
             self.recording
@@ -1242,10 +1734,6 @@ class AudioWorker(threading.Thread):
             self.preview_sample_count = 0
 
             self._request_preview()
-
-        # ======================================================
-        # HARD MAXIMUM
-        # ======================================================
 
         if (
             self.recording
@@ -1264,10 +1752,6 @@ class AudioWorker(threading.Thread):
             )
 
             return
-
-        # ======================================================
-        # NATURAL ENDPOINT
-        # ======================================================
 
         if (
             self.recording
@@ -1298,18 +1782,10 @@ class AudioWorker(threading.Thread):
 
             while True:
 
-                # --------------------------------------------------
-                # Continue draining the queue after stop is requested.
-                #
-                # This preserves audio that was already captured by
-                # the microphone callback.
-                # --------------------------------------------------
-
                 if (
                     self.stop_requested
                     and self.audio_queue.empty()
                 ):
-
                     break
 
                 try:
@@ -1343,20 +1819,12 @@ class AudioWorker(threading.Thread):
 
                     traceback.print_exc()
 
-            # ======================================================
-            # FLUSH ACTIVE SEGMENT
-            # ======================================================
-
             if self.recording:
 
                 self._finalize_segment(
                     reason="shutdown",
                     retain_overlap=False,
                 )
-
-            # ======================================================
-            # WAIT FOR WHISPER
-            # ======================================================
 
             self._wait_for_inference(
                 timeout_seconds=20.0
@@ -1401,18 +1869,16 @@ class AudioWorker(threading.Thread):
         self,
         timeout_seconds: float,
     ):
-        """
-        Wait for all currently queued final transcription jobs.
-
-        Preview work is secondary to final transcription.
-        """
 
         deadline = (
             time.monotonic()
             + timeout_seconds
         )
 
-        while time.monotonic() < deadline:
+        while (
+            time.monotonic()
+            < deadline
+        ):
 
             with self.inference_lock:
 
@@ -1425,23 +1891,24 @@ class AudioWorker(threading.Thread):
                     self.pending_final_jobs
                 )
 
-            if not active and not pending_final:
-
-                # --------------------------------------------------
-                # A preview may still be pending.
-                # It is intentionally not required for authoritative
-                # transcript completion.
-                # --------------------------------------------------
-
+            if (
+                not active
+                and not pending_final
+            ):
                 return
 
             self._pump_inference()
 
-            time.sleep(0.05)
+            time.sleep(
+                0.05
+            )
 
         with self.inference_lock:
 
-            active = self.inference_future is not None
+            active = (
+                self.inference_future
+                is not None
+            )
 
             pending = len(
                 self.pending_final_jobs
@@ -1486,9 +1953,6 @@ class AudioWorker(threading.Thread):
     # ==========================================================
 
     def get_metrics(self) -> dict:
-        """
-        Return a thread-safe diagnostic snapshot.
-        """
 
         with self.inference_lock:
 
@@ -1514,7 +1978,11 @@ class AudioWorker(threading.Thread):
 
             "preview_pending": preview_pending,
 
-            "audio_queue": self.audio_queue.stats(),
+            "audio_queue": (
+                self.audio_queue.stats()
+            ),
 
-            "vad": self.detector.get_state(),
+            "vad": (
+                self.detector.get_state()
+            ),
         }

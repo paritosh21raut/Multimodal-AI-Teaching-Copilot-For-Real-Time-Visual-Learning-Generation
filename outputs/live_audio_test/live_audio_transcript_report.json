@@ -1,0 +1,120 @@
+{
+  "test": {
+    "name": "Live Audio + Context-Aware Transcript Intelligence",
+    "timestamp": "2026-09-06 13:44:45"
+  },
+  "timing": {
+    "elapsed_seconds": 76.089
+  },
+  "audio": {
+    "final_segments": 3,
+    "preview_count": 21,
+    "metrics": {
+      "chunks_processed": 3778,
+      "speech_chunks": 2143,
+      "silence_chunks": 1635,
+      "segments_finalized": 3,
+      "natural_endpoints": 1,
+      "hard_splits": 2,
+      "short_segments_discarded": 1,
+      "preview_requests": 21,
+      "preview_submitted": 21,
+      "preview_skipped": 2,
+      "preview_completed": 21,
+      "final_jobs_submitted": 3,
+      "final_jobs_completed": 3,
+      "final_jobs_failed": 0,
+      "final_jobs_overflow": 0,
+      "transcription_failures": 0,
+      "transcript_characters": 1122,
+      "hard_split_overlap_samples": 32000,
+      "shutdown_queue_drained": 0,
+      "hard_split_sentence_reconciliations": 2,
+      "hard_split_sentence_fallbacks": 0,
+      "active_inference": null,
+      "pending_final_jobs": 0,
+      "preview_pending": false,
+      "audio_queue": {
+        "queue_depth": 0,
+        "queue_capacity": 500,
+        "total_put": 3778,
+        "total_get": 3778,
+        "dropped_chunks": 0
+      },
+      "vad": {
+        "noise_floor": 1.181121898016102e-05,
+        "speech": false
+      }
+    }
+  },
+  "transcript": {
+    "raw": "The dominant sequence transduction models are based on complex or convolutional neural networks that include an encoder and a decoder. Best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture to transform based solely on attention mechanism, dispensing with returns and convolutions entirely. Experiments on two machine translation tasks show these models these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our models are 28.4 BLEU on the WMT-2014 English-German task track, improving over the existing best results, including ensembles by over two BLEU from the WMT-2014 English-to-French Transition Task Car model establishes a new single model state of the art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training cost of the best models from the literature. You may show that. We show that the transformers internalize respect other tasks by applying it successfully to English for citizen passing both with large training data.",
+    "refined": "The dominant sequence transduction models are based on complex or convolutional neural networks that include an encoder and a decoder. Best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture to transform based solely on attention mechanism, dispensing with returns and convolutions entirely. Experiments on two machine translation tasks show these models these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our models are 28.4 BLEU on the WMT-2014 English-German task track, improving over the existing best results, including ensembles by over two BLEU from the WMT-2014 English-to-French Transition Task Car model establishes a new single model state of the art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training cost of the best models from the literature. You may show that. We show that the transformers internalize respect other tasks by applying it successfully to English for citizen passing both with large training data.",
+    "original_characters": 1122,
+    "refined_characters": 1122,
+    "original_words": 173,
+    "refined_words": 173,
+    "changed": false,
+    "characters_removed": 0,
+    "words_removed": 0
+  },
+  "transcript_intelligence": {
+    "analysis_chunks": 3,
+    "final_quality_score": 1.0,
+    "average_live_chunk_quality": 1.0,
+    "corrections": [],
+    "chunk_results": [
+      {
+        "segment_id": 1,
+        "raw": "The dominant sequence transduction models are based on complex or convolutional neural networks that include an encoder and a decoder. Best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture to transform based solely on attention mechanism, dispensing with returns and convolutions entirely.",
+        "context": "The dominant sequence transduction models are based on complex or convolutional neural networks that include an encoder and a decoder. Best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture to transform based solely on attention mechanism, dispensing with returns and convolutions entirely. Experiments on two machine translation tasks show these models these models to be superior in quality while being more parallelizable and requiring significantly",
+        "refined": "The dominant sequence transduction models are based on complex or convolutional neural networks that include an encoder and a decoder. Best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture to transform based solely on attention mechanism, dispensing with returns and convolutions entirely.",
+        "quality_score": 1.0,
+        "corrections": []
+      },
+      {
+        "segment_id": 2,
+        "raw": "Experiments on two machine translation tasks show these models these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our models are 28. 4 BLEU on the WMT-2014 English-German task track, improving over the existing best results, including ensembles by over two BLEU from the WMT-2014 English-to-French Transition Task Car model establishes a new single model state of the art BLEU score of 41. 8 after training for 3.",
+        "context": "an attention mechanism. We propose a new simple network architecture to transform based solely on attention mechanism, dispensing with returns and convolutions entirely. Experiments on two machine translation tasks show these models these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our models are 28.4 BLEU on the WMT-2014 English-German task track, improving over the existing best results, including ensembles by over two BLEU from the WMT-2014 English-to-French Transition Task Car model establishes a new single model state of the art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training cost of the best models from the literature. You may show that.",
+        "refined": "Experiments on two machine translation tasks show these models these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our models are 28. 4 BLEU on the WMT-2014 English-German task track, improving over the existing best results, including ensembles by over two BLEU from the WMT-2014 English-to-French Transition Task Car model establishes a new single model state of the art BLEU score of 41. 8 after training for 3.",
+        "quality_score": 1.0,
+        "corrections": []
+      },
+      {
+        "segment_id": 3,
+        "raw": "5 days on eight GPUs, a small fraction of the training cost of the best models from the literature. You may show that. We show that the transformers internalize respect other tasks by applying it successfully to English for citizen passing both with large training data.",
+        "context": "Experiments on two machine translation tasks show these models these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our models are 28.4 BLEU on the WMT-2014 English-German task track, improving over the existing best results, including ensembles by over two BLEU from the WMT-2014 English-to-French Transition Task Car model establishes a new single model state of the art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training cost of the best models from the literature. You may show that. We show that the transformers internalize respect other tasks by applying it successfully to English for citizen passing both with large training data.",
+        "refined": "5 days on eight GPUs, a small fraction of the training cost of the best models from the literature. You may show that. We show that the transformers internalize respect other tasks by applying it successfully to English for citizen passing both with large training data.",
+        "quality_score": 1.0,
+        "corrections": []
+      }
+    ],
+    "final_analysis": {
+      "raw": "The dominant sequence transduction models are based on complex or convolutional neural networks that include an encoder and a decoder. Best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture to transform based solely on attention mechanism, dispensing with returns and convolutions entirely. Experiments on two machine translation tasks show these models these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our models are 28.4 BLEU on the WMT-2014 English-German task track, improving over the existing best results, including ensembles by over two BLEU from the WMT-2014 English-to-French Transition Task Car model establishes a new single model state of the art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training cost of the best models from the literature. You may show that. We show that the transformers internalize respect other tasks by applying it successfully to English for citizen passing both with large training data.",
+      "context": "",
+      "refined": "The dominant sequence transduction models are based on complex or convolutional neural networks that include an encoder and a decoder. Best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture to transform based solely on attention mechanism, dispensing with returns and convolutions entirely. Experiments on two machine translation tasks show these models these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our models are 28.4 BLEU on the WMT-2014 English-German task track, improving over the existing best results, including ensembles by over two BLEU from the WMT-2014 English-to-French Transition Task Car model establishes a new single model state of the art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training cost of the best models from the literature. You may show that. We show that the transformers internalize respect other tasks by applying it successfully to English for citizen passing both with large training data.",
+      "quality_score": 1.0,
+      "corrections": []
+    }
+  },
+  "segments": [
+    {
+      "segment_id": 1,
+      "text": "The dominant sequence transduction models are based on complex or convolutional neural networks that include an encoder and a decoder. Best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture to transform based solely on attention mechanism, dispensing with returns and convolutions entirely. Experiments on two machine translation tasks show these models these models to be superior in quality while being more parallelizable and requiring significantly",
+      "characters": 534,
+      "words": 76
+    },
+    {
+      "segment_id": 2,
+      "text": "requiring significantly less time to train. Our models are 28.4 BLEU on the WMT-2014 English-German task track, improving over the existing best results, including ensembles by over two BLEU from the WMT-2014 English-to-French Transition Task Car model establishes a new single model state of the art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training cost of the best models from the literature. You may show that.",
+      "characters": 459,
+      "words": 76
+    },
+    {
+      "segment_id": 3,
+      "text": "We show that the transformers internalize respect other tasks by applying it successfully to English for citizen passing both with large training data.",
+      "characters": 151,
+      "words": 23
+    }
+  ]
+}
