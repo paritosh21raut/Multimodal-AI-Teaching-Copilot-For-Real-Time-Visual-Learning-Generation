@@ -37,7 +37,7 @@ class LLMArbiter:
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "llama-3.1-8b-instant"
+        model: str = "qwen/qwen3.8-27b"
     ):
         self.api_key = api_key or os.getenv("GROQ_API_KEY", "")
         self.model = model

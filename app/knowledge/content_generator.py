@@ -1,8 +1,7 @@
 """
-Content Generator - Groq Edition
+Content Generator - Groq Edition (FIXED MODEL)
 
-Uses Groq (Llama 3.1 8B Instant) for slide generation.
-14,400 free requests/day vs Gemini's 20/day.
+Uses qwen3.8-27b for slide generation.
 """
 
 from __future__ import annotations
@@ -26,7 +25,7 @@ class ContentGenerator:
     def __init__(
         self,
         api_key: Optional[str] = None,
-        model: str = "llama-3.1-8b-instant",
+        model: str = "qwen/qwen3.8-27b",  # Correct model from available list
     ):
         self.api_key = api_key or os.getenv("GROQ_API_KEY", "")
         self.model = model
@@ -53,20 +52,12 @@ class ContentGenerator:
         context: str,
         semantic_content: Optional[Dict[str, Any]] = None,
     ) -> SlideContent:
-        """
-        Generate slide content using intelligence data.
-        
-        Args:
-            topic: Topic name
-            context: Rolling lecture context
-            semantic_content: Intelligence data (concepts, propositions, etc.)
-        """
+        """Generate slide content using intelligence data"""
         
         prompt = self._build_prompt(topic, context, semantic_content)
         result = self._call_groq(prompt)
         
         if result is None:
-            # Fallback to basic content
             return self._fallback_content(topic)
         
         bullets = [
@@ -139,9 +130,9 @@ class ContentGenerator:
                         "content": prompt,
                     }
                 ],
-                temperature=0.3,  # Slightly creative but consistent
+                temperature=0.3,
                 max_tokens=500,
-                timeout=5.0,
+                timeout=10.0,  # 27B model may need more time
             )
             
             content = response.choices[0].message.content.strip()
@@ -232,7 +223,7 @@ Rules:
     def _fallback_content(self, topic: str) -> SlideContent:
         """Fallback content if Groq fails"""
         return SlideContent(
-            title=topic,
+            title=topic[:50] if topic else "Lecture",
             bullets=[BulletPoint(text="Content generation temporarily unavailable.")],
             summary="",
             keywords=[],
