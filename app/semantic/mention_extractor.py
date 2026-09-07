@@ -1,8 +1,9 @@
 """
-Mention Extraction
+Mention Extraction (Fixed)
 
 Extracts literal mentions (noun phrases, technical terms) from transcript chunks
-using regex patterns and basic NLP heuristics. No heavy dependencies required.
+using regex patterns and basic NLP heuristics.
+Filters common words to reduce noise in concepts.
 """
 
 from __future__ import annotations
@@ -33,7 +34,22 @@ class MentionExtractor:
         "is", "are", "was", "were", "provides", "uses", "allows", "enables",
         "requires", "causes", "contains", "includes", "has", "have", "had",
         "do", "does", "did", "make", "makes", "made", "get", "gets", "got",
-        "take", "takes", "took", "give", "gives", "gave", "go", "goes", "went"
+        "take", "takes", "took", "give", "gives", "gave", "go", "goes", "went",
+        "connects", "connected", "connecting", "deals", "handles", "ensures",
+        "guarantees", "maintains", "manages", "processes", "transmits",
+        "receives", "sends", "links", "routes", "forwards", "delivers",
+    }
+    
+    # Common words that should NEVER be concepts
+    _COMMON_WORDS = {
+        "all", "through", "discuss", "look", "if", "one", "only",
+        "using", "uses", "used", "connect", "connects", "connected",
+        "provide", "provides", "provided", "layer", "layers",
+        "device", "devices", "model", "models", "process", "processes",
+        "let", "lets", "look", "looking", "see", "seen", "example",
+        "examples", "learning", "learn", "learns", "discuss", "discussion",
+        "talking", "talk", "talks", "going", "go", "goes",
+        "like", "unlike", "without", "within", "between", "among",
     }
     
     # Technical term patterns
@@ -79,8 +95,10 @@ class MentionExtractor:
                 if not surface or len(surface) < 2:
                     continue
                 
-                # Skip if it's a verb
+                # Skip if it's a verb or common word
                 if surface.lower() in self.VERBS:
+                    continue
+                if surface.lower() in self._COMMON_WORDS:
                     continue
                 
                 span_key = (match.start(), match.end())
@@ -126,7 +144,7 @@ class MentionExtractor:
                 if mention:
                     mentions.append(mention)
         
-        # Extract individual technical terms (not part of larger phrases)
+        # Extract individual technical terms
         individual_terms = self._extract_individual_terms(text, seen_spans)
         mentions.extend(individual_terms)
         
@@ -143,7 +161,6 @@ class MentionExtractor:
         
         char_position = 0
         for word in words:
-            # Calculate character position
             word_start = text.find(word, char_position)
             word_end = word_start + len(word)
             char_position = word_end
@@ -151,10 +168,12 @@ class MentionExtractor:
             clean_word = word.strip('.,;:!?()')
             word_lower = clean_word.lower()
             
-            # Skip stopwords, verbs, short words
+            # Skip stopwords, verbs, common words, short words
             if word_lower in self.STOPWORDS:
                 continue
             if word_lower in self.VERBS:
+                continue
+            if word_lower in self._COMMON_WORDS:
                 continue
             if len(clean_word) < 3:
                 continue
@@ -192,6 +211,12 @@ class MentionExtractor:
     
     def _is_technical_term(self, word: str) -> bool:
         """Check if word looks like a technical term"""
+        # Skip common words
+        if word.lower() in self._COMMON_WORDS:
+            return False
+        if word.lower() in self.VERBS:
+            return False
+        
         # Acronyms
         if word.isupper() and len(word) <= 5:
             return True
@@ -215,7 +240,12 @@ class MentionExtractor:
         words = phrase.lower().split()
         
         # Must have at least 2 content words
-        content_words = [w for w in words if w not in self.STOPWORDS and w not in self.VERBS]
+        content_words = [
+            w for w in words
+            if w not in self.STOPWORDS
+            and w not in self.VERBS
+            and w not in self._COMMON_WORDS
+        ]
         if len(content_words) < 2:
             return False
         
@@ -239,12 +269,12 @@ class MentionExtractor:
         if not surface or len(surface) < 2:
             return None
         
-        # Skip pure stopwords
+        # Skip pure stopwords, verbs, common words
         if surface.lower() in self.STOPWORDS:
             return None
-        
-        # Skip pure verbs
         if surface.lower() in self.VERBS:
+            return None
+        if surface.lower() in self._COMMON_WORDS:
             return None
         
         normalized = self._normalize_mention(surface)
@@ -264,14 +294,8 @@ class MentionExtractor:
     def _normalize_mention(self, text: str) -> str:
         """Normalize mention text for comparison"""
         normalized = text.lower()
-        
-        # Remove articles
         normalized = re.sub(r'\b(the|a|an)\b', '', normalized)
-        
-        # Remove punctuation
         normalized = re.sub(r'[^\w\s-]', ' ', normalized)
-        
-        # Remove extra whitespace
         normalized = re.sub(r'\s+', ' ', normalized).strip()
         
         # Basic singularization
