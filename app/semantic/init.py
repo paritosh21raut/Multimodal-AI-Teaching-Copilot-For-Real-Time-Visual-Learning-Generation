@@ -44,9 +44,11 @@ from .contradiction_detector import ContradictionDetector
 from .development_tracker import DevelopmentTracker, DevelopmentScore
 from .importance_scorer import ImportanceScorer, ImportanceScore
 from .semantic_integration import SemanticIntegration, SemanticSummary
+from .llm_arbiter import LLMArbiter
+from .slide_grounder import SlideGrounder, SlideContent
 from .semantic_intelligence import SemanticIntelligence
 
-__version__ = "0.7.0"
+__version__ = "0.9.0"
 
 __all__ = [
     # Models
@@ -101,6 +103,11 @@ __all__ = [
     "ImportanceScore",
     "SemanticIntegration",
     "SemanticSummary",
+    # Phase 7
+    "LLMArbiter",
+    # Phase 8
+    "SlideGrounder",
+    "SlideContent",
     # Main
     "SemanticIntelligence"
 ]

@@ -1,8 +1,7 @@
 """
-Semantic Integration
+Semantic Integration (Updated with Slide Grounding)
 
-Provides clean API for downstream systems to consume
-semantic intelligence outputs.
+Provides clean API for downstream systems including slide generation.
 """
 
 from __future__ import annotations
@@ -23,6 +22,7 @@ from .semantic_models import (
 )
 from .development_tracker import DevelopmentTracker, DevelopmentScore
 from .importance_scorer import ImportanceScorer, ImportanceScore
+from .slide_grounder import SlideGrounder, SlideContent
 
 
 @dataclass
@@ -49,6 +49,7 @@ class SemanticIntegration:
         self.importance_scorer = importance_scorer or ImportanceScorer(
             self.development_tracker
         )
+        self.slide_grounder = SlideGrounder()
         
         # Recent frames for context
         self._recent_frames: List[SemanticFrame] = []
@@ -83,33 +84,27 @@ class SemanticIntegration:
     ) -> SemanticSummary:
         """Get current semantic summary for downstream systems"""
         
-        # Get concepts and propositions
         all_concepts = concepts or []
         all_propositions = propositions or []
         active = active_concepts or []
         
-        # Get development scores
         developed = self.development_tracker.get_most_developed(limit=10)
         
-        # Get importance scores
         important = self.importance_scorer.get_top_concepts(
             all_concepts,
             all_propositions,
             limit=10
         )
         
-        # Get active propositions
         active_props = [
             p for p in all_propositions
             if p.lifecycle == PropositionLifecycle.ACTIVE
         ]
         
-        # Get recent instructional acts
         recent_acts = []
-        for frame in self._recent_frames[-3:]:  # Last 3 frames
+        for frame in self._recent_frames[-3:]:
             recent_acts.extend(frame.instructional_acts)
         
-        # Statistics
         stats = {
             "development": self.development_tracker.get_statistics(),
             "total_concepts": len(all_concepts),
@@ -128,34 +123,41 @@ class SemanticIntegration:
             timestamp=datetime.now()
         )
     
+    def prepare_slide_content(
+        self,
+        topic: str,
+        concepts: List[Concept],
+        propositions: List[Proposition],
+        instructional_acts: List[InstructionalAct] = None,
+        relations: List[Relation] = None
+    ) -> SlideContent:
+        """
+        Prepare slide content from semantic data.
+        
+        This is the bridge between Semantic Intelligence and ContentGenerator.
+        """
+        return self.slide_grounder.prepare_slide_content(
+            topic=topic,
+            concepts=concepts,
+            propositions=propositions,
+            instructional_acts=instructional_acts,
+            relations=relations
+        )
+    
     def get_concepts_for_slide_generation(
         self,
         limit: int = 5
     ) -> List[Dict[str, Any]]:
         """Get concepts suitable for slide generation"""
         developed = self.development_tracker.get_most_developed(limit=limit)
-        important = self.importance_scorer.get_top_concepts([], [], limit=limit)
         
-        # Combine and deduplicate
         result = []
-        seen_ids = set()
-        
         for score in developed:
-            if score.concept_id not in seen_ids:
-                seen_ids.add(score.concept_id)
-                result.append({
-                    "concept_id": score.concept_id,
-                    "development_score": score.total_score,
-                    "development_level": score.development_level
-                })
-        
-        for score in important:
-            if score.entity_id not in seen_ids:
-                seen_ids.add(score.entity_id)
-                result.append({
-                    "concept_id": score.entity_id,
-                    "importance_score": score.importance
-                })
+            result.append({
+                "concept_id": score.concept_id,
+                "development_score": score.total_score,
+                "development_level": score.development_level
+            })
         
         return result[:limit]
     
