@@ -46,9 +46,13 @@ from .importance_scorer import ImportanceScorer, ImportanceScore
 from .semantic_integration import SemanticIntegration, SemanticSummary
 from .llm_arbiter import LLMArbiter
 from .slide_grounder import SlideGrounder, SlideContent
+from .logger import SemanticLogger
+from .performance_monitor import PerformanceMonitor
+from .config import SemanticConfig
+from .semantic_pipeline import SemanticPipeline
 from .semantic_intelligence import SemanticIntelligence
 
-__version__ = "0.9.0"
+__version__ = "1.0.0"
 
 __all__ = [
     # Models
@@ -108,6 +112,11 @@ __all__ = [
     # Phase 8
     "SlideGrounder",
     "SlideContent",
+    # Phase 9
+    "SemanticLogger",
+    "PerformanceMonitor",
+    "SemanticConfig",
+    "SemanticPipeline",
     # Main
     "SemanticIntelligence"
 ]
