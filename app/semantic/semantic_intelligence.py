@@ -1,7 +1,7 @@
 """
-Semantic Intelligence - Main Orchestrator (Phase 3)
+Semantic Intelligence - Main Orchestrator (Phase 4)
 
-Integrates embedding-based retrieval for improved concept resolution.
+Integrates coreference resolution and enhanced instructional act detection.
 """
 
 from __future__ import annotations
@@ -23,7 +23,9 @@ from .semantic_models import (
     Confidence,
     GroundingStatus,
     ExtractionStatus,
-    RelationType
+    RelationType,
+    Coreference,
+    UnresolvedReference
 )
 from .evidence import EvidenceManager
 from .mention_extractor import MentionExtractor
@@ -33,11 +35,12 @@ from .instructional_detector import InstructionalDetector
 from .entity_resolver import EntityResolver
 from .semantic_memory import SemanticMemory
 from .embedding_index import EmbeddingIndex
+from .coreference_resolver import CoreferenceResolver
 
 
 class SemanticIntelligence:
     """
-    Main orchestrator with embedding-based concept resolution.
+    Main orchestrator with coreference resolution and instructional acts.
     """
     
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
@@ -47,12 +50,13 @@ class SemanticIntelligence:
         self.relation_normalizer = RelationNormalizer()
         self.instructional_detector = InstructionalDetector()
         
-        # Embedding index
+        # Phase 3
         self.embedding_index = EmbeddingIndex()
-        
-        # Entity resolver with embedding support
         self.entity_resolver = EntityResolver(self.embedding_index)
         self.semantic_memory = SemanticMemory()
+        
+        # Phase 4
+        self.coreference_resolver = CoreferenceResolver()
     
     def process(
         self,
@@ -63,7 +67,8 @@ class SemanticIntelligence:
         asr_confidence: Optional[float] = None,
         timestamp: Optional[float] = None,
         topic_path: Optional[str] = None,
-        generate_embeddings: bool = True
+        generate_embeddings: bool = True,
+        resolve_coreferences: bool = True
     ) -> SemanticFrame:
         """
         Process a transcript chunk and produce a SemanticFrame.
@@ -102,7 +107,7 @@ class SemanticIntelligence:
         )
         frame.mentions = mentions
         
-        # Generate embeddings for mentions (Phase 3)
+        # Generate embeddings for mentions
         mention_embeddings = {}
         if generate_embeddings and mentions:
             mention_texts = [
@@ -117,7 +122,7 @@ class SemanticIntelligence:
                     if embedding is not None:
                         mention_embeddings[mention.normalized_text] = embedding
         
-        # Get active concepts for resolution
+        # Get active concepts
         active_refs = self.semantic_memory.active_context.get_concept_refs(
             self.semantic_memory.registry
         )
@@ -130,14 +135,13 @@ class SemanticIntelligence:
                 self.semantic_memory.registry
             )
         
-        # Resolve mentions to concepts with embeddings
+        # Resolve mentions to concepts
         resolved_concepts = []
         concept_ref_map = {}
         
         for mention in mentions:
             embedding = mention_embeddings.get(mention.normalized_text)
             
-            # Resolve using entity resolver with embeddings
             resolution = self.entity_resolver.resolve(
                 mention=mention,
                 embedding=embedding,
@@ -153,28 +157,42 @@ class SemanticIntelligence:
                 resolved_concepts.append(concept)
                 concept_ref_map[mention.normalized_text] = resolution.concept_ref
                 
-                # Update memory
                 if resolution.is_new:
                     self.semantic_memory.add_concept(
                         concept,
                         topic_path=topic_path
                     )
                     
-                    # Add embedding to index
                     if embedding is not None:
                         self.embedding_index.add_concept_embedding(
                             concept.concept_id,
                             embedding
                         )
                 else:
-                    # Activate existing concept
                     self.semantic_memory.active_context.add_concept(
                         concept.concept_id
                     )
         
         frame.concepts = resolved_concepts
         
-        # Extract propositions with resolved concepts
+        # Phase 4: Resolve coreferences
+        if resolve_coreferences:
+            coreferences = self.coreference_resolver.resolve_all(
+                transcript_text,
+                self.semantic_memory.registry,
+                active_refs,
+                evidence
+            )
+            frame.coreferences = coreferences
+            
+            # Track unresolved references
+            unresolved = self._find_unresolved_references(
+                transcript_text,
+                active_refs
+            )
+            frame.unresolved_references = unresolved
+        
+        # Extract propositions
         chunk_concepts = {
             name.lower(): ref
             for name, ref in concept_ref_map.items()
@@ -195,13 +213,14 @@ class SemanticIntelligence:
         relations = self._extract_relations(propositions)
         frame.relations = relations
         
-        # Detect instructional acts
+        # Detect instructional acts with concept linking
         concept_refs = [ref for ref in concept_ref_map.values()]
         
         instructional_acts = self.instructional_detector.detect(
             transcript_text,
             evidence=evidence,
-            concept_refs=concept_refs
+            concept_refs=concept_refs,
+            active_concepts=active_refs
         )
         frame.instructional_acts = instructional_acts
         
@@ -220,6 +239,29 @@ class SemanticIntelligence:
             frame.extraction_status = ExtractionStatus.REJECTED
         
         return frame
+    
+    def _find_unresolved_references(
+        self,
+        text: str,
+        active_concepts: List[ConceptRef]
+    ) -> List[UnresolvedReference]:
+        """Find references that couldn't be resolved"""
+        unresolved = []
+        
+        # Check for pronouns without clear antecedents
+        pronouns = ["it", "this", "that", "these", "those", "they", "them"]
+        
+        words = text.lower().split()
+        for word in words:
+            clean_word = word.strip('.,;:!?()')
+            
+            if clean_word in pronouns and len(active_concepts) == 0:
+                unresolved.append(UnresolvedReference(
+                    mention_text=clean_word,
+                    reason="no_active_concepts"
+                ))
+        
+        return unresolved
     
     def _extract_relations(self, propositions: List[Proposition]) -> List[Relation]:
         """Extract relations from propositions"""
@@ -258,8 +300,6 @@ class SemanticIntelligence:
             extraction_confidence = 0.0
         
         grounding_confidence = 0.9 if frame.evidence else 0.0
-        
-        # Entity resolution confidence improved with embeddings
         entity_resolution_confidence = 0.7 if frame.concepts else 0.0
         
         if frame.concepts:
@@ -271,6 +311,10 @@ class SemanticIntelligence:
         
         validation_confidence = 0.5
         consistency_confidence = 0.5
+        
+        # Boost consistency if coreferences resolved
+        if frame.coreferences:
+            consistency_confidence = 0.7
         
         return Confidence(
             asr_quality=asr_quality,

@@ -37,9 +37,10 @@ from .entity_resolver import EntityResolver
 from .semantic_memory import SemanticMemory, ActiveContext, TopicMemory
 from .embedding_index import EmbeddingIndex
 from .embedding_retriever import EmbeddingRetriever
+from .coreference_resolver import CoreferenceResolver
 from .semantic_intelligence import SemanticIntelligence
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 __all__ = [
     # Models
@@ -81,6 +82,8 @@ __all__ = [
     # Phase 3
     "EmbeddingIndex",
     "EmbeddingRetriever",
+    # Phase 4
+    "CoreferenceResolver",
     # Main
     "SemanticIntelligence"
 ]
