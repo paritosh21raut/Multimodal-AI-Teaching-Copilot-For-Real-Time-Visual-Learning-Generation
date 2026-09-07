@@ -1,8 +1,8 @@
 """
-Semantic Intelligence - Main Orchestrator
+Semantic Intelligence - Main Orchestrator (Phase 2)
 
-Coordinates evidence extraction, mention extraction, proposition extraction,
-relation normalization, and instructional act detection.
+Integrates semantic memory, entity resolution, and concept registry
+for incremental cross-chunk understanding.
 """
 
 from __future__ import annotations
@@ -30,15 +30,16 @@ from .mention_extractor import MentionExtractor
 from .proposition_extractor import PropositionExtractor
 from .relation_normalizer import RelationNormalizer
 from .instructional_detector import InstructionalDetector
+from .entity_resolver import EntityResolver
+from .semantic_memory import SemanticMemory
 
 
 class SemanticIntelligence:
     """
-    Main orchestrator for semantic extraction.
+    Main orchestrator for semantic extraction with memory.
     
-    Processes refined transcript chunks and produces SemanticFrames
-    containing extracted concepts, propositions, relations, and
-    instructional acts.
+    Maintains concept identity across chunks through entity resolution
+    and semantic memory.
     """
     
     def __init__(self):
@@ -48,8 +49,9 @@ class SemanticIntelligence:
         self.relation_normalizer = RelationNormalizer()
         self.instructional_detector = InstructionalDetector()
         
-        # Known concepts (name -> ConceptRef)
-        self._concept_registry: Dict[str, ConceptRef] = {}
+        # Phase 2: Memory and entity resolution
+        self.entity_resolver = EntityResolver()
+        self.semantic_memory = SemanticMemory()
     
     def process(
         self,
@@ -58,7 +60,9 @@ class SemanticIntelligence:
         lecture_id: str = "",
         structural_context: Optional[Dict[str, Any]] = None,
         asr_confidence: Optional[float] = None,
-        timestamp: Optional[float] = None
+        timestamp: Optional[float] = None,
+        topic_path: Optional[str] = None,
+        embeddings: Optional[Dict[str, List[float]]] = None
     ) -> SemanticFrame:
         """
         Process a transcript chunk and produce a SemanticFrame.
@@ -68,11 +72,13 @@ class SemanticIntelligence:
             chunk_id: Current chunk identifier
             lecture_id: Current lecture identifier
             structural_context: Context from Lecture Structure Intelligence
-            asr_confidence: ASR confidence score from Whisper
+            asr_confidence: ASR confidence score
             timestamp: Transcript timestamp
+            topic_path: Current topic path from LSI
+            embeddings: Optional embeddings for mentions
             
         Returns:
-            SemanticFrame with extracted semantic content
+            SemanticFrame with resolved concepts and memory integration
         """
         # Create frame
         frame = SemanticFrame(
@@ -98,6 +104,7 @@ class SemanticIntelligence:
             timestamp=timestamp
         )
         frame.evidence.append(evidence)
+        self.semantic_memory.add_evidence(evidence)
         
         # Extract mentions
         mentions = self.mention_extractor.extract_mentions(
@@ -107,26 +114,67 @@ class SemanticIntelligence:
         )
         frame.mentions = mentions
         
-        # Extract concepts from mentions
-        concepts = self._extract_concepts(mentions)
-        frame.concepts = concepts
+        # Resolve mentions to concepts (Phase 2)
+        resolved_concepts = []
+        concept_ref_map = {}  # mention normalized -> ConceptRef
         
-        # Build concept registry for this chunk
-        chunk_concepts = {
-            concept.canonical_name.lower(): ConceptRef(
-                concept_id=concept.concept_id,
-                canonical_name=concept.canonical_name,
-                confidence=concept.confidence
+        for mention in mentions:
+            # Get embedding for this mention if available
+            embedding = None
+            if embeddings and mention.normalized_text in embeddings:
+                embedding = embeddings[mention.normalized_text]
+            
+            # Resolve to concept
+            resolution = self.entity_resolver.resolve(
+                mention=mention,
+                embedding=embedding,
+                topic_concepts=(
+                    self.semantic_memory.topic_memory.get_topic_concept_refs(
+                        topic_path, self.semantic_memory.registry
+                    )
+                    if topic_path else None
+                )
             )
-            for concept in concepts
+            
+            # Get the concept
+            concept = self.entity_resolver.get_concept(
+                resolution.concept_ref.concept_id
+            )
+            
+            if concept:
+                resolved_concepts.append(concept)
+                concept_ref_map[mention.normalized_text] = resolution.concept_ref
+                
+                # Add to semantic memory
+                if resolution.is_new:
+                    self.semantic_memory.add_concept(
+                        concept,
+                        topic_path=topic_path
+                    )
+                else:
+                    # Activate existing concept
+                    self.semantic_memory.active_context.add_concept(
+                        concept.concept_id
+                    )
+        
+        frame.concepts = resolved_concepts
+        
+        # Extract propositions with resolved concepts
+        chunk_concepts = {
+            name.lower(): ref
+            for name, ref in concept_ref_map.items()
         }
         
-        # Extract propositions
         propositions = self.proposition_extractor.extract_propositions(
             transcript_text,
             evidence=evidence,
             concepts=chunk_concepts
         )
+        
+        # Add propositions to memory
+        for prop in propositions:
+            self.semantic_memory.add_proposition(prop)
+        
         frame.propositions = propositions
         
         # Extract relations from propositions
@@ -134,14 +182,7 @@ class SemanticIntelligence:
         frame.relations = relations
         
         # Detect instructional acts
-        concept_refs = [
-            ConceptRef(
-                concept_id=concept.concept_id,
-                canonical_name=concept.canonical_name,
-                confidence=concept.confidence
-            )
-            for concept in concepts
-        ]
+        concept_refs = [ref for ref in concept_ref_map.values()]
         
         instructional_acts = self.instructional_detector.detect(
             transcript_text,
@@ -157,45 +198,14 @@ class SemanticIntelligence:
         )
         
         # Set extraction status
-        if propositions or concepts:
+        if propositions or resolved_concepts:
             frame.extraction_status = ExtractionStatus.COMPLETE
-        else:
+        elif mentions:
             frame.extraction_status = ExtractionStatus.PARTIAL
+        else:
+            frame.extraction_status = ExtractionStatus.REJECTED
         
         return frame
-    
-    def _extract_concepts(self, mentions: List[Mention]) -> List[Concept]:
-        """Extract concepts from mentions"""
-        concepts = []
-        seen_names = set()
-        
-        for mention in mentions:
-            name = mention.surface_text
-            
-            if name.lower() in seen_names:
-                continue
-            
-            seen_names.add(name.lower())
-            
-            concept = Concept(
-                canonical_name=name,
-                aliases=[mention.normalized_text] if mention.normalized_text != name.lower() else [],
-                first_mention=mention.evidence,
-                mention_count=1,
-                confidence=mention.confidence,
-                concept_type=self._determine_concept_type(name)
-            )
-            
-            concepts.append(concept)
-            
-            # Register in concept registry
-            self._concept_registry[name.lower()] = ConceptRef(
-                concept_id=concept.concept_id,
-                canonical_name=concept.canonical_name,
-                confidence=concept.confidence
-            )
-        
-        return concepts
     
     def _extract_relations(self, propositions: List[Proposition]) -> List[Relation]:
         """Extract relations from propositions"""
@@ -215,28 +225,15 @@ class SemanticIntelligence:
         
         return relations
     
-    def _determine_concept_type(self, name: str) -> str:
-        """Determine concept type based on name patterns"""
-        if name.isupper() and len(name) <= 5:
-            return "entity"  # Acronyms like TCP, CPU
-        elif " " in name:
-            return "abstraction"  # Multi-word concepts
-        elif name[0].isupper():
-            return "entity"  # Proper nouns
-        else:
-            return "abstraction"
-    
     def _calculate_frame_confidence(
         self,
         frame: SemanticFrame,
         asr_confidence: Optional[float]
     ) -> Confidence:
-        """Calculate multi-dimensional confidence for frame"""
+        """Calculate multi-dimensional confidence"""
         
-        # ASR quality
         asr_quality = asr_confidence if asr_confidence is not None else 0.8
         
-        # Extraction confidence based on what was extracted
         if frame.propositions:
             extraction_confidence = 0.8
         elif frame.concepts:
@@ -246,19 +243,18 @@ class SemanticIntelligence:
         else:
             extraction_confidence = 0.0
         
-        # Grounding confidence
-        if frame.evidence:
-            grounding_confidence = 0.9
-        else:
-            grounding_confidence = 0.0
-        
-        # Entity resolution confidence (basic for now)
+        grounding_confidence = 0.9 if frame.evidence else 0.0
         entity_resolution_confidence = 0.7 if frame.concepts else 0.0
         
-        # Validation confidence (no validation yet in Phase 1)
-        validation_confidence = 0.5
+        # Higher confidence if concepts were resolved (not new)
+        if frame.concepts:
+            resolved_count = sum(
+                1 for c in frame.concepts if c.mention_count > 1
+            )
+            if resolved_count > 0:
+                entity_resolution_confidence = 0.9
         
-        # Consistency confidence (no consistency check yet)
+        validation_confidence = 0.5
         consistency_confidence = 0.5
         
         return Confidence(
@@ -270,6 +266,14 @@ class SemanticIntelligence:
             consistency_confidence=consistency_confidence
         )
     
-    def get_registered_concepts(self) -> Dict[str, ConceptRef]:
-        """Get all registered concepts"""
-        return dict(self._concept_registry)
+    def get_memory_statistics(self) -> Dict[str, Any]:
+        """Get semantic memory statistics"""
+        return self.semantic_memory.get_statistics()
+    
+    def get_all_concepts(self) -> List[Concept]:
+        """Get all concepts from memory"""
+        return self.entity_resolver.get_all_concepts()
+    
+    def get_concept(self, concept_id: str) -> Optional[Concept]:
+        """Get concept by ID"""
+        return self.entity_resolver.get_concept(concept_id)

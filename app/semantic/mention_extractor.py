@@ -28,21 +28,18 @@ class MentionExtractor:
         "what", "how", "today", "here", "there", "when", "where", "why"
     }
     
+    # Common verbs that shouldn't be extracted as concepts
+    VERBS = {
+        "is", "are", "was", "were", "provides", "uses", "allows", "enables",
+        "requires", "causes", "contains", "includes", "has", "have", "had",
+        "do", "does", "did", "make", "makes", "made", "get", "gets", "got",
+        "take", "takes", "took", "give", "gives", "gave", "go", "goes", "went"
+    }
+    
     # Technical term patterns
     TECHNICAL_PATTERNS = [
         r'\b[A-Z]{2,}\b',  # Acronyms (TCP, HTTP, CPU)
         r'\b[A-Z][a-z]+(?:[ -][A-Z][a-z]+)*\b',  # CamelCase (WiFi, JavaScript)
-        r'\b[a-z]+(?:[- ][a-z]+){1,5}\b',  # Multi-word terms (data structure)
-    ]
-    
-    # Patterns to extract noun phrases
-    NOUN_PHRASE_PATTERNS = [
-        # Adjective + Noun
-        r'\b(?:[a-z]+ ){0,2}(?:[a-z]+)\b',
-        # Noun + of + Noun
-        r'\b[a-z]+ of [a-z]+\b',
-        # Compound nouns
-        r'\b[a-z]+ [a-z]+ [a-z]+\b',
     ]
     
     def __init__(self):
@@ -82,6 +79,10 @@ class MentionExtractor:
                 if not surface or len(surface) < 2:
                     continue
                 
+                # Skip if it's a verb
+                if surface.lower() in self.VERBS:
+                    continue
+                
                 span_key = (match.start(), match.end())
                 if span_key in seen_spans:
                     continue
@@ -98,30 +99,10 @@ class MentionExtractor:
                 if mention:
                     mentions.append(mention)
         
-        # Extract noun phrases (simplified)
-        noun_phrases = self._extract_noun_phrases(text)
-        
-        for np_text, start, end in noun_phrases:
-            span_key = (start, end)
-            if span_key in seen_spans:
-                continue
-            seen_spans.add(span_key)
-            
-            mention = self._create_mention(
-                surface_text=np_text,
-                start_char=start,
-                end_char=end,
-                evidence=evidence,
-                chunk_id=chunk_id
-            )
-            
-            if mention:
-                mentions.append(mention)
-        
         # Extract "X of Y" patterns
         partitive_pattern = re.compile(
-            r'\b([a-zA-Z]+(?:\s+[a-zA-Z]+){0,4})\s+of\s+'
-            r'([a-zA-Z]+(?:\s+[a-zA-Z]+){0,4})\b'
+            r'\b([a-zA-Z]+(?:\s+[a-zA-Z]+){0,3})\s+of\s+'
+            r'([a-zA-Z]+(?:\s+[a-zA-Z]+){0,3})\b'
         )
         
         for match in partitive_pattern.finditer(text):
@@ -131,68 +112,118 @@ class MentionExtractor:
             seen_spans.add(span_key)
             
             full_text = match.group(0).strip()
-            mention = self._create_mention(
-                surface_text=full_text,
-                start_char=match.start(),
-                end_char=match.end(),
-                evidence=evidence,
-                chunk_id=chunk_id
-            )
             
-            if mention:
-                mentions.append(mention)
+            # Validate that this is a meaningful phrase
+            if self._is_valid_phrase(full_text):
+                mention = self._create_mention(
+                    surface_text=full_text,
+                    start_char=match.start(),
+                    end_char=match.end(),
+                    evidence=evidence,
+                    chunk_id=chunk_id
+                )
+                
+                if mention:
+                    mentions.append(mention)
+        
+        # Extract individual technical terms (not part of larger phrases)
+        individual_terms = self._extract_individual_terms(text, seen_spans)
+        mentions.extend(individual_terms)
         
         return self._deduplicate(mentions)
     
-    def _extract_noun_phrases(self, text: str) -> List[Tuple[str, int, int]]:
-        """Extract noun phrases using simple heuristics"""
-        phrases = []
+    def _extract_individual_terms(
+        self,
+        text: str,
+        seen_spans: set
+    ) -> List[Mention]:
+        """Extract individual technical terms"""
+        mentions = []
         words = text.split()
         
-        i = 0
-        while i < len(words):
-            word = words[i].lower().strip('.,;:!?()')
+        char_position = 0
+        for word in words:
+            # Calculate character position
+            word_start = text.find(word, char_position)
+            word_end = word_start + len(word)
+            char_position = word_end
             
-            # Skip stopwords and short words
-            if word in self.STOPWORDS or len(word) < 3:
-                i += 1
+            clean_word = word.strip('.,;:!?()')
+            word_lower = clean_word.lower()
+            
+            # Skip stopwords, verbs, short words
+            if word_lower in self.STOPWORDS:
+                continue
+            if word_lower in self.VERBS:
+                continue
+            if len(clean_word) < 3:
                 continue
             
-            # Check for multi-word phrases
-            phrase_start = i
-            phrase_words = [words[i]]
+            # Check if this word is already part of a mention
+            span_key = (word_start, word_end)
+            if span_key in seen_spans:
+                continue
             
-            # Extend phrase while words are not stopwords
-            j = i + 1
-            while j < len(words) and j < i + 5:
-                next_word = words[j].lower().strip('.,;:!?()')
-                
-                # Stop if we hit a verb or stopword
-                if next_word in self.STOPWORDS:
+            # Skip if word is part of a larger phrase we already extracted
+            is_part_of_larger = False
+            for existing_start, existing_end in seen_spans:
+                if existing_start <= word_start and word_end <= existing_end:
+                    is_part_of_larger = True
                     break
-                
-                # Stop if next word is a common verb
-                if next_word in {"is", "are", "was", "were", "provides", "uses", 
-                                 "allows", "enables", "requires", "contains"}:
-                    break
-                
-                phrase_words.append(words[j])
-                j += 1
             
-            if len(phrase_words) >= 1:
-                phrase_text = " ".join(phrase_words).strip('.,;:!?()')
-                
-                if len(phrase_text) > 2:
-                    # Calculate character positions
-                    char_start = text.find(phrase_words[0], 
-                                          sum(len(w) + 1 for w in words[:phrase_start]))
-                    char_end = char_start + len(phrase_text)
-                    
-                    phrases.append((phrase_text, char_start, char_end))
+            if is_part_of_larger:
+                continue
             
-            i = j
+            # Only extract if it looks technical
+            if self._is_technical_term(clean_word):
+                mention = self._create_mention(
+                    surface_text=clean_word,
+                    start_char=word_start,
+                    end_char=word_end,
+                    evidence=None,
+                    chunk_id=""
+                )
+                
+                if mention:
+                    mentions.append(mention)
+                    seen_spans.add(span_key)
         
-        return phrases
+        return mentions
+    
+    def _is_technical_term(self, word: str) -> bool:
+        """Check if word looks like a technical term"""
+        # Acronyms
+        if word.isupper() and len(word) <= 5:
+            return True
+        
+        # Proper nouns (first letter uppercase, not at sentence start)
+        if word[0].isupper() and len(word) > 2:
+            return True
+        
+        # Words with numbers
+        if re.search(r'\d', word):
+            return True
+        
+        # Technical suffixes
+        if word.lower().endswith(('tion', 'sion', 'ment', 'ity', 'ism', 'ics')):
+            return True
+        
+        return False
+    
+    def _is_valid_phrase(self, phrase: str) -> bool:
+        """Check if phrase is a valid concept"""
+        words = phrase.lower().split()
+        
+        # Must have at least 2 content words
+        content_words = [w for w in words if w not in self.STOPWORDS and w not in self.VERBS]
+        if len(content_words) < 2:
+            return False
+        
+        # Should not start or end with a verb
+        if words[0] in self.VERBS or words[-1] in self.VERBS:
+            return False
+        
+        return True
     
     def _create_mention(
         self,
@@ -212,6 +243,10 @@ class MentionExtractor:
         if surface.lower() in self.STOPWORDS:
             return None
         
+        # Skip pure verbs
+        if surface.lower() in self.VERBS:
+            return None
+        
         normalized = self._normalize_mention(surface)
         
         if not normalized:
@@ -223,7 +258,7 @@ class MentionExtractor:
             evidence=evidence,
             start_char=start_char,
             end_char=end_char,
-            confidence=0.7  # Base confidence for extracted mentions
+            confidence=0.7
         )
     
     def _normalize_mention(self, text: str) -> str:
@@ -245,7 +280,6 @@ class MentionExtractor:
         elif normalized.endswith('es') and len(normalized) > 4:
             normalized = normalized[:-2]
         elif normalized.endswith('s') and len(normalized) > 3:
-            # Don't singularize words ending in 'ss', 'us', 'is'
             if not normalized.endswith(('ss', 'us', 'is')):
                 normalized = normalized[:-1]
         
