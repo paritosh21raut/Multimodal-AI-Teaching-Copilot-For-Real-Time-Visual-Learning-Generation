@@ -1,5 +1,5 @@
 """
-Term Tracker Tests
+Term Tracker Tests (Fixed for acronym preservation)
 """
 
 from __future__ import annotations
@@ -30,11 +30,9 @@ def test_correct_misrecognition():
     """Test correcting misrecognition"""
     tracker = TermTracker()
     
-    # Add "Proportional" multiple times
     for _ in range(5):
         tracker.add_term("Proportional")
     
-    # Now correct "Portional" (misrecognition)
     text = "Portional integral and derivative"
     corrected, corrections = tracker.correct(text)
     
@@ -46,19 +44,17 @@ def test_no_correction_without_trust():
     """Test that no correction happens without enough occurrences"""
     tracker = TermTracker()
     
-    # Add term only once
     tracker.add_term("Proportional")
     
     text = "Portional integral"
     corrected, corrections = tracker.correct(text)
     
-    # Should NOT correct (not enough occurrences)
     assert "Portional" in corrected
     assert len(corrections) == 0
 
 
 def test_add_terms_from_text():
-    """Test extracting terms from text"""
+    """Test extracting terms - acronyms preserved as uppercase"""
     tracker = TermTracker()
     
     text = "TCP provides reliable transmission. TCP uses acknowledgements. TCP is connection-oriented."
@@ -66,21 +62,34 @@ def test_add_terms_from_text():
     
     trusted = tracker.get_trusted_terms()
     
-    # TCP should be trusted after 3 occurrences
-    assert "tcp" in trusted
+    # TCP should be trusted (uppercase preserved)
+    assert "TCP" in trusted
 
 
 def test_similarity_threshold():
     """Test that dissimilar terms are not matched"""
     tracker = TermTracker()
     
-    # Add "TCP" multiple times
     for _ in range(5):
         tracker.add_term("TCP")
     
-    # Try to correct "UDP" (should NOT match TCP)
     text = "UDP is connectionless"
     corrected, corrections = tracker.correct(text)
     
     # UDP should remain unchanged
     assert "UDP" in corrected
+
+
+def test_acronym_preservation():
+    """Test that acronyms are not lowercased"""
+    tracker = TermTracker()
+    
+    for _ in range(5):
+        tracker.add_term("TCP")
+    
+    text = "TCP provides reliable delivery"
+    corrected, corrections = tracker.correct(text)
+    
+    # TCP should stay TCP (not Tcp)
+    assert "TCP" in corrected
+    assert "Tcp" not in corrected
