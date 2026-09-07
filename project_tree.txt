@@ -1,0 +1,244 @@
+erd .
+         -    ┌─ speech_to_text
+         - ┌─ src
+      98 B ├─ README.md
+     146 B ├─ main.py
+     319 B │  ┌─ settings.yaml
+     319 B ├─ configs
+   37980 B ├─ project_tree.txt
+     330 B │  ┌─ test_context.py
+     364 B │  ├─ test_gemini.py
+     609 B │  ├─ test_ppt.py
+    1534 B │  ├─ test_audio_queueing.py
+    3410 B │  ├─ test_live_transcript_manager.py
+    4386 B │  ├─ test_application_lecture_pipeline_integration.py
+    5730 B │  ├─ test_visual_renderer.py
+    6391 B │  ├─ test_hard_split_boundary.py
+    6449 B │  ├─ test_real_pipeline_logic.py
+    6970 B │  ├─ test_application_transcript_integration.py
+    7551 B │  ├─ test_topic_domain_generalization.py
+    9548 B │  ├─ test_topic_sequence.py
+    9717 B │  ├─ test_topic.py
+   17240 B │  ├─ test_live_transcription_flow.py
+   17276 B │  ├─ test_audio_worker_production.py
+   20392 B │  ├─ test_whisper_model.py
+   22278 B │  ├─ test_transcript_intelligence.py
+   30443 B │  ├─ test_live_audio_transcript_intelligence.py
+  170618 B ├─ test
+       0 B │     ┌─ __init__.py
+         - │  ┌─ database
+       0 B │  │  ┌─ diagram_generator.py
+       0 B │  │  ├─ __init__.py
+         - │  ├─ diagrams
+         - │  ├─ llm
+       0 B │  │  ┌─ __init__.py
+         - │  ├─ nlp
+       0 B │  │  ┌─ slide_preview.py
+       0 B │  │  ├─ __init__.py
+         - │  ├─ ui
+     162 B │  ├─ config.py
+       0 B │  │  ┌─ __init__.py
+     442 B │  │  ├─ logger.py
+     453 B │  │  ├─ config_loader.py
+     895 B │  ├─ utils
+       0 B │  │  ┌─ llm_client.py
+       0 B │  │  ├─ prompt_builder.py
+    3292 B │  │  ├─ content_generator.py
+    3292 B │  ├─ knowledge
+       0 B │  │  ┌─ __init__.py
+    4676 B │  │  ├─ gemini_client.py
+    4676 B │  ├─ ai
+       0 B │  │  ┌─ __init__.py
+    7400 B │  │  ├─ ppt_manager.py
+    7400 B │  ├─ ppt
+   10355 B │  ├─ application.py
+       0 B │  │  ┌─ __init__.py
+     233 B │  │  ├─ image_manager.py
+   14070 B │  │  ├─ image_downloader.py
+   14303 B │  ├─ images
+       0 B │  │  ┌─ __init__.py
+    1047 B │  │  ├─ context_buffer.py
+    5498 B │  │  ├─ lecture_state.py
+   11750 B │  │  ├─ lecture_pipeline.py
+   18295 B │  ├─ lecture
+       0 B │  │  ┌─ components.py
+   10319 B │  │  ├─ dashboard.py
+   13103 B │  │  ├─ dashboard_state.py
+   23422 B │  ├─ dashboard
+       0 B │  │  ┌─ __init__.py
+     401 B │  │  ├─ text_queue.py
+     417 B │  │  ├─ speech_queue.py
+     484 B │  │  ├─ transcript_manager.py
+     845 B │  │  ├─ speech_segmenter.py
+    1174 B │  │  ├─ whisper_worker.py
+    3168 B │  │  ├─ speech_segment_builder.py
+    7192 B │  │  ├─ whisper_model.py
+   25620 B │  │  ├─ transcript_intelligence.py
+   39301 B │  ├─ speech
+       0 B │  │  ┌─ __init__.py
+   53668 B │  │  ├─ topic_intelligence.py
+   53668 B │  ├─ topics
+       0 B │  │  ┌─ __init__.py
+    3006 B │  │  ├─ slide_models.py
+    7264 B │  │  ├─ slide_manager.py
+   59301 B │  │  ├─ slide_renderer.py
+   69571 B │  ├─ slides
+       0 B │  │  ┌─ __init__.py
+     427 B │  │  ├─ audio_recorder.py
+     437 B │  │  ├─ audio_manager.py
+     526 B │  │  ├─ audio_buffer.py
+    1641 B │  │  ├─ audio_pipeline.py
+    1677 B │  │  ├─ microphone.py
+    3040 B │  │  ├─ audio_stream.py
+    3580 B │  │  ├─ audio_queue.py
+    3604 B │  │  ├─ voice_detector.py
+   14875 B │  │  ├─ live_transcript_manager.py
+   49504 B │  │  ├─ audio_worker.py
+   79311 B │  ├─ audio
+  324651 B ├─ app
+  805834 B │  ┌─ project.log
+  805834 B ├─ logs
+      19 B │     ┌─ close_up_modern_microchip_architecture_with_visible_silicon_integrated_circuit_traces.jpg
+      19 B │     ├─ clean_geometric_diagram_showing_a_circle_with_labeled_circumference_diameter_and_pi_symbol.jpg
+      19 B │     ├─ detailed_biological_diagram_of_plant_photosynthesis_displaying_sunlight_absorption,_water_intake,_ca.jpg
+      19 B │     ├─ high_tech_macro_photography_of_a_modern_system_on_chip_microchip_with_visible_silicon_die_circuits.jpg
+      19 B │     ├─ microchip_architecture_diagram_showing_integrated_CPU_memory_and_peripherals_on_single_silicon_wafer.jpg
+      19 B │     ├─ microscopic_view_of_diverse_bacteria_shapes_including_spherical_rod_and_spiral.jpg
+      19 B │     ├─ semiconductor_silicon_microchip_system_on_chip_architecture_close_up_high_tech.jpg
+   51249 B │     ├─ mathematical_graph_illustrating_time_domain_signal_decomposing_frequency_spectrum_sine_waves.jpg
+   57809 B │     ├─ mobile_modern_computing_hardware_software_servers_personal_computers_devices.jpg
+   63307 B │     ├─ 3D_diagram_of_the_solar_system_showing_the_sun,_inner_rocky_planets,_and_outer_gas_giants_orbiting.jpg
+   63307 B │     ├─ 3D_render_diagram_of_the_solar_system_with_sun,_inner_rocky_planets,_asteroid_belt,_and_outer_gas_gi.jpg
+   63307 B │     ├─ 3D_render_of_solar_system_planets_orbiting_around_the_sun_high_resolution.jpg
+   63307 B │     ├─ 3D_realistic_illustration_of_the_solar_system_layout_with_sun_inner_rocky_planets_and_outer_gas_gian.jpg
+   63307 B │     ├─ 3d_visual_model_of_solar_system_planets_orbiting_sun.jpg
+   63307 B │     ├─ high_resolution_diagram_of_solar_system_with_inner_rocky_planets_and_outer_gas_giants_orbiting_the_sun.jpg
+   63307 B │     ├─ high_resolution_diagram_of_the_solar_system_showing_eight_planets_orbiting_the_sun.jpg
+   63307 B │     ├─ Illustration_of_the_solar_system_with_planets_orbiting_the_bright_central_sun.jpg
+   63307 B │     ├─ solar_system_diagram_showing_sun_inner_rocky_planets_asteroid_belt_outer_gas_giants_illustration.jpg
+   63307 B │     ├─ 3D_render_of_the_solar_system_showing_the_sun,_inner_rocky_planets,_asteroid_belt,_and_outer_gas_giants.jpg
+  122448 B │     ├─ abstract_visual_representation_of_decision_making_cognitive_loop_minimalist_academic_style.jpg
+  139097 B │     ├─ microchip_circuit_plant_photosynthesis_abstract_split_featuring_digital_cloud_computing_green_leaf_u.jpg
+  143683 B │     ├─ microcontroller_chip_circuit_smart_modern_electronic_board_device_icons.jpg
+  150960 B │     ├─ photosynthesis_water_carbon_dioxide_oxygen_glucose_reaction_sunlight_green_leaf.jpg
+  152267 B │     ├─ abstract_visualization_of_interconnected_network_nodes_cloud_computing_and_digital_workspace_links.jpg
+  165533 B │     ├─ minimalist_abstract_illustration_of_falling_dominoes_representing_chain_of_unchecked_commands.jpg
+  205213 B │     ├─ abstract_visualization_of_a_densely_interconnected_network_of_glowing_nodes.jpg
+  208187 B │     ├─ detailed_diagram_of_the_solar_system_displaying_sun_inner_planets_asteroid_belt_and_outer_planets.jpg
+  208187 B │     ├─ high_resolution_diagram_of_the_solar_system_showcasing_inner_rocky_planets_asteroid_belt_and_outer_g.jpg
+  211333 B │     ├─ professor_speaking_into_a_microphone_in_a_modern_university_lecture_hall.jpg
+  220229 B │     ├─ professional_thank_you_slide_with_warm_team_atmosphere_and_digital_connectivity_concept.jpg
+  235138 B │     ├─ macro_photograph_of_an_advanced_system-on-chip_silicon_microchip_with_visible_integrated_circuits.jpg
+  235850 B │     ├─ Raspberry_Pi_5_board_macro_photograph_displaying_processor_and_ports.jpg
+  244835 B │     ├─ cloud_computing_iaas_paas_saas_layers.jpg
+  257729 B │     ├─ bacterial_3d_scientific_different_shapes_cocci_bacilli_spirilla_under_microscope.jpg
+  269686 B │     ├─ microchip_circuit_fpga_macro_photography_integrated_die.jpg
+  271102 B │     ├─ macro_photograph_of_modern_system_on_chip_microchip_showing_integrated_circuit_structure.jpg
+  274051 B │     ├─ 5G_network_technology_visualization_connecting_smart_city_and_autonomous_vehicles.jpg
+  274051 B │     ├─ futuristic_5G_telecommunication_tower_connected_to_smart_city_network.jpg
+  274955 B │     ├─ real-time_operating_system_task_state_running_ready_blocked_suspended_states_technical_modern_vector.jpg
+  276273 B │     ├─ high_tech_modern_microchip_architecture_with_integrated_circuits_diagram.jpg
+  286589 B │     ├─ cellular_network_architecture_diagram_showing_mobile_devices,_base_stations,_and_core_network.jpg
+  302320 B │     ├─ microcontroller_chip_circuit_close_up_green_printed_board_tech_electronic_component.jpg
+  302320 B │     ├─ microcontroller_chip_circuit_board_embedded_system_close_up.jpg
+  302320 B │     ├─ microcontroller_circuit_chip_macro_photograph_integrated_modern_blue_printed_board_dark_tech_lightin.jpg
+  302320 B │     ├─ microcontroller_chip_circuit_printed_board_close_up_engineering.jpg
+  302320 B │     ├─ microcontroller_microchip_circuit_board_embedded_system.jpg
+  302683 B │     ├─ detailed_scale_diagram_of_the_solar_system_showing_the_sun_eight_planets_and_the_asteroid_belt.jpg
+  302683 B │     ├─ high_quality_astronomical_illustration_of_the_solar_system_showing_the_sun_and_eight_planets.jpg
+  302795 B │     ├─ futuristic_digital_network_grid_connecting_smart_city_autonomous_vehicles_high_tech_visual.jpg
+  314035 B │     ├─ microcontroller_chip_circuit_iot_board_electronic_component_close_up.jpg
+  336726 B │     ├─ smart_city_internet_things_glowing_connectivity_nodes_digital_overlay.jpg
+  356521 B │     ├─ science_technology_multidisciplinary_abstract_tech_background.jpg
+  362830 B │     ├─ abstract_minimalist_illustration_of_a_person_stepping_into_deep_water_facing_complex_risk_blocks.jpg
+  363877 B │     ├─ physics_light_beam_passing_through_glass_prism_refraction_rainbow_spectrum.jpg
+  377617 B │     ├─ microcontroller_circuit_electronics_chips_esp32_stm32_board_professional_layout.jpg
+  398171 B │     ├─ microcontroller_chip_circuit_modern_electronic_board_close_up.jpg
+  408599 B │     ├─ university_professor_giving_a_lecture_on_public_speaking_and_narrative_structure_in_a_modern_hall.jpg
+  438032 B │     ├─ microcontroller_chip_architecture_on_circuit_board_detailed_microchip_photo.jpg
+  457351 B │     ├─ high_tech_macro_photograph_of_a_silicon_microchip_system_on_chip_SoC_board_layout.jpg
+  457351 B │     ├─ high_tech_microchip_system_on_chip_circuit_board_detailed_macro_photograph.jpg
+  457351 B │     ├─ high_tech_system_on_chip_microchip_layout_showing_processor_memory_and_peripherals_integration.jpg
+  473775 B │     ├─ Macro_photography_of_a_modern_silicon_microchip_showing_circuit_pathways_and_integrated_processor_die.jpg
+  509693 B │     ├─ microchip_circuit_field_programmable_gate_array_fpga_closeup_board.jpg
+  593418 B │     ├─ Detailed_scientific_diagram_of_photosynthesis_showing_leaf_cross_section_absorbing_sunlight_carbon_d.jpg
+14294765 B │  ┌─ images
+14294765 B ├─ assets
+    1122 B │     ┌─ live_transcript.txt
+    1122 B │  ┌─ transcripts
+    1565 B │  ├─ dashboard_state.json
+    2375 B │  │  ┌─ transcript.txt
+    2375 B │  ├─ audio_stt_test
+    1146 B │  │  ┌─ hard_split_boundary_transcript.txt
+    1366 B │  │  ├─ production_transcript.txt
+    3928 B │  │  ├─ hard_split_boundary_report.txt
+    6440 B │  ├─ audio_worker_test
+   12037 B │  │  ┌─ live_audio_transcript_report.txt
+   12746 B │  │  ├─ live_audio_transcript_report.json
+   24783 B │  ├─ live_audio_test
+   28534 B │  ├─ test_none.pptx
+   28819 B │  ├─ test_formula.pptx
+   28980 B │  ├─ test_example_grid.pptx
+   29071 B │  ├─ test_flowchart.pptx
+   29138 B │  ├─ test_comparison_table.pptx
+   29186 B │  ├─ test_hierarchy.pptx
+   29187 B │  ├─ test_concept_map.pptx
+   29242 B │  ├─ test_timeline.pptx
+   29272 B │  ├─ test_diagram.pptx
+   34995 B │  ├─ test_chart.pptx
+  195564 B │  ├─ temp.wav
+    2946 B │  │  ┌─ small_validation_report.txt
+    4746 B │  │  ├─ whisper_benchmark_report.txt
+    8120 B │  │  ├─ vad_comparison_report.txt
+ 1912364 B │  │  ├─ benchmark_recording.wav
+ 1928176 B │  ├─ whisper_model_benchmark
+   28269 B │  │  ┌─ Lecture_Test.pptx
+   28324 B │  │  ├─ Live_Lecture_20260808_064148.pptx
+   28324 B │  │  ├─ Live_Lecture_20260808_063646.pptx
+   28324 B │  │  ├─ Live_Lecture_20260808_084826.pptx
+   28324 B │  │  ├─ Live_Lecture_20260818_120838.pptx
+   28324 B │  │  ├─ Live_Lecture_20260820_203349.pptx
+   28324 B │  │  ├─ Live_Lecture_20260821_203004.pptx
+   28325 B │  │  ├─ Today's_Lecture_20260825_113017.pptx
+   28325 B │  │  ├─ Today's_Lecture_20260825_113136.pptx
+   28325 B │  │  ├─ Today's_Lecture_20260825_115044.pptx
+   28325 B │  │  ├─ Today's_Lecture_20260825_115816.pptx
+   28325 B │  │  ├─ Today's_Lecture_20260825_115206.pptx
+   29234 B │  │  ├─ Live_Lecture_20260808_034542.pptx
+   29474 B │  │  ├─ Live_Lecture_20260808_043120.pptx
+   29502 B │  │  ├─ Live_Lecture_20260808_065805.pptx
+   29506 B │  │  ├─ Live_Lecture_20260808_044000.pptx
+   29510 B │  │  ├─ Live_Lecture_20260808_051643.pptx
+   29521 B │  │  ├─ Live_Lecture_20260808_064518.pptx
+   30159 B │  │  ├─ Live_Lecture_20260808_035804.pptx
+   30160 B │  │  ├─ Live_Lecture_20260808_035351.pptx
+   30162 B │  │  ├─ Live_Lecture_20260808_040122.pptx
+   30708 B │  │  ├─ Live_Lecture_20260808_040623.pptx
+   32143 B │  │  ├─ Live_Lecture_20260808_023614.pptx
+   89727 B │  │  ├─ Live_Lecture_20260808_085151.pptx
+   89802 B │  │  ├─ Live_Lecture_20260818_180133.pptx
+   89810 B │  │  ├─ Live_Lecture_20260820_215005.pptx
+   89830 B │  │  ├─ Live_Lecture_20260818_174052.pptx
+   89839 B │  │  ├─ Live_Lecture_20260812_171404.pptx
+   89871 B │  │  ├─ Live_Lecture_20260820_200356.pptx
+   91283 B │  │  ├─ Live_Lecture_20260820_193313.pptx
+  265582 B │  │  ├─ Live_Lecture_20260808_094723.pptx
+  299393 B │  │  ├─ Live_Lecture_20260820_193852.pptx
+  303840 B │  │  ├─ Live_Lecture_20260818_181048.pptx
+  316397 B │  │  ├─ Live_Lecture_20260808_101839.pptx
+  332780 B │  │  ├─ Live_Lecture_20260820_202408.pptx
+  333692 B │  │  ├─ Live_Lecture_20260821_203709.pptx
+  393863 B │  │  ├─ Live_Lecture_20260820_202009.pptx
+  438539 B │  │  ├─ Live_Lecture_20260812_171115.pptx
+  623402 B │  │  ├─ Live_Lecture_20260820_213251.pptx
+  747281 B │  │  ├─ Live_Lecture_20260820_220208.pptx
+  885449 B │  │  ├─ Live_Lecture_20260818_124152.pptx
+ 1458842 B │  │  ├─ Live_Lecture_20260820_223734.pptx
+ 1563584 B │  │  ├─ Live_Lecture_20260821_203121.pptx
+ 1580616 B │  │  ├─ Live_Lecture_20260820_222541.pptx
+ 2128403 B │  │  ├─ Live_Lecture_20260818_120809.pptx
+12971742 B │  ├─ presentations
+15428191 B ├─ outputs
+31062602 B Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation
+
+31 directories, 209 files
