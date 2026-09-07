@@ -1,7 +1,8 @@
 """
-Semantic Intelligence - Main Orchestrator (Phase 5)
+Semantic Intelligence - Main Orchestrator (Phase 7)
 
-Integrates validation, confidence calculation, and contradiction detection.
+Integrates LLM arbitration for ambiguous cases.
+Deterministic processing remains primary.
 """
 
 from __future__ import annotations
@@ -40,14 +41,20 @@ from .coreference_resolver import CoreferenceResolver
 from .validator import SemanticValidator
 from .confidence import ConfidenceCalculator
 from .contradiction_detector import ContradictionDetector
+from .llm_arbiter import LLMArbiter
 
 
 class SemanticIntelligence:
     """
-    Main orchestrator with validation, confidence, and contradiction detection.
+    Main orchestrator with LLM arbitration for ambiguous cases.
     """
     
-    def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
+    def __init__(
+        self,
+        model_name: str = "all-MiniLM-L6-v2",
+        groq_api_key: Optional[str] = None,
+        enable_llm: bool = True
+    ):
         self.evidence_manager = EvidenceManager()
         self.mention_extractor = MentionExtractor()
         self.proposition_extractor = PropositionExtractor()
@@ -66,6 +73,13 @@ class SemanticIntelligence:
         self.validator = SemanticValidator()
         self.confidence_calculator = ConfidenceCalculator()
         self.contradiction_detector = ContradictionDetector()
+        
+        # Phase 7
+        self.enable_llm = enable_llm
+        if enable_llm:
+            self.llm_arbiter = LLMArbiter(api_key=groq_api_key)
+        else:
+            self.llm_arbiter = None
     
     def process(
         self,
@@ -79,10 +93,11 @@ class SemanticIntelligence:
         generate_embeddings: bool = True,
         resolve_coreferences: bool = True,
         validate: bool = True,
-        detect_contradictions: bool = True
+        detect_contradictions: bool = True,
+        allow_llm_arbitration: bool = True
     ) -> SemanticFrame:
         """
-        Process a transcript chunk and produce a validated SemanticFrame.
+        Process a transcript chunk with optional LLM arbitration.
         """
         # Create frame
         frame = SemanticFrame(
@@ -160,6 +175,43 @@ class SemanticIntelligence:
                 topic_concepts=topic_refs
             )
             
+            # Phase 7: LLM arbitration for low-confidence resolutions
+            if (
+                allow_llm_arbitration and
+                self.llm_arbiter is not None and
+                resolution.confidence < 0.5 and
+                resolution.is_new
+            ):
+                candidates = self.entity_resolver.embedding_retriever.retrieve_candidates(
+                    embedding,
+                    self.entity_resolver.registry,
+                    active_concepts=active_refs,
+                    topic_concepts=topic_refs,
+                    top_k=3
+                ) if embedding is not None else []
+                
+                if candidates:
+                    llm_result = self.llm_arbiter.arbitrate_entity_merge(
+                        mention.surface_text,
+                        [c[0] for c in candidates],
+                        context=transcript_text
+                    )
+                    
+                    if llm_result and llm_result.get("should_merge"):
+                        # Merge with existing concept
+                        target_id = llm_result["concept_id"]
+                        source_id = resolution.concept_ref.concept_id
+                        
+                        self.entity_resolver.merge_concepts(source_id, target_id)
+                        
+                        concept = self.entity_resolver.get_concept(target_id)
+                        if concept:
+                            concept.mention_count += 1
+                            resolution.concept_ref.concept_id = target_id
+                            resolution.is_new = False
+                            resolution.confidence = llm_result["confidence"]
+                            resolution.resolution_method = "llm_arbitration"
+            
             concept = self.entity_resolver.get_concept(
                 resolution.concept_ref.concept_id
             )
@@ -186,7 +238,7 @@ class SemanticIntelligence:
         
         frame.concepts = resolved_concepts
         
-        # Phase 4: Coreference resolution
+        # Coreference resolution
         if resolve_coreferences:
             coreferences = self.coreference_resolver.resolve_all(
                 transcript_text,
@@ -214,7 +266,7 @@ class SemanticIntelligence:
             concepts=chunk_concepts
         )
         
-        # Phase 5: Contradiction detection
+        # Contradiction detection
         if detect_contradictions and propositions:
             existing_props = list(self.semantic_memory._propositions.values())
             
@@ -251,7 +303,7 @@ class SemanticIntelligence:
         )
         frame.instructional_acts = instructional_acts
         
-        # Phase 5: Validation
+        # Validation
         validation_report = None
         if validate:
             frame_valid, validation_confidence, validation_report = (
@@ -329,6 +381,10 @@ class SemanticIntelligence:
         stats = self.semantic_memory.get_statistics()
         stats.update(self.embedding_index.get_stats())
         stats["contradictions"] = len(self.contradiction_detector.get_contradictions())
+        
+        if self.llm_arbiter:
+            stats["llm"] = self.llm_arbiter.get_statistics()
+        
         return stats
     
     def get_all_concepts(self) -> List[Concept]:
