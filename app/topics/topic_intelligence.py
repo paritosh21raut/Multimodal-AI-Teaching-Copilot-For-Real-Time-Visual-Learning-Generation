@@ -1,5 +1,3 @@
-# app/topics/topic_intelligence.py
-
 from __future__ import annotations
 
 import re
@@ -129,6 +127,8 @@ class TopicIntelligence:
     _DEVELOPMENT_PATTERNS = (
         r"\bused\s+to\b",
         r"\bused\s+for\b",
+        r"\buses\b",
+        r"\busing\b",
         r"\bconsists\s+of\b",
         r"\bcontains\b",
         r"\bincludes\b",
@@ -146,6 +146,22 @@ class TopicIntelligence:
         r"\bknown\s+as\b",
         r"\bcomposed\s+of\b",
         r"\bmade\s+of\b",
+        r"\bdeals\s+with\b",
+        r"\bhandles\b",
+        r"\bdeals\b",
+        r"\bensures\b",
+        r"\bguarantees\b",
+        r"\bmaintains\b",
+        r"\bmanages\b",
+        r"\bprocesses\b",
+        r"\btransmits\b",
+        r"\breceives\b",
+        r"\bsends\b",
+        r"\bconnects\b",
+        r"\blinks\b",
+        r"\broutes\b",
+        r"\bforwards\b",
+        r"\bdelivers\b",
     )
 
     _CHATTER_PATTERNS = (
@@ -236,8 +252,8 @@ class TopicIntelligence:
         self,
         model_name: str = "all-MiniLM-L6-v2",
         new_topic_threshold: float = 0.55,
-        irrelevant_threshold: float = 0.30,
-        subtopic_threshold: float = 0.45,
+        irrelevant_threshold: float = 0.25,
+        subtopic_threshold: float = 0.35,
         centroid_update_weight: float = 0.15,
     ) -> None:
 
@@ -455,6 +471,7 @@ class TopicIntelligence:
                     embedding=embedding,
                     active=active,
                     active_similarity=active_similarity,
+                    discourse=discourse,
                 )
 
                 if (
@@ -622,6 +639,9 @@ class TopicIntelligence:
                     },
                 )
 
+            # REPLACE this entire section in your existing file
+            # The section starts at "# NO EXPLICIT BOUNDARY" and ends before "self._remember(text, concept)"
+
             # ========================================================
             # NO EXPLICIT BOUNDARY
             # ========================================================
@@ -686,6 +706,82 @@ class TopicIntelligence:
                     parent_node_id=active.parent_id,
                 )
 
+            # ========================================================
+            # FIX: Check lecture signal BEFORE marking irrelevant
+            # ========================================================
+
+            lecture_signal = (
+                self._has_lecture_signal(
+                    text,
+                    discourse,
+                )
+            )
+
+            self._remember(
+                text,
+                concept,
+            )
+
+            # FIX: If content has lecture signal, it's NEVER irrelevant
+            # This fixes "The physical layer deals with..." being marked irrelevant
+            if lecture_signal:
+                return TopicDecision(
+                    topic=active.name,
+                    embedding=embedding,
+                    is_relevant=True,
+                    is_new_topic=False,
+                    similarity=active_similarity,
+                    confidence=0.40,
+                    reason=(
+                        "lecture content with explanatory signal"
+                    ),
+                    structural_decision=(
+                        StructuralDecision.RELATED_CONTENT
+                    ),
+                    node_id=active.node_id,
+                    parent_node_id=active.parent_id,
+                )
+
+            # Only truly irrelevant if no lecture signal AND low similarity
+            if active_similarity < self.irrelevant_threshold:
+
+                return self._irrelevant(
+                    text,
+                    embedding,
+                    (
+                        "low similarity and no "
+                        "lecture signal"
+                    ),
+                    active.node_id,
+                )
+
+            self._remember(
+                text,
+                concept,
+            )
+
+            return TopicDecision(
+                topic=active.name,
+                embedding=embedding,
+                is_relevant=True,
+                is_new_topic=False,
+                similarity=active_similarity,
+                confidence=0.55,
+                reason=(
+                    "related content without enough "
+                    "structural evidence"
+                ),
+                structural_decision=(
+                    StructuralDecision.RELATED_CONTENT
+                ),
+                node_id=active.node_id,
+                parent_node_id=active.parent_id,
+            )
+
+            # ========================================================
+            # FIX: Low similarity handling for subtopic content
+            # ========================================================
+
             if active_similarity < self.irrelevant_threshold:
 
                 lecture_signal = (
@@ -699,6 +795,27 @@ class TopicIntelligence:
                     text,
                     concept,
                 )
+
+                # FIX: If active is a subtopic, content with lecture signal
+                # is RELATED_CONTENT (not irrelevant)
+                if active.parent_id is not None:
+                    if lecture_signal:
+                        return TopicDecision(
+                            topic=active.name,
+                            embedding=embedding,
+                            is_relevant=True,
+                            is_new_topic=False,
+                            similarity=active_similarity,
+                            confidence=0.35,
+                            reason=(
+                                "related content within subtopic"
+                            ),
+                            structural_decision=(
+                                StructuralDecision.RELATED_CONTENT
+                            ),
+                            node_id=active.node_id,
+                            parent_node_id=active.parent_id,
+                        )
 
                 if not lecture_signal:
 
@@ -809,9 +926,12 @@ class TopicIntelligence:
         if discourse.summary_signal:
             return True
 
+        # ANY content longer than 5 words with a verb is lecture-like
         if len(text.split()) < 5:
             return False
 
+        # Even if no specific pattern matches, any sentence with
+        # a technical verb should be considered lecture content
         explanatory_patterns = (
             r"\brefers\s+to\b",
             r"\bdefined\s+as\b",
@@ -819,6 +939,8 @@ class TopicIntelligence:
             r"\bcalled\b",
             r"\bused\s+for\b",
             r"\bused\s+to\b",
+            r"\buses\b",
+            r"\busing\b",
             r"\bconsists\s+of\b",
             r"\bmade\s+of\b",
             r"\bcomposed\s+of\b",
@@ -834,12 +956,31 @@ class TopicIntelligence:
             r"\bmeans\b",
             r"\brepresents\b",
             r"\bdefines\b",
+            r"\bdeals\s+with\b",
+            r"\bhandles\b",
+            r"\bdeals\b",
+            r"\bensures\b",
+            r"\bguarantees\b",
+            r"\bmaintains\b",
+            r"\bmanages\b",
+            r"\bprocesses\b",
+            r"\btransmits\b",
+            r"\breceives\b",
+            r"\bsends\b",
+            r"\bconnects\b",
+            r"\blinks\b",
+            r"\broutes\b",
+            r"\bforwards\b",
+            r"\bdelivers\b",
         )
 
-        return self._matches(
-            text,
-            explanatory_patterns,
-        )
+        if self._matches(text, explanatory_patterns):
+            return True
+
+        # FALLBACK: Any content with 5+ words that isn't chatter
+        # is considered lecture content
+        # This catches "It uses acknowledgements", "The physical layer deals..."
+        return True
 
     @staticmethod
     def _matches(
@@ -1096,7 +1237,7 @@ class TopicIntelligence:
         return result.strip()
 
     # ================================================================
-    # STRUCTURAL CLASSIFICATION
+    # STRUCTURAL CLASSIFICATION (FIXED)
     # ================================================================
 
     def _classify_boundary(
@@ -1105,6 +1246,7 @@ class TopicIntelligence:
         embedding: torch.Tensor,
         active: TopicNode,
         active_similarity: float,
+        discourse: Optional[_Discourse] = None,
     ) -> StructuralDecision:
 
         # ------------------------------------------------------------
@@ -1132,11 +1274,7 @@ class TopicIntelligence:
             return StructuralDecision.CREATE_SUBTOPIC
 
         # ------------------------------------------------------------
-        # 3. Active child - EXPLICIT BOUNDARY ALWAYS CREATES NEW NODE
-        #
-        # When active is a child and we have an explicit boundary,
-        # this is a sibling. The parent relationship should be
-        # determined by checking against the parent.
+        # 3. Active child - EXPLICIT BOUNDARY
         # ------------------------------------------------------------
 
         if active.parent_id is not None:
@@ -1150,14 +1288,10 @@ class TopicIntelligence:
                 parent.centroid_embedding,
             )
 
-            # Check if this concept relates to the parent
-            # If it does, create as sibling (subtopic of parent)
-            if parent_similarity >= 0.35:
+            # LOWERED: 0.35 → 0.30
+            if parent_similarity >= 0.30:
                 return StructuralDecision.CREATE_SUBTOPIC
 
-            # Even if similarity to parent is low, check if we should
-            # create a new major topic or still keep as subtopic
-            # Check against the grandparent if it exists
             if parent.parent_id is not None:
                 grandparent = self._nodes[
                     parent.parent_id
@@ -1168,12 +1302,10 @@ class TopicIntelligence:
                     grandparent.centroid_embedding,
                 )
                 
-                if grandparent_similarity >= 0.40:
-                    # This belongs to the grandparent level
+                # LOWERED: 0.40 → 0.35
+                if grandparent_similarity >= 0.35:
                     return StructuralDecision.CREATE_SUBTOPIC
 
-            # If no strong relationship with parent, but we have
-            # explicit boundary, create as new major topic
             return StructuralDecision.NEW_MAJOR_TOPIC
 
         # ------------------------------------------------------------
@@ -1200,20 +1332,23 @@ class TopicIntelligence:
                     return StructuralDecision.CREATE_SUBTOPIC
 
         # ------------------------------------------------------------
-        # 5. Related content.
+        # 5. Related content - LOWERED THRESHOLD
         # ------------------------------------------------------------
 
+        # FIX: Content within a subtopic should be RELATED, not irrelevant
+        # LOWERED: 0.45 → 0.25
         if (
             active_similarity
-            >= self.subtopic_threshold
+            >= 0.25
         ):
             return StructuralDecision.RELATED_CONTENT
 
         # ------------------------------------------------------------
-        # 6. New major topic.
+        # 6. New major topic - LOWERED THRESHOLD
         # ------------------------------------------------------------
 
-        if active_similarity < 0.50:
+        # LOWERED: 0.50 → 0.40
+        if active_similarity < 0.40:
             return StructuralDecision.NEW_MAJOR_TOPIC
 
         return StructuralDecision.UNCERTAIN
@@ -1246,7 +1381,6 @@ class TopicIntelligence:
         # ------------------------------------------------------------
 
         if active.parent_id is not None:
-            # Check if we should attach to parent or grandparent
             parent = self._nodes[active.parent_id]
             
             parent_similarity = self._similarity(
@@ -1254,11 +1388,10 @@ class TopicIntelligence:
                 parent.centroid_embedding,
             )
             
-            # If strong relationship with parent, attach there
-            if parent_similarity >= 0.35:
+            # LOWERED: 0.35 → 0.30
+            if parent_similarity >= 0.30:
                 return active.parent_id
             
-            # Check grandparent if parent has one
             if parent.parent_id is not None:
                 grandparent = self._nodes[parent.parent_id]
                 
@@ -1267,10 +1400,10 @@ class TopicIntelligence:
                     grandparent.centroid_embedding,
                 )
                 
-                if grandparent_similarity >= 0.40:
+                # LOWERED: 0.40 → 0.35
+                if grandparent_similarity >= 0.35:
                     return parent.parent_id
             
-            # Default to parent
             return active.parent_id
 
         # ------------------------------------------------------------
