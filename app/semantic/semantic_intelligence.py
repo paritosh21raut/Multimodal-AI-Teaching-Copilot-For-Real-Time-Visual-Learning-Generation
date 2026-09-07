@@ -1,7 +1,7 @@
 """
-Semantic Intelligence - Main Orchestrator (Phase 4)
+Semantic Intelligence - Main Orchestrator (Phase 5)
 
-Integrates coreference resolution and enhanced instructional act detection.
+Integrates validation, confidence calculation, and contradiction detection.
 """
 
 from __future__ import annotations
@@ -25,7 +25,8 @@ from .semantic_models import (
     ExtractionStatus,
     RelationType,
     Coreference,
-    UnresolvedReference
+    UnresolvedReference,
+    PropositionLifecycle
 )
 from .evidence import EvidenceManager
 from .mention_extractor import MentionExtractor
@@ -36,11 +37,14 @@ from .entity_resolver import EntityResolver
 from .semantic_memory import SemanticMemory
 from .embedding_index import EmbeddingIndex
 from .coreference_resolver import CoreferenceResolver
+from .validator import SemanticValidator
+from .confidence import ConfidenceCalculator
+from .contradiction_detector import ContradictionDetector
 
 
 class SemanticIntelligence:
     """
-    Main orchestrator with coreference resolution and instructional acts.
+    Main orchestrator with validation, confidence, and contradiction detection.
     """
     
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
@@ -57,6 +61,11 @@ class SemanticIntelligence:
         
         # Phase 4
         self.coreference_resolver = CoreferenceResolver()
+        
+        # Phase 5
+        self.validator = SemanticValidator()
+        self.confidence_calculator = ConfidenceCalculator()
+        self.contradiction_detector = ContradictionDetector()
     
     def process(
         self,
@@ -68,10 +77,12 @@ class SemanticIntelligence:
         timestamp: Optional[float] = None,
         topic_path: Optional[str] = None,
         generate_embeddings: bool = True,
-        resolve_coreferences: bool = True
+        resolve_coreferences: bool = True,
+        validate: bool = True,
+        detect_contradictions: bool = True
     ) -> SemanticFrame:
         """
-        Process a transcript chunk and produce a SemanticFrame.
+        Process a transcript chunk and produce a validated SemanticFrame.
         """
         # Create frame
         frame = SemanticFrame(
@@ -107,7 +118,7 @@ class SemanticIntelligence:
         )
         frame.mentions = mentions
         
-        # Generate embeddings for mentions
+        # Generate embeddings
         mention_embeddings = {}
         if generate_embeddings and mentions:
             mention_texts = [
@@ -175,7 +186,7 @@ class SemanticIntelligence:
         
         frame.concepts = resolved_concepts
         
-        # Phase 4: Resolve coreferences
+        # Phase 4: Coreference resolution
         if resolve_coreferences:
             coreferences = self.coreference_resolver.resolve_all(
                 transcript_text,
@@ -185,7 +196,6 @@ class SemanticIntelligence:
             )
             frame.coreferences = coreferences
             
-            # Track unresolved references
             unresolved = self._find_unresolved_references(
                 transcript_text,
                 active_refs
@@ -204,6 +214,23 @@ class SemanticIntelligence:
             concepts=chunk_concepts
         )
         
+        # Phase 5: Contradiction detection
+        if detect_contradictions and propositions:
+            existing_props = list(self.semantic_memory._propositions.values())
+            
+            for prop in propositions:
+                contradiction = self.contradiction_detector.detect_contradiction(
+                    prop,
+                    existing_props
+                )
+                
+                if contradiction:
+                    self.contradiction_detector.handle_contradiction(
+                        contradiction,
+                        self.semantic_memory._propositions
+                    )
+        
+        # Add propositions to memory
         for prop in propositions:
             self.semantic_memory.add_proposition(prop)
         
@@ -213,7 +240,7 @@ class SemanticIntelligence:
         relations = self._extract_relations(propositions)
         frame.relations = relations
         
-        # Detect instructional acts with concept linking
+        # Detect instructional acts
         concept_refs = [ref for ref in concept_ref_map.values()]
         
         instructional_acts = self.instructional_detector.detect(
@@ -224,10 +251,27 @@ class SemanticIntelligence:
         )
         frame.instructional_acts = instructional_acts
         
+        # Phase 5: Validation
+        validation_report = None
+        if validate:
+            frame_valid, validation_confidence, validation_report = (
+                self.validator.validate_frame(
+                    resolved_concepts,
+                    propositions,
+                    frame.evidence
+                )
+            )
+            
+            if not frame_valid:
+                frame.extraction_status = ExtractionStatus.PARTIAL
+        
         # Calculate confidence
-        frame.frame_confidence = self._calculate_frame_confidence(
-            frame,
-            asr_confidence
+        frame.frame_confidence = self.confidence_calculator.calculate_frame_confidence(
+            resolved_concepts,
+            propositions,
+            frame.evidence,
+            asr_confidence=asr_confidence,
+            validation_report=validation_report
         )
         
         # Set extraction status
@@ -248,7 +292,6 @@ class SemanticIntelligence:
         """Find references that couldn't be resolved"""
         unresolved = []
         
-        # Check for pronouns without clear antecedents
         pronouns = ["it", "this", "that", "these", "those", "they", "them"]
         
         words = text.lower().split()
@@ -281,54 +324,11 @@ class SemanticIntelligence:
         
         return relations
     
-    def _calculate_frame_confidence(
-        self,
-        frame: SemanticFrame,
-        asr_confidence: Optional[float]
-    ) -> Confidence:
-        """Calculate multi-dimensional confidence"""
-        
-        asr_quality = asr_confidence if asr_confidence is not None else 0.8
-        
-        if frame.propositions:
-            extraction_confidence = 0.8
-        elif frame.concepts:
-            extraction_confidence = 0.6
-        elif frame.mentions:
-            extraction_confidence = 0.4
-        else:
-            extraction_confidence = 0.0
-        
-        grounding_confidence = 0.9 if frame.evidence else 0.0
-        entity_resolution_confidence = 0.7 if frame.concepts else 0.0
-        
-        if frame.concepts:
-            resolved_count = sum(
-                1 for c in frame.concepts if c.mention_count > 1
-            )
-            if resolved_count > 0:
-                entity_resolution_confidence = 0.9
-        
-        validation_confidence = 0.5
-        consistency_confidence = 0.5
-        
-        # Boost consistency if coreferences resolved
-        if frame.coreferences:
-            consistency_confidence = 0.7
-        
-        return Confidence(
-            asr_quality=asr_quality,
-            extraction_confidence=extraction_confidence,
-            entity_resolution_confidence=entity_resolution_confidence,
-            grounding_confidence=grounding_confidence,
-            validation_confidence=validation_confidence,
-            consistency_confidence=consistency_confidence
-        )
-    
     def get_memory_statistics(self) -> Dict[str, Any]:
         """Get semantic memory statistics"""
         stats = self.semantic_memory.get_statistics()
         stats.update(self.embedding_index.get_stats())
+        stats["contradictions"] = len(self.contradiction_detector.get_contradictions())
         return stats
     
     def get_all_concepts(self) -> List[Concept]:
@@ -338,3 +338,13 @@ class SemanticIntelligence:
     def get_concept(self, concept_id: str) -> Optional[Concept]:
         """Get concept by ID"""
         return self.entity_resolver.get_concept(concept_id)
+    
+    def get_contradictions(self) -> List[Any]:
+        """Get all detected contradictions"""
+        return self.contradiction_detector.get_contradictions()
+    
+    def get_active_propositions(self) -> List[Proposition]:
+        """Get active propositions only"""
+        return self.contradiction_detector.get_active_propositions(
+            self.semantic_memory._propositions
+        )

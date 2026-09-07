@@ -38,9 +38,12 @@ from .semantic_memory import SemanticMemory, ActiveContext, TopicMemory
 from .embedding_index import EmbeddingIndex
 from .embedding_retriever import EmbeddingRetriever
 from .coreference_resolver import CoreferenceResolver
+from .validator import SemanticValidator
+from .confidence import ConfidenceCalculator
+from .contradiction_detector import ContradictionDetector
 from .semantic_intelligence import SemanticIntelligence
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
 __all__ = [
     # Models
@@ -84,6 +87,10 @@ __all__ = [
     "EmbeddingRetriever",
     # Phase 4
     "CoreferenceResolver",
+    # Phase 5
+    "SemanticValidator",
+    "ConfidenceCalculator",
+    "ContradictionDetector",
     # Main
     "SemanticIntelligence"
 ]
