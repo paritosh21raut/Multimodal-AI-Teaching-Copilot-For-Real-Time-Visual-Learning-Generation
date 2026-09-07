@@ -9,6 +9,7 @@ from .semantic_models import (
     SemanticEvent,
     SemanticEventLog,
     Concept,
+    ConceptRef,
     Proposition,
     Relation,
     EvidenceSpan,
@@ -27,14 +28,21 @@ from .semantic_models import (
 
 from .semantic_state import SemanticState
 from .evidence import EvidenceManager
+from .mention_extractor import MentionExtractor
+from .proposition_extractor import PropositionExtractor
+from .relation_normalizer import RelationNormalizer
+from .instructional_detector import InstructionalDetector
+from .semantic_intelligence import SemanticIntelligence
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
+    # Models
     "SemanticFrame",
     "SemanticEvent",
     "SemanticEventLog",
     "Concept",
+    "ConceptRef",
     "Proposition",
     "Relation",
     "EvidenceSpan",
@@ -49,6 +57,15 @@ __all__ = [
     "RelationType",
     "InstructionalActType",
     "SemanticEventType",
+    # State
     "SemanticState",
-    "EvidenceManager"
+    # Managers
+    "EvidenceManager",
+    # Extractors
+    "MentionExtractor",
+    "PropositionExtractor",
+    "RelationNormalizer",
+    "InstructionalDetector",
+    # Main
+    "SemanticIntelligence"
 ]
