@@ -41,9 +41,12 @@ from .coreference_resolver import CoreferenceResolver
 from .validator import SemanticValidator
 from .confidence import ConfidenceCalculator
 from .contradiction_detector import ContradictionDetector
+from .development_tracker import DevelopmentTracker, DevelopmentScore
+from .importance_scorer import ImportanceScorer, ImportanceScore
+from .semantic_integration import SemanticIntegration, SemanticSummary
 from .semantic_intelligence import SemanticIntelligence
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 __all__ = [
     # Models
@@ -91,6 +94,13 @@ __all__ = [
     "SemanticValidator",
     "ConfidenceCalculator",
     "ContradictionDetector",
+    # Phase 6
+    "DevelopmentTracker",
+    "DevelopmentScore",
+    "ImportanceScorer",
+    "ImportanceScore",
+    "SemanticIntegration",
+    "SemanticSummary",
     # Main
     "SemanticIntelligence"
 ]
