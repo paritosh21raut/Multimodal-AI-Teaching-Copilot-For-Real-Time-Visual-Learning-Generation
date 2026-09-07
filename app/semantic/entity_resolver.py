@@ -1,73 +1,162 @@
 """
-Entity Resolver
+Entity Resolver (Phase 3 - Fixed)
 
-Resolves mentions to concepts using multiple signals.
-Prevents incorrect merging while maintaining concept identity.
+Resolves mentions to concepts using multiple signals including
+embeddings for improved accuracy with proper ambiguity handling.
 """
 
 from __future__ import annotations
 
 from typing import Dict, List, Optional, Set, Tuple, Any
 import re
+import numpy as np
+from datetime import datetime
 
 from .semantic_models import Concept, ConceptRef, Mention, EvidenceSpan
 from .concept_registry import ConceptRegistry, ResolutionResult
+from .embedding_index import EmbeddingIndex
+from .embedding_retriever import EmbeddingRetriever
 
 
 class EntityResolver:
     """Resolves mentions to stable concept identities"""
     
-    def __init__(self):
+    def __init__(self, embedding_index: Optional[EmbeddingIndex] = None):
         self.registry = ConceptRegistry()
+        self.embedding_index = embedding_index or EmbeddingIndex()
+        self.embedding_retriever = EmbeddingRetriever(self.embedding_index)
         
-        # Minimum confidence thresholds
+        # Resolution thresholds
         self.exact_match_threshold = 1.0
         self.normalized_match_threshold = 0.85
-        self.embedding_match_threshold = 0.80
+        self.embedding_match_threshold = 0.85
+        self.margin_threshold = 0.03
         self.min_confidence = 0.50
     
     def resolve(
         self,
         mention: Mention,
-        embedding: Optional[List[float]] = None,
+        embedding: Optional[np.ndarray] = None,
         active_concepts: Optional[List[ConceptRef]] = None,
         topic_concepts: Optional[List[ConceptRef]] = None
     ) -> ResolutionResult:
         """
-        Resolve mention to concept.
-        
-        Args:
-            mention: The mention to resolve
-            embedding: Optional embedding for similarity matching
-            active_concepts: Currently active concepts (recent context)
-            topic_concepts: Concepts associated with current topic
-            
-        Returns:
-            ResolutionResult
+        Resolve mention to concept using multi-stage approach.
         """
-        # Try exact match first
+        # Stage 1 & 2: Exact and normalized match (from registry)
         result = self.registry.resolve(
             mention=mention,
-            embedding=embedding,
+            embedding=embedding.tolist() if isinstance(embedding, np.ndarray) else embedding,
             active_concepts=active_concepts
         )
         
-        # If new concept, check if we should be more conservative
-        if result.is_new and embedding is not None:
-            # Check topic-local concepts for potential matches
-            if topic_concepts:
-                topic_match = self._check_topic_concepts(
-                    mention, embedding, topic_concepts
-                )
-                if topic_match:
-                    return topic_match
+        # If resolved via exact or normalized, return immediately
+        if not result.is_new:
+            return result
+        
+        # Stage 3: Embedding similarity (only for new concepts)
+        if embedding is not None and result.is_new:
+            embedding_result = self._resolve_with_embedding(
+                mention,
+                embedding,
+                active_concepts,
+                topic_concepts
+            )
+            
+            if embedding_result:
+                return embedding_result
+        
+        # If still new, register its embedding
+        if embedding is not None and result.is_new:
+            self.embedding_index.add_concept_embedding(
+                result.concept_ref.concept_id,
+                embedding
+            )
         
         return result
+    
+    def _resolve_with_embedding(
+        self,
+        mention: Mention,
+        embedding: np.ndarray,
+        active_concepts: Optional[List[ConceptRef]],
+        topic_concepts: Optional[List[ConceptRef]]
+    ) -> Optional[ResolutionResult]:
+        """Resolve using embedding similarity with ambiguity check"""
+        
+        # Retrieve top candidates
+        candidates = self.embedding_retriever.retrieve_candidates(
+            embedding,
+            self.registry,
+            active_concepts=active_concepts,
+            topic_concepts=topic_concepts,
+            top_k=5
+        )
+        
+        if not candidates:
+            return None
+        
+        best_match, best_similarity = candidates[0]
+        
+        # Check if similarity is high enough
+        if best_similarity < self.embedding_match_threshold:
+            return None
+        
+        # Check ambiguity (if second match is very close)
+        if len(candidates) > 1:
+            second_similarity = candidates[1][1]
+            
+            if best_similarity - second_similarity < self.margin_threshold:
+                # Too ambiguous - don't force match
+                return None
+        
+        # Merge with existing concept
+        concept = self.registry.get_concept(best_match.concept_id)
+        
+        if concept:
+            # Add this mention as alias
+            if mention.surface_text not in concept.aliases:
+                concept.aliases.append(mention.surface_text)
+                self.registry._alias_index[
+                    self.registry._normalize(mention.surface_text)
+                ] = concept.concept_id
+                self.registry._exact_index[
+                    mention.surface_text.lower().strip()
+                ] = concept.concept_id
+            
+            concept.mention_count += 1
+            concept.updated_at = datetime.now()
+            
+            # Update centroid embedding (weighted average)
+            if concept.centroid_embedding:
+                old_embedding = np.array(concept.centroid_embedding)
+                concept.centroid_embedding = (
+                    0.7 * old_embedding + 0.3 * embedding
+                ).tolist()
+                
+                self.embedding_index.add_concept_embedding(
+                    concept.concept_id,
+                    np.array(concept.centroid_embedding)
+                )
+            
+            return ResolutionResult(
+                concept_ref=ConceptRef(
+                    concept_id=concept.concept_id,
+                    canonical_name=concept.canonical_name,
+                    confidence=best_similarity
+                ),
+                is_new=False,
+                confidence=best_similarity,
+                resolution_method='embedding',
+                candidates=[c[0] for c in candidates[:3]]
+            )
+        
+        return None
     
     def resolve_all(
         self,
         mentions: List[Mention],
-        embeddings: Optional[Dict[str, List[float]]] = None,
+        embeddings: Optional[Dict[str, np.ndarray]] = None,
         active_concepts: Optional[List[ConceptRef]] = None,
         topic_concepts: Optional[List[ConceptRef]] = None
     ) -> List[ResolutionResult]:
@@ -78,6 +167,8 @@ class EntityResolver:
             embedding = None
             if embeddings and mention.normalized_text in embeddings:
                 embedding = embeddings[mention.normalized_text]
+            elif embeddings and mention.surface_text in embeddings:
+                embedding = embeddings[mention.surface_text]
             
             result = self.resolve(
                 mention=mention,
@@ -89,81 +180,30 @@ class EntityResolver:
         
         return results
     
-    def _check_topic_concepts(
-        self,
-        mention: Mention,
-        embedding: List[float],
-        topic_concepts: List[ConceptRef]
-    ) -> Optional[ResolutionResult]:
-        """Check if mention matches any topic-local concepts"""
-        best_match = None
-        best_similarity = 0.0
-        
-        for ref in topic_concepts:
-            concept = self.registry.get_concept(ref.concept_id)
-            if concept and concept.centroid_embedding:
-                similarity = self._cosine_similarity(
-                    embedding,
-                    concept.centroid_embedding
-                )
-                
-                if similarity > best_similarity:
-                    best_similarity = similarity
-                    best_match = concept
-        
-        # If strong match found, merge into existing
-        if best_match and best_similarity > self.embedding_match_threshold:
-            # Add alias
-            if mention.surface_text not in best_match.aliases:
-                best_match.aliases.append(mention.surface_text)
-            
-            best_match.mention_count += 1
-            
-            return ResolutionResult(
-                concept_ref=ConceptRef(
-                    concept_id=best_match.concept_id,
-                    canonical_name=best_match.canonical_name,
-                    confidence=best_similarity
-                ),
-                is_new=False,
-                confidence=best_similarity,
-                resolution_method='topic_local',
-                candidates=[ConceptRef(
-                    concept_id=best_match.concept_id,
-                    canonical_name=best_match.canonical_name,
-                    confidence=best_similarity
-                )]
-            )
-        
-        return None
-    
     def merge_concepts(self, source_id: str, target_id: str) -> bool:
         """Merge two concepts"""
-        return self.registry.merge_concepts(source_id, target_id)
+        success = self.registry.merge_concepts(source_id, target_id)
+        
+        if success:
+            # Remove source embedding
+            self.embedding_index.remove_concept(source_id)
+        
+        return success
     
     def get_concept(self, concept_id: str) -> Optional[Concept]:
         """Get concept by ID"""
         return self.registry.get_concept(concept_id)
     
+    def get_concept_by_alias(self, alias: str) -> Optional[Concept]:
+        """Get concept by alias"""
+        return self.registry.get_concept_by_alias(alias)
+    
     def get_all_concepts(self) -> List[Concept]:
         """Get all concepts"""
         return self.registry.get_all_concepts()
     
-    def get_statistics(self) -> Dict[str, int]:
+    def get_statistics(self) -> Dict[str, Any]:
         """Get resolver statistics"""
-        return self.registry.get_statistics()
-    
-    @staticmethod
-    def _cosine_similarity(a: List[float], b: List[float]) -> float:
-        """Calculate cosine similarity"""
-        if not a or not b or len(a) != len(b):
-            return 0.0
-        
-        dot_product = sum(x * y for x, y in zip(a, b))
-        norm_a = sum(x * x for x in a) ** 0.5
-        norm_b = sum(x * x for x in b) ** 0.5
-        
-        if norm_a == 0 or norm_b == 0:
-            return 0.0
-        
-        return dot_product / (norm_a * norm_b)
+        stats = self.registry.get_statistics()
+        stats.update(self.embedding_index.get_stats())
+        return stats

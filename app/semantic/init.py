@@ -35,9 +35,11 @@ from .instructional_detector import InstructionalDetector
 from .concept_registry import ConceptRegistry, ResolutionResult
 from .entity_resolver import EntityResolver
 from .semantic_memory import SemanticMemory, ActiveContext, TopicMemory
+from .embedding_index import EmbeddingIndex
+from .embedding_retriever import EmbeddingRetriever
 from .semantic_intelligence import SemanticIntelligence
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     # Models
@@ -76,6 +78,9 @@ __all__ = [
     "SemanticMemory",
     "ActiveContext",
     "TopicMemory",
+    # Phase 3
+    "EmbeddingIndex",
+    "EmbeddingRetriever",
     # Main
     "SemanticIntelligence"
 ]

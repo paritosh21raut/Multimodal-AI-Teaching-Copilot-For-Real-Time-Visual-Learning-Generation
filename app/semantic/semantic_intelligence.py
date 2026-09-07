@@ -1,14 +1,14 @@
 """
-Semantic Intelligence - Main Orchestrator (Phase 2)
+Semantic Intelligence - Main Orchestrator (Phase 3)
 
-Integrates semantic memory, entity resolution, and concept registry
-for incremental cross-chunk understanding.
+Integrates embedding-based retrieval for improved concept resolution.
 """
 
 from __future__ import annotations
 
 from typing import Optional, Dict, Any, List
 import uuid
+import numpy as np
 from datetime import datetime
 
 from .semantic_models import (
@@ -32,25 +32,26 @@ from .relation_normalizer import RelationNormalizer
 from .instructional_detector import InstructionalDetector
 from .entity_resolver import EntityResolver
 from .semantic_memory import SemanticMemory
+from .embedding_index import EmbeddingIndex
 
 
 class SemanticIntelligence:
     """
-    Main orchestrator for semantic extraction with memory.
-    
-    Maintains concept identity across chunks through entity resolution
-    and semantic memory.
+    Main orchestrator with embedding-based concept resolution.
     """
     
-    def __init__(self):
+    def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
         self.evidence_manager = EvidenceManager()
         self.mention_extractor = MentionExtractor()
         self.proposition_extractor = PropositionExtractor()
         self.relation_normalizer = RelationNormalizer()
         self.instructional_detector = InstructionalDetector()
         
-        # Phase 2: Memory and entity resolution
-        self.entity_resolver = EntityResolver()
+        # Embedding index
+        self.embedding_index = EmbeddingIndex()
+        
+        # Entity resolver with embedding support
+        self.entity_resolver = EntityResolver(self.embedding_index)
         self.semantic_memory = SemanticMemory()
     
     def process(
@@ -62,23 +63,10 @@ class SemanticIntelligence:
         asr_confidence: Optional[float] = None,
         timestamp: Optional[float] = None,
         topic_path: Optional[str] = None,
-        embeddings: Optional[Dict[str, List[float]]] = None
+        generate_embeddings: bool = True
     ) -> SemanticFrame:
         """
         Process a transcript chunk and produce a SemanticFrame.
-        
-        Args:
-            transcript_text: Refined transcript text
-            chunk_id: Current chunk identifier
-            lecture_id: Current lecture identifier
-            structural_context: Context from Lecture Structure Intelligence
-            asr_confidence: ASR confidence score
-            timestamp: Transcript timestamp
-            topic_path: Current topic path from LSI
-            embeddings: Optional embeddings for mentions
-            
-        Returns:
-            SemanticFrame with resolved concepts and memory integration
         """
         # Create frame
         frame = SemanticFrame(
@@ -114,29 +102,49 @@ class SemanticIntelligence:
         )
         frame.mentions = mentions
         
-        # Resolve mentions to concepts (Phase 2)
+        # Generate embeddings for mentions (Phase 3)
+        mention_embeddings = {}
+        if generate_embeddings and mentions:
+            mention_texts = [
+                m.surface_text for m in mentions
+                if m.surface_text.strip()
+            ]
+            
+            if mention_texts:
+                embeddings = self.embedding_index.batch_encode(mention_texts)
+                
+                for mention, embedding in zip(mentions, embeddings):
+                    if embedding is not None:
+                        mention_embeddings[mention.normalized_text] = embedding
+        
+        # Get active concepts for resolution
+        active_refs = self.semantic_memory.active_context.get_concept_refs(
+            self.semantic_memory.registry
+        )
+        
+        # Get topic concepts
+        topic_refs = None
+        if topic_path:
+            topic_refs = self.semantic_memory.topic_memory.get_topic_concept_refs(
+                topic_path,
+                self.semantic_memory.registry
+            )
+        
+        # Resolve mentions to concepts with embeddings
         resolved_concepts = []
-        concept_ref_map = {}  # mention normalized -> ConceptRef
+        concept_ref_map = {}
         
         for mention in mentions:
-            # Get embedding for this mention if available
-            embedding = None
-            if embeddings and mention.normalized_text in embeddings:
-                embedding = embeddings[mention.normalized_text]
+            embedding = mention_embeddings.get(mention.normalized_text)
             
-            # Resolve to concept
+            # Resolve using entity resolver with embeddings
             resolution = self.entity_resolver.resolve(
                 mention=mention,
                 embedding=embedding,
-                topic_concepts=(
-                    self.semantic_memory.topic_memory.get_topic_concept_refs(
-                        topic_path, self.semantic_memory.registry
-                    )
-                    if topic_path else None
-                )
+                active_concepts=active_refs,
+                topic_concepts=topic_refs
             )
             
-            # Get the concept
             concept = self.entity_resolver.get_concept(
                 resolution.concept_ref.concept_id
             )
@@ -145,12 +153,19 @@ class SemanticIntelligence:
                 resolved_concepts.append(concept)
                 concept_ref_map[mention.normalized_text] = resolution.concept_ref
                 
-                # Add to semantic memory
+                # Update memory
                 if resolution.is_new:
                     self.semantic_memory.add_concept(
                         concept,
                         topic_path=topic_path
                     )
+                    
+                    # Add embedding to index
+                    if embedding is not None:
+                        self.embedding_index.add_concept_embedding(
+                            concept.concept_id,
+                            embedding
+                        )
                 else:
                     # Activate existing concept
                     self.semantic_memory.active_context.add_concept(
@@ -171,13 +186,12 @@ class SemanticIntelligence:
             concepts=chunk_concepts
         )
         
-        # Add propositions to memory
         for prop in propositions:
             self.semantic_memory.add_proposition(prop)
         
         frame.propositions = propositions
         
-        # Extract relations from propositions
+        # Extract relations
         relations = self._extract_relations(propositions)
         frame.relations = relations
         
@@ -191,7 +205,7 @@ class SemanticIntelligence:
         )
         frame.instructional_acts = instructional_acts
         
-        # Calculate frame confidence
+        # Calculate confidence
         frame.frame_confidence = self._calculate_frame_confidence(
             frame,
             asr_confidence
@@ -244,9 +258,10 @@ class SemanticIntelligence:
             extraction_confidence = 0.0
         
         grounding_confidence = 0.9 if frame.evidence else 0.0
+        
+        # Entity resolution confidence improved with embeddings
         entity_resolution_confidence = 0.7 if frame.concepts else 0.0
         
-        # Higher confidence if concepts were resolved (not new)
         if frame.concepts:
             resolved_count = sum(
                 1 for c in frame.concepts if c.mention_count > 1
@@ -268,7 +283,9 @@ class SemanticIntelligence:
     
     def get_memory_statistics(self) -> Dict[str, Any]:
         """Get semantic memory statistics"""
-        return self.semantic_memory.get_statistics()
+        stats = self.semantic_memory.get_statistics()
+        stats.update(self.embedding_index.get_stats())
+        return stats
     
     def get_all_concepts(self) -> List[Concept]:
         """Get all concepts from memory"""
