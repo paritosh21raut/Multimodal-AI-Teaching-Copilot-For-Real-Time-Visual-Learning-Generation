@@ -1,12 +1,36 @@
-# Virtual Environment
-.venv/
+# Environment variables
+.env
+*.env
+.env.local
+.env.production
+
+# API Keys
+*api_key*
+*apikey*
+setup_groq_env_local.bat
 
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
 
-# Environment Variables
-.env
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
 
-# VS Code
+# IDE
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

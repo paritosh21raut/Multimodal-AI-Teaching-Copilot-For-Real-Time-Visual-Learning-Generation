@@ -18,6 +18,9 @@ from app.dashboard.dashboard_state import (
     dashboard_state,
 )
 
+# Import Semantic Pipeline
+from app.semantic.semantic_pipeline import SemanticPipeline
+
 
 class LecturePipeline:
 
@@ -30,6 +33,9 @@ class LecturePipeline:
         self.content_generator = None
 
         self.slide_manager = None
+
+        # Initialize Semantic Pipeline
+        self.semantic_pipeline = SemanticPipeline()
 
         self.started = False
 
@@ -179,6 +185,23 @@ class LecturePipeline:
         )
 
         # ----------------------------------------------------------
+        # SEMANTIC INTELLIGENCE PROCESSING
+        # ----------------------------------------------------------
+
+        # Get current topic path for semantic context
+        topic_path = str(decision.topic) if decision.topic else ""
+
+        # Process through Semantic Pipeline
+        semantic_result = self.semantic_pipeline.process_transcript(
+            transcript_text=transcript,
+            chunk_id=f"chunk_{lecture_state.get_current_slide().slide_number if lecture_state.get_current_slide() else 0}",
+            lecture_id=lecture_state.lecture_title,
+            topic_path=topic_path,
+            asr_confidence=None,  # We don't have ASR confidence in this flow
+            generate_embeddings=False  # Disable for speed in initial integration
+        )
+
+        # ----------------------------------------------------------
         # Confidence
         # ----------------------------------------------------------
 
@@ -300,6 +323,14 @@ class LecturePipeline:
             f"{decision.reason}"
         )
 
+        # Add semantic info if available
+        if semantic_result:
+            print(
+                f"Semantic       : "
+                f"{len(semantic_result['frame'].concepts)} concepts, "
+                f"{len(semantic_result['frame'].propositions)} propositions"
+            )
+
         print(
             "-" * 70
         )
@@ -321,19 +352,48 @@ class LecturePipeline:
 
         try:
 
-            content = (
-                self.content_generator.generate(
+            # Use semantic content if available
+            if semantic_result and semantic_result.get("slide_content"):
+                slide_content = semantic_result["slide_content"]
+                
+                # Pass semantic context to content generator
+                content = (
+                    self.content_generator.generate(
 
-                    topic=(
-                        decision.topic
-                    ),
+                        topic=(
+                            decision.topic
+                        ),
 
-                    context=(
-                        context_buffer
-                        .rolling_context()
-                    ),
+                        context=(
+                            context_buffer
+                            .rolling_context()
+                        ),
+
+                        semantic_content={
+                            "key_concepts": slide_content.key_concepts,
+                            "definitions": slide_content.definitions,
+                            "propositions": slide_content.propositions,
+                            "examples": slide_content.examples,
+                            "importance": slide_content.importance,
+                            "confidence": slide_content.confidence,
+                        }
+                    )
                 )
-            )
+            else:
+                # Fallback to original behavior
+                content = (
+                    self.content_generator.generate(
+
+                        topic=(
+                            decision.topic
+                        ),
+
+                        context=(
+                            context_buffer
+                            .rolling_context()
+                        ),
+                    )
+                )
 
         except Exception as error:
 
@@ -489,6 +549,16 @@ class LecturePipeline:
             ),
             "visual_spec": (
                 content.visual_spec
+            ),
+            "semantic_concepts": (
+                len(semantic_result["frame"].concepts)
+                if semantic_result
+                else 0
+            ),
+            "semantic_propositions": (
+                len(semantic_result["frame"].propositions)
+                if semantic_result
+                else 0
             ),
         }
 
