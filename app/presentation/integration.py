@@ -1,13 +1,14 @@
 """
-Presentation Integration (FINAL FIX v2)
+Presentation Integration (GOLDEN TEST FIX)
 
-Fixed: Checks if selected info contains NEW content before proceeding.
+Fixed: Better detection of new content beyond IS_A/PROVIDES.
 """
 
 from __future__ import annotations
 
 from typing import Dict, List, Optional, Any, Set
 import threading
+import re
 
 from app.presentation.models.presentation_models import (
     SlideAction, SlideDecision, SelectedInformation, RepresentationDecision,
@@ -53,14 +54,10 @@ class PresentationIntelligence:
         important_concepts: List[str],
         chunk_id: str = "",
     ) -> Optional[Dict[str, Any]]:
-        """Process semantic frame through presentation pipeline"""
         with self._lock:
-            # ==========================================
-            # Check if there's NEW content to display
-            # ==========================================
-            has_new_content = self._has_new_content(frame, important_concepts)
+            # Check for new content
+            has_new_content = self._has_new_content(frame, important_concepts, topic_changed)
             
-            # If no new content AND no topic change, NO_CHANGE
             if not has_new_content and not topic_changed:
                 return {
                     "action": SlideAction.NO_CHANGE.value,
@@ -68,25 +65,17 @@ class PresentationIntelligence:
                     "slide_created": False,
                 }
             
-            # ==========================================
             # Information Selection
-            # ==========================================
             selected_info = self.information_selector.select(
                 frame=frame,
                 important_concepts=important_concepts,
             )
-            
-            # Track displayed content
             self._track_displayed(selected_info)
             
-            # ==========================================
             # Calculate novelty
-            # ==========================================
             semantic_novelty = self._calculate_novelty(important_concepts)
             
-            # ==========================================
             # Slide Decision
-            # ==========================================
             decision = self.slide_decision_engine.decide(
                 topic_changed=topic_changed,
                 current_topic=current_topic,
@@ -102,9 +91,7 @@ class PresentationIntelligence:
                     "slide_created": False,
                 }
             
-            # ==========================================
             # Representation, Planning, Layout, Visual
-            # ==========================================
             representation = self.representation_engine.decide(
                 frame=frame,
                 selected_info=selected_info,
@@ -133,8 +120,24 @@ class PresentationIntelligence:
                 "slide_created": render_result.get("is_valid", False),
             }
     
-    def _has_new_content(self, frame: Any, important_concepts: List[str]) -> bool:
-        """Check if frame contains content not yet displayed"""
+    def _has_new_content(
+        self,
+        frame: Any,
+        important_concepts: List[str],
+        topic_changed: bool = False,
+    ) -> bool:
+        """Check if frame has content we haven't displayed yet"""
+        
+        # Topic change always has new content
+        if topic_changed:
+            return True
+        
+        # Check concepts
+        if hasattr(frame, 'concepts'):
+            for concept in frame.concepts:
+                if concept.canonical_name not in self._displayed_content:
+                    return True
+        
         # Check propositions
         if hasattr(frame, 'propositions'):
             for prop in frame.propositions:
@@ -142,23 +145,28 @@ class PresentationIntelligence:
                     text = f"{prop.subject.canonical_name} {prop.predicate.value} {prop.object.canonical_name}"
                     if text not in self._displayed_content:
                         return True
-                    # Also check if important concepts are new
-                    if prop.subject.canonical_name in important_concepts:
-                        if prop.subject.canonical_name not in self._processed_chunks:
-                            return True
+                # Even if no subject/object, proposition itself is new
+                elif prop.proposition_id not in self._displayed_content:
+                    return True
         
-        # Check definitions
+        # Check instructional acts
         if hasattr(frame, 'instructional_acts'):
             for act in frame.instructional_acts:
-                if hasattr(act, 'act_type') and act.act_type.value == "DEFINITION":
-                    for ref in act.concept_refs:
-                        if ref.canonical_name not in self._displayed_content:
-                            return True
+                act_text = f"{act.act_type.value}_{len(act.concept_refs)}"
+                if act_text not in self._displayed_content:
+                    return True
+        
+        # Check relations
+        if hasattr(frame, 'relations'):
+            for rel in frame.relations:
+                if rel.source and rel.target:
+                    text = f"{rel.source.canonical_name}_{rel.relation_type.value}_{rel.target.canonical_name}"
+                    if text not in self._displayed_content:
+                        return True
         
         return False
     
     def _track_displayed(self, selected_info: SelectedInformation):
-        """Track what's been displayed"""
         if selected_info.focal_claim:
             self._displayed_content.add(selected_info.focal_claim)
         for unit in selected_info.semantic_units:
