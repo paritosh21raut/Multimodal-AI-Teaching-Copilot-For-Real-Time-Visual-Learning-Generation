@@ -1,20 +1,16 @@
 """
-Transcript Intelligence - FIXED
+Transcript Intelligence (Updated with Term Tracking)
 
-Conservative transcript refinement.
-Key fixes:
-1. Removed aggressive pluralization
-2. Removed context-based word replacement
-3. Only fixes obvious ASR errors
-4. Preserves technical terminology
+Conservative transcript refinement with technical term tracking.
 """
 
 from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from difflib import SequenceMatcher
 from typing import List, Optional, Tuple
+
+from app.speech.term_tracker import TermTracker
 
 
 @dataclass
@@ -35,9 +31,8 @@ class TranscriptResult:
 
 
 class TranscriptIntelligence:
-    """Conservative transcript refinement layer"""
+    """Conservative transcript refinement with term tracking"""
 
-    # Fillers to remove
     _FILLER_PATTERNS = (
         r"\b(um+|uh+|er+|ah+)\b",
         r"\byou know\b",
@@ -47,7 +42,6 @@ class TranscriptIntelligence:
         r"\bsort of\b",
     )
 
-    # Generic terminology normalization (safe, domain-agnostic)
     _TERMINOLOGY = {
         "data set": "dataset",
         "fine tuned": "fine-tuned",
@@ -58,10 +52,6 @@ class TranscriptIntelligence:
         "real time": "real-time",
     }
 
-    # IMPORTANT: Removed _CONTEXT_CORRECTIONS - too aggressive
-    # IMPORTANT: Removed _apply_generic_context_corrections - causes pluralization issues
-
-    # Words that should NEVER be modified
     _PROTECTED_WORDS = {
         "this", "that", "these", "those", "there", "where",
         "which", "while", "using", "used", "uses", "model",
@@ -71,12 +61,17 @@ class TranscriptIntelligence:
         "layer", "layers", "device", "devices",
     }
 
+    def __init__(self):
+        # Initialize term tracker for technical term learning
+        self.term_tracker = TermTracker()
+        self._processed_chunks = 0
+
     def refine(
         self,
         text: str,
         context: Optional[str] = None,
     ) -> TranscriptResult:
-        """Refine transcript conservatively"""
+        """Refine transcript conservatively with term tracking"""
 
         original_text = str(text).strip() if text else ""
 
@@ -100,7 +95,7 @@ class TranscriptIntelligence:
                 correction_type="filler", confidence=0.99
             ))
 
-        # 2. Remove immediate word repetitions only
+        # 2. Remove immediate word repetitions
         refined, repetition_changed = self._remove_immediate_repetitions(refined)
         if repetition_changed:
             corrections.append(TranscriptCorrection(
@@ -112,7 +107,23 @@ class TranscriptIntelligence:
         refined, term_corrections = self._normalize_terminology(refined)
         corrections.extend(term_corrections)
 
-        # 4. Basic punctuation cleanup
+        # 4. Add terms to tracker (learn from this chunk)
+        self.term_tracker.add_terms_from_text(refined)
+
+        # 5. Correct misrecognized terms using learned context
+        # Only apply after we've processed enough chunks
+        if self._processed_chunks >= 2:
+            refined, term_corrections = self.term_tracker.correct(refined)
+            
+            for correction in term_corrections:
+                corrections.append(TranscriptCorrection(
+                    original=correction["original"],
+                    replacement=correction["replacement"],
+                    correction_type="term_correction",
+                    confidence=correction["confidence"],
+                ))
+
+        # 6. Basic punctuation cleanup
         cleaned = self._clean_punctuation(refined)
         if cleaned != refined:
             corrections.append(TranscriptCorrection(
@@ -122,6 +133,7 @@ class TranscriptIntelligence:
             refined = cleaned
 
         refined = self._normalize(refined)
+        self._processed_chunks += 1
 
         return TranscriptResult(
             original_text=original_text,
@@ -146,7 +158,6 @@ class TranscriptIntelligence:
 
     @staticmethod
     def _remove_immediate_repetitions(text: str) -> Tuple[str, bool]:
-        """Only remove immediate word repetitions (e.g., 'the the')"""
         if not text:
             return text, False
 
@@ -208,7 +219,6 @@ class TranscriptIntelligence:
             return 0.0
 
         removed_ratio = max(0.0, (len(original_words) - len(refined_words)) / len(original_words))
-
         score = 1.0 - removed_ratio * 0.2
 
         return max(0.0, min(1.0, float(score)))
