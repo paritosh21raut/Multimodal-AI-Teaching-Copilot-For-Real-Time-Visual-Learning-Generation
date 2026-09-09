@@ -34,3 +34,9 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+outputs/
+logs/
+*.pptx"outputs/" 
+"logs/" 
+"*.pptx" 
