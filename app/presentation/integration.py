@@ -1,14 +1,13 @@
 """
-Presentation Integration (GOLDEN TEST FIX)
+Presentation Integration (DEDUP FIXED)
 
-Fixed: Better detection of new content beyond IS_A/PROVIDES.
+Fixed: _displayed_content is now populated before _has_new_content check.
 """
 
 from __future__ import annotations
 
 from typing import Dict, List, Optional, Any, Set
 import threading
-import re
 
 from app.presentation.models.presentation_models import (
     SlideAction, SlideDecision, SelectedInformation, RepresentationDecision,
@@ -30,7 +29,6 @@ class PresentationIntelligence:
     
     def __init__(self):
         self._lock = threading.RLock()
-        
         self.slide_decision_engine = SlideDecisionEngine()
         self.information_selector = InformationSelector()
         self.representation_engine = RepresentationEngine()
@@ -41,7 +39,6 @@ class PresentationIntelligence:
         self.slide_validator = SlideValidator()
         self.llm_router = LLMRouter()
         
-        self._current_slide_id: str = ""
         self._last_plan: Optional[SlidePlan] = None
         self._processed_chunks: Set[str] = set()
         self._displayed_content: Set[str] = set()
@@ -55,27 +52,38 @@ class PresentationIntelligence:
         chunk_id: str = "",
     ) -> Optional[Dict[str, Any]]:
         with self._lock:
-            # Check for new content
-            has_new_content = self._has_new_content(frame, important_concepts, topic_changed)
+            # ==========================================
+            # FIX: Check if content is NEW before processing
+            # ==========================================
+            content_key = self._generate_content_key(frame)
             
-            if not has_new_content and not topic_changed:
+            # If we've already seen this exact content AND no topic change
+            if content_key in self._displayed_content and not topic_changed:
                 return {
                     "action": SlideAction.NO_CHANGE.value,
                     "reason": "No new information to display",
                     "slide_created": False,
                 }
             
+            # Mark as displayed NOW (before processing)
+            self._displayed_content.add(content_key)
+            
+            # ==========================================
             # Information Selection
+            # ==========================================
             selected_info = self.information_selector.select(
                 frame=frame,
                 important_concepts=important_concepts,
             )
-            self._track_displayed(selected_info)
             
+            # ==========================================
             # Calculate novelty
+            # ==========================================
             semantic_novelty = self._calculate_novelty(important_concepts)
             
+            # ==========================================
             # Slide Decision
+            # ==========================================
             decision = self.slide_decision_engine.decide(
                 topic_changed=topic_changed,
                 current_topic=current_topic,
@@ -91,7 +99,9 @@ class PresentationIntelligence:
                     "slide_created": False,
                 }
             
+            # ==========================================
             # Representation, Planning, Layout, Visual
+            # ==========================================
             representation = self.representation_engine.decide(
                 frame=frame,
                 selected_info=selected_info,
@@ -120,61 +130,24 @@ class PresentationIntelligence:
                 "slide_created": render_result.get("is_valid", False),
             }
     
-    def _has_new_content(
-        self,
-        frame: Any,
-        important_concepts: List[str],
-        topic_changed: bool = False,
-    ) -> bool:
-        """Check if frame has content we haven't displayed yet"""
+    def _generate_content_key(self, frame: Any) -> str:
+        """Generate a deduplication key from frame content"""
+        parts = []
         
-        # Topic change always has new content
-        if topic_changed:
-            return True
-        
-        # Check concepts
         if hasattr(frame, 'concepts'):
-            for concept in frame.concepts:
-                if concept.canonical_name not in self._displayed_content:
-                    return True
+            parts.extend([c.canonical_name for c in frame.concepts])
         
-        # Check propositions
         if hasattr(frame, 'propositions'):
             for prop in frame.propositions:
                 if prop.subject and prop.object and prop.predicate:
-                    text = f"{prop.subject.canonical_name} {prop.predicate.value} {prop.object.canonical_name}"
-                    if text not in self._displayed_content:
-                        return True
-                # Even if no subject/object, proposition itself is new
-                elif prop.proposition_id not in self._displayed_content:
-                    return True
+                    parts.append(f"{prop.subject.canonical_name}_{prop.predicate.value}_{prop.object.canonical_name}")
         
-        # Check instructional acts
         if hasattr(frame, 'instructional_acts'):
             for act in frame.instructional_acts:
-                act_text = f"{act.act_type.value}_{len(act.concept_refs)}"
-                if act_text not in self._displayed_content:
-                    return True
+                if act.act_type:
+                    parts.append(f"act_{act.act_type.value}")
         
-        # Check relations
-        if hasattr(frame, 'relations'):
-            for rel in frame.relations:
-                if rel.source and rel.target:
-                    text = f"{rel.source.canonical_name}_{rel.relation_type.value}_{rel.target.canonical_name}"
-                    if text not in self._displayed_content:
-                        return True
-        
-        return False
-    
-    def _track_displayed(self, selected_info: SelectedInformation):
-        if selected_info.focal_claim:
-            self._displayed_content.add(selected_info.focal_claim)
-        for unit in selected_info.semantic_units:
-            self._displayed_content.add(unit)
-        for definition in selected_info.definitions:
-            self._displayed_content.add(definition)
-        for example in selected_info.examples:
-            self._displayed_content.add(example)
+        return "|".join(sorted(parts))
     
     def _calculate_novelty(self, important_concepts: List[str]) -> float:
         if not important_concepts:
@@ -202,7 +175,6 @@ class PresentationIntelligence:
         with self._lock:
             self.slide_decision_engine.reset()
             self.information_selector.reset_displayed_units()
-            self._current_slide_id = ""
             self._last_plan = None
             self._processed_chunks = set()
             self._displayed_content = set()
