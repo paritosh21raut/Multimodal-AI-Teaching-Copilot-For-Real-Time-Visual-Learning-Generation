@@ -1,5 +1,8 @@
 """
 Presentation Intelligence - Core Models
+
+Contains all enums, dataclasses, and SemanticEvidence for
+structured semantic evidence preservation.
 """
 
 from __future__ import annotations
@@ -87,6 +90,25 @@ class ContentBlockType(str, Enum):
     EMPHASIS = "emphasis"
 
 
+class SemanticEvidence:
+    """Structured semantic evidence - NOT display text."""
+    def __init__(self, subject: str, predicate: str, object: str, evidence_id: str = "", confidence: float = 0.0):
+        self.subject = subject
+        self.predicate = predicate
+        self.object = object
+        self.evidence_id = evidence_id
+        self.confidence = confidence
+    
+    def to_dict(self):
+        return {
+            "subject": self.subject,
+            "predicate": self.predicate,
+            "object": self.object,
+            "evidence_id": self.evidence_id,
+            "confidence": self.confidence,
+        }
+
+
 @dataclass
 class SlideDecision:
     action: SlideAction
@@ -99,18 +121,17 @@ class SlideDecision:
     timestamp: datetime = field(default_factory=datetime.now)
 
 
-@dataclass
 class SelectedInformation:
-    focal_claim: str = ""
-    semantic_units: List[str] = field(default_factory=list)
-    definitions: List[str] = field(default_factory=list)
-    examples: List[str] = field(default_factory=list)
-    relations: List[str] = field(default_factory=list)
-    numbers: List[Dict[str, Any]] = field(default_factory=list)
-    formula: List[str] = field(default_factory=list)
-    evidence_ids: List[str] = field(default_factory=list)
-    priority: float = 0.0
-    redundancy_score: float = 0.0
+    """Selected information preserving structured semantic evidence."""
+    def __init__(self):
+        self.focal_claim: Optional[SemanticEvidence] = None
+        self.semantic_units: List[SemanticEvidence] = []
+        self.definitions: List[str] = []
+        self.examples: List[str] = []
+        self.numbers: List[Dict[str, Any]] = []
+        self.evidence_ids: List[str] = []
+        self.priority: float = 0.0
+        self.redundancy_score: float = 0.0
 
 
 @dataclass
@@ -122,16 +143,17 @@ class RepresentationDecision:
     supporting_visuals: List[str] = field(default_factory=list)
 
 
-@dataclass
 class ContentBlock:
-    block_type: ContentBlockType
-    text: str = ""
-    semantic_ids: List[str] = field(default_factory=list)
-    priority: float = 1.0
-    visual_role: str = ""
-    placement_role: str = ""
-    max_space: float = 0.5
-    optional: bool = False
+    """Content block with display text and semantic references."""
+    def __init__(self, block_type: ContentBlockType, text: str = "", semantic_ids: List[str] = None, priority: float = 1.0):
+        self.block_type = block_type
+        self.text = text  # STUDENT-FACING TEXT ONLY
+        self.semantic_ids = semantic_ids or []
+        self.priority = priority
+        self.visual_role = ""
+        self.placement_role = ""
+        self.max_space = 0.5
+        self.optional = False
 
 
 @dataclass

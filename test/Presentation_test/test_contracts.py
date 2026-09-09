@@ -1,5 +1,5 @@
 """
-Presentation Contracts Tests
+Presentation Contracts Tests (UPDATED)
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ from app.presentation.models.presentation_models import (
     ContentBlockType,
     SlideDecision,
     SelectedInformation,
+    SemanticEvidence,
     RepresentationDecision,
     ContentBlock,
     SlidePlan,
@@ -37,13 +38,13 @@ def test_slide_decision_model():
 
 
 def test_selected_information_model():
-    info = SelectedInformation(
-        focal_claim="TCP is connection-oriented",
-        semantic_units=["TCP IS_A protocol", "TCP PROVIDES reliability"],
-        evidence_ids=["e1", "e2"],
-    )
-    assert info.focal_claim != ""
-    assert len(info.semantic_units) == 2
+    info = SelectedInformation()
+    info.focal_claim = SemanticEvidence(subject="TCP", predicate="IS_A", object="protocol")
+    info.semantic_units = [SemanticEvidence(subject="TCP", predicate="PROVIDES", object="reliability")]
+    info.evidence_ids = ["e1", "e2"]
+    
+    assert info.focal_claim.subject == "TCP"
+    assert len(info.semantic_units) == 1
 
 
 def test_representation_decision_model():

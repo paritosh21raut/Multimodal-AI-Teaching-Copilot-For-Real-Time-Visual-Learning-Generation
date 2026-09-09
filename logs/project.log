@@ -7443,3 +7443,728 @@
 2026-09-06 13:44:45.570 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
 2026-09-06 13:44:45.570 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
 2026-09-06 13:44:45.586 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped
+2026-09-08 00:25:10.938 | INFO     | app.audio.voice_detector:_load_model:61 - Loading Silero VAD...
+2026-09-08 00:25:11.637 | WARNING  | app.audio.voice_detector:_load_model:75 - Silero VAD failed to load: pytest: reading from stdin while output is captured!  Consider using `-s`.. Falling back to energy-based VAD.
+2026-09-08 00:25:33.179 | INFO     | app.audio.voice_detector:_load_model:61 - Loading Silero VAD...
+2026-09-08 00:25:52.998 | WARNING  | app.audio.voice_detector:_load_model:75 - Silero VAD failed to load: 'tuple' object has no attribute 'init_state'. Falling back to energy-based VAD.
+2026-09-08 00:28:01.703 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-08 00:28:01.712 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-08 00:28:01.712 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-08 00:28:01.712 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-08 00:28:04.314 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-08 00:28:05.591 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:28:05.591 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:35:43.392 | INFO     | app.audio.voice_detector:_load_model:61 - Loading Silero VAD...
+2026-09-08 00:35:43.694 | WARNING  | app.audio.voice_detector:_load_model:75 - Silero VAD failed to load: 'tuple' object has no attribute 'init_state'. Falling back to energy-based VAD.
+2026-09-08 00:35:43.694 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-08 00:35:43.694 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-08 00:35:43.694 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-08 00:35:43.694 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-08 00:35:45.045 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-08 00:35:51.890 | SUCCESS  | app.audio.audio_worker:run:1777 - Audio Worker Started
+2026-09-08 00:36:47.989 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
+2026-09-08 00:36:48.005 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped
+2026-09-08 00:38:30.487 | INFO     | app.audio.voice_detector:_load_model:41 - Loading Silero VAD...
+2026-09-08 00:38:30.861 | SUCCESS  | app.audio.voice_detector:_load_model:84 - Silero VAD Ready
+2026-09-08 00:38:30.861 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-08 00:38:30.861 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-08 00:38:30.861 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-08 00:38:30.861 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-08 00:38:32.148 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-08 00:38:39.707 | SUCCESS  | app.audio.audio_worker:run:1777 - Audio Worker Started
+2026-09-08 00:39:09.964 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
+2026-09-08 00:39:10.032 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped
+2026-09-08 00:40:16.891 | INFO     | app.audio.voice_detector:_load_model:41 - Loading Silero VAD...
+2026-09-08 00:40:17.613 | SUCCESS  | app.audio.voice_detector:_load_model:84 - Silero VAD Ready
+2026-09-08 00:40:17.613 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-08 00:40:17.613 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-08 00:40:17.613 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-08 00:40:17.613 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-08 00:40:18.910 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-08 00:40:26.898 | SUCCESS  | app.audio.audio_worker:run:1777 - Audio Worker Started
+2026-09-08 00:40:28.908 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 00:40:28.908 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 00:40:29.598 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 00:40:29.598 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 00:40:59.167 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
+2026-09-08 00:40:59.195 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped
+2026-09-08 00:40:59.350 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 00:42:20.644 | INFO     | app.audio.voice_detector:_load_model:41 - Loading Silero VAD...
+2026-09-08 00:42:20.985 | SUCCESS  | app.audio.voice_detector:_load_model:84 - Silero VAD Ready
+2026-09-08 00:42:20.985 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 00:42:20.985 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 00:42:21.302 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 00:42:21.302 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 00:42:33.207 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 00:42:42.587 | INFO     | app.audio.voice_detector:_load_model:41 - Loading Silero VAD...
+2026-09-08 00:42:42.872 | SUCCESS  | app.audio.voice_detector:_load_model:84 - Silero VAD Ready
+2026-09-08 00:42:42.872 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 00:42:42.872 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 00:42:43.185 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 00:42:43.185 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 00:42:55.076 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 00:44:11.155 | INFO     | app.audio.voice_detector:_load_model:41 - Loading Silero VAD...
+2026-09-08 00:44:11.493 | SUCCESS  | app.audio.voice_detector:_load_model:66 - Silero VAD Ready
+2026-09-08 00:44:11.494 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 00:44:11.495 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 00:44:11.779 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 00:44:11.779 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 00:44:23.740 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 00:46:13.818 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 00:46:13.827 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 00:46:14.198 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 00:46:14.198 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 00:46:21.038 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 00:46:34.511 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 00:46:34.511 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 00:46:35.088 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 00:46:35.088 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 00:46:41.695 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 00:47:58.360 | INFO     | app.audio.voice_detector:_load_model:45 - Loading Silero VAD...
+2026-09-08 00:47:58.910 | SUCCESS  | app.audio.voice_detector:_load_model:62 - Silero VAD Ready
+2026-09-08 00:47:58.910 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 00:47:58.910 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 00:47:59.480 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 00:47:59.480 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 00:48:11.180 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 00:49:51.266 | INFO     | app.audio.voice_detector:_load_model:45 - Loading Silero VAD...
+2026-09-08 00:49:51.607 | SUCCESS  | app.audio.voice_detector:_load_model:62 - Silero VAD Ready
+2026-09-08 00:49:51.607 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-08 00:49:51.607 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-08 00:49:51.607 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-08 00:49:51.607 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-08 00:49:53.549 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-08 00:50:02.455 | SUCCESS  | app.audio.audio_worker:run:1777 - Audio Worker Started
+2026-09-08 00:50:04.470 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 00:50:04.470 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 00:50:05.272 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 00:50:05.272 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 00:50:05.905 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 00:50:08.882 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:50:11.170 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:50:11.171 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:50:11.171 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:50:11.885 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:50:14.244 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:50:14.244 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:50:14.246 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:50:14.882 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:50:17.392 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:50:17.392 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:50:17.392 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:50:17.886 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:50:20.399 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:50:20.399 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:50:20.399 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:50:20.880 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:50:23.327 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:50:23.327 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:50:23.327 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:50:23.885 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:50:26.223 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:50:26.223 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:50:26.223 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:50:26.876 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:50:29.324 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:50:29.324 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:50:29.324 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:50:29.884 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:50:34.490 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:50:34.490 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:50:34.493 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:50:34.495 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:50:34.750 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
+2026-09-08 00:50:34.923 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 00:50:36.896 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:50:36.896 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:50:36.896 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:50:36.896 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:50:42.181 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:50:42.181 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:50:42.181 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:50:42.300 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped
+2026-09-08 00:51:35.099 | INFO     | app.audio.voice_detector:_load_model:45 - Loading Silero VAD...
+2026-09-08 00:51:35.423 | SUCCESS  | app.audio.voice_detector:_load_model:62 - Silero VAD Ready
+2026-09-08 00:51:35.423 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-08 00:51:35.423 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-08 00:51:35.423 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-08 00:51:35.423 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-08 00:51:37.531 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-08 00:51:46.449 | SUCCESS  | app.audio.audio_worker:run:1777 - Audio Worker Started
+2026-09-08 00:51:48.460 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 00:51:48.460 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 00:51:49.301 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 00:51:49.301 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 00:51:50.088 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 00:51:53.065 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:51:55.355 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:51:55.355 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:51:55.355 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:51:56.066 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:52:00.045 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:52:00.045 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:52:00.045 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:52:00.047 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:52:02.287 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:52:02.287 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:52:02.290 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:52:02.290 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:52:04.643 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:52:04.645 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:52:04.647 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:52:05.063 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:52:09.557 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:52:09.557 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:52:09.557 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:52:09.557 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:52:12.421 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:52:12.421 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:52:12.421 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:52:12.421 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:52:14.998 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:52:15.003 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:52:15.003 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:52:15.003 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:52:17.671 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:52:17.671 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:52:17.671 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:52:17.671 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:52:18.693 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
+2026-09-08 00:52:18.821 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 00:52:20.250 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:52:20.252 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:52:20.252 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:52:20.252 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 00:52:24.313 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 00:52:24.316 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 00:52:24.316 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 00:52:24.415 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped
+2026-09-08 01:41:07.011 | INFO     | app.audio.voice_detector:_load_model:45 - Loading Silero VAD...
+2026-09-08 01:41:07.334 | SUCCESS  | app.audio.voice_detector:_load_model:62 - Silero VAD Ready
+2026-09-08 01:41:07.334 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-08 01:41:07.334 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-08 01:41:07.334 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-08 01:41:07.334 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-08 01:41:08.724 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-08 01:41:16.093 | SUCCESS  | app.audio.audio_worker:run:1777 - Audio Worker Started
+2026-09-08 01:41:18.106 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 01:41:18.106 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 01:41:18.681 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 01:41:18.681 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 01:41:20.643 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 01:41:23.625 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:25.034 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:25.034 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:25.034 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:26.625 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:28.124 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:28.124 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:28.124 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:29.625 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:31.224 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:31.224 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:31.224 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:32.627 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:34.467 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:34.467 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:34.467 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:35.625 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:36.678 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 01:41:37.448 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:37.448 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:37.454 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:37.455 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:39.560 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 01:41:40.661 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:40.661 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:40.661 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:42.545 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:43.922 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:43.922 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:43.924 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:45.544 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:47.064 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:47.064 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:47.064 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:48.544 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:50.252 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:50.252 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:50.252 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:51.545 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:53.351 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:53.351 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:53.351 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:54.545 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:56.304 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:56.304 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:56.306 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:57.546 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:41:59.505 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 01:41:59.557 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:41:59.557 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:41:59.557 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:41:59.557 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:42:00.785 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 01:42:01.746 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:42:01.746 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:42:01.746 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:42:03.431 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
+2026-09-08 01:42:03.457 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 01:42:03.561 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 01:42:04.767 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 01:42:04.773 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 01:42:04.773 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 01:42:04.795 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped
+2026-09-08 02:01:35.078 | INFO     | app.audio.voice_detector:_load_model:45 - Loading Silero VAD...
+2026-09-08 02:01:35.751 | SUCCESS  | app.audio.voice_detector:_load_model:62 - Silero VAD Ready
+2026-09-08 02:01:35.751 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-08 02:01:35.751 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-08 02:01:35.751 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-08 02:01:35.753 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-08 02:01:37.551 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-08 02:01:44.083 | SUCCESS  | app.audio.audio_worker:run:1777 - Audio Worker Started
+2026-09-08 02:01:46.094 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 02:01:46.094 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 02:01:46.612 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 02:01:46.612 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 02:01:48.572 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 02:01:51.552 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:01:53.031 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:01:53.033 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:01:53.033 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:01:54.551 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:01:55.994 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:01:55.994 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:01:55.994 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:01:57.552 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:01:59.219 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:01:59.219 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:01:59.221 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:00.551 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:02.389 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:02.389 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:02.389 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:03.552 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:05.329 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:05.329 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:05.329 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:06.554 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:09.573 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:09.573 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:09.573 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:09.577 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:11.323 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:11.323 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:11.323 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:12.552 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:14.339 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:14.339 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:14.339 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:15.552 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:17.491 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:17.491 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:17.491 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:18.311 | INFO     | app.audio.audio_worker:_process_chunk:1744 - Maximum speech segment reached. Creating hard boundary.
+2026-09-08 02:02:18.313 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:22.381 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:22.381 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:22.381 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:23.385 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:24.831 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:24.831 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:24.831 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:24.831 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:26.358 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:26.358 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:26.358 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:27.311 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:28.970 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:28.970 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:28.970 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:30.128 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 02:02:30.130 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:30.152 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 02:02:31.855 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:31.855 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:31.855 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:33.132 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:34.612 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:34.612 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:34.612 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:36.128 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:37.607 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:37.607 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:37.607 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:39.132 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:40.731 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:40.731 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:40.735 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:42.127 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:43.739 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:43.739 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:43.741 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:45.131 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:46.920 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:46.920 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:46.920 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:48.128 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:49.820 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:49.820 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:49.820 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:51.132 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:52.953 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:52.953 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:52.953 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:02:53.968 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 02:02:53.969 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:02:57.342 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:02:57.342 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:02:57.342 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:03:08.718 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
+2026-09-08 02:03:08.744 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped
+2026-09-08 02:03:08.872 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 02:10:21.728 | INFO     | app.audio.voice_detector:_load_model:45 - Loading Silero VAD...
+2026-09-08 02:10:21.952 | SUCCESS  | app.audio.voice_detector:_load_model:62 - Silero VAD Ready
+2026-09-08 02:10:21.952 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-08 02:10:21.952 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-08 02:10:21.952 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-08 02:10:21.952 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-08 02:10:23.229 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-08 02:10:29.840 | SUCCESS  | app.audio.audio_worker:run:1777 - Audio Worker Started
+2026-09-08 02:10:31.845 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 02:10:31.847 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 02:10:32.414 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 02:10:32.414 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 02:10:33.088 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 02:10:36.068 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:10:37.361 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:10:37.361 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:10:37.361 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:10:39.059 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:10:40.497 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:10:40.497 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:10:40.497 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:10:42.068 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:10:43.629 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:10:43.633 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:10:43.633 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:10:45.064 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:10:46.813 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:10:46.813 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:10:46.813 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:10:48.066 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:10:49.781 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:10:49.785 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:10:49.785 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:10:51.059 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:10:52.711 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:10:52.711 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:10:52.711 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:10:54.067 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:10:57.137 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:10:57.137 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:10:57.137 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:10:57.137 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:10:57.248 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 02:10:57.588 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 02:10:58.626 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:10:58.626 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:10:58.627 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:10:58.627 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:01.833 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:01.835 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:01.835 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:03.469 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:04.757 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:04.757 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:04.757 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:04.757 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:05.768 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 02:11:06.153 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:06.153 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:06.153 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:06.153 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:06.343 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 02:11:07.544 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:07.544 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:07.544 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:09.327 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:10.635 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:10.635 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:10.635 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:11.527 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 02:11:11.528 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:11.608 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 02:11:12.843 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:12.845 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:12.845 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:14.583 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:15.845 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:15.847 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:15.847 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:17.588 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:18.970 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:18.970 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:18.970 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:20.583 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:22.143 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:22.143 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:22.143 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:23.107 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 02:11:23.107 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:23.449 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 02:11:24.610 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:24.610 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:24.610 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:26.422 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:27.766 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:27.766 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:27.766 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:29.428 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:30.775 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:30.775 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:30.775 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:32.423 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:33.983 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:33.983 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:33.983 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:35.426 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:36.915 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:36.915 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:36.917 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:38.423 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:41.155 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:41.156 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:41.156 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:41.427 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:42.930 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:42.930 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:42.930 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:44.420 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:45.347 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 02:11:45.728 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 02:11:45.957 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:45.957 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:45.957 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:45.957 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:48.583 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 02:11:48.980 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 02:11:49.129 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:49.129 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:49.129 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:49.167 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:50.485 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:50.485 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:50.487 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:50.948 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 02:11:50.949 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:51.327 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 02:11:52.188 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:52.188 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:52.188 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:54.306 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:55.581 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:55.581 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:55.581 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:57.298 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:57.768 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 02:11:58.182 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 02:11:58.613 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:58.613 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:58.614 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:11:58.614 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 02:11:59.459 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 02:11:59.909 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 02:11:59.909 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 02:11:59.911 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 02:12:02.548 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
+2026-09-08 02:12:02.592 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped
+2026-09-08 02:12:02.744 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 19:42:15.322 | INFO     | app.audio.voice_detector:_load_model:45 - Loading Silero VAD...
+2026-09-08 19:42:15.522 | SUCCESS  | app.audio.voice_detector:_load_model:62 - Silero VAD Ready
+2026-09-08 19:42:15.522 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-08 19:42:15.522 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-08 19:42:15.522 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-08 19:42:15.528 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-08 19:42:17.284 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-08 19:42:22.397 | SUCCESS  | app.audio.audio_worker:run:1777 - Audio Worker Started
+2026-09-08 19:42:24.399 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 19:42:24.399 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 19:42:24.954 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 19:42:24.956 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 19:42:27.052 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 19:42:30.034 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:42:31.412 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:42:31.412 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:42:31.412 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:42:33.037 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:42:34.439 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:42:34.439 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:42:34.439 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:42:36.033 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:42:37.628 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:42:37.628 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:42:37.628 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:42:39.037 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:42:40.655 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:42:40.655 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:42:40.655 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:42:42.026 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:42:43.652 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:42:43.652 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:42:43.652 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:42:45.037 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:42:45.197 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 19:42:46.464 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:42:46.464 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:42:46.464 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:42:46.464 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:42:48.452 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:42:48.452 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:42:48.452 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:43:03.546 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
+2026-09-08 19:43:03.566 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped
+2026-09-08 19:43:03.615 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-08 19:47:00.958 | INFO     | app.audio.voice_detector:_load_model:45 - Loading Silero VAD...
+2026-09-08 19:47:01.083 | SUCCESS  | app.audio.voice_detector:_load_model:62 - Silero VAD Ready
+2026-09-08 19:47:01.084 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-08 19:47:01.084 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-08 19:47:01.085 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-08 19:47:01.085 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-08 19:47:02.389 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-08 19:47:07.277 | SUCCESS  | app.audio.audio_worker:run:1777 - Audio Worker Started
+2026-09-08 19:47:09.278 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-08 19:47:09.278 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-08 19:47:09.823 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-08 19:47:09.823 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-08 19:47:12.094 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 19:47:14.545 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 19:47:14.545 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:47:14.574 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 19:47:16.105 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:47:16.105 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:47:16.105 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:47:17.354 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 19:47:17.354 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:47:17.483 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-08 19:47:18.741 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:47:18.741 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:47:18.741 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:47:20.464 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:47:21.800 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:47:21.800 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:47:21.800 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:47:23.460 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:47:24.959 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:47:24.959 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:47:24.959 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:47:26.463 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:47:27.964 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-08 19:47:28.183 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:47:28.183 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:47:28.183 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:47:28.184 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-08 19:47:30.749 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-08 19:47:30.749 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-08 19:47:30.749 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-08 19:47:38.434 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
+2026-09-08 19:47:38.457 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped
+2026-09-08 19:47:38.492 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-09 17:42:29.308 | INFO     | app.audio.voice_detector:_load_model:45 - Loading Silero VAD...
+2026-09-09 17:42:29.481 | SUCCESS  | app.audio.voice_detector:_load_model:62 - Silero VAD Ready
+2026-09-09 17:42:29.481 | INFO     | app.speech.whisper_model:__init__:38 - Loading Whisper Model...
+2026-09-09 17:42:29.481 | INFO     | app.speech.whisper_model:__init__:46 - Whisper Model : small
+2026-09-09 17:42:29.481 | INFO     | app.speech.whisper_model:__init__:47 - Whisper Device : cpu
+2026-09-09 17:42:29.481 | INFO     | app.speech.whisper_model:__init__:48 - Whisper Compute : int8
+2026-09-09 17:42:31.084 | SUCCESS  | app.speech.whisper_model:__init__:58 - Whisper Ready
+2026-09-09 17:42:36.641 | SUCCESS  | app.audio.audio_worker:run:1777 - Audio Worker Started
+2026-09-09 17:42:38.654 | INFO     | app.audio.audio_stream:start:74 - Starting Audio Stream...
+2026-09-09 17:42:38.655 | INFO     | app.audio.microphone:open_stream:46 - Opening Microphone...
+2026-09-09 17:42:39.274 | SUCCESS  | app.audio.microphone:open_stream:58 - Microphone Ready
+2026-09-09 17:42:39.275 | SUCCESS  | app.audio.audio_stream:start:81 - Audio Stream Running
+2026-09-09 17:42:41.126 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-09 17:42:44.093 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:42:45.490 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:42:45.490 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:42:45.490 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:42:47.095 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:42:48.586 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:42:48.586 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:42:48.587 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:42:50.093 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:42:51.680 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:42:51.681 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:42:51.681 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:42:53.095 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:42:54.158 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-09 17:42:55.267 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:42:55.267 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:42:55.268 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:42:55.269 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:42:55.630 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-09 17:42:58.407 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:42:58.408 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:42:58.408 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:42:58.614 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:00.034 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:00.034 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:00.035 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:01.612 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:03.174 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:03.174 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:03.176 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:04.617 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:06.309 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:06.309 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:06.309 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:07.611 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:09.399 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:09.399 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:09.399 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:10.055 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-09 17:43:10.056 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:11.982 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:11.982 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:11.982 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:12.376 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-09 17:43:15.357 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:16.881 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:16.881 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:16.881 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:18.352 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:19.810 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:19.810 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:19.810 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:21.358 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:23.044 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:23.044 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:23.045 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:24.352 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:26.250 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:26.251 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:26.251 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:27.016 | INFO     | app.audio.audio_worker:_process_chunk:1762 - Speech Finished
+2026-09-09 17:43:27.017 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:28.297 | INFO     | app.audio.audio_worker:_process_chunk:1685 - Speech Started
+2026-09-09 17:43:30.175 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:30.175 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:30.175 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:31.278 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:32.785 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:32.786 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:32.786 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:34.272 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:35.843 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:35.843 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:35.843 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:37.277 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:39.031 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:39.031 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:39.031 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:39.100 | INFO     | app.audio.audio_worker:stop:1939 - Audio Worker Stop Requested
+2026-09-09 17:43:39.141 | INFO     | app.speech.whisper_worker:transcribe_audio:31 - Starting Live Whisper Transcription...
+2026-09-09 17:43:39.183 | INFO     | app.audio.audio_stream:start:101 - Audio Stream Closed
+2026-09-09 17:43:40.820 | INFO     | app.speech.whisper_model:_transcribe_array:231 - Detected Language : en
+2026-09-09 17:43:40.820 | INFO     | app.speech.whisper_model:_transcribe_array:233 - Language Probability : 1.00
+2026-09-09 17:43:40.821 | SUCCESS  | app.speech.whisper_worker:transcribe_audio:33 - Live Transcription Completed
+2026-09-09 17:43:40.871 | INFO     | app.audio.audio_worker:run:1860 - Audio Worker Stopped

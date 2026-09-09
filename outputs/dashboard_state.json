@@ -1,7 +1,7 @@
 {
   "running": false,
   "microphone_status": "Ready",
-  "pipeline_stage": "Content Generated",
+  "pipeline_stage": "Complete",
   "transcript": "test speech segment test speech segment test speech segment test speech segment test speech segment",
   "transcript_history": [
     "different.",
@@ -15,18 +15,21 @@
     "test speech segment test speech segment test speech segment test speech segment",
     "test speech segment test speech segment test speech segment test speech segment test speech segment"
   ],
-  "topic": "Types of microcontrollers",
-  "topic_confidence": 0.36606162786483765,
-  "title": "Test Slide - Types of microcontrollers",
+  "topic": "solar system so solar system center one around",
+  "topic_confidence": 0.82,
+  "title": "Solar System Structure",
   "bullets": [
-    "Key point about Types of microcontrollers",
-    "Important concept in Types of microcontrollers"
+    "Sun is at the center of the solar system.",
+    "Eight planets revolve around the central star.",
+    "First four planets are classified as inner planets.",
+    "Mercury, Venus, Earth, and Mars are inner planets.",
+    "Jupiter, Saturn, Uranus, and Neptune are outer planets."
   ],
-  "image": "assets\\images\\microcontroller_microchip_circuit_board_embedded_system.jpg",
-  "slide_number": 2,
-  "slide_count": 2,
-  "ppt_path": "outputs\\presentations\\Live_Lecture_20260821_203709.pptx",
-  "generation_status": "Generating",
+  "image": "",
+  "slide_number": 1,
+  "slide_count": 1,
+  "ppt_path": "outputs\\presentations\\Today's_Lecture_20260908_021101.pptx",
+  "generation_status": "Ready",
   "error": "503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
-  "last_update": 1787639296.2435384
+  "last_update": 1788813719.9408927
 }
