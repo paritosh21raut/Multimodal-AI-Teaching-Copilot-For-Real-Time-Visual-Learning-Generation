@@ -1,8 +1,10 @@
 """
-Proposition Extraction
+Proposition Extraction (PHASE 1 FIXED)
 
-Extracts atomic semantic propositions from transcript chunks using
-pattern matching and dependency-like heuristics. No heavy dependencies.
+Fixes:
+- Distinguishes IS_A (category) from HAS_ATTRIBUTE (property)
+- Splits combined "is a [adjective] [noun]" into TWO propositions
+- Detects "while/whereas" contrast
 """
 
 from __future__ import annotations
@@ -21,9 +23,9 @@ from .semantic_models import (
 
 
 class PropositionExtractor:
-    """Extracts propositions from transcript text using deterministic patterns"""
+    """Extracts propositions from transcript text"""
     
-    # Verb patterns to relation types
+    # Relation patterns
     RELATION_PATTERNS = {
         RelationType.IS_A: [
             r'\bis\s+(?:a|an|the)\s+',
@@ -66,16 +68,24 @@ class PropositionExtractor:
             r'\bconsists?\s+of\s+',
         ],
         RelationType.HAS_ATTRIBUTE: [
-            r'\bhas\s+(?:a|an|the)?\s*\w+\s+',
-            r'\bhave\s+(?:a|an|the)?\s*\w+\s+',
+            r'\bis\s+(?!a|an|the)\s*',  # "is" without article → attribute
         ],
     }
     
-    # Patterns for subject extraction
-    SUBJECT_PATTERNS = [
-        r'^([A-Za-z][A-Za-z\s-]{1,50}?)\s+(?:is|are|was|were|provides|uses|'
-        r'requires|causes|contains|has|have|enables|allows|delivers|offers)\b',
-    ]
+    # Known category indicators (nouns that represent types/categories)
+    CATEGORY_INDICATORS = {
+        "protocol", "device", "system", "process", "algorithm",
+        "network", "model", "architecture", "language", "method",
+        "technique", "mechanism", "layer", "interface", "component",
+    }
+    
+    # Known property/attribute indicators (adjectives/descriptive words)
+    PROPERTY_INDICATORS = {
+        "connectionless", "connection-oriented", "reliable", "unreliable",
+        "fast", "slow", "secure", "insecure", "volatile", "non-volatile",
+        "synchronous", "asynchronous", "deterministic", "probabilistic",
+        "static", "dynamic", "analog", "digital",
+    }
     
     def __init__(self):
         self._compiled_relations = {}
@@ -90,132 +100,257 @@ class PropositionExtractor:
         evidence: Optional[EvidenceSpan] = None,
         concepts: Optional[Dict[str, ConceptRef]] = None
     ) -> List[Proposition]:
-        """
-        Extract propositions from text.
-        
-        Args:
-            text: Transcript text
-            evidence: Evidence span for grounding
-            concepts: Known concepts (name -> ConceptRef)
-            
-        Returns:
-            List of Proposition objects
-        """
+        """Extract propositions from text"""
         if not text or not text.strip():
             return []
         
         propositions = []
         
-        # Split into sentences
-        sentences = self._split_sentences(text)
+        # Split into clauses (handle "while", "whereas")
+        clauses = self._split_clauses(text)
         
-        for sentence in sentences:
-            sentence_props = self._extract_from_sentence(
-                sentence, evidence, concepts
-            )
-            propositions.extend(sentence_props)
+        for clause in clauses:
+            clause_props = self._extract_from_clause(clause, evidence, concepts)
+            propositions.extend(clause_props)
+        
+        # Detect contrast between clauses
+        contrast_props = self._detect_contrast(clauses, evidence, concepts)
+        propositions.extend(contrast_props)
         
         return propositions
     
-    def _split_sentences(self, text: str) -> List[str]:
-        """Split text into sentences"""
-        # Split on sentence boundaries
-        sentences = re.split(r'(?<=[.!?])\s+', text.strip())
-        
-        # Filter empty sentences
-        return [s.strip() for s in sentences if s.strip()]
+    def _split_clauses(self, text: str) -> List[str]:
+        """Split text into clauses by contrast conjunctions"""
+        # Split on "while", "whereas", "but", "however"
+        split_pattern = r'(?:\bwhile\b|\bwhereas\b|\bbut\b|\bhowever\b)'
+        parts = re.split(split_pattern, text, flags=re.IGNORECASE)
+        return [p.strip() for p in parts if p.strip()]
     
-    def _extract_from_sentence(
+    def _extract_from_clause(
         self,
-        sentence: str,
+        clause: str,
         evidence: Optional[EvidenceSpan],
         concepts: Optional[Dict[str, ConceptRef]]
     ) -> List[Proposition]:
-        """Extract propositions from a single sentence"""
+        """Extract propositions from a single clause"""
         propositions = []
         
-        # Try to extract subject and object
-        subject = self._extract_subject(sentence)
-        
+        subject = self._extract_subject(clause)
         if not subject:
             return propositions
         
-        # Find relation type and object
-        for rel_type, patterns in self._compiled_relations.items():
-            for pattern in patterns:
-                match = pattern.search(sentence)
-                
-                if match:
-                    obj = self._extract_object(sentence, match)
+        # Check IS_A with article
+        for pattern in self._compiled_relations.get(RelationType.IS_A, []):
+            match = pattern.search(clause)
+            if match:
+                obj_phrase = self._extract_object(clause, match)
+                if obj_phrase:
+                    # Check if combined type + property
+                    split_result = self._split_object_phrase(obj_phrase)
                     
+                    if split_result:
+                        adjective, noun = split_result
+                        
+                        # Create IS_A with just the noun
+                        if noun:
+                            prop_is_a = self._create_proposition(
+                                subject=subject,
+                                predicate=RelationType.IS_A,
+                                object=noun,
+                                evidence=evidence,
+                                concepts=concepts,
+                            )
+                            propositions.append(prop_is_a)
+                        
+                        # Create HAS_ATTRIBUTE with the adjective
+                        if adjective:
+                            prop_attr = self._create_proposition(
+                                subject=subject,
+                                predicate=RelationType.HAS_ATTRIBUTE,
+                                object=adjective,
+                                evidence=evidence,
+                                concepts=concepts,
+                            )
+                            propositions.append(prop_attr)
+                    else:
+                        # Just a category
+                        prop = self._create_proposition(
+                            subject=subject,
+                            predicate=RelationType.IS_A,
+                            object=obj_phrase,
+                            evidence=evidence,
+                            concepts=concepts,
+                        )
+                        propositions.append(prop)
+                break
+        
+        # Check HAS_ATTRIBUTE (is without article)
+        for pattern in self._compiled_relations.get(RelationType.HAS_ATTRIBUTE, []):
+            match = pattern.search(clause)
+            if match:
+                obj_phrase = self._extract_object(clause, match)
+                if obj_phrase and self._is_property(obj_phrase):
+                    prop = self._create_proposition(
+                        subject=subject,
+                        predicate=RelationType.HAS_ATTRIBUTE,
+                        object=obj_phrase,
+                        evidence=evidence,
+                        concepts=concepts,
+                    )
+                    propositions.append(prop)
+                break
+        
+        # Check other relation types
+        for rel_type, patterns in self._compiled_relations.items():
+            if rel_type in [RelationType.IS_A, RelationType.HAS_ATTRIBUTE]:
+                continue  # Already handled
+            
+            for pattern in patterns:
+                match = pattern.search(clause)
+                if match:
+                    obj = self._extract_object(clause, match)
                     if obj:
-                        proposition = self._create_proposition(
+                        prop = self._create_proposition(
                             subject=subject,
                             predicate=rel_type,
                             object=obj,
                             evidence=evidence,
-                            concepts=concepts
+                            concepts=concepts,
                         )
-                        
-                        if proposition:
-                            propositions.append(proposition)
-                    
-                    break  # One relation per sentence for now
+                        propositions.append(prop)
+                    break
         
         return propositions
     
-    def _extract_subject(self, sentence: str) -> Optional[str]:
-        """Extract subject from sentence"""
-        for pattern in self.SUBJECT_PATTERNS:
-            match = re.match(pattern, sentence, re.IGNORECASE)
-            if match:
-                return match.group(1).strip()
+    def _detect_contrast(
+        self,
+        clauses: List[str],
+        evidence: Optional[EvidenceSpan],
+        concepts: Optional[Dict[str, ConceptRef]]
+    ) -> List[Proposition]:
+        """Detect contrast between two clauses"""
+        if len(clauses) < 2:
+            return []
         
-        # Fallback: first noun phrase before verb
-        words = sentence.split()
+        propositions = []
+        
+        # Extract subjects from each clause
+        subjects = []
+        for clause in clauses:
+            subject = self._extract_subject(clause)
+            if subject and subject not in subjects:
+                subjects.append(subject)
+        
+        # If two different subjects found, create CONTRASTS_WITH
+        if len(subjects) >= 2:
+            # Create contrast proposition
+            source_ref = ConceptRef(
+                concept_id="",
+                canonical_name=subjects[0],
+                confidence=0.7,
+            )
+            target_ref = ConceptRef(
+                concept_id="",
+                canonical_name=subjects[1],
+                confidence=0.7,
+            )
+            
+            prop = Proposition(
+                subject=source_ref,
+                predicate=RelationType.CONTRASTS_WITH,
+                object=target_ref,
+                evidence_ids=[evidence.evidence_id] if evidence else [],
+                confidence=0.7,
+                grounding_status=GroundingStatus.EXPLICIT if evidence else GroundingStatus.UNSUPPORTED,
+                extraction_status=ExtractionStatus.COMPLETE,
+            )
+            propositions.append(prop)
+        
+        return propositions
+    
+    def _split_object_phrase(self, phrase: str) -> Optional[Tuple[str, str]]:
+        """
+        Split object phrase into (adjective, noun).
+        
+        Returns None if no split needed.
+        """
+        words = phrase.split()
+        
+        if len(words) < 2:
+            return None
+        
+        # Check if first word(s) are property indicators
+        for i in range(1, len(words)):
+            candidate_adj = " ".join(words[:i])
+            candidate_noun = " ".join(words[i:])
+            
+            if (
+                candidate_adj in self.PROPERTY_INDICATORS
+                or candidate_adj.lower() in self.PROPERTY_INDICATORS
+            ):
+                # Check noun is a category indicator
+                if candidate_noun.split()[-1].lower() in self.CATEGORY_INDICATORS:
+                    return (candidate_adj, candidate_noun)
+        
+        # Also check hyphenated forms
+        for word in words:
+            if word.lower() in self.PROPERTY_INDICATORS:
+                idx = words.index(word)
+                if idx + 1 < len(words):
+                    adjective = word
+                    noun = " ".join(words[idx+1:])
+                    return (adjective, noun)
+        
+        return None
+    
+    def _is_property(self, phrase: str) -> bool:
+        """Check if phrase is a property/attribute"""
+        phrase_lower = phrase.lower().strip()
+        
+        if phrase_lower in self.PROPERTY_INDICATORS:
+            return True
+        
+        # Single descriptive word
+        if len(phrase.split()) == 1:
+            return True
+        
+        return False
+    
+    def _extract_subject(self, clause: str) -> Optional[str]:
+        """Extract subject from clause"""
+        words = clause.split()
         for i, word in enumerate(words):
             if word.lower() in {"is", "are", "was", "were", "provides", "uses",
                                "requires", "causes", "contains", "has", "have"}:
                 if i > 0:
                     return " ".join(words[:i]).strip('.,;:!?()')
                 break
-        
         return None
     
-    def _extract_object(self, sentence: str, match) -> Optional[str]:
-        """Extract object after the verb"""
-        # Get text after the verb match
-        after_verb = sentence[match.end():].strip()
+    def _extract_object(self, clause: str, match) -> Optional[str]:
+        """Extract object after verb match"""
+        after_verb = clause[match.end():].strip()
         
         if not after_verb:
             return None
         
-        # Remove leading articles
         after_verb = re.sub(r'^(?:a|an|the)\s+', '', after_verb, flags=re.IGNORECASE)
         
-        # Take first few words as object
         words = after_verb.split()
-        
-        # Stop at conjunctions or punctuation
         object_words = []
+        
         for word in words:
             clean_word = word.strip('.,;:!?()')
-            
-            if clean_word.lower() in {"and", "or", "but", "for", "with", "by", 
-                                       "using", "through", "via", "to"}:
+            if clean_word.lower() in {"and", "or", "but", "for", "with", "by", "using"}:
                 break
-            
             object_words.append(clean_word)
-            
             if len(object_words) >= 5:
                 break
         
         if not object_words:
             return None
         
-        obj = " ".join(object_words).strip('.,;:!?()')
-        
-        return obj if len(obj) > 1 else None
+        return " ".join(object_words).strip('.,;:!?()')
     
     def _create_proposition(
         self,
@@ -223,49 +358,32 @@ class PropositionExtractor:
         predicate: RelationType,
         object: str,
         evidence: Optional[EvidenceSpan],
-        concepts: Optional[Dict[str, ConceptRef]]
+        concepts: Optional[Dict[str, ConceptRef]],
     ) -> Optional[Proposition]:
-        """Create a Proposition object"""
-        subject_clean = self._clean_text(subject)
-        object_clean = self._clean_text(object)
+        """Create proposition from extracted components"""
+        subject_clean = subject.strip()
+        object_clean = object.strip()
         
         if not subject_clean or not object_clean:
             return None
         
-        # Create concept refs
-        subject_ref = None
-        object_ref = None
-        
-        if concepts:
-            subject_ref = concepts.get(subject_clean.lower())
-            object_ref = concepts.get(object_clean.lower())
-        
-        if not subject_ref:
-            subject_ref = ConceptRef(
-                concept_id="",
-                canonical_name=subject_clean,
-                confidence=0.6
-            )
-        
-        if not object_ref:
-            object_ref = ConceptRef(
-                concept_id="",
-                canonical_name=object_clean,
-                confidence=0.6
-            )
+        subject_ref = ConceptRef(
+            concept_id="",
+            canonical_name=subject_clean,
+            confidence=0.7,
+        )
+        object_ref = ConceptRef(
+            concept_id="",
+            canonical_name=object_clean,
+            confidence=0.7,
+        )
         
         return Proposition(
             subject=subject_ref,
             predicate=predicate,
             object=object_ref,
             evidence_ids=[evidence.evidence_id] if evidence else [],
-            confidence=0.6,
+            confidence=0.7,
             grounding_status=GroundingStatus.EXPLICIT if evidence else GroundingStatus.UNSUPPORTED,
-            extraction_status=ExtractionStatus.COMPLETE
+            extraction_status=ExtractionStatus.COMPLETE,
         )
-    
-    def _clean_text(self, text: str) -> str:
-        """Clean extracted text"""
-        text = re.sub(r'\s+', ' ', text).strip()
-        text = re.sub(r'^(?:the|a|an)\s+', '', text, flags=re.IGNORECASE)
-        return text.strip('.,;:!?()')

@@ -30,7 +30,7 @@ def test_llm_arbiter_initialization():
     arbiter = LLMArbiter(api_key="test_key")
     
     assert arbiter is not None
-    assert arbiter.model == "llama-3.1-8b-instant"
+    assert arbiter.model == "qwen/qwen3.8-27b"  # UPDATED from llama-3.1-8b-instant
     assert arbiter.api_key == "test_key"
 
 
