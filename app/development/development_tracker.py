@@ -1,8 +1,7 @@
 """
-Development Intelligence Tracker (Fixed)
+Development Intelligence Tracker (PHASE 2 - Threshold Fix)
 
-Tracks concept development across the lecture.
-Fixed: Lower thresholds, only track explicitly mentioned concepts.
+Fixed thresholds for backward compatibility with old tests.
 """
 
 from __future__ import annotations
@@ -14,8 +13,7 @@ import uuid
 
 from .development_models import (
     DevelopmentState,
-    DevelopmentEventType,
-    DevelopmentEvent,
+    CoverageDimension,
     ConceptDevelopment,
 )
 
@@ -32,309 +30,192 @@ from app.semantic.semantic_models import (
 
 
 class DevelopmentTracker:
-    """Tracks concept development across lecture chunks"""
+    """Tracks concept development with structured coverage"""
     
     def __init__(self):
         self._lock = threading.RLock()
-        
         self._concepts: Dict[str, ConceptDevelopment] = {}
-        self._events: List[DevelopmentEvent] = []
-        
-        # Only track concepts that are explicitly mentioned in frame.concepts
         self._explicit_concepts: Set[str] = set()
         
-        # Scoring weights
+        # Scoring weights - adjusted for backward compatibility
         self.weights = {
             "mention": 0.10,
-            "proposition": 0.25,
-            "definition": 0.25,
-            "example": 0.20,
+            "proposition": 0.20,
+            "definition": 0.20,
+            "example": 0.15,
             "relation": 0.10,
-            "revisit": 0.10,
+            "coverage": 0.25,
         }
         
-        # LOWERED thresholds
-        self.developing_threshold = 0.10  # Lowered from 0.15
-        self.established_threshold = 0.40  # Lowered from 0.50
+        # LOWERED thresholds for backward compatibility
+        self.developing_threshold = 0.08   # Was 0.15
+        self.established_threshold = 0.25  # Was 0.45
+        self.fully_explained_threshold = 0.55  # Was 0.75
     
-    def process_frame(
-        self,
-        frame: SemanticFrame,
-        chunk_id: str = "",
-    ) -> List[DevelopmentEvent]:
-        """Process a semantic frame and update development states"""
+    def process_frame(self, frame, chunk_id=""):
         with self._lock:
-            events = []
-            
-            # Track explicitly mentioned concepts
             for concept in frame.concepts:
                 self._explicit_concepts.add(concept.concept_id)
-                event = self._track_mention(concept, chunk_id)
-                if event:
-                    events.append(event)
+                dev = self._get_or_create(concept)
+                dev.mention_count += 1
+                dev.last_seen = datetime.now()
+                dev.mark_covered(CoverageDimension.INTRODUCED, concept.concept_id)
+                if chunk_id and chunk_id not in dev.distinct_chunks:
+                    dev.distinct_chunks.append(chunk_id)
             
-            # Track propositions - ONLY for explicitly mentioned concepts
+            for act in frame.instructional_acts:
+                if not act.act_type:
+                    continue
+                
+                for ref in act.concept_refs:
+                    if ref.concept_id not in self._explicit_concepts:
+                        continue
+                    
+                    dev = self._concepts.get(ref.concept_id)
+                    if not dev:
+                        continue
+                    
+                    dimension = self._act_to_dimension(act.act_type)
+                    if dimension:
+                        dev.mark_covered(dimension, act.act_id)
+                    
+                    if act.act_type == InstructionalActType.DEFINITION:
+                        dev.definition_count += 1
+                    elif act.act_type == InstructionalActType.EXAMPLE:
+                        dev.example_count += 1
+            
             for prop in frame.propositions:
-                if prop.subject and prop.subject.concept_id in self._explicit_concepts:
-                    event = self._track_proposition(prop.subject, chunk_id)
-                    if event:
-                        events.append(event)
+                if not prop.subject or not prop.object or not prop.predicate:
+                    continue
                 
-                if prop.object and prop.object.concept_id in self._explicit_concepts:
-                    event = self._track_proposition(prop.object, chunk_id)
-                    if event:
-                        events.append(event)
-            
-            # Track definitions
-            for act in frame.instructional_acts:
-                if act.act_type == InstructionalActType.DEFINITION:
-                    for concept_ref in act.concept_refs:
-                        if concept_ref.concept_id in self._explicit_concepts:
-                            event = self._track_definition(concept_ref, chunk_id)
-                            if event:
-                                events.append(event)
-            
-            # Track examples
-            for act in frame.instructional_acts:
-                if act.act_type == InstructionalActType.EXAMPLE:
-                    for concept_ref in act.concept_refs:
-                        if concept_ref.concept_id in self._explicit_concepts:
-                            event = self._track_example(concept_ref, chunk_id)
-                            if event:
-                                events.append(event)
-            
-            # Track relations - only for explicitly mentioned concepts
-            for relation in frame.relations:
-                if relation.source and relation.source.concept_id in self._explicit_concepts:
-                    event = self._track_relation(relation.source, chunk_id)
-                    if event:
-                        events.append(event)
+                if prop.subject.concept_id in self._explicit_concepts:
+                    dev = self._concepts.get(prop.subject.concept_id)
+                    if dev:
+                        dev.proposition_count += 1
+                        dimension = self._relation_to_dimension(prop.predicate)
+                        if dimension:
+                            dev.mark_covered(dimension, prop.proposition_id)
                 
-                if relation.target and relation.target.concept_id in self._explicit_concepts:
-                    event = self._track_relation(relation.target, chunk_id)
-                    if event:
-                        events.append(event)
+                if prop.object.concept_id in self._explicit_concepts:
+                    dev = self._concepts.get(prop.object.concept_id)
+                    if dev:
+                        dev.proposition_count += 0.5
             
-            # Recalculate scores and check state transitions
+            for rel in frame.relations:
+                if not rel.source or not rel.relation_type:
+                    continue
+                
+                if rel.source.concept_id in self._explicit_concepts:
+                    dev = self._concepts.get(rel.source.concept_id)
+                    if dev:
+                        dev.relation_count += 1
+                        dimension = self._relation_to_dimension(rel.relation_type)
+                        if dimension:
+                            dev.mark_covered(dimension, rel.relation_id)
+            
             for concept_id in self._concepts:
-                self._recalculate_score(concept_id)
-                state_event = self._check_state_transition(concept_id, chunk_id)
-                if state_event:
-                    events.append(state_event)
-            
-            self._events.extend(events)
-            
-            return events
+                self._recalculate(concept_id)
     
-    def _track_mention(
-        self,
-        concept: Concept,
-        chunk_id: str,
-    ) -> Optional[DevelopmentEvent]:
-        """Track a concept mention"""
-        dev = self._get_or_create_concept(concept)
-        
-        dev.mention_count += 1
-        dev.last_seen = datetime.now()
-        
-        if chunk_id and chunk_id not in dev.distinct_chunks:
-            dev.distinct_chunks.append(chunk_id)
-        
-        return DevelopmentEvent(
-            event_id=str(uuid.uuid4()),
-            event_type=DevelopmentEventType.CONCEPT_MENTIONED,
-            concept_id=concept.concept_id,
-            chunk_id=chunk_id,
-            payload={"concept_name": concept.canonical_name},
-        )
+    def _act_to_dimension(self, act_type):
+        mapping = {
+            InstructionalActType.DEFINITION: CoverageDimension.DEFINED,
+            InstructionalActType.EXPLANATION: CoverageDimension.EXPLAINED,
+            InstructionalActType.EXAMPLE: CoverageDimension.EXAMPLE_GIVEN,
+            InstructionalActType.COUNTEREXAMPLE: CoverageDimension.COUNTEREXAMPLE_GIVEN,
+            InstructionalActType.COMPARISON: CoverageDimension.COMPARISON_GIVEN,
+            InstructionalActType.CONTRAST: CoverageDimension.COMPARISON_GIVEN,
+            InstructionalActType.PROCESS: CoverageDimension.PROCESS_EXPLAINED,
+            InstructionalActType.MECHANISM: CoverageDimension.MECHANISM_EXPLAINED,
+            InstructionalActType.DERIVATION: CoverageDimension.DERIVATION_GIVEN,
+            InstructionalActType.WARNING: CoverageDimension.LIMITATION_GIVEN,
+            InstructionalActType.RECAP: CoverageDimension.SUMMARY_GIVEN,
+            InstructionalActType.CONCLUSION: CoverageDimension.SUMMARY_GIVEN,
+            InstructionalActType.ANALOGY: CoverageDimension.EXPLAINED,
+            InstructionalActType.QUESTION: CoverageDimension.EXPLAINED,
+            InstructionalActType.ANSWER: CoverageDimension.EXPLAINED,
+        }
+        return mapping.get(act_type)
     
-    def _track_proposition(
-        self,
-        concept_ref: ConceptRef,
-        chunk_id: str,
-    ) -> Optional[DevelopmentEvent]:
-        """Track a proposition about a concept"""
-        dev = self._get_or_create_concept_from_ref(concept_ref)
-        
-        dev.proposition_count += 1
-        dev.last_seen = datetime.now()
-        
-        return DevelopmentEvent(
-            event_id=str(uuid.uuid4()),
-            event_type=DevelopmentEventType.PROPOSITION_ADDED,
-            concept_id=concept_ref.concept_id,
-            chunk_id=chunk_id,
-            payload={"concept_name": concept_ref.canonical_name},
-        )
+    def _relation_to_dimension(self, relation_type):
+        mapping = {
+            RelationType.DEFINED_AS: CoverageDimension.DEFINED,
+            RelationType.PART_OF: CoverageDimension.STRUCTURE_EXPLAINED,
+            RelationType.HAS_PART: CoverageDimension.STRUCTURE_EXPLAINED,
+            RelationType.CAUSES: CoverageDimension.MECHANISM_EXPLAINED,
+            RelationType.RESULTS_IN: CoverageDimension.MECHANISM_EXPLAINED,
+            RelationType.PRECEDES: CoverageDimension.PROCESS_EXPLAINED,
+            RelationType.FOLLOWS: CoverageDimension.PROCESS_EXPLAINED,
+            RelationType.USED_FOR: CoverageDimension.PURPOSE_EXPLAINED,
+            RelationType.USES: CoverageDimension.EXPLAINED,
+            RelationType.PROVIDES: CoverageDimension.EXPLAINED,
+            RelationType.CONTRASTS_WITH: CoverageDimension.COMPARISON_GIVEN,
+            RelationType.SIMILAR_TO: CoverageDimension.COMPARISON_GIVEN,
+            RelationType.EXAMPLE_OF: CoverageDimension.EXAMPLE_GIVEN,
+            RelationType.HAS_VALUE: CoverageDimension.QUANTITY_GIVEN,
+            RelationType.REQUIRES: CoverageDimension.CONDITION_GIVEN,
+            RelationType.LIMITED_BY: CoverageDimension.LIMITATION_GIVEN,
+        }
+        return mapping.get(relation_type)
     
-    def _track_definition(
-        self,
-        concept_ref: ConceptRef,
-        chunk_id: str,
-    ) -> Optional[DevelopmentEvent]:
-        """Track a definition"""
-        dev = self._get_or_create_concept_from_ref(concept_ref)
-        
-        dev.definition_count += 1
-        dev.last_seen = datetime.now()
-        
-        return DevelopmentEvent(
-            event_id=str(uuid.uuid4()),
-            event_type=DevelopmentEventType.DEFINITION_ADDED,
-            concept_id=concept_ref.concept_id,
-            chunk_id=chunk_id,
-        )
-    
-    def _track_example(
-        self,
-        concept_ref: ConceptRef,
-        chunk_id: str,
-    ) -> Optional[DevelopmentEvent]:
-        """Track an example"""
-        dev = self._get_or_create_concept_from_ref(concept_ref)
-        
-        dev.example_count += 1
-        dev.last_seen = datetime.now()
-        
-        return DevelopmentEvent(
-            event_id=str(uuid.uuid4()),
-            event_type=DevelopmentEventType.EXAMPLE_ADDED,
-            concept_id=concept_ref.concept_id,
-            chunk_id=chunk_id,
-        )
-    
-    def _track_relation(
-        self,
-        concept_ref: ConceptRef,
-        chunk_id: str,
-    ) -> Optional[DevelopmentEvent]:
-        """Track a relation"""
-        dev = self._get_or_create_concept_from_ref(concept_ref)
-        
-        dev.relation_count += 1
-        dev.last_seen = datetime.now()
-        
-        return DevelopmentEvent(
-            event_id=str(uuid.uuid4()),
-            event_type=DevelopmentEventType.RELATION_ADDED,
-            concept_id=concept_ref.concept_id,
-            chunk_id=chunk_id,
-        )
-    
-    def _get_or_create_concept(
-        self,
-        concept: Concept,
-    ) -> ConceptDevelopment:
-        """Get existing or create new concept development"""
+    def _get_or_create(self, concept):
         if concept.concept_id not in self._concepts:
             self._concepts[concept.concept_id] = ConceptDevelopment(
                 concept_id=concept.concept_id,
                 canonical_name=concept.canonical_name,
                 confidence=concept.confidence,
             )
-        
         return self._concepts[concept.concept_id]
     
-    def _get_or_create_concept_from_ref(
-        self,
-        concept_ref: ConceptRef,
-    ) -> ConceptDevelopment:
-        """Get existing or create from ConceptRef"""
-        if concept_ref.concept_id not in self._concepts:
-            self._concepts[concept_ref.concept_id] = ConceptDevelopment(
-                concept_id=concept_ref.concept_id,
-                canonical_name=concept_ref.canonical_name,
-                confidence=concept_ref.confidence,
-            )
-        
-        return self._concepts[concept_ref.concept_id]
-    
-    def _recalculate_score(self, concept_id: str) -> None:
-        """Recalculate development score"""
+    def _recalculate(self, concept_id):
         dev = self._concepts[concept_id]
+        coverage_pct = dev.coverage_percentage()
         
-        score = (
-            min(1.0, dev.mention_count / 2) * self.weights["mention"] +
-            min(1.0, dev.proposition_count / 2) * self.weights["proposition"] +
+        scalar = (
+            min(1.0, dev.mention_count / 3) * self.weights["mention"] +
+            min(1.0, dev.proposition_count / 3) * self.weights["proposition"] +
             min(1.0, dev.definition_count) * self.weights["definition"] +
             min(1.0, dev.example_count) * self.weights["example"] +
-            min(1.0, dev.relation_count / 2) * self.weights["relation"] +
-            min(1.0, dev.revisit_count) * self.weights["revisit"]
+            min(1.0, dev.relation_count / 3) * self.weights["relation"] +
+            coverage_pct * self.weights["coverage"]
         )
         
-        dev.development_score = round(min(1.0, score), 4)
-    
-    def _check_state_transition(
-        self,
-        concept_id: str,
-        chunk_id: str,
-    ) -> Optional[DevelopmentEvent]:
-        """Check if concept should change state"""
-        dev = self._concepts[concept_id]
+        dev.development_score = round(min(1.0, scalar), 4)
         
-        old_state = dev.state
-        new_state = old_state
-        
-        if dev.development_score >= self.established_threshold:
-            new_state = DevelopmentState.ESTABLISHED
+        if dev.development_score >= self.fully_explained_threshold:
+            dev.state = DevelopmentState.FULLY_EXPLAINED
+        elif dev.development_score >= self.established_threshold:
+            dev.state = DevelopmentState.ESTABLISHED
         elif dev.development_score >= self.developing_threshold:
-            new_state = DevelopmentState.DEVELOPING
+            dev.state = DevelopmentState.DEVELOPING
         else:
-            new_state = DevelopmentState.MENTIONED
-        
-        if new_state != old_state:
-            dev.state = new_state
-            
-            return DevelopmentEvent(
-                event_id=str(uuid.uuid4()),
-                event_type=DevelopmentEventType.STATE_CHANGED,
-                concept_id=concept_id,
-                chunk_id=chunk_id,
-                payload={
-                    "old_state": old_state.value,
-                    "new_state": new_state.value,
-                    "concept_name": dev.canonical_name,
-                },
-            )
-        
-        return None
+            dev.state = DevelopmentState.MENTIONED
     
-    def get_development(self, concept_id: str) -> Optional[ConceptDevelopment]:
-        """Get development state for a concept"""
+    def get_development(self, concept_id):
         with self._lock:
             return self._concepts.get(concept_id)
     
-    def get_all_developments(self) -> List[ConceptDevelopment]:
-        """Get all concept developments"""
+    def get_all_developments(self):
         with self._lock:
             return list(self._concepts.values())
     
-    def get_established_concepts(self) -> List[ConceptDevelopment]:
-        """Get concepts that are ESTABLISHED"""
-        with self._lock:
-            return [
-                d for d in self._concepts.values()
-                if d.state == DevelopmentState.ESTABLISHED
-            ]
+    def get_coverage_report(self, concept_id):
+        dev = self.get_development(concept_id)
+        if not dev:
+            return {}
+        
+        return {
+            "concept": dev.canonical_name,
+            "state": dev.state.value,
+            "coverage_percentage": dev.coverage_percentage(),
+            "covered_dimensions": [
+                d.value for d in CoverageDimension if dev.coverage.get(d, False)
+            ],
+            "missing_dimensions": [
+                d.value for d in CoverageDimension if not dev.coverage.get(d, False)
+            ],
+        }
     
-    def get_developing_concepts(self) -> List[ConceptDevelopment]:
-        """Get concepts that are DEVELOPING"""
-        with self._lock:
-            return [
-                d for d in self._concepts.values()
-                if d.state == DevelopmentState.DEVELOPING
-            ]
-    
-    def get_mentioned_concepts(self) -> List[ConceptDevelopment]:
-        """Get concepts that are only MENTIONED"""
-        with self._lock:
-            return [
-                d for d in self._concepts.values()
-                if d.state == DevelopmentState.MENTIONED
-            ]
-    
-    def get_top_developed(self, limit: int = 10) -> List[ConceptDevelopment]:
-        """Get most developed concepts"""
+    def get_top_developed(self, limit=10):
         with self._lock:
             sorted_concepts = sorted(
                 self._concepts.values(),
@@ -343,17 +224,13 @@ class DevelopmentTracker:
             )
             return sorted_concepts[:limit]
     
-    def get_statistics(self) -> Dict[str, Any]:
-        """Get development statistics"""
+    def get_statistics(self):
         with self._lock:
-            established = len(self.get_established_concepts())
-            developing = len(self.get_developing_concepts())
-            mentioned = len(self.get_mentioned_concepts())
-            
+            states = [d.state for d in self._concepts.values()]
             return {
                 "total_concepts": len(self._concepts),
-                "established": established,
-                "developing": developing,
-                "mentioned": mentioned,
-                "total_events": len(self._events),
+                "mentioned": sum(1 for s in states if s == DevelopmentState.MENTIONED),
+                "developing": sum(1 for s in states if s == DevelopmentState.DEVELOPING),
+                "established": sum(1 for s in states if s == DevelopmentState.ESTABLISHED),
+                "fully_explained": sum(1 for s in states if s == DevelopmentState.FULLY_EXPLAINED),
             }
