@@ -6,7 +6,7 @@ Changes:
 - Extract core noun phrases for topic names
 - Preserve partitive "X of Y" only when head is a strict short noun phrase
 - Reject generic noun heads (process, system, mechanism, ...) as partitive heads
-- Strip leading articles from topic names
+- Strip leading articles, pronouns, and discourse markers from topic names
 - Clause-aware anchor extraction: strip definitional clauses
 - Boundary detection only at start of utterance for ambiguous markers
 - Topic anchor is always extracted from raw text, not concept text
@@ -107,7 +107,7 @@ class TopicIntelligence:
         r"^(?:now\s+|ok(?:ay)?\s+|so\s+|alright\s+)?next\b",
         r"\bnext\s+up\b",
         r"\bmoving\s+on\b",
-        r"\blet'?s\s+(?:discuss|look\s+at|talk\s+about|consider)\b",
+        r"\blet'?s\s+(?:discuss|look\s+at|talk\s+about|talk\s+through|talk\s+over|talk|consider|examine|explore)\b",
         r"\bwe\s+(?:will|are\s+going\s+to)\s+(?:discuss|look\s+at|consider)\b",
         r"\bturning\s+to\b",
         r"\banother\s+(?:topic|aspect|concept|point)\b",
@@ -206,9 +206,20 @@ class TopicIntelligence:
         "then", "also", "and", "but",
     }
 
+    _LEADING_PRONOUNS = {
+        "it", "it's", "its", "this", "that", "these", "those",
+        "there", "they", "them", "their", "we", "us", "our",
+    }
+
+    _TRAILING_DISCOURSE = {
+        "so", "now", "okay", "ok", "right", "alright", "then",
+    }
+
     _SIGNPOST_PATTERNS = (
         r"^(?:now\s+)?(?:let'?s|we\s+will|we'll)\s+"
-        r"(?:discuss|look\s+at|talk\s+about|consider|examine|explore)\s+",
+        r"(?:discuss|look\s+at|talk\s+about|talk\s+through|talk\s+over|talk|"
+        r"consider|examine|explore|"
+        r"learn\s+about|learn|study|understand|cover|review)\s+",
 
         r"^(?:today\s+)?(?:we\s+are|we're|we\s+will|we'll)\s+"
         r"(?:going\s+to\s+)?(?:learning|learn|studying|study|covering|cover|"
@@ -220,6 +231,10 @@ class TopicIntelligence:
 
         r"^(?:in\s+this\s+(?:lecture|lesson|section|module))\s+"
         r"(?:we\s+will\s+|we'll\s+)?(?:discuss|cover|learn|study)\s+",
+
+        r"^let'?s\s+talk\s+",
+        r"^let'?s\s+move\s+on\s+to\s+",
+        r"^let'?s\s+look\s+at\s+",
     )
 
     def __init__(
@@ -401,11 +416,7 @@ class TopicIntelligence:
     # ============================================================
 
     def _clean_topic_name(self, text: str) -> str:
-        """Extract concise topic anchor from raw text.
-
-        Rejects clause fragments and discourse-only anchors. Returns "" when
-        no reliable identity can be extracted; caller must fall back.
-        """
+        """Extract concise topic anchor from raw text."""
         cleaned = self._normalize_text(text)
 
         for pattern in self._compiled_signposts:
@@ -421,6 +432,9 @@ class TopicIntelligence:
         if not cleaned:
             return ""
 
+        # Strip leading pronouns (after signpost removal).
+        cleaned = self._strip_leading_pronouns(cleaned)
+
         cleaned = self._cut_at_clause_boundary(cleaned)
         cleaned = cleaned.strip(" .,;:!?")
         if not cleaned:
@@ -432,8 +446,7 @@ class TopicIntelligence:
         if len(words_after_comma) > 8:
             cleaned = " ".join(words_after_comma[:8])
 
-        # Partitive "X of Y": only accept when head is a strict short noun
-        # phrase (<= 2 words, no clause verbs, no generic nouns, no prepositions).
+        # Partitive "X of Y"
         partitive_match = re.match(
             r"^(?P<head>.+?)\s+of\s+(?P<object>.+)$",
             cleaned, flags=re.IGNORECASE,
@@ -466,6 +479,9 @@ class TopicIntelligence:
             else:
                 cleaned = head
 
+        # Strip trailing discourse markers.
+        cleaned = self._strip_trailing_discourse(cleaned)
+
         stripped = self._strip_leading_article(cleaned)
         words_raw = stripped.split()
 
@@ -488,6 +504,28 @@ class TopicIntelligence:
             return ""
 
         return result
+
+    @staticmethod
+    def _strip_leading_pronouns(text: str) -> str:
+        words = text.split()
+        while words:
+            first = words[0].lower().strip(".,;:!?\"'()")
+            if first in TopicIntelligence._LEADING_PRONOUNS:
+                words = words[1:]
+                continue
+            break
+        return " ".join(words).strip()
+
+    @staticmethod
+    def _strip_trailing_discourse(text: str) -> str:
+        words = text.split()
+        while words:
+            last = words[-1].lower().strip(".,;:!?\"'()")
+            if last in TopicIntelligence._TRAILING_DISCOURSE:
+                words = words[:-1]
+                continue
+            break
+        return " ".join(words).strip(" .,;:!?")
 
     @staticmethod
     def _cut_at_clause_boundary(text: str) -> str:

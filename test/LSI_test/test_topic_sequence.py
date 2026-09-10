@@ -354,3 +354,98 @@ def test_same_topic_does_not_create_duplicate_nodes():
     ]
 
     assert len(microcontroller_nodes) == 1
+
+# ============================================================
+# PHASE 3 REGRESSION: topic anchor must cut definitional clauses
+# ============================================================
+
+def test_cpu_scheduling_clause_is_stripped():
+    engine = create_engine()
+
+    d = process(
+        engine,
+        "CPU scheduling is the process of deciding which ready process gets the CPU next.",
+        "",
+        None,
+        None,
+    )
+
+    assert d.is_relevant
+    assert d.topic.lower() == "cpu scheduling"
+
+
+def test_computer_network_clause_is_stripped():
+    engine = create_engine()
+
+    d = process(
+        engine,
+        "A computer network is a collection of interconnected devices.",
+        "",
+        None,
+        None,
+    )
+
+    assert d.is_relevant
+    assert "network" in d.topic.lower()
+    # No clause verbs leaked into the anchor.
+    assert " is " not in f" {d.topic.lower()} "
+    assert " collection " not in f" {d.topic.lower()} "
+
+
+def test_tcp_definition_yields_tcp_anchor():
+    engine = create_engine()
+
+    d = process(
+        engine,
+        "TCP is a connection-oriented protocol.",
+        "",
+        None,
+        None,
+    )
+
+    assert d.is_relevant
+    assert d.topic.lower().strip(".") == "tcp"
+
+
+def test_multi_word_proper_topic_preserved():
+    engine = create_engine()
+
+    d = process(
+        engine,
+        "First Come First Serve Scheduling",
+        "",
+        None,
+        None,
+    )
+
+    assert d.is_relevant
+    assert d.topic.lower() == "first come first serve scheduling"
+
+
+def test_topic_identity_stable_across_definition_sentences():
+    engine = create_engine()
+
+    first = process(
+        engine,
+        "CPU scheduling is the process of deciding which ready process gets the CPU next.",
+        "",
+        None,
+        None,
+    )
+
+    current_topic = first.topic
+    current_embedding = first.embedding
+    context = "CPU scheduling is the process of deciding which ready process gets the CPU next."
+
+    second = process(
+        engine,
+        "The scheduler selects the next process based on priority.",
+        context,
+        current_topic,
+        current_embedding,
+    )
+
+    assert second.is_relevant
+    # Same topic should remain stable, not create a new node for every
+    # explanatory sentence.
+    assert second.topic.lower() == first.topic.lower()
