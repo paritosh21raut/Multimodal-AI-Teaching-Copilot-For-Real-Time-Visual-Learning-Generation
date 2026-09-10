@@ -6,7 +6,9 @@ Changes:
 - Extract core noun phrases for topic names
 - Preserve partitive "X of Y" structure (including internal articles)
 - Strip leading articles from topic names
-- Improved concept extraction
+- Clause-aware anchor extraction: strip definitional clauses
+- Boundary detection only at start of utterance for ambiguous markers
+- Topic anchor is always extracted from raw text, not concept text
 - Stable topic identity
 """
 
@@ -99,9 +101,13 @@ class _Discourse:
 
 class TopicIntelligence:
 
+    # Boundary markers. Ambiguous content words such as "next" must be
+    # anchored to utterance start so they don't trigger on phrases
+    # like "the next process".
     _BOUNDARY_PATTERNS = (
         r"\bnow\s+(?:let'?s|we'?ll|we\s+will)\b",
-        r"\bnext\b",
+        r"^(?:now\s+|ok(?:ay)?\s+|so\s+|alright\s+)?next\b",
+        r"\bnext\s+up\b",
         r"\bmoving\s+on\b",
         r"\blet'?s\s+(?:discuss|look\s+at|talk\s+about|consider)\b",
         r"\bwe\s+(?:will|are\s+going\s+to)\s+(?:discuss|look\s+at|consider)\b",
@@ -178,7 +184,17 @@ class TopicIntelligence:
         "what", "how", "today",
     }
 
-    _LEADING_ARTICLES = ("the ", "a ", "an ")
+    _CLAUSE_STOPWORDS = {
+        "is", "are", "was", "were", "be", "been", "being",
+        "means", "refer", "refers", "referred",
+        "define", "defines", "defined",
+        "describe", "describes", "described",
+        "explain", "explains", "explained",
+        "denote", "denotes", "denoted",
+        "represent", "represents", "represented",
+        "call", "calls", "called",
+        "known", "consist", "consists",
+    }
 
     _SIGNPOST_PATTERNS = (
         r"^(?:now\s+)?(?:let'?s|we\s+will|we'll)\s+"
@@ -241,7 +257,7 @@ class TopicIntelligence:
             concept = self._extract_concept(text)
 
             if not self._active_stack:
-                topic_name = self._clean_topic_name(concept.text if concept else text)
+                topic_name = self._clean_topic_name(text)
                 node = self._create_node(name=topic_name, embedding=embedding, parent_id=None, concept=concept)
                 self._activate(node.node_id)
                 self._remember(text, concept)
@@ -291,7 +307,7 @@ class TopicIntelligence:
                 if relation == StructuralDecision.CREATE_SUBTOPIC:
                     parent_id = self._get_boundary_parent(concept=concept, active=active, embedding=embedding)
                     node = self._create_node(
-                        name=self._clean_topic_name(concept.text if concept else text),
+                        name=self._clean_topic_name(text),
                         embedding=embedding, parent_id=parent_id, concept=concept,
                     )
                     self._activate(node.node_id)
@@ -306,9 +322,8 @@ class TopicIntelligence:
                     )
 
                 if relation == StructuralDecision.NEW_MAJOR_TOPIC:
-                    clean_concept_text = concept.text if concept else text
                     node = self._create_node(
-                        name=self._clean_topic_name(clean_concept_text),
+                        name=self._clean_topic_name(text),
                         embedding=embedding, parent_id=None, concept=concept,
                     )
                     self._activate(node.node_id)
@@ -372,15 +387,11 @@ class TopicIntelligence:
             )
 
     # ============================================================
-    # CLEAN TOPIC NAME - strips leading articles, preserves partitives
+    # CLEAN TOPIC NAME - clause-aware
     # ============================================================
 
     def _clean_topic_name(self, text: str) -> str:
-        """Clean topic name by removing signposting and extracting core phrase.
-
-        - Strips leading articles ("the ", "a ", "an ").
-        - Preserves "X of Y" partitive structure with internal articles intact.
-        """
+        """Extract concise topic anchor from raw text."""
         cleaned = self._normalize_text(text)
 
         for pattern in self._compiled_signposts:
@@ -396,7 +407,13 @@ class TopicIntelligence:
         if not cleaned:
             return ""
 
-        # Partitive "X of Y": strip leading article from head, keep internal articles
+        # Cut definitional clause on the full string first.
+        cleaned = self._cut_at_clause_boundary(cleaned)
+        cleaned = cleaned.strip(" .,;:!?")
+        if not cleaned:
+            return ""
+
+        # Partitive "X of Y": strip leading article from head, keep internal articles.
         partitive_match = re.match(
             r"^(?P<head>.+?)\s+of\s+(?P<object>.+)$",
             cleaned, flags=re.IGNORECASE,
@@ -410,17 +427,38 @@ class TopicIntelligence:
                 return f"{head} of {obj}".strip(" .,;:!?")
             return cleaned.strip(" .,;:!?")
 
-        # Non-partitive: strip leading article, then extract content words
+        # Non-partitive.
         stripped = self._strip_leading_article(cleaned)
-        words = [w for w in stripped.split() if w.lower() not in self._STOPWORDS]
-        if not words:
-            return stripped
 
+        # Short anchors preserved verbatim so multi-word proper names are not
+        # collapsed (e.g. "First Come First Serve Scheduling").
+        words_raw = stripped.split()
+        if len(words_raw) <= 5:
+            return stripped.strip(" .,;:!?")
+
+        words = [w for w in words_raw if w.lower() not in self._STOPWORDS]
+        if not words:
+            return stripped.strip(" .,;:!?")
         core = " ".join(words[:5])
         while core and core.split()[-1].lower() in self._STOPWORDS:
             core = " ".join(core.split()[:-1])
-
         return core.strip(" .,;:!?") if core else stripped
+
+    @staticmethod
+    def _cut_at_clause_boundary(text: str) -> str:
+        """Return text up to the first copula/definition verb."""
+        tokens = text.split()
+        if not tokens:
+            return text
+        kept: List[str] = []
+        for tok in tokens:
+            bare = tok.lower().strip(".,;:!?\"'()")
+            if bare in TopicIntelligence._CLAUSE_STOPWORDS:
+                break
+            kept.append(tok)
+        if not kept:
+            return text
+        return " ".join(kept)
 
     @staticmethod
     def _strip_leading_article(phrase: str) -> str:
