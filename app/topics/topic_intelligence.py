@@ -4,12 +4,13 @@ Topic Intelligence - LECTURE STRUCTURE HARDENED
 Changes:
 - Clean topic labels (remove signposting completely)
 - Extract core noun phrases for topic names
-- Preserve partitive "X of Y" structure (including internal articles)
+- Preserve partitive "X of Y" only when head is a strict short noun phrase
+- Reject generic noun heads (process, system, mechanism, ...) as partitive heads
 - Strip leading articles from topic names
 - Clause-aware anchor extraction: strip definitional clauses
 - Boundary detection only at start of utterance for ambiguous markers
 - Topic anchor is always extracted from raw text, not concept text
-- Stable topic identity
+- Reject clause-fragments and discourse-only anchors
 """
 
 from __future__ import annotations
@@ -101,9 +102,6 @@ class _Discourse:
 
 class TopicIntelligence:
 
-    # Boundary markers. Ambiguous content words such as "next" must be
-    # anchored to utterance start so they don't trigger on phrases
-    # like "the next process".
     _BOUNDARY_PATTERNS = (
         r"\bnow\s+(?:let'?s|we'?ll|we\s+will)\b",
         r"^(?:now\s+|ok(?:ay)?\s+|so\s+|alright\s+)?next\b",
@@ -194,6 +192,18 @@ class TopicIntelligence:
         "represent", "represents", "represented",
         "call", "calls", "called",
         "known", "consist", "consists",
+    }
+
+    _PARTITIVE_HEAD_BLOCKERS = {
+        "in", "on", "at", "by", "for", "with", "from",
+        "process", "system", "mechanism", "method", "way", "type",
+        "kind", "form", "case", "set", "class", "concept", "approach",
+        "thing", "part", "piece", "example", "instance",
+    }
+
+    _DISCOURSE_ONLY = {
+        "next", "finally", "now", "okay", "ok", "so", "right", "alright",
+        "then", "also", "and", "but",
     }
 
     _SIGNPOST_PATTERNS = (
@@ -387,11 +397,15 @@ class TopicIntelligence:
             )
 
     # ============================================================
-    # CLEAN TOPIC NAME - clause-aware
+    # CLEAN TOPIC NAME - clause-aware, partitive-guarded
     # ============================================================
 
     def _clean_topic_name(self, text: str) -> str:
-        """Extract concise topic anchor from raw text."""
+        """Extract concise topic anchor from raw text.
+
+        Rejects clause fragments and discourse-only anchors. Returns "" when
+        no reliable identity can be extracted; caller must fall back.
+        """
         cleaned = self._normalize_text(text)
 
         for pattern in self._compiled_signposts:
@@ -407,46 +421,76 @@ class TopicIntelligence:
         if not cleaned:
             return ""
 
-        # Cut definitional clause on the full string first.
         cleaned = self._cut_at_clause_boundary(cleaned)
         cleaned = cleaned.strip(" .,;:!?")
         if not cleaned:
             return ""
 
-        # Partitive "X of Y": strip leading article from head, keep internal articles.
+        if "," in cleaned:
+            cleaned = cleaned.split(",")[0].strip()
+        words_after_comma = cleaned.split()
+        if len(words_after_comma) > 8:
+            cleaned = " ".join(words_after_comma[:8])
+
+        # Partitive "X of Y": only accept when head is a strict short noun
+        # phrase (<= 2 words, no clause verbs, no generic nouns, no prepositions).
         partitive_match = re.match(
             r"^(?P<head>.+?)\s+of\s+(?P<object>.+)$",
             cleaned, flags=re.IGNORECASE,
         )
         if partitive_match:
-            head = self._strip_leading_article(
-                partitive_match.group("head").strip(" .,;:!?")
+            head_raw = partitive_match.group("head").strip(" .,;:!?")
+            obj_raw = partitive_match.group("object").strip(" .,;:!?")
+            head = self._strip_leading_article(head_raw)
+            head_words = head.split()
+            head_tokens_bare = [w.lower().strip(".,;:!?\"'()") for w in head_words]
+
+            head_is_noun_phrase = (
+                len(head_words) <= 2
+                and "," not in head
+                and not any(w in self._CLAUSE_STOPWORDS for w in head_tokens_bare)
+                and not any(w in self._PARTITIVE_HEAD_BLOCKERS for w in head_tokens_bare)
             )
-            obj = partitive_match.group("object").strip(" .,;:!?")
-            if head and obj:
-                return f"{head} of {obj}".strip(" .,;:!?")
-            return cleaned.strip(" .,;:!?")
 
-        # Non-partitive.
+            if head_is_noun_phrase and head and obj_raw:
+                return f"{head} of {obj_raw}".strip(" .,;:!?")
+
+            head_content = [
+                w for w in head_words
+                if w.lower() not in self._STOPWORDS
+                and w.lower().strip(".,;:!?") not in self._PARTITIVE_HEAD_BLOCKERS
+                and w.lower().strip(".,;:!?") not in self._CLAUSE_STOPWORDS
+            ]
+            if head_content:
+                cleaned = " ".join(head_content)
+            else:
+                cleaned = head
+
         stripped = self._strip_leading_article(cleaned)
-
-        # Short anchors preserved verbatim so multi-word proper names are not
-        # collapsed (e.g. "First Come First Serve Scheduling").
         words_raw = stripped.split()
-        if len(words_raw) <= 5:
-            return stripped.strip(" .,;:!?")
 
-        words = [w for w in words_raw if w.lower() not in self._STOPWORDS]
-        if not words:
-            return stripped.strip(" .,;:!?")
-        core = " ".join(words[:5])
-        while core and core.split()[-1].lower() in self._STOPWORDS:
-            core = " ".join(core.split()[:-1])
-        return core.strip(" .,;:!?") if core else stripped
+        if len(words_raw) <= 5:
+            result = stripped.strip(" .,;:!?")
+        else:
+            words = [w for w in words_raw if w.lower() not in self._STOPWORDS]
+            if not words:
+                result = stripped.strip(" .,;:!?")
+            else:
+                core = " ".join(words[:5])
+                while core and core.split()[-1].lower() in self._STOPWORDS:
+                    core = " ".join(core.split()[:-1])
+                result = core.strip(" .,;:!?") if core else stripped
+
+        if not result:
+            return ""
+
+        if result.lower().strip(".,;:!?") in self._DISCOURSE_ONLY:
+            return ""
+
+        return result
 
     @staticmethod
     def _cut_at_clause_boundary(text: str) -> str:
-        """Return text up to the first copula/definition verb."""
         tokens = text.split()
         if not tokens:
             return text
@@ -469,7 +513,7 @@ class TopicIntelligence:
         return phrase
 
     # ============================================================
-    # CONCEPT EXTRACTION - preserves partitive with articles
+    # CONCEPT EXTRACTION
     # ============================================================
 
     def _extract_concept(self, text: str) -> Optional[_Concept]:
@@ -638,6 +682,16 @@ class TopicIntelligence:
         node_id = self._next_node_id
         self._next_node_id += 1
         clean_name = self._clean_topic_name(name)
+        if not clean_name:
+            if concept and concept.head:
+                clean_name = concept.head.strip(" .,;:!?")
+            if not clean_name:
+                cleaned_input = self._normalize_text(name).strip(" .,;:!?")
+                tokens = [w for w in cleaned_input.split() if w.lower() not in self._STOPWORDS]
+                if tokens:
+                    clean_name = tokens[0]
+            if not clean_name:
+                clean_name = "unnamed"
         anchor = embedding.detach().clone()
         centroid = embedding.detach().clone()
         node = TopicNode(
