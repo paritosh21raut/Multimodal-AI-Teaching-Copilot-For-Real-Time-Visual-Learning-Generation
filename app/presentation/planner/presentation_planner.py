@@ -1,4 +1,8 @@
-"""PresentationPlanner with deterministic language realization."""
+"""PresentationPlanner with deterministic language realization.
+
+Deduplicates visible text blocks: one semantic claim/evidence unit must not
+produce multiple identical visible text blocks on the same slide.
+"""
 
 from __future__ import annotations
 from typing import Dict, List, Optional, Any
@@ -11,20 +15,19 @@ from app.presentation.models.presentation_models import (
 
 class PresentationPlanner:
     """Composes SlidePlan and realizes display text deterministically."""
-    
+
     def __init__(self):
         self._slide_counter = 0
-    
+
     def plan(self, slide_decision, selected_info, representation=None, topic_id=""):
         self._slide_counter += 1
-        
+
         action = slide_decision
         if hasattr(slide_decision, 'action'):
             action = slide_decision.action
-        
-        # Build display text from structured evidence
+
         focal_text = self._realize_evidence(selected_info.focal_claim) if selected_info.focal_claim else ""
-        
+
         plan = SlidePlan(
             slide_id=f"slide_{self._slide_counter}",
             topic_id=topic_id,
@@ -36,11 +39,10 @@ class PresentationPlanner:
             density=self._determine_density(selected_info),
             layout_family=self._determine_layout(representation),
         )
-        
+
         return plan
-    
+
     def _realize_evidence(self, evidence: SemanticEvidence) -> str:
-        """Convert structured semantic evidence to display text."""
         mapping = {
             "IS_A": f"{evidence.subject} is a {evidence.object}",
             "HAS_ATTRIBUTE": f"{evidence.subject} is {evidence.object}",
@@ -53,36 +55,46 @@ class PresentationPlanner:
             "DEFINED_AS": f"{evidence.subject} is defined as {evidence.object}",
         }
         return mapping.get(evidence.predicate, f"{evidence.subject} {evidence.predicate} {evidence.object}")
-    
+
     def _build_blocks(self, selected_info):
         blocks = []
-        
-        if selected_info.focal_claim:
+        seen_text = set()
+
+        def _add(block_type, text, semantic_ids=None, priority=1.0):
+            if not text:
+                return
+            if text in seen_text:
+                return
+            seen_text.add(text)
             blocks.append(ContentBlock(
-                block_type=ContentBlockType.KEY_CLAIM,
-                text=self._realize_evidence(selected_info.focal_claim),
+                block_type=block_type,
+                text=text,
+                semantic_ids=semantic_ids or [],
+                priority=priority,
+            ))
+
+        if selected_info.focal_claim:
+            _add(
+                ContentBlockType.KEY_CLAIM,
+                self._realize_evidence(selected_info.focal_claim),
                 semantic_ids=[selected_info.focal_claim.evidence_id] if selected_info.focal_claim.evidence_id else [],
                 priority=1.0,
-            ))
-        
+            )
+
         for ev in selected_info.semantic_units:
-            blocks.append(ContentBlock(
-                block_type=ContentBlockType.EXPLANATION,
-                text=self._realize_evidence(ev),
+            _add(
+                ContentBlockType.EXPLANATION,
+                self._realize_evidence(ev),
                 semantic_ids=[ev.evidence_id] if ev.evidence_id else [],
                 priority=0.6,
-            ))
-        
+            )
+
         for d in selected_info.definitions:
-            blocks.append(ContentBlock(
-                block_type=ContentBlockType.DEFINITION,
-                text=d,
-                priority=0.5,
-            ))
-        
+            _add(ContentBlockType.DEFINITION, d, priority=0.5)
+
         blocks.sort(key=lambda b: b.priority, reverse=True)
         return blocks
-    
+
     def _determine_purpose(self, action):
         purposes = {
             "create_new": "Introduce new concept",
@@ -93,14 +105,14 @@ class PresentationPlanner:
             "wait": "Waiting for more information",
         }
         return purposes.get(action.value if hasattr(action, 'value') else str(action), "General content")
-    
+
     def _determine_density(self, selected_info):
         total = len(selected_info.semantic_units) + len(selected_info.definitions)
         if total <= 2: return 0.3
         if total <= 4: return 0.5
         if total <= 6: return 0.7
         return 0.9
-    
+
     def _determine_layout(self, representation):
         if not representation:
             return LayoutFamily.TEXT_LEFT_VISUAL_RIGHT
