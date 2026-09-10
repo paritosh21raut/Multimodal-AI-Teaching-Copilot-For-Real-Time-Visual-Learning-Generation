@@ -1,7 +1,12 @@
 """
-Development Intelligence - Core Models (PHASE 2 - Backward Compatible)
+Development Intelligence - Core Models (PHASE 3)
 
-Adds structured coverage dimensions while preserving legacy classes.
+Adds:
+- development_index (structured projection driving state)
+- trajectory log
+- topic anchor (LSI node_id)
+- repetition signatures
+Backward-compatible with legacy classes and fields.
 """
 
 from __future__ import annotations
@@ -9,11 +14,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Set
 
 
 class DevelopmentState(str, Enum):
-    """Development lifecycle of a concept"""
     MENTIONED = "mentioned"
     DEVELOPING = "developing"
     ESTABLISHED = "established"
@@ -21,7 +25,6 @@ class DevelopmentState(str, Enum):
 
 
 class DevelopmentEventType(str, Enum):
-    """Types of development events (LEGACY - kept for backward compatibility)"""
     CONCEPT_MENTIONED = "concept_mentioned"
     CONCEPT_EXPLAINED = "concept_explained"
     DEFINITION_ADDED = "definition_added"
@@ -33,7 +36,6 @@ class DevelopmentEventType(str, Enum):
 
 
 class CoverageDimension(str, Enum):
-    """Structured coverage dimensions for concept development"""
     INTRODUCED = "introduced"
     DEFINED = "defined"
     EXPLAINED = "explained"
@@ -55,7 +57,6 @@ class CoverageDimension(str, Enum):
 
 @dataclass
 class DevelopmentEvent:
-    """Event representing a development update (LEGACY - kept for compatibility)"""
     event_id: str
     event_type: DevelopmentEventType
     concept_id: str
@@ -66,47 +67,64 @@ class DevelopmentEvent:
 
 @dataclass
 class ConceptDevelopment:
-    """Development state for a single concept with coverage dimensions"""
     concept_id: str
     canonical_name: str
     state: DevelopmentState = DevelopmentState.MENTIONED
-    
-    # Coverage dimensions (structured)
+
     coverage: Dict[CoverageDimension, bool] = field(default_factory=dict)
-    
-    # Legacy scalar (compatibility)
+
     mention_count: int = 0
-    proposition_count: int = 0
+    proposition_count: float = 0
     definition_count: int = 0
     example_count: int = 0
     relation_count: int = 0
     revisit_count: int = 0
-    
+
     distinct_chunks: List[str] = field(default_factory=list)
     evidence_ids: List[str] = field(default_factory=list)
-    
+
     first_seen: datetime = field(default_factory=datetime.now)
     last_seen: datetime = field(default_factory=datetime.now)
-    
+
     development_score: float = 0.0
+    development_index: float = 0.0
     confidence: float = 0.0
-    
-    def mark_covered(self, dimension: CoverageDimension, evidence_id: str = ""):
-        """Mark a coverage dimension as covered"""
+
+    topic_node_id: Optional[int] = None
+    first_seen_topic_id: Optional[int] = None
+    last_seen_topic_id: Optional[int] = None
+    trajectory: List[Dict[str, str]] = field(default_factory=list)
+
+    seen_proposition_signatures: Set[str] = field(default_factory=set)
+    seen_relation_signatures: Set[str] = field(default_factory=set)
+
+    def mark_covered(self, dimension: CoverageDimension, evidence_id: str = "") -> bool:
+        newly = not self.coverage.get(dimension, False)
         self.coverage[dimension] = True
         if evidence_id and evidence_id not in self.evidence_ids:
             self.evidence_ids.append(evidence_id)
-    
+        return newly
+
     def is_covered(self, dimension: CoverageDimension) -> bool:
-        """Check if a coverage dimension is covered"""
         return self.coverage.get(dimension, False)
-    
+
+    def covered_dimensions(self) -> List[CoverageDimension]:
+        return [d for d in CoverageDimension if self.coverage.get(d, False)]
+
+    def missing_dimensions(self) -> List[CoverageDimension]:
+        return [d for d in CoverageDimension if not self.coverage.get(d, False)]
+
+    def non_introduced_coverage_count(self) -> int:
+        return sum(
+            1 for d in CoverageDimension
+            if d != CoverageDimension.INTRODUCED and self.coverage.get(d, False)
+        )
+
     def coverage_percentage(self) -> float:
-        """Percentage of dimensions covered"""
         total = len(CoverageDimension)
         covered = sum(1 for d in CoverageDimension if self.coverage.get(d, False))
         return covered / total if total > 0 else 0.0
-    
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "concept_id": self.concept_id,
@@ -124,6 +142,11 @@ class ConceptDevelopment:
             "first_seen": self.first_seen.isoformat(),
             "last_seen": self.last_seen.isoformat(),
             "development_score": self.development_score,
+            "development_index": self.development_index,
             "coverage_percentage": self.coverage_percentage(),
             "confidence": self.confidence,
+            "topic_node_id": self.topic_node_id,
+            "first_seen_topic_id": self.first_seen_topic_id,
+            "last_seen_topic_id": self.last_seen_topic_id,
+            "trajectory": list(self.trajectory),
         }
