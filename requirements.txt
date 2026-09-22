@@ -1,0 +1,14 @@
+sounddevice
+numpy
+soundfile
+faster-whisper
+sentence-transformers
+python-pptx
+streamlit
+streamlit-autorefresh
+requests
+Pillow
+PyYAML
+loguru
+python-dotenv
+google-genai

@@ -20,3 +20,13 @@ images:
 
 logging:
   level: INFO
+
+llm:
+  provider: groq
+  model: openai/gpt-oss-120b
+  base_url: https://api.groq.com/openai/v1
+  timeout: 30
+  max_retries: 2
+  temperature: 0.2
+  max_tokens: 2048
+  reasoning_effort: medium
