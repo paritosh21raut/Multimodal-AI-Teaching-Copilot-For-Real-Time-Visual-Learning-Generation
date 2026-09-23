@@ -30,3 +30,13 @@ llm:
   temperature: 0.2
   max_tokens: 2048
   reasoning_effort: medium
+
+lsi:
+  reasoner_enabled: true
+  reasoner_reasoning_effort: low
+  reasoner_max_tokens: 320
+  continue_threshold: 0.45
+  related_floor: 0.30
+  return_floor: 0.55
+  top_k_candidates: 5
+  max_nodes: 200
