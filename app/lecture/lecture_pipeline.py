@@ -82,6 +82,21 @@ class LecturePipeline:
 
         context_buffer.clear()
 
+        # ------------------------------------------------------
+        # Phase 3: explicit LSI reset lifecycle.
+        #
+        # Structural state must be cleared between lectures.
+        # The detector is optional at pipeline construction time,
+        # so guard with hasattr.
+        # ------------------------------------------------------
+
+        if (
+            self.topic_detector is not None
+            and hasattr(self.topic_detector, "reset")
+        ):
+
+            self.topic_detector.reset()
+
         self.started = True
 
         print(
