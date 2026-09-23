@@ -15,6 +15,10 @@ from app.audio.live_transcript_manager import (
     LiveTranscriptManager,
 )
 
+from app.transcript.transcript_intelligence import (
+    transcript_intelligence,
+)
+
 from app.utils.logger import app_logger
 from app.lecture.lecture_pipeline import (
     lecture_pipeline,
@@ -71,18 +75,7 @@ class AudioWorker(threading.Thread):
             * self.live_interval_seconds
         )
 
-        # Number of samples already placed into the
-        # Whisper processing queue for the current speech segment.
         self.last_live_sample_count = 0
-
-        # ----------------------------------------------------------
-        # IMPORTANT
-        #
-        # Whisper jobs are now QUEUED.
-        #
-        # We do NOT skip a new audio segment just because the
-        # previous Whisper job is still running.
-        # ----------------------------------------------------------
 
         self.live_executor = (
             ThreadPoolExecutor(
@@ -109,15 +102,20 @@ class AudioWorker(threading.Thread):
         self.analysis_lock = threading.Lock()
 
         # ==========================================================
-        # TRANSCRIPT MANAGER
+        # TRANSCRIPT MANAGERS
+        #
+        # - LiveTranscriptManager: terminal/UI display only.
+        # - TranscriptIntelligence: authoritative transcript +
+        #   analysis-ready chunks.
         # ==========================================================
 
         self.transcript_manager = (
             LiveTranscriptManager()
         )
 
-        # Complete transcript accumulated during the lecture.
-        self.current_transcript = ""
+        self.transcript_intelligence = (
+            transcript_intelligence
+        )
 
     # ==========================================================
     # LIVE WHISPER QUEUE
@@ -142,12 +140,6 @@ class AudioWorker(threading.Thread):
 
             try:
 
-                # --------------------------------------------------
-                # ALWAYS QUEUE THE AUDIO.
-                #
-                # Never discard a segment because Whisper is busy.
-                # --------------------------------------------------
-
                 self.live_executor.submit(
                     self._live_transcribe,
                     audio,
@@ -156,7 +148,6 @@ class AudioWorker(threading.Thread):
 
             except RuntimeError:
 
-                # Executor is shutting down.
                 return
 
             except Exception as error:
@@ -178,77 +169,59 @@ class AudioWorker(threading.Thread):
 
         try:
 
-            transcript = (
+            raw = (
                 self.whisper.transcribe_audio(
                     audio
                 )
             )
 
-            if not transcript:
+            if not raw:
                 return
 
-            transcript = (
-                self.transcript_manager
-                .normalize(
-                    transcript
-                )
+            raw = self.transcript_manager.normalize(
+                raw
             )
 
-            if not transcript:
+            if not raw:
                 return
 
             # --------------------------------------------------
-            # IMPORTANT:
+            # Terminal/UI display update.
             #
-            # Each Whisper job represents a NEW non-overlapping
-            # audio window.
-            #
-            # Append it to the current lecture transcript instead
-            # of replacing the existing transcript.
-            # --------------------------------------------------
-
-            if self.current_transcript:
-
-                self.current_transcript = (
-                    self.current_transcript
-                    + " "
-                    + transcript
-                )
-
-            else:
-
-                self.current_transcript = (
-                    transcript
-                )
-
-            self.current_transcript = (
-                self.transcript_manager
-                .normalize(
-                    self.current_transcript
-                )
-            )
-
-            # --------------------------------------------------
-            # Update single live transcript.
+            # LiveTranscriptManager still receives the raw
+            # per-window Whisper output. It handles its own
+            # paragraph/boundary display logic.
             # --------------------------------------------------
 
             self.transcript_manager.update(
-                self.current_transcript
+                raw
+            )
+
+            # --------------------------------------------------
+            # Authoritative transcript + analysis chunking.
+            # --------------------------------------------------
+
+            chunk = (
+                self.transcript_intelligence
+                .process(
+                    raw,
+                    force=force,
+                )
             )
 
             dashboard_state.update_transcript(
-                self.current_transcript
+                self.transcript_intelligence
+                .authoritative_transcript()
             )
 
             sys.stdout.flush()
 
-            # --------------------------------------------------
-            # Backend analysis works independently.
-            # --------------------------------------------------
+            if chunk is None:
+                return
 
             self._queue_backend_analysis(
-                self.current_transcript,
-                force=force,
+                chunk.text,
+                force=chunk.is_forced,
             )
 
         except Exception as error:
@@ -268,34 +241,17 @@ class AudioWorker(threading.Thread):
 
     def _queue_backend_analysis(
         self,
-        transcript,
+        chunk_text,
         force=False,
     ):
 
-        chunk = (
-            self.transcript_manager
-            .get_new_analysis_text(
-                transcript,
-                force=force,
-            )
-        )
-
-        if not chunk:
+        if not chunk_text:
             return
 
         with self.analysis_lock:
 
             if not self.running:
                 return
-
-            # --------------------------------------------------
-            # Backend analysis may still be busy.
-            #
-            # We intentionally leave the unprocessed chunk inside
-            # LiveTranscriptManager.
-            #
-            # The next transcript update will retry it.
-            # --------------------------------------------------
 
             if (
                 self.analysis_future is not None
@@ -309,7 +265,7 @@ class AudioWorker(threading.Thread):
                 self.analysis_future = (
                     self.analysis_executor.submit(
                         self._analyze_chunk,
-                        chunk,
+                        chunk_text,
                     )
                 )
 
@@ -358,27 +314,30 @@ class AudioWorker(threading.Thread):
                 )
             )
 
-            # --------------------------------------------------
-            # Mark successful analysis.
-            # --------------------------------------------------
-
             if isinstance(
                 result,
                 dict,
             ):
 
+                # ----------------------------------------------
+                # Mark analyzed only when the pipeline actually
+                # consumed the text (relevant or not).
+                # ----------------------------------------------
+
                 if result.get(
-                    "is_relevant",
+                    "content_generated",
                     False,
+                ) or (
+                    result.get("is_relevant") is False
                 ):
 
-                    self.transcript_manager.mark_analyzed(
+                    self.transcript_intelligence.mark_analyzed(
                         transcript
                     )
 
-                # --------------------------------------------------
-                # New topic
-                # --------------------------------------------------
+                # ----------------------------------------------
+                # New topic.
+                # ----------------------------------------------
 
                 if result.get(
                     "is_new_topic",
@@ -393,6 +352,10 @@ class AudioWorker(threading.Thread):
                     self.transcript_manager.start_new_topic(
                         topic=topic,
                         boundary_text=transcript,
+                    )
+
+                    self.transcript_intelligence.start_new_topic(
+                        transcript
                     )
 
             print(
@@ -454,17 +417,9 @@ class AudioWorker(threading.Thread):
                     self.audio_queue.get()
                 )
 
-                # ==================================================
-                # SPEECH
-                # ==================================================
-
                 if self.detector.is_speech(
                     chunk
                 ):
-
-                    # ------------------------------------------------
-                    # Speech begins.
-                    # ------------------------------------------------
 
                     if not self.recording:
 
@@ -484,10 +439,6 @@ class AudioWorker(threading.Thread):
                             "Speech Started"
                         )
 
-                    # ------------------------------------------------
-                    # EVERY audio chunk is stored.
-                    # ------------------------------------------------
-
                     self.builder.add_chunk(
                         chunk
                     )
@@ -497,11 +448,6 @@ class AudioWorker(threading.Thread):
                     current_samples = (
                         self.builder.sample_count()
                     )
-
-                    # ------------------------------------------------
-                    # Every ~2 seconds create ONE NEW NON-OVERLAPPING
-                    # audio window.
-                    # ------------------------------------------------
 
                     if (
                         current_samples
@@ -527,9 +473,6 @@ class AudioWorker(threading.Thread):
                             ]
                         )
 
-                        # Mark these samples as queued BEFORE
-                        # submitting, so they can never be queued
-                        # twice.
                         self.last_live_sample_count = (
                             end
                         )
@@ -538,25 +481,16 @@ class AudioWorker(threading.Thread):
                             audio_window
                         )
 
-                # ==================================================
-                # SILENCE
-                # ==================================================
-
                 else:
 
                     if not self.recording:
                         continue
 
-                    # Keep trailing silence.
                     self.builder.add_chunk(
                         chunk
                     )
 
                     self.silence_counter += 1
-
-                    # ------------------------------------------------
-                    # Around 2 seconds of silence.
-                    # ------------------------------------------------
 
                     if self.silence_counter >= 80:
 
@@ -567,10 +501,6 @@ class AudioWorker(threading.Thread):
                         current_samples = (
                             self.builder.sample_count()
                         )
-
-                        # ------------------------------------------------
-                        # Queue any final unprocessed speech.
-                        # ------------------------------------------------
 
                         if (
                             current_samples
