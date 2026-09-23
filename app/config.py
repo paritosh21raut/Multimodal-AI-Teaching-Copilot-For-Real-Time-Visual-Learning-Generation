@@ -7,10 +7,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-# --------------------------------------------------------------
-# LLM CONFIGURATION (Phase 1 — Groq only)
-# --------------------------------------------------------------
-
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "groq").strip().lower()
 
 LLM_MODEL = os.getenv(
@@ -33,16 +29,8 @@ LLM_REASONING_EFFORT = (
 )
 
 
-# --------------------------------------------------------------
-# GROQ
-# --------------------------------------------------------------
-
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-
-# --------------------------------------------------------------
-# LSI (Lecture Structure Intelligence)
-# --------------------------------------------------------------
 
 LSI_REASONER_ENABLED = (
     os.getenv("LSI_REASONER_ENABLED", "true").strip().lower()
@@ -78,8 +66,48 @@ LSI_MAX_NODES = int(
 )
 
 
-# --------------------------------------------------------------
-# IMAGES (unchanged, outside current scope)
-# --------------------------------------------------------------
+SEMANTIC_ENABLED = (
+    os.getenv("SEMANTIC_ENABLED", "true").strip().lower()
+    in ("1", "true", "yes", "on")
+)
+
+SEMANTIC_REASONER_MODEL = os.getenv(
+    "SEMANTIC_REASONER_MODEL",
+    "openai/gpt-oss-120b",
+).strip()
+
+SEMANTIC_FALLBACK_MODEL = os.getenv(
+    "SEMANTIC_FALLBACK_MODEL",
+    "openai/gpt-oss-20b",
+).strip()
+
+SEMANTIC_REASONER_REASONING_EFFORT = (
+    os.getenv("SEMANTIC_REASONER_REASONING_EFFORT", "low").strip() or None
+)
+
+SEMANTIC_REASONER_MAX_TOKENS = int(
+    os.getenv("SEMANTIC_REASONER_MAX_TOKENS", "1600")
+)
+
+SEMANTIC_QUEUE_MAX_SIZE = int(
+    os.getenv("SEMANTIC_QUEUE_MAX_SIZE", "64")
+)
+
+SEMANTIC_BATCH_SIZE = int(
+    os.getenv("SEMANTIC_BATCH_SIZE", "2")
+)
+
+SEMANTIC_BATCH_TIMEOUT = float(
+    os.getenv("SEMANTIC_BATCH_TIMEOUT", "6.0")
+)
+
+SEMANTIC_MAX_CALLS_PER_MINUTE = int(
+    os.getenv("SEMANTIC_MAX_CALLS_PER_MINUTE", "2")
+)
+
+SEMANTIC_MIN_INTERVAL_SECONDS = float(
+    os.getenv("SEMANTIC_MIN_INTERVAL_SECONDS", "20.0")
+)
+
 
 PIXABAY_API_KEY = "57059568-74dfdc6ee55bf8f5dbfe36051"

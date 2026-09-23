@@ -22,6 +22,11 @@ from app.ai.llm_client import (
 from app.utils.logger import app_logger
 
 
+# Sentinel: distinguishes "argument not provided" from
+# "argument explicitly set to None".
+_DEFAULT_EFFORT = object()
+
+
 class GroqClient(LLMClient):
 
     def __init__(
@@ -88,7 +93,8 @@ class GroqClient(LLMClient):
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
         timeout: Optional[float] = None,
-        reasoning_effort: Optional[str] = None,
+        reasoning_effort: Any = _DEFAULT_EFFORT,
+        model: Optional[str] = None,
     ) -> str:
         messages = self._build_messages(prompt, system)
         response = self._call(
@@ -98,6 +104,7 @@ class GroqClient(LLMClient):
             max_tokens=max_tokens,
             timeout=timeout,
             reasoning_effort=reasoning_effort,
+            model=model,
         )
         return self._extract_text(response)
 
@@ -111,7 +118,8 @@ class GroqClient(LLMClient):
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
         timeout: Optional[float] = None,
-        reasoning_effort: Optional[str] = None,
+        reasoning_effort: Any = _DEFAULT_EFFORT,
+        model: Optional[str] = None,
     ) -> Dict[str, Any]:
         if not isinstance(schema, dict) or not schema:
             raise LLMConfigurationError(
@@ -133,6 +141,7 @@ class GroqClient(LLMClient):
             max_tokens=max_tokens,
             timeout=timeout,
             reasoning_effort=reasoning_effort,
+            model=model,
         )
         text = self._extract_text(response)
         return self._parse_json_object(text)
@@ -168,20 +177,33 @@ class GroqClient(LLMClient):
         temperature: Optional[float],
         max_tokens: Optional[int],
         timeout: Optional[float],
-        reasoning_effort: Optional[str] = None,
+        reasoning_effort: Any = _DEFAULT_EFFORT,
+        model: Optional[str] = None,
     ):
         self._ensure_configured()
         client = self._get_client()
+
         effective_timeout = (
             self._timeout if timeout is None else float(timeout)
         )
-        effective_reasoning = (
-            reasoning_effort
-            if reasoning_effort is not None
-            else self._reasoning_effort
+
+        # Resolve reasoning_effort with sentinel semantics:
+        # - not provided        -> use constructor default
+        # - provided as None    -> omit the parameter
+        # - provided as string  -> use that value
+        if reasoning_effort is _DEFAULT_EFFORT:
+            effective_reasoning = self._reasoning_effort
+        else:
+            effective_reasoning = reasoning_effort
+
+        effective_model = (
+            model.strip()
+            if isinstance(model, str) and model.strip()
+            else self._model
         )
+
         kwargs: Dict[str, Any] = {
-            "model": self._model,
+            "model": effective_model,
             "messages": messages,
             "temperature": (
                 self._temperature
@@ -194,6 +216,7 @@ class GroqClient(LLMClient):
                 else int(max_tokens)
             ),
         }
+
         if response_format is not None:
             kwargs["response_format"] = response_format
         if effective_reasoning:
@@ -212,7 +235,7 @@ class GroqClient(LLMClient):
                 app_logger.info(
                     "[GroqClient] "
                     f"provider=groq "
-                    f"model={self._model} "
+                    f"model={effective_model} "
                     f"latency={latency:.2f}s "
                     f"attempt={attempt + 1}"
                 )

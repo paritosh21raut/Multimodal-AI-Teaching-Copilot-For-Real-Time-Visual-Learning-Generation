@@ -26,10 +26,11 @@ class LecturePipeline:
         self._lock = Lock()
 
         self.topic_detector = None
-
         self.content_generator = None
-
         self.slide_manager = None
+
+        # Phase 4 sidecar. Set via register_semantic_intelligence().
+        self.semantic_intelligence = None
 
         self.started = False
 
@@ -37,26 +38,17 @@ class LecturePipeline:
     # REGISTRATION
     # ==========================================================
 
-    def register_topic_detector(
-        self,
-        detector,
-    ):
-
+    def register_topic_detector(self, detector):
         self.topic_detector = detector
 
-    def register_content_generator(
-        self,
-        generator,
-    ):
-
+    def register_content_generator(self, generator):
         self.content_generator = generator
 
-    def register_slide_manager(
-        self,
-        manager,
-    ):
-
+    def register_slide_manager(self, manager):
         self.slide_manager = manager
+
+    def register_semantic_intelligence(self, sidecar):
+        self.semantic_intelligence = sidecar
 
     # ==========================================================
     # START
@@ -82,35 +74,33 @@ class LecturePipeline:
 
         context_buffer.clear()
 
-        # ------------------------------------------------------
         # Phase 3: explicit LSI reset lifecycle.
-        #
-        # Structural state must be cleared between lectures.
-        # The detector is optional at pipeline construction time,
-        # so guard with hasattr.
-        # ------------------------------------------------------
-
         if (
             self.topic_detector is not None
             and hasattr(self.topic_detector, "reset")
         ):
-
             self.topic_detector.reset()
+
+        # Phase 4: reset semantic sidecar.
+        if self.semantic_intelligence is not None:
+            try:
+                self.semantic_intelligence.reset()
+                self.semantic_intelligence.start()
+            except Exception as error:
+                print(
+                    "[Pipeline] Semantic sidecar reset failed:",
+                    error,
+                )
 
         self.started = True
 
-        print(
-            "[Pipeline] Lecture Pipeline Started"
-        )
+        print("[Pipeline] Lecture Pipeline Started")
 
     # ==========================================================
     # PROCESS
     # ==========================================================
 
-    def process_transcript(
-        self,
-        transcript: str,
-    ):
+    def process_transcript(self, transcript: str):
 
         transcript = transcript.strip()
 
@@ -120,391 +110,174 @@ class LecturePipeline:
         if not self.started:
             self.start()
 
-        # ----------------------------------------------------------
-        # Semantic topic analysis
-        # ----------------------------------------------------------
-
-        decision = (
-            self.topic_detector.process(
-
-                latest_text=transcript,
-
-                rolling_context=(
-                    context_buffer.rolling_context()
-                ),
-
-                current_topic=(
-                    lecture_state.get_current_topic()
-                ),
-
-                current_embedding=(
-                    lecture_state.get_current_embedding()
-                ),
-            )
+        decision = self.topic_detector.process(
+            latest_text=transcript,
+            rolling_context=context_buffer.rolling_context(),
+            current_topic=lecture_state.get_current_topic(),
+            current_embedding=lecture_state.get_current_embedding(),
         )
+
+        # ----------------------------------------------------------
+        # Phase 4: non-blocking enqueue of semantic work.
+        # This MUST NOT block the live pipeline. Errors are swallowed
+        # by the sidecar itself.
+        # ----------------------------------------------------------
+
+        if self.semantic_intelligence is not None:
+            try:
+                self.semantic_intelligence.enqueue(
+                    transcript, decision
+                )
+            except Exception as error:
+                print(
+                    "[Pipeline] Semantic enqueue failed:",
+                    error,
+                )
 
         # ----------------------------------------------------------
         # Irrelevant speech
         # ----------------------------------------------------------
 
         if (
-            hasattr(
-                decision,
-                "is_relevant",
-            )
+            hasattr(decision, "is_relevant")
             and not decision.is_relevant
         ):
 
             print()
-            print(
-                "ANALYSIS RESULT"
-            )
-            print(
-                "-" * 70
-            )
-            print(
-                "Relevant      : NO"
-            )
-            print(
-                "Action        : KEEP CURRENT SLIDE"
-            )
-            print(
-                f"Reason        : {decision.reason}"
-            )
-            print(
-                "-" * 70
-            )
+            print("ANALYSIS RESULT")
+            print("-" * 70)
+            print("Relevant      : NO")
+            print("Action        : KEEP CURRENT SLIDE")
+            print(f"Reason        : {decision.reason}")
+            print("-" * 70)
 
             return {
                 "is_relevant": False,
                 "is_new_topic": False,
-                "topic": (
-                    lecture_state.get_current_topic()
-                ),
+                "topic": lecture_state.get_current_topic(),
                 "confidence": 0.0,
                 "reason": decision.reason,
             }
 
-        # ----------------------------------------------------------
-        # Add only relevant speech to lecture context
-        # ----------------------------------------------------------
+        context_buffer.add(transcript)
 
-        context_buffer.add(
-            transcript
-        )
-
-        # ----------------------------------------------------------
-        # Confidence
-        # ----------------------------------------------------------
-
-        if (
-            lecture_state.get_current_topic()
-            is None
-        ):
-
+        if lecture_state.get_current_topic() is None:
             confidence = 1.0
-
         elif decision.is_new_topic:
-
             confidence = max(
                 0.0,
-                min(
-                    1.0,
-                    1.0 - float(
-                        decision.similarity
-                    ),
-                ),
+                min(1.0, 1.0 - float(decision.similarity)),
             )
-
         else:
-
             confidence = max(
                 0.0,
-                min(
-                    1.0,
-                    float(
-                        decision.similarity
-                    ),
-                ),
+                min(1.0, float(decision.similarity)),
             )
-
-        # ----------------------------------------------------------
-        # Slide decision
-        # ----------------------------------------------------------
 
         if decision.is_new_topic:
-
-            slide_action = (
-                "NEW SLIDE"
-            )
-
-            slide = (
-                lecture_state.create_slide(
-                    decision.topic
-                )
-            )
-
+            slide_action = "NEW SLIDE"
+            slide = lecture_state.create_slide(decision.topic)
         else:
-
-            slide_action = (
-                "SAME SLIDE - UPDATE"
-            )
-
+            slide_action = "SAME SLIDE - UPDATE"
             lecture_state.update_current_slide()
-
-            slide = (
-                lecture_state.get_current_slide()
-            )
+            slide = lecture_state.get_current_slide()
 
         lecture_state.set_current_topic(
-            decision.topic,
-            decision.embedding,
+            decision.topic, decision.embedding
         )
-
-        # ----------------------------------------------------------
-        # Analysis report
-        # ----------------------------------------------------------
 
         print()
-        print(
-            "=" * 70
-        )
-        print(
-            "LECTURE ANALYSIS REPORT"
-        )
-        print(
-            "=" * 70
-        )
+        print("=" * 70)
+        print("LECTURE ANALYSIS REPORT")
+        print("=" * 70)
 
-        print(
-            f"Input Chunk    : {transcript}"
-        )
-
-        print(
-            f"Topic          : "
-            f"{decision.topic}"
-        )
-
-        print(
-            f"Similarity     : "
-            f"{decision.similarity:.3f}"
-        )
-
-        print(
-            f"Confidence     : "
-            f"{confidence:.3f}"
-        )
-
-        print(
-            f"New Topic      : "
-            f"{decision.is_new_topic}"
-        )
-
-        print(
-            f"Slide Decision : "
-            f"{slide_action}"
-        )
-
-        print(
-            f"Slide Number   : "
-            f"{slide.slide_number}"
-        )
-
-        print(
-            f"Reason         : "
-            f"{decision.reason}"
-        )
-
-        print(
-            "-" * 70
-        )
+        print(f"Input Chunk    : {transcript}")
+        print(f"Topic          : {decision.topic}")
+        print(f"Similarity     : {decision.similarity:.3f}")
+        print(f"Confidence     : {confidence:.3f}")
+        print(f"New Topic      : {decision.is_new_topic}")
+        print(f"Slide Decision : {slide_action}")
+        print(f"Slide Number   : {slide.slide_number}")
+        print(f"Reason         : {decision.reason}")
+        print("-" * 70)
 
         dashboard_state.update_topic(
-            str(
-                decision.topic
-            ),
-            confidence,
+            str(decision.topic), confidence
         )
 
-        # ----------------------------------------------------------
-        # Generate structured slide content
-        # ----------------------------------------------------------
-
-        print(
-            "Generating educational content..."
-        )
+        print("Generating educational content...")
 
         try:
-
-            content = (
-                self.content_generator.generate(
-
-                    topic=(
-                        decision.topic
-                    ),
-
-                    context=(
-                        context_buffer
-                        .rolling_context()
-                    ),
-                )
+            content = self.content_generator.generate(
+                topic=decision.topic,
+                context=context_buffer.rolling_context(),
             )
-
         except Exception as error:
 
-            print(
-                "Content Generation : FAILED"
-            )
+            print("Content Generation : FAILED")
+            print(f"Error              : {error}")
 
-            print(
-                f"Error              : {error}"
-            )
-
-            dashboard_state.set_error(
-                str(error)
-            )
-
+            dashboard_state.set_error(str(error))
             dashboard_state.set_pipeline(
-                "Content Generation",
-                "Failed",
+                "Content Generation", "Failed"
             )
 
             return {
                 "is_relevant": True,
-                "is_new_topic": (
-                    decision.is_new_topic
-                ),
-                "topic": str(
-                    decision.topic
-                ),
+                "is_new_topic": decision.is_new_topic,
+                "topic": str(decision.topic),
                 "confidence": confidence,
-                "slide_number": (
-                    slide.slide_number
-                ),
+                "slide_number": slide.slide_number,
                 "content_generated": False,
             }
 
-        # ----------------------------------------------------------
-        # Content intelligence report
-        # ----------------------------------------------------------
-
-        print(
-            f"Content Type   : "
-            f"{content.content_type}"
-        )
-
-        print(
-            f"Visual Type    : "
-            f"{content.visual_type}"
-        )
-
-        print(
-            f"Visual Reason  : "
-            f"{content.visual_reason}"
-        )
-
-        print(
-            f"Visual Spec    : "
-            f"{content.visual_spec}"
-        )
-
-        print(
-            f"Title          : "
-            f"{content.title}"
-        )
-
-        print(
-            f"Bullets        : "
-            f"{len(content.bullets)}"
-        )
-
-        # ----------------------------------------------------------
-        # Dashboard
-        # ----------------------------------------------------------
+        print(f"Content Type   : {content.content_type}")
+        print(f"Visual Type    : {content.visual_type}")
+        print(f"Visual Reason  : {content.visual_reason}")
+        print(f"Visual Spec    : {content.visual_spec}")
+        print(f"Title          : {content.title}")
+        print(f"Bullets        : {len(content.bullets)}")
 
         dashboard_state.update_slide(
             content.title,
-            [
-                bullet.text
-                for bullet
-                in content.bullets
-            ],
+            [b.text for b in content.bullets],
             slide.slide_number,
         )
 
         dashboard_state.set_pipeline(
-            "Content Generated",
-            "Generating",
+            "Content Generated", "Generating"
         )
-
-        # ----------------------------------------------------------
-        # Existing PPT/SlideManager
-        # ----------------------------------------------------------
 
         if decision.is_new_topic:
-
-            result = (
-                self.slide_manager.create_slide(
-                    slide,
-                    content,
-                )
+            result = self.slide_manager.create_slide(
+                slide, content
             )
-
         else:
-
-            result = (
-                self.slide_manager.update_slide(
-                    slide,
-                    content,
-                )
+            result = self.slide_manager.update_slide(
+                slide, content
             )
 
         print(
-            f"Slide Generation : "
+            "Slide Generation : "
             f"{'SUCCESS' if result.success else 'FAILED'}"
         )
-
-        print(
-            f"PPT              : "
-            f"{result.presentation_path or '-'}"
-        )
-
-        print(
-            "=" * 70
-        )
+        print(f"PPT              : {result.presentation_path or '-'}")
+        print("=" * 70)
 
         return {
             "is_relevant": True,
-            "is_new_topic": (
-                decision.is_new_topic
-            ),
-            "topic": str(
-                decision.topic
-            ),
+            "is_new_topic": decision.is_new_topic,
+            "topic": str(decision.topic),
             "confidence": confidence,
             "slide_action": slide_action,
-            "slide_number": (
-                slide.slide_number
-            ),
+            "slide_number": slide.slide_number,
             "content_generated": True,
             "title": content.title,
-            "bullets": [
-                bullet.text
-                for bullet
-                in content.bullets
-            ],
-            "content_type": (
-                content.content_type
-            ),
-            "visual_type": (
-                content.visual_type
-            ),
-            "visual_reason": (
-                content.visual_reason
-            ),
-            "visual_spec": (
-                content.visual_spec
-            ),
+            "bullets": [b.text for b in content.bullets],
+            "content_type": content.content_type,
+            "visual_type": content.visual_type,
+            "visual_reason": content.visual_reason,
+            "visual_spec": content.visual_spec,
         }
 
 

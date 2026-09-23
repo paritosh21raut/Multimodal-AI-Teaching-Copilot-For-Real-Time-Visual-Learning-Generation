@@ -25,3 +25,4 @@ assets/images/
 build/
 dist/
 *.egg-info/
+scratch/

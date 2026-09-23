@@ -40,3 +40,15 @@ lsi:
   return_floor: 0.55
   top_k_candidates: 5
   max_nodes: 200
+
+semantic:
+  enabled: true
+  reasoner_model: openai/gpt-oss-120b
+  fallback_model: openai/gpt-oss-20b
+  reasoner_reasoning_effort: low
+  reasoner_max_tokens: 1600
+  queue_max_size: 64
+  batch_size: 2
+  batch_timeout: 6.0
+  max_calls_per_minute: 2
+  min_interval_seconds: 20.0
