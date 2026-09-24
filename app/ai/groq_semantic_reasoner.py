@@ -47,7 +47,13 @@ _SYSTEM_PROMPT = (
     "corrected}. relation_to_prior in {new, supports, contradicts, refines}.\n"
     "- information_type must be one of the allowed values.\n"
     "- semantic_role must be one of the allowed values.\n"
-    "- concept_type must be one of: entity, class, process, quantity, unknown.\n"
+    "- concept_type MUST be one of: entity, class, process, quantity, unknown.\n"
+    "- Do NOT use 'property', 'attribute', 'behavior', or any other value "
+    "as concept_type. These are not valid concept_type values.\n"
+    "- If a concept is best described as a property or behavior, choose "
+    "the most appropriate allowed concept_type (usually 'entity' for the "
+    "thing being described) or 'unknown' if none applies. Never invent a "
+    "new concept_type.\n"
     "- Evidence is provided as (sentence_index, span_start, span_end) offsets "
     "into the chunk text. Do NOT supply evidence strings.\n"
     "- confidence_hint is optional. Use a number between 0 and 1, or null if "
@@ -223,11 +229,13 @@ class GroqSemanticReasoner(SemanticReasoner):
         model: str,
         max_tokens: int = 1600,
         reasoning_effort: Optional[str] = None,
+        schema_strict: bool = True,
     ) -> None:
         self._client = client
         self._model = model
         self._max_tokens = int(max_tokens)
         self._reasoning_effort = reasoning_effort
+        self._schema_strict = bool(schema_strict)
 
     def reason(
         self,
@@ -249,6 +257,7 @@ class GroqSemanticReasoner(SemanticReasoner):
                 system=_SYSTEM_PROMPT,
                 schema=schema,
                 schema_name="semantic_proposal",
+                schema_strict=self._schema_strict,
                 max_tokens=self._max_tokens,
                 reasoning_effort=self._reasoning_effort,
                 model=self._model,

@@ -22,8 +22,6 @@ from app.ai.llm_client import (
 from app.utils.logger import app_logger
 
 
-# Sentinel: distinguishes "argument not provided" from
-# "argument explicitly set to None".
 _DEFAULT_EFFORT = object()
 
 
@@ -115,6 +113,7 @@ class GroqClient(LLMClient):
         system: Optional[str] = None,
         schema: Optional[Dict[str, Any]] = None,
         schema_name: str = "response",
+        schema_strict: bool = True,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
         timeout: Optional[float] = None,
@@ -130,7 +129,7 @@ class GroqClient(LLMClient):
             "type": "json_schema",
             "json_schema": {
                 "name": schema_name,
-                "strict": True,
+                "strict": bool(schema_strict),
                 "schema": schema,
             },
         }
@@ -187,10 +186,6 @@ class GroqClient(LLMClient):
             self._timeout if timeout is None else float(timeout)
         )
 
-        # Resolve reasoning_effort with sentinel semantics:
-        # - not provided        -> use constructor default
-        # - provided as None    -> omit the parameter
-        # - provided as string  -> use that value
         if reasoning_effort is _DEFAULT_EFFORT:
             effective_reasoning = self._reasoning_effort
         else:
