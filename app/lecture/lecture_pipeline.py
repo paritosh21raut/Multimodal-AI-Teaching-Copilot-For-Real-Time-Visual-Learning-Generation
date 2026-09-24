@@ -32,6 +32,9 @@ class LecturePipeline:
         # Phase 4 sidecar. Set via register_semantic_intelligence().
         self.semantic_intelligence = None
 
+        # Phase 5 sidecar. Set via register_importance_intelligence().
+        self.importance_intelligence = None
+
         self.started = False
 
     # ==========================================================
@@ -49,6 +52,9 @@ class LecturePipeline:
 
     def register_semantic_intelligence(self, sidecar):
         self.semantic_intelligence = sidecar
+
+    def register_importance_intelligence(self, sidecar):
+        self.importance_intelligence = sidecar
 
     # ==========================================================
     # START
@@ -92,6 +98,16 @@ class LecturePipeline:
                     error,
                 )
 
+        # Phase 5: reset importance sidecar.
+        if self.importance_intelligence is not None:
+            try:
+                self.importance_intelligence.reset()
+            except Exception as error:
+                print(
+                    "[Pipeline] Importance sidecar reset failed:",
+                    error,
+                )
+
         self.started = True
 
         print("[Pipeline] Lecture Pipeline Started")
@@ -131,6 +147,34 @@ class LecturePipeline:
             except Exception as error:
                 print(
                     "[Pipeline] Semantic enqueue failed:",
+                    error,
+                )
+
+        # ----------------------------------------------------------
+        # Phase 5: synchronous, fail-open importance evaluation.
+        # Failures here must never affect the live pipeline.
+        # ----------------------------------------------------------
+
+        if self.importance_intelligence is not None:
+            try:
+                importance_result = self.importance_intelligence.evaluate(
+                    chunk_text=transcript,
+                    topic_decision=decision,
+                )
+                if importance_result is not None:
+                    print(
+                        "[Phase5] centrality={centrality} "
+                        "emphasis={emphasis} roles={roles} "
+                        "conf={conf}".format(
+                            centrality=importance_result.structural_centrality,
+                            emphasis=importance_result.explicit_emphasis,
+                            roles=",".join(importance_result.developmental_roles),
+                            conf=importance_result.confidence,
+                        )
+                    )
+            except Exception as error:
+                print(
+                    "[Pipeline] Importance evaluation failed:",
                     error,
                 )
 

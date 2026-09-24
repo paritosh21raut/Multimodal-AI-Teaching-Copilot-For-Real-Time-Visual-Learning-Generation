@@ -5,6 +5,7 @@ from app.slides.slide_manager import slide_manager
 from app.topics.topic_intelligence import topic_intelligence
 from app.utils.logger import app_logger
 from app.ppt.ppt_manager import ppt_manager
+from app.lecture.context_buffer import context_buffer
 
 from app.config import (
     SEMANTIC_BATCH_SIZE,
@@ -20,6 +21,8 @@ from app.config import (
 )
 from app.semantic.semantic_intelligence import SemanticIntelligence
 from app.ai.groq_semantic_reasoner import GroqSemanticReasoner
+
+from app.importance.importance_intelligence import ImportanceIntelligence
 
 
 class Application:
@@ -41,6 +44,8 @@ class Application:
         lecture_pipeline.register_slide_manager(
             slide_manager
         )
+
+        semantic_sidecar = None
 
         if SEMANTIC_ENABLED:
 
@@ -72,7 +77,7 @@ class Application:
                         reasoning_effort=None,
                     )
 
-                sidecar = SemanticIntelligence(
+                semantic_sidecar = SemanticIntelligence(
                     embedding_model=embedding_model,
                     lsi_registry_getter=lsi_registry.get,
                     reasoner=primary,
@@ -86,7 +91,7 @@ class Application:
                 )
 
                 lecture_pipeline.register_semantic_intelligence(
-                    sidecar
+                    semantic_sidecar
                 )
 
                 app_logger.info(
@@ -104,6 +109,39 @@ class Application:
                 app_logger.warning(
                     "[Application] Continuing without semantic sidecar"
                 )
+
+        # Phase 5 registration.
+        try:
+
+            semantic_ledger = (
+                semantic_sidecar._ledger
+                if semantic_sidecar is not None
+                else None
+            )
+
+            importance_sidecar = ImportanceIntelligence(
+                context_buffer=context_buffer,
+                semantic_ledger=semantic_ledger,
+                enabled=True,
+            )
+
+            lecture_pipeline.register_importance_intelligence(
+                importance_sidecar
+            )
+
+            app_logger.info(
+                "[Application] Importance Intelligence registered"
+            )
+
+        except Exception as error:
+
+            app_logger.warning(
+                "[Application] Importance sidecar init failed: "
+                f"{error}"
+            )
+            app_logger.warning(
+                "[Application] Continuing without importance sidecar"
+            )
 
         ppt_manager.create_new_presentation("Live Lecture")
         ppt_manager.add_title_slide(
