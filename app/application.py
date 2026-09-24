@@ -23,6 +23,7 @@ from app.semantic.semantic_intelligence import SemanticIntelligence
 from app.ai.groq_semantic_reasoner import GroqSemanticReasoner
 
 from app.importance.importance_intelligence import ImportanceIntelligence
+from app.slide_decision.slide_decision_engine import SlideDecisionEngine
 
 
 class Application:
@@ -75,6 +76,7 @@ class Application:
                         model=SEMANTIC_FALLBACK_MODEL,
                         max_tokens=SEMANTIC_REASONER_MAX_TOKENS,
                         reasoning_effort=None,
+                        schema_strict=False,
                     )
 
                 semantic_sidecar = SemanticIntelligence(
@@ -141,6 +143,26 @@ class Application:
             )
             app_logger.warning(
                 "[Application] Continuing without importance sidecar"
+            )
+
+        # Phase 6 registration.
+        try:
+
+            engine = SlideDecisionEngine(enabled=True)
+            lecture_pipeline.register_slide_decision_engine(engine)
+
+            app_logger.info(
+                "[Application] Slide Decision Engine registered"
+            )
+
+        except Exception as error:
+
+            app_logger.warning(
+                "[Application] Slide Decision Engine init failed: "
+                f"{error}"
+            )
+            app_logger.warning(
+                "[Application] Continuing without slide decision engine"
             )
 
         ppt_manager.create_new_presentation("Live Lecture")
