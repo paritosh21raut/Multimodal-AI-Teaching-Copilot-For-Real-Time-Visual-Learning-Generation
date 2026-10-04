@@ -11,12 +11,33 @@ grade_level = ""
 expected_topic = ""
 output_language = "en"
 
+[display]
+host = "127.0.0.1"         # 0.0.0.0 to allow other devices on the LAN
+port = 8765
+demo_interval_s = 3.0
+
 [bus]
 default_queue_size = 1000
 
 [persistence]
 flush_interval_s = 0.5
 flush_batch = 200
+
+[audio]
+device = ""                # "" = system default input; or a device index/name
+start_threshold = 0.5
+end_threshold = 0.35
+min_silence_ms = 600
+pad_ms = 200
+min_speech_ms = 300
+max_utterance_s = 15.0
+
+[stt]
+model = "medium.en"        # small.en for low-resource machines (see F-002 measurements)
+device = "cuda"            # cuda | cpu
+compute_type = "int8_float16"   # use "int8" on cpu
+beam_size = 1
+download_root = "models/whisper"
 
 [sim]
 words_per_minute = 150

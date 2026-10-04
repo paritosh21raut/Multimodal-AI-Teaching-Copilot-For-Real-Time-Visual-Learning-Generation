@@ -4,7 +4,7 @@ from __future__ import annotations
 import time
 import uuid
 from enum import Enum
-from typing import Any, Literal, Optional
+from typing import Any, ClassVar, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -27,6 +27,9 @@ class Event(BaseModel):
     """Base class for all events. Immutable."""
 
     model_config = ConfigDict(frozen=True)
+
+    # Ephemeral events (e.g. audio levels) are not written to the event log.
+    ephemeral: ClassVar[bool] = False
 
     id: str = Field(default_factory=new_id)
     ts: float = Field(default_factory=time.time)
@@ -73,6 +76,24 @@ class LifecycleChanged(Event):
 
 class TranscriptFinal(Event):
     segment: TranscriptSegment
+    stt_latency_ms: Optional[float] = None  # utterance end detected -> text ready (mic only)
+
+
+class AudioLevel(Event):
+    ephemeral: ClassVar[bool] = True
+    rms: float
+    speaking: bool
+
+
+class AudioDeviceLost(Event):
+    detail: str
+
+
+class UtteranceDropped(Event):
+    start: float
+    end: float
+    reason: str
+    text: str = ""
 
 
 class CommandReceived(Event):
@@ -84,6 +105,24 @@ class StateChanged(Event):
     changes: list[str] = Field(default_factory=list)
 
 
+class SlidePatch(Event):
+    """A new or updated slide. `spec` is a SlideSpec dump (core does not import presentation)."""
+    slide_id: str
+    version: int
+    op: Literal["add", "update"]
+    spec: dict[str, Any]
+
+
+class DeckState(Event):
+    """Which slide is on screen and the teacher's display flags."""
+    live_id: Optional[str]
+    slide_ids: list[str]
+    following: bool  # live slide auto-advances to new slides
+    pinned: bool
+    frozen: bool
+    blank: bool
+
+
 class ErrorRaised(Event):
     component: str
     error: str
@@ -92,7 +131,10 @@ class ErrorRaised(Event):
 
 EVENT_TYPES: dict[str, type[Event]] = {
     cls.__name__: cls
-    for cls in (LifecycleChanged, TranscriptFinal, CommandReceived, StateChanged, ErrorRaised)
+    for cls in (
+        LifecycleChanged, TranscriptFinal, AudioLevel, AudioDeviceLost, UtteranceDropped,
+        CommandReceived, StateChanged, SlidePatch, DeckState, ErrorRaised,
+    )
 }
 
 

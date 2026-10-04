@@ -53,7 +53,15 @@ Original requirements: `docs/brief/master-prompt.md` (read only when requirement
 ## Commands
 ```bash
 .venv/Scripts/python -m pip install -e ".[dev]"     # install
-.venv/Scripts/python -m pytest                      # tests
+.venv/Scripts/python -m pip install -e ".[dev,audio,display]"   # full stack
+.venv/Scripts/python -m pytest                      # fast tests
+.venv/Scripts/python -m pytest -m slow              # + GPU/model tests
+.venv/Scripts/python -m pytest -m browser           # real Edge via Playwright (display)
+.venv/Scripts/python tools/screenshot_display.py    # all layouts, both themes -> artifacts/display (LOOK at them)
+.venv/Scripts/python tools/screenshot_app.py        # run app, screenshot /control + /display -> artifacts/app
+.venv/Scripts/python -m copilot --simulate tests/fixtures/lectures/photosynthesis.txt --demo-slides --open
+.venv/Scripts/python -m copilot.audio.mic_check     # list mics, record, transcribe
+.venv/Scripts/python -m copilot --audio-file tests/fixtures/audio/photosynthesis_tts.wav
 .venv/Scripts/python -m copilot                     # run app (ready → Enter → live)
 .venv/Scripts/python -m copilot --simulate tests/fixtures/lectures/photosynthesis.txt
 ```

@@ -1,0 +1,63 @@
+/* Design tokens. The stage is designed at 1920x1080 and scaled; sizes below are stage pixels. */
+:root {
+  --font-text: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Cascadia Mono", Consolas, "SF Mono", monospace;
+
+  /* type scale (multiplied by --fit for auto-fit) */
+  --fs-hero: 104px;
+  --fs-title: 68px;
+  --fs-term: 76px;
+  --fs-lead: 42px;
+  --fs-body: 34px;
+  --fs-small: 26px;
+  --fs-label: 22px;
+
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 40px;
+  --space-5: 64px;
+  --space-6: 96px;
+
+  --radius: 22px;
+  --radius-sm: 14px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-enter: 420ms;
+  --t-slide: 380ms;
+}
+
+/* Light: warm paper, ink, one strong accent. Readable on washed-out classroom projectors. */
+:root,
+:root[data-theme="light"] {
+  --bg: #f6f3ec;
+  --surface: #ffffff;
+  --surface-2: #efebe2;
+  --ink: #16191d;
+  --ink-2: #3d444d;
+  --muted: #6b7380;
+  --line: #ddd6c8;
+  --accent: #0e6e66;
+  --accent-ink: #ffffff;
+  --accent-soft: #d8ece8;
+  --accent-2: #b4531f;
+  --accent-2-soft: #f6e3d6;
+  --shadow: 0 2px 0 rgba(22, 25, 29, 0.04), 0 10px 30px rgba(22, 25, 29, 0.07);
+}
+
+:root[data-theme="dark"] {
+  --bg: #111418;
+  --surface: #1a1f25;
+  --surface-2: #222830;
+  --ink: #eef1f4;
+  --ink-2: #c9d0d8;
+  --muted: #8f99a6;
+  --line: #2e3640;
+  --accent: #34c3b0;
+  --accent-ink: #062521;
+  --accent-soft: #163a36;
+  --accent-2: #f0965c;
+  --accent-2-soft: #3b271b;
+  --shadow: 0 2px 0 rgba(0, 0, 0, 0.25), 0 12px 32px rgba(0, 0, 0, 0.35);
+}

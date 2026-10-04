@@ -53,6 +53,8 @@ class EventLog:
         return conn
 
     async def _on_event(self, event: Event) -> None:
+        if event.ephemeral:
+            return
         self._buffer.append((event.ts, event.type, event.model_dump_json()))
         if len(self._buffer) >= self._flush_batch:
             await self.flush()

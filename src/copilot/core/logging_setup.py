@@ -17,3 +17,5 @@ def setup_logging(level: str = "INFO", log_file: Optional[Path] = None) -> None:
         handlers=handlers,
         force=True,
     )
+    for noisy in ("faster_whisper", "httpx", "huggingface_hub"):
+        logging.getLogger(noisy).setLevel(logging.WARNING)

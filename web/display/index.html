@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Classroom Display</title>
+  <link rel="stylesheet" href="/web/shared/tokens.css" />
+  <link rel="stylesheet" href="/web/shared/slide.css" />
+  <style>
+    html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+    body { cursor: none; }
+    #root, .viewport { position: fixed; inset: 0; }
+    .stage { position: absolute; left: 50%; top: 50%; transform-origin: center center; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/web/display/app.js"></script>
+</body>
+</html>
