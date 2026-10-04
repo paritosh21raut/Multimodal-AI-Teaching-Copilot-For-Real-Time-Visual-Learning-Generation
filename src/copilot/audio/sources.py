@@ -60,7 +60,7 @@ class MicSource:
             finished_callback=self._finished,
         )
         self._stream.start()
-        log.info("mic opened: %s", self._stream.device)
+        log.debug("mic opened: %s", self._stream.device)
 
     def _callback(self, indata, frames, time_info, status) -> None:
         if status.input_overflow:

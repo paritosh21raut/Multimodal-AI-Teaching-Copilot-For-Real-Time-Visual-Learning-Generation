@@ -1,6 +1,6 @@
 # Current State
 
-_Last updated: 2026-10-05: M0 ✅, M1 ⏳ (needs a real-voice mic test), M2 ✅._
+_Last updated: 2026-10-05: M0 ✅, M1 ✅ (real mic verified), M2 ✅. Next: M3._
 
 ## Now
 - **Next milestone: M3 Lecture Understanding.** Write `docs/specs/F-004-understanding.md`, then build:
@@ -8,10 +8,7 @@ _Last updated: 2026-10-05: M0 ✅, M1 ⏳ (needs a real-voice mic test), M2 ✅.
   - discourse buffer and gate
   - LLM provider layer: Groq → OpenRouter → Ollama, with rate limiting and JSON-schema validation
   - interpreter with a bounded prompt, and rolling memory
-- **Blocked on the user:**
-  - real-voice mic test (M1 sign-off)
-  - `GROQ_API_KEY` in `.env` (needed for M3's live-LLM verification)
-  - optionally, install Ollama
+- `.env` has `GROQ_API_KEY` and `OPENROUTER_API_KEY` (never print/commit). Ollama not installed (optional fallback).
 
 ## Progress (honest; done = implemented + tested + runtime-verified)
 | Subsystem | % | Status |
@@ -19,7 +16,7 @@ _Last updated: 2026-10-05: M0 ✅, M1 ⏳ (needs a real-voice mic test), M2 ✅.
 | Core (events, bus, config, state store, lifecycle) | 30 | verified; state grows in M3/M4 |
 | Persistence (event log, recovery) | 15 | event log verified; snapshots/recovery not started |
 | Simulator / test harness | 55 | text simulator, WAV-as-mic, display harness, screenshot tools; no soak runner yet |
-| Audio / STT | 80 | verified on WAV in real time; real-voice mic capture unverified |
+| Audio / STT | 95 | verified on WAV and real human voice (laptop mic array); classroom lapel mic still to try |
 | Lecture understanding + LLM | 0 | not started |
 | Presentation engine | 15 | SlideSpec + Deck (lifecycle, navigation, flags) verified; planner/composer not started |
 | Live display + control view | 60 | server, hub, all layouts, themes, fit, transitions, controls verified in Edge; KaTeX, images, concern panel pending (V1) |
@@ -37,7 +34,7 @@ _Last updated: 2026-10-05: M0 ✅, M1 ⏳ (needs a real-voice mic test), M2 ✅.
 | App lifecycle READY → Enter / control Start → LIVE → q / control End → ENDED | – | – | ✅ (Ctrl+C not exercised) |
 | Segmenter, VAD, Whisper engine and guard, speech pipeline | ✅ | ✅ (GPU) | ✅ WAV real time: p50 ≈ 650 ms, VRAM ~1.1 GB |
 | M1 review fixes (forced-split loss, stop hangs, mic leak, device "0", watchdog) | ✅ regression tests | – | – |
-| Real mic | – | – | ⚠️ opens and closes cleanly with no false transcripts; a human-voice test is needed |
+| Real mic (human voice, Intel SST array) | – | – | ✅ mic_check rms −37.5 dBFS, accurate transcript, conf 0.92; live run 7 segments, 0 dropped, STT p50 781 / p95 971 ms |
 | SlideSpec validation, Deck ops/navigation/pin/freeze/blank | ✅ | – | ✅ |
 | DisplayHub + server: hello, patch fan-out, reconnect snapshot, commands, role check, coalescing | ✅ | ✅ (real WebSockets) | ✅ |
 | Display in Edge: 100 rapid in-place patches → 0 nodes re-created, no console errors | – | ✅ `-m browser` | ✅ |
@@ -70,9 +67,9 @@ _Last updated: 2026-10-05: M0 ✅, M1 ⏳ (needs a real-voice mic test), M2 ✅.
   - the STT queue is unbounded if Whisper runs slower than real time
 - Formula blocks show the spoken form; KaTeX rendering is pending (V1).
 - The `onOverflow` callback exists in the renderer but is not reported to the server yet (needed by the M4 planner).
-- Mic levels on the Intel SST array are very low in a quiet room; the classroom lapel mic may differ.
+- Mic levels on the Intel SST array are low (≈ −37 dBFS speech) but transcribe well.
+- Fixed: terminal READY/LIVE lines garbled by unflushed prints (all app prints now flush).
 
 ## User actions pending
-1. **Mic test:** `.venv/Scripts/python -m copilot.audio.mic_check --seconds 8` (speak), then
-   `.venv/Scripts/python -m copilot --subject Biology --topic Photosynthesis --open`. Press Enter, talk for about a minute, type `q`.
-2. Free Groq API key → `.env` (`GROQ_API_KEY`). Optional: install Ollama + `ollama pull qwen2.5:3b`.
+- Optional: install Ollama + `ollama pull qwen2.5:3b` (local LLM fallback).
+- Later: try the classroom lapel mic with `mic_check`.

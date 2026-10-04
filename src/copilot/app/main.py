@@ -116,7 +116,7 @@ class App:
         cfg = self.engine.cfg
         print(f"[INIT]  loading speech model {cfg.model} on {cfg.device} ...", flush=True)
         took = await asyncio.to_thread(self.engine.load)
-        print(f"[INIT]  speech model ready ({took:.1f} s)")
+        print(f"[INIT]  speech model ready ({took:.1f} s)", flush=True)
 
     async def _print_transcript(self, event: Event) -> None:
         if isinstance(event, TranscriptFinal):
@@ -163,24 +163,24 @@ class App:
             if script is None:
                 await self._init_speech()
             await self._lifecycle(Lifecycle.READY)
-            print(f"\n[READY] session {self.session_id}")
+            print(f"\n[READY] session {self.session_id}", flush=True)
             if self.server is not None:
-                print(f"        classroom display: {self.server.base_url}/display   (projector, full screen: F11)")
-                print(f"        teacher control:   {self.server.base_url}/control")
+                print(f"        classroom display: {self.server.base_url}/display   (projector, full screen: F11)", flush=True)
+                print(f"        teacher control:   {self.server.base_url}/control", flush=True)
                 if self.open_display:
                     webbrowser.open(f"{self.server.base_url}/control")
                     webbrowser.open(f"{self.server.base_url}/display")
             setup = self.store.snapshot().setup
             if setup.subject or setup.expected_topic:
-                print(f"        subject={setup.subject or '-'} grade={setup.grade_level or '-'} topic={setup.expected_topic or '-'}")
+                print(f"        subject={setup.subject or '-'} grade={setup.grade_level or '-'} topic={setup.expected_topic or '-'}", flush=True)
             if self.wait_for_enter:
-                print("        Press Enter (or Start in the control view) to begin; q + Enter to quit.")
+                print("        Press Enter (or Start in the control view) to begin; q + Enter to quit.", flush=True)
                 if not await self._wait_for_start():
                     await self._lifecycle(Lifecycle.ENDING, "quit before start")
                     return 0
             await self.bus.publish(CommandReceived(command=Command(kind="start", origin="terminal")))
             await self._lifecycle(Lifecycle.LIVE)
-            print("[LIVE]  lecture started. Type q + Enter to end.")
+            print("[LIVE]  lecture started. Type q + Enter to end.", flush=True)
             await self._run_live(script)
             await self._lifecycle(Lifecycle.ENDING, "lecture finished")
             return 0
@@ -278,8 +278,8 @@ class App:
         s = self.store.snapshot()
         counts = Counter(t for _, t, _ in read_events(self.event_log.path))
         print(f"[ENDED] session {self.session_id}: {s.stats.segments} segments, {s.stats.words} words, "
-              f"state v{s.version}, {sum(counts.values())} events logged")
-        print("        " + ", ".join(f"{k}={v}" for k, v in sorted(counts.items())))
+              f"state v{s.version}, {sum(counts.values())} events logged", flush=True)
+        print("        " + ", ".join(f"{k}={v}" for k, v in sorted(counts.items())), flush=True)
         if self.speech is not None:
             st = self.speech.stats
             lat = sorted(st["latency_ms"])
@@ -287,10 +287,10 @@ class App:
                 p50 = lat[len(lat) // 2]
                 p95 = lat[min(len(lat) - 1, int(len(lat) * 0.95))]
                 print(f"        stt: {st['published']} published, {st['dropped']} dropped, "
-                      f"latency p50={p50:.0f} ms p95={p95:.0f} ms max={lat[-1]:.0f} ms")
+                      f"latency p50={p50:.0f} ms p95={p95:.0f} ms max={lat[-1]:.0f} ms", flush=True)
             else:
-                print(f"        stt: {st['published']} published, {st['dropped']} dropped")
-        print(f"        log: {self.event_log.path}")
+                print(f"        stt: {st['published']} published, {st['dropped']} dropped", flush=True)
+        print(f"        log: {self.event_log.path}", flush=True)
 
 
 def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
@@ -332,5 +332,5 @@ def main(argv: Optional[list[str]] = None) -> int:
     try:
         return asyncio.run(_run())
     except KeyboardInterrupt:
-        print("\n[ENDED] interrupted")
+        print("\n[ENDED] interrupted", flush=True)
         return 130
