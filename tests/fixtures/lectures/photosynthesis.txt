@@ -1,0 +1,42 @@
+# Class 7 biology: ~4 minutes. Used for continuity tests (M3/M4).
+@setup subject=Biology grade=7 topic=Photosynthesis
+
+@expect kind=meta
+Good morning everyone, please take out your science books.
+[pause 2]
+@expect topic=Photosynthesis subtopic=Definition act=definition slide=new
+Today we are going to learn about photosynthesis.
+Photosynthesis is the process by which green plants make their own food using sunlight.
+@expect topic=Photosynthesis subtopic=Definition act=explanation slide=update
+The word photo means light and synthesis means putting together.
+So plants put together food with the help of light.
+[pause 1.5]
+@expect kind=meta
+Look at the screen please.
+@expect topic=Photosynthesis subtopic=Requirements act=explanation slide=update_or_continue
+For photosynthesis, a plant needs four things: sunlight, water, carbon dioxide and chlorophyll.
+Water is absorbed by the roots from the soil.
+Carbon dioxide enters the leaves through tiny pores called stomata.
+Chlorophyll is the green pigment in leaves that traps sunlight.
+[pause 2]
+@expect topic=Photosynthesis subtopic=Process act=process slide=continue
+Now let's see how the process actually happens step by step.
+First, the chlorophyll in the leaf absorbs sunlight.
+Then this light energy is used to split water into hydrogen and oxygen.
+Next, the hydrogen combines with carbon dioxide to make glucose.
+Finally, oxygen is released into the air as a by-product.
+@expect topic=Photosynthesis subtopic=Process act=formula slide=update_or_continue
+We can write this as an equation: carbon dioxide plus water, in the presence of sunlight and chlorophyll, gives glucose plus oxygen.
+[pause 2]
+@expect kind=content concern=true
+Plants take in oxygen during photosynthesis and give out carbon dioxide.
+[pause 1]
+@expect topic=Photosynthesis subtopic=Importance act=application slide=continue
+Why is photosynthesis important for us?
+All the food we eat comes directly or indirectly from plants.
+And the oxygen we breathe is produced by photosynthesis.
+[pause 3]
+@expect topic=Respiration act=comparison slide=new
+Now, the next topic is respiration in plants, which is quite different from photosynthesis.
+Photosynthesis happens only in the presence of sunlight, but respiration happens all the time.
+Photosynthesis uses carbon dioxide, while respiration releases carbon dioxide.

@@ -1,0 +1,24 @@
+# Defaults. Override with config/local.toml (git-ignored) or env COPILOT__SECTION__KEY.
+
+[app]
+data_dir = "data"
+log_level = "INFO"
+theme = "light"            # light | dark
+
+[setup]
+subject = ""
+grade_level = ""
+expected_topic = ""
+output_language = "en"
+
+[bus]
+default_queue_size = 1000
+
+[persistence]
+flush_interval_s = 0.5
+flush_batch = 200
+
+[sim]
+words_per_minute = 150
+min_utterance_s = 1.0
+speed = 1.0
