@@ -3,13 +3,16 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import hashlib
+import json
 import logging
+import re
 from pathlib import Path
 from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from copilot.core.config import PROJECT_ROOT
@@ -18,6 +21,67 @@ from copilot.display.hub import Connection, DisplayHub
 log = logging.getLogger(__name__)
 
 WEB_ROOT = PROJECT_ROOT / "web"
+
+
+class NoCacheStaticFiles(StaticFiles):
+    """Static client files that the browser must revalidate on every load (cheap 304 when unchanged).
+
+    Without this a browser keeps an old slide.js/slide.css after an update and renders new block types as
+    nothing (seen in the verify lectures: blank fact-tile slides, missing groups, old layouts)."""
+
+    def file_response(self, *args, **kwargs):
+        response = super().file_response(*args, **kwargs)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
+CLIENT_SUFFIXES = (".js", ".mjs", ".css")
+
+# Runs as a classic script before the app module: a page that fails to load says so instead of staying blank.
+ERROR_BANNER = """<script>
+(function () {
+  function show(msg) {
+    var b = document.getElementById("load-error");
+    if (!b) {
+      b = document.createElement("div"); b.id = "load-error";
+      b.style.cssText = "position:fixed;left:16px;right:16px;bottom:16px;z-index:9999;padding:14px 18px;" +
+        "border-radius:10px;background:#b4232c;color:#fff;font:15px/1.4 system-ui,sans-serif";
+      (document.body || document.documentElement).appendChild(b);
+    }
+    b.textContent = "Page error: " + msg + "  (reload the page; if it persists, press Ctrl+F5)";
+  }
+  window.addEventListener("error", function (e) { show(e.message || ("could not load " + (e.target && e.target.src))); }, true);
+  window.addEventListener("unhandledrejection", function (e) { show(String(e.reason)); });
+  setTimeout(function () {
+    var root = document.getElementById("root");
+    if (root && !root.firstChild) show("the page did not start");
+  }, 8000);
+})();
+</script>"""
+
+
+def client_version(web_root: Path) -> str:
+    """Hash of every client file's path, size and mtime: changes whenever any client file changes."""
+    h = hashlib.sha1()
+    for f in sorted(web_root.rglob("*")):
+        if f.suffix in CLIENT_SUFFIXES + (".html",):
+            st = f.stat()
+            h.update(f"{f.relative_to(web_root)}:{st.st_size}:{st.st_mtime_ns}".encode())
+    return h.hexdigest()[:10]
+
+
+def versioned_page(page: Path, web_root: Path) -> str:
+    """The page with every client URL stamped ?v=<version> — including modules imported by other modules, via an
+    import map — so a browser can never combine old and new files (verify round 4: blank pages after an update
+    when a cached old slide.js lacked an export the new control script imports)."""
+    v = client_version(web_root)
+    html = page.read_text(encoding="utf-8")
+    html = re.sub(r'((?:src|href)="/web/[^"?]+\.(?:js|mjs|css))"', rf'\1?v={v}"', html)
+    modules = {f"/web/{f.relative_to(web_root).as_posix()}": f"/web/{f.relative_to(web_root).as_posix()}?v={v}"
+               for f in sorted(web_root.rglob("*")) if f.suffix in (".js", ".mjs")}
+    importmap = f'<script type="importmap">{json.dumps({"imports": modules})}</script>'
+    # end of <head>: after <meta charset> (must stay in the first 1024 bytes), before the module scripts in <body>
+    return html.replace("</head>", f"  {importmap}\n  {ERROR_BANNER}\n</head>", 1)
 
 
 def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT) -> FastAPI:
@@ -33,11 +97,13 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT) -> FastAPI:
 
     @app.get("/display")
     async def display_page():
-        return FileResponse(web_root / "display" / "index.html", headers={"Cache-Control": "no-store"})
+        return HTMLResponse(versioned_page(web_root / "display" / "index.html", web_root),
+                            headers={"Cache-Control": "no-store"})
 
     @app.get("/control")
     async def control_page():
-        return FileResponse(web_root / "control" / "index.html", headers={"Cache-Control": "no-store"})
+        return HTMLResponse(versioned_page(web_root / "control" / "index.html", web_root),
+                            headers={"Cache-Control": "no-store"})
 
     @app.get("/api/state")
     async def state():
@@ -65,7 +131,7 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT) -> FastAPI:
             hub.disconnect(conn)
             sender.cancel()
 
-    app.mount("/web", StaticFiles(directory=web_root), name="web")
+    app.mount("/web", NoCacheStaticFiles(directory=web_root), name="web")
     return app
 
 

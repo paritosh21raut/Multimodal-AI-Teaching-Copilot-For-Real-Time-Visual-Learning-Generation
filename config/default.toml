@@ -18,6 +18,7 @@ demo_interval_s = 3.0
 
 [presentation]
 min_dwell_s = 15.0         # an automatic slide change waits until the live slide was up this long (lecture time)
+part_dwell_s = 6.0         # ... but only this long before the next part of the same (full) frame
 provisional = true         # fast path: keyword teaser on the live slide until the interpretation arrives
 provisional_ttl_s = 20.0
 title_slide = true         # title slide at LIVE when an expected topic is given

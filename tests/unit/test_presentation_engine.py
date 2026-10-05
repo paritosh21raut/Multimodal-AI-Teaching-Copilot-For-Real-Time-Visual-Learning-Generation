@@ -478,3 +478,52 @@ async def test_review_tentative_diagram_moves_without_duplicates():
     assert sum(1 for b in gal.blocks if b.type == "hierarchy") == 1
     assert sum(1 for s in deck.slides for b in s.blocks if b.type == "hierarchy") == 1
     await eng.stop()
+
+
+
+# ---- verify round 3 -------------------------------------------------------------------------------------------
+
+async def test_sparse_definition_slide_keeps_its_supporting_classification():
+    bus, store, deck, eng, clock = await make(min_dwell_s=15.0)
+    await send(bus, ready("Chemistry", "Definition", [act("definition", term="Chemistry",
+                          definition="The branch of science that deals with the composition, structure and properties "
+                                     "of matter")], relation="new_topic"))
+    clock.t = 5.0
+    await send(bus, ready("Chemistry", "Branches of Chemistry", [act("classification", label="Branches of chemistry",
+                          points=["Inorganic", "Organic", "Physical", "Analytical"])], relation="sibling_concept"))
+    assert len(deck.slides) == 1 and [b.type for b in deck.live.blocks] == ["definition", "hierarchy"]
+    # a new definition is not absorbed: it deserves its own space
+    await send(bus, ready("Chemistry", "Matter", [act("definition", term="Matter",
+                          definition="Anything that occupies space and has mass")], relation="sibling_concept"))
+    assert len(eng._pending) == 1 and eng._pending[0].blocks[0].term == "Matter"
+    await eng.stop()
+
+
+async def test_next_part_waits_only_the_short_part_dwell():
+    bus, store, deck, eng, clock = await make(min_dwell_s=15.0, part_dwell_s=6.0)
+    long = [f"Planet fact {i} explained with a reasonably long sentence for the slide" for i in range(12)]
+    await send(bus, ready("Solar System", "Planets", [act("explanation", points=long[:2])], relation="new_topic"))
+    clock.t = 1.0
+    await send(bus, ready("Solar System", "Planets", [act("explanation", points=long[2:])]))
+    assert len(eng._pending) == 1                                     # part II waits ...
+    clock.t = 7.5
+    await asyncio.sleep(0.4)
+    await bus.drain()
+    assert not eng._pending and deck.live.part == 2                   # ... 6 s, not 15 s
+    await eng.stop()
+
+
+
+async def test_slide_emptied_by_a_tentative_move_is_removed():
+    """Verify round 4: 'What is chemistry? II' stayed in the deck with no content after Matter moved out."""
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    long = [f"Chemistry fact {i} with a reasonably long explanation for the slide" for i in range(8)]
+    await send(bus, ready("Chemistry", "Definition", [act("explanation", points=long)], relation="new_topic"))
+    n_before = len(deck.slides)
+    await send(bus, ready("Matter", "Definition", [act("explanation", points=[
+        "Matter occupies space", "Matter has mass", "Particles attract each other", "Particles keep moving",
+        "Particles have space between them"])], relation="new_topic"))             # unconfirmed: shown meanwhile
+    await send(bus, ready("Matter", "Definition", [act("explanation", points=["Matter is made of particles"])]))
+    assert all(s.blocks for s in deck.slides)                                    # no empty slide left behind
+    assert deck.slides[-1].title.startswith("What is matter") and len(deck.slides) <= n_before + 1
+    await eng.stop()

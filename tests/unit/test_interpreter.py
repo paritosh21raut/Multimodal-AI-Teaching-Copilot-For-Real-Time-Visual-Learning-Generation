@@ -192,3 +192,19 @@ def test_fallback_shows_only_complete_sentences():
              BufferedLine("c", "So Our universe has billions of galaxies. Why is it so?", 2, 3)]
     it = fallback_interpretation(LectureState(session_id="s"), lines)
     assert it.acts[0].items.points == ["Our universe has billions of galaxies"]
+
+
+
+def test_fallback_recognises_definitions_and_announced_subtopics():
+    from copilot.core.state import TopicNode
+    from copilot.understanding.interpreter import fallback_interpretation
+    t = TopicNode(title="Chemistry")
+    st = LectureState(session_id="s", outline=[t], current_topic_id=t.id)
+    lines = [BufferedLine("a", "Let's learn about atoms and molecules. Atoms are the smallest particles of an element "
+                               "which can take part in a chemical reaction.", 0, 9)]
+    it = fallback_interpretation(st, lines)
+    assert it.subtopic == "Atoms and Molecules" and it.relation == "sibling_concept"
+    d = it.acts[0]
+    assert d.act == "definition" and d.items.term == "Atoms"
+    assert d.items.definition.startswith("the smallest particles of an element")
+    assert all("learn about" not in p for a in it.acts for p in a.items.points)

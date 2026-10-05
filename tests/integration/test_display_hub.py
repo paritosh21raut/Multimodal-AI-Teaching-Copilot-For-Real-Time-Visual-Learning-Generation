@@ -148,3 +148,24 @@ async def test_concerns_reach_only_the_control_view_and_overflow_is_forwarded(st
         await d.send(json.dumps({"type": "command", "kind": "next"}))
         err = await recv_until(d, lambda m: m["type"] == "error")
         assert "control" in err["error"]
+
+
+
+async def test_client_files_are_revalidated_so_updates_reach_the_browser(stack):
+    bus, deck, hub, server = stack
+    async with httpx.AsyncClient() as client:
+        for path in ("/web/shared/slide.js", "/web/shared/slide.css", "/web/shared/ws.js"):
+            r = await client.get(f"http://127.0.0.1:{server.port}{path}")
+            assert r.status_code == 200 and r.headers["cache-control"] == "no-cache", path
+
+
+async def test_pages_stamp_every_client_file_with_a_version(stack):
+    """A browser can never mix an old cached module with a new one: page, styles and imported modules carry ?v=."""
+    bus, deck, hub, server = stack
+    async with httpx.AsyncClient() as client:
+        for page in ("/display", "/control"):
+            html = (await client.get(f"http://127.0.0.1:{server.port}{page}")).text
+            assert '<script type="importmap">' in html and '"/web/shared/slide.js": "/web/shared/slide.js?v=' in html
+            assert 'src="/web/' in html and '.js?v=' in html and 'slide.css?v=' in html
+            assert html.index("charset") < 1024 and html.index("importmap") < html.index("<body>")
+            assert 'id="load-error"' in html or "load-error" in html               # visible error banner

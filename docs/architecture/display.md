@@ -20,6 +20,11 @@
   no full re-render, so there is no flicker. Images fade in only after they are loaded.
 - Provisional items render subtly (lighter weight); refined content replaces them in place.
 - The display reconnects automatically and requests the full current spec on reconnect (state is server-authoritative).
+- Client files under `/web` are served with `Cache-Control: no-cache`, and `/display` + `/control` are served with
+  every client URL stamped `?v=<hash of client files>` — modules imported by other modules too, via an import map —
+  so a browser can never run an old renderer or mix old and new modules (verify rounds 3–4: blank slides / blank
+  pages). A classic-script banner shows any load/runtime error instead of a silently blank page.
+- `tools/replay_session.py <session>` replays a recorded session's slide patches into Edge and reports console errors.
 
 ## Teacher controls
 Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `F` freeze, `P` pin, `B` blank,

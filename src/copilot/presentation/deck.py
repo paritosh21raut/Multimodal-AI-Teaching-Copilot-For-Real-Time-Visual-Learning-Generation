@@ -78,6 +78,17 @@ class Deck:
         await self._bus.publish(SlidePatch(slide_id=spec.id, version=spec.version, op="update", spec=spec.model_dump()))
         return spec
 
+    async def remove(self, slide_id: str) -> None:
+        """Drop a slide that ended up empty (its content moved to the right topic's slide)."""
+        if slide_id not in self._slides:
+            return
+        idx = self._order.index(slide_id)
+        self._order.remove(slide_id)
+        del self._slides[slide_id]
+        if self.live_id == slide_id:
+            self.live_id = self._order[min(idx, len(self._order) - 1)] if self._order else None
+        await self._publish_state()
+
     # ---- teacher commands -----------------------------------------------------------------
     async def _on_command(self, event: Event) -> None:
         assert isinstance(event, CommandReceived)

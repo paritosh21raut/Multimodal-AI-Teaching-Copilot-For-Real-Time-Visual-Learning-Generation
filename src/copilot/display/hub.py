@@ -138,6 +138,8 @@ class DisplayHub:
                             key=("patch", event.slide_id))
         elif isinstance(event, DeckState):
             self.deck = event.model_dump(include={"live_id", "slide_ids", "following", "pinned", "frozen", "blank"})
+            for sid in [s for s in self.slides if s not in event.slide_ids]:  # removed slides
+                del self.slides[sid]
             self._broadcast({"type": "deck", "deck": self.deck}, key=("deck",))
         elif isinstance(event, LifecycleChanged):
             self.lifecycle = event.state.value

@@ -33,7 +33,8 @@ from copilot.core.events import (
 )
 from copilot.core.state import Concern, LectureStateStore
 from copilot.presentation.composer import (
-    clear_provisional, describe, element_texts, frame_slide, is_small, merge, remove_elements, revise_item,
+    BODY_BUDGET_PX, body_height, clear_provisional, describe, element_texts, fits, frame_slide, is_small, merge,
+    remove_elements, revise_item,
     set_provisional, substitute, teacher_items, title_slide,
 )
 from copilot.presentation.content import Piece, clean, pieces_from
@@ -52,6 +53,7 @@ MAX_CORRECTIONS = 100
 @dataclass
 class PresentationSettings:
     min_dwell_s: float = 15.0
+    part_dwell_s: float = 6.0   # the next part of the same frame (the slide is full): a short wait is enough
     provisional: bool = True
     provisional_ttl_s: float = 20.0
     shift_threshold: float = 0.75
@@ -250,7 +252,9 @@ class PresentationEngine:
         meta = self._meta.get(live.id)
         if meta is None or meta.is_title or teacher_items(live) == 0:
             return True
-        return self.now() - self._live_since >= self.s.min_dwell_s
+        nxt = self._meta.get(self._pending[0].id) if self._pending else None
+        dwell = self.s.part_dwell_s if nxt is not None and nxt.frame.same(meta.frame) else self.s.min_dwell_s
+        return self.now() - self._live_since >= dwell
 
     async def _add_to_deck(self, spec: SlideSpec) -> None:
         before = self.deck.live_id
@@ -429,8 +433,17 @@ class PresentationEngine:
             by_slide.setdefault(sid, set()).add(eid)
         for sid, ids in by_slide.items():
             spec = self._spec(sid)
-            if spec is not None:
-                await self._commit(remove_elements(spec, ids))
+            if spec is None:
+                continue
+            left = remove_elements(spec, ids)
+            if left.blocks:
+                await self._commit(left)
+            else:  # nothing else was on it: no empty slide stays in the deck
+                self._pending = [x for x in self._pending if x.id != sid]
+                await self.deck.remove(sid)
+                self._meta.pop(sid, None)
+                if self._working_id == sid:
+                    self._working_id = None
         log.info("moving %d item(s) of %r to the new topic's slide", len(t.elements), t.topic)
         return t.pieces, set(t.elements)
 
@@ -529,6 +542,14 @@ class PresentationEngine:
     async def _apply(self, d: Decision, working: Optional[Working], pieces: list[Piece]) -> Optional[str]:
         """Carry out a decision; returns the id of the slide the content went to."""
         frame = d.frame
+        if d.op == "continue" and self._absorbs(pieces):
+            # a sparse definition slide takes its supporting content (the branches of chemistry under its
+            # definition) instead of a new, equally sparse slide replacing it seconds later
+            spec = self._spec(self._working_id)
+            assert spec is not None
+            self._meta[spec.id].frame = frame
+            log.info("supporting %s content stays on the sparse definition slide %r", frame.facet, spec.title)
+            return await self._place(spec, False, frame, pieces)
         if d.op in ("new", "continue"):
             cont = self._working_id if d.op == "continue" else None
             spec = frame_slide(frame.topic, frame.facet, continuation_of=cont)
@@ -543,6 +564,24 @@ class PresentationEngine:
         spec = self._spec(self._working_id)
         assert spec is not None
         return await self._place(spec, False, self._meta[spec.id].frame, pieces)
+
+    ABSORB_KINDS = ("tree", "groups", "facts", "points", "example")
+    ABSORB_MAX_FILL = 0.45
+
+    def _absorbs(self, pieces: list[Piece]) -> bool:
+        """The working slide is just a definition with room to spare and the new facet is supporting content
+        (no new definition, no big diagram) that fits completely."""
+        spec = self._spec(self._working_id)
+        if spec is None or not pieces or any(p.kind not in self.ABSORB_KINDS for p in pieces):
+            return False
+        if [b.type for b in spec.blocks] != ["definition"] or body_height(spec) > BODY_BUDGET_PX * self.ABSORB_MAX_FILL:
+            return False
+        trial = spec
+        for p in pieces:
+            trial, left = merge(trial, p)
+            if left is not None:
+                return False
+        return fits(trial)
 
     def _navigated_back_to(self, frame: Frame) -> Optional[str]:
         """The slide the teacher navigated back to, if it shows this frame (and is not the working slide)."""

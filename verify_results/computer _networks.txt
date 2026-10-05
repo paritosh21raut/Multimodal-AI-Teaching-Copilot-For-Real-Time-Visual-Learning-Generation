@@ -1,0 +1,161 @@
+(.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> python -m copilot
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (15.3 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main -> groq_alt -> openrouter_main -> ollama
+
+[READY] session 20261005-104702-c350
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+
+[LIVE]  lecture started. Type q + Enter to end.
+  [    0.7s] Thank you very much. (905 ms)
+  [    3.1s] Let us learn about computers. (492 ms)
+10:47:32 WARNING copilot.llm.router: llm groq_main failed: timeout after 6.0s (ConnectTimeout) (retrying)
+10:47:34 WARNING copilot.llm.router: llm groq_main failed: timeout after 6.0s (ConnectTimeout)
+  [    6.0s] Computer is a collection of hardware resources that execute program. (627 ms)
+  [   11.0s] Boom. (307 ms)
+10:47:38 WARNING copilot.llm.router: llm groq_alt failed: timeout after 6.0s (ConnectTimeout) (retrying)
+10:47:40 WARNING copilot.understanding.interpreter: interpretation from groq_alt invalid (schema: [{'type': 'value_error', 'loc': ('topic',), 'msg': 'Value error, topic must not be blank', 'input': '', 'ctx': {'error': ValueError('topic must not be blank')}}, {'type': 'literal_error', 'loc': ('relation',), 'msg': "Input should be 'same_concept', 'elaboration', 'sub_concept', 'sibling_concept', 'new_topic' or 'digression'", 'input': 'other', 'ctx': {'expected': "'same_concept', 'elaboration', 'sub_concept', 'sibling_concept', 'new_topic' or 'digression'"}}]); one repair attempt
+  [UNDERSTAND] Classroom > Greeting (new_topic) acts=transition hint=none lines=1 via groq_main 11028 ms
+               Teacher expressed gratitude.
+10:47:41 INFO    copilot.presentation.engine: planner: noop Classroom > Greeting (nothing to display)
+10:47:41 WARNING copilot.llm.router: llm groq_main failed: 429 {"error":{"message":"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m1y7z7r3esjaek71dw1q6b5z` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199167, Re
+  [UNDERSTAND] Computers > Definition (new_topic) acts=transition,definition hint=definition lines=2 via groq_alt 4753 ms
+               Teacher introduced the topic of computers and defined a computer as hardware resources executing programs.
+10:47:46 INFO    copilot.presentation.engine: planner: new Computers > Definition (first content slide)
+  [SLIDE] add    'What is computer?' [definition] v1 (1 items)
+  [   12.1s] Operating System. Operating System is the resource manager that allows multiple programs to run safely and efficiently and share computer hardware. (569 ms)
+  [UNDERSTAND] Computers > Definition (same_concept) acts=- hint=none lines=1 via groq_alt 704 ms
+               Teacher made a brief non-instructional remark.
+10:47:50 INFO    copilot.presentation.engine: planner: noop Computers > Definition (nothing to display)
+  [   22.7s] It is a collection of CPU. It is a collection of software. (664 ms)
+  [UNDERSTAND] Computers > Operating System (sibling_concept) acts=definition hint=definition lines=1 via groq_alt 1313 ms
+               Teacher defined the Operating System as a resource manager for safe program execution.
+10:47:58 INFO    copilot.presentation.engine: planner: continue Computers > Operating System (new facet)
+10:47:58 INFO    copilot.presentation.engine: slide 'Operating System' waits for the min dwell time
+  [SLIDE] add    'Operating System' [definition] v1 (1 items)
+  [UNDERSTAND] Computers > Operating System (elaboration) acts=explanation hint=key_points lines=1 via groq_alt 1881 ms
+               Teacher clarified that an operating system is a collection of software.
+  [CONCERN] (factual) It is a collection of CPU -> It is a collection of software (0.95)
+10:48:07 INFO    copilot.presentation.engine: planner: update Computers > Operating System (same frame)
+10:48:07 INFO    copilot.presentation.engine: concern 7d113eb8928a (factual, applied=True): 0 element(s); slide shows 'software'
+  [   27.7s] Then let's learn about kernel. Kernel is the core program of the operating system that directly manages hardware and provides services to applications. It is responsible for CPU scheduling, storage and networking. (820 ms)
+  [SLIDE] update 'Operating System' [definition] v2 (1 items)
+  [   43.2s] Modern operating system divides execution into two modes user space and kernel space (692 ms)
+  [SLIDE] update 'Operating System' [definition] v3 (1 items)
+10:48:19 WARNING copilot.llm.router: llm groq_alt failed: timeout after 6.0s (ReadTimeout) (retrying)
+10:48:21 WARNING copilot.llm.router: llm groq_alt failed: timeout after 6.0s (ConnectTimeout)
+  [   51.6s] system for it. It is the mechanism by which a user space program requests a service from the kernel. (704 ms)
+  [SLIDE] update 'Operating System' [definition] v4 (1 items)
+10:48:28 WARNING copilot.llm.router: llm openrouter_main failed: no complete response within 6.5s (retrying)
+10:48:28 WARNING copilot.understanding.interpreter: interpretation fallback: llm: deadline exceeded; groq_main: skipped (cooldown 521s); groq_alt: Transient; groq_alt: Transient; openrouter_main: Transient; openrouter_main: deadline
+  [UNDERSTAND] Computers > Kernel (sibling_concept) acts=definition,explanation hint=definition lines=1 via FALLBACK llm: deadline exceeded; groq_main: skipped (cooldown 521s); groq_alt: Transient; 14792 ms
+10:48:28 INFO    copilot.presentation.engine: planner: continue Computers > Kernel (new facet)
+  [SLIDE] add    'Kernel' [definition] v1 (2 items)
+  [   61.0s] Let's understand what a program is. It is a passive file containing instructions stored on disk. (777 ms)
+  [SLIDE] update 'Operating System' [definition] v5 (1 items)
+  [SLIDE] update 'Kernel' [definition] v2 (3 items)
+  [UNDERSTAND] Computers > Kernel (elaboration) acts=classification,definition hint=key_points lines=2 via openrouter_main 6036 ms
+               Modern operating systems separate execution into user space and kernel space, and system calls let user programs request kernel services.
+10:48:34 INFO    copilot.presentation.engine: planner: update Computers > Kernel (same frame)
+10:48:34 INFO    copilot.presentation.engine: slide 'Kernel' waits for the min dwell time
+  [SLIDE] update 'Kernel' [definition] v3 (5 items)
+  [SLIDE] add    'Kernel' [definition] v1 (1 items)
+  [   67.6s] A process is a program that is currently executing process in an active instance for a program. (712 ms)
+  [SLIDE] update 'Kernel' [definition] v4 (4 items)
+  [SLIDE] update 'Kernel' [definition] v2 (1 items)
+  [   74.8s] process equals program plus resources (556 ms)
+  [SLIDE] update 'Kernel' [definition] v3 (1 items)
+  [   79.4s] Process memory layout (431 ms)
+  [SLIDE] update 'Kernel' [definition] v4 (1 items)
+  [   81.4s] It is the way the operating system (601 ms)
+  [SLIDE] update 'Kernel' [definition] v5 (1 items)
+  [UNDERSTAND] Computers > Process (sibling_concept) acts=definition,definition,transition hint=definition lines=5 via groq_alt 2652 ms
+               Teacher defined a program as a passive file and a process as an active instance with resources.
+10:48:52 INFO    copilot.presentation.engine: planner: continue Computers > Process (new facet)
+  [SLIDE] update 'Kernel' [definition] v6 (1 items)
+  [SLIDE] add    'How computers works' [concept] v1 (2 items)
+  [   84.7s] organizes a process virtual memory (486 ms)
+  [   89.3s] Process state is described as the current state of a process in its lifetime. (721 ms)
+  [UNDERSTAND] Computers > Process (elaboration) acts=explanation,definition hint=key_points lines=2 via groq_alt 1036 ms
+               Teacher explained that the OS organizes virtual memory and defined process state.
+10:49:01 INFO    copilot.presentation.engine: planner: update Computers > Process (same frame)
+  [SLIDE] update 'How computers works' [concept] v2 (4 items)
+  [   98.7s] Now lets understand context switch. It is the process by saving the state of one process and restoring the state of another. So the CPU can switch between them. (887 ms)
+  [SLIDE] update 'How computers works' [concept] v3 (5 items)
+  [UNDERSTAND] Computers > Context Switch (sibling_concept) acts=definition hint=definition lines=1 via groq_alt 1182 ms
+               Teacher defined context switching as saving and restoring process states to allow CPU switching.
+10:49:16 INFO    copilot.presentation.engine: planner: continue Computers > Context Switch (new facet)
+  [SLIDE] update 'How computers works' [concept] v4 (4 items)
+  [SLIDE] add    'Context Switch' [definition] v1 (1 items)
+  [  112.0s] CPU scheduling it is the process of deciding which ready process gets the CPU next The scheduler makes the decision (756 ms)
+  [SLIDE] update 'Context Switch' [definition] v2 (1 items)
+  [  125.6s] Some popular CPU scheduling algorithms are CFSFCCS (613 ms)
+  [SLIDE] update 'Context Switch' [definition] v3 (1 items)
+  [  132.5s] SJF, Priority Scheduling and Robin Hood (644 ms)
+  [SLIDE] update 'Context Switch' [definition] v4 (1 items)
+  [  136.8s] A round robin (305 ms)
+  [UNDERSTAND] Computers > CPU Scheduling (sibling_concept) acts=definition,classification hint=key_points lines=4 via groq_alt 1544 ms
+               Teacher defined CPU scheduling and listed popular algorithms including CFS, SJF, Priority, and Round Robin.
+  [CONCERN] (transcription) CFSFCCS -> CFS (Completely Fair Scheduler) (0.6)
+  [CONCERN] (transcription) Robin Hood -> Round Robin (0.8)
+10:49:45 INFO    copilot.presentation.engine: planner: continue Computers > CPU Scheduling (new facet)
+10:49:45 INFO    copilot.presentation.engine: concern fa6b4e0134f5 (transcription, applied=True): 1 element(s); slide shows 'CFS'
+10:49:45 INFO    copilot.presentation.engine: concern 93503064441e (transcription, applied=True): 1 element(s); slide shows 'Round Robin'
+  [SLIDE] update 'Context Switch' [definition] v5 (1 items)
+  [SLIDE] add    'CPU Scheduling' [definition] v1 (2 items)
+  [  141.0s] Let's learn about Thread. Thread is the smallest unit of execution that the OS schedules. (665 ms)
+  [UNDERSTAND] Computers > Thread (new_topic) acts=definition hint=definition lines=1 via groq_alt 951 ms
+               Teacher defined a thread as the smallest unit of execution scheduled by the OS.
+10:49:53 INFO    copilot.presentation.engine: planner: continue Computers > Thread (new facet)
+10:49:53 INFO    copilot.presentation.engine: slide 'Thread' waits for the min dwell time
+  [SLIDE] add    'Thread' [definition] v1 (1 items)
+  [  149.1s] Race condition, it occurs when multiple threads or processes access and modify shared data concurrently and the final result depends on the order in which they execute. (837 ms)
+  [SLIDE] update 'Thread' [definition] v2 (1 items)
+  [UNDERSTAND] Computers > Race Condition (sibling_concept) acts=definition hint=definition lines=1 via groq_alt 866 ms
+               Teacher defined race condition as an error caused by concurrent access to shared data.
+10:50:06 INFO    copilot.presentation.engine: planner: continue Computers > Race Condition (new facet)
+10:50:06 INFO    copilot.presentation.engine: slide 'Race Condition' waits for the min dwell time
+  [SLIDE] update 'Thread' [definition] v3 (1 items)
+  [SLIDE] add    'Race Condition' [definition] v1 (1 items)
+  [  162.6s] mutex it is a synchronization mechanism that ensures only one thread can access a critical section at a time (752 ms)
+  [SLIDE] update 'Race Condition' [definition] v2 (1 items)
+  [  172.4s] Mutex stand for mutual exclusion. (587 ms)
+  [SLIDE] update 'Race Condition' [definition] v3 (1 items)
+  [UNDERSTAND] Computers > Race Condition (elaboration) acts=definition hint=definition lines=2 via groq_alt 1030 ms
+               Teacher defined Mutex as a synchronization mechanism for mutual exclusion in critical sections.
+10:50:29 INFO    copilot.presentation.engine: planner: update Computers > Race Condition (same frame)
+  [SLIDE] update 'Race Condition' [definition] v4 (1 items)
+  [SLIDE] update 'Race Condition' [concept] v5 (2 items)
+  [  175.8s] Semaphore is the synchronization mechanism that controls how many threads can access a shared resource at the same time. (661 ms)
+  [  186.3s] (dropped: empty) 
+10:50:37 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Race Condition' -> same_concept
+  [UNDERSTAND] Computers > Race Condition (same_concept) acts=definition hint=definition lines=1 via groq_alt 845 ms
+               Teacher defined Semaphore as a synchronization mechanism controlling concurrent thread access to shared resources.
+10:50:37 INFO    copilot.presentation.engine: planner: update Computers > Race Condition (same frame)
+  [SLIDE] update 'Race Condition' [concept] v6 (2 items)
+  [SLIDE] add    'Race Condition' [definition] v1 (1 items)
+  [  222.9s] You will end up in a lost fight. (1773 ms)
+  [  229.9s] (dropped: empty) 
+  [  234.6s] (dropped: empty) 
+  [UNDERSTAND] Computers > Race Condition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt 864 ms
+               Teacher explained that failing to handle race conditions results in unpredictable or incorrect outcomes.
+10:51:22 INFO    copilot.presentation.engine: planner: update Computers > Race Condition (same frame)
+  [SLIDE] update 'Race Condition' [definition] v2 (2 items)
+  [  241.1s] Take a look. (617 ms)
+  [  242.2s] It doesn't matter. (481 ms)
+  [UNDERSTAND] Computers > Race Condition (same_concept) acts=- hint=none lines=1 via groq_alt 702 ms
+               Teacher directs students to observe a demonstration.
+10:51:30 INFO    copilot.presentation.engine: planner: noop Computers > Race Condition (nothing to display)
+  [  245.7s] Okay. (516 ms)
+  [  250.6s] (dropped: empty) 
+  [UNDERSTAND] Computers > Race Condition (same_concept) acts=- hint=none lines=1 via groq_alt 723 ms
+               Teacher dismissed a specific detail as irrelevant to the current explanation.
+10:51:42 INFO    copilot.presentation.engine: planner: noop Computers > Race Condition (nothing to display)
+  [  301.9s] (dropped: empty) 
+  [  304.1s] (dropped: empty) 
+
+[ENDED] interrupted

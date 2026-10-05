@@ -30,7 +30,11 @@ Frame of a slide = (topic, facet). Facet = subtopic (or the topic). Titles compa
   earlier no-op that announced this topic. **Tentative move**: items shown under an unconfirmed topic are removed
   from the old slide and placed first on the new topic's slide when it is confirmed.
 - **Min dwell** 15 s (lecture-scaled) before an automatic slide change; new slides wait as *pending* (content keeps
-  merging). Exempt: first content slide, title slide, teacher `force_new_slide`.
+  merging). The next part of the same (full) frame waits only `part_dwell_s` = 6 s. Exempt: first content slide,
+  title slide, teacher `force_new_slide`.
+- **Sparse definition slide absorbs supporting content**: a `continue` whose pieces are only tree / groups / facts /
+  points / example stays on the working slide when that slide is just a definition filling ≤ 45 % of the space and
+  everything fits (e.g. "Chemistry" definition + "Branches of chemistry" tree). A new definition never is absorbed.
 - **Teacher flags**: pinned → new slides queue; frozen → the display holds its render; navigated back to a slide of
   the same frame → updated in place (never adopted as working slide); `force_new_slide` → next part now.
 

@@ -262,30 +262,53 @@ def _examples_need_a_cue(it: Interpretation, lines: Sequence[BufferedLine]) -> I
     return it.model_copy(update={"acts": acts})
 
 
+# "Atoms are the smallest particles of an element ..." -> term "Atoms" + definition (fallback only)
+_DEFINES = re.compile(r"^(?P<term>[A-Z][A-Za-z-]*(?:\s+[A-Za-z-]+){0,2}?)\s+(?:is|are|means)\s+"
+                      r"(?P<def>(?:the|a|an|any|anything)\b.{8,})$")
+_NOT_TERMS = {"it", "this", "that", "there", "they", "these", "those", "he", "she", "we", "you", "which", "what"}
+
+
 def fallback_interpretation(state: LectureState, lines: Sequence[BufferedLine]) -> Interpretation:
-    """Deterministic interpretation when no LLM answer is usable: topic unchanged; only complete spoken sentences
-    become key points, tidied (fillers dropped). Fragments ("diatomic triatomic or ...", "also called ...") are not
-    slide text; they stay in the transcript and the event log."""
+    """Deterministic interpretation when no LLM answer is usable: only complete spoken sentences become slide text,
+    tidied (fillers dropped); "X is/are the ..." sentences become definitions; "let's learn about X" moves to the
+    subtopic X. Fragments ("diatomic triatomic or ...") are not slide text; they stay in the transcript and log."""
+    from copilot.understanding.prompt import announced_subject
+
     topic = state.topic(state.current_topic_id)
     sub = state.subtopic()
     title = topic.title if topic else (state.setup.expected_topic or "Lecture")
-    points = []
-    for l in lines:
+    acts: list[DiscourseAct] = []
+    points: list[str] = []
+    announced = ""
+    for n, l in enumerate(lines, start=1):
         text = " ".join(l.text.split())
-        if l.maybe_meta or not text or not text[0].isupper() or not ends_sentence(text) or len(text.split()) < 4:
+        if l.maybe_meta or not text:
+            continue
+        announced = announced or announced_subject(text)
+        if not text[0].isupper() or not ends_sentence(text) or len(text.split()) < 4:
             continue
         for sentence in re.split(r"(?<=[.!?])\s+(?=[A-Z])", text):
-            tidy = tidy_spoken(" ".join(sentence.split()[:25]))
-            if len(tidy.split()) >= 4 and not tidy.endswith("?"):
+            tidy = tidy_spoken(" ".join(sentence.split()[:30]))
+            if len(tidy.split()) < 4 or tidy.endswith("?") or announced_subject(tidy):
+                continue
+            m = _DEFINES.match(tidy)
+            if m and m.group("term").split()[0].lower() not in _NOT_TERMS:
+                acts.append(DiscourseAct(act="definition", lines=[n], items=ContentItems(
+                    term=m.group("term"), definition=m.group("def"))))
+            else:
                 points.append(tidy)
-    return Interpretation(
-        topic=title,
-        subtopic=sub.title if sub else "",
-        relation="same_concept" if topic else "new_topic",
-        acts=[DiscourseAct(act="explanation", lines=list(range(1, len(lines) + 1)), items=ContentItems(points=points))]
-        if points else [],
-        representation_hint="key_points",
-    )
+    if points:
+        acts.append(DiscourseAct(act="explanation", lines=list(range(1, len(lines) + 1)),
+                                 items=ContentItems(points=points)))
+    subtopic, relation = (sub.title if sub else ""), ("same_concept" if topic else "new_topic")
+    if announced and topic is not None:
+        small = {"and", "or", "of", "the", "in", "on", "a", "an", "to"}
+        words = announced.split()
+        subtopic = " ".join(w if (i and w.lower() in small) else w[:1].upper() + w[1:] for i, w in enumerate(words))
+        relation = "sibling_concept"
+    return Interpretation(topic=title, subtopic=subtopic, relation=relation, acts=acts,
+                          representation_hint="definition" if any(a.act == "definition" for a in acts)
+                          else "key_points")
 
 
 class Interpreter:

@@ -60,7 +60,8 @@ Truthful slides (concerns):
   wrong (reversed, wrong name or quantity, wrong cause), put the corrected statement in acts and add a concern:
   kind "factual", claim = what the teacher said, suggested_correction = the correct statement, wrong = the
   wrong word(s) as said, right = the word(s) used instead in acts, issue, confidence (0-1), lines.
-- Speech recognition can mis-hear words or formulas ("Omo atomic" for "monoatomic", "6H2" where "6H2O" fits):
+- Speech recognition can mis-hear words or formulas ("Omo atomic" for "monoatomic", "in organic" for "inorganic",
+  "6H2" where "6H2O" fits); never drop an item because it looks like a duplicate of a mis-heard one:
   use the intended form in acts and add a concern of kind "transcription" (claim = as heard, wrong/right as
   above, confidence 0.3-0.7).
 - Not concerns: grade-level simplifications, facts that depend on definition or where sources differ, and

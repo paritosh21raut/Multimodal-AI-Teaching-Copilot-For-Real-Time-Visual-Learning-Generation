@@ -64,7 +64,8 @@ content keeps the correct form (truthful slides, F-005). Transcription concerns 
 - Concerns: acts hold the corrected content; `wrong` / `right` minimal words (derived by `minimal_change` when
   missing). Lines that announce a subject are tagged "(announces: X)".
 - Deterministic guards: an "example" act whose lines have no example cue becomes points; an empty content act gets
-  its spoken line only if it is a complete sentence (tidied); the fallback shows complete tidied sentences only.
+  its spoken line only if it is a complete sentence (tidied); the fallback shows complete tidied sentences only,
+  turns "X is/are the ..." into a definition and "let's learn about X" into the subtopic X (sibling).
 - Budget: system prompt ≈ 1.45k est. tokens; `prompt_budget_tokens` = 3000.
 
 ## State application (store)
