@@ -263,3 +263,18 @@ async def test_hard_total_timeout_and_rpm_per_attempt():
         await router.complete([], est_tokens=10, max_tokens=50, deadline=deadline())
     assert time.monotonic() - t0 < 3.0
     assert limiter.requests.available() == 8  # both attempts charged
+
+
+async def test_connect_timeout_counts_as_unavailable():
+    """Verify lecture 20261005-110717-dc56: Ollama not running surfaced as ConnectTimeout on Windows and was retried
+    (2 x 2 s) on every unit instead of cooling down."""
+    def handler(req):
+        if req.url.host == "a.test":
+            raise httpx.ConnectTimeout("no answer", request=req)
+        return httpx.Response(200, json=ok_body())
+
+    router, client = make_router(handler)
+    res = await router.complete([], est_tokens=10, max_tokens=50, deadline=deadline())
+    await client.aclose()
+    assert res.entry == "b"
+    assert (router.entries[0].limiter.admit(10) or "").startswith("cooldown")  # not retried, cooled down

@@ -125,6 +125,8 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT) -> FastAPI:
                     conn.push({"type": "error", "error": error})
         except WebSocketDisconnect:
             pass
+        except asyncio.CancelledError:  # app shutting down (Ctrl+C): close quietly instead of an ASGI traceback
+            pass
         except Exception:
             log.exception("websocket %s failed", role)
         finally:

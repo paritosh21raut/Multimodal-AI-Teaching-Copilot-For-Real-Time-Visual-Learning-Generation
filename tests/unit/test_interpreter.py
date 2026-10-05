@@ -208,3 +208,13 @@ def test_fallback_recognises_definitions_and_announced_subtopics():
     assert d.act == "definition" and d.items.term == "Atoms"
     assert d.items.definition.startswith("the smallest particles of an element")
     assert all("learn about" not in p for a in it.acts for p in a.items.points)
+
+
+def test_fallback_names_the_topic_when_the_lecture_opens_with_an_announcement():
+    """Verify lecture 20261005-110717-dc56: every LLM rate-limited, the deck was titled 'Lecture' although the
+    teacher opened with 'Let us learn about states of matter'."""
+    from copilot.understanding.interpreter import fallback_interpretation
+    lines = [BufferedLine("a", "Let us learn about states of matter. There are five states of matter. Solid, liquid, "
+                               "gas, plasma and Bose-Einstein condensate.", 0, 9)]
+    it = fallback_interpretation(LectureState(session_id="s"), lines)
+    assert it.topic == "States of Matter" and it.relation == "new_topic" and it.subtopic == ""

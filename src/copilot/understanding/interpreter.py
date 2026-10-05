@@ -301,11 +301,14 @@ def fallback_interpretation(state: LectureState, lines: Sequence[BufferedLine]) 
         acts.append(DiscourseAct(act="explanation", lines=list(range(1, len(lines) + 1)),
                                  items=ContentItems(points=points)))
     subtopic, relation = (sub.title if sub else ""), ("same_concept" if topic else "new_topic")
-    if announced and topic is not None:
+    if announced:
         small = {"and", "or", "of", "the", "in", "on", "a", "an", "to"}
         words = announced.split()
-        subtopic = " ".join(w if (i and w.lower() in small) else w[:1].upper() + w[1:] for i, w in enumerate(words))
-        relation = "sibling_concept"
+        named = " ".join(w if (i and w.lower() in small) else w[:1].upper() + w[1:] for i, w in enumerate(words))
+        if topic is None:  # "Let us learn about states of matter" opening the lecture names the topic
+            title = named
+        else:
+            subtopic, relation = named, "sibling_concept"
     return Interpretation(topic=title, subtopic=subtopic, relation=relation, acts=acts,
                           representation_hint="definition" if any(a.act == "definition" for a in acts)
                           else "key_points")

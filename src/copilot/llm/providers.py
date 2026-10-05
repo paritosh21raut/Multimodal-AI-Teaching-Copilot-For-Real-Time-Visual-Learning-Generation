@@ -102,7 +102,8 @@ class OpenAICompatProvider:
                 url, json=body, headers=headers,
                 timeout=httpx.Timeout(timeout, connect=min(timeout, 2.0)),
             )
-        except httpx.ConnectError as e:
+        except (httpx.ConnectError, httpx.ConnectTimeout) as e:
+            # nothing listening (on Windows a refused localhost connect can surface as ConnectTimeout): cool down
             raise Unavailable(f"connect failed: {type(e).__name__}") from e
         except httpx.TimeoutException as e:
             raise Transient(f"timeout after {timeout:.1f}s ({type(e).__name__})") from e
