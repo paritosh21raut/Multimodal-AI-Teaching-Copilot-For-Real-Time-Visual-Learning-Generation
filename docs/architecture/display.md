@@ -6,6 +6,11 @@
   KaTeX for formulas, custom SVG components for flows/timelines/trees/causal graphs.
 - Display opened full screen on the projector (Chrome/Edge `--app=<url> --start-fullscreen`, or the teacher presses F11).
 
+## Opening the pages
+`python -m copilot` opens `/control` and `/display` in the default browser ~3 s after READY, only for a role with no
+page connected since the server started: tabs left open from an earlier run reconnect on their own (client reconnect
+backoff capped at 2 s), so no duplicate tabs. `--no-open` disables it. Test: `tests/e2e/test_auto_open.py`.
+
 ## Pages
 | URL | Who | Shows |
 |---|---|---|

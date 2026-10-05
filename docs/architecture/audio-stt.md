@@ -7,7 +7,10 @@
 
 ## Voice activity detection
 - silero-vad (ONNX, CPU). Speech start/end with hangover (end silence ≈ 600 ms).
-- Utterances are capped at ≈ 15 s (forced split at the lowest-energy point), so latency stays bounded.
+- Utterances are capped at ≈ 15 s (forced split at the lowest-energy point), so latency stays bounded. The
+  silence run is clipped to the frames kept after a split (a cut inside a pause once crashed the audio thread,
+  live test 2026-10-05). A segmenter error drops only the pending utterance (`UtteranceDropped`,
+  reason `segmenter_error`); the lecture continues.
 - Very short segments (< 300 ms) are dropped as noise.
 
 ## STT

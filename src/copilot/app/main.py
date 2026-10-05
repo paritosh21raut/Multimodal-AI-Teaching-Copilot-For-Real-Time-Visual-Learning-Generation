@@ -36,6 +36,42 @@ from copilot.sim.simulator import LectureSimulator, parse_script
 
 log = logging.getLogger("copilot")
 
+OPEN_AFTER_READY_S = 3.0     # pages left open from an earlier run reconnect by themselves within this time ...
+OPEN_AFTER_SERVER_S = 4.0    # ... and the client's reconnect backoff is capped at 2 s (web/shared/ws.js)
+PAGES = (("control", "teacher control"), ("display", "classroom display"))
+
+# Rough planning number for the startup view: ~4.5 interpretations/min x ~1.8k tokens (real Groq runs, 2026-10-05).
+TOKENS_PER_LECTURE_MINUTE = 8000
+
+
+def print_quota(router) -> None:
+    """Free-tier tokens left today per model and key, and roughly how many lecture minutes that covers. Terminal
+    only, shown while the system loads (before Enter); the teacher's screen does not show it."""
+    print("\n[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):",
+          flush=True)
+    tokens_left = 0
+    for q in router.quota():
+        if q["tpd"]:
+            left = 0 if q["spent"] else max(0, q["tpd"] - q["used"])
+            tokens_left += left
+            amount = f"{left / 1000:4.0f}k of {q['tpd'] / 1000:.0f}k tokens"
+        else:
+            amount = "not tracked"
+        again = f", free again in ~{q['free_in_s'] / 60:.0f} min" if q["spent"] and q["free_in_s"] >= 60 else ""
+        print(f"        {q['name']:18} {q['model']:28} {amount:20} {'SPENT' if q['spent'] else 'ok'}{again}",
+              flush=True)
+    minutes = tokens_left / TOKENS_PER_LECTURE_MINUTE
+    if minutes < 1:
+        print("        !! No Groq quota left: slides will come from the backup model (if it answers) or the simple\n"
+              "           built-in fallback. Add another key as GROQ_API_KEY_2 (_3, ...) in .env, or wait.", flush=True)
+    else:
+        print(f"        enough for about {minutes:.0f} lecture minutes", flush=True)
+
+
+def pages_to_open(connects: dict[str, int]) -> list[str]:
+    """Roles with no page connected since the server started (a reconnecting old tab counts as connected)."""
+    return [role for role, _ in PAGES if not connects.get(role)]
+
 
 def new_session_id() -> str:
     return f"{time.strftime('%Y%m%d-%H%M%S')}-{new_id()[:4]}"
@@ -68,7 +104,7 @@ class App:
         speed: float = 1.0,
         setup_overrides: Optional[dict[str, str]] = None,
         display: bool = True,
-        open_display: bool = False,
+        open_pages: bool = False,
         demo_slides: bool = False,
         understanding: bool = True,
     ) -> None:
@@ -78,7 +114,11 @@ class App:
         self.presentation = None
         self._http = None
         self.display_enabled = display
-        self.open_display = open_display
+        self.open_pages = open_pages
+        self._opener: Optional[asyncio.Task] = None
+        self._router = None
+        self.hub = None
+        self._server_started = 0.0
         self.demo_slides = demo_slides
         self.server = None
         self.simulate = simulate
@@ -153,8 +193,12 @@ class App:
         async def on_failure(entry: str, error: str, will_retry: bool) -> None:
             await self.bus.publish(LLMCallFailed(provider=entry, error=error[:300], will_retry=will_retry))
 
+        from copilot.llm.usage import UsageLedger
+
         self._http = httpx.AsyncClient()
-        router = build_router(self.config, self._http, on_failure)
+        usage = UsageLedger(PROJECT_ROOT / self.config.get("llm", "usage_file", "data/llm_usage.json"))
+        router = build_router(self.config, self._http, on_failure, usage)
+        self._router = router
         names = [e.name for e in router.entries]
         print(f"[INIT]  LLM providers: {' -> '.join(names)}", flush=True)
         settings = UnderstandingSettings.from_config(self.config)
@@ -218,10 +262,12 @@ class App:
 
         hub = DisplayHub(self.bus, theme=self.store.snapshot().setup.theme if self.store else "light")
         hub.attach()
+        self.hub = hub
         self.server = DisplayServer(
             hub, self.config.get("display", "host", "127.0.0.1"), int(self.config.get("display", "port", 8765))
         )
         await self.server.start()
+        self._server_started = asyncio.get_running_loop().time()
 
     async def run(self) -> int:
         script = parse_script(self.simulate) if self.simulate else None
@@ -246,13 +292,14 @@ class App:
             # thread is blocked reading a piped stdin (seen with tools/screenshot_app.py).
             TerminalInput(asyncio.get_running_loop(), self._terminal).start()
             await self._lifecycle(Lifecycle.READY)
+            if self._router is not None:
+                print_quota(self._router)
             print(f"\n[READY] session {self.session_id}", flush=True)
             if self.server is not None:
                 print(f"        classroom display: {self.server.base_url}/display   (projector, full screen: F11)", flush=True)
                 print(f"        teacher control:   {self.server.base_url}/control", flush=True)
-                if self.open_display:
-                    webbrowser.open(f"{self.server.base_url}/control")
-                    webbrowser.open(f"{self.server.base_url}/display")
+                if self.open_pages:
+                    self._opener = asyncio.create_task(self._auto_open(), name="app:auto-open")
             setup = self.store.snapshot().setup
             if setup.subject or setup.expected_topic:
                 print(f"        subject={setup.subject or '-'} grade={setup.grade_level or '-'} topic={setup.expected_topic or '-'}", flush=True)
@@ -355,7 +402,24 @@ class App:
         finally:
             await self.speech.stop()  # closes the mic even on Ctrl+C / errors
 
+    async def _auto_open(self) -> None:
+        """After READY, open the control/display pages in the default browser unless a page of that role has
+        (re)connected: tabs left open from an earlier run reconnect on their own, so no duplicate tabs."""
+        assert self.server is not None and self.hub is not None
+        loop = asyncio.get_running_loop()
+        await asyncio.sleep(max(OPEN_AFTER_READY_S, self._server_started + OPEN_AFTER_SERVER_S - loop.time()))
+        for role in pages_to_open(self.hub.connects):
+            url = f"{self.server.base_url}/{role}"
+            try:
+                opened = await asyncio.to_thread(webbrowser.open, url)
+            except Exception as e:  # no browser available: the URLs are printed at READY
+                log.warning("could not open %s: %s", url, e)
+                continue
+            print(f"[OPEN]  {url}" if opened else f"[OPEN]  no browser opened {url}; open it manually", flush=True)
+
     async def _shutdown(self) -> None:
+        if self._opener is not None:
+            self._opener.cancel()
         if self.presentation is not None:
             await self.presentation.stop()
         if self.understanding is not None:
@@ -422,7 +486,10 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     p.add_argument("--grade", help="optional lecture setup: class/grade level")
     p.add_argument("--topic", help="optional lecture setup: expected topic")
     p.add_argument("--no-display", action="store_true", help="do not start the display server")
-    p.add_argument("--open", action="store_true", help="open the display and control pages in the browser")
+    p.add_argument("--open", action="store_true", help=argparse.SUPPRESS)  # old flag: opening is the default now
+    p.add_argument("--no-open", action="store_true",
+                   help="do not open the control/display pages (by default they open ~3 s after READY unless a page "
+                        "of that role is already connected)")
     p.add_argument("--demo-slides", action="store_true", help="play a scripted slide sequence (display check)")
     p.add_argument("--no-understanding", action="store_true", help="disable lecture understanding (no LLM calls)")
     p.add_argument("--log-level", default=None)
@@ -447,7 +514,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             speed=speed,
             setup_overrides={"subject": args.subject, "grade": args.grade, "topic": args.topic},
             display=not args.no_display,
-            open_display=args.open,
+            open_pages=not args.no_open,
             demo_slides=args.demo_slides,
             understanding=not args.no_understanding,
         )

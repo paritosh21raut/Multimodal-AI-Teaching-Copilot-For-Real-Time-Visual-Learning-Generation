@@ -65,6 +65,8 @@ def _normalise(data: Any) -> Any:
     for key in ("relation", "representation_hint"):
         if isinstance(data.get(key), str):
             data[key] = data[key].strip().lower().replace(" ", "_").replace("-", "_")
+    if data.get("relation") in _ACTS:  # an act name in the relation slot ("transition"): the lecture continues;
+        data["relation"] = "same_concept"  # mapped here instead of a repair call (live test 20261005-230039-f084)
     hint = data.get("representation_hint")
     if not (isinstance(hint, str) and hint in _REPRS):
         data["representation_hint"] = "none"
@@ -245,6 +247,71 @@ def _fill_empty_acts(it: Interpretation, lines: Sequence[BufferedLine]) -> Inter
     return it.model_copy(update={"acts": acts})
 
 
+COVER_MIN_WORDS = 4      # content words a dropped sentence must have to be worth showing
+COVER_MAX_SHARE = 0.34   # ... and at most this share of them may already be on the slide / in the output
+COVER_MAX_SENTENCES = 3
+_STOP = set("""about above after again also always another because been before being below between both could does
+doing down during each even every from further have having here into just like made make many more most much must
+never often once only other ours over same should since some such than that their them then there these they this
+those through together under until upon very want were what when where which while will with within would your
+called known""".split())
+
+
+# not slide content: announcements/transitions, greetings, recaps, the teacher's own anecdotes ("When I was ...")
+_NOT_CONTENT = re.compile(r"^(?:hello|hi|good (?:morning|afternoon)|today we|let'?s|let us|let me|"
+                          r"(?:so |now )?we (?:will|are going to|'ll))\b|\b(?:I|my|me|I'm|I've)\b", re.IGNORECASE)
+_NO_CONTENT_ACTS = {"transition", "question"}
+
+
+def _content_words(text: str) -> set[str]:
+    return {w for w in re.findall(r"[a-z]+", text.lower()) if len(w) >= 4 and w not in _STOP}
+
+
+def _item_texts(it: Interpretation) -> list[str]:
+    out: list[str] = []
+    for a in it.acts:
+        for v in a.items.model_dump().values():
+            if isinstance(v, str):
+                out.append(v)
+            elif isinstance(v, (list, dict)):
+                out.append(json.dumps(v))
+    out += [r.text for r in it.revisions]
+    out += [f"{c.claim} {c.suggested_correction}" for c in it.concerns]
+    return out
+
+
+def _cover_dropped_sentences(it: Interpretation, lines: Sequence[BufferedLine], slide_context: str) -> Interpretation:
+    """A complete content sentence the model left out entirely (none of its content words on the slide or in the
+    output) is shown as the teacher said it, tidied, and logged. Live chemistry test (session
+    20261005-231113-abfe): "The matter particles attract each other and are in the state of continuous motion" was
+    dropped by the model and never reached the projector. Digressions, meta lines and questions are left out."""
+    if it.relation == "digression":
+        return it
+    have = _content_words(" ".join(_item_texts(it)) + " " + slide_context)
+    meta = set(it.meta_lines)
+    # lines the model only used for transitions/questions: it judged them not slide content
+    acts_of = {n: {a.act for a in it.acts if n in a.lines} for n in range(1, len(lines) + 1)}
+    missed: list[tuple[int, str]] = []
+    for n, l in enumerate(lines, start=1):
+        if n in meta or l.maybe_meta or l.question or (acts_of[n] and acts_of[n] <= _NO_CONTENT_ACTS):
+            continue
+        for sentence in re.split(r"(?<=[.!?])\s+", " ".join(l.text.split())):
+            words = _content_words(sentence)
+            if (len(sentence.split()) < 6 or not ends_sentence(sentence) or sentence.rstrip().endswith("?")
+                    or len(words) < COVER_MIN_WORDS or _NOT_CONTENT.search(sentence)):
+                continue
+            if len(words & have) / len(words) <= COVER_MAX_SHARE:
+                missed.append((n, tidy_spoken(" ".join(sentence.split()[:30]))))
+                have |= words
+    missed = missed[:COVER_MAX_SENTENCES]
+    if not missed:
+        return it
+    log.warning("model left out %d spoken sentence(s); shown as said: %s", len(missed), [t for _, t in missed])
+    act = DiscourseAct(act="explanation", lines=sorted({n for n, _ in missed}),
+                       items=ContentItems(points=[t for _, t in missed]))
+    return it.model_copy(update={"acts": list(it.acts) + [act]})
+
+
 _EXAMPLE_CUE = re.compile(r"\b(?:for example|for instance|such as|e\.?g\.?|example|like)\b", re.IGNORECASE)
 
 
@@ -391,6 +458,7 @@ class Interpreter:
             log.warning("interpretation from %s changed spoken tokens without saying so; concern added: %s",
                         res.entry, ", ".join(changed))
         it = _sanitise(it, len(lines), self.s.min_concern_confidence, state, self.s.min_transcription_confidence)
+        it = _cover_dropped_sentences(it, lines, state.slide_context)
         return InterpretResult(it, res.entry, (time.perf_counter() - t0) * 1000, False, "",
                                prompt.tokens, repaired, attempts)
 

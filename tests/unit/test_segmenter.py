@@ -73,3 +73,14 @@ def test_max_length_forces_split_at_lowest_probability_frame():
 def test_flush_emits_pending_speech():
     _, out = run([0.9] * 40, flush=True)
     assert len(out) == 1 and out[0].duration == pytest.approx(40 * FRAME_S)
+
+
+@pytest.mark.parametrize("speech", [440, 455, 465])
+def test_forced_split_inside_a_pause_does_not_crash(speech):
+    """Live chemistry test (session 20261005-230039-f084): ~14.6 s of speech, then a pause that crosses the 15 s
+    limit. The forced cut fell inside the pause, the silence run kept counting frames already cut off, and the end
+    of the pause computed a negative length -> ValueError in the audio thread -> lecture ended."""
+    _, out = run([0.9] * speech + [0.1] * 40 + [0.9] * 60 + [0.0] * 30)
+    assert out and sum(1 for u in out if len(u.audio) == 0) == 0
+    total = sum(len(u.audio) for u in out) / F
+    assert total >= speech + 60  # all speech kept

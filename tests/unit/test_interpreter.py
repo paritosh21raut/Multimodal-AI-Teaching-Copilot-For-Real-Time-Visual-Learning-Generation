@@ -218,3 +218,73 @@ def test_fallback_names_the_topic_when_the_lecture_opens_with_an_announcement():
                                "gas, plasma and Bose-Einstein condensate.", 0, 9)]
     it = fallback_interpretation(LectureState(session_id="s"), lines)
     assert it.topic == "States of Matter" and it.relation == "new_topic" and it.subtopic == ""
+
+
+# ---- live chemistry test 2026-10-05 (sessions 20261005-230039-f084 / -231113-abfe) ----------------------------
+MATTER_LINE = ("Anything which occupies some space and has some mass is called matter. It is only up to the small "
+               "particles which have space between them. The matter particles attract each other and are in the "
+               "state of continuous motion.")
+
+
+def test_relation_given_as_an_act_name_is_accepted_without_repair():
+    data = dict(VALID, relation="transition")
+    assert parse_interpretation(json.dumps(data)).relation == "same_concept"
+    with pytest.raises(InvalidInterpretation):  # anything else stays invalid
+        parse_interpretation(json.dumps(dict(VALID, relation="banana")))
+
+
+def test_sentence_the_model_left_out_is_shown_as_said():
+    from copilot.understanding.interpreter import _cover_dropped_sentences
+
+    it = parse_interpretation(json.dumps({
+        "topic": "Chemistry", "subtopic": "Matter", "relation": "sibling_concept", "acts": [
+            {"act": "definition", "lines": [1], "items": {"term": "Matter",
+                                                          "definition": "Anything which occupies some space and has some mass"}},
+            {"act": "explanation", "lines": [2], "items": {"points": ["Matter can be classified"]}}]}))
+    lines = [BufferedLine("a", MATTER_LINE, 0, 14), BufferedLine("b", "Classification of matter", 14, 16)]
+    out = _cover_dropped_sentences(it, lines, "")
+    added = out.acts[-1]
+    assert len(out.acts) == 3 and added.act == "explanation" and added.lines == [1]
+    # the mis-heard fragment ("It is only up to ...") has too little content to show; the definition is covered
+    assert added.items.points == ["The matter particles attract each other and are in the state of continuous motion"]
+
+
+def test_covered_or_digression_or_meta_sentences_are_not_added():
+    from copilot.understanding.interpreter import _cover_dropped_sentences
+
+    covered = parse_interpretation(json.dumps({
+        "topic": "Chemistry", "subtopic": "Matter", "relation": "same_concept", "acts": [
+            {"act": "explanation", "lines": [1], "items": {"points": ["Matter particles attract each other",
+                                                                      "Particles are in continuous motion"]}}]}))
+    line = [BufferedLine("a", "The matter particles attract each other and are in the state of continuous motion.", 0, 5)]
+    assert _cover_dropped_sentences(covered, line, "") == covered
+    empty = covered.model_copy(update={"acts": []})
+    assert _cover_dropped_sentences(empty, line, "Matter: [S1] Matter particles attract each other; "
+                                                 "[S2] they are in continuous motion state") == empty  # already shown
+    assert _cover_dropped_sentences(empty.model_copy(update={"relation": "digression"}), line, "").acts == []
+    assert _cover_dropped_sentences(empty.model_copy(update={"meta_lines": [1]}), line, "").acts == []
+    meta = [BufferedLine("a", line[0].text, 0, 5, maybe_meta=True)]
+    assert _cover_dropped_sentences(empty, meta, "").acts == []
+
+
+@pytest.mark.parametrize("said", [
+    "Today we are going to learn about the systems of the human body.",
+    "Let me quickly recap what we learned today about digestion.",
+    "When I was in college, I ran a race and my heart was beating fast.",
+])
+def test_announcements_and_anecdotes_are_not_recovered(said):
+    """Offline replay of 128 recorded units: these were the guard's false positives before the exclusions."""
+    from copilot.understanding.interpreter import _cover_dropped_sentences
+
+    it = parse_interpretation(json.dumps({"topic": "Human Body", "subtopic": "Heart", "relation": "same_concept",
+                                          "acts": []}))
+    assert _cover_dropped_sentences(it, [BufferedLine("a", said, 0, 5)], "").acts == []
+
+
+def test_line_used_only_for_a_transition_is_not_recovered():
+    from copilot.understanding.interpreter import _cover_dropped_sentences
+
+    it = parse_interpretation(json.dumps({"topic": "Chemistry", "subtopic": "Matter", "relation": "same_concept",
+                                          "acts": [{"act": "transition", "lines": [1]}]}))
+    line = [BufferedLine("a", "After this the classification of different matter types comes next in sequence.", 0, 5)]
+    assert _cover_dropped_sentences(it, line, "").acts == it.acts

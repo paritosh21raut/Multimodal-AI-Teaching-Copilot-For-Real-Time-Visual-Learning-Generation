@@ -8,7 +8,7 @@ from copilot.audio.segmenter import SegmenterConfig, UtteranceSegmenter
 from copilot.audio.sources import ArraySource, MicSource
 from copilot.core.bus import EventBus
 from copilot.core.config import Config
-from copilot.core.events import AudioDeviceLost
+from copilot.core.events import AudioDeviceLost, UtteranceDropped
 from copilot.stt.engine import SttResult
 from copilot.stt.factory import make_source
 from copilot.stt.pipeline import SpeechPipeline
@@ -93,3 +93,33 @@ def test_mic_device_config_parsing(raw, expected):
     src = make_source(Config({"audio": {"device": raw}}), None, 1.0)
     assert isinstance(src, MicSource)
     assert src.device == expected
+
+
+async def test_segmenter_error_drops_one_utterance_and_the_lecture_goes_on(monkeypatch):
+    """Live chemistry test (session 20261005-230039-f084): a segmenter bug killed the audio thread and ended the
+    lecture after 43 s. Now it costs the pending utterance only: logged as dropped, audio keeps flowing."""
+    calls = {"n": 0}
+    real_push = UtteranceSegmenter.push
+
+    def flaky_push(self, frame, prob):
+        calls["n"] += 1
+        if calls["n"] == 3:
+            raise ValueError("need at least one array to concatenate")
+        return real_push(self, frame, prob)
+
+    monkeypatch.setattr(UtteranceSegmenter, "push", flaky_push)
+    bus = EventBus()
+    seen = []
+
+    async def collect(e):
+        seen.append(e)
+
+    bus.subscribe("collect", collect, [AudioDeviceLost, UtteranceDropped])
+    pipe = SpeechPipeline(bus, ArraySource(np.zeros(F * 20, np.float32), speed=0), StubEngine())
+    pipe.start()
+    await asyncio.wait_for(pipe.wait_finished(), timeout=10)
+    await pipe.stop()
+    await bus.close()
+    assert calls["n"] > 10                                     # frames after the error were still processed
+    assert [type(e).__name__ for e in seen] == ["UtteranceDropped"]
+    assert seen[0].reason.startswith("segmenter_error")

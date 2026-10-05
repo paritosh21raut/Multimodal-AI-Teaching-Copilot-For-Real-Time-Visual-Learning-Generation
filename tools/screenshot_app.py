@@ -62,7 +62,7 @@ async def main(extra: list[str]) -> None:
     from playwright.async_api import async_playwright
 
     OUT.mkdir(parents=True, exist_ok=True)
-    args = [sys.executable, "-m", "copilot", "--no-wait", "--log-level", "WARNING"] + (extra or [
+    args = [sys.executable, "-m", "copilot", "--no-wait", "--no-open", "--log-level", "WARNING"] + (extra or [
         "--simulate", "tests/fixtures/lectures/photosynthesis.txt", "--demo-slides", "--speed", "3"])
     log_path = OUT / "app_output.txt"  # a file, not a pipe: a long run must never block on a full pipe buffer
     log_file = open(log_path, "w", encoding="utf-8", errors="replace")

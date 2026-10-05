@@ -1,10 +1,32 @@
 # Current State
 
-_Last updated: 2026-10-05: M0–M3 ✅, M4 ✅ + M4 verify fixes (display-quality text, fact tiles / groups / trees,
-space-based layout, part badges, revisions, truthful slides) verified on the user's two verify lectures replayed
-through the real pipeline. Next: user real-mic re-test._
+_Last updated: 2026-10-05 (late): M4 closeout fixes from the user's live chemistry test: audio crash on a long
+sentence fixed (lecture no longer ends), definitions revisable (completed in place), coverage guard for sentences the
+model drops. Exit check left: the user's live 5–10 min lecture (ROADMAP M4, adjusted)._
 
 ## Now
+- **M4 exit check (only item left): user live-mic lecture, 5–10 min continuous** (`python -m copilot`). Pass =
+  lecture runs to the end, every taught point reaches the projector, slides follow the topics, no crash.
+- **Live chemistry test 2026-10-05 (session 20261005-230039-f084), fixed:**
+  1. The lecture ended after 43 s: forced 15 s split inside a pause → negative frame count → audio thread crash.
+     Fixed in the segmenter + the pipeline now drops only the pending utterance on a segmenter error.
+  2. Definition stuck at "the branch of science which deals": the definition had no [S#] ref, the model's
+     completion was dropped as an unknown ref. Definitions are now revisable.
+  3. Coverage guard: complete content sentences the model leaves out are shown as said (logged).
+  4. `relation: "transition"` no longer costs a repair call.
+  Verified: replay of the user's transcript (`tests/fixtures/lectures/chemistry_live7.txt`, real Groq): 8/8 by LLM,
+  0 repaired, 0 fallbacks, 3 slides, full definition, matter facts shown (screenshots
+  `artifacts/app/lecture_chemistry_live7/`). 215 fast tests.
+- **Architecture decision (user, 2026-10-05):** the free tier is for development only (continuous 5–10 min lectures);
+  no extra fallback models layer. Later the same system moves to a paid API for long lectures. Keep LLM use efficient.
+  Groq primary (3–4 keys, used one after another), OpenRouter as backup, deterministic fallback when all fail.
+- **Done this round (on 0e8bff5):** Groq keys `GROQ_API_KEY`, `_2` … `_9` → per-key entries, same model first;
+  Ollama opt-in only; `copilot.llm.usage` daily ledger (429 TPD body parsed, spent key skipped across sessions);
+  `[QUOTA]` printed before READY; `/control` + `/display` auto-open (`--no-open`). Verified: 203 fast + 4 browser
+  tests; real run photosynthesis (session 20261005-225236-fff4): 12/12 by LLM, 0 fallbacks, 5 slides.
+- **Next: user test** with the keys added to `.env` as `GROQ_API_KEY_2`, `_3`, … (check the `[QUOTA]` lines).
+- Prompt shrink A/B (gpt-oss-120b, 11 recorded units): 2135 → 1860 tokens/call, both 11/11 valid, but the shorter
+  prompt was less truthful in 3/11 → not adopted. Further token savings need a different approach (later).
 - **Next: user real-mic re-test** of the solar-system / chemistry style lectures (`python -m copilot`), ideally on
   a fresh Groq daily quota. Watch: concise slide text, facts as tiles, no "(cont.)", corrections shown truthfully
   with the teacher card (OK / Show as I said).
@@ -14,7 +36,7 @@ through the real pipeline. Next: user real-mic re-test._
   Options: shrink/split the system prompt, longer units, add more free models to the router, or a local model.
   **Confirmed by session 20261005-110717-dc56 (states of matter): all three remote models rate-limited (both Groq
   models at ~199k/200k TPD, OpenRouter free upstream-limited) → almost every unit used the deterministic fallback.
-  This is the next build (LLM budget + a usable local/extra free provider).**
+  Superseded by the 2026-10-05 architecture decision above (several Groq keys, no extra provider layer).**
 - After that: V1 items (KaTeX, images), soak runner, snapshots/recovery.
 - `.env` has `GROQ_API_KEY` and `OPENROUTER_API_KEY` (never print/commit). Ollama not installed (optional fallback).
 
@@ -39,6 +61,11 @@ through the real pipeline. Next: user real-mic re-test._
 | Item | Unit | Integration | Runtime |
 |---|---|---|---|
 | EventBus, config, state store, event log, simulator | ✅ | ✅ | ✅ |
+| Several Groq keys, daily quota ledger, `[QUOTA]` at startup | ✅ | – | ✅ photosynthesis real run, quota printed |
+| Auto-open /control + /display, no duplicate tabs, `--no-open` | ✅ | ✅ browser (real app + Edge) | ✅ |
+| Segmenter: forced split inside a pause, segmenter error keeps the lecture going | ✅ | – | replay ✅, live mic pending |
+| Definition completed in place across units (revisable ref) | ✅ | ✅ engine | ✅ chemistry replay |
+| Coverage guard (dropped sentences shown as said) | ✅ | offline replay 128 units | ✅ chemistry replay |
 | App lifecycle READY → Enter / control Start → LIVE → q / control End → ENDED | – | – | ✅ (Ctrl+C not exercised) |
 | Segmenter, VAD, Whisper engine and guard, speech pipeline | ✅ | ✅ (GPU) | ✅ WAV real time: p50 ≈ 650 ms, VRAM ~1.1 GB |
 | M1 review fixes (forced-split loss, stop hangs, mic leak, device "0", watchdog) | ✅ regression tests | – | – |

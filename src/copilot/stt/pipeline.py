@@ -122,7 +122,15 @@ class SpeechPipeline:
                     break
                 prob = self._vad(frame)
                 voice = voice or prob >= self._seg_cfg.end_threshold
-                for u in seg.push(frame, prob):
+                try:
+                    done = seg.push(frame, prob)
+                except Exception as e:  # a segmentation bug costs one utterance, never the lecture
+                    log.exception("segmenter failed; pending utterance dropped")
+                    self._publish(UtteranceDropped(start=seg.pending_start(), end=seg.clock_s(),
+                                                   reason=f"segmenter_error: {e}"))
+                    seg.abandon()
+                    done = []
+                for u in done:
                     self._utterances.put((u, time.perf_counter()))
                     backlog = self._utterances.qsize()
                     if backlog > BACKLOG_WARN:

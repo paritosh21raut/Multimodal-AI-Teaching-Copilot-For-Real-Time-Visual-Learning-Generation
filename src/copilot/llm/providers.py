@@ -1,6 +1,7 @@
 """OpenAI-compatible chat-completions client (Groq, OpenRouter and Ollama all expose /v1/chat/completions)."""
 from __future__ import annotations
 
+import re
 import time
 from dataclasses import dataclass, field
 from typing import Any, Optional
@@ -19,9 +20,13 @@ class Transient(LLMError):  # timeout, 5xx, dropped connection
 
 
 class RateLimited(LLMError):
-    def __init__(self, msg: str, retry_after: Optional[float]) -> None:
+    def __init__(self, msg: str, retry_after: Optional[float], daily: bool = False,
+                 reset_at: Optional[float] = None, used: Optional[int] = None, limit: Optional[int] = None) -> None:
         super().__init__(msg)
         self.retry_after = retry_after
+        self.daily = daily          # the per-day quota is spent (not a per-minute burst)
+        self.reset_at = reset_at    # wall-clock time the daily quota frees up, when known
+        self.used, self.limit = used, limit  # server's daily token count / limit (Groq TPD body)
 
 
 class Unavailable(LLMError):  # cannot connect (e.g. Ollama not installed / offline)
@@ -46,6 +51,7 @@ class ProviderConfig:
     tpm: float = 8000
     json_mode: bool = True
     max_output_tokens: Optional[int] = None  # per-model cap (e.g. Groq qwen: 1000 output tokens/min)
+    tpd: int = 0  # free-tier tokens per day (0 = not tracked); shown at startup, a spent entry is skipped
     extra: dict[str, Any] = field(default_factory=dict)  # provider-specific body params
 
 
@@ -64,6 +70,33 @@ def _retry_after(resp: httpx.Response) -> Optional[float]:
         return float(raw) if raw is not None else None
     except ValueError:
         return None
+
+
+_DURATION = re.compile(r"(?:(\d+)h)?(?:(\d+)m(?!s))?(?:([\d.]+)s)?")
+# Groq: "... on tokens per day (TPD): Limit 200000, Used 199616, Requested 2345. Please try again in 7m12.48s."
+_GROQ_DAILY = re.compile(r"tokens per day \(TPD\): Limit (\d+), Used (\d+)", re.IGNORECASE)
+_TRY_AGAIN = re.compile(r"try again in ((?:\d+h)?(?:\d+m(?!s))?(?:[\d.]+s)?)", re.IGNORECASE)
+
+
+def _duration_s(text: str) -> Optional[float]:
+    m = _DURATION.fullmatch(text)
+    if not m or not any(m.groups()):
+        return None
+    h, mi, s = m.groups()
+    return int(h or 0) * 3600 + int(mi or 0) * 60 + float(s or 0)
+
+
+def rate_limited(resp: httpx.Response) -> RateLimited:
+    """429 -> RateLimited; a Groq tokens-per-day body is recognised as a spent daily quota."""
+    body = resp.text
+    retry = _retry_after(resp)
+    m = _GROQ_DAILY.search(body)
+    if m:
+        again = _TRY_AGAIN.search(body)
+        wait = (_duration_s(again.group(1)) if again else None) or retry
+        return RateLimited(f"429 daily token quota: used {m.group(2)}/{m.group(1)}", wait, daily=True,
+                           reset_at=time.time() + wait if wait else None, used=int(m.group(2)), limit=int(m.group(1)))
+    return RateLimited(f"429 {body[:200]}", retry)
 
 
 def _int(v: Any) -> int:
@@ -112,7 +145,7 @@ class OpenAICompatProvider:
         latency = (time.perf_counter() - t0) * 1000
 
         if resp.status_code == 429:
-            raise RateLimited(f"429 {resp.text[:200]}", _retry_after(resp))
+            raise rate_limited(resp)
         if resp.status_code >= 500:
             raise Transient(f"{resp.status_code} {resp.text[:200]}")
         if resp.status_code >= 400:

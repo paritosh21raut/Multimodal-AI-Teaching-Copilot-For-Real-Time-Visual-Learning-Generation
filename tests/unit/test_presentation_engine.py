@@ -95,7 +95,7 @@ async def test_title_slide_then_first_content_slide_and_in_place_update():
     assert len(deck.slides) == 2 and s2.version == s.version + 1
     assert s2.blocks[0].id == s.blocks[0].id and texts(s2) == ["Photosynthesis", "photo = light"]
     assert "photo = light" in store.snapshot().slide_context                  # prompt sees the current slide
-    assert list(store.snapshot().slide_refs) == ["S1"]                         # ... with a revisable ref
+    assert list(store.snapshot().slide_refs) == ["S1", "S2"]                   # ... with revisable refs
     await eng.stop()
 
 
@@ -206,6 +206,29 @@ async def test_revision_rewrites_a_fragment_in_place():
     items = deck.live.blocks[0].items
     assert items[1].id == item.id and items[1].text == "Its gravity is so strong that light cannot escape"
     assert len(items) == 2
+    await eng.stop()
+
+
+async def test_definition_spoken_across_units_is_completed_in_place():
+    """Live chemistry test (session 20261005-230039-f084): "Chemistry is the branch of science which deals" /
+    "with the consumption" / "composition, structure and properties of matter". The definition had no [S#] ref, so
+    the model's completion was dropped as an unknown ref and the slide kept "the branch of science which deals"."""
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    await send(bus, ready("Chemistry", "Basic Concepts", [act("definition", term="Chemistry",
+                                                             definition="the branch of science which deals")],
+                          relation="new_topic"))
+    d = deck.live.blocks[0]
+    snap = store.snapshot()
+    assert "[S1] (definition) Chemistry: the branch of science which deals" in snap.slide_context
+    refs = dict(snap.slide_refs)
+    assert refs["S1"].endswith("/" + d.id)
+    await send(bus, ready("Chemistry", "Basic Concepts", [], revisions=[Revision(
+        ref="S1", text="Chemistry: the branch of science which deals with the composition, structure and properties "
+                       "of matter")], refs=refs))
+    d2 = deck.live.blocks[0]
+    assert d2.id == d.id and d2.term == "Chemistry"
+    assert d2.definition == "the branch of science which deals with the composition, structure and properties of matter"
+    assert len(deck.slides) == 1
     await eng.stop()
 
 

@@ -339,7 +339,9 @@ def describe(spec: SlideSpec, max_items: int = 8) -> tuple[str, dict[str, str]]:
                 if not i.provisional:
                     ref(i.id, i.text)
         elif b.type == "definition":
-            parts.append(f"(definition) {b.term}: {b.definition}")
+            # revisable too: a definition spoken across units arrives in pieces ("which deals" / "with the
+            # composition, ...") and is completed in place (live chemistry test, session 20261005-230039-f084)
+            ref(b.id, f"(definition) {b.term}: {b.definition}")
             for n in b.notes:
                 if not n.provisional:
                     ref(n.id, n.text)
@@ -689,6 +691,17 @@ _MERGERS = {
 
 
 # ---- in-place edits (revisions, correction toggles) -----------------------------------------------------
+def _definition_text(term: str, text: str) -> str:
+    """A revised definition may repeat the term ("Chemistry: the branch ...", "Chemistry is the branch ...")."""
+    t = text.strip()
+    if term and t.lower().startswith(term.lower()):
+        rest = t[len(term):].lstrip()
+        for lead in (":", "-", "–", "is ", "means "):
+            if rest.lower().startswith(lead):
+                return rest[len(lead):].strip() or t
+    return t
+
+
 def revise_item(spec: SlideSpec, item_id: str, text: str) -> Optional[SlideSpec]:
     """Rewrite one item in place (same id: the display updates just that text). None if the id is not here."""
     blocks = []
@@ -697,6 +710,9 @@ def revise_item(spec: SlideSpec, item_id: str, text: str) -> Optional[SlideSpec]
         if b.type == "points" and any(i.id == item_id for i in b.items):
             b = b.model_copy(update={"items": [i.model_copy(update={"text": text, "provisional": False})
                                                if i.id == item_id else i for i in b.items]})
+            hit = True
+        elif b.type == "definition" and b.id == item_id:
+            b = b.model_copy(update={"definition": _definition_text(b.term, text)})
             hit = True
         elif b.type == "definition" and any(n.id == item_id for n in b.notes):
             b = b.model_copy(update={"notes": [n.model_copy(update={"text": text}) if n.id == item_id else n

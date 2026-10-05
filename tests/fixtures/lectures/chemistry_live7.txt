@@ -1,0 +1,18 @@
+# User's live-mic chemistry test, 2026-10-05 (session 20261005-230039-f084), transcript as heard (mis-hearings kept).
+# Regression: the definition arrived in pieces and stayed cut off; a long sentence crashed the audio thread.
+Let's learn about the basic concept of chemistry. Chemistry, it is the branch of science which deals
+[pause 1.5]
+with the consumption.
+[pause 1]
+composition, structure and properties of matter.
+[pause 2]
+branch of chemistry. Inorganic chemistry, organic chemistry, physical chemistry, analytical chemistry.
+[pause 2]
+Let's learn about from my talk.
+[pause 1.5]
+Anything which occupies some space and has some mass is called matter. It is only up to the small particles which have space between them. The matter particles attract each other and are in the state of continuous motion.
+[pause 2]
+Classification of matter
+[pause 1.5]
+It is in two types physical classification and chemical classification In physical classification it can be solid liquid or gas in chemical classification it can be pure substances or mixtures
+[pause 3]

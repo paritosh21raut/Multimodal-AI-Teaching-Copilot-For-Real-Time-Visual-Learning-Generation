@@ -71,6 +71,7 @@ class DisplayHub:
         self.lifecycle = "starting"
         self.transcript: deque[dict] = deque(maxlen=TRANSCRIPT_LINES)
         self.concerns: dict[str, dict] = {}  # open concerns (control view only; never sent to the display)
+        self.connects: dict[str, int] = {"display": 0, "control": 0}  # connections ever made, per role
 
     def attach(self) -> None:
         self._bus.subscribe(
@@ -85,6 +86,7 @@ class DisplayHub:
     def connect(self, role: Role) -> Connection:
         conn = Connection(role)
         self.connections.add(conn)
+        self.connects[role] = self.connects.get(role, 0) + 1
         conn.push(self.hello(role))
         return conn
 

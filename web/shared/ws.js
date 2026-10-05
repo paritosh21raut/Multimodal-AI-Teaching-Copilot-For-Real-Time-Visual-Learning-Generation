@@ -15,7 +15,8 @@ export function connect(role, onMessage, onStatus) {
     ws.onclose = () => {
       onStatus && onStatus("disconnected");
       if (closed) return;
-      const delay = Math.min(5000, 300 * 2 ** retry++);
+      // capped at 2 s: a tab left open from an earlier run reconnects before the app decides to open a new one
+      const delay = Math.min(2000, 300 * 2 ** retry++);
       setTimeout(open, delay);
     };
   };

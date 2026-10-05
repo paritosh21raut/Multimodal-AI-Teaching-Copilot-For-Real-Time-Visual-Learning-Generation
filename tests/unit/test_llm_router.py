@@ -192,10 +192,12 @@ async def test_tpm_skips_entry_and_server_header_clamps():
 def test_build_router_from_config_skips_missing_keys(monkeypatch):
     cfg = load_config(environ={})
     monkeypatch.setenv("GROQ_API_KEY", "x")
+    for i in range(2, 10):  # extra keys in .env would add entries (tests/unit/test_llm_keys_usage.py)
+        monkeypatch.delenv(f"GROQ_API_KEY_{i}", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     router = build_router(cfg, httpx.AsyncClient())
     names = [e.name for e in router.entries]
-    assert names == ["groq_main", "groq_alt", "ollama"]
+    assert names == ["groq_main", "groq_alt"]  # Ollama is opt-in only (verify round 6)
     assert router.entries[0].provider.cfg.extra["reasoning_effort"] == "low"
     assert router.settings.timeout_s == 6.0 and router.settings.retries == 1
     assert router.entries[1].provider.cfg.max_output_tokens == 900

@@ -33,6 +33,9 @@ plugs into them.
 - Progressive update: quick structural update, then a refined one.
 - **MVP exit:** a real 20–30 min spoken lecture → stable, continuity-aware live slides on the projector.
   Runtime-verified with screenshots and an event log review.
+  Adjusted 2026-10-05 (user decision): on the free Groq tier during development, a real continuous **5–10 min**
+  spoken lecture (live mic, the user) is the exit check; 20–60 min lectures are for the paid API later (the
+  60-min soak stays in V1).
 
 ## V1 — Rich representations + images + robustness
 - Layouts: process, comparison, timeline, hierarchy, cause-effect, formula (KaTeX), application, example.

@@ -63,7 +63,7 @@ Original requirements: `docs/brief/master-prompt.md` (read only when requirement
 .venv/Scripts/python -m copilot --simulate tests/fixtures/lectures/photosynthesis.txt --demo-slides --open
 .venv/Scripts/python -m copilot.audio.mic_check     # list mics, record, transcribe
 .venv/Scripts/python -m copilot --audio-file tests/fixtures/audio/photosynthesis_tts.wav
-.venv/Scripts/python -m copilot                     # run app (ready → Enter → live)
+.venv/Scripts/python -m copilot                     # run app ([QUOTA] → ready → Enter → live; opens /control + /display, --no-open)
 .venv/Scripts/python -m copilot --simulate tests/fixtures/lectures/photosynthesis.txt
 .venv/Scripts/python -m copilot --simulate tests/fixtures/lectures/photosynthesis.txt --no-wait --speed 1   # M3 runtime check (real LLM)
 ```

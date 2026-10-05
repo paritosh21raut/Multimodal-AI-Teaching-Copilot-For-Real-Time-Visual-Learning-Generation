@@ -53,9 +53,20 @@ and how*, while calling the LLM rarely.
   (label + kinds → tree; named groups → group cards), process steps, comparison, timeline, formula, cause-effect,
   points, examples (only real examples; deterministic guard: an "example" act without an example cue in its
   lines becomes points).
-- The CURRENT SLIDE is shown with numbered items; the model may return `revisions` ({ref, text}) to complete or fix
+- The CURRENT SLIDE is shown with numbered items (the definition too, so a definition spoken across units is
+  completed in place); the model may return `revisions` ({ref, text}) to complete or fix
   an item instead of adding a fragment. Announcement lines are tagged "(announces: X)".
 - The Composer caps `added` content (≤ 1 item per slide), and it is rendered visually subtle.
+
+## Coverage guard (content the model left out)
+A complete content sentence (>= 6 words, >= 4 content words) of which at most a third of the content words appear
+in the model's output or on the current slide is shown as the teacher said it (tidied, as a point) and logged
+("model left out ... shown as said"). Not recovered: meta/maybe-meta lines, questions, lines the model used only for
+a transition/question, digressions, announcements/greetings ("today we", "let's", "let me"), first-person asides
+("When I was in college ..."); at most 3 sentences per unit. Offline replay of 128 recorded units (6 sessions): 20
+units got lost facts back, no announcements or anecdotes. Reason: live test 2026-10-05, "The matter particles
+attract each other ..." never reached the projector.
+A `relation` given as an act name ("transition") is read as `same_concept` instead of costing a repair call.
 
 ## Grounding guard
 Formula-like tokens the model changed from what was said get a `transcription` concern (wrong = heard,
@@ -70,9 +81,21 @@ right = shown) when the model did not raise one itself (details: F-004). Nothing
   in place (F-005). Teacher self-corrections are not concerns.
 
 ## LLM layer (`copilot.llm`)
-- Router: Groq gpt-oss-120b → Groq qwen3.8-27b (separate 8k-TPM bucket) → OpenRouter free model (50 req/day) →
-  Ollama local. Per-entry timeout 6 s, 1 retry on timeouts/5xx only; whole interpretation deadline 15 s.
+- Router: Groq gpt-oss-120b → Groq qwen3.8-27b (separate 8k-TPM bucket) → OpenRouter free model (50 req/day, backup).
+  Every Groq key in `.env` is used: `GROQ_API_KEY`, `GROQ_API_KEY_2` … `_9` each get their own entries, the same model
+  through the next key first (`groq_main`, `groq_main#2`, …, then `groq_alt`, `groq_alt#2`, …). Ollama is not in the
+  default order (verify round 6: with all remote quota spent it copied prompt values; opt in via `config/local.toml`).
+  When every model fails, the deterministic fallback below shows the spoken content.
+  Per-entry timeout 6 s, 1 retry on timeouts/5xx only; whole interpretation deadline 15 s.
 - Rate limiter: token bucket per provider (RPM/TPM from config). 429 → cooldown and fall through.
+- Daily quota (`copilot.llm.usage`, `data/llm_usage.json`): tokens per (key, model) over a rolling 24 h, counted from
+  our own calls; a Groq "tokens per day" 429 adopts the server's count and blocks that key+model until the time it
+  states (1 h when it states none), across sessions. A spent entry (blocked, or `tpd` would be exceeded) is skipped
+  without a call. Keys are stored as a short hash, never the key. The quota left is printed in the terminal while the
+  system loads (`[QUOTA]`, before Enter), not on the teacher's screen.
+- System prompt unchanged from 0e8bff5 (≈ 1.55k tokens): a 13 % shorter version was A/B-tested on gpt-oss-120b
+  (11 recorded units, 2026-10-05) and was less truthful in 3 of 11 (silent mis-hearing fix, corrected fact missing
+  from acts, an unsaid explanation added), so it was not adopted.
 - Strict JSON: schema in the prompt + Pydantic validation; one repair attempt; on failure, a deterministic
   fallback interpretation (topic unchanged; only complete spoken sentences, tidied, as key points; fragments are not
   shown). The fallback is logged, never hidden.

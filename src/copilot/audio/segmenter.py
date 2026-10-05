@@ -105,6 +105,10 @@ class UtteranceSegmenter:
             self._frames = self._frames[cut:]
             self._probs = self._probs[cut:]
             self._speech_frames = sum(1 for p in self._probs if p >= self.cfg.end_threshold)
+            # the silence run counts only frames still held (the cut often falls inside a pause): a run longer than
+            # the remainder made the next end "keep" a negative frame count and crashed the audio thread
+            # (live chemistry test, session 20261005-230039-f084)
+            self._silence_run = min(self._silence_run, len(self._frames))
             self._continuation = True
         return out
 
@@ -117,8 +121,20 @@ class UtteranceSegmenter:
         self._reset_after_end()
         return [u] if u else []
 
+    def clock_s(self) -> float:
+        return self._clock_frames * self._frame_s
+
+    def pending_start(self) -> float:
+        return self._start_frame * self._frame_s if self.in_speech else self.clock_s()
+
+    def abandon(self) -> None:
+        """Drop the pending utterance after an error; the sample clock keeps running (timestamps stay right)."""
+        self._reset_after_end()
+
     def _emit(self, n_frames: int, forced: bool) -> Optional[Utterance]:
-        n_frames = min(n_frames, len(self._frames))
+        n_frames = max(0, min(n_frames, len(self._frames)))
+        if n_frames == 0:  # nothing left to emit (e.g. only the pause after a forced split)
+            return None
         if self._speech_frames < self._min_frames and not forced and not self._continuation:
             self.dropped_short += 1
             return None
