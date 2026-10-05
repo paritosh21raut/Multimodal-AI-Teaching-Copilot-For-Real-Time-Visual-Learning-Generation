@@ -1,6 +1,6 @@
 # F-007a: Formulas (KaTeX) + layout polish (V1a)
 
-**Status 2026-10-06: implemented, tested, runtime-verified with 0 LLM tokens; one real-Groq run pending (quota).**
+**Status 2026-10-06: done — implemented, tested, runtime-verified (0-token checks + a real LLM run on the qwen backup).**
 
 Order: **V1a** → V1b images (F-007b) → V1c robustness (F-007c); each finished and verified before the next.
 Architecture: `display.md`, `presentation.md`. Contract: `slide-spec.md` (`formula` block).
@@ -74,5 +74,10 @@ Done (0 tokens), screenshots inspected:
 - `tools/screenshot_app.py --lecture --simulate tests/fixtures/lectures/force_motion.txt --demo-slides
   --no-understanding --speed 2`: real app, /control + /display render KaTeX, 0 errors → `artifacts/app/lecture_force_motion/`.
 
-Pending: one real-Groq run of `force_motion.txt` (≈ 8–10 calls, ≈ 20–25k tokens) when the gpt-oss-120b daily
-quota allows (ledger at ≈ 198k / 200k on 2026-10-06 00:45; only one Groq key in `.env`).
+Real LLM run (user, 2026-10-06 01:08, session 20261006-010822-cdb5, `--speed 1`): gpt-oss-120b skipped (daily
+quota spent), so **8 interpretations by qwen3.8-27b (`groq_alt`, ≈ 33k tokens)**, 2 deterministic fallbacks at the
+end (qwen OTPM limit; OpenRouter backup 404 "model unavailable for free"). 5 slides, 0 page errors. Model formulas:
+`Speed = Distance / Time`, `v = u + at`, `F = ma`, `KE = 1/2 mv²`. The last one rendered wrongly (1 over "2 mv"):
+neither side counted as symbolic → fixed (a lowercase product next to a number is symbolic; "ice → water" stays
+words), regression tests added, re-rendered and inspected (`artifacts/app/lecture_force_motion/fixed_ke.png`).
+Not yet seen: the same lecture on gpt-oss-120b.

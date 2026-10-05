@@ -39,6 +39,12 @@ GLUCOSE = r"\text{C}_{\text{6}}\text{H}_{\text{12}}\text{O}_{\text{6}}"
     ("Kinetic energy equals half m v squared", r"\text{Kinetic energy} = \dfrac{1}{2} m v ^{2}"),
     ("Kinetic energy = 1/2 m v^2", r"\text{Kinetic energy} = \dfrac{1}{2} m v ^{2}"),
     ("water turns into steam", r"\text{water turns into steam}"),
+    # real model output (qwen, session 20261006-010822-cdb5): rendered as 1 over "2 mv" before the fix
+    ("KE = 1/2 mv²", r"\text{KE} = \dfrac{1}{2} m v ^{2}"),
+    ("Speed = Distance / Time", r"\text{Speed} = \dfrac{\text{Distance}}{\text{Time}}"),
+    ("speed = d / t", r"\text{speed} = \dfrac{d}{t}"),
+    ("ice + heat → water", r"\text{ice} + \text{heat} \rightarrow \text{water}"),
+    ("ice → water", r"\text{ice} \rightarrow \text{water}"),
 ])
 def test_to_latex(expr, latex):
     assert to_latex(expr) == latex

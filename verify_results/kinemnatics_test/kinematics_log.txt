@@ -1,0 +1,58 @@
+(.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> python -m copilot
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (4.1 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.2 s)
+01:43:06 WARNING copilot.llm.router: llm entry openrouter_main disabled: OPENROUTER_API_KEY not set
+[INIT]  LLM providers: groq_main#3 -> groq_alt#3
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        groq_main#3        openai/gpt-oss-120b           190k of 200k tokens ok
+        groq_alt#3         qwen/qwen3.8-27b              200k of 200k tokens ok
+        enough for about 49 lecture minutes
+
+[READY] session 20261006-014301-5830
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+
+[LIVE]  lecture started. Type q + Enter to end.
+  [    0.4s] Let's learn about Kinematics. Kinematics is the branch of classical mechanics that describes the motion of objects such as position, velocity and acceleration without looking at the force or masses that cause the motion. (959 ms)
+  [   15.6s] core concepts are distance vs. displacement (577 ms)
+  [   19.0s] Distance is the total length of the path travelled whereas displacement is the straight line change. (767 ms)
+  [UNDERSTAND] Kinematics > Definition (new_topic) acts=definition,definition,definition,explanation hint=definition lines=3 via groq_main#3 2077 ms
+               Introduced Kinematics and defined distance and displacement as core concepts
+01:43:39 INFO    copilot.presentation.engine: planner: new Kinematics > Definition (first content slide)
+01:43:39 INFO    copilot.presentation.engine: slide 'What is displacement?' waits for the min dwell time
+  [SLIDE] add    'What is kinematics?' [concept] v1 (2 items)
+  [   25.3s] in position from start to finish. A victim. (506 ms)
+  [   28.9s] Speed vs Velocity (312 ms)
+  [SLIDE] add    'What is displacement?' [definition] v1 (2 items)
+  [   31.1s] Speed is how fast an object moves, while velocity includes both the speed and the direction of motion. (673 ms)
+  [   38.0s] Excellent addition. (330 ms)
+01:43:53 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Definition' -> same_concept
+  [UNDERSTAND] Kinematics > Definition (same_concept) acts=definition,definition hint=definition lines=3 via groq_main#3 1919 ms
+               Refined displacement definition and introduced definitions of speed and velocity
+01:43:53 INFO    copilot.presentation.engine: revised S1: Displacement: change in position from start to finish in a straight line
+01:43:53 INFO    copilot.presentation.engine: planner: update Kinematics > Definition (same frame)
+01:43:53 INFO    copilot.presentation.engine: slide 'What is speed?' waits for the min dwell time
+  [SLIDE] update 'What is displacement?' [definition] v2 (2 items)
+  [SLIDE] add    'What is speed?' [concept] v1 (2 items)
+  [   39.6s] the rate at which an object's velocity changes over time. (599 ms)
+  [UNDERSTAND] Kinematics > Acceleration (sibling_concept) acts=definition hint=definition lines=2 via groq_main#3 1163 ms
+               Defined acceleration as the rate of change of velocity over time
+01:44:00 INFO    copilot.presentation.engine: planner: continue Kinematics > Acceleration (new facet)
+01:44:00 INFO    copilot.presentation.engine: slide 'Acceleration' waits for the min dwell time
+  [SLIDE] add    'Acceleration' [definition] v1 (1 items)
+  [   45.2s] The key kinematic equations are v equals to u plus a t, s equals to u t plus half a t square and v square equals to u square plus two a s, where v is the final velocity. (864 ms)
+  [SLIDE] update 'Acceleration' [definition] v2 (1 items)
+  [   59.2s] u is the initial velocity, t is time, a is acceleration and s is the displacement. (712 ms)
+  [SLIDE] update 'Acceleration' [definition] v3 (1 items)
+01:44:20 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The key kinematic equations are v equals to u plus a t, s equals to u t plus half a t square and v square equals to u square plus']
+  [UNDERSTAND] Kinematics > Acceleration (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#3 1418 ms
+               Presented the three main kinematic equations and defined each variable.
+01:44:20 INFO    copilot.presentation.engine: planner: update Kinematics > Acceleration (same frame)
+  [SLIDE] update 'Acceleration' [definition] v4 (1 items)
+  [SLIDE] update 'Acceleration' [definition] v5 (5 items)
+
+[ENDED] interrupted

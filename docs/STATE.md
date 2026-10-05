@@ -1,7 +1,7 @@
 # Current State
 
-_Last updated: 2026-10-06: **V1a (formulas + layout polish) implemented, tested, runtime-verified with 0 tokens**;
-one real-Groq run of `force_motion.txt` pending (quota). Next: V1b images (F-007b)._
+_Last updated: 2026-10-06: **V1a (formulas + layout polish) done**: tested, runtime-verified (0-token checks + a real
+LLM run on the qwen backup; gpt-oss-120b quota was spent). Next: V1b images (F-007b)._
 
 ## Now
 - **V1 (2026-10-06):** order V1a → V1b → V1c (ROADMAP). Specs: `docs/specs/F-007a-formulas-layout.md`,
@@ -9,10 +9,10 @@ one real-Groq run of `force_motion.txt` pending (quota). Next: V1b images (F-007
 - **V1a done (see F-007a "Result"):** KaTeX vendored + `web/shared/rich.js`; `presentation/mathtext.py`
   (plain/spoken formula → LaTeX, no prompt change); chemical subscripts in all slide text; plural title templates;
   step/process/cause-effect/teaser polish; **M4 bug fixed**: points mentioning the slide's term were dropped as
-  duplicates. 269 fast + 7 browser tests. Screenshots inspected: `artifacts/display/`, `artifacts/lessons/physics_*`,
+  duplicates. 274 fast + 7 browser tests. Screenshots inspected: `artifacts/display/`, `artifacts/lessons/physics_*`,
   `artifacts/app/lecture_force_motion/`.
-- **Pending (needs quota):** `python tools/screenshot_app.py --lecture --simulate tests/fixtures/lectures/force_motion.txt --speed 1`
-  with real Groq (≈ 20–25k tokens). Not run: the ledger showed gpt-oss-120b at ≈ 198k/200k and `.env` has one Groq key.
+- **Real LLM run (user, session 20261006-010822-cdb5):** 8/10 by qwen3.8-27b (gpt-oss-120b quota spent), ~33k tokens,
+  2 fallbacks at the end; `KE = 1/2 mv²` rendered wrongly → converter fixed + tests. OpenRouter backup now 404 (model no longer free).
 - **M4 / MVP: accepted by the user 2026-10-05.**
 - **Live chemistry test 2026-10-05 (session 20261005-230039-f084), fixed:**
   1. The lecture ended after 43 s: forced 15 s split inside a pause → negative frame count → audio thread crash.

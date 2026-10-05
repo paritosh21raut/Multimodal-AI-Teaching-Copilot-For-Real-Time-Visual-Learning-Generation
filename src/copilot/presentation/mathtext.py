@@ -120,7 +120,11 @@ def _operand(chunk: str, symbolic: bool) -> str:
 def _is_symbolic(chunks: list[str]) -> bool:
     """A formula written in symbols (F = ma), not in words (speed = distance / time)."""
     words = [w for c in chunks for w in c.split()]
-    singles = [w for w in words if re.fullmatch(r"\d*\s*[A-Za-z]", w) or w in GREEK]
+    # a single letter ("v"), a Greek letter, or — next to a number — a lowercase product ("mv" in "1/2 mv²";
+    # "ice → water" stays words)
+    has_number = any(re.fullmatch(r"\d+(?:[.,]\d+)?", w) for w in words)
+    singles = [w for w in words if re.fullmatch(r"\d*\s*[A-Za-z]", w) or w in GREEK
+               or (has_number and re.fullmatch(r"[a-z]{2,3}", w))]
     return bool(singles) and all(len(w) <= 3 or w in GREEK or chem_parts(w.replace(" ", "")) for w in words)
 
 
