@@ -1,0 +1,45 @@
+# Live test transcript, session 20261006-021104-94b1, exported as heard (mis-hearings kept).
+# User live mic test 2026-10-06: voltage, power, resistors in series/parallel, capacitance.
+Let us learn voltage
+[pause 1.1]
+Voltage is the difference in electric potential.
+between two points.
+Voltage does not describe the energy at a single location. Instead, it describes how much the electric potential changes from one location to another.
+Voltage is the work done per unit charge in moving a charge between two points.
+that is v equals w by q or v equals delta u upon q.
+[pause 1.1]
+Voltage represents how much energy can each coulomb of charge gain or lose when moving between two points.
+[pause 6.0]
+Electric power
+Electric power is the energy consumption.
+[pause 1.1]
+in a unit time
+t equals v times r
+What?
+P equals I squared R or V squared by R.
+[pause 2.1]
+Now let's talk about registers in series and parallel.
+In series, r equivalent equals to r1 plus r2.
+[pause 1.0]
+and v1 equals r1 upon r1 plus r2 times vin.
+V2 equals R2 upon R1 plus R2 times Vin.
+[pause 1.2]
+registers in parallel.
+R equivalent equals
+R1 R2 upon R1 plus R2
+[pause 2.6]
+I1 equals R2 upon R1 plus R2 times I1.
+I2 equals R1 upon
+R1 plus R2 times
+i in
+[pause 1.3]
+conductance is inverse of resistance that is
+[pause 1.3]
+G equals 1 by r
+[pause 6.0]
+Let's learn capacitance. Capacitance is the amount of charge in coulombs required to charge a capacitor voltage by 1 volt.
+C equals Q upon V.
+[pause 6.0]
+the term time constant means when a capacitor charges or discharges it charges it changes about 63.2 percent of the remaining voltage during one time constant
+[pause 2.3]
+tau equals RC

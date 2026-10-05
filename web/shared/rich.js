@@ -58,6 +58,22 @@ export function texHtml(latex) {
   return out;
 }
 
+// Slide text whose equations the server marked as \( latex \) (presentation.annotate): prose stays text (it wraps),
+// each equation renders with KaTeX. Without marks: the text with chemical subscripts.
+const MATH_SPAN = /\\\((.+?)\\\)/g;
+export function mixed(text, math) {
+  if (!math) return rich(text);
+  const out = [];
+  let last = 0;
+  for (const m of math.matchAll(MATH_SPAN)) {
+    if (m.index > last) out.push(rich(math.slice(last, m.index)));
+    out.push(html`<${Tex} latex=${m[1]} text=${m[1]} cls="inline" />`);
+    last = m.index + m[0].length;
+  }
+  if (last < math.length) out.push(rich(math.slice(last)));
+  return out;
+}
+
 export function Tex({ latex, text, cls = "" }) {
   const h = texHtml(latex);
   return h

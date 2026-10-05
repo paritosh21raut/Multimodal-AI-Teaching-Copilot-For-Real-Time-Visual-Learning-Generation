@@ -37,7 +37,7 @@ from copilot.presentation.composer import (
     remove_elements, revise_item,
     set_provisional, substitute, teacher_items, title_slide,
 )
-from copilot.presentation.content import Piece, clean, pieces_from
+from copilot.presentation.content import Piece, clean, pieces_and_chain
 from copilot.presentation.deck import Deck
 from copilot.presentation.planner import Decision, Frame, Signal, Working, decide
 from copilot.presentation.spec import SlideSpec
@@ -144,6 +144,7 @@ class PresentationEngine:
         self._pending: list[SlideSpec] = []      # planner slides waiting for the dwell time (not in the deck yet)
         self._working_id: Optional[str] = None
         self._candidate: Optional[str] = None
+        self._about_chain: tuple[Optional[Frame], str] = (None, "")  # concept chain of the last unit, per frame
         self._signals: OrderedDict[str, Signal] = OrderedDict()
         self._corrections: OrderedDict[str, Correction] = OrderedDict()
         self._tentative: Optional[Tentative] = None
@@ -379,7 +380,10 @@ class PresentationEngine:
         if self._boundary_seg in ev.segment_ids:
             self._boundary_seg = None
         revised = await self._apply_revisions(ev)
-        pieces = pieces_from(it)
+        frame = Frame.of(it)
+        carry = self._about_chain[1] if self._about_chain[0] == frame else ""
+        pieces, chain = pieces_and_chain(it, carry)  # which concept each piece is about (concept columns)
+        self._about_chain = (frame, chain)
         signals = [self._signals[x] for x in ev.segment_ids if x in self._signals]
         self._placements = []
         moved: list[Piece] = []

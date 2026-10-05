@@ -136,6 +136,32 @@ def physics(store) -> list:
     ]
 
 
+def energy(store) -> list:
+    """User's live energy lecture (2026-10-06): unit 2 is gpt-oss-120b's real reply (flattened formulas), the other
+    units as recorded. Checks concept columns: each concept's formula and examples under its own definition."""
+    from copilot.understanding.interpreter import parse_interpretation
+    raw = ('{"topic":"Energy","subtopic":"Kinetic and Potential Energy","relation":"same_concept","acts":['
+           '{"act":"formula","lines":[1],"items":{"expression":"KE = ½ m v^2","variables":[{"symbol":"m",'
+           '"meaning":"mass"},{"symbol":"v","meaning":"velocity"}]}},{"act":"example","lines":[2],"items":'
+           '{"examples":["rolling ball","running person","speeding car"]}},{"act":"formula","lines":[3],"items":'
+           '{"expression":"PE = m g h","variables":[{"symbol":"m","meaning":"mass"},{"symbol":"g","meaning":'
+           '"gravitational acceleration"},{"symbol":"h","meaning":"height"}]}}]}')
+    t, s = "Energy", "Kinetic and Potential Energy"
+    return [
+        lambda: ready(t, s, [act("definition", term="Kinetic energy", definition="energy of motion"),
+                             act("definition", term="Potential energy",
+                                 definition="energy stored based on object's position or state")], "new_topic"),
+        lambda: InterpretationReady(request_id="energy-2", segment_ids=["e1", "e2", "e3"], provider="script",
+                                    interpretation=parse_interpretation(raw)),
+        lambda: ready(t, s, [act("explanation", points=[
+            "Mass, height and physical configuration determine potential energy"]),
+            act("example", lines=(2,), examples=["water at the top of a dam", "a compressed spring"])]),
+        lambda: ready(t, s, [act("explanation", points=["Potential energy converts to kinetic energy as height decreases",
+                                                       "Total mechanical energy stays constant in a closed system",
+                                                       "Mechanical energy = potential energy + kinetic energy"])]),
+    ]
+
+
 async def capture(name: str, script, theme: str) -> list[Path]:
     paths = []
     async with display_harness(theme) as h:
@@ -167,7 +193,7 @@ async def main(theme: str) -> None:
     for old in OUT.glob(f"*_{theme}_*.png"):
         old.unlink()
     only = sys.argv[2:]  # optional lesson names
-    for name, script in (("solar", solar), ("chemistry", chemistry), ("physics", physics)):
+    for name, script in (("solar", solar), ("chemistry", chemistry), ("physics", physics), ("energy", energy)):
         if not only or name in only:
             await capture(name, script, theme)
 

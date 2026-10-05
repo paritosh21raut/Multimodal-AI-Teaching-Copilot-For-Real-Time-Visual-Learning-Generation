@@ -104,6 +104,22 @@
   background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 24px;
 }
 .point.emph { background: var(--accent); color: var(--accent-ink); }
+/* bullets: explanations (numbers are for counted / ordered lists) */
+.list-bullets .point { grid-template-columns: 20px 1fr; gap: 22px; }
+.point .num.bullet {
+  background: none; width: 20px; height: calc(var(--fs-body) * var(--fit) * 1.32); position: relative; border-radius: 0;
+}
+.point .num.bullet::before {
+  content: ""; position: absolute; left: 3px; top: 50%; width: 14px; height: 14px; margin-top: -7px;
+  border-radius: 50%; background: var(--accent);
+}
+.point.emph .num.bullet { background: none; }
+.point.emph .num.bullet::before { background: currentColor; }
+.list-bullets .point .num.ghost { width: 18px; height: 18px; margin: 12px 1px; }
+.list-letters .point .num { font-style: italic; }
+/* equations inside text (points, examples, definitions): KaTeX inline, a little larger than the text */
+.tex.inline .katex { font-size: 1.08em; }
+.tex.inline .katex .text, .tex.inline .katex .text * { font-family: var(--font-text); font-weight: inherit; }
 .point .num.ghost { background: none; border: 3px dashed var(--line); box-sizing: border-box; width: 30px; height: 30px; margin: 11px; }
 .point.emph .num { background: rgba(255, 255, 255, 0.18); color: inherit; }
 
@@ -253,7 +269,20 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .def-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: stretch; }
 .def-pair .def { align-content: start; gap: 20px; }
 .def-pair .def-term { font-size: calc(var(--fs-lead) * 1.15 * var(--fit)); }
-.def-pair .def-body { font-size: calc(var(--fs-body) * var(--fit)); padding: 34px 40px 34px 52px; height: 100%; box-sizing: border-box; }
+.def-pair .def-body { font-size: calc(var(--fs-body) * var(--fit)); padding: 34px 40px 34px 52px; box-sizing: border-box; }
+/* a concept column: definition, then its own formula / points / examples (live energy test 2026-10-06) */
+.def-col { display: grid; gap: 24px; align-content: start; min-width: 0; }
+.def-col .formula { gap: 18px; }
+.def-col .formula-eq { font-size: calc(var(--fs-lead) * 1.05 * var(--fit)); padding: 26px 36px; }
+/* points in a column: one card of compact bullet lines (composer._column_block_height mirrors this) */
+.def-col .points-list {
+  background: var(--surface); border-radius: var(--radius-sm); box-shadow: var(--shadow); padding: 18px 24px; gap: 6px;
+}
+.def-col .point {
+  background: none; box-shadow: none; padding: 0; font-size: calc(var(--fs-small) * 1.1 * var(--fit)); line-height: 1.33;
+}
+.def-col .list-bullets .point .num.bullet { height: calc(var(--fs-small) * 1.1 * var(--fit) * 1.33); }
+.def-col .example { padding: 24px 30px; font-size: calc(var(--fs-small) * 1.1 * var(--fit)); }
 
 /* ---------- image ---------- */
 .figure { margin: 0; display: grid; gap: 12px; }

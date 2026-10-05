@@ -30,6 +30,11 @@ backoff capped at 2 s), so no duplicate tabs. `--no-open` disables it. Test: `te
   every client URL stamped `?v=<hash of client files>` — modules imported by other modules too, via an import map —
   so a browser can never run an old renderer or mix old and new modules (verify rounds 3–4: blank slides / blank
   pages). A classic-script banner shows any load/runtime error instead of a silently blank page.
+- Each page carries `<meta name="client-version">`; on every (re)connect `ws.js` compares it with
+  `GET /api/client-version` and reloads when the client files changed (a tab left open across app runs otherwise
+  kept the old renderer: live tests 2026-10-06 showed no KaTeX and no subscripts).
+- `tools/replay_interpretations.py <session>` replays a session's logged interpretations through the current engine
+  and display (0 tokens); `tools/export_transcript.py <session> <name>` saves a live transcript as a fixture.
 - `tools/replay_session.py <session>` replays a recorded session's slide patches into Edge and reports console errors.
 
 ## Teacher controls

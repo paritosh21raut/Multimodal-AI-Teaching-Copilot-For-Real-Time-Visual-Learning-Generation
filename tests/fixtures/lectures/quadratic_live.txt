@@ -1,0 +1,10 @@
+# Live test transcript, session 20261006-020147-a3e0, exported as heard (mis-hearings kept).
+# User live mic test 2026-10-06: quadratic equations, quadratic formula, discriminant.
+Let's learn the quadratic equations. A quadratic equation has the form ax2 is bx plus c equals 0. The solutions are found using the quadratic formula.
+it is x=-b +/- v square-4ac upon 2a.
+example x squared minus 5ac plus 6 equals 0 here a equals 1 b equals minus 5 and c equals 6 so x equals
+5 plus minus under root 25 minus 24 upon 2 x equals 5 plus minus 1 upon 2
+Therefore, X equals
+three and two
+Key idea is a quadratic equation can have two 1 power
+no real solutions depending upon p square minus 4 ac that is called the discriminant.

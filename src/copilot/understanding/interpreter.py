@@ -76,7 +76,12 @@ def _normalise(data: Any) -> Any:
             if isinstance(a, dict) and isinstance(a.get("act"), str):
                 act = a["act"].strip().lower().replace(" ", "_").replace("-", "_")
                 a["act"] = act if act in _ACTS else "other"
+            if isinstance(a, dict) and not isinstance(a.get("items"), dict) and _FORMULA_KEYS & set(a):
+                a["items"] = {}  # a formula written on the act itself ({"act": "formula", "expression": ...})
             if isinstance(a, dict) and isinstance(a.get("items"), dict):
+                for k in _FORMULA_KEYS | {"variables"}:
+                    if k in a and k not in a["items"]:
+                        a["items"][k] = a.pop(k)
                 _normalise_items(a["items"])
     for key in ("topic", "subtopic"):
         if data.get(key) is None:
@@ -103,8 +108,48 @@ _STR_LISTS = ("points", "steps", "compare", "examples")
 _SHAPED = {"pairs": ("aspect", "left", "right"), "events": ("when", "what"), "causes": ("cause", "effect")}
 
 
+_FORMULA_KEYS = {"expression", "equation"}
+
+
+def _normalise_formula(items: dict) -> None:
+    """The prompt asks for items.formula = {expression, variables}; gpt-oss-120b often flattens it to
+    items.expression + items.variables (live tests 2026-10-06: energy, resistors, quadratic — those formulas were
+    silently dropped as unknown keys). Also accepted: formula as a plain string, "equation" for "expression",
+    variables as {symbol: meaning} or ["m: mass", ...]."""
+    f = items.get("formula")
+    if isinstance(f, str):
+        f = {"expression": f}
+    if not isinstance(f, dict):
+        f = None
+    flat = next((items.get(k) for k in ("expression", "equation") if isinstance(items.get(k), str)), None)
+    if f is None and flat:
+        f = {"expression": flat}
+    if f is None:
+        items.pop("formula", None)
+        return
+    if not isinstance(f.get("expression"), str) or not f["expression"].strip():
+        f["expression"] = next((f.get(k) for k in ("equation", "formula", "latex") if isinstance(f.get(k), str)),
+                               flat or "")
+    variables = f.get("variables") if f.get("variables") is not None else items.get("variables")
+    if isinstance(variables, dict):
+        variables = [{"symbol": str(k), "meaning": str(v)} for k, v in variables.items()]
+    if isinstance(variables, list):
+        out = []
+        for v in variables:
+            if isinstance(v, str):
+                sym, _, meaning = v.partition(":") if ":" in v else v.partition("=")
+                v = {"symbol": sym.strip(), "meaning": meaning.strip()}
+            if isinstance(v, dict) and str(v.get("symbol") or "").strip():
+                out.append({"symbol": str(v["symbol"]), "meaning": str(v.get("meaning") or "")})
+        variables = out
+    else:
+        variables = []
+    items["formula"] = {"expression": f["expression"], "variables": variables} if f["expression"].strip() else None
+
+
 def _normalise_items(items: dict) -> None:
     """Shape-only fixes that keep every value the model produced (no content is invented or dropped)."""
+    _normalise_formula(items)
     for key in _STR_LISTS:
         v = items.get(key)
         if isinstance(v, str):
@@ -288,6 +333,9 @@ def _cover_dropped_sentences(it: Interpretation, lines: Sequence[BufferedLine], 
     if it.relation == "digression":
         return it
     have = _content_words(" ".join(_item_texts(it)) + " " + slide_context)
+    # spoken maths ("v equals u plus a t") never shares words with "v = u + at": an equation on the same line counts
+    eq_lines = {n for a in it.acts for n in a.lines if a.items.formula or any(
+        _EQUATION.search(t) for t in (*a.items.points, *a.items.examples, *a.items.steps, a.items.definition))}
     meta = set(it.meta_lines)
     # lines the model only used for transitions/questions: it judged them not slide content
     acts_of = {n: {a.act for a in it.acts if n in a.lines} for n in range(1, len(lines) + 1)}
@@ -300,6 +348,8 @@ def _cover_dropped_sentences(it: Interpretation, lines: Sequence[BufferedLine], 
             if (len(sentence.split()) < 6 or not ends_sentence(sentence) or sentence.rstrip().endswith("?")
                     or len(words) < COVER_MIN_WORDS or _NOT_CONTENT.search(sentence)):
                 continue
+            if n in eq_lines and len(_SPOKEN_MATH.findall(sentence)) >= 2:
+                continue
             if len(words & have) / len(words) <= COVER_MAX_SHARE:
                 missed.append((n, tidy_spoken(" ".join(sentence.split()[:30]))))
                 have |= words
@@ -310,6 +360,11 @@ def _cover_dropped_sentences(it: Interpretation, lines: Sequence[BufferedLine], 
     act = DiscourseAct(act="explanation", lines=sorted({n for n, _ in missed}),
                        items=ContentItems(points=[t for _, t in missed]))
     return it.model_copy(update={"acts": list(it.acts) + [act]})
+
+
+_EQUATION = re.compile(r"=|→|->|⟶")
+_SPOKEN_MATH = re.compile(r"\b(?:equals?|plus|minus|gives|upon|by|times|into|square[d]?|cube[d]?|root|over|"
+                          r"divided|multiplied|half|delta)\b", re.IGNORECASE)
 
 
 _EXAMPLE_CUE = re.compile(r"\b(?:for example|for instance|such as|e\.?g\.?|example|like)\b", re.IGNORECASE)

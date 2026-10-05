@@ -16,6 +16,7 @@ from typing import Optional
 
 from copilot.core.bus import EventBus
 from copilot.core.events import CommandReceived, DeckState, Event, SlidePatch
+from copilot.presentation.annotate import annotate
 from copilot.presentation.spec import SlideSpec
 
 log = logging.getLogger(__name__)
@@ -60,7 +61,7 @@ class Deck:
         """activate=False: append without moving the live slide (e.g. late content for an earlier frame)."""
         if spec.id in self._slides:
             raise ValueError(f"slide {spec.id} already exists")
-        spec = spec.model_copy(update={"version": 1})
+        spec = annotate(spec).model_copy(update={"version": 1})  # formulas in text, list style
         self._slides[spec.id] = spec
         self._order.append(spec.id)
         await self._bus.publish(SlidePatch(slide_id=spec.id, version=1, op="add", spec=spec.model_dump()))
@@ -73,7 +74,7 @@ class Deck:
         old = self._slides.get(spec.id)
         if old is None:
             raise KeyError(f"unknown slide {spec.id}")
-        spec = spec.model_copy(update={"version": old.version + 1})
+        spec = annotate(spec).model_copy(update={"version": old.version + 1})
         self._slides[spec.id] = spec
         await self._bus.publish(SlidePatch(slide_id=spec.id, version=spec.version, op="update", spec=spec.model_dump()))
         return spec

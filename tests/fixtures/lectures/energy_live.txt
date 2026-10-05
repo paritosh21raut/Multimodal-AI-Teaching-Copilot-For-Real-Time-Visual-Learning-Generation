@@ -1,0 +1,18 @@
+# Live test transcript, session 20261006-015047-44b7, exported as heard (mis-hearings kept).
+# User live mic test 2026-10-06: kinetic and potential energy (formulas were lost: flattened formula JSON).
+Let us learn about the kinetic and
+potential energy. Kinetic energy is the energy of motion while potential energy is the energy stored based on object's position or state.
+[pause 1.2]
+Kinetic energy equals half mv square, where m is mass and v is the velocity.
+Examples are a rolling ball, a running person or a speeding car.
+[pause 1.8]
+Potential energy equals mgh that is mass times gravitation times height.
+Key factors are mass, height or distance and physical configuration.
+e.g. water sitting at top of a dam or a compressed spring.
+how it works
+the conversion they constantly switch back and forth a drop ball loses height
+losing potential energy while speeding up gaining kinetic energy
+[pause 1.2]
+conservation. Total mechanical energy stays constant in a closed system.
+[pause 1.2]
+mechanical energy equals potential energy plus kinetic energy

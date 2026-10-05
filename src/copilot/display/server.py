@@ -81,7 +81,8 @@ def versioned_page(page: Path, web_root: Path) -> str:
                for f in sorted(web_root.rglob("*")) if f.suffix in (".js", ".mjs")}
     importmap = f'<script type="importmap">{json.dumps({"imports": modules})}</script>'
     # end of <head>: after <meta charset> (must stay in the first 1024 bytes), before the module scripts in <body>
-    return html.replace("</head>", f"  {importmap}\n  {ERROR_BANNER}\n</head>", 1)
+    meta = f'<meta name="client-version" content="{v}" />'
+    return html.replace("</head>", f"  {meta}\n  {importmap}\n  {ERROR_BANNER}\n</head>", 1)
 
 
 def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT) -> FastAPI:
@@ -104,6 +105,12 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT) -> FastAPI:
     async def control_page():
         return HTMLResponse(versioned_page(web_root / "control" / "index.html", web_root),
                             headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/client-version")
+    async def version():
+        # a page left open across app runs reconnects without reloading; it compares this with the version it was
+        # served with and reloads itself (live tests 2026-10-06 ran the pre-V1a renderer in an old tab)
+        return JSONResponse({"version": client_version(web_root)}, headers={"Cache-Control": "no-store"})
 
     @app.get("/api/state")
     async def state():
@@ -155,10 +162,11 @@ class _EmbeddedServer(uvicorn.Server):
 
 
 class DisplayServer:
-    def __init__(self, hub: DisplayHub, host: str = "127.0.0.1", port: int = 8765) -> None:
+    def __init__(self, hub: DisplayHub, host: str = "127.0.0.1", port: int = 8765,
+                 web_root: Path = WEB_ROOT) -> None:
         self.host, self.port = host, port
         self._server = _EmbeddedServer(
-            uvicorn.Config(create_app(hub), host=host, port=port, log_level="warning", lifespan="off")
+            uvicorn.Config(create_app(hub, web_root), host=host, port=port, log_level="warning", lifespan="off")
         )
         self._task: Optional[asyncio.Task] = None
 

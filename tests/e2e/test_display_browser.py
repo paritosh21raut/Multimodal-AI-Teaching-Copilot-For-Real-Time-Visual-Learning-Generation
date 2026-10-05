@@ -73,7 +73,8 @@ async def test_freeze_blank_and_navigation_on_projector():
         await h.deck.add(points("b", ["beta"]))
         await h.settle()
         await asyncio.sleep(0.5)
-        assert await page.locator(".point").all_inner_texts() == ["1\nalpha"]  # held exactly
+        # item text only: the list marker is a bullet or a number depending on the list (F-007a follow-up)
+        assert await page.locator(".point > span:last-child").all_inner_texts() == ["alpha"]  # held exactly
 
         await command(h, "unfreeze")
         await wait_for_slide(page, "b")  # catches up with the live slide
@@ -85,8 +86,8 @@ async def test_freeze_blank_and_navigation_on_projector():
 
         await command(h, "prev")
         await wait_for_slide(page, "a")
-        texts = await page.locator(".slide:not(.is-leaving) .point").all_inner_texts()
-        assert texts == ["1\nalpha", "2\nchanged while frozen"]
+        texts = await page.locator(".slide:not(.is-leaving) .point > span:last-child").all_inner_texts()
+        assert texts == ["alpha", "changed while frozen"]
         assert page.errors == []
 
 
@@ -107,3 +108,35 @@ async def test_display_reconnects_by_itself_after_the_server_drops():
         # no reload: the client's own reconnect gets a full hello snapshot
         await page.wait_for_function("() => document.body.innerText.includes('sent while disconnected')", timeout=8000)
         assert page.errors == [] or all("WebSocket" in e or "ERR_CONNECTION" in e for e in page.errors)
+
+
+async def test_an_open_tab_reloads_itself_when_the_client_files_changed(tmp_path):
+    """Live tests 2026-10-06: a /control tab left open from an earlier run reconnected to the new app but kept the
+    pre-V1a renderer (no KaTeX, no subscripts). After a reconnect the page must load the current client files."""
+    import os
+    import shutil
+
+    from copilot.display.server import WEB_ROOT, DisplayServer
+
+    web = tmp_path / "web"
+    shutil.copytree(WEB_ROOT, web)
+    async with display_harness() as h:
+        port = h.server.port
+        await h.server.stop()
+        h.server = DisplayServer(h.hub, port=port, web_root=web)
+        await h.server.start()
+        await h.deck.add(points("a", ["alpha"]))
+        await h.settle()
+        async with browser_page(f"{h.url}/display") as page:
+            await wait_for_slide(page, "a")
+            before = await page.evaluate("() => document.querySelector('meta[name=client-version]').content")
+            await h.server.stop()
+            css = web / "shared" / "tokens.css"
+            css.write_text(css.read_text(encoding="utf-8") + "\n/* changed */\n", encoding="utf-8")
+            os.utime(css)
+            h.server = DisplayServer(h.hub, port=port, web_root=web)
+            await h.server.start()
+            await page.wait_for_function("v => document.querySelector('meta[name=client-version]')?.content"
+                                         " && document.querySelector('meta[name=client-version]').content !== v",
+                                         arg=before, timeout=10000)
+            await wait_for_slide(page, "a")

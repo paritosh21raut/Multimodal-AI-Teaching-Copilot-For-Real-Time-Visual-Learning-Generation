@@ -18,7 +18,7 @@ from dataclasses import replace
 from difflib import SequenceMatcher
 from typing import Callable, Optional
 
-from copilot.core.memory import titles_match
+from copilot.core.memory import title_key, titles_match
 from copilot.presentation.content import Piece
 from copilot.presentation.mathtext import has_fraction, to_latex, visible_length
 from copilot.presentation.spec import (
@@ -238,9 +238,13 @@ def body_height(spec: SlideSpec) -> float:
     main, aside = _split(list(spec.blocks))
     width = MAIN_WIDTH_ASIDE_PX if aside else BODY_WIDTH_PX
     defs = [b for b in main if b.type == "definition"]
-    if len(defs) > 1:  # rendered side by side (slide.js def-pair): one row, each card half wide
-        rest = [b for b in main if b.type != "definition"]
-        pair = 80 + max(block_height(d, width / 2 - 18) for d in defs)  # + the term heading above each card
+    if len(defs) > 1:  # side by side (slide.js def-pair): one column per concept, each half wide
+        half = width / 2 - 18
+        ids = {d.id for d in defs}
+        rest = [b for b in main if b.type != "definition" and getattr(b, "about", "") not in ids]
+        pair = max(80 + block_height(d, half)  # + the term heading above each card
+                   + sum(_column_block_height(b, half) + 24 for b in main if getattr(b, "about", "") == d.id)
+                   for d in defs)
         h_main = pair + sum(block_height(b, width) for b in rest) + BLOCK_GAP_PX * len(rest)
     else:
         h_main = sum(block_height(b, width) for b in main) + BLOCK_GAP_PX * max(0, len(main) - 1)
@@ -249,6 +253,15 @@ def body_height(spec: SlideSpec) -> float:
     return max(h_main, h_aside)
 
 
+COLUMN_SCALE = 0.8  # blocks in a concept column are drawn smaller (slide.css .def-col: type, padding ~0.8)
+
+
+def _column_block_height(b: Block, width: float) -> float:
+    """Concept-column blocks (slide.css .def-col): points are one compact card of bullet lines (28.6 px type)."""
+    if b.type == "points":
+        cpl = _cpl(width - 90, 28.6)
+        return 36 + sum(38 * _lines(i.text, cpl) + 6 for i in b.items)
+    return COLUMN_SCALE * block_height(b, width / COLUMN_SCALE)
 _budget = [BODY_BUDGET_PX]  # current budget (merge(..., squeeze=True) relaxes it for one small item)
 SQUEEZE = 1.25             # display auto-fit shrinks the type down to 0.8 (= 1.25 x the space), so this still fits
 
@@ -265,7 +278,8 @@ def is_small(piece: Piece) -> bool:
 
 # ---- slide inspection -----------------------------------------------------------------------------------
 def _find(spec: SlideSpec, block_type: str):
-    return next((b for b in spec.blocks if b.type == block_type), None)
+    """The slide-wide block of a type (blocks inside a concept column belong to that concept only)."""
+    return next((b for b in spec.blocks if b.type == block_type and not getattr(b, "about", "")), None)
 
 
 def _replace_block(spec: SlideSpec, old, new) -> SlideSpec:
@@ -410,8 +424,98 @@ def merge(spec: SlideSpec, piece: Piece, *, full: bool = False, squeeze: bool = 
         return spec, piece
     if _is_empty(spec):  # nothing from the teacher yet (maybe a provisional item): the piece shapes the slide
         spec = spec.model_copy(update={"layout": LAYOUT_FOR[piece.kind], "blocks": []})
+    column = _column_for(spec, piece)
+    if column is not None:
+        out, left = _merge_column(spec, piece, column)
+        return _with_layout(out), left
     out, left = _MERGERS[piece.kind](spec, piece)
     return _with_layout(out), left
+
+
+# ---- concept columns: two concepts defined side by side, each with its own formula / points / examples ----
+_COLUMN_KINDS = ("points", "example", "formula")
+
+
+def _initials(text: str) -> str:
+    return "".join(w[0] for w in re.findall(r"[A-Za-z]+", text)).upper()
+
+
+def _names(name: str, term: str) -> bool:
+    """"KE" / "Kinetic energy" / "kinetic" name the term "Kinetic energy"."""
+    kn, kt = title_key(name), title_key(term)
+    if not kn or not kt:
+        return False
+    if kn == kt or kn <= kt:
+        return True
+    compact = re.sub(r"[^A-Za-z]", "", name)
+    return 2 <= len(compact) <= 4 and compact.isupper() and compact == _initials(term)
+
+
+def _mentions(texts: tuple[str, ...], term: str) -> bool:
+    kt = title_key(term)
+    return bool(kt) and any(kt <= title_key(t) for t in texts)
+
+
+def _column_for(spec: SlideSpec, piece: Piece):
+    """The definition whose column a piece belongs to (live energy test 2026-10-06: the KE formula and examples
+    landed under "Potential energy"). Mention in its own text wins, then the concept named by the lecture."""
+    if piece.kind not in _COLUMN_KINDS:
+        return None
+    defs = [b for b in spec.blocks if b.type == "definition"]
+    if len(defs) != 2:
+        return None
+    texts = piece.texts if piece.kind != "formula" else ()
+    mentioned = [d for d in defs if _mentions(texts, d.term)]
+    if len(mentioned) == 1:
+        return mentioned[0]
+    if len(mentioned) == 2:
+        return None  # about both: full width below
+    for segment in reversed(piece.about.split("\n") if piece.about else []):  # the newest named concept first
+        named = [d for d in defs if _names(segment, d.term) or _mentions((segment,), d.term)]
+        if len(named) == 1:
+            return named[0]
+        if named:
+            return None
+    return None
+
+
+def _merge_column(spec: SlideSpec, piece: Piece, db: DefinitionBlock) -> tuple[SlideSpec, Optional[Piece]]:
+    mine = [b for b in spec.blocks if getattr(b, "about", "") == db.id]
+    if piece.kind == "formula":
+        f = piece.formula
+        assert f is not None
+        if any(b.type == "formula" and is_duplicate(b.spoken or b.latex, f.expression) for b in spec.blocks):
+            return spec, None
+        if any(b.type == "formula" for b in mine):
+            return spec, piece  # one formula per concept column; the next one continues on the next part
+        variables = [_variable(s, m) for s, m in f.variables[:CAPACITY["variables"]]]
+        cand = _add_block(spec, FormulaBlock(latex=to_latex(f.expression), spoken=f.expression, variables=variables,
+                                             about=db.id))
+        return (cand, None) if fits(cand) else (spec, piece)
+    fresh = _new(_texts_on(spec), piece.texts)
+    if piece.added:
+        fresh = fresh[:1]
+    if not fresh:
+        return spec, None
+    if piece.kind == "example":
+        eb = next((b for b in mine if b.type == "example"), None)
+        text = "; ".join(fresh)
+        cand = (_replace_block(spec, eb, eb.model_copy(update={"text": f"{eb.text}; {text}"})) if eb
+                else _add_block(spec, ExampleBlock(text=text, about=db.id)))
+        return (cand, None) if fits(cand) else (spec, piece)
+    pb = next((b for b in mine if b.type == "points"), None)
+    if pb is not None:
+        room = max(0, CAPACITY["points"] - len(pb.items))
+        out, rest = _greedy(spec, fresh[:room], lambda ts: _replace_block(
+            spec, pb, pb.model_copy(update={"items": pb.items + _items(ts, piece.added)})))
+        rest += fresh[room:]
+    else:
+        out, rest = _greedy(spec, fresh[:CAPACITY["points"]], lambda ts: _add_block(
+            spec, PointsBlock(items=_items(ts, piece.added), about=db.id)))
+        rest += fresh[CAPACITY["points"]:]
+    if out is spec:
+        return spec, piece
+    return out, piece.with_texts(rest) if rest else None
 
 
 def _greedy(spec: SlideSpec, items: list, build: Callable[[list], SlideSpec]) -> tuple[SlideSpec, list]:
@@ -432,7 +536,7 @@ def _items(texts: list[str], added: bool) -> list[Item]:
 
 def _merge_points(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:
     label = piece.term
-    pb = next((b for b in spec.blocks if b.type == "points"
+    pb = next((b for b in spec.blocks if b.type == "points" and not b.about
                and (not label or not b.heading or titles_match(b.heading, label))), None)
     fresh = _new(_texts_on(spec), piece.texts)
     if piece.added:
@@ -495,13 +599,19 @@ def _merge_definition(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optiona
     if not defs:  # a new term introduced on a slide with other content: a definition card below it, if room
         cand = _add_block(spec, block)
         return (cand, None) if fits(cand) else (spec, piece)
-    # a peer concept defined alongside (elements and compounds, atoms and molecules): side-by-side definitions
-    if len(defs) == 1 and all(b.type in ("definition",) + SECONDARY for b in spec.blocks) \
+    # a peer concept defined alongside (elements and compounds, atoms and molecules): side-by-side definitions.
+    # The topic's own definition is no peer: live kinematics test 2026-10-06 paired "Kinematics" with "Distance" and
+    # pushed "Displacement" to another slide; now distance + displacement go together on the next part.
+    # exact key: "Kinetic energy" is a peer concept under the topic "Energy", not the topic itself
+    topic_def = len(defs) == 1 and bool(title_key(defs[0].term)) and title_key(defs[0].term) == title_key(spec.subtitle or "")
+    if len(defs) == 1 and not topic_def and all(b.type in ("definition",) + SECONDARY for b in spec.blocks) \
             and not any(not n.provisional for n in defs[0].notes):
         spec = clear_provisional(spec)  # a teaser note must not block the pairing
         cand = _add_block(spec, block)
         cand = cand.model_copy(update={"blocks": [b for b in cand.blocks if b.type == "definition"]
                                        + [b for b in cand.blocks if b.type != "definition"]})
+        if spec.title == what_is(_lower_term(defs[0].term)):  # "What is distance?" → "Distance and displacement"
+            cand = cand.model_copy(update={"title": f"{cap(defs[0].term)} and {_lower_term(piece.term)}"})
         if fits(cand):
             return _with_layout(cand), None
     return spec, piece
@@ -698,6 +808,11 @@ def _merge_example(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[P
         block = block.model_copy(update={"id": "added-" + block.id})
     if not spec.blocks:
         return _add_block(spec, block), None
+    eb = next((b for b in spec.blocks if b.type == "example" and not b.about and not b.id.startswith("added-")), None)
+    if eb is not None and not piece.added:  # a further example joins the example card (live energy test: a lone
+        cand = _replace_block(spec, eb, eb.model_copy(update={"text": f"{eb.text}; {text}"}))  # "compressed spring"
+        if fits(cand):                                                                         # opened a part)
+            return cand, None
     if sum(1 for b in spec.blocks if b.type in SECONDARY) < CAPACITY["secondary"]:
         cand = _add_block(spec, block)
         if fits(cand):

@@ -1,0 +1,14 @@
+# Live test transcript, session 20261006-014301-5830, exported as heard (mis-hearings kept).
+# User live mic test 2026-10-06: Kinematics, distance vs displacement, speed/velocity, kinematic equations.
+Let's learn about Kinematics. Kinematics is the branch of classical mechanics that describes the motion of objects such as position, velocity and acceleration without looking at the force or masses that cause the motion.
+[pause 1.1]
+core concepts are distance vs. displacement
+Distance is the total length of the path travelled whereas displacement is the straight line change.
+in position from start to finish. A victim.
+Speed vs Velocity
+Speed is how fast an object moves, while velocity includes both the speed and the direction of motion.
+Excellent addition.
+the rate at which an object's velocity changes over time.
+[pause 1.4]
+The key kinematic equations are v equals to u plus a t, s equals to u t plus half a t square and v square equals to u square plus two a s, where v is the final velocity.
+u is the initial velocity, t is time, a is acceleration and s is the displacement.

@@ -23,12 +23,14 @@ class Item(_Model):
     emphasis: bool = False
     provisional: bool = False  # fast-path placeholder; replaced in place by refined content
     added: bool = False  # supporting content not said by the teacher (styled subtly)
+    math: str = ""  # `text` with \(latex\) around its equations (presentation.annotate); "" = none
 
 
 class Step(_Model):
     id: str = Field(default_factory=new_id)
     label: str
     detail: str = ""
+    math: str = ""  # `label` with \(latex\) around its equations
 
 
 class Column(_Model):
@@ -86,6 +88,10 @@ class DefinitionBlock(_Model):
     term: str
     definition: str
     notes: list[Item] = Field(default_factory=list)
+    math: str = ""  # `definition` with \(latex\) around its equations
+
+
+ListStyle = Literal["bullets", "numbers", "letters"]
 
 
 class PointsBlock(_Model):
@@ -93,6 +99,8 @@ class PointsBlock(_Model):
     id: str = Field(default_factory=new_id)
     heading: str = ""
     items: list[Item] = Field(default_factory=list)
+    style: ListStyle = "bullets"  # numbers only for counted / ordered lists (presentation.annotate)
+    about: str = ""  # id of the definition block whose column this belongs to
 
 
 class ProcessBlock(_Model):
@@ -140,6 +148,7 @@ class FormulaBlock(_Model):
     latex: str  # KaTeX source built by presentation.mathtext; "" = not renderable, the display shows `spoken`
     spoken: str = ""  # the formula as the model wrote it from the lecture (plain text)
     variables: list[Variable] = Field(default_factory=list)
+    about: str = ""  # id of the definition block whose column this belongs to (two definitions side by side)
 
 
 class ExampleBlock(_Model):
@@ -147,6 +156,8 @@ class ExampleBlock(_Model):
     id: str = Field(default_factory=new_id)
     title: str = ""
     text: str
+    math: str = ""
+    about: str = ""  # id of the definition block whose column this belongs to
 
 
 class CalloutBlock(_Model):
@@ -154,6 +165,7 @@ class CalloutBlock(_Model):
     id: str = Field(default_factory=new_id)
     kind: Literal["note", "tip", "key"] = "key"
     text: str
+    math: str = ""
 
 
 class FactsBlock(_Model):
@@ -162,6 +174,7 @@ class FactsBlock(_Model):
     id: str = Field(default_factory=new_id)
     heading: str = ""
     facts: list[Fact] = Field(default_factory=list)
+    about: str = ""  # id of the definition block whose column this belongs to
 
 
 class GroupsBlock(_Model):

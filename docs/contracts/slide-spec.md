@@ -39,5 +39,11 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
 - Formulas (F-007a): `spoken` = the formula as the model wrote it; `latex` = KaTeX source built from it by
   `presentation.mathtext` ("" = not renderable → the display shows `spoken`). Edits (truthful substitution) change
   `spoken` and rebuild `latex`. Chemical formulas in any text (`CO2`) are subscripted by the display (`rich.js`).
+- `math` (items, steps, definitions, examples, callouts): the text with `\(latex\)` around its equations, filled by
+  `presentation.annotate` in the Deck for every published spec ("" = none); the display renders prose as text and
+  each span with KaTeX. `PointsBlock.style`: `bullets` (default) | `numbers` (counted / ordered lists, labelled
+  kinds) | `letters` (a) b) options), also set by `annotate`.
+- `about` (formula, points, example, facts): id of a definition block when two concepts are defined side by side;
+  the display draws one column per concept (definition + its blocks), the rest full width below (F-007a, issue 6).
 - Builder: `presentation.composer` (space-based height model, F-005). Overflow continues on the next part of the
   same frame: same title, `part` badge, never "(cont.)". Two `definition` blocks render side by side.

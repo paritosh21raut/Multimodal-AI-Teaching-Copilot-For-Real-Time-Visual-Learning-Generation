@@ -1,9 +1,15 @@
 # Current State
 
-_Last updated: 2026-10-06: **V1a (formulas + layout polish) done**: tested, runtime-verified (0-token checks + a real
-LLM run on the qwen backup; gpt-oss-120b quota was spent). Next: V1b images (F-007b)._
+_Last updated: 2026-10-06 (late): **V1a round 2** (user's 7 issues from live mic tests) fixed and verified: real
+formula parser, equations in text, concept columns, bullets/numbers, peer pairing, stale-tab reload, formula-JSON
+parsing. Next: user re-test with the mic, then V1b images (F-007b)._
 
 ## Now
+- **V1a round 2 (F-007a "Round 2"):** root causes + fixes for all 7 user issues; 323 fast + 9 browser tests; replays of
+  the 5 live sessions (0 tokens) + real Groq energy ×2 / kinematics (≈ 43k tokens incl. a 2.2k probe), 0 fallbacks.
+  Biggest find: gpt-oss-120b flattens `items.formula` → half the formulas were silently dropped since M3 (fixed).
+  Live transcripts saved: `tests/fixtures/lectures/*_live.txt`. New tools: `export_transcript.py`,
+  `replay_interpretations.py`. Open: model keeps several concepts under subtopic "Definition" (kinematics parts).
 - **V1 (2026-10-06):** order V1a → V1b → V1c (ROADMAP). Specs: `docs/specs/F-007a-formulas-layout.md`,
   `F-007b-images.md`, `F-007c-robustness.md` (user answers recorded in each).
 - **V1a done (see F-007a "Result"):** KaTeX vendored + `web/shared/rich.js`; `presentation/mathtext.py`
@@ -68,7 +74,8 @@ LLM run on the qwen backup; gpt-oss-120b quota was spent). Next: V1b images (F-0
 | Item | Unit | Integration | Runtime |
 |---|---|---|---|
 | EventBus, config, state store, event log, simulator | ✅ | ✅ | ✅ |
-| V1a: formulas → KaTeX (`mathtext`, `rich.js`), chemical subscripts, layout polish, dropped-point fix | ✅ 52 + 9 | ✅ Edge (3 tests) | ✅ 0 tokens: display set, physics lesson, real app; real-Groq run pending |
+| V1a: formulas → KaTeX (`mathtext`, `rich.js`), chemical subscripts, layout polish, dropped-point fix | ✅ 52 + 9 | ✅ Edge (3 tests) | ✅ 0 tokens: display set, physics lesson, real app; real LLM (qwen) force_motion |
+| V1a round 2: parser (fractions, brackets, ions, spoken), equations in text, concept columns, list styles, peer pairing, flattened-formula parsing, math-aware guard, stale-tab reload | ✅ 323 total | ✅ Edge (9 tests) | ✅ replays of 5 live sessions; real Groq energy ×2 + kinematics |
 | Several Groq keys, daily quota ledger, `[QUOTA]` at startup | ✅ | – | ✅ photosynthesis real run, quota printed |
 | Auto-open /control + /display, no duplicate tabs, `--no-open` | ✅ | ✅ browser (real app + Edge) | ✅ |
 | Segmenter: forced split inside a pause, segmenter error keeps the lecture going | ✅ | – | replay ✅, live mic pending |

@@ -2,7 +2,7 @@
 // Items are keyed by their stable ids, so Preact keeps existing DOM nodes and only new nodes get the
 // mount animation (.enter) - in-place updates never re-animate the whole slide.
 import { html, useLayoutEffect, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
-import { rich, Tex } from "./rich.js";
+import { mixed, rich, Tex } from "./rich.js";
 
 const ARROW = html`<svg class="arrow" viewBox="0 0 56 40" aria-hidden="true">
   <path d="M4 20h40M34 9l12 11-12 11" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -14,23 +14,35 @@ const itemClass = (it, base) =>
 function Definition({ b, termInTitle }) {
   return html`<div class="def enter">
     ${!termInTitle && html`<div class="def-term enter">${rich(b.term)}</div>`}
-    <div class="def-body enter">${rich(b.definition)}</div>
+    <div class="def-body enter">${mixed(b.definition, b.math)}</div>
     ${b.notes.length > 0 && html`<div class="def-notes">
-      ${b.notes.map((n) => html`<span key=${n.id} class=${itemClass(n, "def-note")}>${rich(n.text)}</span>`)}
+      ${b.notes.map((n) => html`<span key=${n.id} class=${itemClass(n, "def-note")}>${mixed(n.text, n.math)}</span>`)}
     </div>`}
   </div>`;
 }
 
-// Provisional teasers (keywords before the refined items arrive) are not numbered like real points.
-const numbered = (items) => { let n = 0; return items.map((it) => [it, it.provisional ? 0 : ++n]); };
+// List markers (style chosen by the server, presentation.annotate): numbers for counted / ordered lists, letters for
+// a) b) options, bullets for explanations. Provisional teasers get no marker number.
+const LETTER_PREFIX = /^\(?[a-h][).]\s+/;
+const markers = (items, style) => {
+  let n = 0;
+  return items.map((it) => {
+    if (it.provisional) return [it, ""];
+    n += 1;
+    return [it, style === "numbers" ? String(n) : style === "letters" ? String.fromCharCode(96 + n) : ""];
+  });
+};
 
 function Points({ b, wide }) {
+  const style = b.style || "bullets";
   const cols = wide && b.items.length > 3 && b.items.every((i) => i.text.length < 90) ? "cols-2" : "";
+  const strip = (s) => (style === "letters" && s ? s.replace(LETTER_PREFIX, "") : s);
   return html`<div class="points">
     ${b.heading && html`<div class="points-heading">${rich(b.heading)}</div>`}
-    <ol class=${"points-list " + cols}>
-      ${numbered(b.items).map(([it, n]) => html`<li key=${it.id} class=${itemClass(it, "point")}>
-        ${n ? html`<span class="num">${n}</span>` : html`<span class="num ghost"></span>`}<span>${rich(it.text)}</span>
+    <ol class=${`points-list list-${style} ${cols}`}>
+      ${markers(b.items, style).map(([it, mark]) => html`<li key=${it.id} class=${itemClass(it, "point")}>
+        ${it.provisional ? html`<span class="num ghost"></span>`
+          : mark ? html`<span class="num">${mark}</span>` : html`<span class="num bullet"></span>`}<span>${mixed(strip(it.text), strip(it.math))}</span>
       </li>`)}
     </ol>
   </div>`;
@@ -39,7 +51,7 @@ function Points({ b, wide }) {
 // "Inhale: diaphragm contracts, ..." -> label "Inhale" + detail; a long label without a name reads as text.
 const LONG_STEP = 60;
 function stepText(s) {
-  if (s.detail) return { label: s.label, detail: s.detail };
+  if (s.detail || s.math) return { label: s.label, detail: s.detail };
   const m = /^([^:]{2,40}):\s+(.{8,})$/.exec(s.label);
   return m && m[1].split(" ").length <= 4 ? { label: m[1], detail: m[2] } : { label: s.label, detail: "" };
 }
@@ -50,7 +62,7 @@ function Process({ b }) {
       ${b.steps.map((s, i) => { const { label, detail } = stepText(s); return html`<div key=${s.id} class="step enter">
         <div class="step-card">
           <span class="step-no">STEP ${i + 1}</span>
-          <span class=${"step-label" + (label.length > LONG_STEP ? " long" : "")}>${rich(label)}</span>
+          <span class=${"step-label" + (label.length > LONG_STEP ? " long" : "")}>${mixed(label, s.math)}</span>
           ${detail && html`<span class="step-detail">${rich(detail)}</span>`}
         </div>
         ${i < b.steps.length - 1 && ARROW}
@@ -159,9 +171,9 @@ function Block({ b, wide, termInTitle }) {
     case "facts": return html`<${Facts} b=${b} />`;
     case "groups": return html`<${Groups} b=${b} />`;
     case "example": return html`<div class="example enter"><span class="label">Example</span>
-      ${b.title && html`<span class="title">${rich(b.title)}</span>`}${rich(b.text)}</div>`;
+      ${b.title && html`<span class="title">${rich(b.title)}</span>`}${mixed(b.text, b.math)}</div>`;
     case "callout": return html`<div class="callout enter"><span class="label">${
-      { key: "Key idea", tip: "Remember", note: "Note" }[b.kind]}</span>${rich(b.text)}</div>`;
+      { key: "Key idea", tip: "Remember", note: "Note" }[b.kind]}</span>${mixed(b.text, b.math)}</div>`;
     default: return null;
   }
 }
@@ -227,7 +239,8 @@ export function Slide({ spec, phase = "", onOverflow }) {
   const title = def ? def.term : spec.title;
   // Two concepts defined together (elements and compounds): side-by-side definition cards.
   const pairDefs = defs.length > 1 ? new Set(defs.map((d) => d.id)) : null;
-  const mainRest = pairDefs ? main.filter((b) => !pairDefs.has(b.id)) : main;
+  // ... each concept is a column: its definition, then its own formula / points / examples (block.about = def id)
+  const mainRest = pairDefs ? main.filter((b) => !pairDefs.has(b.id) && !pairDefs.has(b.about)) : main;
   return html`<section data-slide=${spec.id} class=${`slide layout-${spec.layout} ${phase}`} style=${style}>
     <header class="slide-head">
       ${(spec.facet || spec.continuation_of) && html`<div class="crumb">
@@ -239,7 +252,10 @@ export function Slide({ spec, phase = "", onOverflow }) {
     </header>
     <div ref=${bodyRef} class=${"slide-body" + (aside.length ? " with-aside" : "")}>
       <div class="main">
-        ${pairDefs && html`<div class="def-pair">${defs.map((d) => html`<${Definition} key=${d.id} b=${d} termInTitle=${false} />`)}</div>`}
+        ${pairDefs && html`<div class="def-pair">${defs.map((d) => html`<div key=${d.id} class="def-col">
+          <${Definition} b=${d} termInTitle=${false} />
+          ${spec.blocks.filter((b) => b.about === d.id).map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} />`)}
+        </div>`)}</div>`}
         ${mainRest.map((b) => html`<${Block} key=${b.id} b=${b} wide=${!aside.length} termInTitle=${!!def} />`)}
       </div>
       ${aside.length > 0 && html`<div class="aside">${aside.map((b) => html`<${Block} key=${b.id} b=${b} />`)}</div>`}

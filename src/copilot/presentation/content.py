@@ -44,6 +44,9 @@ class Piece:
     pairs: tuple[tuple[str, str], ...] = ()          # timeline (when, what) / causes / facts (label, value)
     groups: tuple[tuple[str, tuple[str, ...]], ...] = ()  # named groups (label, items)
     formula: Optional[FormulaData] = None
+    # the concept this piece is about, as named in the lecture ("KE", "Kinetic energy"); "" = not known. The
+    # composer resolves it against the definitions on the slide (concept columns, live energy test 2026-10-06).
+    about: str = ""
     meta: dict = field(default_factory=dict, compare=False, hash=False)
 
     def with_texts(self, texts: Sequence[str]) -> "Piece":
@@ -71,10 +74,13 @@ class Piece:
         )
 
 
-def clean(text: str) -> str:
+MAX_DEFINITION_CHARS = 320  # definitions stay exact (RULES.md); live kinematics: "... without looking at the…"
+
+
+def clean(text: str, max_chars: int = MAX_TEXT_CHARS) -> str:
     text = " ".join(str(text).split()).strip(" -–•;,")
-    if len(text) > MAX_TEXT_CHARS:
-        cut = text[:MAX_TEXT_CHARS].rsplit(" ", 1)[0]
+    if len(text) > max_chars:
+        cut = text[:max_chars].rsplit(" ", 1)[0]
         text = cut + "…"
     return text
 
@@ -102,7 +108,7 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
     steps = _texts(it.steps)
     if act.act == "process" and not steps and points:
         steps, points = points, ()  # a process given as points is still a process
-    term, definition = clean(it.term), clean(it.definition)
+    term, definition = clean(it.term), clean(it.definition, MAX_DEFINITION_CHARS)
     if term and definition:
         out.append(Piece("definition", term=term, definition=definition, **base))
     elif definition:
@@ -156,6 +162,12 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
 
 
 def pieces_from(it: Interpretation) -> list[Piece]:
+    return pieces_and_chain(it)[0]
+
+
+def pieces_and_chain(it: Interpretation, carry: str = "") -> tuple[list[Piece], str]:
+    """Pieces of one interpretation, attributed to concepts. `carry`: the concept chain left by the previous unit of
+    the same slide frame (the teacher is still on KE when the examples come in the next unit, live energy re-run)."""
     meta = set(it.meta_lines)
     out: list[Piece] = []
     for act in it.acts:
@@ -165,7 +177,42 @@ def pieces_from(it: Interpretation) -> list[Piece]:
         if act.act in NO_CONTENT_ACTS and not pieces:
             continue
         out += pieces
-    return _group_classifications(out)
+    return _attribute(_drop_covered_headings(_group_classifications(out)), carry)
+
+
+def _drop_covered_headings(pieces: list[Piece]) -> list[Piece]:
+    """A comparison with headings but no rows ("Speed" | "Velocity") whose sides the same unit already explains as
+    points ("Speed is how fast ...", "Velocity includes ...") would be an empty table (live kinematics re-run)."""
+    texts = " ".join(t.lower() for p in pieces if p.kind == "points" for t in p.texts)
+    return [p for p in pieces if not (p.kind == "comparison" and not p.rows and p.columns
+                                      and all(c.lower() in texts for c in p.columns))]
+
+
+_ABOUT_KINDS = ("points", "example", "formula", "facts")
+
+
+def _attribute(pieces: list[Piece], carry: str = "") -> tuple[list[Piece], str]:
+    """Name the concept each piece is about: a definition names its term, a formula its left side ("KE = ½mv²");
+    points / examples / facts right after them in the same unit follow the same concept ("Examples are a rolling
+    ball ..." after the KE formula). Resolution against the slide is the composer's job."""
+    out: list[Piece] = []
+    current = carry  # newest last, one per line: names, and point texts that may mention a concept
+    for p in pieces:
+        own = ""
+        if p.kind == "definition":
+            own = p.term
+        elif p.kind == "formula" and p.formula and "=" in p.formula.expression:
+            own = p.formula.expression.split("=", 1)[0].strip()
+        if own:
+            current = own
+        if p.kind in _ABOUT_KINDS or p.kind == "definition":
+            p = replace(p, about=own or current)
+            if not own and p.texts:  # "Mass and height determine potential energy", then "e.g. a dam": PE
+                current = "\n".join([*current.split("\n"), " ".join(p.texts)][-3:]).strip("\n")
+        else:
+            current = ""  # a diagram in between ends the chain
+        out.append(p)
+    return out, current
 
 
 def _group_classifications(pieces: list[Piece]) -> list[Piece]:

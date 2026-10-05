@@ -82,3 +82,28 @@ async def test_chemical_formulas_in_text_get_subscripts_and_match_python_rules()
         py = [[list(p) for p in parts] if (parts := chem_parts(t)) else None for t in TOKENS]
         assert js == py
         assert page.errors == []
+
+
+async def test_equations_in_points_render_and_lists_use_bullets_unless_counted():
+    """Live tests 2026-10-06: equation points ("v = u + a·t") were plain text; every list was numbered."""
+    async with display_harness() as h, browser_page(f"{h.url}/display") as page:
+        await h.deck.add(SlideSpec(id="eq", title="Acceleration", layout="key_points", blocks=[
+            PointsBlock(id="p", items=[Item(id="a", text="v = u + a·t"), Item(id="b", text="s = u·t + ½ a·t²"),
+                                       Item(id="c", text="has the form ax² + bx + c = 0")]),
+            PointsBlock(id="k", heading="Types of motion", items=[Item(id="x", text="Linear"),
+                                                                Item(id="y", text="Circular")])]))
+        await h.settle()
+        await wait_for_slide(page, "eq")
+        info = await page.evaluate("""() => {
+            const lists = [...document.querySelectorAll('.points-list')];
+            return {
+              katex: [...lists[0].querySelectorAll('.point')].map(p => !!p.querySelector('.katex')),
+              prose: lists[0].querySelectorAll('.point')[2].textContent.trim().startsWith('has the form'),
+              styles: lists.map(l => [...l.classList].find(c => c.startsWith('list-'))),
+              bullets: lists[0].querySelectorAll('.num.bullet').length,
+              numbers: [...lists[1].querySelectorAll('.num')].map(n => n.textContent),
+              errors: document.querySelectorAll('.katex-error').length };
+        }""")
+        assert info == {"katex": [True, True, True], "prose": True, "styles": ["list-bullets", "list-numbers"],
+                        "bullets": 3, "numbers": ["1", "2"], "errors": 0}
+        assert page.errors == []

@@ -81,3 +81,25 @@ end (qwen OTPM limit; OpenRouter backup 404 "model unavailable for free"). 5 sli
 neither side counted as symbolic → fixed (a lowercase product next to a number is symbolic; "ice → water" stays
 words), regression tests added, re-rendered and inspected (`artifacts/app/lecture_force_motion/fixed_ke.png`).
 Not yet seen: the same lecture on gpt-oss-120b.
+
+## Round 2: user's live mic tests (2026-10-06: neutralization, quadratic, electricity, kinematics, energy)
+Transcripts saved as fixtures `tests/fixtures/lectures/{neutralization,quadratic,electricity,kinematics,energy}_live.txt`
+(`tools/export_transcript.py`). Screenshots in `verify_results/` (user).
+
+| # | User issue | Root cause | Fix |
+|---|---|---|---|
+| 1 | Neutralization point 5 shown as said ("They combine H plus plus O minus gives H2O") | dropped-sentence guard: spoken maths shares no words with "H⁺ + OH⁻ → H₂O" | guard: a line with an equation in the output counts as covered when the sentence is spoken maths (≥ 2 spoken operators) |
+| 2, 5 | Quadratic formula / energy formulas missing; equations shown as plain text | (a) gpt-oss-120b flattens `items.formula` to `items.expression` → silently dropped (M3 parser); (b) equations inside points/examples/definitions were never rendered as maths | (a) parser accepts flattened / string / act-level formulas, `equation`, dict/str variables; (b) `mathtext.mark_math` + `presentation.annotate` → `math` field → KaTeX spans in text |
+| 3 | Resistor formula on one line, "/" side by side | linear converter: no brackets, no grouping | recursive-descent parser: stacked fractions (brackets around numerator/denominator dropped), roots, ±, R1 → R₁, I_total, Vin → V_in, implicit products (2a, 4ac, I²R, R1 R2), ions, spoken "upon" grouping ("R2 upon R1 plus R2 times Vin" → R₂/(R₁+R₂)·V_in), U+2011 hyphens |
+| 4 | Kinematics: Distance paired with Kinematics, Displacement alone | any single definition counted as a peer | the topic's own definition is no peer (exact title key); peers go together on the next part, titled "Distance and displacement" |
+| 6 | Energy: KE examples looked common to both | no concept attribution | concept columns: pieces carry `about` (definition term, formula left side "KE" = initials, mention, chain within a unit and across units of the frame); composer places them in that concept's column (one formula per column, compact bullet card); display draws a column per concept |
+| 7 | Single point numbered; numbering everywhere | one list style | `PointsBlock.style`: bullets by default, numbers for labelled kinds / ordered lists, letters for a) b) |
+| – | Old tab ran the pre-V1a renderer | reconnect never reloads | `/api/client-version` + `<meta client-version>`: reload on mismatch (browser test) |
+| – | Lonely "compressed spring" part; definition cut "…without looking at the…"; empty Speed/Velocity table | example cap 1, item length cap, columns-only comparison | further examples join the example card; definitions up to 320 chars; heading-only comparison dropped when points cover it |
+
+Verified: 323 fast + 9 browser tests; replays of all five sessions (`tools/replay_interpretations.py`, 0 tokens);
+real Groq: energy ×2 and kinematics (`tools/screenshot_app.py --lecture --simulate …_live.txt --speed 1`): 0 fallbacks,
+0 re-added sentences, formulas present; energy ends as 2 slides with one column per concept (replay of the live
+re-run, `artifacts/replay/20261006-041248-f61f_*`). Tokens this round ≈ 43k (probe 2.2k + 3 runs).
+Open: the model sometimes keeps every concept under subtopic "Definition" (kinematics: speed/velocity land on the
+"Displacement" part); title of a concept-mixed part follows its first definition.

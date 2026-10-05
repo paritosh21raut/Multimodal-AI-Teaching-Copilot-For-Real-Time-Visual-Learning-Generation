@@ -1,5 +1,17 @@
 // WebSocket client with automatic reconnect. The server is authoritative: every (re)connect
 // starts with a full "hello" snapshot, so the client never has to replay missed messages.
+// A tab left open across app runs reconnects on its own but keeps its old scripts: reload when the server's
+// client files differ from the ones this page was served with (live tests 2026-10-06 ran the pre-V1a renderer).
+async function reloadIfOutdated() {
+  const mine = document.querySelector('meta[name="client-version"]')?.content;
+  if (!mine) return;
+  try {
+    const r = await fetch("/api/client-version", { cache: "no-store" });
+    const { version } = await r.json();
+    if (version && version !== mine) location.reload();
+  } catch (e) { console.warn("client version check failed", e); }
+}
+
 export function connect(role, onMessage, onStatus) {
   let ws = null;
   let retry = 0;
@@ -8,7 +20,7 @@ export function connect(role, onMessage, onStatus) {
   const open = () => {
     const proto = location.protocol === "https:" ? "wss" : "ws";
     ws = new WebSocket(`${proto}://${location.host}/ws?role=${role}`);
-    ws.onopen = () => { retry = 0; onStatus && onStatus("connected"); };
+    ws.onopen = () => { retry = 0; onStatus && onStatus("connected"); reloadIfOutdated(); };
     ws.onmessage = (ev) => {
       try { onMessage(JSON.parse(ev.data)); } catch (e) { console.error("bad message", e); }
     };
