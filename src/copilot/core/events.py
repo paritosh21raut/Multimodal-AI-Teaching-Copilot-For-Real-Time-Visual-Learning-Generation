@@ -8,6 +8,8 @@ from typing import Any, ClassVar, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from copilot.core.interpretation import Interpretation
+
 
 def new_id() -> str:
     return uuid.uuid4().hex[:12]
@@ -123,6 +125,52 @@ class DeckState(Event):
     blank: bool
 
 
+UtteranceKind = Literal["content", "classroom_management", "meta", "filler", "question_to_class"]
+
+
+class UtteranceClassified(Event):
+    segment_id: str
+    kind: UtteranceKind
+    maybe_meta: bool = False
+    rule: str = ""  # which filter rule decided (debugging/evaluation)
+
+
+class ConceptSignal(Event):
+    segment_id: str
+    shift_score: float          # smoothed 1 - cos(utterance, concept centroid); 0 for the first utterance
+    topic_shift: float = 0.0    # 1 - cos(utterance, slow topic centroid)
+    keyphrases: list[str] = Field(default_factory=list)
+    cues: list[str] = Field(default_factory=list)
+    boundary: bool = False      # strong cue or shift above threshold at utterance start
+
+
+class InterpretRequested(Event):
+    request_id: str
+    reason: str
+    segment_ids: list[str]
+    prompt_tokens: int = 0      # approximate, as enforced by the budget
+
+
+class InterpretationReady(Event):
+    request_id: str
+    interpretation: Interpretation
+    segment_ids: list[str]      # line n of the request = segment_ids[n - 1]
+    provider: str = ""          # router entry name; "" for a deterministic fallback
+    latency_ms: float = 0.0
+    fallback: bool = False
+    fallback_reason: str = ""
+
+
+class LLMCallFailed(Event):
+    provider: str
+    error: str
+    will_retry: bool
+
+
+class ConcernRaised(Event):
+    concern: dict[str, Any]     # Concern dump (core.state.Concern)
+
+
 class ErrorRaised(Event):
     component: str
     error: str
@@ -134,6 +182,8 @@ EVENT_TYPES: dict[str, type[Event]] = {
     for cls in (
         LifecycleChanged, TranscriptFinal, AudioLevel, AudioDeviceLost, UtteranceDropped,
         CommandReceived, StateChanged, SlidePatch, DeckState, ErrorRaised,
+        UtteranceClassified, ConceptSignal, InterpretRequested, InterpretationReady, LLMCallFailed,
+        ConcernRaised,
     )
 }
 

@@ -24,7 +24,7 @@ audio = [
     "nvidia-cudnn-cu12>=9,<10; sys_platform == 'win32'",
 ]
 display = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
-understanding = ["httpx>=0.27", "sentence-transformers>=2.7"]
+understanding = ["httpx>=0.27", "numpy>=1.24", "onnxruntime>=1.17", "tokenizers>=0.15", "huggingface_hub>=0.20"]
 dev = ["pytest>=8", "pytest-asyncio>=0.23", "httpx>=0.27", "websockets>=12", "playwright>=1.44"]
 
 [project.scripts]

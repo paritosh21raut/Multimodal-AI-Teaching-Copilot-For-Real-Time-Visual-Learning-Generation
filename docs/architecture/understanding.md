@@ -10,7 +10,10 @@ and how*, while calling the LLM rarely.
    - Rules: phrase lexicon + imperative/2nd-person patterns + length. Ambiguous segments pass as `content`
      but carry the flag `maybe_meta`; the Interpreter makes the final call.
 2. **ConceptTracker** (deterministic, CPU)
-   - Embeds each content utterance (MiniLM). Keeps an EMA centroid for the current concept and for the topic.
+   - Embeds each content utterance (all-MiniLM-L6-v2 as ONNX via onnxruntime, ADR-0008; ~6 ms per sentence).
+     Keeps an EMA centroid for the current concept and for the topic.
+   - Measured on the fixture: single-sentence shift is noisy (0.3–0.6 within a facet), so the boundary threshold is
+     high (0.75) and cue words carry most boundary detection; the Interpreter decides the relation.
    - `shift_score = 1 - cos(utterance, concept_centroid)`, smoothed over 2–3 utterances.
    - Keyphrase extraction (noun chunks + frequency) → candidate terms.
    - Emits `ConceptSignal(shift_score, keyphrases, cue_words)`. Cue words: "next", "now let's",
@@ -22,8 +25,9 @@ and how*, while calling the LLM rarely.
    - `shift_score` above threshold (possible new concept)
    - max wait 12 s while content is pending
 
-   It is rate-limited by the LLM scheduler (target ≤ 6–8 calls/min); while a call is in flight, new text queues
-   for the next call (no parallel interpretations → ordered state).
+   It is rate-limited by a wall-clock floor (8 s → ≤ 7.5 calls/min); while a call is in flight or waiting on the
+   floor, a unit that already triggered is sealed and new text queues for the next call (no parallel
+   interpretations → ordered state). Details: `docs/specs/F-004-understanding.md`.
 5. **Interpreter** (LLM, JSON-schema output). Input (bounded, ≈ 1.2k tokens max):
    - header: subject, grade level (given or inferred), lecture title, outline (topic → subtopics, ≤ 150 tokens)
    - current slide summary (title, representation, items, remaining capacity)
@@ -51,7 +55,8 @@ and how*, while calling the LLM rarely.
   The teacher's choice is a command → state → the planner updates the slide.
 
 ## LLM layer (`copilot.llm`)
-- Router: Groq (primary) → OpenRouter free model → Ollama local (fallback). Per-provider timeout 6 s, 1 retry.
+- Router: Groq gpt-oss-120b → Groq qwen3.8-27b (separate 8k-TPM bucket) → OpenRouter free model (50 req/day) →
+  Ollama local. Per-entry timeout 6 s, 1 retry on timeouts/5xx only; whole interpretation deadline 15 s.
 - Rate limiter: token bucket per provider (RPM/TPM from config). 429 → cooldown and fall through.
 - Strict JSON: schema in the prompt + Pydantic validation; one repair attempt; on failure, a deterministic
   fallback interpretation from the ConceptTracker (topic unchanged, raw sentence as a key point). The fallback is logged, never hidden.

@@ -1,0 +1,240 @@
+"""Interpreter: bounded prompt → LLM router → strict JSON validation → one repair → deterministic fallback."""
+from __future__ import annotations
+
+import json
+import logging
+import re
+import time
+from dataclasses import dataclass, field
+from typing import Any, Optional, Sequence, get_args
+
+from pydantic import ValidationError
+
+from copilot.core.interpretation import (
+    ActKind,
+    ContentItems,
+    DiscourseAct,
+    Interpretation,
+    Representation,
+)
+from copilot.core.memory import titles_match
+from copilot.core.state import LectureState
+from copilot.core.textutil import approx_tokens
+from copilot.llm.router import AllProvidersFailed, LLMRouter
+from copilot.understanding.gate import BufferedLine
+from copilot.understanding.prompt import BuiltPrompt, PromptBudgetError, build_prompt
+
+log = logging.getLogger(__name__)
+
+_ACTS = set(get_args(ActKind))
+_REPRS = set(get_args(Representation))
+_FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.IGNORECASE)
+
+
+class InvalidInterpretation(ValueError):
+    pass
+
+
+@dataclass
+class InterpreterSettings:
+    dynamic_budget_tokens: int = 1200
+    prompt_budget_tokens: int = 2600
+    max_output_tokens: int = 1400
+    interpret_deadline_s: float = 15.0
+    min_concern_confidence: float = 0.6
+
+
+@dataclass
+class InterpretResult:
+    interpretation: Interpretation
+    provider: str = ""
+    latency_ms: float = 0.0
+    fallback: bool = False
+    fallback_reason: str = ""
+    prompt_tokens: int = 0
+    repaired: bool = False
+    attempts: list[str] = field(default_factory=list)
+
+
+def _normalise(data: Any) -> Any:
+    """Tolerate harmless deviations (case, unknown act/hint names) before strict validation."""
+    if not isinstance(data, dict):
+        return data
+    for key in ("relation", "representation_hint"):
+        if isinstance(data.get(key), str):
+            data[key] = data[key].strip().lower().replace(" ", "_").replace("-", "_")
+    hint = data.get("representation_hint")
+    if not (isinstance(hint, str) and hint in _REPRS):
+        data["representation_hint"] = "none"
+    acts = data.get("acts")
+    if isinstance(acts, list):
+        for a in acts:
+            if isinstance(a, dict) and isinstance(a.get("act"), str):
+                act = a["act"].strip().lower().replace(" ", "_").replace("-", "_")
+                a["act"] = act if act in _ACTS else "other"
+            if isinstance(a, dict) and isinstance(a.get("items"), dict):
+                _normalise_items(a["items"])
+    for key in ("topic", "subtopic"):
+        if data.get(key) is None:
+            data[key] = ""
+    return data
+
+
+_STR_LISTS = ("points", "steps", "compare", "examples")
+_SHAPED = {"pairs": ("aspect", "left", "right"), "events": ("when", "what"), "causes": ("cause", "effect")}
+
+
+def _normalise_items(items: dict) -> None:
+    """Shape-only fixes that keep every value the model produced (no content is invented or dropped)."""
+    for key in _STR_LISTS:
+        v = items.get(key)
+        if isinstance(v, str):
+            items[key] = [p.strip() for p in re.split(r"\s+vs\.?\s+", v) if p.strip()] if key == "compare" else [v]
+        elif isinstance(v, list):
+            items[key] = [x if isinstance(x, str) else " ".join(str(y) for y in x.values()) if isinstance(x, dict)
+                          else str(x) for x in v if x is not None]
+    for key, fields in _SHAPED.items():
+        v = items.get(key)
+        if isinstance(v, list):
+            items[key] = [dict(zip(fields, x)) if isinstance(x, (list, tuple)) and len(x) == len(fields) else x
+                          for x in v]
+    for key in ("term", "definition"):
+        if items.get(key) is None:
+            items[key] = ""
+
+
+def parse_interpretation(text: str) -> Interpretation:
+    raw = _FENCE.sub("", text.strip())
+    start, end = raw.find("{"), raw.rfind("}")
+    if start < 0 or end <= start:
+        raise InvalidInterpretation("no JSON object in output")
+    try:
+        data = json.loads(raw[start: end + 1])
+    except json.JSONDecodeError as e:
+        raise InvalidInterpretation(f"invalid JSON: {e}") from e
+    try:
+        data = _normalise(data)
+    except Exception as e:  # odd shapes must lead to repair/fallback, never escape
+        raise InvalidInterpretation(f"unexpected shape: {type(e).__name__}: {e}") from e
+    try:
+        return Interpretation.model_validate(data)
+    except ValidationError as e:
+        raise InvalidInterpretation(f"schema: {e.errors(include_url=False)[:3]}") from e
+
+
+def _sanitise(it: Interpretation, n_lines: int, min_conf: float, state: LectureState) -> Interpretation:
+    """Deterministic post-processing: drop out-of-range line numbers and low-confidence concerns, and make
+    relation and subtopic agree (a new facet under the same subtopic title is treated as a continuation)."""
+    def ok(lines: list[int]) -> list[int]:
+        return [i for i in lines if 1 <= i <= n_lines]
+
+    relation = it.relation
+    topic, sub = state.topic(state.current_topic_id), state.subtopic()
+    if (relation in ("sibling_concept", "sub_concept") and topic and titles_match(it.topic, topic.title)
+            and titles_match(it.subtopic or topic.title, sub.title if sub else topic.title)):
+        log.info("relation %s with unchanged subtopic %r -> same_concept", relation, it.subtopic)
+        relation = "same_concept"
+    return it.model_copy(update={
+        "relation": relation,
+        "acts": [a.model_copy(update={"lines": ok(a.lines)}) for a in it.acts],
+        "meta_lines": ok(it.meta_lines),
+        "concerns": [c.model_copy(update={"lines": ok(c.lines)}) for c in it.concerns if c.confidence >= min_conf],
+    })
+
+
+def fallback_interpretation(state: LectureState, lines: Sequence[BufferedLine]) -> Interpretation:
+    """Deterministic interpretation when no LLM answer is usable: topic unchanged, raw sentences as key points."""
+    topic = state.topic(state.current_topic_id)
+    sub = state.subtopic()
+    title = topic.title if topic else (state.setup.expected_topic or "Lecture")
+    points = [" ".join(l.text.split()[:25]) for l in lines if not l.maybe_meta]  # every line; the composer caps
+    return Interpretation(
+        topic=title,
+        subtopic=sub.title if sub else "",
+        relation="same_concept" if topic else "new_topic",
+        acts=[DiscourseAct(act="explanation", lines=list(range(1, len(lines) + 1)), items=ContentItems(points=points))]
+        if points else [],
+        representation_hint="key_points",
+    )
+
+
+class Interpreter:
+    def __init__(self, router: Optional[LLMRouter], settings: Optional[InterpreterSettings] = None) -> None:
+        self.router = router
+        self.s = settings or InterpreterSettings()
+
+    def build(self, state: LectureState, lines: Sequence[BufferedLine]) -> BuiltPrompt:
+        return build_prompt(state, lines, dynamic_budget=self.s.dynamic_budget_tokens,
+                            total_budget=self.s.prompt_budget_tokens)
+
+    async def interpret(self, state: LectureState, lines: Sequence[BufferedLine],
+                        prompt: Optional[BuiltPrompt] = None) -> InterpretResult:
+        """Always returns a result for these lines: an LLM interpretation or a logged deterministic fallback."""
+        t0 = time.perf_counter()
+        try:
+            return await self._interpret(state, lines, prompt, t0)
+        except Exception as e:  # unexpected failure: the lines must still be interpreted (CancelledError passes)
+            log.exception("interpreter failed unexpectedly")
+            return self._fallback(state, lines, f"unexpected error: {type(e).__name__}: {e}", t0)
+
+    async def _interpret(self, state: LectureState, lines: Sequence[BufferedLine], prompt: Optional[BuiltPrompt],
+                         t0: float) -> InterpretResult:
+        if prompt is None:
+            try:
+                prompt = self.build(state, lines)
+            except PromptBudgetError as e:
+                log.error("%s", e)
+                return self._fallback(state, lines, str(e), t0)
+        if self.router is None:
+            return self._fallback(state, lines, "no LLM providers configured", t0, prompt.tokens)
+
+        log.debug("interpretation prompt (%d tokens): %s", prompt.tokens, prompt.messages[1]["content"])
+        deadline = time.monotonic() + self.s.interpret_deadline_s
+        attempts: list[str] = []
+        try:
+            res = await self.router.complete(prompt.messages, est_tokens=prompt.tokens,
+                                             max_tokens=self.s.max_output_tokens, deadline=deadline)
+            attempts += res.attempts
+        except AllProvidersFailed as e:
+            return self._fallback(state, lines, f"llm: {e}", t0, prompt.tokens, attempts)
+
+        log.debug("interpretation raw output from %s: %s", res.entry, res.response.text[:2000])
+        repaired = False
+        try:
+            it = parse_interpretation(res.response.text)
+        except InvalidInterpretation as first:
+            log.warning("interpretation from %s invalid (%s); one repair attempt", res.entry, first)
+            instruction = f"That output was invalid: {str(first)[:300]}. Reply with the corrected JSON object only."
+            room = self.s.prompt_budget_tokens - prompt.tokens - approx_tokens(instruction) - 8
+            if room < 50:
+                return self._fallback(state, lines, f"invalid output, no budget to repair: {first}", t0,
+                                      prompt.tokens, attempts)
+            echo = res.response.text
+            while approx_tokens(echo) > room:  # the repair prompt obeys the same budget
+                echo = echo[: int(len(echo) * 0.8)]
+            repair_msgs = prompt.messages + [
+                {"role": "assistant", "content": echo},
+                {"role": "user", "content": instruction},
+            ]
+            repair_tokens = prompt.tokens + approx_tokens(echo) + approx_tokens(instruction)
+            try:
+                res = await self.router.complete(
+                    repair_msgs, est_tokens=repair_tokens,
+                    max_tokens=self.s.max_output_tokens, deadline=deadline,
+                )
+                attempts += res.attempts
+                it = parse_interpretation(res.response.text)
+                repaired = True
+            except (AllProvidersFailed, InvalidInterpretation) as second:
+                return self._fallback(state, lines, f"invalid output after repair: {second}", t0,
+                                      prompt.tokens, attempts)
+
+        it = _sanitise(it, len(lines), self.s.min_concern_confidence, state)
+        return InterpretResult(it, res.entry, (time.perf_counter() - t0) * 1000, False, "",
+                               prompt.tokens, repaired, attempts)
+
+    def _fallback(self, state: LectureState, lines: Sequence[BufferedLine], reason: str, t0: float,
+                  prompt_tokens: int = 0, attempts: Optional[list[str]] = None) -> InterpretResult:
+        log.warning("interpretation fallback: %s", reason)
+        return InterpretResult(fallback_interpretation(state, lines), "", (time.perf_counter() - t0) * 1000,
+                               True, reason[:500], prompt_tokens, False, attempts or [])

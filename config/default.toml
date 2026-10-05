@@ -43,3 +43,58 @@ download_root = "models/whisper"
 words_per_minute = 150
 min_utterance_s = 1.0
 speed = 1.0
+
+[understanding]
+embed_repo = "sentence-transformers/all-MiniLM-L6-v2"
+embed_dir = "models/minilm"
+shift_threshold = 0.75     # smoothed 1-cos vs concept centroid; calibrated on fixtures (F-004)
+concept_alpha = 0.35       # EMA weight of a new utterance in the concept centroid
+topic_alpha = 0.1
+pause_s = 1.2              # gate: pause after a sentence end ...
+pause_min_words = 12       # ... with at least this many buffered words
+max_words = 40             # gate: buffered words
+max_wait_s = 12.0          # gate: oldest pending content age (lecture time)
+buffer_cap_tokens = 600    # max transcript tokens per interpretation call
+min_call_interval_s = 8.0  # wall clock; <= 7.5 calls/min
+interpret_deadline_s = 15.0
+prompt_budget_tokens = 2600   # whole prompt (static system part + dynamic part)
+dynamic_budget_tokens = 1200  # header + outline + summary + new lines
+max_output_tokens = 1400
+min_concern_confidence = 0.6
+
+[llm]
+timeout_s = 6.0
+retries = 1
+cooldown_429_s = 20.0
+cooldown_unavailable_s = 60.0
+cooldown_rejected_s = 300.0
+order = ["groq_main", "groq_alt", "openrouter_main", "ollama"]
+
+[llm.providers.groq_main]
+base_url = "https://api.groq.com/openai/v1"
+model = "openai/gpt-oss-120b"
+api_key_env = "GROQ_API_KEY"
+rpm = 30
+tpm = 8000
+extra = { reasoning_effort = "low", include_reasoning = false }
+
+[llm.providers.groq_alt]
+base_url = "https://api.groq.com/openai/v1"
+model = "qwen/qwen3.8-27b"
+api_key_env = "GROQ_API_KEY"
+rpm = 30
+tpm = 8000
+max_output_tokens = 900    # Groq limits this model to 1000 output tokens/min; typical outputs are 300-600
+
+[llm.providers.openrouter_main]
+base_url = "https://openrouter.ai/api/v1"
+model = "qwen/qwen3.8-27b:free"
+api_key_env = "OPENROUTER_API_KEY"
+rpm = 10
+tpm = 20000
+
+[llm.providers.ollama]
+base_url = "http://localhost:11434/v1"
+model = "qwen2.5:3b"
+rpm = 60
+tpm = 100000

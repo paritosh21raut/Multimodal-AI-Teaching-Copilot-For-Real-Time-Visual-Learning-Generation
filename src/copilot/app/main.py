@@ -18,7 +18,9 @@ from copilot.core.events import (
     AudioDeviceLost,
     Command,
     CommandReceived,
+    ConcernRaised,
     Event,
+    InterpretationReady,
     Lifecycle,
     LifecycleChanged,
     TranscriptFinal,
@@ -67,8 +69,12 @@ class App:
         display: bool = True,
         open_display: bool = False,
         demo_slides: bool = False,
+        understanding: bool = True,
     ) -> None:
         self.config = config
+        self.understanding_enabled = understanding
+        self.understanding = None
+        self._http = None
         self.display_enabled = display
         self.open_display = open_display
         self.demo_slides = demo_slides
@@ -118,6 +124,57 @@ class App:
         took = await asyncio.to_thread(self.engine.load)
         print(f"[INIT]  speech model ready ({took:.1f} s)", flush=True)
 
+    async def _init_understanding(self) -> None:
+        import httpx
+
+        from copilot.core.events import LLMCallFailed
+        from copilot.llm.router import build_router
+        from copilot.understanding.embedder import MiniLmEmbedder
+        from copilot.understanding.interpreter import Interpreter
+        from copilot.understanding.service import UnderstandingService, UnderstandingSettings
+
+        assert self.store is not None
+        u = self.config.section("understanding")
+        embedder: Optional[MiniLmEmbedder] = MiniLmEmbedder(
+            PROJECT_ROOT / u.get("embed_dir", "models/minilm"), u.get("embed_repo", "sentence-transformers/all-MiniLM-L6-v2")
+        )
+        print("[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...", flush=True)
+        try:
+            took = await asyncio.to_thread(embedder.load)
+            print(f"[INIT]  concept embedder ready ({took:.1f} s)", flush=True)
+        except Exception as e:  # explicit degraded mode: cue words only
+            log.exception("embedder load failed")
+            print(f"[INIT]  concept embedder unavailable ({type(e).__name__}); using cue words only", flush=True)
+            embedder = None
+
+        async def on_failure(entry: str, error: str, will_retry: bool) -> None:
+            await self.bus.publish(LLMCallFailed(provider=entry, error=error[:300], will_retry=will_retry))
+
+        self._http = httpx.AsyncClient()
+        router = build_router(self.config, self._http, on_failure)
+        names = [e.name for e in router.entries]
+        print(f"[INIT]  LLM providers: {' -> '.join(names)}", flush=True)
+        settings = UnderstandingSettings.from_config(self.config)
+        self.understanding = UnderstandingService(
+            self.bus, self.store, Interpreter(router, settings.interpreter), embedder, settings,
+            speed=self.speed if self.simulate or self.audio_file else 1.0,
+        )
+        self.understanding.attach()
+
+    async def _print_understanding(self, event: Event) -> None:
+        if isinstance(event, InterpretationReady):
+            it = event.interpretation
+            acts = ",".join(a.act for a in it.acts) or "-"
+            src = "FALLBACK " + event.fallback_reason[:80] if event.fallback else event.provider
+            print(f"  [UNDERSTAND] {it.topic} > {it.subtopic or '-'} ({it.relation}) acts={acts} "
+                  f"hint={it.representation_hint} lines={len(event.segment_ids)} via {src} {event.latency_ms:.0f} ms",
+                  flush=True)
+            if it.summary_delta:
+                print(f"               {it.summary_delta}", flush=True)
+        elif isinstance(event, ConcernRaised):
+            c = event.concern
+            print(f"  [CONCERN] {c.get('claim')} -> {c.get('suggested_correction')} ({c.get('confidence')})", flush=True)
+
     async def _print_transcript(self, event: Event) -> None:
         if isinstance(event, TranscriptFinal):
             seg = event.segment
@@ -155,6 +212,7 @@ class App:
         self.bus.subscribe("terminal_transcript", self._print_transcript,
                            [TranscriptFinal, UtteranceDropped, AudioDeviceLost])
         self.bus.subscribe("app_commands", self._on_command, [CommandReceived])
+        self.bus.subscribe("terminal_understanding", self._print_understanding, [InterpretationReady, ConcernRaised])
         await self._lifecycle(Lifecycle.STARTING)
         TerminalInput(asyncio.get_running_loop(), self._terminal).start()
         try:
@@ -162,6 +220,8 @@ class App:
                 await self._start_display()
             if script is None:
                 await self._init_speech()
+            if self.understanding_enabled:
+                await self._init_understanding()
             await self._lifecycle(Lifecycle.READY)
             print(f"\n[READY] session {self.session_id}", flush=True)
             if self.server is not None:
@@ -182,6 +242,11 @@ class App:
             await self._lifecycle(Lifecycle.LIVE)
             print("[LIVE]  lecture started. Type q + Enter to end.", flush=True)
             await self._run_live(script)
+            if self.understanding is not None:
+                pending = len(self.understanding.buffer.lines)
+                print(f"[END]   finishing lecture understanding ({pending} buffered lines) ...", flush=True)
+                if not await self.understanding.flush(timeout=90.0):
+                    print("[END]   understanding did not finish in 90 s; remaining lines stay in the event log", flush=True)
             await self._lifecycle(Lifecycle.ENDING, "lecture finished")
             return 0
         finally:
@@ -264,6 +329,10 @@ class App:
             await self.speech.stop()  # closes the mic even on Ctrl+C / errors
 
     async def _shutdown(self) -> None:
+        if self.understanding is not None:
+            await self.understanding.stop()
+        if self._http is not None:
+            await self._http.aclose()
         await self._lifecycle(Lifecycle.ENDED)
         if self.server is not None:
             await asyncio.sleep(0.2)  # let clients receive the final state
@@ -290,6 +359,17 @@ class App:
                       f"latency p50={p50:.0f} ms p95={p95:.0f} ms max={lat[-1]:.0f} ms", flush=True)
             else:
                 print(f"        stt: {st['published']} published, {st['dropped']} dropped", flush=True)
+        if self.understanding is not None:
+            u = self.understanding.stats
+            toks = list(u.prompt_tokens)
+            lat = sorted(u.latencies_ms)
+            print(f"        understanding: {u.requests} interpretations ({s.stats.llm_calls} by LLM, {u.fallbacks} fallbacks, "
+                  f"{u.repaired} repaired), max {u.max_calls_per_minute} calls/min, "
+                  f"prompt tokens max={u.max_prompt_tokens} avg={sum(toks) // max(1, len(toks))}, "
+                  f"latency p50={lat[len(lat) // 2] if lat else 0:.0f} ms max={lat[-1] if lat else 0:.0f} ms", flush=True)
+            print(f"        providers: {u.providers or '-'}; triggers: {u.reasons or '-'}; "
+                  f"outline: {[t.title + ' > ' + ', '.join(x.title for x in t.subtopics) for t in s.outline]}; "
+                  f"concerns: {len(s.concerns)}", flush=True)
         print(f"        log: {self.event_log.path}", flush=True)
 
 
@@ -305,12 +385,16 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     p.add_argument("--no-display", action="store_true", help="do not start the display server")
     p.add_argument("--open", action="store_true", help="open the display and control pages in the browser")
     p.add_argument("--demo-slides", action="store_true", help="play a scripted slide sequence (display check)")
+    p.add_argument("--no-understanding", action="store_true", help="disable lecture understanding (no LLM calls)")
     p.add_argument("--log-level", default=None)
     return p.parse_args(argv)
 
 
 def main(argv: Optional[list[str]] = None) -> int:
     args = parse_args(argv)
+    for stream in (sys.stdout, sys.stderr):  # LLM text can contain characters the console codepage lacks
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
     config = load_config()
     setup_logging(args.log_level or config.get("app", "log_level", "INFO"))
     speed = args.speed if args.speed is not None else config.get("sim", "speed", 1.0)
@@ -326,6 +410,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             display=not args.no_display,
             open_display=args.open,
             demo_slides=args.demo_slides,
+            understanding=not args.no_understanding,
         )
         return await app.run()
 
