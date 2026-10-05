@@ -1,7 +1,11 @@
 """PresentationEngine: InterpretationReady + ConceptSignal + teacher commands → Deck (F-005).
 
-Deterministic. Owns the planner state (working slide, dwell queue, held content, new-topic candidate) and is the
+Deterministic. Owns the planner state (working slide, dwell queue, corrections, new-topic candidate) and is the
 only caller of Deck.add/update in a real lecture. Display flags (pin/freeze/blank/navigation) stay in the Deck.
+
+Truthful projector: interpretations carry the corrected content. A concern says what the teacher actually said
+(`wrong`) and what the slide shows instead (`right`). When the model is not confident enough the slide shows what
+the teacher said; the teacher can switch either way from the control view.
 """
 from __future__ import annotations
 
@@ -27,13 +31,13 @@ from copilot.core.events import (
     SlideContextChanged,
     SlideOverflow,
 )
-from copilot.core.state import LectureStateStore
+from copilot.core.state import Concern, LectureStateStore
 from copilot.presentation.composer import (
-    LAYOUT_FOR, clear_provisional, describe, frame_slide, merge, set_provisional, teacher_items, title_slide,
+    clear_provisional, describe, element_texts, frame_slide, is_small, merge, remove_elements, revise_item,
+    set_provisional, substitute, teacher_items, title_slide,
 )
-from copilot.presentation.content import Piece, pieces_from
+from copilot.presentation.content import Piece, clean, pieces_from
 from copilot.presentation.deck import Deck
-from copilot.presentation.holds import ConcernInfo, HeldPiece, apply_known, replace_spoken, resolve, split  # noqa: F401
 from copilot.presentation.planner import Decision, Frame, Signal, Working, decide
 from copilot.presentation.spec import SlideSpec
 
@@ -42,7 +46,7 @@ log = logging.getLogger(__name__)
 TICK_S = 0.25
 APPLY_WAIT_S = 5.0
 MAX_SIGNALS = 300
-CONT_SUFFIX = " (cont.)"
+MAX_CORRECTIONS = 100
 
 
 @dataclass
@@ -71,19 +75,31 @@ class SlideMeta:
 
 
 @dataclass
-class HeldEntry:
-    held: HeldPiece
-    frame: Frame
-    slide_id: Optional[str]  # where the content would have gone (None: no slide was opened for it)
+class Correction:
+    """Where a concern's words appear on the slides, and which version is shown."""
+    concern_id: str
+    targets: list[tuple[str, str]]  # (slide id, element id)
+    wrong: str                      # as the teacher said it
+    right: str                      # the correction
+    showing_right: bool = True
+
+
+@dataclass
+class Tentative:
+    """Content of a not-yet-confirmed new topic, shown on the current slide meanwhile; it moves to the new topic's
+    slide once the topic is confirmed (so it does not stay on the previous topic's slide)."""
+    topic: str
+    elements: set[tuple[str, str]]  # (slide id, element id) on every slide the content reached
+    pieces: list[Piece]
 
 
 @dataclass
 class EngineStats:
     ops: Counter = field(default_factory=Counter)
     slides: int = 0
-    held: int = 0
-    released: int = 0
-    dropped_added: int = 0
+    revisions: int = 0
+    corrections_shown: int = 0
+    shown_as_said: int = 0
 
 
 def provisional_text(keyphrases: list[str], max_phrases: int = 3) -> str:
@@ -104,18 +120,9 @@ def provisional_text(keyphrases: list[str], max_phrases: int = 3) -> str:
     return " · ".join(chosen)
 
 
-KIND_SUFFIX = {"formula": ": the equation", "comparison": ": compared", "example": ": an example",
-               "timeline": ": timeline", "causes": ": causes and effects", "definition": ": key terms"}
-
-
-def continuation_title(frame_title: str, previous: SlideSpec, piece: Piece) -> str:
-    """Same kind of content that did not fit → "(cont.)"; a different representation → a short suffix."""
-    if LAYOUT_FOR[piece.kind] == previous.layout or piece.kind in ("points", "example"):
-        return frame_title + CONT_SUFFIX
-    suffix = KIND_SUFFIX.get(piece.kind, "")
-    if suffix and frame_title.endswith("?"):  # "What is respiration?" -> "Respiration: compared"
-        return (previous.subtitle or frame_title.rstrip("?")) + suffix
-    return frame_title + suffix
+def contains_words(text: str, words: str) -> bool:
+    return bool(words) and re.search(rf"(?<![A-Za-z0-9]){re.escape(words)}(?![A-Za-z0-9])", text, re.IGNORECASE) \
+        is not None
 
 
 class PresentationEngine:
@@ -136,13 +143,14 @@ class PresentationEngine:
         self._working_id: Optional[str] = None
         self._candidate: Optional[str] = None
         self._signals: OrderedDict[str, Signal] = OrderedDict()
-        self._held: list[HeldEntry] = []
-        self._concerns: dict[str, ConcernInfo] = {}
+        self._corrections: OrderedDict[str, Correction] = OrderedDict()
+        self._tentative: Optional[Tentative] = None
+        self._placements: Optional[list[tuple[Piece, set[tuple[str, str]]]]] = None  # collected by _place
         self._prov: Optional[tuple[str, str, float]] = None  # (slide id, segment id, expires at)
         self._boundary_seg: Optional[str] = None  # a concept boundary not yet interpreted: the slide may change
         self._live_id: Optional[str] = None
         self._live_since = 0.0
-        self._context = ""
+        self._context: tuple[str, dict[str, str]] = ("", {})
         self._tasks: list[asyncio.Task] = []
 
     # ---- wiring -------------------------------------------------------------------------------
@@ -222,6 +230,12 @@ class PresentationEngine:
         except KeyError:
             return None
 
+    def _all_specs(self) -> list[SlideSpec]:
+        return self.deck.slides + list(self._pending)
+
+    def _elements(self) -> dict[tuple[str, str], str]:
+        return {(s.id, eid): text for s in self._all_specs() for eid, text in element_texts(s).items()}
+
     def _working(self) -> Optional[Working]:
         spec = self._spec(self._working_id)
         meta = self._meta.get(self._working_id or "")
@@ -247,7 +261,7 @@ class PresentationEngine:
 
     async def _open(self, spec: SlideSpec, meta: SlideMeta, exempt: bool = False, adopt: bool = True) -> None:
         self._meta[spec.id] = meta
-        if not adopt:  # content for an earlier frame (released late): into the deck without taking the screen
+        if not adopt:  # content for an earlier frame: into the deck without taking the screen
             await self.deck.add(spec, activate=False)
             self.stats.slides += 1
             return
@@ -268,10 +282,10 @@ class PresentationEngine:
 
     async def _publish_context(self) -> None:
         spec = self._spec(self._working_id)
-        text = describe(spec) if spec is not None and not self._meta[spec.id].is_title else ""
-        if text != self._context:
-            self._context = text
-            await self.bus.publish(SlideContextChanged(text=text))
+        ctx = describe(spec) if spec is not None and not self._meta[spec.id].is_title else ("", {})
+        if ctx != self._context:
+            self._context = ctx
+            await self.bus.publish(SlideContextChanged(text=ctx[0], refs=ctx[1]))
 
     # ---- lifecycle / commands -----------------------------------------------------------------
     async def _on_live(self) -> None:
@@ -291,18 +305,29 @@ class PresentationEngine:
                 await self._add_to_deck(self._pending.pop(0))
             return
         meta = self._meta.get(self._working_id or "")
-        if meta is None:
+        prev = self._spec(self._working_id)
+        if meta is None or meta.is_title or prev is None:
             state = self.store.snapshot()
             topic = state.topic(state.current_topic_id)
             if topic is None:
                 return
             sub = state.subtopic()
             frame = Frame(topic.title, sub.title if sub else topic.title)
+            spec = frame_slide(frame.topic, frame.facet, continuation_of=self._working_id)
         else:
             frame = meta.frame
-        spec = frame_slide(frame.topic, frame.facet, continuation_of=self._working_id)
+            spec = await self._next_part(prev, frame)
         await self._open(spec, SlideMeta(frame), exempt=True)
         self._working_id = spec.id
+
+    async def _next_part(self, prev: SlideSpec, frame: Frame) -> SlideSpec:
+        """The next slide of the same frame: same title, part badge I, II, III (never "(cont.)")."""
+        part = self._last_part(frame, prev)
+        if prev.part is None:
+            numbered = prev.model_copy(update={"part": 1})
+            await self._commit(numbered)
+        nxt = frame_slide(frame.topic, frame.facet, continuation_of=prev.id)
+        return nxt.model_copy(update={"title": prev.title, "part": part + 1})
 
     # ---- fast path ----------------------------------------------------------------------------
     async def _on_signal(self, ev: ConceptSignal) -> None:
@@ -349,58 +374,162 @@ class PresentationEngine:
             await self._clear_provisional()
         if self._boundary_seg in ev.segment_ids:
             self._boundary_seg = None
+        revised = await self._apply_revisions(ev)
         pieces = pieces_from(it)
-        line_of = {sid: n for n, sid in enumerate(ev.segment_ids, start=1)}
-        mine = [c for c in snap.concerns if c.request_id == ev.request_id]
-        infos = [ConcernInfo(c.id, c.kind, c.claim, c.suggested_correction,
-                             frozenset(line_of[x] for x in c.segment_ids if x in line_of)) for c in mine]
-        self._concerns.update({c.id: c for c in infos})
-        shown, held = split(pieces, infos)
-        statuses = {c.id: c.status for c in mine}  # a decision may already have been made (engine backlog)
-        waiting: list[HeldPiece] = []
-        for h in held:
-            h2 = apply_known(h, self._concerns, statuses)
-            if h2 is None:
-                continue
-            if h2.pending:
-                waiting.append(h2)
-            else:
-                shown.append(h2.piece)
         signals = [self._signals[x] for x in ev.segment_ids if x in self._signals]
-        nav = self._navigated_back_to(Frame.of(it))
-        if nav is not None:  # the teacher went back to the slide this content belongs to: update it there
-            meta = self._meta[nav]
-            spec = self._spec(nav)
-            assert spec is not None
-            self.stats.ops["update"] += 1
-            target = await self._place(spec, False, meta.frame, shown, adopt=False)
-            self._hold(waiting, meta.frame, target)
-            return
-        working = self._working()
-        d = decide(working, it, signals, self._candidate, has_pieces=bool(shown or waiting),
-                   shift_threshold=self.s.shift_threshold)
-        self._candidate = d.candidate
-        self.stats.ops[d.op] += 1
-        log.info("planner: %s %s > %s (%s)", d.op, d.frame.topic, d.frame.facet, d.reason)
-        if d.op == "noop":
-            return
-        target_id = await self._apply(d, working, shown)
-        if d.op == "new" and target_id is None:
-            self._candidate = it.topic  # confirmed, but everything is held: the next unit opens the topic
-        self._hold(waiting, d.frame, target_id)
+        self._placements = []
+        moved: list[Piece] = []
+        removed: set[tuple[str, str]] = set()
+        try:
+            nav = self._navigated_back_to(Frame.of(it))
+            if nav is not None:  # the teacher went back to the slide this content belongs to: update it there
+                meta = self._meta[nav]
+                spec = self._spec(nav)
+                assert spec is not None
+                self.stats.ops["update"] += 1
+                await self._place(spec, False, meta.frame, pieces, adopt=False)
+            else:
+                working = self._working()
+                d = decide(working, it, signals, self._candidate, has_pieces=bool(pieces),
+                           shift_threshold=self.s.shift_threshold)
+                self._candidate = d.candidate
+                self.stats.ops[d.op] += 1
+                log.info("planner: %s %s > %s (%s)", d.op, d.frame.topic, d.frame.facet, d.reason)
+                tentative = self._tentative
+                if d.op == "new" and tentative is not None and Frame(tentative.topic, "").same_topic(d.frame):
+                    moved, removed = await self._take_back(tentative)  # the confirmed topic gets its earlier lines
+                    pieces = moved + pieces
+                if d.candidate is None or (tentative and not Frame(tentative.topic, "").same_topic(
+                        Frame(d.candidate, ""))):
+                    self._tentative = None
+                if d.op != "noop":
+                    await self._apply(d, working, pieces)
+                    if d.candidate is not None:
+                        placed = {k for _, ks in self._placements for k in ks}
+                        if self._tentative is None:
+                            self._tentative = Tentative(d.candidate, placed, list(pieces))
+                        else:
+                            self._tentative.elements |= placed
+                            self._tentative.pieces += pieces
+            placements = self._placements
+        finally:
+            self._placements = None
+        if moved:
+            await self._retarget_moved(moved, removed, placements)
+        line_of = {sid: n for n, sid in enumerate(ev.segment_ids, start=1)}
+        await self._track_corrections([c for c in snap.concerns if c.request_id == ev.request_id], line_of,
+                                      [(p, ks) for p, ks in placements if not any(p is m for m in moved)], revised)
 
-    def _hold(self, held: list[HeldPiece], frame: Frame, slide_id: Optional[str]) -> None:
-        for h in held:
-            self._held.append(HeldEntry(h, frame, slide_id))
-            self.stats.held += 1
-            log.info("holding %s piece for concern(s) %s", h.piece.kind, sorted(h.pending))
+    async def _take_back(self, t: Tentative) -> tuple[list[Piece], set[tuple[str, str]]]:
+        """Remove a confirmed topic's early items from the slides they were shown on; the caller places them on the
+        new topic's slide."""
+        self._tentative = None
+        by_slide: dict[str, set[str]] = {}
+        for sid, eid in t.elements:
+            by_slide.setdefault(sid, set()).add(eid)
+        for sid, ids in by_slide.items():
+            spec = self._spec(sid)
+            if spec is not None:
+                await self._commit(remove_elements(spec, ids))
+        log.info("moving %d item(s) of %r to the new topic's slide", len(t.elements), t.topic)
+        return t.pieces, set(t.elements)
+
+    async def _retarget_moved(self, moved: list[Piece], removed: set[tuple[str, str]],
+                              placements: list[tuple[Piece, set[tuple[str, str]]]]) -> None:
+        """Corrections that pointed at moved items follow them (and keep showing the version chosen)."""
+        new_ids = {k for p, ks in placements if any(p is m for m in moved) for k in ks}
+        texts = self._elements()
+        for corr in self._corrections.values():
+            if not removed & set(corr.targets):
+                continue
+            corr.targets = [k for k in new_ids if contains_words(texts.get(k, ""), corr.right)]
+            if not corr.showing_right and corr.targets:  # moved items carry the corrected words again
+                corr.showing_right = True
+                await self._toggle(corr, show_right=False)
+
+    async def _apply_revisions(self, ev: InterpretationReady) -> set[tuple[str, str]]:
+        """Rewrite CURRENT SLIDE items the new lines completed or corrected (refs from the prompt's context)."""
+        done: set[tuple[str, str]] = set()
+        for r in ev.interpretation.revisions:
+            target = ev.slide_refs.get(r.ref.strip().upper())
+            text = clean(r.text)
+            if not target or not text or "/" not in target:
+                continue
+            slide_id, item_id = target.split("/", 1)
+            spec = self._spec(slide_id)
+            new = revise_item(spec, item_id, text) if spec is not None else None
+            if new is None:
+                log.info("revision %s -> %s: item no longer on the slide", r.ref, target)
+                continue
+            await self._commit(new)
+            done.add((slide_id, item_id))
+            self.stats.revisions += 1
+            log.info("revised %s: %s", r.ref, text)
+        return done
+
+    async def _track_corrections(self, concerns: list[Concern], line_of: dict[str, int],
+                                 placements: list[tuple[Piece, set[tuple[str, str]]]],
+                                 revised: set[tuple[str, str]]) -> None:
+        """Find the elements each concern is about — those made from the concern's own transcript lines — and show
+        the chosen version there: the correction when applied, otherwise what the teacher said. Word matching alone
+        would hit unrelated items ("Jupiter is the largest planet" for a largest/smallest concern)."""
+        texts = self._elements()
+        all_new = {k for _, ks in placements for k in ks} | revised
+        for c in concerns:
+            if not (c.wrong and c.right):
+                continue
+            lines = {line_of[x] for x in c.segment_ids if x in line_of}
+            own = {k for p, ks in placements if lines & set(p.lines) for k in ks}
+            candidates = (own | revised) if own else all_new
+            right_hits = [k for k in candidates if contains_words(texts.get(k, ""), c.right)]
+            wrong_hits = [k for k in candidates if k not in right_hits and contains_words(texts.get(k, ""), c.wrong)]
+            want_right = (c.applied and c.status != "kept") or c.status == "accepted"
+            if right_hits:
+                corr = Correction(c.id, right_hits, c.wrong, c.right, showing_right=True)
+            elif wrong_hits:  # the model raised the correction but left the teacher's words in its items
+                corr = Correction(c.id, wrong_hits, c.wrong, c.right, showing_right=False)
+            else:
+                corr = Correction(c.id, [], c.wrong, c.right, showing_right=want_right)
+            self._corrections[c.id] = corr
+            while len(self._corrections) > MAX_CORRECTIONS:
+                self._corrections.popitem(last=False)
+            if corr.targets:
+                await self._toggle(corr, show_right=want_right)
+                if corr.showing_right:
+                    self.stats.corrections_shown += 1
+            log.info("concern %s (%s, applied=%s): %d element(s); slide shows %r", c.id, c.kind, c.applied,
+                     len(corr.targets), c.right if corr.showing_right else c.wrong)
+
+    async def _toggle(self, corr: Correction, show_right: bool) -> None:
+        if corr.showing_right == show_right:
+            return
+        old, new = (corr.wrong, corr.right) if show_right else (corr.right, corr.wrong)
+        by_slide: dict[str, set[str]] = {}
+        for sid, eid in corr.targets:
+            by_slide.setdefault(sid, set()).add(eid)
+        for sid, ids in by_slide.items():
+            spec = self._spec(sid)
+            if spec is not None:
+                await self._commit(substitute(spec, ids, old, new))
+        corr.showing_right = show_right
+        if not show_right:
+            self.stats.shown_as_said += 1
+
+    async def _on_resolved(self, ev: ConcernResolved) -> None:
+        corr = self._corrections.get(ev.concern_id)
+        if corr is None:
+            return
+        if ev.status == "accepted":
+            await self._toggle(corr, show_right=True)
+        elif ev.status == "kept":
+            await self._toggle(corr, show_right=False)
+        log.info("concern %s %s: slide shows %r", ev.concern_id, ev.status,
+                 corr.right if corr.showing_right else corr.wrong)
 
     async def _apply(self, d: Decision, working: Optional[Working], pieces: list[Piece]) -> Optional[str]:
-        """Carry out a decision; returns the id of the slide the content went to (for held content)."""
+        """Carry out a decision; returns the id of the slide the content went to."""
         frame = d.frame
         if d.op in ("new", "continue"):
-            if not pieces:
-                return None  # everything is held: no empty slide
             cont = self._working_id if d.op == "continue" else None
             spec = frame_slide(frame.topic, frame.facet, continuation_of=cont)
             return await self._place(spec, True, frame, pieces, exempt=working is None or working.is_title)
@@ -425,25 +554,42 @@ class PresentationEngine:
 
     async def _place(self, spec: SlideSpec, is_new: bool, frame: Frame, pieces: list[Piece],
                      exempt: bool = False, adopt: bool = True) -> str:
-        """Merge pieces into spec, opening continuation slides as needed. adopt=False: content for another
-        frame (late release, navigated-back slide) never becomes the working slide nor takes the screen."""
+        """Merge pieces into spec, opening the next part of the frame when the slide is full. adopt=False: content
+        for another frame (navigated-back slide) never becomes the working slide nor takes the screen.
+        Records which elements each piece produced (self._placements) for corrections and tentative moves."""
         cur, cur_new = spec, is_new
         for piece in pieces:
+            ids_before = {(cur.id, e) for e in element_texts(cur)}
+            finished: list[SlideSpec] = []
             full = (not cur_new) and self._meta.get(cur.id, SlideMeta(frame)).full
             cur, left = merge(cur, piece, full=full)
+            if left is not None and not full and is_small(left):
+                cur, left = merge(cur, left, squeeze=True)  # one short item: squeeze it in, no lonely next part
             while left is not None:
-                await self._finish(cur, cur_new, frame, exempt, adopt)
-                exempt = False
                 nxt = frame_slide(frame.topic, frame.facet, continuation_of=cur.id)
-                nxt = nxt.model_copy(update={"title": continuation_title(nxt.title, cur, left)})
-                cur, cur_new = nxt, True
-                cur, rest = merge(cur, left)
-                if rest == left:
+                nxt = nxt.model_copy(update={"title": cur.title})
+                nxt, rest = merge(nxt, left)
+                if not nxt.blocks or rest == left:
                     log.error("piece does not fit an empty slide; dropped: %s", left.all_text()[:3])
                     break
+                part = self._last_part(frame, cur) + 1  # numbered only once the next part really has content
+                if cur.part is None:
+                    cur = cur.model_copy(update={"part": 1})
+                await self._finish(cur, cur_new, frame, exempt, adopt)
+                finished.append(cur)
+                exempt = False
+                cur, cur_new = nxt.model_copy(update={"part": part}), True
                 left = rest
+            if self._placements is not None:
+                produced = {(s.id, e) for s in finished + [cur] for e in element_texts(s)} - ids_before
+                self._placements.append((piece, produced))
         await self._finish(cur, cur_new, frame, exempt, adopt)
         return cur.id
+
+    def _last_part(self, frame: Frame, cur: SlideSpec) -> int:
+        """Highest part number of this frame so far (a navigated-back part I must not create a second II)."""
+        parts = [s.part or 1 for s in self._all_specs() if s.id in self._meta and self._meta[s.id].frame.same(frame)]
+        return max(parts + [cur.part or 1])
 
     async def _finish(self, spec: SlideSpec, is_new: bool, frame: Frame, exempt: bool, adopt: bool = True) -> None:
         if is_new:
@@ -454,46 +600,5 @@ class PresentationEngine:
                 self._working_id = spec.id
         else:
             await self._commit(spec)
-            if spec.id != self._working_id and spec.id not in self._meta:
+            if spec.id not in self._meta:
                 self._meta[spec.id] = SlideMeta(frame)
-
-    # ---- concerns -----------------------------------------------------------------------------
-    async def _on_resolved(self, ev: ConcernResolved) -> None:
-        info = self._concerns.pop(ev.concern_id, None)
-        if info is None:
-            return
-        remaining: list[HeldEntry] = []
-        for e in self._held:
-            if ev.concern_id not in e.held.pending:
-                remaining.append(e)
-                continue
-            piece = resolve(e.held.piece, info, ev.status)
-            e.held.pending.discard(ev.concern_id)
-            if piece is None:
-                log.info("concern %s %s: held content not shown", ev.concern_id, ev.status)
-                continue
-            e.held.piece = piece
-            if e.held.pending:
-                remaining.append(e)  # still waits for another open concern
-            else:
-                await self._release(e)
-        self._held = remaining
-
-    async def _release(self, e: HeldEntry) -> None:
-        self.stats.released += 1
-        pieces = [e.held.piece]
-        spec = self._spec(e.slide_id)
-        if spec is None:
-            working = self._working()
-            if working is not None and working.frame.same(e.frame):
-                spec = self._spec(self._working_id)
-        if spec is not None:
-            frame = self._meta[spec.id].frame if spec.id in self._meta else e.frame
-            await self._place(spec, False, frame, pieces, adopt=spec.id == self._working_id)
-            return
-        working = self._working()
-        if working is None or working.is_title:  # nothing on screen yet: this is the first content
-            await self._place(frame_slide(e.frame.topic, e.frame.facet), True, e.frame, pieces, exempt=True)
-        else:
-            new = frame_slide(e.frame.topic, e.frame.facet, continuation_of=self._working_id)
-            await self._place(new, True, e.frame, pieces, adopt=working.frame.same(e.frame))

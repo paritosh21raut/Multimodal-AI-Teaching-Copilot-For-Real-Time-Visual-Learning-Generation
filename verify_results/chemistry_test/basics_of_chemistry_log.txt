@@ -1,0 +1,114 @@
+(.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> python -m copilot
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (5.1 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.2 s)
+[INIT]  LLM providers: groq_main -> groq_alt -> openrouter_main -> ollama
+
+[READY] session 20261005-090608-60a9
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+
+[LIVE]  lecture started. Type q + Enter to end.
+  [    0.3s] Hello everyone, today we will learn about basic concepts of chemistry. (732 ms)
+  [    4.6s] Chemistry, it is the base branch of science which deals with the consumption. (639 ms)
+  [   11.1s] composition structure and properties of metal (516 ms)
+  [   15.2s] branches of chemistry are (452 ms)
+  [   17.9s] in organic chemistry, organic chemistry, physical chemistry and analytical chemistry. (613 ms)
+  [UNDERSTAND] Chemistry > Basic Concepts of Chemistry (new_topic) acts=definition hint=definition lines=4 via groq_main 1754 ms
+               Introduced chemistry as the foundational science studying composition, structure, and properties of matter.
+  [CONCERN] (transcription) composition structure and properties of metal -> composition, structure, and properties of matter (0.5)
+09:06:42 INFO    copilot.presentation.engine: planner: new Chemistry > Basic Concepts of Chemistry (first content slide)
+09:06:42 INFO    copilot.presentation.engine: concern da0547042924 (transcription, applied=True): 1 element(s); slide shows 'matter'
+  [SLIDE] add    'Basic Concepts of Chemistry' [definition] v1 (1 items)
+  [   24.8s] Let's learn about metal. (494 ms)
+09:06:49 WARNING copilot.llm.router: llm groq_main failed: 429 {"error":{"message":"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m1y7z7r3esjaek71dw1q6b5z` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 197880, Re
+  [UNDERSTAND] Chemistry > Branches of Chemistry (sibling_concept) acts=classification hint=hierarchy lines=1 via groq_alt 998 ms
+               Listed organic, physical, and analytical chemistry as major branches.
+09:06:49 INFO    copilot.presentation.engine: planner: continue Chemistry > Branches of Chemistry (new facet)
+09:06:49 INFO    copilot.presentation.engine: slide 'Chemistry' waits for the min dwell time
+  [SLIDE] add    'Chemistry' [hierarchy] v1 (1 items)
+  [   29.3s] Anything which occupies some space and has some mass is called matter. It is made up of small particles which have space between them. The matter particles attract each other and are in the state of continuous motion. (994 ms)
+  [UNDERSTAND] Chemistry > Metals (sibling_concept) acts=transition hint=none lines=1 via groq_main 1391 ms
+               Introduced metals as a new concept within Chemistry
+09:07:02 INFO    copilot.presentation.engine: planner: noop Chemistry > Metals (nothing to display)
+09:07:13 WARNING copilot.llm.router: llm groq_main failed: 429 {"error":{"message":"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m1y7z7r3esjaek71dw1q6b5z` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199806, Re
+  [UNDERSTAND] Chemistry > Basic Concepts of Chemistry (new_topic) acts=definition,explanation hint=concept lines=1 via groq_alt 1192 ms
+               Defined matter as anything occupying space and having mass, composed of moving, attracting particles.
+09:07:14 INFO    copilot.presentation.engine: planner: continue Chemistry > Basic Concepts of Chemistry (new facet)
+  [SLIDE] add    'Basic Concepts of Chemistry' [definition] v1 (5 items)
+  [   43.9s] elements. It is the simplest form of pure substance which can neither be decomposed nor be built from simpler substances by ordinary physical and chemical methods. (758 ms)
+  [SLIDE] update 'Basic Concepts of Chemistry' [definition] v2 (6 items)
+09:07:21 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Basic Concepts of Chemistry' -> same_concept
+  [UNDERSTAND] Chemistry > Basic Concepts of Chemistry (same_concept) acts=definition hint=definition lines=1 via groq_alt 836 ms
+               Defined an element as the simplest form of pure substance that cannot be decomposed by ordinary methods.
+09:07:21 INFO    copilot.presentation.engine: planner: update Chemistry > Basic Concepts of Chemistry (same frame)
+09:07:21 INFO    copilot.presentation.engine: slide 'Basic Concepts of Chemistry' waits for the min dwell time
+  [SLIDE] update 'Basic Concepts of Chemistry' [definition] v3 (5 items)
+  [SLIDE] update 'Basic Concepts of Chemistry' [definition] v4 (5 items)
+  [   56.3s] water compounds. Compounds, it is also the form of matter which can be formed by combining two or more elements in a definite ratio by mass. (817 ms)
+  [   67.3s] Types of compounds are (459 ms)
+  [SLIDE] add    'Basic Concepts of Chemistry' [definition] v1 (1 items)
+09:07:29 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Basic Concepts of Chemistry' -> same_concept
+  [UNDERSTAND] Chemistry > Basic Concepts of Chemistry (same_concept) acts=definition hint=definition lines=1 via groq_alt 865 ms
+               Defined a compound as matter formed by combining two or more elements in a definite ratio by mass.
+09:07:29 INFO    copilot.presentation.engine: planner: update Chemistry > Basic Concepts of Chemistry (same frame)
+  [SLIDE] update 'Basic Concepts of Chemistry' [concept] v2 (2 items)
+  [   69.2s] in organic compounds and organic compounds. (486 ms)
+  [   72.9s] water mixtures (488 ms)
+09:07:38 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Basic Concepts of Chemistry' -> same_concept
+  [UNDERSTAND] Chemistry > Basic Concepts of Chemistry (same_concept) acts=classification hint=hierarchy lines=2 via groq_alt 1270 ms
+               Classified compounds into inorganic and organic types.
+  [CONCERN] (transcription) in organic compounds and organic compounds -> Inorganic compounds and organic compounds (0.9)
+09:07:38 INFO    copilot.presentation.engine: planner: update Chemistry > Basic Concepts of Chemistry (same frame)
+09:07:38 INFO    copilot.presentation.engine: concern cfc61ff44549 (transcription, applied=True): 1 element(s); slide shows 'Inorganic'
+  [SLIDE] update 'Basic Concepts of Chemistry' [concept] v3 (3 items)
+  [   75.6s] They are made up of two or more pure substances. They can possess variable compositions and can be separated into their components by some physical methods. (798 ms)
+09:07:45 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Basic Concepts of Chemistry' -> same_concept
+  [UNDERSTAND] Chemistry > Basic Concepts of Chemistry (same_concept) acts=definition hint=definition lines=2 via groq_alt 920 ms
+               Defined mixtures as combinations of pure substances with variable compositions separable by physical methods.
+09:07:45 INFO    copilot.presentation.engine: planner: update Chemistry > Basic Concepts of Chemistry (same frame)
+  [SLIDE] add    'Basic Concepts of Chemistry' [definition] v1 (1 items)
+  [   87.1s] Examples are homogeneous and heterogeneous. (567 ms)
+  [SLIDE] update 'Basic Concepts of Chemistry' [definition] v2 (1 items)
+09:07:53 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Basic Concepts of Chemistry' -> same_concept
+  [UNDERSTAND] Chemistry > Basic Concepts of Chemistry (same_concept) acts=classification hint=hierarchy lines=1 via groq_alt 838 ms
+               Classified mixtures into homogeneous and heterogeneous types.
+09:07:53 INFO    copilot.presentation.engine: planner: update Chemistry > Basic Concepts of Chemistry (same frame)
+  [SLIDE] update 'Basic Concepts of Chemistry' [definition] v3 (1 items)
+  [SLIDE] update 'Basic Concepts of Chemistry' [definition] v4 (2 items)
+  [   93.7s] Let's learn about atoms and molecules. Atoms are the smallest particles of an element which can take part in a chemical reaction. (828 ms)
+  [  102.1s] it may or may not be capable of independent existence. (556 ms)
+09:08:10 WARNING copilot.llm.router: llm openrouter_main failed: no complete response within 6.5s (retrying)
+  [  105.9s] Molecule on the other hand is the simplest particle of matter that has independent existence it may be (705 ms)
+  [  113.9s] Omo Atomic (342 ms)
+09:08:17 WARNING copilot.llm.router: llm openrouter_main failed: no complete response within 6.5s
+  [  115.4s] diatomic triatomic or heteroatomic (600 ms)
+09:08:19 WARNING copilot.llm.router: llm ollama failed: timeout after 2.0s (ConnectTimeout) (retrying)
+09:08:19 WARNING copilot.understanding.interpreter: interpretation fallback: llm: deadline exceeded; groq_main: skipped (cooldown 810s); groq_alt: skipped (tpm); openrouter_main: Transient; openrouter_main: Transient; ollama: Transient; ollama: deadline
+  [UNDERSTAND] Chemistry > Basic Concepts of Chemistry (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: deadline exceeded; groq_main: skipped (cooldown 810s); groq_alt: skipped (t 15011 ms
+09:08:19 INFO    copilot.presentation.engine: planner: update Chemistry > Basic Concepts of Chemistry (same frame)
+  [SLIDE] update 'Basic Concepts of Chemistry' [definition] v5 (3 items)
+09:08:23 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Basic Concepts of Chemistry' -> same_concept
+  [UNDERSTAND] Chemistry > Basic Concepts of Chemistry (same_concept) acts=definition,classification hint=definition lines=4 via groq_alt 1251 ms
+               Defined molecules as the simplest particles with independent existence and classified them into monoatomic, diatomic, triatomic, and heteroatomic types.
+  [CONCERN] (transcription) Omo Atomic -> Monoatomic (0.9)
+09:08:23 INFO    copilot.presentation.engine: planner: update Chemistry > Basic Concepts of Chemistry (same frame)
+09:08:23 INFO    copilot.presentation.engine: concern 1bb651fac0ce (transcription, applied=True): 1 element(s); slide shows 'Monoatomic'
+  [SLIDE] add    'Basic Concepts of Chemistry' [definition] v1 (2 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261005-090608-60a9: 19 segments, 237 words, state v44, 223 events logged
+        CommandReceived=29, ConceptSignal=19, ConcernRaised=3, DeckState=33, InterpretRequested=11, InterpretationReady=11, LLMCallFailed=5, LifecycleChanged=5, SlideContextChanged=10, SlidePatch=15, StateChanged=44, TranscriptFinal=19, UtteranceClassified=19
+        stt: 19 published, 0 dropped, latency p50=599 ms p95=994 ms max=994 ms
+        understanding: 11 interpretations (10 by LLM, 1 fallbacks, 0 repaired), max 7 calls/min, prompt tokens max=1852 avg=1770, latency p50=1192 ms max=15011 ms
+        presentation: 6 slides; planner ops {'new': 1, 'continue': 2, 'noop': 1, 'update': 7}; revisions 0, corrections shown 3, shown as said 0
+          1. [definition] Basic Concepts of Chemistry  (v1, ['definition'])
+          2. [hierarchy] Chemistry  (v1, ['hierarchy'])
+          3. [definition] Basic Concepts of Chemistry [part 1]  (v4, ['definition', 'points'])
+          4. [concept] Basic Concepts of Chemistry [part 2]  (v3, ['definition', 'definition', 'hierarchy'])
+          5. [definition] Basic Concepts of Chemistry [part 3]  (v5, ['definition', 'hierarchy', 'callout'])
+          6. [definition] Basic Concepts of Chemistry [part 4]  (v1, ['definition', 'hierarchy'])
+        providers: {'groq_main': 2, 'groq_alt': 8}; triggers: {'max_wait': 3, 'pause': 6, 'boundary': 2}; outline: ['Chemistry > Basic Concepts of Chemistry, Branches of Chemistry, Metals']; concerns: 3
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261005-090608-60a9\session.sqlite
+(.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> 

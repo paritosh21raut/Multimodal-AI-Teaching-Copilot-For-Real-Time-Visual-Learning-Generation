@@ -1,10 +1,9 @@
-"""Deterministic grounding guard: formula-like tokens on the display must be what the teacher said.
+"""Deterministic grounding guard: no silent changes to what the teacher said.
 
-LLMs "helpfully" fix what they believe was mis-heard ("6H2" → "6H2O") without saying so. The teacher is the
-authority (RULES 8): a suspected mis-hearing or mis-statement is kept as said and raised as a concern, so the
-teacher decides. This guard catches silent corrections of chemical formulas / symbol-number tokens: a token in
-the model's items that does not occur in the transcript, with a close variant that does, is reverted to the
-spoken form and a `transcription` concern is added (unless the model already raised one about it).
+LLMs "helpfully" fix what they believe was mis-heard ("6H2" → "6H2O") without saying so. The projector shows the
+correct form (truthful slides), but the teacher must always know: a formula-like token in the model's items that
+was not said, with a close spoken variant in the same place, gets a `transcription` concern (wrong = spoken form,
+right = shown form) unless the model already raised one. The content itself is not changed here.
 
 Only tokens with an upper-case letter and a digit are checked (CO2, 6H2O, C6H12O6, H2SO4). Symbol forms of
 spoken words ("carbon dioxide" → CO2) have no close variant in the transcript and are left alone.
@@ -153,33 +152,30 @@ def _act_texts(it: ContentItems) -> list[str]:
 
 
 def enforce_grounding(it: Interpretation, lines: Sequence[str]) -> tuple[Interpretation, list[str]]:
-    """Revert silent corrections of formula-like tokens and raise them as concerns.
+    """Report silent corrections of formula-like tokens as concerns; the shown content stays as the model wrote it.
 
-    Returns the grounded interpretation and the reverted tokens ("6H2O->6H2") for logging.
+    Returns the interpretation (with any added concerns) and the changes found ("6H2->6H2O") for logging.
     """
     model_tokens = frozenset(t for a in it.acts for text in _act_texts(a.items) for t in _tokens(text))
     g = _Grounder(lines, model_tokens)
-    acts: list[DiscourseAct] = []
     for a in it.acts:
-        items = g.items(a.items)
-        acts.append(a.model_copy(update={"items": items}) if items != a.items else a)
+        g.items(a.items)  # detection only (fills g.mapping); the result is discarded
     if not g.mapping:
         return it, []
     concerns = list(it.concerns)
-    reverted: list[str] = []
+    changes: list[str] = []
     raised: set[str] = set()
     for tok, (said, line) in g.mapping.items():
-        reverted.append(f"{tok}->{said}")
+        changes.append(f"{said}->{tok}")
         if any(o != tok and _strip_coeff(o) == tok for o in g.mapping):
             continue  # coefficient-free twin ("H2O" of "6H2O"): one concern covers both
-        mentioned = any({tok, said} & set(_tokens(f"{c.claim} {c.issue} {c.suggested_correction}"))
+        mentioned = any({tok, said} & set(_tokens(f"{c.claim} {c.issue} {c.suggested_correction} {c.wrong} {c.right}"))
                         for c in concerns)
         if mentioned or said in raised:
             continue  # the model already raised it
         raised.add(said)
         concerns.append(ConcernItem(
-            claim=said,  # the spoken form exactly, so "Accept" can replace it in the held content
-            issue=f"Heard “{said}”; possibly mis-heard or mis-spoken for “{tok}”.",
-            suggested_correction=tok, confidence=CONCERN_CONFIDENCE, lines=[line], kind="transcription",
+            claim=said, issue=f"Heard “{said}”; the slide shows “{tok}”.", suggested_correction=tok,
+            confidence=CONCERN_CONFIDENCE, lines=[line], kind="transcription", wrong=said, right=tok,
         ))
-    return it.model_copy(update={"acts": acts, "concerns": concerns}), reverted
+    return it.model_copy(update={"concerns": concerns}), changes

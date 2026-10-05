@@ -160,6 +160,7 @@ class InterpretationReady(Event):
     latency_ms: float = 0.0
     fallback: bool = False
     fallback_reason: str = ""
+    slide_refs: dict[str, str] = Field(default_factory=dict)  # CURRENT SLIDE refs the prompt showed (revisions)
 
 
 class LLMCallFailed(Event):
@@ -178,8 +179,10 @@ class ConcernResolved(Event):
 
 
 class SlideContextChanged(Event):
-    """Short summary of the slide receiving content, for the interpretation prompt (presentation → store)."""
+    """Short summary of the slide receiving content, for the interpretation prompt (presentation → store).
+    refs: item reference used in the text ("S1") -> "slide_id/item_id", so revisions can be applied exactly."""
     text: str
+    refs: dict[str, str] = Field(default_factory=dict)
 
 
 class SlideOverflow(Event):

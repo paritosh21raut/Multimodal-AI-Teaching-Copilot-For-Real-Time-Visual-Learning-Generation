@@ -9,7 +9,7 @@ from copilot.core.events import new_id
 
 Layout = Literal[
     "title", "concept", "definition", "key_points", "process_flow", "comparison", "timeline",
-    "hierarchy", "cause_effect", "formula", "example", "application", "narrative",
+    "hierarchy", "cause_effect", "formula", "example", "application", "narrative", "facts", "groups",
 ]
 
 
@@ -59,6 +59,18 @@ class CauseLink(_Model):
     id: str = Field(default_factory=new_id)
     cause: str
     effect: str
+
+
+class Fact(_Model):
+    id: str = Field(default_factory=new_id)
+    label: str          # "Smallest planet"
+    value: str = ""     # "Mercury"
+
+
+class Group(_Model):
+    id: str = Field(default_factory=new_id)
+    label: str
+    items: list[Item] = Field(default_factory=list)
 
 
 class Variable(_Model):
@@ -143,6 +155,22 @@ class CalloutBlock(_Model):
     text: str
 
 
+class FactsBlock(_Model):
+    """Fact tiles: short attribute facts about named things (records, superlatives, properties)."""
+    type: Literal["facts"] = "facts"
+    id: str = Field(default_factory=new_id)
+    heading: str = ""
+    facts: list[Fact] = Field(default_factory=list)
+
+
+class GroupsBlock(_Model):
+    """Named groups side by side ("Inner planets" | "Outer planets")."""
+    type: Literal["groups"] = "groups"
+    id: str = Field(default_factory=new_id)
+    heading: str = ""
+    groups: list[Group] = Field(default_factory=list)
+
+
 class ImageBlock(_Model):
     type: Literal["image"] = "image"
     id: str = Field(default_factory=new_id)
@@ -155,7 +183,7 @@ class ImageBlock(_Model):
 Block = Annotated[
     Union[
         DefinitionBlock, PointsBlock, ProcessBlock, ComparisonBlock, TimelineBlock, HierarchyBlock,
-        CauseEffectBlock, FormulaBlock, ExampleBlock, CalloutBlock, ImageBlock,
+        CauseEffectBlock, FormulaBlock, ExampleBlock, CalloutBlock, ImageBlock, FactsBlock, GroupsBlock,
     ],
     Field(discriminator="type"),
 ]
@@ -170,6 +198,7 @@ class SlideSpec(_Model):
     title: str
     subtitle: str = ""
     continuation_of: Optional[str] = None  # previous slide of the same concept
+    part: Optional[int] = None  # 1, 2, 3 ... when one frame spans several slides (shown as a I / II badge)
     layout: Layout = "concept"
     blocks: list[Block] = Field(default_factory=list)
     language: str = "en"

@@ -1,7 +1,7 @@
 // /control — the teacher's laptop view: live preview, deck, controls, transcript, status.
 // It never changes state itself; every action is a command sent to the server.
 import { html, render, useEffect, useReducer, useRef } from "../vendor/htm-preact-standalone.mjs";
-import { Slide, useStageScale } from "../shared/slide.js";
+import { Slide, partLabel, useStageScale } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
 
 const KEYS = {
@@ -33,28 +33,37 @@ function Meter({ audio }) {
   </div>`;
 }
 
-// Doubtful statements and suspected mis-hearings: shown only here, never on the projector. The content they
-// refer to is held back until the teacher decides.
+// Mistakes and suspected mis-hearings: the projector stays truthful (it shows the correction when the model is
+// confident); this panel tells the teacher what was said and what the slide shows, with a one-click switch.
 function Concerns({ concerns, send }) {
   if (!concerns.length) return null;
   const act = (id, action) => send("resolve_concern", { id, action });
   return html`<section class="concerns">
-    <h2>Needs your review <span class="count">${concerns.length}</span></h2>
-    ${concerns.map((c) => html`<article key=${c.id} class=${"concern " + (c.kind || "factual")}>
-      <div class="concern-head">
-        <span class="kind">${c.kind === "transcription" ? "Possible mis-hearing" : "Possible error"}</span>
-        <span class="conf">${Math.round((c.confidence || 0) * 100)}%</span>
-      </div>
-      <p class="claim">“${c.claim}”</p>
-      ${c.issue && html`<p class="issue">${c.issue}</p>`}
-      ${c.suggested_correction && html`<p class="fix"><span>Suggested:</span> ${c.suggested_correction}</p>`}
-      <div class="concern-actions">
-        <button class="accept" disabled=${!c.suggested_correction} onClick=${() => act(c.id, "accept")}
-          title="Show the corrected version on the display">Accept correction</button>
-        <button onClick=${() => act(c.id, "keep")} title="Show it as you said it">Keep as said</button>
-        <button class="ghost" onClick=${() => act(c.id, "dismiss")} title="Do not show this content">Dismiss</button>
-      </div>
-    </article>`)}
+    <h2>Check this <span class="count">${concerns.length}</span></h2>
+    ${concerns.map((c) => {
+      const mishear = c.kind === "transcription";
+      const shows = c.applied ? (c.right || c.suggested_correction) : (c.wrong || c.claim);
+      return html`<article key=${c.id} class=${"concern " + (c.kind || "factual")}>
+        <div class="concern-head">
+          <span class="kind">${mishear ? "Possible mis-hearing" : "Possible mistake"}</span>
+          <span class="conf">${Math.round((c.confidence || 0) * 100)}%</span>
+        </div>
+        <p class="said"><span>${mishear ? "Heard" : "You said"}</span> “${c.claim}”</p>
+        ${c.suggested_correction && html`<p class="fix"><span>Correct</span> ${c.suggested_correction}</p>`}
+        ${c.issue && html`<p class="issue">${c.issue}</p>`}
+        <p class=${"status " + (c.applied ? "fixed" : "as-said")}>
+          ${c.applied ? "The slide shows the correction" : "The slide shows what you said"}${shows ? `: “${shows}”` : ""}
+        </p>
+        <div class="concern-actions">
+          ${c.applied
+            ? html`<button class="accept" onClick=${() => act(c.id, "dismiss")} title="Keep the correction on the slide">OK</button>
+                   <button onClick=${() => act(c.id, "keep")} title="Put back what you said">Show as I said</button>`
+            : html`<button class="accept" disabled=${!c.suggested_correction} onClick=${() => act(c.id, "accept")}
+                     title="Show the corrected version on the slide">Show correction</button>
+                   <button onClick=${() => act(c.id, "dismiss")} title="Keep what you said">OK</button>`}
+        </div>
+      </article>`;
+    })}
   </section>`;
 }
 
@@ -114,7 +123,7 @@ function App() {
           ${ids.map((id, i) => {
             const s = state.slides[id];
             return html`<li key=${id} class=${id === (deck && deck.live_id) ? "live" : ""} onClick=${() => send("goto", { slide_id: id })}>
-              <span class="n">${i + 1}</span><span class="t">${s ? s.title : "…"}</span>${s && s.facet && html`<span class="f">${s.facet}</span>`}
+              <span class="n">${i + 1}</span><span class="t">${s ? s.title : "…"}${s && s.part ? html` <span class="part">${partLabel(s.part)}</span>` : ""}</span>${s && s.facet && html`<span class="f">${s.facet}</span>`}
             </li>`;
           })}
         </ol>

@@ -1,0 +1,26 @@
+# Real-mic verify lecture (session 20261005-072208-c25c), transcript lines exactly as speech recognition produced
+# them, including mis-hearings ("Omo atomic" = monoatomic, "catastrophic" = polyatomic).
+Hello everyone, today we are going to learn about the basic concepts of chemistry.
+So what is Chemistry? Chemistry is the branch of science which deals with the composition, structure and properties of matter.
+[pause 1]
+Branches of chemistry are Inorganic chemistry, organic chemistry, physical chemistry and analytical chemistry.
+[pause 1.5]
+Now let's learn about matter.
+Matter is anything which occupies some space and has some mass.
+it is made up of small particles which have space between them
+The matter particles attract each other and are in the state of continuous motion.
+[pause 1.5]
+Let's learn about elements. It is the simplest form of pure substance which can neither be decomposed nor be built from simpler substances by ordinary physical and chemical methods.
+water compounds.
+Compound is also the form of matter which can be formed by combining two or more elements in a definite ratio by mass.
+[pause 1.5]
+Types of compounds are Inorganic compounds and Organic compounds.
+[pause 1.5]
+Let's learn about mixtures.
+Mixtures, these are made up of two or more pure substances. They can possess variable composition and can be separated into their components by some physical method.
+[pause 2]
+Now let's learn about atoms and molecules.
+Atoms are the smallest particles of an element which can take part in a chemical reaction.
+while a molecule is the simplest particle of matter that has independent existence. It may be
+Omo atomic
+diatomic triatomic or catastrophic

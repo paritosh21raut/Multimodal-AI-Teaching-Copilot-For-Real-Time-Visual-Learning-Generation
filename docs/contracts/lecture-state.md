@@ -13,6 +13,7 @@ LectureState
   summary_deltas: list[str]           # the sentences behind rolling_summary (bounded by the same budget)
   concerns: list[Concern]             # open + resolved (≤ 50; resolved ones pruned first)
   slide_context: str                  # summary of the slide receiving content (presentation engine), for the prompt
+  slide_refs: dict[str, str]          # "S1" -> "slide_id/item_id" for the numbered items in slide_context
   stats: segments, words, llm_calls (interpretations answered by an LLM), fallbacks
   lecture_clock_s, last_interpretation_id
 ```
@@ -30,7 +31,8 @@ LectureState
 `TopicNode(id, title, summary, subtopics: list[TopicNode], first_seen, last_seen)`
 
 `Concern(id, claim, issue, suggested_correction, confidence, status=open|accepted|kept|dismissed,
-kind=factual|transcription, segment_id, segment_ids, request_id)`
+kind=factual|transcription, wrong, right, applied, segment_id, segment_ids, request_id)`
+(`applied` = the projector shows the correction: confidence ≥ 0.75 factual / ≥ 0.4 transcription.)
 
 ## Invariants
 - `version` increments on every applied change; `StateChanged` carries the new version.

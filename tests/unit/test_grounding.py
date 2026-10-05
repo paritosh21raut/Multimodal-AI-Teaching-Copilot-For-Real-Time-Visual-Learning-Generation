@@ -1,4 +1,7 @@
-"""Grounding guard: silent corrections of spoken formulas are reverted and raised as concerns (M3 live fix b)."""
+"""Grounding guard: silent corrections of spoken formulas are always reported to the teacher (M3 live fix b).
+
+Truthful slides (M4 verify fixes): the slide keeps the corrected form; the guard only makes sure a concern says
+what was actually heard (wrong) and what the slide shows (right)."""
 import json
 
 import httpx
@@ -22,17 +25,15 @@ def formula_it(expr, variables=(), concerns=()):
         concerns=list(concerns))
 
 
-def test_silent_formula_correction_is_reverted_and_raised():
+def test_silent_formula_correction_is_reported_not_hidden():
     it = formula_it("6CO2 + 6H2O + light → C6H12O6 + 6O2",
                     [("CO2", "carbon dioxide"), ("H2O", "water"), ("C6H12O6", "glucose")])
-    out, reverted = enforce_grounding(it, [SAID])
-    f = out.acts[0].items.formula
-    assert f.expression == "6CO2 + 6H2 + light → C6H12O6 + 6O2"     # kept as said
-    assert [v.symbol for v in f.variables] == ["CO2", "H2", "C6H12O6"]   # derived symbol follows the spoken form
-    assert "6H2O->6H2" in reverted
+    out, changes = enforce_grounding(it, [SAID])
+    assert out.acts == it.acts                                       # the correct form stays on the slide
+    assert "6H2->6H2O" in changes
     assert len(out.concerns) == 1
     c = out.concerns[0]
-    assert c.kind == "transcription" and c.suggested_correction == "6H2O" and "6H2" in c.claim
+    assert c.kind == "transcription" and (c.wrong, c.right) == ("6H2", "6H2O") and c.claim == "6H2"
     assert c.lines == [1] and 0.3 <= c.confidence < 0.6
 
 
@@ -58,15 +59,15 @@ def test_existing_model_concern_is_not_duplicated():
     it = formula_it("6CO2 + 6H2O + light → C6H12O6 + 6O2", concerns=[model_concern])
     out, _ = enforce_grounding(it, [SAID])
     assert out.concerns == [model_concern]
-    assert "6H2 " in out.acts[0].items.formula.expression
+    assert "6H2O" in out.acts[0].items.formula.expression
 
 
 def test_points_are_grounded_too():
     it = Interpretation(topic="T", relation="same_concept", acts=[DiscourseAct(
         act="explanation", lines=[1], items=ContentItems(points=["Plants make C6H12O6 from CO2"]))])
-    out, reverted = enforce_grounding(it, ["Plants make C6H12O from CO2."])
-    assert out.acts[0].items.points == ["Plants make C6H12O from CO2"] and reverted == ["C6H12O6->C6H12O"]
-    assert out.concerns[0].suggested_correction == "C6H12O6"
+    out, changes = enforce_grounding(it, ["Plants make C6H12O from CO2."])
+    assert out.acts[0].items.points == ["Plants make C6H12O6 from CO2"] and changes == ["C6H12O->C6H12O6"]
+    assert (out.concerns[0].wrong, out.concerns[0].right) == ("C6H12O", "C6H12O6")
     # a 2-character token with one changed character is too ambiguous to call a correction (O2 vs O3)
     it2 = Interpretation(topic="T", relation="same_concept", acts=[DiscourseAct(
         act="explanation", lines=[1], items=ContentItems(points=["Ozone is O3"]))])
@@ -98,9 +99,9 @@ async def test_interpreter_keeps_low_confidence_transcription_concern_and_ground
     interp = Interpreter(_router(json.dumps(out)))
     res = await interp.interpret(LectureState(session_id="s"), [BufferedLine("a", SAID, 0, 10)])
     assert not res.fallback
-    assert res.interpretation.acts[0].items.formula.expression.startswith("6CO2 + 6H2 +")
-    kinds = [(c.kind, c.suggested_correction) for c in res.interpretation.concerns]
-    assert kinds == [("transcription", "6H2O")]          # low-confidence factual dropped, transcription kept
+    assert res.interpretation.acts[0].items.formula.expression.startswith("6CO2 + 6H2O +")
+    kinds = [(c.kind, c.wrong, c.right) for c in res.interpretation.concerns]
+    assert kinds == [("transcription", "6H2", "6H2O")]   # low-confidence factual dropped, transcription kept
 
 
 def test_review7_a_different_molecule_named_in_words_is_not_reverted():
@@ -111,10 +112,16 @@ def test_review7_a_different_molecule_named_in_words_is_not_reverted():
         assert enforce_grounding(it, [line]) == (it, []), line
 
 
-def test_review8_accepting_the_transcription_fix_also_fixes_derived_symbols():
-    from copilot.presentation.content import FormulaData, Piece
-    from copilot.presentation.holds import ConcernInfo, resolve
-    p = Piece("formula", formula=FormulaData("6CO2 + 6H2 + light -> C6H12O6 + 6O2", (("H2", "water"),)))
-    out = resolve(p, ConcernInfo("c", "transcription", "6H2", "6H2O"), "accepted")
-    assert out.formula.expression == "6CO2 + 6H2O + light -> C6H12O6 + 6O2"
-    assert out.formula.variables == (("H2O", "water"),)
+def test_minimal_change_and_revision_filtering():
+    from copilot.core.interpretation import Revision
+    from copilot.understanding.interpreter import _sanitise, minimal_change
+    assert minimal_change("Neptune is the coldest planet", "Uranus is the coldest planet") == ("Neptune", "Uranus")
+    assert minimal_change("Plants take in oxygen.", "Plants take in carbon dioxide.") == ("oxygen", "carbon dioxide")
+    st = LectureState(session_id="s", slide_refs={"S1": "a/b"})
+    it = Interpretation(topic="T", relation="same_concept", revisions=[Revision(ref="s1", text="x"),
+                                                                       Revision(ref="S9", text="y")],
+                        concerns=[ConcernItem(claim="Neptune is the coldest", issue="i", confidence=0.9,
+                                              suggested_correction="Uranus is the coldest")])
+    out = _sanitise(it, 3, 0.6, st)
+    assert [r.ref for r in out.revisions] == ["S1"]                  # unknown refs dropped, case normalised
+    assert (out.concerns[0].wrong, out.concerns[0].right) == ("Neptune", "Uranus")

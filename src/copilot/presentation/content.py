@@ -5,15 +5,24 @@ the `added` flag. The composer decides where pieces go.
 """
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field, replace
 from typing import Literal, Optional, Sequence
 
 from copilot.core.interpretation import DiscourseAct, Interpretation
 
-PieceKind = Literal["definition", "points", "steps", "comparison", "timeline", "formula", "causes", "example"]
+PieceKind = Literal["definition", "points", "steps", "comparison", "timeline", "formula", "causes", "example",
+                    "facts", "tree", "groups"]
 
 MAX_TEXT_CHARS = 140
 NO_CONTENT_ACTS = {"question", "transition"}
+# An item that only announces what comes next is not content ("Now let's learn about matter").
+_ANNOUNCE = re.compile(r"^(?:so\s+|now\s*,?\s+|okay\s*,?\s+)*(?:let'?s|let us|we will|we'll|we are going to|"
+                       r"today we|next we)\b", re.IGNORECASE)
+
+
+def is_announcement(text: str) -> bool:
+    return bool(_ANNOUNCE.match(text.strip()))
 
 
 @dataclass(frozen=True)
@@ -32,7 +41,8 @@ class Piece:
     texts: tuple[str, ...] = ()                      # points / steps / examples
     columns: tuple[str, ...] = ()                    # comparison headings
     rows: tuple[tuple[str, tuple[str, ...]], ...] = ()  # comparison (aspect, cells)
-    pairs: tuple[tuple[str, str], ...] = ()          # timeline (when, what) / causes (cause, effect)
+    pairs: tuple[tuple[str, str], ...] = ()          # timeline (when, what) / causes / facts (label, value)
+    groups: tuple[tuple[str, tuple[str, ...]], ...] = ()  # named groups (label, items)
     formula: Optional[FormulaData] = None
     meta: dict = field(default_factory=dict, compare=False, hash=False)
 
@@ -43,6 +53,7 @@ class Piece:
         out = [self.term, self.definition, *self.texts, *self.columns]
         out += [a for a, cells in self.rows for a in (a, *cells)]
         out += [x for p in self.pairs for x in p]
+        out += [x for g, items in self.groups for x in (g, *items)]
         if self.formula:
             out += [self.formula.expression, *(x for v in self.formula.variables for x in v)]
         return [t for t in out if t]
@@ -54,6 +65,7 @@ class Piece:
             columns=tuple(fn(c) for c in self.columns),
             rows=tuple((fn(a), tuple(fn(c) for c in cells)) for a, cells in self.rows),
             pairs=tuple((fn(a), fn(b)) for a, b in self.pairs),
+            groups=tuple((fn(g), tuple(fn(x) for x in items)) for g, items in self.groups),
             formula=FormulaData(fn(self.formula.expression), tuple((fn(s), fn(m)) for s, m in self.formula.variables))
             if self.formula else None,
         )
@@ -71,15 +83,21 @@ def _texts(values: Sequence[str]) -> tuple[str, ...]:
     out: list[str] = []
     for v in values:
         c = clean(v)
-        if c and c not in out:
+        if c and c not in out and not is_announcement(c):
             out.append(c)
     return tuple(out)
+
+
+def cap(text: str) -> str:
+    return text[:1].upper() + text[1:] if text else text
 
 
 def pieces_from_act(act: DiscourseAct) -> list[Piece]:
     it = act.items
     base = dict(lines=tuple(act.lines), added=act.added)
     out: list[Piece] = []
+    if act.act in NO_CONTENT_ACTS:
+        return out  # transitions and questions never put text on the slide
     points = _texts(it.points)
     steps = _texts(it.steps)
     if act.act == "process" and not steps and points:
@@ -109,8 +127,24 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
             clean(it.formula.expression),
             tuple((clean(v.symbol), clean(v.meaning)) for v in it.formula.variables if v.symbol.strip()),
         ), **base))
+    facts = tuple((cap(clean(f.label)), cap(clean(f.value))) for f in it.facts if f.label.strip())
+    # a yes/no "fact" is a statement ("Milky Way contains our solar system: Yes") -> a point
+    yes = tuple(lb for lb, v in facts if v.lower() in ("yes", "true"))
+    facts = tuple((lb, v) for lb, v in facts if v.lower() not in ("yes", "true", "no", "false"))
+    points = points + _texts(yes)
+    if facts:
+        out.append(Piece("facts", pairs=facts, **base))
+    groups = tuple((cap(clean(g.label)), _texts(g.items)) for g in it.groups if g.label.strip())
+    groups = tuple(g for g in groups if g[1])
+    if groups:
+        out.append(Piece("groups", groups=groups, term=cap(clean(it.label)), **base))
+    label = cap(clean(it.label))
+    if label and points and 2 <= len(points) <= 6 and all(len(x) <= 40 for x in points) and not groups:
+        # a labelled classification of short kinds reads best as a tree ("Branches of chemistry" -> 4 kinds)
+        out.append(Piece("tree", term=label, texts=tuple(cap(x) for x in points), **base))
+        points = ()
     if points:
-        out.append(Piece("points", texts=points, **base))
+        out.append(Piece("points", texts=points, term=label, **base))
     examples = _texts(it.examples)
     if examples and act.act not in ("example", "application"):
         # an explanation's "examples" are its points (the model mixes them up); real examples come from example acts
@@ -131,4 +165,22 @@ def pieces_from(it: Interpretation) -> list[Piece]:
         if act.act in NO_CONTENT_ACTS and not pieces:
             continue
         out += pieces
+    return _group_classifications(out)
+
+
+def _group_classifications(pieces: list[Piece]) -> list[Piece]:
+    """Two or more labelled classifications taught together ("Inner planets: ...", "Outer planets: ...") are
+    one set of named groups side by side, not separate diagrams."""
+    trees = [p for p in pieces if p.kind == "tree"]
+    if len(trees) < 2:
+        return pieces
+    lines = tuple(sorted({n for t in trees for n in t.lines}))
+    groups = Piece("groups", lines=lines, groups=tuple((t.term, t.texts) for t in trees),
+                   added=all(t.added for t in trees))
+    out: list[Piece] = []
+    for p in pieces:
+        if p.kind != "tree":
+            out.append(p)
+        elif p is trees[0]:
+            out.append(groups)
     return out

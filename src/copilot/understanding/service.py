@@ -300,7 +300,7 @@ class UnderstandingService:
         await self.bus.publish(InterpretationReady(
             request_id=request_id, interpretation=res.interpretation, segment_ids=seg_ids,
             provider=res.provider, latency_ms=round(res.latency_ms, 1), fallback=res.fallback,
-            fallback_reason=res.fallback_reason,
+            fallback_reason=res.fallback_reason, slide_refs=dict(state.slide_refs),
         ))
         if not await self.store.wait_applied(request_id, APPLY_TIMEOUT_S):
             log.error("state store did not apply interpretation %s within %.0fs", request_id, APPLY_TIMEOUT_S)

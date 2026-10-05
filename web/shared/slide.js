@@ -11,7 +11,7 @@ const itemClass = (it, base) =>
   [base, "enter", it.provisional && "provisional", it.added && "added", it.emphasis && "emph"].filter(Boolean).join(" ");
 
 function Definition({ b, termInTitle }) {
-  return html`<div class="def">
+  return html`<div class="def enter">
     ${!termInTitle && html`<div class="def-term enter">${b.term}</div>`}
     <div class="def-body enter">${b.definition}</div>
     ${b.notes.length > 0 && html`<div class="def-notes">
@@ -96,6 +96,33 @@ function Formula({ b }) {
   </div>`;
 }
 
+// Fact tiles: short attribute facts about named things ("Smallest planet" / "Mercury").
+function Facts({ b }) {
+  const cols = b.facts.length === 3 || b.facts.some((f) => f.value.length > 24) ? 3 : Math.min(4, Math.max(1, b.facts.length));
+  return html`<div class="facts">
+    ${b.heading && html`<div class="points-heading">${b.heading}</div>`}
+    <div class="facts-grid" style=${{ "--cols": cols }}>
+      ${b.facts.map((f) => html`<div key=${f.id} class="fact enter">
+        <span class="fact-label">${f.label}</span>
+        ${f.value && html`<span class="fact-value">${f.value}</span>`}
+      </div>`)}
+    </div>
+  </div>`;
+}
+
+// Named groups side by side ("Inner planets" | "Outer planets").
+function Groups({ b }) {
+  return html`<div class="groups">
+    ${b.heading && html`<div class="points-heading">${b.heading}</div>`}
+    <div class="groups-row">
+      ${b.groups.map((g) => html`<div key=${g.id} class="group enter">
+        <div class="group-label">${g.label}</div>
+        <div class="group-items">${g.items.map((i) => html`<span key=${i.id} class=${itemClass(i, "group-item")}>${i.text}</span>`)}</div>
+      </div>`)}
+    </div>
+  </div>`;
+}
+
 function Figure({ b }) {
   const [loaded, setLoaded] = useState(false);
   return html`<figure class="figure">
@@ -115,6 +142,8 @@ function Block({ b, wide, termInTitle }) {
     case "hierarchy": return html`<div class="tree"><${TreeNode} n=${b.root} root /></div>`;
     case "formula": return html`<${Formula} b=${b} />`;
     case "image": return html`<${Figure} b=${b} />`;
+    case "facts": return html`<${Facts} b=${b} />`;
+    case "groups": return html`<${Groups} b=${b} />`;
     case "example": return html`<div class="example enter"><span class="label">Example</span>
       ${b.title && html`<span class="title">${b.title}</span>`}${b.text}</div>`;
     case "callout": return html`<div class="callout enter"><span class="label">${
@@ -125,12 +154,16 @@ function Block({ b, wide, termInTitle }) {
 
 // Secondary blocks go into the right-hand aside when the primary block leaves room for one.
 const ASIDE_TYPES = new Set(["callout", "example", "image"]);
-const FULL_WIDTH_PRIMARY = new Set(["process", "comparison", "timeline", "hierarchy", "cause_effect", "formula"]);
+const FULL_WIDTH_PRIMARY = new Set(["process", "comparison", "timeline", "hierarchy", "cause_effect", "formula", "facts", "groups"]);
+const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+export const partLabel = (n) => (n ? ROMAN[n] || String(n) : "");
 
 function splitBlocks(blocks) {
   if (blocks.length < 2) return { main: blocks, aside: [] };
   const [primary, ...rest] = blocks;
-  if (FULL_WIDTH_PRIMARY.has(primary.type)) return { main: blocks, aside: [] };
+  // wide content anywhere (a diagram, tiles, two definitions side by side) needs the full width: stack instead
+  if (blocks.some((b) => FULL_WIDTH_PRIMARY.has(b.type)) || blocks.filter((b) => b.type === "definition").length > 1)
+    return { main: blocks, aside: [] };
   return { main: [primary, ...rest.filter((b) => !ASIDE_TYPES.has(b.type))], aside: rest.filter((b) => ASIDE_TYPES.has(b.type)) };
 }
 
@@ -175,8 +208,12 @@ export function Slide({ spec, phase = "", onOverflow }) {
     </section>`;
   }
   const { main, aside } = splitBlocks(spec.blocks);
-  const def = spec.layout === "definition" && spec.blocks.find((b) => b.type === "definition");
+  const defs = spec.blocks.filter((b) => b.type === "definition");
+  const def = spec.layout === "definition" && defs.length === 1 && defs[0];
   const title = def ? def.term : spec.title;
+  // Two concepts defined together (elements and compounds): side-by-side definition cards.
+  const pairDefs = defs.length > 1 ? new Set(defs.map((d) => d.id)) : null;
+  const mainRest = pairDefs ? main.filter((b) => !pairDefs.has(b.id)) : main;
   return html`<section data-slide=${spec.id} class=${`slide layout-${spec.layout} ${phase}`} style=${style}>
     <header class="slide-head">
       ${(spec.facet || spec.continuation_of) && html`<div class="crumb">
@@ -184,10 +221,13 @@ export function Slide({ spec, phase = "", onOverflow }) {
         ${spec.facet && html`<span class="sep"></span><span class="facet">${spec.facet}</span>`}
         ${spec.continuation_of && !spec.facet && html`<span class="cont">continued</span>`}
       </div>`}
-      <h1 class="slide-title">${title}</h1>
+      <h1 class="slide-title">${title}${spec.part && html`<span class="part" title=${`Part ${spec.part}`}>${partLabel(spec.part)}</span>`}</h1>
     </header>
     <div ref=${bodyRef} class=${"slide-body" + (aside.length ? " with-aside" : "")}>
-      <div class="main">${main.map((b) => html`<${Block} key=${b.id} b=${b} wide=${!aside.length} termInTitle=${!!def} />`)}</div>
+      <div class="main">
+        ${pairDefs && html`<div class="def-pair">${defs.map((d) => html`<${Definition} key=${d.id} b=${d} termInTitle=${false} />`)}</div>`}
+        ${mainRest.map((b) => html`<${Block} key=${b.id} b=${b} wide=${!aside.length} termInTitle=${!!def} />`)}
+      </div>
       ${aside.length > 0 && html`<div class="aside">${aside.map((b) => html`<${Block} key=${b.id} b=${b} />`)}</div>`}
     </div>
   </section>`;

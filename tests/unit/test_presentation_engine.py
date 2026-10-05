@@ -5,10 +5,12 @@ from copilot.core.bus import EventBus
 from copilot.core.events import (
     Command, CommandReceived, ConceptSignal, InterpretationReady, Lifecycle, LifecycleChanged, SlideOverflow,
 )
-from copilot.core.interpretation import ConcernItem, ContentItems, DiscourseAct, Formula, Interpretation
+from copilot.core.interpretation import (
+    ConcernItem, ContentItems, DiscourseAct, Fact, Group, Interpretation, Revision,
+)
 from copilot.core.state import LectureSetup, LectureStateStore
 from copilot.presentation.deck import Deck
-from copilot.presentation.engine import PresentationEngine, PresentationSettings, provisional_text, replace_spoken
+from copilot.presentation.engine import PresentationEngine, PresentationSettings, provisional_text
 
 
 class Clock:
@@ -38,12 +40,14 @@ def act(kind, lines=(1,), **items):
 _n = 0
 
 
-def ready(topic, sub, acts, relation="same_concept", segs=None, concerns=()):
+def ready(topic, sub, acts, relation="same_concept", segs=None, concerns=(), revisions=(), refs=None):
     global _n
     _n += 1
     segs = segs or [f"seg{_n}-{i}" for i in range(1, 4)]
-    return InterpretationReady(request_id=f"r{_n}", segment_ids=segs, provider="m", interpretation=Interpretation(
-        topic=topic, subtopic=sub, relation=relation, acts=list(acts), concerns=list(concerns)))
+    return InterpretationReady(request_id=f"r{_n}", segment_ids=segs, provider="m", slide_refs=refs or {},
+                               interpretation=Interpretation(topic=topic, subtopic=sub, relation=relation,
+                                                             acts=list(acts), concerns=list(concerns),
+                                                             revisions=list(revisions)))
 
 
 async def send(bus, *events):
@@ -64,7 +68,15 @@ def texts(spec):
             out += [b.term] + [n.text for n in b.notes]
         elif b.type == "formula":
             out.append(b.latex)
+        elif b.type == "facts":
+            out += [f"{f.label}: {f.value}" for f in b.facts]
+        elif b.type == "callout":
+            out.append(b.text)
     return out
+
+
+async def _resolve(bus, cid, action):
+    await send(bus, CommandReceived(command=Command(kind="resolve_concern", args={"id": cid, "action": action})))
 
 
 async def test_title_slide_then_first_content_slide_and_in_place_update():
@@ -83,6 +95,7 @@ async def test_title_slide_then_first_content_slide_and_in_place_update():
     assert len(deck.slides) == 2 and s2.version == s.version + 1
     assert s2.blocks[0].id == s.blocks[0].id and texts(s2) == ["Photosynthesis", "photo = light"]
     assert "photo = light" in store.snapshot().slide_context                  # prompt sees the current slide
+    assert list(store.snapshot().slide_refs) == ["S1"]                         # ... with a revisable ref
     await eng.stop()
 
 
@@ -96,7 +109,7 @@ async def test_new_facet_waits_for_min_dwell_then_appears():
                           relation="sibling_concept"))
     assert len(deck.slides) == 1 and deck.live_id == first                   # pending: dwell not over
     clock.t = 8.0
-    await send(bus, ready("Photosynthesis", "Process", [act("process", lines=(1,), steps=["Water is split"])]))
+    await send(bus, ready("Photosynthesis", "Process", [act("process", steps=["Water is split"])]))
     clock.t = 15.5
     await asyncio.sleep(0.4)                                                  # ticker releases it
     await bus.drain()
@@ -116,8 +129,8 @@ async def test_unconfirmed_topic_change_stays_then_second_agreeing_interpretatio
     await send(bus, *[ConceptSignal(segment_id=s, shift_score=0.3) for s in r.segment_ids], r)
     assert len(deck.slides) == 1 and "Respiration happens all the time" in texts(deck.slides[0])
     await send(bus, ready("Respiration", "Comparison", [act("explanation", points=["Uses oxygen"])]))
-    assert len(deck.slides) == 2 and deck.slides[1].title == "Comparison of Respiration"
-    assert deck.slides[1].continuation_of is None                            # a new topic, not a continuation
+    assert len(deck.slides) == 2 and deck.slides[1].title == "Comparison"   # no "Comparison of Respiration"
+    assert deck.slides[1].subtitle == "Respiration" and deck.slides[1].continuation_of is None
     await eng.stop()
 
 
@@ -130,54 +143,125 @@ async def test_boundary_signal_confirms_new_topic_at_once():
     await eng.stop()
 
 
-async def test_concern_linked_content_is_held_until_the_teacher_decides():
+# ---- truthful slides ------------------------------------------------------------------------------------
+
+async def test_confident_factual_correction_is_shown_and_teacher_can_switch_back():
+    """Acts carry the corrected content; the slide shows it; "Show as I said" puts back the teacher's words."""
     bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
-    await send(bus, ready("Photosynthesis", "Process", [act("process", steps=["Light is absorbed"])],
-                          relation="new_topic"))
-    wrong = "Plants take in oxygen and give out carbon dioxide"
-    c = ConcernItem(claim=wrong + " during photosynthesis", issue="reversed", confidence=0.95, lines=[2],
-                    suggested_correction="Plants take in carbon dioxide and give out oxygen")
-    await send(bus, ready("Photosynthesis", "Process", [act("process", lines=(1,), steps=["Oxygen is released"]),
-                                                        act("explanation", lines=(2,), points=[wrong])],
-                          concerns=[c]))
-    s = deck.slides[0]
-    assert texts(s) == ["Light is absorbed", "Oxygen is released"]           # the wrong claim is not shown
+    c = ConcernItem(claim="Neptune is the hottest planet", issue="Venus is the hottest", confidence=0.95,
+                    suggested_correction="Venus is the hottest planet", wrong="Neptune", right="Venus", lines=[1])
+    await send(bus, ready("Solar System", "Planets", [act("explanation", facts=[
+        Fact(label="Hottest planet", value="Venus"), Fact(label="Largest planet", value="Jupiter")])],
+        relation="new_topic", concerns=[c]))
+    assert texts(deck.live) == ["Hottest planet: Venus", "Largest planet: Jupiter"]
     concern = store.snapshot().concerns[0]
-    assert concern.status == "open" and concern.segment_ids
-    await send(bus, CommandReceived(command=Command(kind="resolve_concern",
-                                                    args={"id": concern.id, "action": "accept"})))
-    shown = [t for sl in deck.slides for t in texts(sl)] + [b.text for sl in deck.slides for b in sl.blocks
-                                                            if b.type == "callout"]
-    assert "Plants take in carbon dioxide and give out oxygen" in shown and wrong not in shown
+    assert concern.applied and concern.wrong == "Neptune"
+    await _resolve(bus, concern.id, "keep")
+    assert texts(deck.live) == ["Hottest planet: Neptune", "Largest planet: Jupiter"]
     await eng.stop()
 
 
-async def test_keep_and_dismiss():
+async def test_low_confidence_correction_shows_what_was_said_until_accepted():
     bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
-    for action, expect_shown in (("keep", True), ("dismiss", False)):
-        claim = f"The Sun orbits the Earth ({action})"
-        c = ConcernItem(claim=claim, issue="wrong", suggested_correction="The Earth orbits the Sun", confidence=0.9,
-                        lines=[1])
-        await send(bus, ready("Astronomy", "", [act("explanation", points=[claim])], relation="new_topic",
-                              concerns=[c]))
-        cid = next(x.id for x in store.snapshot().concerns if x.claim == claim)
-        await send(bus, CommandReceived(command=Command(kind="resolve_concern", args={"id": cid, "action": action})))
-        shown = [t for sl in deck.slides for t in texts(sl)]
-        assert (claim in shown) == expect_shown
-        assert "The Earth orbits the Sun" not in shown
+    c = ConcernItem(claim="Neptune is the coldest planet", issue="Uranus has the lowest recorded temperature",
+                    confidence=0.6, suggested_correction="Uranus is the coldest planet", wrong="Neptune",
+                    right="Uranus", lines=[1])
+    await send(bus, ready("Solar System", "Planets", [act("explanation", points=["Uranus is the coldest planet"])],
+                          relation="new_topic", concerns=[c]))
+    assert texts(deck.live) == ["Neptune is the coldest planet"]             # never omitted: shown as said
+    concern = store.snapshot().concerns[0]
+    assert not concern.applied
+    await _resolve(bus, concern.id, "accept")
+    assert texts(deck.live) == ["Uranus is the coldest planet"]
     await eng.stop()
 
 
-async def test_transcription_concern_accept_replaces_the_spoken_token():
+async def test_mis_heard_word_is_shown_corrected():
     bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
-    c = ConcernItem(claim="6H2", issue="mis-heard?", suggested_correction="6H2O", confidence=0.5, lines=[1],
-                    kind="transcription")
-    await send(bus, ready("Photosynthesis", "Equation", [act("formula", formula=Formula(
-        expression="6CO2 + 6H2 + light -> C6H12O6 + 6O2"))], relation="new_topic", concerns=[c]))
-    assert deck.slides == []                                                  # nothing else to show yet
-    cid = store.snapshot().concerns[0].id
-    await send(bus, CommandReceived(command=Command(kind="resolve_concern", args={"id": cid, "action": "accept"})))
-    assert texts(deck.slides[0]) == ["6CO2 + 6H2O + light -> C6H12O6 + 6O2"]
+    c = ConcernItem(claim="Omo atomic", issue="mis-heard", suggested_correction="monoatomic", wrong="Omo atomic",
+                    right="monoatomic", confidence=0.5, lines=[1], kind="transcription")
+    await send(bus, ready("Chemistry", "Molecules", [act("classification", label="Types of molecules",
+                                                         points=["Monoatomic", "Diatomic", "Polyatomic"])],
+                          relation="new_topic", concerns=[c]))
+    tree = deck.live.blocks[0]
+    assert tree.type == "hierarchy" and [n.label for n in tree.root.children] == ["Monoatomic", "Diatomic",
+                                                                                   "Polyatomic"]
+    await _resolve(bus, store.snapshot().concerns[0].id, "keep")
+    assert [n.label for n in deck.live.blocks[0].root.children][0] == "Omo atomic"
+    await eng.stop()
+
+
+# ---- structure ------------------------------------------------------------------------------------------
+
+async def test_revision_rewrites_a_fragment_in_place():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    await send(bus, ready("Galaxies", "Black Holes", [act("explanation", points=["Black hole at the centre",
+                                                                                "Black hole has huge gravity"])],
+                          relation="new_topic"))
+    item = deck.live.blocks[0].items[1]
+    refs = dict(store.snapshot().slide_refs)
+    assert refs["S2"].endswith("/" + item.id)
+    await send(bus, ready("Galaxies", "Black Holes", [], revisions=[
+        Revision(ref="S2", text="Its gravity is so strong that light cannot escape")], refs=refs))
+    items = deck.live.blocks[0].items
+    assert items[1].id == item.id and items[1].text == "Its gravity is so strong that light cannot escape"
+    assert len(items) == 2
+    await eng.stop()
+
+
+async def test_solar_system_facts_stay_together_on_one_slide():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    await send(bus, ready("Solar System", "Overview", [
+        act("definition", term="Solar System", definition="The Sun and the eight planets that revolve around it")],
+        relation="new_topic"))
+    await send(bus, ready("Solar System", "Overview", [
+        act("classification", groups=[Group(label="Inner planets", items=["Mercury", "Venus", "Earth", "Mars"]),
+                                      Group(label="Outer planets", items=["Jupiter", "Saturn", "Uranus", "Neptune"])]),
+        act("explanation", lines=(2,), facts=[Fact(label="Smallest planet", value="Mercury"),
+                                              Fact(label="Largest planet", value="Jupiter")])]))
+    await send(bus, ready("Solar System", "Overview", [act("explanation", facts=[
+        Fact(label="Hottest planet", value="Venus"), Fact(label="Saturn", value="Has rings")])]))
+    assert len(deck.slides) == 1
+    s = deck.slides[0]
+    assert [b.type for b in s.blocks] == ["definition", "groups", "facts"]
+    assert not any(b.type == "example" for b in s.blocks)
+    assert len(s.blocks[2].facts) == 4
+    await eng.stop()
+
+
+async def test_two_concepts_defined_together_sit_side_by_side():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    await send(bus, ready("Chemistry", "Elements and Compounds", [
+        act("definition", term="Element", definition="Simplest pure substance; cannot be broken down chemically"),
+        act("definition", lines=(2,), term="Compound",
+            definition="Two or more elements combined in a fixed ratio by mass")], relation="new_topic"))
+    s = deck.live
+    assert [b.type for b in s.blocks] == ["definition", "definition"] and s.layout == "concept"
+    assert s.title == "Elements and Compounds"
+    await eng.stop()
+
+
+async def test_overflow_continues_with_a_part_badge_not_cont():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    long = [f"Galaxy fact number {i} with a fairly long explanation attached to it" for i in range(12)]
+    await send(bus, ready("Galaxies", "", [act("explanation", points=long)], relation="new_topic"))
+    titles = [s.title for s in deck.slides]
+    assert len(deck.slides) >= 2 and all(t == "Galaxies" for t in titles)
+    assert [s.part for s in deck.slides] == list(range(1, len(deck.slides) + 1))
+    assert all("cont" not in t for t in titles)
+    assert sum(len(texts(s)) for s in deck.slides) == 12                      # nothing lost
+    await eng.stop()
+
+
+async def test_announcements_never_reach_the_slide():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    await send(bus, ready("Chemistry", "Matter", [
+        act("transition", points=["Now let's learn about matter"]),
+        act("definition", lines=(2,), term="Matter", definition="Anything that occupies space and has mass"),
+        act("explanation", lines=(3,), points=["Let's learn about elements", "Particles are always moving"])],
+        relation="new_topic"))
+    shown = texts(deck.live)
+    assert not any("learn about" in t.lower() for t in shown) and "Particles are always moving" in shown
     await eng.stop()
 
 
@@ -188,20 +272,19 @@ async def test_force_new_slide_pinned_and_overflow():
     first = deck.live_id
     await send(bus, CommandReceived(command=Command(kind="force_new_slide")))
     assert len(deck.slides) == 2 and deck.live_id == deck.slides[1].id and deck.slides[1].blocks == []
+    assert deck.slides[1].part == 2 and deck.get(first).part == 1           # same frame: part badge
     await send(bus, ready("Photosynthesis", "Requirements", [act("explanation", points=["Water"])]))
     assert texts(deck.slides[1]) == ["Water"]                                 # fills the forced slide
-    # pinned: new slides queue behind the pinned live slide
     await send(bus, CommandReceived(command=Command(kind="goto", args={"slide_id": first})),
                CommandReceived(command=Command(kind="pin")))
     await send(bus, ready("Photosynthesis", "Process", [act("process", steps=["Light is absorbed"])],
                           relation="sibling_concept"))
-    assert len(deck.slides) == 3 and deck.live_id == first
-    # overflow reported by the display: the next content goes to a new slide
+    assert len(deck.slides) == 3 and deck.live_id == first                   # pinned: queued behind
     proc = deck.slides[2]
     await send(bus, SlideOverflow(slide_id=proc.id, version=proc.version))
     await send(bus, ready("Photosynthesis", "Process", [act("process", steps=["Water is split"])]))
     assert texts(deck.get(proc.id)) == ["Light is absorbed"] and texts(deck.slides[3]) == ["Water is split"]
-    assert deck.slides[3].title.endswith("(cont.)")
+    assert deck.slides[3].title == proc.title and deck.slides[3].part == 2
     await eng.stop()
 
 
@@ -235,55 +318,7 @@ async def test_provisional_fast_path_is_replaced_by_the_interpretation():
     await eng.stop()
 
 
-def test_helpers():
-    assert provisional_text(["bacteria convert sunlight", "convert sunlight water", "photosynthesis photosynthesis",
-                             "biological process"]) == "bacteria convert sunlight · biological process"
-    assert replace_spoken("6CO2 + 6H2 + light", "6H2", "6H2O") == "6CO2 + 6H2O + light"
-
-
-# ---- M4 independent review regressions ------------------------------------------------------------------
-
-async def _resolve(bus, cid, action):
-    await send(bus, CommandReceived(command=Command(kind="resolve_concern", args={"id": cid, "action": action})))
-
-
-async def test_review1_piece_waits_for_every_linked_concern():
-    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
-    await send(bus, ready("Photosynthesis", "Def", [act("explanation", points=["Plants make food"])],
-                          relation="new_topic"))
-    await send(bus, ready("Photosynthesis", "Def", [act("explanation", lines=(1, 2, 3),
-                                                        points=["Oxygen comes from CO2", "Needs 6H2"])],
-                          concerns=[ConcernItem(claim="6H2", issue="x", suggested_correction="6H2O", confidence=0.9,
-                                                lines=[3], kind="transcription"),
-                                    ConcernItem(claim="Oxygen comes from CO2", issue="wrong", confidence=0.9,
-                                                suggested_correction="Oxygen comes from water", lines=[2])]))
-    cs = store.snapshot().concerns
-    tr = next(c for c in cs if c.kind == "transcription")
-    fa = next(c for c in cs if c.kind == "factual")
-    assert texts(deck.live) == ["Plants make food"]
-    await _resolve(bus, tr.id, "keep")
-    assert "Oxygen comes from CO2" not in texts(deck.live)          # factual concern still open
-    await _resolve(bus, fa.id, "dismiss")
-    assert "Oxygen comes from CO2" not in texts(deck.live) and "Needs 6H2" in texts(deck.live)
-    await eng.stop()
-
-
-async def test_review2_accept_replaces_only_the_disputed_point():
-    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
-    await send(bus, ready("Photosynthesis", "Def", [act("explanation", points=["Plants make food"])],
-                          relation="new_topic"))
-    await send(bus, ready("Photosynthesis", "Def", [act("explanation", lines=(2, 3), points=[
-        "Happens in chloroplasts", "Oxygen comes from CO2", "Uses sunlight"])], concerns=[ConcernItem(
-            claim="Oxygen comes from CO2", issue="wrong", suggested_correction="Oxygen comes from water",
-            confidence=0.9, lines=[3])]))
-    assert texts(deck.live) == ["Plants make food", "Happens in chloroplasts", "Uses sunlight"]  # undisputed shown
-    await _resolve(bus, store.snapshot().concerns[0].id, "accept")
-    assert texts(deck.live) == ["Plants make food", "Happens in chloroplasts", "Uses sunlight",
-                                "Oxygen comes from water"]
-    await eng.stop()
-
-
-async def test_review3_and_4_provisional_never_left_behind_nor_blocks_a_real_point():
+async def test_provisional_never_left_behind_and_no_teaser_after_a_boundary():
     bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
     await send(bus, ready("Photosynthesis", "Requirements", [act("explanation", points=["Sunlight"])],
                           relation="new_topic"))
@@ -294,111 +329,152 @@ async def test_review3_and_4_provisional_never_left_behind_nor_blocks_a_real_poi
     await send(bus, ready("Photosynthesis", "Process", [act("explanation", points=["Chlorophyll pigment"])]))
     await send(bus, ConceptSignal(segment_id="s2", shift_score=0.2, keyphrases=["light energy"]))
     assert not any(i.provisional for b in deck.get(a).blocks if b.type == "points" for i in b.items)
-    from copilot.presentation.composer import frame_slide, merge, set_provisional
-    from copilot.presentation.content import Piece
-    s, _ = merge(frame_slide("P", "R"), Piece("points", texts=("Sunlight",)))
-    s = set_provisional(s, "chlorophyll pigment · light energy")
-    s, left = merge(s, Piece("points", texts=("Chlorophyll pigment",)))
-    assert "Chlorophyll pigment" in [i.text for i in s.blocks[0].items if not i.provisional]
-    await eng.stop()
-
-
-async def test_review5_late_release_does_not_take_the_screen_or_the_working_slide():
-    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
-    c = ConcernItem(claim="Plants need oxygen to photosynthesize", issue="wrong", confidence=0.9, lines=[1])
-    await send(bus, ready("Photosynthesis", "Requirements", [act("explanation", points=["Sunlight"])],
-                          relation="new_topic"))
-    await send(bus, ready("Photosynthesis", "Requirements",
-                          [act("explanation", points=["Plants need oxygen to photosynthesize"])], concerns=[c]))
-    r = ready("Respiration", "", [act("explanation", points=["Uses glucose"])], relation="new_topic")
-    await send(bus, ConceptSignal(segment_id=r.segment_ids[0], shift_score=0.2, boundary=True), r)
-    resp = deck.live_id
-    await _resolve(bus, store.snapshot().concerns[0].id, "keep")
-    assert deck.live_id == resp
-    await send(bus, ready("Respiration", "", [act("explanation", points=["Produces ATP"])]))
-    assert texts(deck.get(resp)) == ["Uses glucose", "Produces ATP"]
-    assert "Plants need oxygen to photosynthesize" in texts(deck.slides[0])   # back on its own slide
-    await eng.stop()
-
-
-async def test_review6_confirmed_topic_with_all_content_held_still_opens_next():
-    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
-    await send(bus, ready("Photosynthesis", "Importance", [act("explanation", points=["Food for all"])],
-                          relation="new_topic"))
-    r = ready("Respiration", "", [act("explanation", points=["Respiration makes oxygen"])], relation="new_topic",
-              concerns=[ConcernItem(claim="Respiration makes oxygen", issue="wrong", confidence=0.9, lines=[1])])
-    await send(bus, ConceptSignal(segment_id=r.segment_ids[0], shift_score=0.2, boundary=True), r)
-    await send(bus, ready("Respiration", "", [act("explanation", points=["Happens in mitochondria"])]))
-    assert [s.title for s in deck.slides] == ["Why photosynthesis matters", "Respiration"]
-    await eng.stop()
-
-
-async def test_review_concern_resolved_before_the_engine_saw_it_is_applied():
-    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
-    await send(bus, ready("Astronomy", "", [act("explanation", points=["Stars are suns"])], relation="new_topic"))
-    r = ready("Astronomy", "", [act("explanation", points=["The Sun orbits the Earth"])],
-              concerns=[ConcernItem(claim="The Sun orbits the Earth", issue="wrong", confidence=0.9, lines=[1])])
-    orig = store.snapshot
-
-    def snap():  # engine backlog: the teacher already dismissed it when the engine reads the state
-        s = orig()
-        s.concerns = [c.model_copy(update={"status": "dismissed"}) for c in s.concerns]
-        return s
-    store.snapshot = snap
-    await send(bus, r)
-    assert texts(deck.live) == ["Stars are suns"]
-    await eng.stop()
-
-
-async def test_concern_without_extracted_content_still_shows_the_teachers_choice():
-    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
-    await send(bus, ready("Photosynthesis", "Process", [act("process", steps=["Light is absorbed"])],
-                          relation="new_topic"))
-    claim = "Plants take in oxygen during photosynthesis"
-    await send(bus, ready("Photosynthesis", "Process", [act("explanation", lines=(1,))], concerns=[ConcernItem(
-        claim=claim, issue="reversed", suggested_correction="Plants take in carbon dioxide", confidence=0.95,
-        lines=[1])]))
-    assert claim not in str([texts(s) for s in deck.slides])
-    await _resolve(bus, store.snapshot().concerns[0].id, "accept")
-    shown = [b.text for s in deck.slides for b in s.blocks if b.type == "callout"] + \
-        [t for s in deck.slides for t in texts(s)]
-    assert "Plants take in carbon dioxide" in shown and claim not in shown
-    await eng.stop()
-
-
-async def test_no_fast_path_teaser_after_an_uninterpreted_boundary():
-    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
-    await send(bus, ready("Photosynthesis", "Requirements", [act("explanation", points=["Sunlight"])],
-                          relation="new_topic"))
-    await send(bus, ConceptSignal(segment_id="b1", shift_score=0.4, boundary=True, cues=["now let's"]),
+    bus2, store2, deck2, eng2, _ = await make(min_dwell_s=0.0)
+    await send(bus2, ready("P", "R", [act("explanation", points=["Sunlight"])], relation="new_topic"))
+    await send(bus2, ConceptSignal(segment_id="b1", shift_score=0.4, boundary=True, cues=["now let's"]),
                ConceptSignal(segment_id="b2", shift_score=0.3, keyphrases=["hydrogen combines", "carbon dioxide"]))
-    assert not any(i.provisional for i in deck.live.blocks[0].items)
-    await send(bus, ready("Photosynthesis", "Requirements", [act("explanation", points=["Water"])], segs=["b1"]))
-    await send(bus, ConceptSignal(segment_id="b3", shift_score=0.3, keyphrases=["leaf pores", "stomata"]))
-    assert deck.live.blocks[0].items[-1].provisional          # boundary interpreted: teasers resume
+    assert not any(i.provisional for i in deck2.live.blocks[0].items)
+    await eng.stop()
+    await eng2.stop()
+
+
+def test_helpers():
+    assert provisional_text(["bacteria convert sunlight", "convert sunlight water", "photosynthesis photosynthesis",
+                             "biological process"]) == "bacteria convert sunlight · biological process"
+
+
+async def test_unconfirmed_topic_items_move_to_the_new_topic_slide_once_confirmed():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    await send(bus, ready("Solar System", "Natural Satellites", [act("definition", term="Natural satellites",
+                                                                   definition="Moons that revolve around a planet")],
+                          relation="new_topic"))
+    sat = deck.live_id
+    await send(bus, ready("Galaxies", "", [act("explanation", points=["The universe has billions of galaxies",
+                                                                      "The Milky Way is our galaxy"])],
+                          relation="new_topic"))                              # no cue: not yet confirmed
+    assert "The Milky Way is our galaxy" in texts(deck.get(sat))             # shown meanwhile (never omitted)
+    await send(bus, ready("Galaxies", "", [act("explanation", points=["A black hole sits at the centre"])]))
+    gal = deck.slides[-1]
+    assert texts(gal) == ["The universe has billions of galaxies", "The Milky Way is our galaxy",
+                          "A black hole sits at the centre"]
+    assert texts(deck.get(sat)) == ["Natural satellites"]                    # moved off the previous slide
     await eng.stop()
 
 
-def test_display_case_and_term_notes():
-    from copilot.presentation.composer import frame_slide, merge
-    from copilot.presentation.content import Piece
-    s, _ = merge(frame_slide("Photosynthesis", "Definition"),
-                 Piece("definition", term="photosynthesis", definition="how plants make food"))
-    s, _ = merge(s, Piece("definition", term="photo", definition="means light"))
-    assert s.blocks[0].term == "Photosynthesis" and s.blocks[0].notes[0].text == "photo means light"
-    c, _ = merge(frame_slide("Respiration", "Comparison"), Piece("comparison", columns=("photosynthesis", "respiration"),
-                                                                rows=(("light", ("needed", "not needed")),)))
-    assert [x.heading for x in c.blocks[0].columns] == ["Photosynthesis", "Respiration"]
-    assert c.blocks[0].rows[0].aspect == "Light"
+async def test_one_small_leftover_is_squeezed_in_not_put_on_its_own_part():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    await send(bus, ready("Chemistry", "Elements and Compounds", [
+        act("definition", term="Element", definition="The simplest pure substance; it cannot be broken down or built "
+            "from simpler substances by ordinary physical or chemical methods"),
+        act("definition", lines=(2,), term="Compound",
+            definition="Two or more elements combined in a definite ratio by mass"),
+        act("classification", lines=(3,), label="Types of compounds",
+            points=["Inorganic compounds", "Organic compounds"])], relation="new_topic"))
+    await send(bus, ready("Chemistry", "Elements and Compounds", [act("example", examples=["Water is a compound"])]))
+    assert len(deck.slides) == 1 and any(b.type == "example" for b in deck.slides[0].blocks)
+    await eng.stop()
 
 
-def test_continuation_titles():
-    from copilot.presentation.composer import frame_slide
-    from copilot.presentation.content import FormulaData, Piece
-    from copilot.presentation.engine import continuation_title
-    q = frame_slide("Respiration in Plants", "Definition").model_copy(update={"layout": "definition"})
-    assert continuation_title(q.title, q, Piece("comparison", columns=("A", "B"))) == "Respiration in Plants: compared"
-    w = frame_slide("Photosynthesis", "Process").model_copy(update={"layout": "process_flow"})
-    assert continuation_title(w.title, w, Piece("formula", formula=FormulaData("x"))) == \
-        "How photosynthesis works: the equation"
-    assert continuation_title(w.title, w, Piece("steps", texts=("a",))) == "How photosynthesis works (cont.)"
+
+async def test_correction_the_model_did_not_apply_is_enforced():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    c = ConcernItem(claim="catastrophic", issue="mis-heard", suggested_correction="polyatomic", wrong="catastrophic",
+                    right="Polyatomic", confidence=0.6, lines=[1], kind="transcription")
+    await send(bus, ready("Chemistry", "Molecules", [act("classification", label="Types of molecules",
+                                                         points=["Diatomic", "Triatomic", "Catastrophic"])],
+                          relation="new_topic", concerns=[c]))
+    assert [n.label for n in deck.live.blocks[0].root.children] == ["Diatomic", "Triatomic", "Polyatomic"]
+    await _resolve(bus, store.snapshot().concerns[0].id, "keep")      # the teacher can still put back what was heard
+    assert [n.label for n in deck.live.blocks[0].root.children][-1] == "Catastrophic"  # case follows the item
+    await eng.stop()
+
+
+async def test_teaser_note_does_not_block_side_by_side_definitions():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    await send(bus, ready("Chemistry", "Atoms and Molecules", [act("definition", term="Atom",
+                          definition="Smallest particle of an element that can take part in a reaction")],
+                          relation="new_topic"))
+    await send(bus, ConceptSignal(segment_id="t1", shift_score=0.2, keyphrases=["independent existence", "molecule"]))
+    assert any(n.provisional for n in deck.live.blocks[0].notes)
+    await send(bus, ready("Chemistry", "Atoms and Molecules", [act("definition", term="Molecule",
+                          definition="Simplest particle of matter with independent existence")], segs=["t0"]))
+    assert len(deck.slides) == 1 and [b.type for b in deck.live.blocks] == ["definition", "definition"]
+    assert not any(n.provisional for b in deck.live.blocks for n in b.notes)
+    await eng.stop()
+
+
+async def test_definition_slide_title_uses_the_term():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    await send(bus, ready("Basic Concepts of Chemistry", "Definition", [act("definition", term="Chemistry",
+                          definition="The science of matter")], relation="new_topic"))
+    assert deck.live.title == "What is chemistry?"
+    await eng.stop()
+
+
+
+# ---- second independent review (truthful-slides rework) ----------------------------------------------------
+
+async def test_review_correction_targets_only_the_concerns_own_lines():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    c = ConcernItem(claim="Mercury is the largest planet", issue="smallest", confidence=0.95, lines=[1],
+                    suggested_correction="Mercury is the smallest planet", wrong="largest", right="smallest")
+    await send(bus, ready("Solar System", "Planets", [
+        act("explanation", lines=(1,), points=["Mercury is the largest planet"]),       # model left the wrong word
+        act("explanation", lines=(2,), points=["Jupiter is the largest planet"])], relation="new_topic",
+        concerns=[c]))
+    assert texts(deck.live) == ["Mercury is the smallest planet", "Jupiter is the largest planet"]
+    await eng.stop()
+
+
+async def test_review_as_said_does_not_touch_other_lines_and_accept_works_when_words_were_left():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    low = ConcernItem(claim="Plants take in oxygen", issue="reversed", confidence=0.62, lines=[1],
+                      suggested_correction="Plants take in carbon dioxide", wrong="oxygen", right="carbon dioxide")
+    await send(bus, ready("Photosynthesis", "Gases", [
+        act("explanation", lines=(1,), points=["Plants take in carbon dioxide"]),
+        act("explanation", lines=(2,), points=["Leaves release carbon dioxide at night too"])],
+        relation="new_topic", concerns=[low]))
+    assert texts(deck.live) == ["Plants take in oxygen", "Leaves release carbon dioxide at night too"]
+    await _resolve(bus, store.snapshot().concerns[0].id, "accept")
+    assert texts(deck.live)[0] == "Plants take in carbon dioxide"
+    # unapplied concern whose wrong words the model left in: "Show correction" must still work
+    bus2, store2, deck2, eng2, _ = await make(min_dwell_s=0.0)
+    c2 = ConcernItem(claim="Venus has two moons", issue="no moons", confidence=0.5, lines=[1],
+                     suggested_correction="Venus has no moons", wrong="two", right="no")
+    await send(bus2, ready("Planets", "", [act("explanation", points=["Venus has two moons"])], relation="new_topic",
+                           concerns=[c2]))
+    assert texts(deck2.live) == ["Venus has two moons"]
+    await _resolve(bus2, store2.snapshot().concerns[0].id, "accept")
+    assert texts(deck2.live) == ["Venus has no moons"]
+    await eng.stop()
+    await eng2.stop()
+
+
+async def test_review_backslash_correction_and_switching_twice():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    c = ConcernItem(claim="Delta H", issue="symbol", confidence=0.9, lines=[1], suggested_correction="\\Delta G",
+                    wrong="Delta H", right="\\Delta G", kind="transcription")
+    await send(bus, ready("Thermo", "", [act("explanation", points=["Free energy is \\Delta G"])],
+                          relation="new_topic", concerns=[c]))
+    cid = store.snapshot().concerns[0].id
+    await _resolve(bus, cid, "keep")
+    assert texts(deck.live) == ["Free energy is Delta H"]
+    await _resolve(bus, cid, "accept")                                   # the teacher switches back
+    assert texts(deck.live) == ["Free energy is \\Delta G"]
+    await eng.stop()
+
+
+async def test_review_tentative_diagram_moves_without_duplicates():
+    bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
+    await send(bus, ready("Solar System", "Moons", [act("explanation", points=["Moons orbit planets"])],
+                          relation="new_topic"))
+    first = deck.live_id
+    await send(bus, ready("Galaxies", "", [act("classification", label="Types of galaxies",
+                                               points=["Spiral", "Elliptical", "Irregular"])], relation="new_topic"))
+    assert any(b.type == "hierarchy" for b in deck.get(first).blocks)
+    await send(bus, ready("Galaxies", "", [act("explanation", points=["The Milky Way is a spiral galaxy"])]))
+    assert [b.type for b in deck.get(first).blocks] == ["points"]       # the tree left the old slide
+    gal = deck.slides[-1]
+    assert sum(1 for b in gal.blocks if b.type == "hierarchy") == 1
+    assert sum(1 for s in deck.slides for b in s.blocks if b.type == "hierarchy") == 1
+    await eng.stop()

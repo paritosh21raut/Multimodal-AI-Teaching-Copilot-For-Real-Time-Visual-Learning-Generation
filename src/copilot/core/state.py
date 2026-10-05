@@ -58,6 +58,9 @@ class Concern(BaseModel):
     confidence: float = 0.5
     status: Literal["open", "accepted", "kept", "dismissed"] = "open"
     kind: Literal["factual", "transcription"] = "factual"
+    wrong: str = ""             # minimal words as said
+    right: str = ""             # minimal words as corrected
+    applied: bool = True        # the projector shows the correction (False: shows what the teacher said)
     segment_id: str = ""        # first line the concern refers to
     segment_ids: list[str] = Field(default_factory=list)  # every line it refers to (content there is held back)
     request_id: str = ""        # interpretation that raised it
@@ -85,6 +88,7 @@ class LectureState(BaseModel):
     concerns: list[Concern] = Field(default_factory=list)
     stats: LectureStats = Field(default_factory=LectureStats)
     slide_context: str = ""       # summary of the slide receiving content (presentation engine), for the prompt
+    slide_refs: dict[str, str] = Field(default_factory=dict)  # "S1" -> "slide_id/item_id" for the context
     lecture_clock_s: float = 0.0  # end time of the latest transcript segment
     last_interpretation_id: Optional[str] = None
 
@@ -94,6 +98,16 @@ class LectureState(BaseModel):
     def subtopic(self) -> Optional[TopicNode]:
         t = self.topic(self.current_topic_id)
         return next((s for s in t.subtopics if s.id == self.current_subtopic_id), None) if t else None
+
+
+# Truthful projector: a correction is shown by default when the model is confident enough; otherwise the
+# projector shows what the teacher said and the control view offers the correction.
+APPLY_FACTUAL_CONFIDENCE = 0.75
+APPLY_TRANSCRIPTION_CONFIDENCE = 0.4
+
+
+def correction_applied(kind: str, confidence: float) -> bool:
+    return confidence >= (APPLY_TRANSCRIPTION_CONFIDENCE if kind == "transcription" else APPLY_FACTUAL_CONFIDENCE)
 
 
 class LectureStateStore:
@@ -183,16 +197,21 @@ class LectureStateStore:
         elif isinstance(event, InterpretationReady):
             return self._apply_interpretation(event)
         elif isinstance(event, SlideContextChanged):
-            if s.slide_context != event.text:
-                s.slide_context = event.text
+            if s.slide_context != event.text or s.slide_refs != event.refs:
+                s.slide_context, s.slide_refs = event.text, dict(event.refs)
                 return ["slide_context"]
         return []
 
     def _resolve_concern(self, args: dict) -> list[str]:
         status = {"accept": "accepted", "keep": "kept", "dismiss": "dismissed"}.get(str(args.get("action")))
         for c in self._state.concerns:
-            if c.id == args.get("id") and status and c.status == "open":
+            if c.id == args.get("id") and status:
+                # the teacher may switch again later ("Show as I said", then "Show correction")
                 c.status = status  # type: ignore[assignment]
+                if status == "accepted":
+                    c.applied = True
+                elif status == "kept":
+                    c.applied = False
                 self._outbox.append(ConcernResolved(concern_id=c.id, status=status))  # type: ignore[arg-type]
                 return ["concerns"]
         log.warning("resolve_concern ignored: %s", args)
@@ -241,7 +260,8 @@ class LectureStateStore:
             segs = [ev.segment_ids[n - 1] for n in item.lines if 1 <= n <= len(ev.segment_ids)]
             concern = Concern(
                 claim=item.claim, issue=item.issue, suggested_correction=item.suggested_correction,
-                confidence=item.confidence, kind=item.kind, segment_id=segs[0] if segs else "",
+                confidence=item.confidence, kind=item.kind, wrong=item.wrong, right=item.right,
+                applied=correction_applied(item.kind, item.confidence), segment_id=segs[0] if segs else "",
                 segment_ids=segs, request_id=ev.request_id,
             )
             s.concerns.append(concern)

@@ -53,6 +53,18 @@ class CauseEffect(_Lenient):
     effect: str
 
 
+class Fact(_Lenient):
+    """A short attribute fact about a named thing: label "Smallest planet", value "Mercury"."""
+    label: str
+    value: str = ""
+
+
+class Group(_Lenient):
+    """A named group in a classification: label "Inner planets", items ["Mercury", "Venus", ...]."""
+    label: str
+    items: list[str] = Field(default_factory=list)
+
+
 class ContentItems(_Lenient):
     term: str = ""
     definition: str = ""
@@ -64,6 +76,9 @@ class ContentItems(_Lenient):
     formula: Optional[Formula] = None
     causes: list[CauseEffect] = Field(default_factory=list)
     examples: list[str] = Field(default_factory=list)
+    label: str = ""  # what a classification classifies ("Branches of chemistry"); heading of a list
+    facts: list[Fact] = Field(default_factory=list)
+    groups: list[Group] = Field(default_factory=list)
 
 
 class DiscourseAct(_Lenient):
@@ -82,14 +97,22 @@ class ConcernItem(_Lenient):
     suggested_correction: str = ""
     confidence: float = Field(default=0.5, ge=0.0, le=1.0)
     lines: list[int] = Field(default_factory=list)
-    # factual: the statement looks wrong; transcription: a word/formula looks mis-heard or mis-spoken
-    # (kept as said; `claim` is the spoken form, `suggested_correction` the likely intended form)
+    # factual: the statement looks wrong; transcription: a word/formula looks mis-heard or mis-spoken.
+    # Acts carry the CORRECTED content; claim = what the teacher said, suggested_correction = the correct form.
     kind: ConcernKind = "factual"
+    wrong: str = ""   # the minimal words as the teacher said them ("Neptune", "Omo atomic")
+    right: str = ""   # the words now in the acts instead ("Uranus", "monoatomic")
 
     @field_validator("kind", mode="before")
     @classmethod
     def _kind(cls, v: object) -> object:
         return v if v in ("factual", "transcription") else "factual"
+
+
+class Revision(_Lenient):
+    """Rewrite of a CURRENT SLIDE item (ref "S3") that the NEW lines complete or correct."""
+    ref: str
+    text: str
 
 
 class Interpretation(_Lenient):
@@ -100,6 +123,7 @@ class Interpretation(_Lenient):
     representation_hint: Representation = "none"
     meta_lines: list[int] = Field(default_factory=list)
     concerns: list[ConcernItem] = Field(default_factory=list)
+    revisions: list[Revision] = Field(default_factory=list)
     level_estimate: str = ""
     subject_estimate: str = ""
     summary_delta: str = ""

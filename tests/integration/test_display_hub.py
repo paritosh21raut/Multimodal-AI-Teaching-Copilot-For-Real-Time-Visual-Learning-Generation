@@ -130,7 +130,10 @@ async def test_concerns_reach_only_the_control_view_and_overflow_is_forwarded(st
         dh = await recv_until(d, lambda m: m["type"] == "hello")
         ch = await recv_until(c, lambda m: m["type"] == "hello")
         assert "concerns" not in dh and [x["id"] for x in ch["concerns"]] == ["c1"]
-        await bus.publish(ConcernResolved(concern_id="c1", status="kept"))
+        await bus.publish(ConcernResolved(concern_id="c1", status="kept"))   # switched: stays listed
+        msg = await recv_until(c, lambda m: m["type"] == "concern")
+        assert msg["concern"]["applied"] is False and "c1" in hub.concerns
+        await bus.publish(ConcernResolved(concern_id="c1", status="dismissed"))   # OK: gone
         msg = await recv_until(c, lambda m: m["type"] == "concern_resolved")
         assert msg["id"] == "c1" and hub.concerns == {}
         await deck.add(spec("s1", "one"))

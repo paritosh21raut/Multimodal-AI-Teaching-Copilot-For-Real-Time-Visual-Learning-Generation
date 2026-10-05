@@ -3,8 +3,9 @@
     .venv/Scripts/python tools/screenshot_app.py [extra copilot args...]
     .venv/Scripts/python tools/screenshot_app.py --lecture [extra copilot args...]
 
---lecture: capture the whole lecture (display + control every few seconds, whenever the live slide changes) into
-artifacts/app/lecture/, and press "Accept correction" on the first concern shown in the control view.
+--lecture: capture the whole lecture (display + control whenever the live slide changes) into
+artifacts/app/lecture_<fixture>/, plus the control view whenever a new concern card appears. Nothing is clicked,
+so the screenshots show the default (truthful-slide) behaviour.
 """
 from __future__ import annotations
 
@@ -21,12 +22,12 @@ OUT = ROOT / "artifacts" / "app"
 PORT = 8765
 
 
-async def lecture(control, display, proc, errors: list[str]) -> None:
-    out = OUT / "lecture"
+async def lecture(control, display, proc, errors: list[str], name: str = "lecture") -> None:
+    out = OUT / name
     out.mkdir(parents=True, exist_ok=True)
     for old in out.glob("*.png"):
         old.unlink()
-    n, last, resolved, t0 = 0, None, False, time.time()
+    n, last, concerns, t0 = 0, None, 0, time.time()
     while proc.poll() is None:
         await asyncio.sleep(1.0)
         try:
@@ -44,17 +45,20 @@ async def lecture(control, display, proc, errors: list[str]) -> None:
             await display.screenshot(path=str(out / f"display_{tag}.png"))
             await control.screenshot(path=str(out / f"control_{tag}.png"))
             print(f"[shot] {tag} {spec.get('title')!r} v{spec.get('version')}", flush=True)
-        if not resolved and await control.locator(".concern").count():
-            await control.screenshot(path=str(out / "control_concern.png"))
-            await control.locator(".concern button.accept").first.click()
-            resolved = True
-            print("[shot] concern shown; pressed Accept correction", flush=True)
+        count = await control.locator(".concern").count()
+        if count > concerns:
+            concerns = count
+            await control.screenshot(path=str(out / f"control_concern_{count}.png"))
+            print(f"[shot] concern card #{count}", flush=True)
 
 
 async def main(extra: list[str]) -> None:
     whole = bool(extra) and extra[0] == "--lecture"
+    name = "lecture"
     if whole:
         extra = extra[1:] or ["--simulate", "tests/fixtures/lectures/photosynthesis.txt", "--speed", "1"]
+        if "--simulate" in extra:
+            name = "lecture_" + Path(extra[extra.index("--simulate") + 1]).stem
     from playwright.async_api import async_playwright
 
     OUT.mkdir(parents=True, exist_ok=True)
@@ -81,7 +85,7 @@ async def main(extra: list[str]) -> None:
             await control.goto(f"http://127.0.0.1:{PORT}/control")
             await display.goto(f"http://127.0.0.1:{PORT}/display")
             if whole:
-                await lecture(control, display, proc, errors)
+                await lecture(control, display, proc, errors, name)
                 await browser.close()
                 print("page errors:", errors)
                 return

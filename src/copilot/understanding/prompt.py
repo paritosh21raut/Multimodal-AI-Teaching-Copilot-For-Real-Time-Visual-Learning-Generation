@@ -1,6 +1,7 @@
 """Bounded interpretation prompt. The budget is enforced here, in code, before anything is sent."""
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Sequence
 
@@ -8,68 +9,102 @@ from copilot.core.state import LectureState
 from copilot.core.textutil import approx_tokens
 from copilot.understanding.gate import BufferedLine
 
-SYSTEM_PROMPT = """You analyse a live classroom lecture for a projector display that follows the teacher.
-You get the lecture context and a few NEW numbered transcript lines. Reply with ONE JSON object only.
+SYSTEM_PROMPT = """You turn a live classroom lecture into clear projector slides that follow the teacher.
+You get the lecture context, the CURRENT SLIDE (its items numbered [S1], [S2], ...) and a few NEW numbered
+transcript lines from speech recognition (they can be fragments of one sentence). Reply with ONE JSON object only.
 
-Rules:
-- Represent only what the teacher said in the NEW lines. Use the context only to judge continuity.
-- topic = the main subject being taught (e.g. "Photosynthesis"). subtopic = the current facet within it
-  (e.g. "Definition", "Requirements", "Process", "Importance"). Reuse the exact outline title while the teacher
-  stays on it. Titles: 1-4 words, Title Case.
-- Start a new subtopic (sibling_concept) when the teacher moves to a different facet, e.g. from what it is to
-  what it needs, how it works, why it matters, even without an explicit cue. If the NEW lines span two facets,
-  use the facet of the later lines. For sibling_concept, sub_concept and new_topic the subtopic must differ from
-  the CURRENT subtopic. A comparison with an earlier topic stays under the CURRENT topic unless the teacher
-  clearly returns to the earlier topic.
-- relation of the NEW lines to the CURRENT topic/subtopic:
-  same_concept = continues the current subtopic; elaboration = adds detail or examples to it;
-  sub_concept = a narrower concept inside it; sibling_concept = a new subtopic of the same topic;
-  new_topic = the teacher moved to a different main topic; digression = off-topic aside.
-  If there is no current topic yet, use new_topic.
-- acts: what the teacher does, with line numbers and content items as short display phrases (max 12 words each),
-  close to the teacher's words. Fill only the fields that apply:
-  definition: term, definition | explanation, recap, classification: points | process: steps (in order) |
-  comparison: compare (the things compared) + pairs (aspect, left, right) | timeline: events (when, what) |
-  formula: formula {expression, variables [{symbol, meaning}]} | cause_effect: causes [{cause, effect}] |
-  example, application: examples or points.
-  An ordered procedure or flow is a process, never examples or points: steps in sequence (first/then/next/
-  finally, "step by step") or input -> process -> output (what goes in, what happens, what comes out). Give one
-  short step per stage in order, e.g. "Input: roots absorb water", "Chlorophyll absorbs sunlight",
-  "Output: glucose and oxygen". If the CURRENT SLIDE is a process and the NEW lines continue it, give only the
-  NEW steps. examples = only concrete instances the teacher offers as examples.
-  Every content act carries its items: an explanation of one line still gives its point as a short phrase.
+Topic and continuity:
+- topic = the main subject (e.g. "Photosynthesis"). subtopic = the concept or facet now being taught: a facet
+  ("Definition", "Process", "Importance") or a concept name ("Matter", "Planets"). Two concepts introduced
+  together get one subtopic naming both ("Elements and Compounds"); a newly introduced term or concept
+  ("natural satellites") gets its own subtopic. Reuse the exact outline title while the
+  teacher stays on it. Titles: 1-4 words, Title Case.
+- A line tagged (announces: X) names what the teacher moves to next: use X as the new topic (new_topic) when it is
+  not part of the CURRENT topic (e.g. galaxies after the solar system), else as the new subtopic.
+- A different facet or concept of the same topic = sibling_concept (its subtopic must differ from CURRENT); if the
+  NEW lines span two, use the later one. A comparison with an earlier topic stays under the CURRENT topic.
+- relation: same_concept (continues), elaboration (adds detail), sub_concept (narrower concept inside it),
+  sibling_concept, new_topic (different main topic; also when there is no current topic), digression (aside).
+
+Slide content (acts):
+- Only what the teacher taught in the NEW lines; no facts beyond the lecture or the grade level.
+- Items are slide text, not transcript: short, clear, complete phrases (max 12 words) a student can recall fast.
+  Drop fillers ("so", "now", "we have", "it is"), replace pronouns with what they refer to, join a sentence split
+  across lines (or across the CURRENT SLIDE), and simplify wording for the grade. Keep facts, names and numbers.
+- Definitions stay exact: the term and the teacher's definition wording (only fillers removed).
+- If NEW lines complete or change a CURRENT SLIDE item, return a revision {"ref": "S2", "text": "full new item"}
+  instead of a new item (e.g. S2 "Black hole has huge gravity" + NEW "because of which light cannot escape"
+  -> revise S2 to "Its gravity is so strong that light cannot escape").
+- Transitions/announcements ("now let's learn about X", "today we will ...") and questions to the class are acts
+  with NO items. If the teacher corrects themselves ("Uranus, sorry, Neptune ...") use only the corrected words.
+- Pick the item type that best fits (fill only what applies):
+  definition: term, definition (one act per term; two terms defined -> two definition acts)
+  facts: [{label, value}] ONLY for short parallel attributes of different named things (superlatives, records,
+    properties), never yes/no or general statements (those are points):
+    "Mercury is the smallest planet" -> {"label": "Smallest planet", "value": "Mercury"};
+    "Saturn has rings" -> {"label": "Saturn", "value": "Has rings"}
+  classification: label (what is classified, e.g. "Branches of chemistry") + points (the kinds), or groups
+    [{label, items}] when things are split into named groups (e.g. "Inner planets": Mercury, Venus, Earth, Mars)
+  process: steps in order, for any ordered procedure or input -> process -> output flow (never points/examples);
+    if the CURRENT SLIDE is a process and the NEW lines continue it, give only the NEW steps
+  comparison: compare (the 2 things compared) + pairs (aspect, left, right) | timeline: events (when, what)
+  formula: {expression, variables [{symbol, meaning}]} | cause_effect: causes [{cause, effect}]
+  explanation, recap: points | example, application: examples (only what the teacher offers as examples)
   act is one of: definition, explanation, process, comparison, example, formula, cause_effect, timeline,
   classification, application, question, recap, transition, other.
-- added = true only for a small clarifying addition the teacher did not say (rare). Never go beyond the lecture's
-  scope or the grade level.
-- meta_lines: numbers of lines that are classroom management or talk about the display/board, not content.
-  Lines marked (maybe-meta) are suspected.
-- Grounding: copy names, numbers, symbols and formulas exactly as transcribed; never correct them silently.
-  The transcript comes from speech recognition, so words or formulas may be mis-heard or mis-spoken (e.g.
-  "6H2" where "6H2O" fits). Keep them as said in acts and raise a concern of kind "transcription":
-  claim = the form as said, suggested_correction = the likely intended form, confidence may be low (0.3-0.6).
-- concerns: check every NEW line for factual errors. A statement that is scientifically or factually wrong
-  (e.g. reversed, wrong quantity, wrong cause) is a concern of kind "factual": claim, issue,
-  suggested_correction, confidence (0-1), lines. Grade-appropriate simplifications are not concerns. Wrong
-  statements still go in acts as said.
-- representation_hint: best visual for the NEW content, one of: definition, concept, key_points, process_flow,
-  comparison, timeline, hierarchy, cause_effect, formula, example, application, narrative, none.
-- summary_delta: one sentence (max 25 words) on what the NEW lines taught.
-- level_estimate (e.g. "Grade 7"; keep a given grade) and subject_estimate (e.g. "Biology").
+- added = true only for a small clarifying addition the teacher did not say (rare).
+- meta_lines: lines that are classroom management or talk about the display/board. (maybe-meta) = suspected.
+
+Truthful slides (concerns):
+- Acts always hold the CORRECT content. Check every NEW statement; when the teacher states something clearly
+  wrong (reversed, wrong name or quantity, wrong cause), put the corrected statement in acts and add a concern:
+  kind "factual", claim = what the teacher said, suggested_correction = the correct statement, wrong = the
+  wrong word(s) as said, right = the word(s) used instead in acts, issue, confidence (0-1), lines.
+- Speech recognition can mis-hear words or formulas ("Omo atomic" for "monoatomic", "6H2" where "6H2O" fits):
+  use the intended form in acts and add a concern of kind "transcription" (claim = as heard, wrong/right as
+  above, confidence 0.3-0.7).
+- Not concerns: grade-level simplifications, facts that depend on definition or where sources differ, and
+  anything the teacher already corrected.
+
+Also: representation_hint (definition, concept, key_points, process_flow, comparison, timeline, hierarchy,
+cause_effect, formula, example, application, narrative, none); summary_delta (one sentence, max 25 words, on
+what the NEW lines taught); level_estimate (e.g. "Grade 7"; keep a given grade); subject_estimate.
 
 JSON shape:
 {"topic": "", "subtopic": "", "relation": "", "acts": [{"act": "", "lines": [1], "items": {"term": "",
-"definition": "", "points": [""], "steps": [""], "compare": ["", ""], "pairs": [{"aspect": "", "left": "",
-"right": ""}], "events": [{"when": "", "what": ""}], "formula": {"expression": "", "variables": [{"symbol": "",
-"meaning": ""}]}, "causes": [{"cause": "", "effect": ""}], "examples": [""]}, "added": false}],
-"representation_hint": "", "meta_lines": [], "concerns": [{"claim": "", "issue": "", "suggested_correction": "",
-"confidence": 0.9, "lines": [1], "kind": "factual"}], "level_estimate": "", "subject_estimate": "", "summary_delta": ""}
-Omit empty item fields; concerns is [] when nothing is wrong."""
+"definition": "", "label": "", "points": [""], "facts": [{"label": "", "value": ""}], "groups": [{"label": "",
+"items": [""]}], "steps": [""], "compare": ["", ""], "pairs": [{"aspect": "", "left": "", "right": ""}],
+"events": [{"when": "", "what": ""}], "formula": {"expression": "", "variables": [{"symbol": "", "meaning": ""}]},
+"causes": [{"cause": "", "effect": ""}], "examples": [""]}, "added": false}], "revisions": [{"ref": "S1",
+"text": ""}], "representation_hint": "", "meta_lines": [], "concerns": [{"kind": "factual", "claim": "",
+"issue": "", "suggested_correction": "", "wrong": "", "right": "", "confidence": 0.9, "lines": [1]}],
+"level_estimate": "", "subject_estimate": "", "summary_delta": ""}
+Omit empty fields; revisions and concerns are [] when there are none."""
 
 OUTLINE_MAX_TOKENS = 150
 SUMMARY_MAX_TOKENS = 120
-SLIDE_MAX_TOKENS = 90
+SLIDE_MAX_TOKENS = 160  # numbered items, so revisions can refer to them
 _FIELD_MAX_CHARS = 60
+
+
+_ANNOUNCE = re.compile(
+    r"(?:let'?s|let us|we will|we'll|we are going to|now we)\s+(?:now\s+)?(?:talk|learn|study|look|move on|discuss|"
+    r"see)\s+(?:about|at|to|on)?\s*(?P<a>[^.?!,;]{2,60})|(?:the\s+)?next topic is\s+(?P<b>[^.?!,;]{2,60})",
+    re.IGNORECASE)
+
+
+def announced_subject(text: str) -> str:
+    """"Now let's talk about galaxies." -> "galaxies" (deterministic hint for the model; it decides topic vs facet)."""
+    m = _ANNOUNCE.search(text)
+    if not m:
+        return ""
+    subject = (m.group("a") or m.group("b") or "").strip()
+    while True:
+        stripped = re.sub(r"^(?:the|a|an|how|what|why)\s+", "", subject, flags=re.IGNORECASE)
+        if stripped == subject:
+            break
+        subject = stripped
+    return " ".join(subject.split()[:6])
 
 
 class PromptBudgetError(Exception):
@@ -132,7 +167,8 @@ def build_prompt(state: LectureState, lines: Sequence[BufferedLine], *, dynamic_
     current = (f"CURRENT: topic={_clip(topic.title)}; subtopic={_clip(sub.title) if sub else '-'}"
                if topic else "CURRENT: (none yet)")
     numbered = "\n".join(
-        f"[{i}]{' (maybe-meta)' if l.maybe_meta else ''}{' (question)' if l.question else ''} {' '.join(l.text.split())}"
+        f"[{i}]{' (maybe-meta)' if l.maybe_meta else ''}{' (question)' if l.question else ''}"
+        f"{f' (announces: {a})' if (a := announced_subject(l.text)) else ''} {' '.join(l.text.split())}"
         for i, l in enumerate(lines, start=1)
     )
     fixed = "\n".join([header, current, "NEW LINES:", numbered])

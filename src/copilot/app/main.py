@@ -399,9 +399,12 @@ class App:
             if self.presentation is not None:
                 ps = self.presentation.stats
                 print(f"        presentation: {ps.slides} slides; planner ops {dict(ps.ops)}; "
-                      f"held {ps.held}, released {ps.released}", flush=True)
+                      f"revisions {ps.revisions}, corrections shown {ps.corrections_shown}, "
+                      f"shown as said {ps.shown_as_said}", flush=True)
                 for i, spec in enumerate(self.deck.slides, 1):
-                    print(f"          {i}. [{spec.layout}] {spec.title}  (v{spec.version}, {len(spec.blocks)} blocks)",
+                    part = f" [part {spec.part}]" if spec.part else ""
+                    print(f"          {i}. [{spec.layout}] {spec.title}{part}  (v{spec.version}, "
+                          f"{[b.type for b in spec.blocks]})",
                           flush=True)
             print(f"        providers: {u.providers or '-'}; triggers: {u.reasons or '-'}; "
                   f"outline: {[t.title + ' > ' + ', '.join(x.title for x in t.subtopics) for t in s.outline]}; "

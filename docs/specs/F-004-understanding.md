@@ -49,14 +49,23 @@ outline titles (current topic first, ≤ 150 tokens), current topic/subtopic, ro
 (`[1] …`, maybe-meta lines tagged). Whole prompt ≤ `prompt_budget_tokens`; trimming order: outline → summary. The transcript
 history is never included.
 
-## Grounding guard (M3 live fix)
+## Grounding guard (M3 live fix; revised for truthful slides)
 `understanding.grounding.enforce_grounding` runs after validation: a formula-like token (upper-case letter + digit) in
-the items that was not said, with a close spoken variant starting with the same element (6H2O vs said 6H2), is
-reverted to the spoken form and a concern of kind `transcription` is added (claim = spoken token,
-suggested_correction = the model's form, confidence 0.5) unless the model already raised it. Transcription concerns
-are kept from confidence 0.3 (`min_transcription_confidence`); factual ones from 0.6. The prompt also tells the model
-to keep what was said and raise suspected mis-hearings, and to extract ordered procedures and
-input → process → output explanations as `process` steps.
+the items that was not said, with a close spoken variant in the same place (a small edit starting with the same
+element, e.g. 6H2O vs said 6H2; never a different molecule named in words), gets a `transcription` concern
+(claim = wrong = heard token, right = shown token, confidence 0.5) unless the model already raised it. The shown
+content keeps the correct form (truthful slides, F-005). Transcription concerns are kept from confidence 0.3
+(`min_transcription_confidence`); factual ones from 0.6.
+
+## Prompt and post-processing (verify-lecture fixes)
+- Display-quality items (concise, fillers removed, pronouns resolved, fragments joined; definitions exact); facts,
+  labelled classification / groups; transitions and questions carry no items; self-corrections used as corrected.
+- CURRENT SLIDE with numbered items `[S1]..` and `revisions` [{ref, text}] (unknown refs dropped in `_sanitise`).
+- Concerns: acts hold the corrected content; `wrong` / `right` minimal words (derived by `minimal_change` when
+  missing). Lines that announce a subject are tagged "(announces: X)".
+- Deterministic guards: an "example" act whose lines have no example cue becomes points; an empty content act gets
+  its spoken line only if it is a complete sentence (tidied); the fallback shows complete tidied sentences only.
+- Budget: system prompt ≈ 1.45k est. tokens; `prompt_budget_tokens` = 3000.
 
 ## State application (store)
 `InterpretationReady` → match/insert topic + subtopic (case/token-overlap match, caps 20 × 8, evict oldest non-current),

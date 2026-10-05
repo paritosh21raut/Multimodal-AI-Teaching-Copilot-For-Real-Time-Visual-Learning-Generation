@@ -66,7 +66,7 @@ hold_s = 6.0               # ... for at most this long past max_wait
 buffer_cap_tokens = 600    # max transcript tokens per interpretation call
 min_call_interval_s = 8.0  # wall clock; <= 7.5 calls/min
 interpret_deadline_s = 15.0
-prompt_budget_tokens = 2600   # whole prompt (static system part + dynamic part)
+prompt_budget_tokens = 3000   # whole prompt (static system part + dynamic part)
 dynamic_budget_tokens = 1200  # header + outline + summary + new lines
 max_output_tokens = 1400
 min_concern_confidence = 0.6

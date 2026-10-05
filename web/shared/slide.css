@@ -193,6 +193,43 @@
 .formula-vars { display: flex; flex-wrap: wrap; gap: 18px 40px; justify-content: center; font-size: calc(var(--fs-small) * var(--fit)); }
 .formula-vars .sym { font-family: var(--font-display); font-weight: 700; color: var(--accent); margin-right: 12px; }
 
+/* ---------- part badge (continuation slides: same title, I / II / III) ---------- */
+.slide-title .part {
+  display: inline-block; vertical-align: middle; margin-left: 26px; padding: 6px 20px 8px;
+  border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+  font-family: var(--font-display); font-size: 0.42em; font-weight: 700; letter-spacing: 0.06em; line-height: 1;
+  position: relative; top: -0.08em;
+}
+
+/* ---------- facts (tiles) ---------- */
+.facts { display: grid; gap: 22px; }
+.facts-grid { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: 24px; }
+.fact {
+  display: grid; gap: 10px; align-content: start;
+  background: var(--surface); border-radius: var(--radius-sm); box-shadow: var(--shadow);
+  padding: 26px 30px 30px; border-left: 8px solid var(--accent);
+}
+.fact-label {
+  font-size: calc(var(--fs-small) * var(--fit)); font-weight: 650; letter-spacing: 0.02em; color: var(--muted); line-height: 1.25;
+}
+.fact-value {
+  font-family: var(--font-display); font-size: calc(var(--fs-lead) * var(--fit)); font-weight: 650; line-height: 1.15; color: var(--ink);
+}
+
+/* ---------- groups ---------- */
+.groups { display: grid; gap: 22px; }
+.groups-row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 28px; }
+.group { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 30px 34px; display: grid; gap: 18px; align-content: start; }
+.group-label { font-family: var(--font-display); font-size: calc(var(--fs-lead) * var(--fit)); font-weight: 650; color: var(--accent); line-height: 1.1; }
+.group-items { display: flex; flex-wrap: wrap; gap: 12px 14px; }
+.group-item { font-size: calc(var(--fs-body) * 0.9 * var(--fit)); background: var(--surface-2); border-radius: 999px; padding: 8px 22px; }
+
+/* ---------- two definitions side by side ---------- */
+.def-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: stretch; }
+.def-pair .def { align-content: start; gap: 20px; }
+.def-pair .def-term { font-size: calc(var(--fs-lead) * 1.15 * var(--fit)); }
+.def-pair .def-body { font-size: calc(var(--fs-body) * var(--fit)); padding: 34px 40px 34px 52px; height: 100%; box-sizing: border-box; }
+
 /* ---------- image ---------- */
 .figure { margin: 0; display: grid; gap: 12px; }
 .figure img { width: 100%; max-height: 640px; object-fit: contain; border-radius: var(--radius); background: var(--surface-2); opacity: 0; transition: opacity 500ms var(--ease); }

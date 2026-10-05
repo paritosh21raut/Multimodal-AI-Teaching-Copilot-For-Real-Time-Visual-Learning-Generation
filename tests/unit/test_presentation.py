@@ -50,12 +50,12 @@ def test_points_merge_in_place_with_stable_ids_dedupe_and_capacity():
     assert left is None and s.layout == "key_points"
     ids = [i.id for i in s.blocks[0].items]
     s2, left = merge(s, pts("water from the roots.", "Carbon dioxide", "Chlorophyll", "Minerals", "Warmth", "Air",
-                            "Soil"))
+                            "Soil", "Light"))
     items = s2.blocks[0].items
     assert [i.id for i in items[:2]] == ids                       # existing items untouched
     assert [i.text for i in items] == ["Sunlight", "Water from the roots", "Carbon dioxide", "Chlorophyll",
-                                       "Minerals", "Warmth"]       # duplicate skipped, capacity 6
-    assert left is not None and left.texts == ("Air", "Soil")      # the rest continues on a new slide
+                                       "Minerals", "Warmth", "Air", "Soil"]  # duplicate skipped, cap 8 per list
+    assert left is not None and left.texts == ("Light",)           # the rest continues on the next part
 
 
 def test_steps_capacity_and_formula_needs_its_own_slide():
@@ -81,14 +81,15 @@ def test_definition_then_notes_and_other_terms():
     assert s.layout == "definition"
     s, _ = merge(s, Piece("definition", term="photosynthesis", definition="How plants make food using sunlight."))
     assert s.blocks[0].notes == []                                  # same definition again: nothing new
-    s, _ = merge(s, pts("photo = light"))
-    s, left = merge(s, Piece("definition", term="Chlorophyll", definition="green pigment"))
-    assert [n.text for n in s.blocks[0].notes] == ["photo = light", "Chlorophyll: green pigment"]
-    s, left = merge(s, pts("synthesis = putting together", "Plants are producers", "Light is needed", "Leaves"))
-    assert [b.type for b in s.blocks] == ["definition", "points"]   # notes full: a short supporting list (cap 3)
+    s, _ = merge(s, Piece("definition", term="photo", definition="means light"))
+    assert [n.text for n in s.blocks[0].notes] == ["photo means light"]   # a word part: a note
+    s, left = merge(s, Piece("definition", term="Chlorophyll", definition="the green pigment in leaves"))
+    assert left is not None and left.kind == "definition"           # another concept: its own definition card
+    s, left = merge(s, pts("synthesis = putting together", "Plants are producers", "Light is needed"))
+    assert left is None and [b.type for b in s.blocks] == ["definition", "points"]
+    assert [n.text for n in s.blocks[0].notes] == ["photo means light"]   # chips: word-part notes only
     assert [i.text for i in s.blocks[1].items] == ["synthesis = putting together", "Plants are producers",
-                                                   "Light is needed"]
-    assert left is not None and left.texts == ("Leaves",)
+                                                   "Light is needed"]    # parallel points stay one list
 
 
 def test_provisional_item_updates_in_place_and_refined_content_replaces_it():
@@ -108,12 +109,13 @@ def test_provisional_item_updates_in_place_and_refined_content_replaces_it():
 def test_titles_and_description():
     assert slide_title("Photosynthesis", "Definition") == "What is photosynthesis?"
     assert slide_title("Photosynthesis", "Process") == "How photosynthesis works"
-    assert slide_title("Photosynthesis", "Stages") == "Stages of Photosynthesis"
+    assert slide_title("Photosynthesis", "Stages") == "Stages"          # the crumb shows the topic
     assert slide_title("Respiration", "Respiration") == "Respiration"
     assert slide_title("DNA", "Importance") == "Why DNA matters"
     s, _ = merge(frame_slide("Photosynthesis", "Process"), Piece("steps", texts=("Light absorbed", "Water split")))
-    d = describe(s)
-    assert "How photosynthesis works (process flow)" in d and "1. Light absorbed" in d and "room for 4 more steps" in d
+    d, refs = describe(s)
+    assert d.startswith("How photosynthesis works (process flow, has room)") and "[S1] step: Light absorbed" in d
+    assert list(refs) == ["S1", "S2"] and refs["S1"] == f"{s.id}/{s.blocks[0].steps[0].id}"
 
 
 # ---- planner ------------------------------------------------------------------------------------------
@@ -167,4 +169,35 @@ def test_empty_content_act_gets_the_spoken_line():
     it = interp(acts=[act("question", lines=(1,)), act("explanation", lines=(2,))])
     out = _fill_empty_acts(it, lines)
     assert out.acts[0].items.points == []                             # questions are not filled
-    assert out.acts[1].items.points == ["And the oxygen we breathe is produced by photosynthesis."]
+    assert out.acts[1].items.points == ["The oxygen we breathe is produced by photosynthesis"]  # filler dropped
+
+
+def test_two_labelled_classifications_become_named_groups_and_yes_facts_become_points():
+    from copilot.core.interpretation import Fact
+    ps = pieces_from(interp(acts=[
+        act("classification", label="Inner planets", points=["Mercury", "Venus", "Earth", "Mars"]),
+        act("classification", lines=(2,), label="Outer planets", points=["Jupiter", "Saturn", "Uranus", "Neptune"]),
+        act("explanation", lines=(3,), facts=[Fact(label="Smallest planet", value="Mercury"),
+                                              Fact(label="Milky Way contains our solar system", value="Yes")])]))
+    assert [p.kind for p in ps] == ["groups", "facts", "points"]
+    assert [g[0] for g in ps[0].groups] == ["Inner planets", "Outer planets"]
+    assert ps[1].pairs == (("Smallest planet", "Mercury"),)
+    assert ps[2].texts == ("Milky Way contains our solar system",)
+
+
+def test_facts_and_a_definition_may_join_a_slide_with_a_diagram():
+    s, _ = merge(frame_slide("Chemistry", "Molecules"), Piece("tree", term="Types of molecules",
+                                                              texts=("Monoatomic", "Diatomic")))
+    s, left = merge(s, Piece("definition", term="Molecule", definition="Simplest particle with independent existence"))
+    assert left is None and [b.type for b in s.blocks] == ["hierarchy", "definition"]
+    s, left = merge(s, Piece("tree", term="States", texts=("Solid", "Liquid")))
+    assert left is None and s.blocks[-1].type == "groups"                # a second classification: groups
+
+
+def test_announced_topic_is_remembered_by_a_noop():
+    w = Working(Frame("Solar System", "Overview"), has_content=True)
+    d = decide(w, interp(topic="Galaxies", sub="", relation="new_topic"), [Signal(0.4, True)], None,
+               has_pieces=False)
+    assert d.op == "noop" and d.candidate == "Galaxies"
+    d2 = decide(w, interp(topic="Galaxies", sub=""), [], d.candidate, has_pieces=True)
+    assert d2.op == "new"

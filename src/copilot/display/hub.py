@@ -156,9 +156,15 @@ class DisplayHub:
                 self.concerns[c["id"]] = c
                 self._broadcast({"type": "concern", "concern": c}, roles=("control",))
         elif isinstance(event, ConcernResolved):
-            self.concerns.pop(event.concern_id, None)
-            self._broadcast({"type": "concern_resolved", "id": event.concern_id, "status": event.status},
-                            roles=("control",))
+            c = self.concerns.get(event.concern_id)
+            if event.status == "dismissed" or c is None:  # OK: the teacher has seen it
+                self.concerns.pop(event.concern_id, None)
+                self._broadcast({"type": "concern_resolved", "id": event.concern_id, "status": event.status},
+                                roles=("control",))
+            else:  # switched: stays listed so the teacher can switch back
+                c = {**c, "status": event.status, "applied": event.status == "accepted"}
+                self.concerns[event.concern_id] = c
+                self._broadcast({"type": "concern", "concern": c}, roles=("control",))
         elif isinstance(event, AudioLevel):
             self._broadcast({"type": "audio", "rms": event.rms, "speaking": event.speaking},
                             key=("audio",), roles=("control",))

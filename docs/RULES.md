@@ -14,8 +14,10 @@
 6. **Modes are plug-ins.** New modes consume `LectureState` + `RepresentationIntent`; they must not
    require changes to audio, STT, or understanding.
 7. **Language-aware interfaces.** Text-bearing contracts carry a `language` field (English only for now).
-8. **Teacher is the authority.** Display content comes from the lecture. Additions are small and
-   level-appropriate. Doubtful claims go to the Control View, not the projector.
+8. **Teacher is the authority; the projector is truthful.** Display content comes from the lecture, written as
+   clear slide text (not transcript copies; definitions exact). Additions are small and level-appropriate. A
+   wrong or mis-heard statement is shown corrected (when the model is confident) and always reported in the
+   Control View with what was said; the teacher can switch back with one click. Nothing is corrected silently.
 
 ## Code
 - Python 3.10, type hints everywhere, Pydantic v2 models for all contracts.

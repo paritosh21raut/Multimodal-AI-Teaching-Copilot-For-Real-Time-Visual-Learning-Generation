@@ -45,25 +45,35 @@ and how*, while calling the LLM rarely.
 6. **RollingMemory** — the outline plus a short rolling summary, compressed deterministically
    (outline entries are capped; the summary is replaced, not appended). Never grows with lecture length.
 
-## Grounding and level
-- The prompt instructs: represent only what the teacher said; allow only small clarifying additions,
+## Grounding, level and display quality
+- The prompt instructs: represent only what the teacher taught; allow only small clarifying additions,
   marked `added=true`; respect the grade level; no content beyond the lecture's scope.
+- Items are slide text, not transcript: concise, fillers removed, pronouns resolved, split sentences joined,
+  simplified for the grade; definitions exact. Item types: definition, facts (attribute tiles), classification
+  (label + kinds → tree; named groups → group cards), process steps, comparison, timeline, formula, cause-effect,
+  points, examples (only real examples; deterministic guard: an "example" act without an example cue in its
+  lines becomes points).
+- The CURRENT SLIDE is shown with numbered items; the model may return `revisions` ({ref, text}) to complete or fix
+  an item instead of adding a fragment. Announcement lines are tagged "(announces: X)".
 - The Composer caps `added` content (≤ 1 item per slide), and it is rendered visually subtle.
 
 ## Grounding guard
-Formula-like tokens the model changed from what was said are reverted and raised as `transcription` concerns
-(details: F-004). The teacher decides; the display never shows a silent correction.
+Formula-like tokens the model changed from what was said get a `transcription` concern (wrong = heard,
+right = shown) when the model did not raise one itself (details: F-004). Nothing is corrected silently.
 
-## Incorrect statements
-- `concerns` never reach the projector. A content item linked to a concern is held as `pending_review`.
-- The Control View shows the claim, the issue, and the suggested correction with Accept correction / Keep as said / Dismiss.
-  The teacher's choice is a command → state (`ConcernResolved`) → the presentation engine releases the held content
-  (accept: corrected; keep: as said; dismiss: dropped).
+## Incorrect statements (truthful slides)
+- Acts carry the corrected content; each concern carries `claim`, `suggested_correction` and the minimal differing
+  words `wrong` / `right`. The store marks a concern `applied` when confident (factual ≥ 0.75, transcription ≥ 0.4);
+  otherwise the projector shows what the teacher said. Concern text itself never reaches the projector.
+- The Control View shows what was said, the correct form and what the slide shows, with OK / Show as I said
+  (or Show correction / OK) → `resolve_concern` → `ConcernResolved` → the presentation engine switches the words
+  in place (F-005). Teacher self-corrections are not concerns.
 
 ## LLM layer (`copilot.llm`)
 - Router: Groq gpt-oss-120b → Groq qwen3.8-27b (separate 8k-TPM bucket) → OpenRouter free model (50 req/day) →
   Ollama local. Per-entry timeout 6 s, 1 retry on timeouts/5xx only; whole interpretation deadline 15 s.
 - Rate limiter: token bucket per provider (RPM/TPM from config). 429 → cooldown and fall through.
 - Strict JSON: schema in the prompt + Pydantic validation; one repair attempt; on failure, a deterministic
-  fallback interpretation from the ConceptTracker (topic unchanged, raw sentence as a key point). The fallback is logged, never hidden.
+  fallback interpretation (topic unchanged; only complete spoken sentences, tidied, as key points; fragments are not
+  shown). The fallback is logged, never hidden.
 - Prompt budget enforced in code (approximate tokenizer) before sending.

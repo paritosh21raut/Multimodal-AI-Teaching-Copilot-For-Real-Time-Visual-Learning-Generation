@@ -44,8 +44,10 @@ export function reduce(state, msg) {
     case "transcript": return { ...state, transcript: [...state.transcript.slice(-39), msg.line] };
     case "audio": return { ...state, audio: { rms: msg.rms, speaking: msg.speaking } };
     case "connection": return { ...state, connected: msg.connected };
-    case "concern":
-      return state.concerns.some((c) => c.id === msg.concern.id) ? state : { ...state, concerns: [...state.concerns, msg.concern] };
+    case "concern":  // new or updated (switched) concern
+      return state.concerns.some((c) => c.id === msg.concern.id)
+        ? { ...state, concerns: state.concerns.map((c) => (c.id === msg.concern.id ? msg.concern : c)) }
+        : { ...state, concerns: [...state.concerns, msg.concern] };
     case "concern_resolved": return { ...state, concerns: state.concerns.filter((c) => c.id !== msg.id) };
     default: return state;
   }

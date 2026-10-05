@@ -21,6 +21,7 @@ from tests.integration.test_understanding_pipeline import HashEmbedder
 FIXTURE = Path(__file__).parents[1] / "fixtures" / "lectures" / "photosynthesis.txt"
 SPEED = 30.0
 WRONG = "Plants take in oxygen during photosynthesis"
+FIXED = "Plants take in carbon dioxide during photosynthesis"
 
 
 def facet(line: str) -> tuple[str, str]:
@@ -48,7 +49,9 @@ class SlideLLM:
         for n, text in lines:
             n = int(n)
             t, s = facet(text)
-            if s == "Process" and "equation" not in text.lower() and WRONG not in text:
+            if WRONG in text:  # acts carry the corrected statement; the concern says what was said
+                acts.append({"act": "explanation", "lines": [n], "items": {"points": [FIXED]}})
+            elif s == "Process" and "equation" not in text.lower():
                 acts.append({"act": "process", "lines": [n], "items": {"steps": [text[:60]]}})
             elif "equation" in text.lower():
                 acts.append({"act": "formula", "lines": [n], "items": {"formula": {
@@ -57,7 +60,7 @@ class SlideLLM:
                 acts.append({"act": "explanation", "lines": [n], "items": {"points": [text[:60]]}})
             if WRONG in text:
                 concerns.append({"claim": text, "issue": "reversed", "confidence": 0.95, "lines": [n],
-                                 "suggested_correction": "Plants take in carbon dioxide and give out oxygen"})
+                                 "suggested_correction": FIXED, "wrong": "oxygen", "right": "carbon dioxide"})
         same_topic = cur and cur.group(1).strip() == topic
         relation = ("same_concept" if same_topic and cur.group(2).strip() == sub
                     else "sibling_concept" if same_topic else "new_topic")
@@ -94,15 +97,15 @@ async def test_fixture_lecture_builds_a_continuity_aware_deck():
     titles = [s.title for s in deck.slides]
     assert titles[0] == "Photosynthesis" and deck.slides[0].layout == "title"
     order = ["What is photosynthesis?", "What photosynthesis needs", "How photosynthesis works",
-             "Why photosynthesis matters", "Comparison of Respiration"]
+             "Why photosynthesis matters", "Comparison"]
     positions = [next(i for i, t in enumerate(titles) if t.startswith(o)) for o in order]
     assert positions == sorted(positions), titles                    # facets in lecture order
     assert any(s.layout == "process_flow" for s in deck.slides)
     shown = json.dumps([s.model_dump() for s in deck.slides])
-    assert WRONG not in shown                                        # held for the teacher
+    assert WRONG not in shown and FIXED in shown                     # truthful slide; the teacher is told
     for meta in ("science books", "Look at the screen"):
         assert meta not in shown
-    # teacher keeps the statement as said: it appears on the slide it belonged to
+    # the teacher chooses "show as I said": the slide shows the teacher's words
     cid = store.snapshot().concerns[0].id
     await bus.publish(CommandReceived(command=Command(kind="resolve_concern", args={"id": cid, "action": "keep"})))
     await bus.drain()

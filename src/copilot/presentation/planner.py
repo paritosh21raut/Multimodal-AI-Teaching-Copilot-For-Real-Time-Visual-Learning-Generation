@@ -69,6 +69,11 @@ def decide(working: Optional[Working], it: Interpretation, signals: Sequence[Sig
     if it.relation == "digression":
         return Decision("noop", frame, candidate, "digression")
     if not has_pieces:
+        # "Now let's talk about galaxies" alone: nothing to show yet, but remember the announced topic so the next
+        # unit about it opens its slide without waiting for another confirmation
+        if working is not None and not working.is_title and not frame.same_topic(working.frame) \
+                and it.relation == "new_topic":
+            return Decision("noop", frame, it.topic, "new topic announced")
         return Decision("noop", frame, candidate, "nothing to display")
     if working is None or working.is_title:
         return Decision("new", frame, None, "first content slide")

@@ -50,9 +50,13 @@ h2 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08
 .concern.factual .kind { color: var(--accent-2); }
 .concern.transcription .kind { color: var(--accent); }
 .concern p { margin: 0; line-height: 1.4; }
-.concern .claim { font-weight: 600; }
+.concern .said, .concern .fix { font-weight: 600; }
+.concern .said span, .concern .fix span { display: inline-block; min-width: 72px; color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 6px; }
+.concern .fix { color: var(--accent); }
+.concern .status { font-size: 13px; padding: 6px 10px; border-radius: 8px; background: var(--surface-2); color: var(--ink-2, var(--ink)); }
+.concern .status.fixed { background: var(--accent-soft); }
+.deck .t .part { font-size: 11px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 7px; margin-left: 4px; }
 .concern .issue { color: var(--ink-2, var(--muted)); font-size: 14px; }
-.concern .fix span { color: var(--muted); font-size: 13px; margin-right: 4px; }
 .concern-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 .concern-actions button { padding: 6px 10px; font-size: 13px; }
 .concern-actions button.accept { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }

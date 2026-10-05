@@ -19,7 +19,7 @@ from copilot.core.interpretation import (
 )
 from copilot.core.memory import titles_match
 from copilot.core.state import LectureState
-from copilot.core.textutil import approx_tokens
+from copilot.core.textutil import approx_tokens, ends_sentence
 from copilot.llm.router import AllProvidersFailed, LLMRouter
 from copilot.understanding.gate import BufferedLine
 from copilot.understanding.grounding import enforce_grounding
@@ -39,7 +39,7 @@ class InvalidInterpretation(ValueError):
 @dataclass
 class InterpreterSettings:
     dynamic_budget_tokens: int = 1200
-    prompt_budget_tokens: int = 2600
+    prompt_budget_tokens: int = 3000
     max_output_tokens: int = 1400
     interpret_deadline_s: float = 15.0
     min_concern_confidence: float = 0.6
@@ -79,6 +79,21 @@ def _normalise(data: Any) -> Any:
     for key in ("topic", "subtopic"):
         if data.get(key) is None:
             data[key] = ""
+    revs = data.get("revisions")
+    if isinstance(revs, list):
+        data["revisions"] = [r for r in revs if isinstance(r, dict) and isinstance(r.get("ref"), str)
+                             and isinstance(r.get("text"), str) and r["text"].strip()]
+    elif revs is not None:
+        data["revisions"] = []
+    concerns = data.get("concerns")
+    if isinstance(concerns, list):
+        for c in concerns:
+            if isinstance(c, dict):
+                for k in ("wrong", "right", "suggested_correction", "claim", "issue"):
+                    if c.get(k) is None:
+                        c[k] = ""
+                    elif not isinstance(c[k], str):
+                        c[k] = str(c[k])
     return data
 
 
@@ -100,9 +115,30 @@ def _normalise_items(items: dict) -> None:
         if isinstance(v, list):
             items[key] = [dict(zip(fields, x)) if isinstance(x, (list, tuple)) and len(x) == len(fields) else x
                           for x in v]
-    for key in ("term", "definition"):
+    for key in ("term", "definition", "label"):
         if items.get(key) is None:
             items[key] = ""
+    facts = items.get("facts")
+    if isinstance(facts, list):
+        out = []
+        for f in facts:
+            if isinstance(f, (list, tuple)) and len(f) == 2:
+                f = {"label": str(f[0]), "value": str(f[1])}
+            elif isinstance(f, str):
+                label, _, value = f.partition(":")
+                f = {"label": label.strip(), "value": value.strip()}
+            if isinstance(f, dict) and str(f.get("label") or "").strip():
+                out.append({"label": str(f["label"]), "value": str(f.get("value") or "")})
+        items["facts"] = out
+    groups = items.get("groups")
+    if isinstance(groups, list):
+        out = []
+        for g in groups:
+            if isinstance(g, dict) and str(g.get("label") or "").strip():
+                its = g.get("items") or []
+                its = its if isinstance(its, list) else [its]
+                out.append({"label": str(g["label"]), "items": [str(x) for x in its if x is not None]})
+        items["groups"] = out
 
 
 def parse_interpretation(text: str) -> Interpretation:
@@ -137,17 +173,57 @@ def _sanitise(it: Interpretation, n_lines: int, min_conf: float, state: LectureS
             and titles_match(it.subtopic or topic.title, sub.title if sub else topic.title)):
         log.info("relation %s with unchanged subtopic %r -> same_concept", relation, it.subtopic)
         relation = "same_concept"
+    concerns = []
+    for c in it.concerns:
+        if c.confidence < (min_transcription_conf if c.kind == "transcription" else min_conf):
+            continue
+        upd: dict = {"lines": ok(c.lines)}
+        if not (c.wrong and c.right):  # derive the minimal differing words from claim vs correction
+            wrong, right = minimal_change(c.claim, c.suggested_correction)
+            upd.update({"wrong": c.wrong or wrong, "right": c.right or right})
+        concerns.append(c.model_copy(update=upd))
+    refs = state.slide_refs
+    revisions = [r for r in it.revisions if r.ref.strip().upper() in refs]
+    if len(revisions) != len(it.revisions):
+        log.info("dropped %d revision(s) with unknown refs", len(it.revisions) - len(revisions))
     return it.model_copy(update={
         "relation": relation,
         "acts": [a.model_copy(update={"lines": ok(a.lines)}) for a in it.acts],
         "meta_lines": ok(it.meta_lines),
-        "concerns": [c.model_copy(update={"lines": ok(c.lines)}) for c in it.concerns
-                     if c.confidence >= (min_transcription_conf if c.kind == "transcription" else min_conf)],
+        "concerns": concerns,
+        "revisions": [r.model_copy(update={"ref": r.ref.strip().upper()}) for r in revisions],
     })
+
+
+
+
+def minimal_change(said: str, corrected: str) -> tuple[str, str]:
+    """The smallest differing word span between what was said and the correction ("Neptune" -> "Uranus")."""
+    from difflib import SequenceMatcher
+
+    a, b = said.split(), corrected.split()
+    norm = lambda ws: [w.lower().strip(".,;:!?") for w in ws]  # noqa: E731
+    ops = [o for o in SequenceMatcher(None, norm(a), norm(b)).get_opcodes() if o[0] != "equal"]
+    if not ops:
+        return "", ""
+    i1, i2, j1, j2 = ops[0][1], ops[-1][2], ops[0][3], ops[-1][4]
+    wrong = " ".join(a[i1:i2]).strip(".,;:!?")
+    right = " ".join(b[j1:j2]).strip(".,;:!?")
+    if len(wrong.split()) > 6 or len(right.split()) > 6:  # not a small substitution: no safe token toggle
+        return "", ""
+    return wrong, right
 
 
 FILL_ACTS = {"explanation", "recap", "application", "example", "classification"}
 FILL_MAX_WORDS = 16
+_LEAD_FILLERS = re.compile(r"^(?:(?:so|and|now|okay|ok|well|also|then|basically|actually|you know|"
+                           r"we have|there is|there are)[,\s]+)+", re.IGNORECASE)
+
+
+def tidy_spoken(text: str) -> str:
+    """Spoken line → plain slide text: leading fillers dropped, first letter capitalised, no final period."""
+    t = _LEAD_FILLERS.sub("", " ".join(text.split())).strip().rstrip(".")
+    return t[:1].upper() + t[1:] if t else t
 
 
 def _fill_empty_acts(it: Interpretation, lines: Sequence[BufferedLine]) -> Interpretation:
@@ -158,8 +234,10 @@ def _fill_empty_acts(it: Interpretation, lines: Sequence[BufferedLine]) -> Inter
     acts = []
     for a in it.acts:
         if a.act in FILL_ACTS and a.items == ContentItems() and not a.added:
-            texts = [" ".join(lines[n - 1].text.split()[:FILL_MAX_WORDS]) for n in a.lines
-                     if 1 <= n <= len(lines) and n not in meta and n not in used and not lines[n - 1].maybe_meta]
+            # only complete sentences: a fragment ("the walls around it") is not slide content on its own
+            texts = [tidy_spoken(" ".join(lines[n - 1].text.split()[:FILL_MAX_WORDS])) for n in a.lines
+                     if 1 <= n <= len(lines) and n not in meta and n not in used and not lines[n - 1].maybe_meta
+                     and ends_sentence(lines[n - 1].text) and len(lines[n - 1].text.split()) >= 4]
             if texts:
                 log.info("act %s on lines %s had no items; using the spoken line", a.act, a.lines)
                 a = a.model_copy(update={"items": ContentItems(points=texts)})
@@ -167,12 +245,39 @@ def _fill_empty_acts(it: Interpretation, lines: Sequence[BufferedLine]) -> Inter
     return it.model_copy(update={"acts": acts})
 
 
+_EXAMPLE_CUE = re.compile(r"\b(?:for example|for instance|such as|e\.?g\.?|example|like)\b", re.IGNORECASE)
+
+
+def _examples_need_a_cue(it: Interpretation, lines: Sequence[BufferedLine]) -> Interpretation:
+    """An "example" act whose lines never present an example ("for example", "such as", ...) is a statement of
+    fact: its items become points, so facts are not shown as example cards."""
+    acts = []
+    for a in it.acts:
+        if a.act == "example" and a.items.examples:
+            said = " ".join(lines[n - 1].text for n in a.lines if 1 <= n <= len(lines))
+            if not _EXAMPLE_CUE.search(said):
+                items = a.items.model_copy(update={"points": a.items.points + a.items.examples, "examples": []})
+                a = a.model_copy(update={"act": "explanation", "items": items})
+        acts.append(a)
+    return it.model_copy(update={"acts": acts})
+
+
 def fallback_interpretation(state: LectureState, lines: Sequence[BufferedLine]) -> Interpretation:
-    """Deterministic interpretation when no LLM answer is usable: topic unchanged, raw sentences as key points."""
+    """Deterministic interpretation when no LLM answer is usable: topic unchanged; only complete spoken sentences
+    become key points, tidied (fillers dropped). Fragments ("diatomic triatomic or ...", "also called ...") are not
+    slide text; they stay in the transcript and the event log."""
     topic = state.topic(state.current_topic_id)
     sub = state.subtopic()
     title = topic.title if topic else (state.setup.expected_topic or "Lecture")
-    points = [" ".join(l.text.split()[:25]) for l in lines if not l.maybe_meta]  # every line; the composer caps
+    points = []
+    for l in lines:
+        text = " ".join(l.text.split())
+        if l.maybe_meta or not text or not text[0].isupper() or not ends_sentence(text) or len(text.split()) < 4:
+            continue
+        for sentence in re.split(r"(?<=[.!?])\s+(?=[A-Z])", text):
+            tidy = tidy_spoken(" ".join(sentence.split()[:25]))
+            if len(tidy.split()) >= 4 and not tidy.endswith("?"):
+                points.append(tidy)
     return Interpretation(
         topic=title,
         subtopic=sub.title if sub else "",
@@ -254,11 +359,11 @@ class Interpreter:
                 return self._fallback(state, lines, f"invalid output after repair: {second}", t0,
                                       prompt.tokens, attempts)
 
-        it = _fill_empty_acts(it, lines)
-        it, reverted = enforce_grounding(it, [l.text for l in lines])
-        if reverted:
-            log.warning("interpretation from %s silently changed spoken tokens; kept as said + concern: %s",
-                        res.entry, ", ".join(reverted))
+        it = _fill_empty_acts(_examples_need_a_cue(it, lines), lines)
+        it, changed = enforce_grounding(it, [l.text for l in lines])
+        if changed:
+            log.warning("interpretation from %s changed spoken tokens without saying so; concern added: %s",
+                        res.entry, ", ".join(changed))
         it = _sanitise(it, len(lines), self.s.min_concern_confidence, state, self.s.min_transcription_confidence)
         return InterpretResult(it, res.entry, (time.perf_counter() - t0) * 1000, False, "",
                                prompt.tokens, repaired, attempts)

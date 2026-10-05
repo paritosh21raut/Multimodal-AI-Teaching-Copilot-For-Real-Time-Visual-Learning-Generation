@@ -15,7 +15,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `UtteranceClassified` | understanding | `segment_id`, `kind` (content/classroom_management/meta/filler/question_to_class), `maybe_meta`, `rule` |
 | `ConceptSignal` | understanding | `segment_id`, `shift_score`, `topic_shift`, `keyphrases`, `cues`, `boundary` |
 | `InterpretRequested` | understanding | `request_id`, `reason` (pause/words/boundary/max_wait/cap/flush), `segment_ids`, `prompt_tokens` |
-| `InterpretationReady` | understanding | `request_id`, `interpretation: Interpretation`, `segment_ids` (line n = `segment_ids[n-1]`), `provider` ("" = fallback), `latency_ms`, `fallback`, `fallback_reason` |
+| `InterpretationReady` | understanding | `request_id`, `interpretation: Interpretation`, `segment_ids` (line n = `segment_ids[n-1]`), `provider` ("" = fallback), `latency_ms`, `fallback`, `fallback_reason`, `slide_refs` (refs the prompt showed) |
 | `LLMCallFailed` | llm | `provider`, `error`, `will_retry` |
 | `StateChanged` | state store | `version`, `changes` (topic/subtopic/outline/concerns) |
 | `SlidePatch` | deck | `slide_id`, `version`, `op` (add/update), `spec` (SlideSpec dump) |
@@ -23,7 +23,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `CommandReceived` | display/terminal | `command: Command` |
 | `ConcernRaised` | state store | `concern` (Concern dump) |
 | `ConcernResolved` | state store | `concern_id`, `status` (accepted/kept/dismissed) |
-| `SlideContextChanged` | presentation engine | `text` (working-slide summary → `LectureState.slide_context` → prompt) |
+| `SlideContextChanged` | presentation engine | `text` (working-slide summary with `[S1]..` items → `LectureState.slide_context` → prompt), `refs` (S-ref → slide/item id) |
 | `SlideOverflow` | display hub (from `/display`) | `slide_id`, `version` (auto-fit failed; planner continues on a new slide) |
 | `ErrorRaised` | any | `component`, `error`, `fatal` |
 
@@ -33,6 +33,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 force_new_slide, resolve_concern(id, action)`.
 
 `Interpretation` (`core/interpretation.py`): `topic, subtopic, relation, acts[{act, lines, items, added}],
-representation_hint, meta_lines, concerns[{claim, issue, suggested_correction, confidence, lines, kind}], level_estimate,
+representation_hint, meta_lines, concerns[{claim, issue, suggested_correction, confidence, lines, kind, wrong, right}], revisions[{ref, text}], level_estimate,
 subject_estimate, summary_delta`. `items`: `term, definition, points, steps, compare, pairs[{aspect,left,right}],
-events[{when,what}], formula{expression, variables[{symbol,meaning}]}, causes[{cause,effect}], examples`.
+events[{when,what}], formula{expression, variables[{symbol,meaning}]}, causes[{cause,effect}], examples, label,
+facts[{label,value}], groups[{label,items}]`.

@@ -126,7 +126,7 @@ async def test_invalid_twice_falls_back_deterministically():
     assert res.fallback and "after repair" in res.fallback_reason
     it = res.interpretation
     assert it.topic == "Photosynthesis" and it.subtopic == "Definition" and it.relation == "same_concept"
-    assert it.acts[0].items.points == ["First the leaf absorbs sunlight."]  # maybe-meta line not displayed
+    assert it.acts[0].items.points == ["First the leaf absorbs sunlight"]  # maybe-meta line not displayed; tidied
 
 
 async def test_no_router_and_provider_failure_fall_back():
@@ -172,3 +172,23 @@ async def test_repair_prompt_stays_within_budget():
     assert res.repaired
     repair = seen[1]
     assert sum(approx_tokens(m["content"]) for m in repair) <= 2600
+
+
+
+def test_announced_subject_is_tagged_for_the_model():
+    from copilot.understanding.prompt import announced_subject
+    assert announced_subject("Now let's talk about galaxies.") == "galaxies"
+    assert announced_subject("Let's learn about atoms and molecules.") == "atoms and molecules"
+    assert announced_subject("Now, the next topic is respiration in plants, which is different") == "respiration in plants"
+    assert announced_subject("Now let's see how the process actually happens step by step.") == "process actually happens step by step"
+    assert announced_subject("Plants make food using light.") == ""
+
+
+
+def test_fallback_shows_only_complete_sentences():
+    from copilot.understanding.interpreter import fallback_interpretation
+    lines = [BufferedLine("a", "also called natural satellites which are the moons which revolve around the planet.", 0, 1),
+             BufferedLine("b", "diatomic triatomic or catastrophic", 1, 2),
+             BufferedLine("c", "So Our universe has billions of galaxies. Why is it so?", 2, 3)]
+    it = fallback_interpretation(LectureState(session_id="s"), lines)
+    assert it.acts[0].items.points == ["Our universe has billions of galaxies"]
