@@ -18,9 +18,12 @@ from copilot.core.events import (
     AudioLevel,
     Command,
     CommandReceived,
+    ConcernRaised,
+    ConcernResolved,
     DeckState,
     Event,
     LifecycleChanged,
+    SlideOverflow,
     SlidePatch,
     TranscriptFinal,
     UtteranceDropped,
@@ -67,11 +70,13 @@ class DisplayHub:
         self.deck: Optional[dict] = None
         self.lifecycle = "starting"
         self.transcript: deque[dict] = deque(maxlen=TRANSCRIPT_LINES)
+        self.concerns: dict[str, dict] = {}  # open concerns (control view only; never sent to the display)
 
     def attach(self) -> None:
         self._bus.subscribe(
             "display_hub", self._on_event,
-            [SlidePatch, DeckState, LifecycleChanged, TranscriptFinal, UtteranceDropped],
+            [SlidePatch, DeckState, LifecycleChanged, TranscriptFinal, UtteranceDropped, ConcernRaised,
+             ConcernResolved],
         )
         # Audio levels are high-rate and only matter "now": drop old ones if the hub lags.
         self._bus.subscribe("display_hub_audio", self._on_event, [AudioLevel], queue_size=4, overflow="drop_oldest")
@@ -80,15 +85,15 @@ class DisplayHub:
     def connect(self, role: Role) -> Connection:
         conn = Connection(role)
         self.connections.add(conn)
-        conn.push(self.hello())
+        conn.push(self.hello(role))
         return conn
 
     def disconnect(self, conn: Connection) -> None:
         conn.closed = True
         self.connections.discard(conn)
 
-    def hello(self) -> dict:
-        return {
+    def hello(self, role: Role = "display") -> dict:  # fail closed: concerns only on explicit request
+        msg = {
             "type": "hello",
             "theme": self.theme,
             "lifecycle": self.lifecycle,
@@ -96,9 +101,19 @@ class DisplayHub:
             "deck": self.deck,
             "transcript": list(self.transcript),
         }
+        if role == "control":  # doubtful claims never reach the projector
+            msg["concerns"] = list(self.concerns.values())
+        return msg
 
     async def handle_client_message(self, conn: Connection, msg: dict) -> Optional[str]:
         """Returns an error string for the client, or None."""
+        if msg.get("type") == "overflow":  # display auto-fit could not fit the slide
+            slide_id = msg.get("slide_id")
+            if not isinstance(slide_id, str) or slide_id not in self.slides:
+                return "overflow: unknown slide"
+            version = msg.get("version")
+            await self._bus.publish(SlideOverflow(slide_id=slide_id, version=version if isinstance(version, int) else 0))
+            return None
         if msg.get("type") != "command":
             return f"unknown message type {msg.get('type')!r}"
         if conn.role != "control":
@@ -135,6 +150,15 @@ class DisplayHub:
             line = {"t": event.start, "text": event.text, "dropped": event.reason}
             self.transcript.append(line)
             self._broadcast({"type": "transcript", "line": line}, roles=("control",))
+        elif isinstance(event, ConcernRaised):
+            c = event.concern
+            if c.get("status", "open") == "open":
+                self.concerns[c["id"]] = c
+                self._broadcast({"type": "concern", "concern": c}, roles=("control",))
+        elif isinstance(event, ConcernResolved):
+            self.concerns.pop(event.concern_id, None)
+            self._broadcast({"type": "concern_resolved", "id": event.concern_id, "status": event.status},
+                            roles=("control",))
         elif isinstance(event, AudioLevel):
             self._broadcast({"type": "audio", "rms": event.rms, "speaking": event.speaking},
                             key=("audio",), roles=("control",))

@@ -33,6 +33,31 @@ function Meter({ audio }) {
   </div>`;
 }
 
+// Doubtful statements and suspected mis-hearings: shown only here, never on the projector. The content they
+// refer to is held back until the teacher decides.
+function Concerns({ concerns, send }) {
+  if (!concerns.length) return null;
+  const act = (id, action) => send("resolve_concern", { id, action });
+  return html`<section class="concerns">
+    <h2>Needs your review <span class="count">${concerns.length}</span></h2>
+    ${concerns.map((c) => html`<article key=${c.id} class=${"concern " + (c.kind || "factual")}>
+      <div class="concern-head">
+        <span class="kind">${c.kind === "transcription" ? "Possible mis-hearing" : "Possible error"}</span>
+        <span class="conf">${Math.round((c.confidence || 0) * 100)}%</span>
+      </div>
+      <p class="claim">“${c.claim}”</p>
+      ${c.issue && html`<p class="issue">${c.issue}</p>`}
+      ${c.suggested_correction && html`<p class="fix"><span>Suggested:</span> ${c.suggested_correction}</p>`}
+      <div class="concern-actions">
+        <button class="accept" disabled=${!c.suggested_correction} onClick=${() => act(c.id, "accept")}
+          title="Show the corrected version on the display">Accept correction</button>
+        <button onClick=${() => act(c.id, "keep")} title="Show it as you said it">Keep as said</button>
+        <button class="ghost" onClick=${() => act(c.id, "dismiss")} title="Do not show this content">Dismiss</button>
+      </div>
+    </article>`)}
+  </section>`;
+}
+
 function App() {
   const [state, dispatch] = useReducer(reduce, initialState);
   const conn = useRef(null);
@@ -95,6 +120,7 @@ function App() {
         </ol>
       </section>
       <section class="right">
+        <${Concerns} concerns=${state.concerns} send=${send} />
         <h2>Transcript</h2>
         <div class="transcript" ref=${transcriptRef}>
           ${state.transcript.map((l, i) => html`<p key=${i} class=${l.dropped ? "dropped" : ""}>

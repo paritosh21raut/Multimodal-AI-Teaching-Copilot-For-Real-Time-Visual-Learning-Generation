@@ -41,7 +41,7 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT) -> FastAPI:
 
     @app.get("/api/state")
     async def state():
-        return JSONResponse(hub.hello())
+        return JSONResponse(hub.hello("display"))
 
     @app.websocket("/ws")
     async def ws(websocket: WebSocket, role: str = "display"):

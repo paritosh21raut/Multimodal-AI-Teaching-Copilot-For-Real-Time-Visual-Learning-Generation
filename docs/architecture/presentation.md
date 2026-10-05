@@ -1,5 +1,8 @@
 # Presentation Engine (Live Slides mode)
 
+Implementation and exact rules: `docs/specs/F-005-presentation.md` (`presentation.content` / `composer` /
+`planner` / `engine`). Defaults: min dwell 15 s (config `[presentation]`); near-duplicates by text similarity ≥ 0.85.
+
 ## Concepts
 - **Deck**: an ordered list of `SlideSpec`s for the session; one is `live`. The teacher can navigate or pin.
 - **Slide**: one *concept frame* (topic + subtopic + facet), a representation layout, and blocks.

@@ -34,12 +34,24 @@ function App() {
   const frozenSpec = useRef(null);
   const containerRef = useRef(null);
   const scale = useStageScale(containerRef);
+  const conn = useRef(null);
+  const reported = useRef(new Set());
 
   useEffect(() => {
-    const conn = connect("display", dispatch, (s) => dispatch({ type: "connection", connected: s === "connected" }));
-    return () => conn.close();
+    conn.current = connect("display", dispatch, (s) => dispatch({ type: "connection", connected: s === "connected" }));
+    return () => conn.current.close();
   }, []);
   useEffect(() => { document.documentElement.dataset.theme = state.theme; }, [state.theme]);
+
+  // Auto-fit could not fit the slide even at the smallest type step: tell the server (once per version),
+  // so the planner continues on a new slide instead of adding more here.
+  const onOverflow = (id) => {
+    const spec = state.slides[id];
+    const key = `${id}@${spec ? spec.version : 0}`;
+    if (reported.current.has(key) || !conn.current) return;
+    reported.current.add(key);
+    conn.current.send({ type: "overflow", slide_id: id, version: spec ? spec.version : 0 });
+  };
 
   const deck = state.deck;
   const liveSpec = deck && deck.live_id ? state.slides[deck.live_id] : null;
@@ -52,7 +64,7 @@ function App() {
   const waiting = !shown && !(deck && deck.blank);
   return html`<div class="viewport" ref=${containerRef}>
     <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
-      ${layers.map((l) => html`<${Slide} key=${l.spec.id} spec=${l.spec} phase=${l.phase} />`)}
+      ${layers.map((l) => html`<${Slide} key=${l.spec.id} spec=${l.spec} phase=${l.phase} onOverflow=${onOverflow} />`)}
       ${waiting && html`<div class="waiting"><span><span class="dot"></span>${
         state.lifecycle === "live" ? "Listening…" : state.connected ? "Waiting for the lecture to start" : "Connecting…"}</span></div>`}
     </div>

@@ -104,6 +104,7 @@ class SpeechPipeline:
         seg = UtteranceSegmenter(self._seg_cfg)
         last_level = 0.0
         sq_sum, n = 0.0, 0
+        voice = False
         silent_warned = False
         try:
             while True:
@@ -120,6 +121,7 @@ class SpeechPipeline:
                         self._utterances.put((u, time.perf_counter()))
                     break
                 prob = self._vad(frame)
+                voice = voice or prob >= self._seg_cfg.end_threshold
                 for u in seg.push(frame, prob):
                     self._utterances.put((u, time.perf_counter()))
                     backlog = self._utterances.qsize()
@@ -129,8 +131,9 @@ class SpeechPipeline:
                 n += 1
                 now = time.perf_counter()
                 if now - last_level >= LEVEL_INTERVAL_S:
-                    self._publish(AudioLevel(rms=(sq_sum / n) ** 0.5, speaking=seg.in_speech), wait=False)
-                    last_level, sq_sum, n = now, 0.0, 0
+                    self._publish(AudioLevel(rms=(sq_sum / n) ** 0.5, speaking=seg.in_speech, voice=voice),
+                                  wait=False)
+                    last_level, sq_sum, n, voice = now, 0.0, 0, False
             error = getattr(self._source, "error", None)
             if error:
                 self._publish(AudioDeviceLost(detail=error))

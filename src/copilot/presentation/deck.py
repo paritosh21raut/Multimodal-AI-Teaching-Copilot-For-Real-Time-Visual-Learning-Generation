@@ -56,14 +56,15 @@ class Deck:
         )
 
     # ---- slide ops (planner) --------------------------------------------------------------
-    async def add(self, spec: SlideSpec) -> SlideSpec:
+    async def add(self, spec: SlideSpec, activate: bool = True) -> SlideSpec:
+        """activate=False: append without moving the live slide (e.g. late content for an earlier frame)."""
         if spec.id in self._slides:
             raise ValueError(f"slide {spec.id} already exists")
         spec = spec.model_copy(update={"version": 1})
         self._slides[spec.id] = spec
         self._order.append(spec.id)
         await self._bus.publish(SlidePatch(slide_id=spec.id, version=1, op="add", spec=spec.model_dump()))
-        if self.live_id is None or (self.following and not self.pinned):
+        if self.live_id is None or (activate and self.following and not self.pinned):
             self.live_id = spec.id
         await self._publish_state()
         return spec

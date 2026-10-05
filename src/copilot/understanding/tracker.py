@@ -23,6 +23,11 @@ WEAK_CUES = [
     "to summarize", "in short", "on the other hand", "different from",
 ]
 STRONG_CUE_WINDOW = 7  # words from the utterance start
+# A short why/how/what question that opens a facet ("Why is photosynthesis important for us?", "How does it
+# work?") usually starts a new subtopic even without a transition phrase (M3 live + fixture runs).
+FACET_QUESTION = re.compile(r"^(why|how|what)\b[^?]{0,80}\?$")
+FACET_QUESTION_MAX_WORDS = 10
+FACET_QUESTION_CUE = "facet question"
 
 _WORD = re.compile(r"[a-z][a-z0-9'\-]*")
 _KP_EXTRA_STOP = {"which", "who", "whom", "how", "why", "when", "where", "into", "about", "like", "make",
@@ -42,6 +47,9 @@ def find_cues(text: str) -> tuple[list[str], bool]:
     head = " " + " ".join(low.split()[:STRONG_CUE_WINDOW]) + " "
     strong = [c for c in STRONG_CUES if f" {c.replace(',', '')} " in head]
     weak = [c for c in WEAK_CUES if f" {c} " in low]
+    plain = " ".join(text.lower().split())
+    if FACET_QUESTION.match(plain) and len(plain.split()) <= FACET_QUESTION_MAX_WORDS:
+        strong.append(FACET_QUESTION_CUE)
     found = list(dict.fromkeys(c.replace(",", "") for c in strong + weak))
     found = [c for c in found if not any(c != o and f" {c} " in f" {o} " for o in found)]  # drop sub-cues
     return found, bool(strong)

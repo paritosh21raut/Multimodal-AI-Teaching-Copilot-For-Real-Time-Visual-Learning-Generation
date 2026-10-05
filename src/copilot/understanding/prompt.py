@@ -32,15 +32,26 @@ Rules:
   comparison: compare (the things compared) + pairs (aspect, left, right) | timeline: events (when, what) |
   formula: formula {expression, variables [{symbol, meaning}]} | cause_effect: causes [{cause, effect}] |
   example, application: examples or points.
+  An ordered procedure or flow is a process, never examples or points: steps in sequence (first/then/next/
+  finally, "step by step") or input -> process -> output (what goes in, what happens, what comes out). Give one
+  short step per stage in order, e.g. "Input: roots absorb water", "Chlorophyll absorbs sunlight",
+  "Output: glucose and oxygen". If the CURRENT SLIDE is a process and the NEW lines continue it, give only the
+  NEW steps. examples = only concrete instances the teacher offers as examples.
+  Every content act carries its items: an explanation of one line still gives its point as a short phrase.
   act is one of: definition, explanation, process, comparison, example, formula, cause_effect, timeline,
   classification, application, question, recap, transition, other.
 - added = true only for a small clarifying addition the teacher did not say (rare). Never go beyond the lecture's
   scope or the grade level.
 - meta_lines: numbers of lines that are classroom management or talk about the display/board, not content.
   Lines marked (maybe-meta) are suspected.
+- Grounding: copy names, numbers, symbols and formulas exactly as transcribed; never correct them silently.
+  The transcript comes from speech recognition, so words or formulas may be mis-heard or mis-spoken (e.g.
+  "6H2" where "6H2O" fits). Keep them as said in acts and raise a concern of kind "transcription":
+  claim = the form as said, suggested_correction = the likely intended form, confidence may be low (0.3-0.6).
 - concerns: check every NEW line for factual errors. A statement that is scientifically or factually wrong
-  (e.g. reversed, wrong quantity, wrong cause) is a concern: claim, issue, suggested_correction, confidence (0-1),
-  lines. Grade-appropriate simplifications are not concerns. Wrong statements still go in acts as said.
+  (e.g. reversed, wrong quantity, wrong cause) is a concern of kind "factual": claim, issue,
+  suggested_correction, confidence (0-1), lines. Grade-appropriate simplifications are not concerns. Wrong
+  statements still go in acts as said.
 - representation_hint: best visual for the NEW content, one of: definition, concept, key_points, process_flow,
   comparison, timeline, hierarchy, cause_effect, formula, example, application, narrative, none.
 - summary_delta: one sentence (max 25 words) on what the NEW lines taught.
@@ -52,11 +63,12 @@ JSON shape:
 "right": ""}], "events": [{"when": "", "what": ""}], "formula": {"expression": "", "variables": [{"symbol": "",
 "meaning": ""}]}, "causes": [{"cause": "", "effect": ""}], "examples": [""]}, "added": false}],
 "representation_hint": "", "meta_lines": [], "concerns": [{"claim": "", "issue": "", "suggested_correction": "",
-"confidence": 0.9, "lines": [1]}], "level_estimate": "", "subject_estimate": "", "summary_delta": ""}
+"confidence": 0.9, "lines": [1], "kind": "factual"}], "level_estimate": "", "subject_estimate": "", "summary_delta": ""}
 Omit empty item fields; concerns is [] when nothing is wrong."""
 
 OUTLINE_MAX_TOKENS = 150
 SUMMARY_MAX_TOKENS = 120
+SLIDE_MAX_TOKENS = 90
 _FIELD_MAX_CHARS = 60
 
 
@@ -127,12 +139,16 @@ def build_prompt(state: LectureState, lines: Sequence[BufferedLine], *, dynamic_
     room = dynamic_budget - approx_tokens(fixed) - 12  # 12 ≈ section labels and newlines
     outline = _fit_outline(outline_lines(state), max(0, min(OUTLINE_MAX_TOKENS, room)))
     room -= approx_tokens(outline)
+    slide = _clip_tokens(state.slide_context, max(0, min(SLIDE_MAX_TOKENS, room - 4)))
+    room -= approx_tokens(slide) + (4 if slide else 0)
     summary = _clip_tokens(state.rolling_summary, max(0, min(SUMMARY_MAX_TOKENS, room)))
 
     parts = [header]
     if outline:
         parts += ["OUTLINE (topic: subtopics):", outline]
     parts.append(current)
+    if slide:
+        parts.append(f"CURRENT SLIDE: {slide}")
     if summary:
         parts.append(f"RECENT SUMMARY: {summary}")
     parts += ["NEW LINES:", numbered]

@@ -8,7 +8,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | Event | Producer | Key fields |
 |---|---|---|
 | `LifecycleChanged` | app | `state`, `reason` |
-| `AudioLevel` | audio | `rms`, `speaking` (~5 Hz; **ephemeral**: not written to the event log) |
+| `AudioLevel` | audio / simulator (`vad=True`) | `rms`, `speaking` (segmenter state), `voice` (raw VAD frames; drives pause detection) (~5 Hz; **ephemeral**) |
 | `AudioDeviceLost` | audio | `detail` |
 | `UtteranceDropped` | STT | `start`, `end`, `reason`, `text` (guard rejection or STT error) |
 | `TranscriptFinal` | STT / simulator | `segment: TranscriptSegment`, `stt_latency_ms?` |
@@ -22,6 +22,9 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `DeckState` | deck | `live_id`, `slide_ids`, `following`, `pinned`, `frozen`, `blank` |
 | `CommandReceived` | display/terminal | `command: Command` |
 | `ConcernRaised` | state store | `concern` (Concern dump) |
+| `ConcernResolved` | state store | `concern_id`, `status` (accepted/kept/dismissed) |
+| `SlideContextChanged` | presentation engine | `text` (working-slide summary → `LectureState.slide_context` → prompt) |
+| `SlideOverflow` | display hub (from `/display`) | `slide_id`, `version` (auto-fit failed; planner continues on a new slide) |
 | `ErrorRaised` | any | `component`, `error`, `fatal` |
 
 `TranscriptSegment`: `id, text, start, end, confidence, language="en", source="mic"|"sim"`.
@@ -30,6 +33,6 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 force_new_slide, resolve_concern(id, action)`.
 
 `Interpretation` (`core/interpretation.py`): `topic, subtopic, relation, acts[{act, lines, items, added}],
-representation_hint, meta_lines, concerns[{claim, issue, suggested_correction, confidence, lines}], level_estimate,
+representation_hint, meta_lines, concerns[{claim, issue, suggested_correction, confidence, lines, kind}], level_estimate,
 subject_estimate, summary_delta`. `items`: `term, definition, points, steps, compare, pairs[{aspect,left,right}],
 events[{when,what}], formula{expression, variables[{symbol,meaning}]}, causes[{cause,effect}], examples`.

@@ -28,9 +28,12 @@ class BufferedLine:
 @dataclass
 class GateConfig:
     pause_s: float = 1.2
-    pause_min_words: int = 12
+    pause_min_words: int = 6       # a pause sends a unit of at least this many words ...
+    long_pause_s: float = 3.0      # ... or any complete unit after a long pause
     max_words: int = 40
     max_wait_s: float = 12.0
+    min_unit_words: int = 6        # max_wait holds a smaller unit (a lone fragment) for its continuation
+    hold_s: float = 6.0            # bounded extra wait past max_wait for an incomplete/tiny unit
     buffer_cap_tokens: int = 600
 
 
@@ -106,13 +109,19 @@ class Gate:
         if buf.unit_tokens() >= c.buffer_cap_tokens:
             return "cap"
         words = buf.unit_words()
-        if words >= c.max_words:
-            return "words"
-        if now - buf.lines[0].end >= c.max_wait_s:
-            return "max_wait"
         last = buf.lines[-1]
+        # A unit should end where the speaker ended a sentence: a trailing fragment ("The output of this
+        # process is") is held briefly for its continuation, and a lone short line is held so it is not
+        # sent by itself. The hold is bounded by max_wait_s + hold_s.
+        complete = ends_sentence(last.text)
+        age = now - buf.lines[0].end
+        overdue = age >= c.max_wait_s + c.hold_s
+        if words >= c.max_words and (complete or overdue or words >= c.max_words * 1.5):
+            return "words"
+        if age >= c.max_wait_s and ((complete and words >= c.min_unit_words) or overdue):
+            return "max_wait"
         silence = now - last.end if silence_s is None else silence_s
-        if silence >= c.pause_s and words >= c.pause_min_words and ends_sentence(last.text):
+        if complete and silence >= c.pause_s and (words >= c.pause_min_words or silence >= c.long_pause_s):
             return "pause"
         if flushing:
             return "flush"

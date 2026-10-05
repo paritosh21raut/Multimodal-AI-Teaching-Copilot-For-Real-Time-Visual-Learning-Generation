@@ -20,17 +20,18 @@ and how*, while calling the LLM rarely.
      "another", "for example", "compared to", "first/then/finally", "is defined as".
 3. **DiscourseBuffer** — accumulates content utterances since the last interpretation (hard cap ≈ 60 s / 600 tokens).
 4. **Gate** — decides *when* to call the Interpreter. It fires on any of:
-   - pause ≥ 1.2 s after ≥ 1 complete sentence (fast path for structural updates)
-   - buffer ≥ ~40 words, or a strong cue word
+   - VAD pause ≥ 1.2 s after a complete sentence (≥ 6 words, or any unit after ≥ 3 s)
+   - buffer ≥ ~40 words, or a strong cue word / short facet question
    - `shift_score` above threshold (possible new concept)
-   - max wait 12 s while content is pending
+   - max wait 12 s while content is pending; a unit ending mid-sentence or under 6 words is held ≤ 6 s more
 
    It is rate-limited by a wall-clock floor (8 s → ≤ 7.5 calls/min); while a call is in flight or waiting on the
    floor, a unit that already triggered is sealed and new text queues for the next call (no parallel
    interpretations → ordered state). Details: `docs/specs/F-004-understanding.md`.
 5. **Interpreter** (LLM, JSON-schema output). Input (bounded, ≈ 1.2k tokens max):
    - header: subject, grade level (given or inferred), lecture title, outline (topic → subtopics, ≤ 150 tokens)
-   - current slide summary (title, representation, items, remaining capacity)
+   - current slide summary (title, representation, items, remaining capacity): `LectureState.slide_context`,
+     published by the presentation engine (`SlideContextChanged`)
    - rolling summary of the last few minutes (≤ 120 tokens)
    - new buffered transcript
 
@@ -49,10 +50,15 @@ and how*, while calling the LLM rarely.
   marked `added=true`; respect the grade level; no content beyond the lecture's scope.
 - The Composer caps `added` content (≤ 1 item per slide), and it is rendered visually subtle.
 
+## Grounding guard
+Formula-like tokens the model changed from what was said are reverted and raised as `transcription` concerns
+(details: F-004). The teacher decides; the display never shows a silent correction.
+
 ## Incorrect statements
 - `concerns` never reach the projector. A content item linked to a concern is held as `pending_review`.
 - The Control View shows the claim, the issue, and the suggested correction with Accept correction / Keep as said / Dismiss.
-  The teacher's choice is a command → state → the planner updates the slide.
+  The teacher's choice is a command → state (`ConcernResolved`) → the presentation engine releases the held content
+  (accept: corrected; keep: as said; dismiss: dropped).
 
 ## LLM layer (`copilot.llm`)
 - Router: Groq gpt-oss-120b → Groq qwen3.8-27b (separate 8k-TPM bucket) → OpenRouter free model (50 req/day) →

@@ -84,7 +84,8 @@ class TranscriptFinal(Event):
 class AudioLevel(Event):
     ephemeral: ClassVar[bool] = True
     rms: float
-    speaking: bool
+    speaking: bool       # inside an utterance (segmenter state, includes the end-of-utterance hangover)
+    voice: bool = False  # VAD heard speech in this window (raw frames; drives pause detection)
 
 
 class AudioDeviceLost(Event):
@@ -171,6 +172,22 @@ class ConcernRaised(Event):
     concern: dict[str, Any]     # Concern dump (core.state.Concern)
 
 
+class ConcernResolved(Event):
+    concern_id: str
+    status: Literal["accepted", "kept", "dismissed"]
+
+
+class SlideContextChanged(Event):
+    """Short summary of the slide receiving content, for the interpretation prompt (presentation → store)."""
+    text: str
+
+
+class SlideOverflow(Event):
+    """The display's auto-fit could not fit this slide even at the smallest type step."""
+    slide_id: str
+    version: int = 0
+
+
 class ErrorRaised(Event):
     component: str
     error: str
@@ -183,7 +200,7 @@ EVENT_TYPES: dict[str, type[Event]] = {
         LifecycleChanged, TranscriptFinal, AudioLevel, AudioDeviceLost, UtteranceDropped,
         CommandReceived, StateChanged, SlidePatch, DeckState, ErrorRaised,
         UtteranceClassified, ConceptSignal, InterpretRequested, InterpretationReady, LLMCallFailed,
-        ConcernRaised,
+        ConcernRaised, ConcernResolved, SlideContextChanged, SlideOverflow,
     )
 }
 

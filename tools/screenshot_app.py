@@ -1,6 +1,10 @@
 """Run the real app (subprocess) and screenshot /control and /display mid-lecture.
 
     .venv/Scripts/python tools/screenshot_app.py [extra copilot args...]
+    .venv/Scripts/python tools/screenshot_app.py --lecture [extra copilot args...]
+
+--lecture: capture the whole lecture (display + control every few seconds, whenever the live slide changes) into
+artifacts/app/lecture/, and press "Accept correction" on the first concern shown in the control view.
 """
 from __future__ import annotations
 
@@ -17,13 +21,49 @@ OUT = ROOT / "artifacts" / "app"
 PORT = 8765
 
 
+async def lecture(control, display, proc, errors: list[str]) -> None:
+    out = OUT / "lecture"
+    out.mkdir(parents=True, exist_ok=True)
+    for old in out.glob("*.png"):
+        old.unlink()
+    n, last, resolved, t0 = 0, None, False, time.time()
+    while proc.poll() is None:
+        await asyncio.sleep(1.0)
+        try:
+            state = httpx.get(f"http://127.0.0.1:{PORT}/api/state", timeout=1).json()
+        except httpx.HTTPError:
+            break
+        deck = state.get("deck") or {}
+        live = deck.get("live_id")
+        spec = (state.get("slides") or {}).get(live) or {}
+        key = (live, spec.get("version"))
+        if key != last and live:
+            last, n = key, n + 1
+            await asyncio.sleep(0.6)  # let the transition settle
+            tag = f"{n:02d}_{int(time.time() - t0):03d}s"
+            await display.screenshot(path=str(out / f"display_{tag}.png"))
+            await control.screenshot(path=str(out / f"control_{tag}.png"))
+            print(f"[shot] {tag} {spec.get('title')!r} v{spec.get('version')}", flush=True)
+        if not resolved and await control.locator(".concern").count():
+            await control.screenshot(path=str(out / "control_concern.png"))
+            await control.locator(".concern button.accept").first.click()
+            resolved = True
+            print("[shot] concern shown; pressed Accept correction", flush=True)
+
+
 async def main(extra: list[str]) -> None:
+    whole = bool(extra) and extra[0] == "--lecture"
+    if whole:
+        extra = extra[1:] or ["--simulate", "tests/fixtures/lectures/photosynthesis.txt", "--speed", "1"]
     from playwright.async_api import async_playwright
 
     OUT.mkdir(parents=True, exist_ok=True)
     args = [sys.executable, "-m", "copilot", "--no-wait", "--log-level", "WARNING"] + (extra or [
         "--simulate", "tests/fixtures/lectures/photosynthesis.txt", "--demo-slides", "--speed", "3"])
-    proc = subprocess.Popen(args, cwd=ROOT, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    log_path = OUT / "app_output.txt"  # a file, not a pipe: a long run must never block on a full pipe buffer
+    log_file = open(log_path, "w", encoding="utf-8", errors="replace")
+    proc = subprocess.Popen(args, cwd=ROOT, stdin=subprocess.PIPE, stdout=log_file, stderr=subprocess.STDOUT, text=True,
+                            env={**__import__("os").environ, "PYTHONIOENCODING": "utf-8"})
     try:
         for _ in range(100):
             try:
@@ -40,6 +80,11 @@ async def main(extra: list[str]) -> None:
                 page.on("pageerror", lambda e: errors.append(str(e)))
             await control.goto(f"http://127.0.0.1:{PORT}/control")
             await display.goto(f"http://127.0.0.1:{PORT}/display")
+            if whole:
+                await lecture(control, display, proc, errors)
+                await browser.close()
+                print("page errors:", errors)
+                return
             await asyncio.sleep(14)
             await control.screenshot(path=str(OUT / "control.png"))
             await display.screenshot(path=str(OUT / "display.png"))
@@ -50,15 +95,20 @@ async def main(extra: list[str]) -> None:
             await browser.close()
             print("page errors:", errors)
     finally:
-        proc.stdin.write("q\n")
-        proc.stdin.flush()
         try:
-            out, _ = proc.communicate(timeout=20)
+            proc.stdin.write("q\n")
+            proc.stdin.flush()
+        except OSError:
+            pass  # already exited
+        try:
+            proc.wait(timeout=120)
         except subprocess.TimeoutExpired:
             proc.kill()
-            out, _ = proc.communicate()
-        print(out[-1500:])
+        log_file.close()
+        out = log_path.read_text(encoding="utf-8", errors="replace")
+        print(out[-6000:] if whole else out[-1500:])
 
 
 if __name__ == "__main__":
+    sys.stdout.reconfigure(errors="replace")  # app output can contain characters the console codepage lacks
     asyncio.run(main(sys.argv[1:]))

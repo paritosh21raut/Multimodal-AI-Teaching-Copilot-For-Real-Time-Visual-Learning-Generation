@@ -12,7 +12,10 @@ from pathlib import Path
 from typing import Optional, Union
 
 from copilot.core.bus import EventBus
-from copilot.core.events import TranscriptFinal, TranscriptSegment
+from copilot.core.events import AudioLevel, TranscriptFinal, TranscriptSegment
+
+VAD_TICK_S = 0.2        # lecture seconds between simulated AudioLevel events (as the mic pipeline, ~5 Hz)
+MIN_VAD_TICK_WALL_S = 0.02
 
 _PAUSE = re.compile(r"^\[pause\s+([0-9.]+)\]$", re.IGNORECASE)
 
@@ -90,7 +93,10 @@ class LectureSimulator:
         words_per_minute: float = 150.0,
         min_utterance_s: float = 1.0,
         speed: float = 1.0,
+        vad: bool = False,
     ) -> None:
+        """vad: also publish AudioLevel(voice=...) while an utterance is being "spoken", like the mic pipeline,
+        so pause detection sees the speaker talking between transcripts (a transcript arrives at its end)."""
         if speed <= 0:
             raise ValueError("speed must be > 0")
         self._bus = bus
@@ -98,6 +104,7 @@ class LectureSimulator:
         self._wpm = words_per_minute
         self._min_s = min_utterance_s
         self._speed = speed
+        self._vad = vad
         self.published = 0
 
     def timeline(self) -> list[TranscriptSegment]:
@@ -115,15 +122,38 @@ class LectureSimulator:
     async def run(self, stop: Optional[asyncio.Event] = None) -> None:
         clock = 0.0
         for seg in self.timeline():
-            wait = (seg.end - clock) / self._speed
-            clock = seg.end
-            if stop is not None:
-                try:
-                    await asyncio.wait_for(stop.wait(), timeout=max(0.0, wait))
-                    return  # stop requested
-                except asyncio.TimeoutError:
-                    pass
+            if self._vad:
+                if await self._speak(clock, seg, stop):
+                    return
+                clock = seg.end
             else:
-                await asyncio.sleep(max(0.0, wait))
+                wait = (seg.end - clock) / self._speed
+                clock = seg.end
+                if await self._sleep(wait, stop):
+                    return
             await self._bus.publish(TranscriptFinal(segment=seg))
             self.published += 1
+
+    async def _sleep(self, wait: float, stop: Optional[asyncio.Event]) -> bool:
+        """Sleep wall time; True if a stop was requested."""
+        if stop is None:
+            await asyncio.sleep(max(0.0, wait))
+            return False
+        try:
+            await asyncio.wait_for(stop.wait(), timeout=max(0.0, wait))
+            return True
+        except asyncio.TimeoutError:
+            return False
+
+    async def _speak(self, clock: float, seg: TranscriptSegment, stop: Optional[asyncio.Event]) -> bool:
+        """Advance from `clock` to seg.end, publishing simulated VAD levels: silence before seg.start, voice after."""
+        tick = max(VAD_TICK_S, MIN_VAD_TICK_WALL_S * self._speed)
+        loop = asyncio.get_running_loop()
+        t0_wall, t0 = loop.time(), clock
+        while clock < seg.end:
+            clock = min(seg.end, clock + tick)
+            if await self._sleep(t0_wall + (clock - t0) / self._speed - loop.time(), stop):
+                return True
+            voice = seg.start < clock < seg.end or (clock == seg.end and seg.end > seg.start)
+            await self._bus.publish(AudioLevel(rms=0.05 if voice else 0.001, speaking=voice, voice=voice))
+        return False

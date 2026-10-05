@@ -1,11 +1,12 @@
 # Current State
 
-_Last updated: 2026-10-05: M0 ✅, M1 ✅ (real mic verified), M2 ✅, M3 ✅ (simulated lecture + real Groq). Next: M4._
+_Last updated: 2026-10-05: M0 ✅, M1 ✅, M2 ✅, M3 ✅ (+ live-mic fixes), M4 ✅ on the simulated lecture with real Groq
+(MVP pipeline complete). Next: real-mic MVP lecture test by the user._
 
 ## Now
-- **Next milestone: M4 Presentation Engine → MVP.** Write `docs/specs/F-005-presentation.md`, then the planner
-  (continuity, capacity, hysteresis, new-topic confirmation) and composer (`Interpretation` acts → `SlideSpec` blocks),
-  driven by `InterpretationReady` + `ConceptSignal`; items linked to an open concern held back.
+- **Next: real-mic MVP lecture test** (`python -m copilot`, open /control + /display). Watch: gate triggers
+  (pause should now fire on real ≥ 1.2 s pauses), slide continuity, dwell (15 s), concern panel buttons.
+- After that: V1 items (KaTeX, images), soak runner, snapshots/recovery.
 - `.env` has `GROQ_API_KEY` and `OPENROUTER_API_KEY` (never print/commit). Ollama not installed (optional fallback).
 
 ## Progress (honest; done = implemented + tested + runtime-verified)
@@ -15,9 +16,9 @@ _Last updated: 2026-10-05: M0 ✅, M1 ✅ (real mic verified), M2 ✅, M3 ✅ (s
 | Persistence (event log, recovery) | 15 | event log verified; snapshots/recovery not started |
 | Simulator / test harness | 55 | text simulator, WAV-as-mic, display harness, screenshot tools; no soak runner yet |
 | Audio / STT | 95 | verified on WAV and real human voice (laptop mic array); classroom lapel mic still to try |
-| Lecture understanding + LLM | 75 | filter, tracker (MiniLM ONNX), buffer/gate, router (Groq → Groq → OpenRouter → Ollama), interpreter, rolling memory verified on the fixture with real Groq; not yet on a real-mic lecture |
-| Presentation engine | 15 | SlideSpec + Deck (lifecycle, navigation, flags) verified; planner/composer not started |
-| Live display + control view | 60 | server, hub, all layouts, themes, fit, transitions, controls verified in Edge; KaTeX, images, concern panel pending (V1) |
+| Lecture understanding + LLM | 85 | M3 + live-mic fixes (VAD pause, fragment hold, grounding guard, process prompt, facet-question cue, empty-act fill); verified on the fixture with real Groq; gate fixes replay-tested on the real-mic session, not yet re-run live |
+| Presentation engine | 75 | content/composer/planner/holds/engine: continuity, capacity, dwell, new-topic confirmation, held concerns, provisional fast path, force-new, pin/nav-back, overflow; verified on the fixture with real Groq + screenshots |
+| Live display + control view | 70 | + concern panel (Accept/Keep/Dismiss), overflow reporting; KaTeX, images pending (V1) |
 | Visual system (images/diagrams) | 10 | SVG/CSS diagram layouts (process, timeline, tree, causal) exist; image retrieval not started |
 | Reference materials | 0 | not started |
 | Post-lecture outputs | 0 | not started |
@@ -44,6 +45,9 @@ _Last updated: 2026-10-05: M0 ✅, M1 ✅ (real mic verified), M2 ✅, M3 ✅ (s
 | Interpreter: validation, repair within budget, deterministic fallback, sanitising | ✅ | ✅ | ✅ 0 fallbacks in real runs |
 | State store: outline/subtopics, rolling summary, concerns, resolve_concern, wait_applied | ✅ | ✅ | ✅ |
 | Understanding on photosynthesis.txt, real time, real Groq (`python -m copilot --simulate … --speed 1`) | – | ✅ mock LLM; ✅ `-m live_llm` | ✅ Definition → Requirements → Process → Importance → Respiration (new_topic); oxygen claim → concern (0.95–0.98); 14 calls, max 8/min, prompt ≤ 1171 est. tokens (budget 2600), LLM latency p50 1.1–1.2 s; last segment → interpretation p50 6.3 s, max 12.8 s; reproduced after review fixes |
+| M3 live-mic fixes: gate (VAD silence, fragment/tiny-unit hold), grounding guard, process prompt | ✅ incl. replay of session 20261005-054752-39bc | ✅ mock LLM | ✅ fixture real Groq: 9–12 calls, max 6–8/min, 0 fallbacks, process acts as steps, oxygen concern raised |
+| M4 presentation engine (F-005) | ✅ 40+ tests | ✅ sim → understanding (mock HTTP) → engine → deck | ✅ fixture real Groq, `tools/screenshot_app.py --lecture` inspected: Title → What is photosynthesis? → What photosynthesis needs → How photosynthesis works (4 steps) → …: the equation (+ accepted correction) → Why photosynthesis matters → Respiration (new topic, comparison); concern only in /control, Accept released the correction; no page errors |
+| M4 independent review (subagent): 8 confirmed bugs | regression tests added | – | fixed: multi-concern leak, accept/dismiss content loss, stale provisional, provisional dedupe, late release hijacking the screen, lost new-topic confirmation, grounding false positives, derived-symbol accept; + plausible: pre-resolved concerns, line-less concerns, pause grace after dropped/meta lines, stale overflow, hub hello fail-closed |
 | M3 independent review (subagent): 7 bugs + nits | regression tests added | – | fixed: content loss on unexpected interpreter errors, unhashable fields, hard timeouts, repair budget, apply-failure stall, 3.10 cancellation, flaky rate test, bounded stats, multi-cut buffer, numeric utterances |
 
 ## Code map
@@ -52,23 +56,32 @@ _Last updated: 2026-10-05: M0 ✅, M1 ✅ (real mic verified), M2 ✅, M3 ✅ (s
 - `src/copilot/sim/simulator.py`
 - `src/copilot/audio/`: sources, vad, segmenter, mic_check
 - `src/copilot/stt/`: engine, pipeline, factory, cuda_dlls
-- `src/copilot/presentation/`: spec (SlideSpec), deck, demo (scripted slides; not used in real lectures)
+- `src/copilot/presentation/`: spec (SlideSpec), deck, content (acts → pieces), composer (capacity, merge, titles,
+  provisional), planner (frame decision), holds (concern hold-back), engine (PresentationEngine), demo (scripted)
 - `src/copilot/display/`: hub (WebSocket fan-out, coalescing outbox), server (FastAPI/uvicorn embedded)
 - `src/copilot/core/`: interpretation (Interpretation contract), memory (outline matching, rolling summary), textutil
 - `src/copilot/llm/`: providers (OpenAI-compatible), ratelimit, router (`build_router` from config `[llm]`)
-- `src/copilot/understanding/`: filter, embedder (MiniLM ONNX), tracker, gate, prompt, interpreter, service
+- `src/copilot/understanding/`: filter, embedder (MiniLM ONNX), tracker, gate, prompt, grounding, interpreter, service
 - `web/`
   - `shared/` (tokens.css, slide.css, slide.js renderer + fit, ws.js)
   - `display/` (projector)
   - `control/` (teacher)
   - `vendor/` (htm+preact)
-- `tools/`: display_harness, screenshot_display, screenshot_app
+- `tools/`: display_harness, screenshot_display, screenshot_app (`--lecture`: whole-lecture captures → artifacts/app/lecture)
 - `src/copilot/app/main.py`, CLI flags:
   - `--simulate`, `--audio-file`, `--speed`
   - `--subject/--grade/--topic`
   - `--no-wait`, `--no-display`, `--open`, `--demo-slides`, `--no-understanding`
 
 ## Known issues / notes
+- M4 (open):
+  - LLM extraction varies run to run (e.g. Respiration as "Definition" vs "Comparison"; explanations without items are
+    filled from the spoken line; explanation "examples" become points). Slide titles follow the LLM's subtopic names.
+  - Formula blocks show the spoken/LLM expression (KaTeX pending); the model sometimes swaps variable symbol/meaning.
+  - Provisional teasers are keyword lists from the tracker (subtle italic); quality depends on keyphrases.
+  - Dwell is 15 s (config `[presentation] min_dwell_s`); tune after the real-mic test.
+  - Fixed during M4: Windows deadlock when a numpy DLL imports while the terminal thread reads a *piped* stdin
+    (terminal input now starts after initialization).
 - M3 (open):
   - Single-sentence MiniLM shift is noisy (0.3–0.6 within a facet); the threshold is 0.75, so cue words and the LLM carry
     boundary detection. Topics without spoken cues rely on the LLM alone.
@@ -76,14 +89,14 @@ _Last updated: 2026-10-05: M0 ✅, M1 ✅ (real mic verified), M2 ✅, M3 ✅ (s
     (capped at 900).
   - The rate floor counts interpretations (≤ 7.5/min). During outages one interpretation can make several HTTP calls,
     but each entry's own RPM/TPM bucket is respected.
-  - Pause detection in live mode is measured from transcript arrival, so it lags by the STT latency (~0.7 s).
+  - (fixed) Pause detection used transcript arrival; now raw VAD voice frames (`AudioLevel.voice`).
   - The fallback with no current topic creates an expected-topic/"Lecture" node.
   - `test_understanding_pipeline` had a rare Windows timing flake. It was fixed by measuring on one clock; 10/10 runs passed since.
 - Open (plausible, not reproduced):
   - mic overflow drops frames, so lecture time lags the wall clock
   - the STT queue is unbounded if Whisper runs slower than real time
 - Formula blocks show the spoken form; KaTeX rendering is pending (V1).
-- The `onOverflow` callback exists in the renderer but is not reported to the server yet (needed by the M4 planner).
+- Display overflow is reported to the server (`SlideOverflow`) and the planner continues on a new slide.
 - Mic levels on the Intel SST array are low (≈ −37 dBFS speech) but transcribe well.
 - Fixed: terminal READY/LIVE lines garbled by unflushed prints (all app prints now flush).
 

@@ -23,6 +23,7 @@ from copilot.core.events import (
     InterpretRequested,
     TranscriptFinal,
     UtteranceClassified,
+    UtteranceDropped,
     new_id,
 )
 from copilot.core.state import LectureStateStore
@@ -42,6 +43,17 @@ log = logging.getLogger(__name__)
 
 TICK_S = 0.2
 APPLY_TIMEOUT_S = 5.0
+# Speech heard after the last transcript arrived is still being segmented/transcribed; its text normally
+# arrives within ~0.6 s (segment end) + STT latency. Until then that speech is not counted as a pause.
+PENDING_SPEECH_GRACE_S = 2.0
+
+
+def vad_silence(now: float, last_voice: float, last_arrival: float, speed: float = 1.0) -> float:
+    """Lecture-time silence since the last voiced frame (wall times in, see UnderstandingService._silence)."""
+    silence = (now - last_voice) * speed
+    if last_voice > last_arrival:
+        silence -= PENDING_SPEECH_GRACE_S * speed
+    return max(0.0, silence)
 
 
 @dataclass
@@ -121,13 +133,14 @@ class UnderstandingService:
         self._last_call: Optional[float] = None
         self._last_end = 0.0           # lecture time of the latest buffered line end
         self._last_arrival = clock()   # wall time it arrived
-        self._last_speech: Optional[float] = None  # wall time of the latest AudioLevel(speaking=True)
+        self._last_transcript = clock()  # wall time of the latest transcript of any kind (for the VAD grace)
+        self._last_voice: Optional[float] = None  # wall time of the latest AudioLevel(voice=True)
         self._embed_warned = False
         self._tasks: list[asyncio.Task] = []
 
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
-        self.bus.subscribe("understanding", self._on_event, [TranscriptFinal, AudioLevel])
+        self.bus.subscribe("understanding", self._on_event, [TranscriptFinal, AudioLevel, UtteranceDropped])
         self._tasks = [
             asyncio.create_task(self._worker(), name="understanding:worker"),
             asyncio.create_task(self._ticker(), name="understanding:ticker"),
@@ -163,15 +176,26 @@ class UnderstandingService:
         return self._last_end + (self.clock() - self._last_arrival) * self.speed
 
     def _silence(self) -> Optional[float]:
-        """VAD-informed silence (live mic): no pause while the speaker is still talking."""
-        if self._last_speech is None:
+        """Speaker silence from raw VAD frames (mic/WAV path); None without audio (simulator: the gate uses
+        the time since the last line ended).
+
+        Measured from the last voiced frame, not from transcript arrival: by the time a segment's text
+        arrives the speaker has already been silent for the segmenter hangover plus the STT latency, so a
+        real 1.2 s pause is visible as soon as the text is in the buffer. Speech heard after the latest
+        transcript arrived belongs to a segment still in transcription and only counts after a grace.
+        """
+        if self._last_voice is None:
             return None
-        return min(self.lecture_now() - self._last_end, (self.clock() - self._last_speech) * self.speed)
+        return vad_silence(self.clock(), self._last_voice, self._last_transcript, self.speed)
 
     async def _on_event(self, event) -> None:
         if isinstance(event, AudioLevel):
-            if event.speaking:
-                self._last_speech = self.clock()
+            if event.voice:
+                self._last_voice = self.clock()
+            return
+        # Any transcript outcome (also filtered meta lines and dropped utterances) ends the pending-speech grace.
+        self._last_transcript = self.clock()
+        if isinstance(event, UtteranceDropped):
             return
         assert isinstance(event, TranscriptFinal)
         seg = event.segment

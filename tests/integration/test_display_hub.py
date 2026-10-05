@@ -109,3 +109,39 @@ def test_slow_client_outbox_coalesces_patches_of_same_slide():
     conn.push({"type": "transcript", "n": 2})
     batch = asyncio.run(conn.next_batch())
     assert batch == [{"type": "patch", "v": 2}, {"type": "deck"}, {"type": "transcript", "n": 1}, {"type": "transcript", "n": 2}]
+
+
+async def test_concerns_reach_only_the_control_view_and_overflow_is_forwarded(stack):
+    from copilot.core.events import ConcernRaised, ConcernResolved, SlideOverflow
+
+    bus, deck, hub, server = stack
+    seen = []
+
+    async def watch(e):
+        seen.append(e)
+
+    bus.subscribe("watch_overflow", watch, [SlideOverflow])
+    url = f"ws://127.0.0.1:{server.port}/ws"
+    concern = {"id": "c1", "claim": "Plants take in oxygen", "issue": "reversed", "status": "open",
+               "kind": "factual", "confidence": 0.9, "suggested_correction": "carbon dioxide"}
+    await bus.publish(ConcernRaised(concern=concern))
+    await bus.drain()
+    async with websockets.connect(url + "?role=display") as d, websockets.connect(url + "?role=control") as c:
+        dh = await recv_until(d, lambda m: m["type"] == "hello")
+        ch = await recv_until(c, lambda m: m["type"] == "hello")
+        assert "concerns" not in dh and [x["id"] for x in ch["concerns"]] == ["c1"]
+        await bus.publish(ConcernResolved(concern_id="c1", status="kept"))
+        msg = await recv_until(c, lambda m: m["type"] == "concern_resolved")
+        assert msg["id"] == "c1" and hub.concerns == {}
+        await deck.add(spec("s1", "one"))
+        await bus.drain()
+        await d.send(json.dumps({"type": "overflow", "slide_id": "s1", "version": 1}))
+        await d.send(json.dumps({"type": "overflow", "slide_id": "nope"}))
+        err = await recv_until(d, lambda m: m["type"] == "error")
+        assert "unknown slide" in err["error"]
+        await bus.drain()
+        assert [(e.slide_id, e.version) for e in seen] == [("s1", 1)]
+        # the display still may not send commands
+        await d.send(json.dumps({"type": "command", "kind": "next"}))
+        err = await recv_until(d, lambda m: m["type"] == "error")
+        assert "control" in err["error"]

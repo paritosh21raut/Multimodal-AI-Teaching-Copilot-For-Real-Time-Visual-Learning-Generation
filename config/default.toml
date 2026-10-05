@@ -16,6 +16,12 @@ host = "127.0.0.1"         # 0.0.0.0 to allow other devices on the LAN
 port = 8765
 demo_interval_s = 3.0
 
+[presentation]
+min_dwell_s = 15.0         # an automatic slide change waits until the live slide was up this long (lecture time)
+provisional = true         # fast path: keyword teaser on the live slide until the interpretation arrives
+provisional_ttl_s = 20.0
+title_slide = true         # title slide at LIVE when an expected topic is given
+
 [bus]
 default_queue_size = 1000
 
@@ -50,10 +56,13 @@ embed_dir = "models/minilm"
 shift_threshold = 0.75     # smoothed 1-cos vs concept centroid; calibrated on fixtures (F-004)
 concept_alpha = 0.35       # EMA weight of a new utterance in the concept centroid
 topic_alpha = 0.1
-pause_s = 1.2              # gate: pause after a sentence end ...
-pause_min_words = 12       # ... with at least this many buffered words
+pause_s = 1.2              # gate: VAD silence after a sentence end ...
+pause_min_words = 6        # ... with at least this many buffered words
+long_pause_s = 3.0         # ... or any complete unit after a long silence
 max_words = 40             # gate: buffered words
 max_wait_s = 12.0          # gate: oldest pending content age (lecture time)
+min_unit_words = 6         # gate: max_wait holds a smaller or unfinished unit for its continuation ...
+hold_s = 6.0               # ... for at most this long past max_wait
 buffer_cap_tokens = 600    # max transcript tokens per interpretation call
 min_call_interval_s = 8.0  # wall clock; <= 7.5 calls/min
 interpret_deadline_s = 15.0
@@ -61,6 +70,7 @@ prompt_budget_tokens = 2600   # whole prompt (static system part + dynamic part)
 dynamic_budget_tokens = 1200  # header + outline + summary + new lines
 max_output_tokens = 1400
 min_concern_confidence = 0.6
+min_transcription_confidence = 0.3   # concerns of kind "transcription" (suspected mis-hearing)
 
 [llm]
 timeout_s = 6.0

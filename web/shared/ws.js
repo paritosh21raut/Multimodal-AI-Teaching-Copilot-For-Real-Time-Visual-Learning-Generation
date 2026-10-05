@@ -28,12 +28,12 @@ export function connect(role, onMessage, onStatus) {
 }
 
 // Reducer shared by both pages: applies server messages to a plain state object.
-export const initialState = { theme: "light", lifecycle: "starting", slides: {}, deck: null, transcript: [], audio: null, connected: false };
+export const initialState = { theme: "light", lifecycle: "starting", slides: {}, deck: null, transcript: [], audio: null, connected: false, concerns: [] };
 
 export function reduce(state, msg) {
   switch (msg.type) {
     case "hello":
-      return { ...state, theme: msg.theme, lifecycle: msg.lifecycle, slides: msg.slides || {}, deck: msg.deck, transcript: msg.transcript || [] };
+      return { ...state, theme: msg.theme, lifecycle: msg.lifecycle, slides: msg.slides || {}, deck: msg.deck, transcript: msg.transcript || [], concerns: msg.concerns || [] };
     case "patch": {
       const cur = state.slides[msg.slide_id];
       if (cur && cur.version >= msg.version) return state; // stale
@@ -44,6 +44,9 @@ export function reduce(state, msg) {
     case "transcript": return { ...state, transcript: [...state.transcript.slice(-39), msg.line] };
     case "audio": return { ...state, audio: { rms: msg.rms, speaking: msg.speaking } };
     case "connection": return { ...state, connected: msg.connected };
+    case "concern":
+      return state.concerns.some((c) => c.id === msg.concern.id) ? state : { ...state, concerns: [...state.concerns, msg.concern] };
+    case "concern_resolved": return { ...state, concerns: state.concerns.filter((c) => c.id !== msg.id) };
     default: return state;
   }
 }

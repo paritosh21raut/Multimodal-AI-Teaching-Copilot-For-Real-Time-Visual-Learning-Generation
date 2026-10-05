@@ -73,12 +73,23 @@ class DiscourseAct(_Lenient):
     added: bool = False  # small clarifying addition not said by the teacher
 
 
+ConcernKind = Literal["factual", "transcription"]
+
+
 class ConcernItem(_Lenient):
     claim: str
     issue: str
     suggested_correction: str = ""
     confidence: float = Field(default=0.5, ge=0.0, le=1.0)
     lines: list[int] = Field(default_factory=list)
+    # factual: the statement looks wrong; transcription: a word/formula looks mis-heard or mis-spoken
+    # (kept as said; `claim` is the spoken form, `suggested_correction` the likely intended form)
+    kind: ConcernKind = "factual"
+
+    @field_validator("kind", mode="before")
+    @classmethod
+    def _kind(cls, v: object) -> object:
+        return v if v in ("factual", "transcription") else "factual"
 
 
 class Interpretation(_Lenient):

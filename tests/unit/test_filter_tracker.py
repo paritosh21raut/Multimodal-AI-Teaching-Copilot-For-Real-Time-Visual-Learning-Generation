@@ -95,3 +95,13 @@ def test_keyphrase_memory_is_bounded():
     assert len(t._phrase_hist) == 5
     assert all(v > 0 for v in t._phrase_df.values())
     assert len(t._phrase_df) <= 5 * 10
+
+
+def test_short_facet_question_is_a_strong_cue():
+    for q in ("Why is photosynthesis important for us?", "Why it matters?", "How does it work?",
+              "What does a plant need?"):
+        cues, strong = find_cues(q)
+        assert strong and "facet question" in cues, q
+    for q in ("Why do you think the leaves of most plants turn towards the window in our classroom?",
+              "Plants need light, why?", "What a plant needs is light."):
+        assert not find_cues(q)[1], q

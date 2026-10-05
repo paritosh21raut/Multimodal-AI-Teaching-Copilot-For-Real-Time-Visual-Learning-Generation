@@ -20,10 +20,18 @@ Architecture: `docs/architecture/understanding.md`. Contracts: `lecture-state.md
 
 ## Gate rules (lecture time; config `[understanding]`)
 Fires when content is pending and any holds:
-- pause ≥ 1.2 s after a sentence end and ≥ 12 buffered words
-- ≥ 40 buffered words
-- a strong cue word or `shift_score` ≥ threshold at the start of an utterance → *boundary*: the buffer before that utterance is sent first
-- the oldest pending content is ≥ 12 s old
+- pause: VAD silence ≥ 1.2 s after a sentence end and ≥ 6 buffered words (any complete unit after ≥ 3 s silence)
+- ≥ 40 buffered words (if the last line ends a sentence; always at ≥ 60 words)
+- a strong cue word, a short facet question ("Why is X important?") or `shift_score` ≥ threshold at the start of an
+  utterance → *boundary*: the buffer before that utterance is sent first
+- the oldest pending content is ≥ 12 s old **and** the unit ends a sentence and has ≥ 6 words; otherwise it is held
+  for its continuation for at most `hold_s` = 6 s more (then sent anyway)
+
+Silence (M3 live fix): measured from the last voiced VAD frame (`AudioLevel.voice`, raw frames), not from transcript
+arrival. The old measure needed ~2.2 s of real silence (hangover + STT latency + 1.2 s) and missed real pauses.
+Speech heard after the latest transcript arrived counts only after a 2 s grace (its text is still in STT). The
+simulator publishes the same VAD signal (`vad=True` in the app), so simulated runs pause only where the script pauses.
+Replay of the live session: `tests/unit/test_gate_live_replay.py` (the pre-fix gate reproduces the live trigger mix).
 
 Wall-clock rate floor: ≥ `min_call_interval_s` (8 s → ≤ 7.5 calls/min) between calls, never two in flight.
 Text arriving meanwhile stays in the buffer; the buffer is taken at send time (merges naturally).
@@ -40,6 +48,15 @@ System: role, grounding rules, JSON schema (static). User (≤ 1 200 est. tokens
 outline titles (current topic first, ≤ 150 tokens), current topic/subtopic, rolling summary (≤ 120 tokens), numbered new lines
 (`[1] …`, maybe-meta lines tagged). Whole prompt ≤ `prompt_budget_tokens`; trimming order: outline → summary. The transcript
 history is never included.
+
+## Grounding guard (M3 live fix)
+`understanding.grounding.enforce_grounding` runs after validation: a formula-like token (upper-case letter + digit) in
+the items that was not said, with a close spoken variant starting with the same element (6H2O vs said 6H2), is
+reverted to the spoken form and a concern of kind `transcription` is added (claim = spoken token,
+suggested_correction = the model's form, confidence 0.5) unless the model already raised it. Transcription concerns
+are kept from confidence 0.3 (`min_transcription_confidence`); factual ones from 0.6. The prompt also tells the model
+to keep what was said and raise suspected mis-hearings, and to extract ordered procedures and
+input → process → output explanations as `process` steps.
 
 ## State application (store)
 `InterpretationReady` → match/insert topic + subtopic (case/token-overlap match, caps 20 × 8, evict oldest non-current),

@@ -22,6 +22,7 @@ from copilot.core.state import LectureState
 from copilot.core.textutil import approx_tokens
 from copilot.llm.router import AllProvidersFailed, LLMRouter
 from copilot.understanding.gate import BufferedLine
+from copilot.understanding.grounding import enforce_grounding
 from copilot.understanding.prompt import BuiltPrompt, PromptBudgetError, build_prompt
 
 log = logging.getLogger(__name__)
@@ -42,6 +43,7 @@ class InterpreterSettings:
     max_output_tokens: int = 1400
     interpret_deadline_s: float = 15.0
     min_concern_confidence: float = 0.6
+    min_transcription_confidence: float = 0.3  # suspected mis-hearings are cheap to show the teacher
 
 
 @dataclass
@@ -122,7 +124,8 @@ def parse_interpretation(text: str) -> Interpretation:
         raise InvalidInterpretation(f"schema: {e.errors(include_url=False)[:3]}") from e
 
 
-def _sanitise(it: Interpretation, n_lines: int, min_conf: float, state: LectureState) -> Interpretation:
+def _sanitise(it: Interpretation, n_lines: int, min_conf: float, state: LectureState,
+              min_transcription_conf: float = 0.3) -> Interpretation:
     """Deterministic post-processing: drop out-of-range line numbers and low-confidence concerns, and make
     relation and subtopic agree (a new facet under the same subtopic title is treated as a continuation)."""
     def ok(lines: list[int]) -> list[int]:
@@ -138,8 +141,30 @@ def _sanitise(it: Interpretation, n_lines: int, min_conf: float, state: LectureS
         "relation": relation,
         "acts": [a.model_copy(update={"lines": ok(a.lines)}) for a in it.acts],
         "meta_lines": ok(it.meta_lines),
-        "concerns": [c.model_copy(update={"lines": ok(c.lines)}) for c in it.concerns if c.confidence >= min_conf],
+        "concerns": [c.model_copy(update={"lines": ok(c.lines)}) for c in it.concerns
+                     if c.confidence >= (min_transcription_conf if c.kind == "transcription" else min_conf)],
     })
+
+
+FILL_ACTS = {"explanation", "recap", "application", "example", "classification"}
+FILL_MAX_WORDS = 16
+
+
+def _fill_empty_acts(it: Interpretation, lines: Sequence[BufferedLine]) -> Interpretation:
+    """A content act the model returned without items gets its own transcript line(s) as the point (the teacher's
+    words, trimmed). Meta lines and lines already used by another act are skipped. Logged, never invented."""
+    meta = set(it.meta_lines)
+    used = {n for a in it.acts if a.items != ContentItems() for n in a.lines}
+    acts = []
+    for a in it.acts:
+        if a.act in FILL_ACTS and a.items == ContentItems() and not a.added:
+            texts = [" ".join(lines[n - 1].text.split()[:FILL_MAX_WORDS]) for n in a.lines
+                     if 1 <= n <= len(lines) and n not in meta and n not in used and not lines[n - 1].maybe_meta]
+            if texts:
+                log.info("act %s on lines %s had no items; using the spoken line", a.act, a.lines)
+                a = a.model_copy(update={"items": ContentItems(points=texts)})
+        acts.append(a)
+    return it.model_copy(update={"acts": acts})
 
 
 def fallback_interpretation(state: LectureState, lines: Sequence[BufferedLine]) -> Interpretation:
@@ -229,7 +254,12 @@ class Interpreter:
                 return self._fallback(state, lines, f"invalid output after repair: {second}", t0,
                                       prompt.tokens, attempts)
 
-        it = _sanitise(it, len(lines), self.s.min_concern_confidence, state)
+        it = _fill_empty_acts(it, lines)
+        it, reverted = enforce_grounding(it, [l.text for l in lines])
+        if reverted:
+            log.warning("interpretation from %s silently changed spoken tokens; kept as said + concern: %s",
+                        res.entry, ", ".join(reverted))
+        it = _sanitise(it, len(lines), self.s.min_concern_confidence, state, self.s.min_transcription_confidence)
         return InterpretResult(it, res.entry, (time.perf_counter() - t0) * 1000, False, "",
                                prompt.tokens, repaired, attempts)
 

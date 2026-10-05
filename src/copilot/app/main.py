@@ -23,6 +23,7 @@ from copilot.core.events import (
     InterpretationReady,
     Lifecycle,
     LifecycleChanged,
+    SlidePatch,
     TranscriptFinal,
     UtteranceDropped,
     new_id,
@@ -74,6 +75,7 @@ class App:
         self.config = config
         self.understanding_enabled = understanding
         self.understanding = None
+        self.presentation = None
         self._http = None
         self.display_enabled = display
         self.open_display = open_display
@@ -117,6 +119,7 @@ class App:
 
     async def _init_speech(self) -> None:
         from copilot.stt.factory import make_engine
+        from copilot.stt.pipeline import SpeechPipeline  # noqa: F401  (import before the terminal thread starts)
 
         self.engine = make_engine(self.config)
         cfg = self.engine.cfg
@@ -160,6 +163,14 @@ class App:
             speed=self.speed if self.simulate or self.audio_file else 1.0,
         )
         self.understanding.attach()
+        if not self.demo_slides:
+            from copilot.presentation.engine import PresentationEngine, PresentationSettings
+
+            self.presentation = PresentationEngine(
+                self.bus, self.store, self.deck, PresentationSettings.from_config(self.config),
+                speed=self.speed if self.simulate or self.audio_file else 1.0,
+            )
+            self.presentation.attach()
 
     async def _print_understanding(self, event: Event) -> None:
         if isinstance(event, InterpretationReady):
@@ -173,7 +184,16 @@ class App:
                 print(f"               {it.summary_delta}", flush=True)
         elif isinstance(event, ConcernRaised):
             c = event.concern
-            print(f"  [CONCERN] {c.get('claim')} -> {c.get('suggested_correction')} ({c.get('confidence')})", flush=True)
+            print(f"  [CONCERN] ({c.get('kind')}) {c.get('claim')} -> {c.get('suggested_correction')} "
+                  f"({c.get('confidence')})", flush=True)
+
+    async def _print_slide(self, event: Event) -> None:
+        if isinstance(event, SlidePatch):
+            spec = event.spec
+            n = sum(len(b.get("items", b.get("steps", b.get("rows", b.get("events", b.get("links", [])))))) or 1
+                    for b in spec.get("blocks", []))
+            print(f"  [SLIDE] {event.op:6} {spec.get('title')!r} [{spec.get('layout')}] v{event.version} "
+                  f"({n} items)", flush=True)
 
     async def _print_transcript(self, event: Event) -> None:
         if isinstance(event, TranscriptFinal):
@@ -213,8 +233,8 @@ class App:
                            [TranscriptFinal, UtteranceDropped, AudioDeviceLost])
         self.bus.subscribe("app_commands", self._on_command, [CommandReceived])
         self.bus.subscribe("terminal_understanding", self._print_understanding, [InterpretationReady, ConcernRaised])
+        self.bus.subscribe("terminal_slides", self._print_slide, [SlidePatch])
         await self._lifecycle(Lifecycle.STARTING)
-        TerminalInput(asyncio.get_running_loop(), self._terminal).start()
         try:
             if self.display_enabled:
                 await self._start_display()
@@ -222,6 +242,9 @@ class App:
                 await self._init_speech()
             if self.understanding_enabled:
                 await self._init_understanding()
+            # Started only after every heavy import: on Windows a DLL import (numpy) can deadlock while another
+            # thread is blocked reading a piped stdin (seen with tools/screenshot_app.py).
+            TerminalInput(asyncio.get_running_loop(), self._terminal).start()
             await self._lifecycle(Lifecycle.READY)
             print(f"\n[READY] session {self.session_id}", flush=True)
             if self.server is not None:
@@ -247,6 +270,9 @@ class App:
                 print(f"[END]   finishing lecture understanding ({pending} buffered lines) ...", flush=True)
                 if not await self.understanding.flush(timeout=90.0):
                     print("[END]   understanding did not finish in 90 s; remaining lines stay in the event log", flush=True)
+                await self.bus.drain()  # the last interpretation reaches the presentation engine
+            if self.presentation is not None:
+                await self.presentation.flush_pending()
             await self._lifecycle(Lifecycle.ENDING, "lecture finished")
             return 0
         finally:
@@ -292,6 +318,7 @@ class App:
                     words_per_minute=self.config.get("sim", "words_per_minute", 150),
                     min_utterance_s=self.config.get("sim", "min_utterance_s", 1.0),
                     speed=self.speed,
+                    vad=True,  # simulated mic VAD, so the gate sees pauses only where the script pauses
                 )
                 await sim.run(self._stop)
             elif self.audio_file is not None or not self.demo_slides:
@@ -329,6 +356,8 @@ class App:
             await self.speech.stop()  # closes the mic even on Ctrl+C / errors
 
     async def _shutdown(self) -> None:
+        if self.presentation is not None:
+            await self.presentation.stop()
         if self.understanding is not None:
             await self.understanding.stop()
         if self._http is not None:
@@ -367,6 +396,13 @@ class App:
                   f"{u.repaired} repaired), max {u.max_calls_per_minute} calls/min, "
                   f"prompt tokens max={u.max_prompt_tokens} avg={sum(toks) // max(1, len(toks))}, "
                   f"latency p50={lat[len(lat) // 2] if lat else 0:.0f} ms max={lat[-1] if lat else 0:.0f} ms", flush=True)
+            if self.presentation is not None:
+                ps = self.presentation.stats
+                print(f"        presentation: {ps.slides} slides; planner ops {dict(ps.ops)}; "
+                      f"held {ps.held}, released {ps.released}", flush=True)
+                for i, spec in enumerate(self.deck.slides, 1):
+                    print(f"          {i}. [{spec.layout}] {spec.title}  (v{spec.version}, {len(spec.blocks)} blocks)",
+                          flush=True)
             print(f"        providers: {u.providers or '-'}; triggers: {u.reasons or '-'}; "
                   f"outline: {[t.title + ' > ' + ', '.join(x.title for x in t.subtopics) for t in s.outline]}; "
                   f"concerns: {len(s.concerns)}", flush=True)

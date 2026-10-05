@@ -143,3 +143,26 @@ async def test_wait_applied_released_even_if_apply_fails(monkeypatch):
     await bus.publish(ready("r1", "Cells"))
     assert await store.wait_applied("r1", timeout=1.0)
     await bus.close()
+
+
+async def test_concern_kind_lines_and_resolution_event():
+    from copilot.core.events import ConcernResolved
+
+    c = ConcernItem(claim="6H2", issue="mis-heard", suggested_correction="6H2O", confidence=0.4, lines=[1, 2],
+                    kind="transcription")
+    bus = EventBus()
+    store = LectureStateStore(bus, "s")
+    store.attach()
+    seen = []
+
+    async def watch(e):
+        seen.append(e)
+
+    bus.subscribe("watch_resolved", watch, [ConcernResolved])
+    await bus.publish(ready("r1", "Photosynthesis", concerns=[c]))
+    await bus.drain()
+    got = store.snapshot().concerns[0]
+    assert got.kind == "transcription" and got.segment_ids == ["seg1", "seg2"] and got.request_id == "r1"
+    await bus.publish(CommandReceived(command=Command(kind="resolve_concern", args={"id": got.id, "action": "keep"})))
+    await bus.drain()
+    assert [(e.concern_id, e.status) for e in seen] == [(got.id, "kept")]

@@ -31,4 +31,6 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
 - Item ids are stable across versions → the client animates only diffs.
 - `provisional` items are replaced in place by refined items.
 - `added=true` marks non-teacher supporting content (≤ 1 per slide, styled subtly).
-- Items linked to an open concern are not included.
+- Items linked to an open concern are not included (held by the engine until the teacher resolves the concern).
+- Builder: `presentation.composer` (capacity model, F-005). Same-kind overflow → "(cont.)" slide; a different
+  representation of the same frame → a suffixed title (e.g. "How photosynthesis works: the equation").

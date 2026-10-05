@@ -12,10 +12,12 @@ from copilot.core.bus import EventBus
 from copilot.core.events import (
     CommandReceived,
     ConcernRaised,
+    ConcernResolved,
     Event,
     InterpretationReady,
     Lifecycle,
     LifecycleChanged,
+    SlideContextChanged,
     StateChanged,
     TranscriptFinal,
     new_id,
@@ -55,7 +57,10 @@ class Concern(BaseModel):
     suggested_correction: str = ""
     confidence: float = 0.5
     status: Literal["open", "accepted", "kept", "dismissed"] = "open"
-    segment_id: str = ""
+    kind: Literal["factual", "transcription"] = "factual"
+    segment_id: str = ""        # first line the concern refers to
+    segment_ids: list[str] = Field(default_factory=list)  # every line it refers to (content there is held back)
+    request_id: str = ""        # interpretation that raised it
 
 
 class LectureStats(BaseModel):
@@ -79,6 +84,7 @@ class LectureState(BaseModel):
     summary_deltas: list[str] = Field(default_factory=list)  # sentences behind rolling_summary (bounded by its budget)
     concerns: list[Concern] = Field(default_factory=list)
     stats: LectureStats = Field(default_factory=LectureStats)
+    slide_context: str = ""       # summary of the slide receiving content (presentation engine), for the prompt
     lecture_clock_s: float = 0.0  # end time of the latest transcript segment
     last_interpretation_id: Optional[str] = None
 
@@ -108,7 +114,7 @@ class LectureStateStore:
         self._bus.subscribe(
             "state_store",
             self._on_event,
-            [LifecycleChanged, TranscriptFinal, CommandReceived, InterpretationReady],
+            [LifecycleChanged, TranscriptFinal, CommandReceived, InterpretationReady, SlideContextChanged],
         )
 
     def snapshot(self) -> LectureState:
@@ -176,6 +182,10 @@ class LectureStateStore:
             return []
         elif isinstance(event, InterpretationReady):
             return self._apply_interpretation(event)
+        elif isinstance(event, SlideContextChanged):
+            if s.slide_context != event.text:
+                s.slide_context = event.text
+                return ["slide_context"]
         return []
 
     def _resolve_concern(self, args: dict) -> list[str]:
@@ -183,6 +193,7 @@ class LectureStateStore:
         for c in self._state.concerns:
             if c.id == args.get("id") and status and c.status == "open":
                 c.status = status  # type: ignore[assignment]
+                self._outbox.append(ConcernResolved(concern_id=c.id, status=status))  # type: ignore[arg-type]
                 return ["concerns"]
         log.warning("resolve_concern ignored: %s", args)
         return []
@@ -227,12 +238,11 @@ class LectureStateStore:
             s.subject_estimate = it.subject_estimate
 
         for item in it.concerns:
-            seg = ""
-            if item.lines and 1 <= item.lines[0] <= len(ev.segment_ids):
-                seg = ev.segment_ids[item.lines[0] - 1]
+            segs = [ev.segment_ids[n - 1] for n in item.lines if 1 <= n <= len(ev.segment_ids)]
             concern = Concern(
                 claim=item.claim, issue=item.issue, suggested_correction=item.suggested_correction,
-                confidence=item.confidence, segment_id=seg,
+                confidence=item.confidence, kind=item.kind, segment_id=segs[0] if segs else "",
+                segment_ids=segs, request_id=ev.request_id,
             )
             s.concerns.append(concern)
             self._outbox.append(ConcernRaised(concern=concern.model_dump()))

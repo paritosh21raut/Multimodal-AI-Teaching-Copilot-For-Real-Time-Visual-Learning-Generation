@@ -14,7 +14,7 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); 
 
 .grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr); gap: 18px; padding: 18px; min-height: 0; }
 .left, .right { display: grid; gap: 14px; align-content: start; min-height: 0; }
-.right { grid-template-rows: auto 1fr auto; }
+.right { grid-template-rows: auto auto 1fr auto; }
 
 .preview { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: var(--bg); }
 .preview .stage { position: absolute; left: 50%; top: 50%; transform-origin: center center; }
@@ -41,3 +41,20 @@ h2 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08
 .transcript p.dropped { color: var(--muted); font-style: italic; }
 .transcript .ts { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 10px; font-size: 13px; }
 .hint { margin: 0; color: var(--muted); font-size: 13px; }
+
+.concerns { display: grid; gap: 10px; }
+.concerns h2 .count { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--accent-2); color: #fff; font-size: 11px; }
+.concern { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent-2); border-radius: 10px; padding: 12px 14px; display: grid; gap: 6px; }
+.concern.transcription { border-left-color: var(--accent); }
+.concern-head { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.concern.factual .kind { color: var(--accent-2); }
+.concern.transcription .kind { color: var(--accent); }
+.concern p { margin: 0; line-height: 1.4; }
+.concern .claim { font-weight: 600; }
+.concern .issue { color: var(--ink-2, var(--muted)); font-size: 14px; }
+.concern .fix span { color: var(--muted); font-size: 13px; margin-right: 4px; }
+.concern-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.concern-actions button { padding: 6px 10px; font-size: 13px; }
+.concern-actions button.accept { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.concern-actions button.accept:disabled { opacity: 0.4; cursor: default; }
+.concern-actions button.ghost { color: var(--muted); }
