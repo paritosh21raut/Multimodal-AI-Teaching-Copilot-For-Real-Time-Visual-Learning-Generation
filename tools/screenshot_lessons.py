@@ -16,7 +16,7 @@ from display_harness import browser_page, display_harness, wait_for_slide  # noq
 
 from copilot.core.events import Command, CommandReceived, InterpretationReady  # noqa: E402
 from copilot.core.interpretation import (  # noqa: E402
-    ConcernItem, ContentItems, DiscourseAct, Fact, Group, Interpretation, Revision,
+    ConcernItem, ContentItems, DiscourseAct, Fact, Formula, Group, Interpretation, Revision, Variable,
 )
 from copilot.core.state import LectureSetup, LectureStateStore  # noqa: E402
 from copilot.presentation.engine import PresentationEngine, PresentationSettings  # noqa: E402
@@ -105,6 +105,37 @@ def chemistry(store) -> list:
     ]
 
 
+def physics(store) -> list:
+    """tests/fixtures/lectures/force_motion.txt (F-007a): formula expressions in the forms the model writes
+    (symbols with x, spoken words, a word-name left side)."""
+    f = lambda expr, *v: Formula(expression=expr, variables=[Variable(symbol=a, meaning=b) for a, b in v])  # noqa: E731
+    return [
+        lambda: ready("Force and Motion", "Speed", [act("transition"), act("definition", lines=(2,), term="Speed",
+                      definition="The distance travelled by an object in unit time")], "new_topic"),
+        lambda: ready("Force and Motion", "Speed", [
+            act("formula", formula=f("speed = distance / time")),
+            act("explanation", lines=(2, 3), facts=[Fact(label="SI unit of speed", value="metre per second (m/s)")]),
+            act("example", lines=(4,), examples=["A car travelling 100 m in 5 s has a speed of 20 m/s"])]),
+        lambda: ready("Force and Motion", "Acceleration", [act("definition", term="Acceleration",
+                      definition="The rate of change of velocity")], "sibling_concept"),
+        lambda: ready("Force and Motion", "Acceleration", [act("formula", formula=f(
+            "v = u + at", ("u", "initial velocity"), ("v", "final velocity"), ("a", "acceleration"), ("t", "time"))),
+            act("explanation", lines=(3,), points=["Unit of acceleration: metre per second squared (m/s²)"])]),
+        lambda: ready("Force and Motion", "Newton's Second Law", [
+            act("explanation", points=["Force equals mass multiplied by acceleration"]),
+            act("formula", lines=(2,), formula=f("F equals m into a", ("F", "force (newton)"), ("m", "mass (kg)"),
+                                                 ("a", "acceleration")))], "sibling_concept"),
+        lambda: ready("Force and Motion", "Newton's Second Law", [act("explanation", points=[
+            "Doubling the force on the same mass doubles the acceleration"])]),
+        lambda: ready("Force and Motion", "Kinetic Energy", [act("definition", term="Kinetic energy",
+                      definition="The energy of a moving object"),
+                      act("formula", lines=(2,), formula=f("Kinetic energy = 1/2 m v^2", ("m", "mass"), ("v", "speed")))],
+                      "sibling_concept"),
+        lambda: ready("Force and Motion", "Kinetic Energy", [act("explanation", points=[
+            "If speed doubles, kinetic energy becomes four times"])]),
+    ]
+
+
 async def capture(name: str, script, theme: str) -> list[Path]:
     paths = []
     async with display_harness(theme) as h:
@@ -135,8 +166,10 @@ async def main(theme: str) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     for old in OUT.glob(f"*_{theme}_*.png"):
         old.unlink()
-    await capture("solar", solar, theme)
-    await capture("chemistry", chemistry, theme)
+    only = sys.argv[2:]  # optional lesson names
+    for name, script in (("solar", solar), ("chemistry", chemistry), ("physics", physics)):
+        if not only or name in only:
+            await capture(name, script, theme)
 
 
 if __name__ == "__main__":

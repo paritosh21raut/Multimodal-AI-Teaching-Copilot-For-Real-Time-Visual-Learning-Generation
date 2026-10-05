@@ -67,7 +67,7 @@ def texts(spec):
         elif b.type == "definition":
             out += [b.term] + [n.text for n in b.notes]
         elif b.type == "formula":
-            out.append(b.latex)
+            out.append(b.spoken)  # the formula text as shown (latex is now the KaTeX source)
         elif b.type == "facts":
             out += [f"{f.label}: {f.value}" for f in b.facts]
         elif b.type == "callout":

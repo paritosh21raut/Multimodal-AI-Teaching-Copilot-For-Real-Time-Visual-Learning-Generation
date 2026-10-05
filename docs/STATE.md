@@ -1,12 +1,19 @@
 # Current State
 
-_Last updated: 2026-10-05 (late): M4 closeout fixes from the user's live chemistry test: audio crash on a long
-sentence fixed (lecture no longer ends), definitions revisable (completed in place), coverage guard for sentences the
-model drops. Exit check left: the user's live 5–10 min lecture (ROADMAP M4, adjusted)._
+_Last updated: 2026-10-06: **V1a (formulas + layout polish) implemented, tested, runtime-verified with 0 tokens**;
+one real-Groq run of `force_motion.txt` pending (quota). Next: V1b images (F-007b)._
 
 ## Now
-- **M4 exit check (only item left): user live-mic lecture, 5–10 min continuous** (`python -m copilot`). Pass =
-  lecture runs to the end, every taught point reaches the projector, slides follow the topics, no crash.
+- **V1 (2026-10-06):** order V1a → V1b → V1c (ROADMAP). Specs: `docs/specs/F-007a-formulas-layout.md`,
+  `F-007b-images.md`, `F-007c-robustness.md` (user answers recorded in each).
+- **V1a done (see F-007a "Result"):** KaTeX vendored + `web/shared/rich.js`; `presentation/mathtext.py`
+  (plain/spoken formula → LaTeX, no prompt change); chemical subscripts in all slide text; plural title templates;
+  step/process/cause-effect/teaser polish; **M4 bug fixed**: points mentioning the slide's term were dropped as
+  duplicates. 269 fast + 7 browser tests. Screenshots inspected: `artifacts/display/`, `artifacts/lessons/physics_*`,
+  `artifacts/app/lecture_force_motion/`.
+- **Pending (needs quota):** `python tools/screenshot_app.py --lecture --simulate tests/fixtures/lectures/force_motion.txt --speed 1`
+  with real Groq (≈ 20–25k tokens). Not run: the ledger showed gpt-oss-120b at ≈ 198k/200k and `.env` has one Groq key.
+- **M4 / MVP: accepted by the user 2026-10-05.**
 - **Live chemistry test 2026-10-05 (session 20261005-230039-f084), fixed:**
   1. The lecture ended after 43 s: forced 15 s split inside a pause → negative frame count → audio thread crash.
      Fixed in the segmenter + the pipeline now drops only the pending utterance on a segmenter error.
@@ -49,7 +56,7 @@ model drops. Exit check left: the user's live 5–10 min lecture (ROADMAP M4, ad
 | Audio / STT | 95 | verified on WAV and real human voice (laptop mic array); classroom lapel mic still to try |
 | Lecture understanding + LLM | 88 | M3 + live-mic fixes (VAD pause, fragment hold, grounding guard, process prompt, facet-question cue, empty-act fill); verified on the fixture with real Groq; gate fixes replay-tested on the real-mic session, not yet re-run live |
 | Presentation engine | 85 | content/composer/planner/engine: continuity, space-based layout, parts, dwell, new-topic confirmation + tentative move, revisions, truthful corrections, provisional fast path, force-new, pin/nav-back, overflow; verified on 3 lectures with real LLM + screenshots |
-| Live display + control view | 75 | + fact tiles, group cards, side-by-side definitions, part badges, concern card (said / correct / shown, switchable), overflow reporting; KaTeX, images pending (V1) |
+| Live display + control view | 82 | + fact tiles, group cards, side-by-side definitions, part badges, concern card (said / correct / shown, switchable), overflow reporting; KaTeX formulas + chemical subscripts (V1a); images pending (V1b) |
 | Visual system (images/diagrams) | 10 | SVG/CSS diagram layouts (process, timeline, tree, causal) exist; image retrieval not started |
 | Reference materials | 0 | not started |
 | Post-lecture outputs | 0 | not started |
@@ -61,6 +68,7 @@ model drops. Exit check left: the user's live 5–10 min lecture (ROADMAP M4, ad
 | Item | Unit | Integration | Runtime |
 |---|---|---|---|
 | EventBus, config, state store, event log, simulator | ✅ | ✅ | ✅ |
+| V1a: formulas → KaTeX (`mathtext`, `rich.js`), chemical subscripts, layout polish, dropped-point fix | ✅ 52 + 9 | ✅ Edge (3 tests) | ✅ 0 tokens: display set, physics lesson, real app; real-Groq run pending |
 | Several Groq keys, daily quota ledger, `[QUOTA]` at startup | ✅ | – | ✅ photosynthesis real run, quota printed |
 | Auto-open /control + /display, no duplicate tabs, `--no-open` | ✅ | ✅ browser (real app + Edge) | ✅ |
 | Segmenter: forced split inside a pause, segmenter error keeps the lecture going | ✅ | – | replay ✅, live mic pending |
@@ -98,16 +106,16 @@ model drops. Exit check left: the user's live 5–10 min lecture (ROADMAP M4, ad
 - `src/copilot/audio/`: sources, vad, segmenter, mic_check
 - `src/copilot/stt/`: engine, pipeline, factory, cuda_dlls
 - `src/copilot/presentation/`: spec (SlideSpec), deck, content (acts → pieces), composer (height model, merge, titles,
-  provisional, revise/substitute/remove), planner (frame decision), engine (PresentationEngine), demo (scripted)
+  provisional, revise/substitute/remove), planner (frame decision), engine (PresentationEngine), mathtext (formula → LaTeX), demo (scripted + stress)
 - `src/copilot/display/`: hub (WebSocket fan-out, coalescing outbox), server (FastAPI/uvicorn embedded)
 - `src/copilot/core/`: interpretation (Interpretation contract), memory (outline matching, rolling summary), textutil
 - `src/copilot/llm/`: providers (OpenAI-compatible), ratelimit, router (`build_router` from config `[llm]`)
 - `src/copilot/understanding/`: filter, embedder (MiniLM ONNX), tracker, gate, prompt, grounding, interpreter, service
 - `web/`
-  - `shared/` (tokens.css, slide.css, slide.js renderer + fit, ws.js)
+  - `shared/` (tokens.css, slide.css, slide.js renderer + fit, rich.js KaTeX + chemical subscripts, ws.js)
   - `display/` (projector)
   - `control/` (teacher)
-  - `vendor/` (htm+preact)
+  - `vendor/` (htm+preact, katex 0.16.22)
 - `tools/`: display_harness, screenshot_display, screenshot_app (`--lecture [--simulate f]`: whole-lecture captures →
   artifacts/app/lecture_<fixture>), screenshot_lessons (real engine + scripted interpretations → artifacts/lessons)
 - `src/copilot/app/main.py`, CLI flags:
@@ -125,7 +133,7 @@ model drops. Exit check left: the user's live 5–10 min lecture (ROADMAP M4, ad
 - M4 (open):
   - LLM extraction varies run to run (e.g. Respiration as "Definition" vs "Comparison"; explanations without items are
     filled from the spoken line; explanation "examples" become points). Slide titles follow the LLM's subtopic names.
-  - Formula blocks show the spoken/LLM expression (KaTeX pending); the model sometimes swaps variable symbol/meaning.
+  - The model sometimes swaps variable symbol/meaning in formulas (formulas render with KaTeX since V1a).
   - Provisional teasers are keyword lists from the tracker (subtle italic); quality depends on keyphrases.
   - Dwell is 15 s (config `[presentation] min_dwell_s`); tune after the real-mic test.
   - Fixed during M4: Windows deadlock when a numpy DLL imports while the terminal thread reads a *piped* stdin
@@ -143,7 +151,6 @@ model drops. Exit check left: the user's live 5–10 min lecture (ROADMAP M4, ad
 - Open (plausible, not reproduced):
   - mic overflow drops frames, so lecture time lags the wall clock
   - the STT queue is unbounded if Whisper runs slower than real time
-- Formula blocks show the spoken form; KaTeX rendering is pending (V1).
 - Display overflow is reported to the server (`SlideOverflow`) and the planner continues on a new slide.
 - Mic levels on the Intel SST array are low (≈ −37 dBFS speech) but transcribe well.
 - Fixed: terminal READY/LIVE lines garbled by unflushed prints (all app prints now flush).

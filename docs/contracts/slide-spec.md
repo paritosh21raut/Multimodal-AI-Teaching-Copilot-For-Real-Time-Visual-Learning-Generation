@@ -22,7 +22,7 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
   timeline     { events[{id, when, label, detail?}] }
   hierarchy    { root{label, children[...]} }
   cause_effect { links[{id, cause, effect}] }
-  formula      { latex, variables[{symbol, meaning, unit?}] }
+  formula      { latex, spoken, variables[{symbol, meaning, unit?, latex?}] }   # latex from mathtext (F-007a)
   example      { title?, text }
   image        { url, alt, credit, licence }
   callout      { kind: note|tip|key, text }
@@ -36,5 +36,8 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
 - `added=true` marks non-teacher supporting content (≤ 1 per slide, styled subtly).
 - Truthful slides: items show the corrected words when the concern is applied, else what the teacher said; the
   concern itself is only in the Control View (F-005).
+- Formulas (F-007a): `spoken` = the formula as the model wrote it; `latex` = KaTeX source built from it by
+  `presentation.mathtext` ("" = not renderable → the display shows `spoken`). Edits (truthful substitution) change
+  `spoken` and rebuild `latex`. Chemical formulas in any text (`CO2`) are subscripted by the display (`rich.js`).
 - Builder: `presentation.composer` (space-based height model, F-005). Overflow continues on the next part of the
   same frame: same title, `part` badge, never "(cont.)". Two `definition` blocks render side by side.

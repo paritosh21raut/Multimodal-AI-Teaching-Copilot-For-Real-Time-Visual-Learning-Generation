@@ -1,0 +1,29 @@
+# Class 9 physics, ~2.5 minutes, written by Claude for F-007a (formulas, V1a). Speech-recognition style: formulas
+# are spoken ("F equals m into a"), as Whisper would write them. Expect formula slides rendered with KaTeX.
+@setup subject=Physics grade=9 topic="Force and Motion"
+
+Good morning class. Today we will learn about force and motion.
+[pause 1.5]
+First, speed. Speed is the distance travelled by an object in unit time.
+So speed equals distance divided by time.
+[pause 1]
+The SI unit of speed is metre per second.
+For example, a car that travels 100 metres in 5 seconds has a speed of 20 metres per second.
+[pause 2]
+Next, acceleration. Acceleration is the rate of change of velocity.
+If u is the initial velocity and v is the final velocity after time t, then v = u + at.
+[pause 1]
+Here a is the acceleration, and its unit is metre per second squared.
+[pause 2]
+Now Newton's second law of motion.
+The force on an object is equal to its mass multiplied by its acceleration. So F equals m into a.
+[pause 1]
+F is the force in newton, m is the mass in kilogram and a is the acceleration.
+If we double the force on the same mass, the acceleration also doubles.
+[pause 2]
+Finally, kinetic energy. The energy of a moving object is called kinetic energy.
+Kinetic energy equals half m v squared, where m is the mass and v is the speed.
+[pause 1]
+So if the speed doubles, the kinetic energy becomes four times.
+[pause 2]
+Okay, write these formulas in your notebook.

@@ -2,6 +2,7 @@
 // Items are keyed by their stable ids, so Preact keeps existing DOM nodes and only new nodes get the
 // mount animation (.enter) - in-place updates never re-animate the whole slide.
 import { html, useLayoutEffect, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
+import { rich, Tex } from "./rich.js";
 
 const ARROW = html`<svg class="arrow" viewBox="0 0 56 40" aria-hidden="true">
   <path d="M4 20h40M34 9l12 11-12 11" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -12,37 +13,48 @@ const itemClass = (it, base) =>
 
 function Definition({ b, termInTitle }) {
   return html`<div class="def enter">
-    ${!termInTitle && html`<div class="def-term enter">${b.term}</div>`}
-    <div class="def-body enter">${b.definition}</div>
+    ${!termInTitle && html`<div class="def-term enter">${rich(b.term)}</div>`}
+    <div class="def-body enter">${rich(b.definition)}</div>
     ${b.notes.length > 0 && html`<div class="def-notes">
-      ${b.notes.map((n) => html`<span key=${n.id} class=${itemClass(n, "def-note")}>${n.text}</span>`)}
+      ${b.notes.map((n) => html`<span key=${n.id} class=${itemClass(n, "def-note")}>${rich(n.text)}</span>`)}
     </div>`}
   </div>`;
 }
 
+// Provisional teasers (keywords before the refined items arrive) are not numbered like real points.
+const numbered = (items) => { let n = 0; return items.map((it) => [it, it.provisional ? 0 : ++n]); };
+
 function Points({ b, wide }) {
   const cols = wide && b.items.length > 3 && b.items.every((i) => i.text.length < 90) ? "cols-2" : "";
   return html`<div class="points">
-    ${b.heading && html`<div class="points-heading">${b.heading}</div>`}
+    ${b.heading && html`<div class="points-heading">${rich(b.heading)}</div>`}
     <ol class=${"points-list " + cols}>
-      ${b.items.map((it, i) => html`<li key=${it.id} class=${itemClass(it, "point")}>
-        <span class="num">${i + 1}</span><span>${it.text}</span>
+      ${numbered(b.items).map(([it, n]) => html`<li key=${it.id} class=${itemClass(it, "point")}>
+        ${n ? html`<span class="num">${n}</span>` : html`<span class="num ghost"></span>`}<span>${rich(it.text)}</span>
       </li>`)}
     </ol>
   </div>`;
 }
 
+// "Inhale: diaphragm contracts, ..." -> label "Inhale" + detail; a long label without a name reads as text.
+const LONG_STEP = 60;
+function stepText(s) {
+  if (s.detail) return { label: s.label, detail: s.detail };
+  const m = /^([^:]{2,40}):\s+(.{8,})$/.exec(s.label);
+  return m && m[1].split(" ").length <= 4 ? { label: m[1], detail: m[2] } : { label: s.label, detail: "" };
+}
+
 function Process({ b }) {
   return html`<div class="process">
-    <div class="process-row">
-      ${b.steps.map((s, i) => html`<div key=${s.id} class="step enter">
+    <div class=${"process-row" + (b.steps.length >= 5 ? " many" : "")}>
+      ${b.steps.map((s, i) => { const { label, detail } = stepText(s); return html`<div key=${s.id} class="step enter">
         <div class="step-card">
           <span class="step-no">STEP ${i + 1}</span>
-          <span class="step-label">${s.label}</span>
-          ${s.detail && html`<span class="step-detail">${s.detail}</span>`}
+          <span class=${"step-label" + (label.length > LONG_STEP ? " long" : "")}>${rich(label)}</span>
+          ${detail && html`<span class="step-detail">${rich(detail)}</span>`}
         </div>
         ${i < b.steps.length - 1 && ARROW}
-      </div>`)}
+      </div>`; })}
     </div>
     ${b.cyclic && html`<div class="cycle-note">↻ The cycle repeats</div>`}
   </div>`;
@@ -50,10 +62,10 @@ function Process({ b }) {
 
 function Comparison({ b }) {
   return html`<table class="compare enter">
-    <thead><tr><th></th>${b.columns.map((c) => html`<th key=${c.id}>${c.heading}</th>`)}</tr></thead>
+    <thead><tr><th></th>${b.columns.map((c) => html`<th key=${c.id}>${rich(c.heading)}</th>`)}</tr></thead>
     <tbody>
       ${b.rows.map((r) => html`<tr key=${r.id} class="enter">
-        <td class="aspect">${r.aspect}</td>${r.cells.map((c, i) => html`<td key=${i}>${c}</td>`)}
+        <td class="aspect">${rich(r.aspect)}</td>${r.cells.map((c, i) => html`<td key=${i}>${rich(c)}</td>`)}
       </tr>`)}
     </tbody>
   </table>`;
@@ -63,8 +75,8 @@ function Timeline({ b }) {
   return html`<div class="timeline">
     ${b.events.map((e) => html`<div key=${e.id} class="tl-event enter">
       <span class="tl-when">${e.when}</span>
-      <span class="tl-label">${e.label}</span>
-      ${e.detail && html`<span class="tl-detail">${e.detail}</span>`}
+      <span class="tl-label">${rich(e.label)}</span>
+      ${e.detail && html`<span class="tl-detail">${rich(e.detail)}</span>`}
     </div>`)}
   </div>`;
 }
@@ -72,26 +84,28 @@ function Timeline({ b }) {
 function CauseEffect({ b }) {
   return html`<div class="causal">
     ${b.links.map((l) => html`<div key=${l.id} class="link enter">
-      <div class="cause">${l.cause}</div>${ARROW}<div class="effect">${l.effect}</div>
+      <div class="cause"><span>${rich(l.cause)}</span></div>${ARROW}<div class="effect"><span>${rich(l.effect)}</span></div>
     </div>`)}
   </div>`;
 }
 
 function TreeNode({ n, root }) {
   return html`<div class=${root ? "tree-root" : "tree-sub enter"}>
-    <div class="tree-node">${n.label}</div>
+    <div class="tree-node">${rich(n.label)}</div>
     ${n.children.length > 0 && html`<div class="tree-children">
       ${n.children.map((c) => html`<${TreeNode} key=${c.id} n=${c} />`)}
     </div>`}
   </div>`;
 }
 
+// KaTeX (latex built by presentation.mathtext); the formula as said when it cannot be rendered. Words and chemical
+// formulas inside it use the slide font (slide.css), so a word equation looks like the rest of the slide.
 function Formula({ b }) {
-  // KaTeX rendering arrives in V1; until then show the teacher's spoken form (or the raw LaTeX).
   return html`<div class="formula">
-    <div class="formula-eq enter">${b.spoken || b.latex}</div>
+    <div class="formula-eq enter"><${Tex} latex=${b.latex} text=${b.spoken || b.latex} /></div>
     ${b.variables.length > 0 && html`<div class="formula-vars">
-      ${b.variables.map((v) => html`<span key=${v.symbol} class="enter"><span class="sym">${v.symbol}</span>${v.meaning}${v.unit && ` (${v.unit})`}</span>`)}
+      ${b.variables.map((v) => html`<span key=${v.symbol} class="var enter"><${Tex} cls="sym" latex=${v.latex} text=${v.symbol} />
+        <span class="meaning">${rich(v.meaning)}</span>${v.unit && html`<span class="unit">${v.unit}</span>`}</span>`)}
     </div>`}
   </div>`;
 }
@@ -100,11 +114,11 @@ function Formula({ b }) {
 function Facts({ b }) {
   const cols = b.facts.length === 3 || b.facts.some((f) => f.value.length > 24) ? 3 : Math.min(4, Math.max(1, b.facts.length));
   return html`<div class="facts">
-    ${b.heading && html`<div class="points-heading">${b.heading}</div>`}
+    ${b.heading && html`<div class="points-heading">${rich(b.heading)}</div>`}
     <div class="facts-grid" style=${{ "--cols": cols }}>
       ${b.facts.map((f) => html`<div key=${f.id} class="fact enter">
-        <span class="fact-label">${f.label}</span>
-        ${f.value && html`<span class="fact-value">${f.value}</span>`}
+        <span class="fact-label">${rich(f.label)}</span>
+        ${f.value && html`<span class="fact-value">${rich(f.value)}</span>`}
       </div>`)}
     </div>
   </div>`;
@@ -113,11 +127,11 @@ function Facts({ b }) {
 // Named groups side by side ("Inner planets" | "Outer planets").
 function Groups({ b }) {
   return html`<div class="groups">
-    ${b.heading && html`<div class="points-heading">${b.heading}</div>`}
+    ${b.heading && html`<div class="points-heading">${rich(b.heading)}</div>`}
     <div class="groups-row">
       ${b.groups.map((g) => html`<div key=${g.id} class="group enter">
-        <div class="group-label">${g.label}</div>
-        <div class="group-items">${g.items.map((i) => html`<span key=${i.id} class=${itemClass(i, "group-item")}>${i.text}</span>`)}</div>
+        <div class="group-label">${rich(g.label)}</div>
+        <div class="group-items">${g.items.map((i) => html`<span key=${i.id} class=${itemClass(i, "group-item")}>${rich(i.text)}</span>`)}</div>
       </div>`)}
     </div>
   </div>`;
@@ -145,9 +159,9 @@ function Block({ b, wide, termInTitle }) {
     case "facts": return html`<${Facts} b=${b} />`;
     case "groups": return html`<${Groups} b=${b} />`;
     case "example": return html`<div class="example enter"><span class="label">Example</span>
-      ${b.title && html`<span class="title">${b.title}</span>`}${b.text}</div>`;
+      ${b.title && html`<span class="title">${rich(b.title)}</span>`}${rich(b.text)}</div>`;
     case "callout": return html`<div class="callout enter"><span class="label">${
-      { key: "Key idea", tip: "Remember", note: "Note" }[b.kind]}</span>${b.text}</div>`;
+      { key: "Key idea", tip: "Remember", note: "Note" }[b.kind]}</span>${rich(b.text)}</div>`;
     default: return null;
   }
 }
@@ -202,7 +216,7 @@ export function Slide({ spec, phase = "", onOverflow }) {
     return html`<section data-slide=${spec.id} class=${`slide layout-title ${phase}`} style=${style}>
       <div class="slide-head">
         <div class="rule"></div>
-        <h1 class="slide-title">${spec.title}</h1>
+        <h1 class="slide-title">${rich(spec.title)}</h1>
         ${spec.subtitle && html`<p class="slide-subtitle">${spec.subtitle}</p>`}
       </div>
     </section>`;
@@ -221,7 +235,7 @@ export function Slide({ spec, phase = "", onOverflow }) {
         ${spec.facet && html`<span class="sep"></span><span class="facet">${spec.facet}</span>`}
         ${spec.continuation_of && !spec.facet && html`<span class="cont">continued</span>`}
       </div>`}
-      <h1 class="slide-title">${title}${spec.part && html`<span class="part" title=${`Part ${spec.part}`}>${partLabel(spec.part)}</span>`}</h1>
+      <h1 class="slide-title">${rich(title)}${spec.part && html`<span class="part" title=${`Part ${spec.part}`}>${partLabel(spec.part)}</span>`}</h1>
     </header>
     <div ref=${bodyRef} class=${"slide-body" + (aside.length ? " with-aside" : "")}>
       <div class="main">

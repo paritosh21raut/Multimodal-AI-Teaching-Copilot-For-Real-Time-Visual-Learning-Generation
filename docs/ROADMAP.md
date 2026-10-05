@@ -42,6 +42,11 @@ plugs into them.
 - Image retrieval (Wikimedia/Wikipedia/Openverse) with CLIP re-ranking and a "need-an-image?" decision.
 - Full teacher controls (freeze, pin, blank, force new, prev/next), concern flow in the Control View.
 - Crash recovery from the event log; 60-min soak test.
+- **Split (user, 2026-10-06), each finished and verified before the next:**
+  - **V1a** formulas (KaTeX) + layout polish → `docs/specs/F-007a-formulas-layout.md`
+  - **V1b** images (auto on the projector; teacher remove / replace / drag-drop in /control) → `F-007b-images.md`
+  - **V1c** crash recovery + 60-min soak with recorded/fake LLM answers (0 tokens) → `F-007c-robustness.md`
+  - Teacher controls and the concern flow already exist (M4).
 
 ## V2 — Reference materials + post-lecture
 - Teacher uploads (PDF, docs, labelled images) → local index (separate from the transcript); used for enrichment only.

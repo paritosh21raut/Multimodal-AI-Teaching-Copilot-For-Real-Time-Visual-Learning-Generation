@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from display_harness import browser_page, display_harness, wait_for_slide  # noqa: E402
 
 from copilot.core.events import Command, CommandReceived  # noqa: E402
-from copilot.presentation.demo import demo_frames  # noqa: E402
+from copilot.presentation.demo import demo_frames, stress_frames  # noqa: E402
 
 OUT = Path(__file__).resolve().parents[1] / "artifacts" / "display"
 
@@ -22,7 +22,7 @@ async def capture(theme: str) -> list[Path]:
     paths = []
     async with display_harness(theme) as h:
         async with browser_page(f"{h.url}/display") as page:
-            for op, spec in demo_frames():
+            for op, spec in demo_frames() + stress_frames():
                 await (h.deck.add(spec) if op == "add" else h.deck.update(spec))
                 await h.settle()
             # Final version of each slide: navigate through the deck.
@@ -30,7 +30,7 @@ async def capture(theme: str) -> list[Path]:
                 await h.bus.publish(CommandReceived(command=Command(kind="goto", args={"slide_id": spec.id})))
                 await h.settle()
                 await wait_for_slide(page, spec.id)
-                path = OUT / f"{theme}_{i:02d}_{spec.layout}.png"
+                path = OUT / f"{theme}_{i:02d}_{spec.layout}{'_stress' if spec.id.startswith('x') else ''}.png"
                 await page.screenshot(path=str(path))
                 paths.append(path)
             if page.errors:

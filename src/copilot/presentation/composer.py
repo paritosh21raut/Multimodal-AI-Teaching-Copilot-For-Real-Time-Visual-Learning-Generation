@@ -20,6 +20,7 @@ from typing import Callable, Optional
 
 from copilot.core.memory import titles_match
 from copilot.presentation.content import Piece
+from copilot.presentation.mathtext import has_fraction, to_latex, visible_length
 from copilot.presentation.spec import (
     Block, CalloutBlock, CauseEffectBlock, CauseLink, Column, ComparisonBlock, DefinitionBlock, ExampleBlock, Fact,
     FactsBlock, FormulaBlock, Group, GroupsBlock, HierarchyBlock, Item, PointsBlock, ProcessBlock, Row,
@@ -48,12 +49,25 @@ SECONDARY = ("example", "callout")
 DUP_RATIO = 0.85
 PROVISIONAL_PREFIX = "prov-"
 
-TITLE_TEMPLATES = {  # facet keyword -> title; {t} = topic
-    "definition": "What is {t}?", "meaning": "What is {t}?", "introduction": "{t}", "overview": "{t}",
-    "process": "How {t} works", "how it works": "How {t} works", "mechanism": "How {t} works",
-    "importance": "Why {t} matters", "significance": "Why {t} matters",
-    "requirements": "What {t} needs", "needs": "What {t} needs",
+TITLE_TEMPLATES = {  # facet keyword -> title; {t} = topic, {is}/{s} agree with a plural topic ("What are lenses?")
+    "definition": "What {is} {t}?", "meaning": "What {is} {t}?", "introduction": "{t}", "overview": "{t}",
+    "process": "How {t} work{s}", "how it works": "How {t} work{s}", "mechanism": "How {t} work{s}",
+    "importance": "Why {t} matter{s}", "significance": "Why {t} matter{s}",
+    "requirements": "What {t} need{s}", "needs": "What {t} need{s}",
 }
+DEFINITION_FACETS = ("definition", "meaning")
+_SINGULAR_ENDINGS = ("ss", "is", "us", "as", "ics", "ous", "sis")
+
+
+def is_plural(phrase: str) -> bool:
+    """"Human body systems", "lenses" → True; "photosynthesis", "physics", "gas" → False (cheap English rule)."""
+    words = phrase.split()
+    last = words[-1].lower() if words else ""
+    return len(last) > 3 and last.endswith("s") and not last.endswith(_SINGULAR_ENDINGS)
+
+
+def what_is(term: str) -> str:
+    return f"What {'are' if is_plural(term) else 'is'} {term}?"
 
 
 # ---- text helpers ---------------------------------------------------------------------------------------
@@ -70,7 +84,9 @@ def is_duplicate(a: str, b: str) -> bool:
     if na == nb:
         return True
     short, long_ = sorted((na, nb), key=len)
-    if len(short) >= 12 and f" {short} " in f" {long_} ":
+    # containment = the same item with a few words more; a bare term inside a longer sentence ("acceleration" in
+    # "Unit of acceleration: m/s²") is a new item that mentions it (V1a: such points were silently dropped)
+    if len(short) >= 12 and 2 * len(short) >= len(long_) and f" {short} " in f" {long_} ":
         return True
     # similar wording is a duplicate only with the same content words: "Plants take in oxygen" vs "Plants give
     # out oxygen", or "fact 1" vs "fact 2", are different items
@@ -125,7 +141,8 @@ def slide_title(topic: str, facet: str) -> str:
     tpl = TITLE_TEMPLATES.get(facet.strip().lower())
     if tpl:
         t = topic if topic[:1].isupper() and topic[1:2].isupper() else topic.lower()  # keep acronyms
-        return cap(tpl.format(t=t))
+        plural = is_plural(t)
+        return cap(tpl.format(t=t, **{"is": "are" if plural else "is", "s": "" if plural else "s"}))
     return facet  # the crumb already shows the topic ("CHEMISTRY — MATTER"); "Matter of Chemistry" reads badly
 
 
@@ -197,7 +214,9 @@ def block_height(b: Block, width: float = BODY_WIDTH_PX) -> float:
     if b.type == "cause_effect":
         return len(b.links) * 120
     if b.type == "formula":
-        return 140 + 72 * _lines(b.latex, _cpl(width - 128, 55)) + (60 if b.variables else 0)
+        shown = visible_length(b.latex) if b.latex else len(b.spoken)
+        return (140 + 72 * _lines("x" * shown, _cpl(width - 128, 55)) + (50 if has_fraction(b.latex) else 0)
+                + (60 if b.variables else 0))
     if b.type in SECONDARY:
         return 110 + 45 * _lines(b.text, _cpl(width - 80, 34))
     if b.type == "image":
@@ -362,7 +381,7 @@ def describe(spec: SlideSpec, max_items: int = 8) -> tuple[str, dict[str, str]]:
         elif b.type == "cause_effect":
             parts.append("(cause-effect) " + "; ".join(f"{l.cause} -> {l.effect}" for l in b.links))
         elif b.type == "formula":
-            parts.append(f"(formula) {b.latex}")
+            parts.append(f"(formula) {b.spoken or b.latex}")
         elif b.type in SECONDARY:
             parts.append(f"({b.type}) {b.text}")
     room = max(0, int(_budget[0] - body_height(spec)))
@@ -470,8 +489,8 @@ def _merge_definition(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optiona
     block = DefinitionBlock(term=cap(piece.term), definition=piece.definition)
     if not spec.blocks:
         out = _add_block(spec, block)
-        if spec.facet and spec.facet.strip().lower() in ("definition", "meaning"):
-            out = out.model_copy(update={"title": f"What is {_lower_term(piece.term)}?"})  # the term, not the topic
+        if spec.facet and spec.facet.strip().lower() in DEFINITION_FACETS:
+            out = out.model_copy(update={"title": what_is(_lower_term(piece.term))})  # the term, not the topic
         return out, None
     if not defs:  # a new term introduced on a slide with other content: a definition card below it, if room
         cand = _add_block(spec, block)
@@ -653,16 +672,20 @@ def _merge_pairs(block_type: str, cap_key: str):
     return merge_fn
 
 
+def _variable(symbol: str, meaning: str) -> Variable:
+    return Variable(symbol=symbol, meaning=meaning, latex=to_latex(symbol))
+
+
 def _merge_formula(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:
     fb = _find(spec, "formula")
     f = piece.formula
     assert f is not None
-    if fb is not None and is_duplicate(fb.latex, f.expression):
+    if fb is not None and is_duplicate(fb.spoken or fb.latex, f.expression):
         return spec, None
     if fb is not None or any(b.type in LARGE for b in spec.blocks):
         return spec, piece
-    variables = [Variable(symbol=s, meaning=m) for s, m in f.variables[:CAPACITY["variables"]]]
-    cand = _add_block(spec, FormulaBlock(latex=f.expression, spoken=f.expression, variables=variables))
+    variables = [_variable(s, m) for s, m in f.variables[:CAPACITY["variables"]]]
+    cand = _add_block(spec, FormulaBlock(latex=to_latex(f.expression), spoken=f.expression, variables=variables))
     return (cand, None) if fits(cand) or not spec.blocks else (spec, piece)
 
 
@@ -764,7 +787,7 @@ def element_texts(spec: SlideSpec) -> dict[str, str]:
         elif b.type == "cause_effect":
             out.update({l.id: f"{l.cause} {l.effect}" for l in b.links})
         else:
-            out[b.id] = getattr(b, "text", "") or getattr(b, "latex", "")
+            out[b.id] = getattr(b, "text", "") or getattr(b, "spoken", "") or getattr(b, "latex", "")
     return out
 
 
@@ -883,9 +906,9 @@ def substitute(spec: SlideSpec, ids: set[str], old: str, new: str) -> SlideSpec:
                                                if l.id in ids else l for l in b.links]})
         elif b.id in ids:
             if b.type == "formula":
-                b = b.model_copy(update={"latex": s(b.latex), "spoken": s(b.spoken),
-                                         "variables": [v.model_copy(update={"symbol": s(v.symbol)})
-                                                       for v in b.variables]})
+                spoken = s(b.spoken or b.latex)  # edit the words as said, then rebuild the LaTeX
+                b = b.model_copy(update={"latex": to_latex(spoken), "spoken": spoken,
+                                         "variables": [_variable(s(v.symbol), v.meaning) for v in b.variables]})
             elif b.type in SECONDARY:
                 b = b.model_copy(update={"text": s(b.text)})
         blocks.append(b)

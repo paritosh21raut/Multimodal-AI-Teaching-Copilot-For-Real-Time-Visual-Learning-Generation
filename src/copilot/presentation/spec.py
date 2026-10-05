@@ -77,6 +77,7 @@ class Variable(_Model):
     symbol: str
     meaning: str
     unit: str = ""
+    latex: str = ""  # the symbol for KaTeX ("" = show the symbol as text)
 
 
 class DefinitionBlock(_Model):
@@ -136,8 +137,8 @@ class CauseEffectBlock(_Model):
 class FormulaBlock(_Model):
     type: Literal["formula"] = "formula"
     id: str = Field(default_factory=new_id)
-    latex: str
-    spoken: str = ""  # plain-language form as the teacher said it
+    latex: str  # KaTeX source built by presentation.mathtext; "" = not renderable, the display shows `spoken`
+    spoken: str = ""  # the formula as the model wrote it from the lecture (plain text)
     variables: list[Variable] = Field(default_factory=list)
 
 

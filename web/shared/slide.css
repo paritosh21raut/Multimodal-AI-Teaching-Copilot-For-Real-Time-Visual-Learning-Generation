@@ -104,6 +104,7 @@
   background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 24px;
 }
 .point.emph { background: var(--accent); color: var(--accent-ink); }
+.point .num.ghost { background: none; border: 3px dashed var(--line); box-sizing: border-box; width: 30px; height: 30px; margin: 11px; }
 .point.emph .num { background: rgba(255, 255, 255, 0.18); color: inherit; }
 
 /* ---------- callout / example ---------- */
@@ -135,6 +136,14 @@
 }
 .step-no { font-size: var(--fs-label); font-weight: 700; color: var(--accent); letter-spacing: 0.06em; }
 .step-label { font-size: calc(var(--fs-body) * var(--fit)); font-weight: 650; line-height: 1.2; }
+.step-label.long { font-weight: 500; line-height: 1.3; }
+.step-label, .step-detail { overflow-wrap: break-word; hyphens: auto; }
+/* five or more steps: narrow cards, so a smaller label (long words like "Oesophagus" must fit the card) */
+.process-row.many .step { grid-template-columns: minmax(0, 1fr) 40px; }
+.process-row.many .step:last-child { grid-template-columns: minmax(0, 1fr); }
+.process-row.many .arrow { width: 40px; }
+.process-row.many .step-card { padding: 26px 22px; }
+.process-row.many .step-label { font-size: calc(var(--fs-small) * var(--fit)); }
 .step-detail { font-size: calc(var(--fs-small) * var(--fit)); color: var(--ink-2); line-height: 1.32; }
 .arrow { width: 56px; height: 40px; color: var(--accent); justify-self: center; }
 .cycle-note { font-size: var(--fs-small); color: var(--muted); display: flex; gap: 12px; align-items: center; }
@@ -158,8 +167,10 @@
 
 /* ---------- cause / effect ---------- */
 .causal { display: grid; gap: 22px; }
-.link { display: grid; grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr); align-items: center; }
+.link { display: grid; grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr); align-items: stretch; }
+.link > .arrow { align-self: center; }
 .link .cause, .link .effect {
+  display: flex; align-items: center;
   padding: 26px 32px; border-radius: var(--radius-sm); font-size: calc(var(--fs-body) * var(--fit)); line-height: 1.3;
 }
 .link .cause { background: var(--surface); box-shadow: var(--shadow); }
@@ -184,14 +195,28 @@
 .tree-children > .tree-sub:only-child::after { display: none; }
 .tree-children .tree-children .tree-node { font-weight: 500; font-size: calc(var(--fs-small) * var(--fit)); }
 
-/* ---------- formula ---------- */
+/* ---------- formula (KaTeX; words and chemical formulas in the slide font) ---------- */
 .formula { display: grid; gap: 34px; justify-items: center; }
 .formula-eq {
   font-family: var(--font-display); font-size: calc(var(--fs-lead) * 1.3 * var(--fit)); font-weight: 600; text-align: center;
   background: var(--surface); box-shadow: var(--shadow); border-radius: var(--radius); padding: 44px 64px; line-height: 1.3;
+  max-width: 100%; box-sizing: border-box; color: var(--ink);
 }
-.formula-vars { display: flex; flex-wrap: wrap; gap: 18px 40px; justify-content: center; font-size: calc(var(--fs-small) * var(--fit)); }
-.formula-vars .sym { font-family: var(--font-display); font-weight: 700; color: var(--accent); margin-right: 12px; }
+.formula-eq .katex { font-size: 1.12em; line-height: 1.4; white-space: normal; }
+.formula-eq .katex .base { margin: 0.12em 0; }
+.tex .katex .text, .tex .katex .text * { font-family: var(--font-display); font-weight: 600; font-style: normal; }
+.tex .katex .mrel, .tex .katex .mbin { color: var(--accent); }
+.tex .katex .msupsub .text, .tex .katex .msupsub .text * { font-weight: 500; }
+.formula-vars { display: flex; flex-wrap: wrap; gap: 18px 44px; justify-content: center; font-size: calc(var(--fs-small) * var(--fit)); }
+.formula-vars .var { display: inline-flex; align-items: baseline; gap: 14px; }
+.formula-vars .sym { font-family: var(--font-display); font-weight: 700; color: var(--accent); }
+.formula-vars .sym .katex { font-size: 1.12em; }
+.formula-vars .sym .katex .mrel, .formula-vars .sym .katex .mbin { color: inherit; }
+.formula-vars .unit { color: var(--muted); }
+.formula-vars .unit::before { content: "("; } .formula-vars .unit::after { content: ")"; }
+
+/* chemical formulas in ordinary text (CO2 -> CO₂) */
+sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 
 /* ---------- part badge (continuation slides: same title, I / II / III) ---------- */
 .slide-title .part {

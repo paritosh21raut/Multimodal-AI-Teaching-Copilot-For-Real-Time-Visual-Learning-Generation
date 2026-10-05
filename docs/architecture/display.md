@@ -3,7 +3,8 @@
 ## Technology (ADR-0003, ADR-0005)
 - Server: FastAPI + uvicorn in the same process/loop; the WebSocket hub broadcasts `SlidePatch` and status.
 - Client: static ES modules served from `web/`, **no build step**: Preact + htm (vendored in `web/vendor/`),
-  KaTeX for formulas, custom SVG components for flows/timelines/trees/causal graphs.
+  KaTeX 0.16.22 for formulas (vendored in `web/vendor/katex/`, woff2 only; `web/shared/rich.js`: KaTeX + chemical
+  subscripts in any slide text; words inside formulas use the slide font), custom SVG components for flows/timelines/trees/causal graphs.
 - Display opened full screen on the projector (Chrome/Edge `--app=<url> --start-fullscreen`, or the teacher presses F11).
 
 ## Opening the pages
