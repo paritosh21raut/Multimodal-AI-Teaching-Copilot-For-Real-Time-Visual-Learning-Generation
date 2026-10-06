@@ -1,370 +1,824 @@
+(.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> 
 (.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> python -m copilot
 [INIT]  loading speech model medium.en on cuda ...
-[INIT]  speech model ready (7.3 s)
+[INIT]  speech model ready (4.1 s)
 [INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
-[INIT]  concept embedder ready (0.4 s)
+[INIT]  concept embedder ready (0.2 s)
 [INIT]  LLM providers: groq_main#main -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_alt#main -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> openrouter_main
 [INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
 
 [QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
-        GROQ_API_KEY_5         openai/gpt-oss-120b           137k of 200k tokens IN USE
-        GROQ_API_KEY_main      openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~21.5 h
-        GROQ_API_KEY_2         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~5.4 h
-        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~8.2 h
-        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~15.9 h
-        GROQ_API_KEY_main      qwen/qwen3.8-27b              198k of 200k tokens IN USE
-        GROQ_API_KEY_2         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~5.8 h
-        GROQ_API_KEY_3         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~8.7 h
-        GROQ_API_KEY_4         qwen/qwen3.8-27b               69k of 200k tokens ok
-        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~19.6 h
+        GROQ_API_KEY_main      openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~19.4 h
+        GROQ_API_KEY_2         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~3.3 h
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~6.1 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~13.8 h
+        GROQ_API_KEY_main      qwen/qwen3.8-27b               80k of 200k tokens IN USE
+        GROQ_API_KEY_2         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~3.7 h
+        GROQ_API_KEY_3         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~6.6 h
+        GROQ_API_KEY_4         qwen/qwen3.8-27b               47k of 200k tokens ok
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              189k of 200k tokens ok
         OPENROUTER_API_KEY     qwen/qwen3.8-27b:free        not tracked          IN USE
-        enough for about 76 lecture minutes
+        enough for about 40 lecture minutes
 
-[READY] session 20261006-172934-8aa4
+[READY] session 20261006-193517-c513
         classroom display: http://localhost:8765/display   (projector, full screen: F11)
         teacher control:   http://localhost:8765/control
         Press Enter (or Start in the control view) to begin; q + Enter to quit.
-17:29:44 INFO    copilot.visuals.service: CLIP ready in 1.1 s (CPU)
+19:35:22 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
 
 [LIVE]  lecture started. Type q + Enter to end.
-[SHARE] starting the link ...
-[SHARE] waiting for the link to answer ...
-17:30:04 INFO    copilot.display.share: sharing https://incentive-keno-private-certificates.trycloudflare.com/view
-[SHARE] students: https://incentive-keno-private-certificates.trycloudflare.com/view
-        teacher control from another device: https://incentive-keno-private-certificates.trycloudflare.com/control?key=nP1t551tKVNxvcKNXcphxdls
+  [    3.3s] Let's learn about Chemical Bonding (518 ms)
+  [    6.3s] A chemical bond is defined as the attractive force which holds the various chemical constituents. (662 ms)
+  [   13.2s] atoms, ions etc. together in different chemical species. (583 ms)
+  [UNDERSTAND] Chemical Bonding > Definition (new_topic) acts=definition hint=definition lines=3 via groq_alt#main 1434 ms
+               Defined chemical bonding as the attractive force holding chemical constituents together.
+19:36:10 INFO    copilot.presentation.engine: planner: new Chemical Bonding > Definition (first content slide)
+  [SLIDE] add    'What is chemical Bond?' [definition] v1 (1 items)
+  [   18.1s] bond forms to get the stability with the release of energy. (582 ms)
+  [SLIDE] update 'What is chemical Bond?' [definition] v2 (1 items)
+  [UNDERSTAND] Chemical Bonding > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#main 1023 ms
+               Explained that chemical bonds form to achieve stability by releasing energy.
+19:36:17 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Definition (same frame)
+  [SLIDE] update 'What is chemical Bond?' [definition] v3 (1 items)
+  [SLIDE] update 'What is chemical Bond?' [definition] v4 (3 items)
+  [   24.9s] the octet rule. According to the octet rule, during the formation of a covalent bond, the atoms attain an inert gas electronic configuration. (896 ms)
+  [SLIDE] update 'What is chemical Bond?' [definition] v5 (4 items)
+  [   35.4s] An atom may attain this configuration by gaining, losing or sharing electron with other atoms. (667 ms)
+  [SLIDE] update 'What is chemical Bond?' [definition] v6 (4 items)
+  [UNDERSTAND] Chemical Bonding > Octet Rule (sub_concept) acts=definition,explanation hint=key_points lines=2 via groq_alt#main 1034 ms
+               Introduced the octet rule, explaining that atoms achieve stability by gaining, losing, or sharing electrons to match inert gas configurations.
+19:36:33 INFO    copilot.presentation.engine: planner: continue Chemical Bonding > Octet Rule (new facet)
+  [SLIDE] update 'What is chemical Bond?' [definition] v7 (3 items)
+  [SLIDE] add    'Octet Rule' [definition] v1 (2 items)
+  [   47.6s] ionic bond, the chemical bond formed by (558 ms)
+  [SLIDE] update 'Octet Rule' [definition] v2 (3 items)
+  [   50.7s] complete transference of electron from one atom (567 ms)
+  [SLIDE] update 'Octet Rule' [definition] v3 (3 items)
+  [   54.8s] that is metal to another non-metal and hence each atom acquires the stable nearest noble gas configuration. (761 ms)
+  [SLIDE] update 'Octet Rule' [definition] v4 (3 items)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (sub_concept) acts=definition hint=definition lines=3 via groq_alt#main 1121 ms
+               Defined ionic bonds as formed by complete electron transfer from metals to non-metals.
+19:36:56 INFO    copilot.presentation.engine: planner: continue Chemical Bonding > Ionic Bond (new facet)
+  [SLIDE] update 'Octet Rule' [definition] v5 (2 items)
+  [SLIDE] add    'Ionic Bond' [definition] v1 (1 items)
+19:36:56 INFO    copilot.presentation.engine: image search 'ionic bond formation' (diagram) for 'Ionic Bond'
+  [   64.7s] is called ionic bond or electrovirate bond (525 ms)
+  [SLIDE] update 'Ionic Bond' [definition] v2 (1 items)
+19:37:01 INFO    copilot.visuals.finder: image search 'ionic bond formation' (diagram): 1 candidate(s), 1 accepted, 4.62 s {'search_s': 1.74, 'download_s': 1.38, 'clip_s': 0.04, 'full_s': 1.45, 'total_s': 4.62}
+  [IMAGE] 'ionic bond formation' -> File:207 Ionic Bonding-01.jpg (4.6 s)
+19:37:01 INFO    copilot.presentation.engine: image 'ionic bond formation' on 'Ionic Bond': File:207 Ionic Bonding-01.jpg
+  [SLIDE] update 'Ionic Bond' [definition] v3 (2 items)
+  [   68.4s] example NaCl plus Cl gives NaCl (548 ms)
+  [SLIDE] update 'Ionic Bond' [definition] v4 (2 items)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (elaboration) acts=definition hint=definition lines=1 via groq_alt#main 1174 ms
+               Noted that ionic bonds are also known as electrovalent bonds.
+  [HEARD] 'electrovirate' -> 'electrovalent' corrected on the slide (0.9)
+19:37:05 INFO    copilot.presentation.engine: revised S1: Ionic Bond (Electrovalent Bond): Chemical bond formed by complete electron transfer from metal to non-metal
+19:37:05 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Ionic Bond (same frame)
+19:37:05 INFO    copilot.presentation.engine: concern 696aa58a7aa6 (transcription, applied=True): 2 element(s); slide shows 'electrovalent'
+19:37:05 INFO    copilot.presentation.engine: no image for 'Ionic Bond': has an image
+  [SLIDE] update 'Ionic Bond' [definition] v5 (2 items)
+  [SLIDE] update 'Ionic Bond' [definition] v6 (3 items)
+  [   78.8s] Ions, species carrying either positive or negative charge are termed as ions. (741 ms)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (elaboration) acts=example,definition hint=example lines=2 via groq_alt#main 1602 ms
+               Provided the formation of NaCl as an example of ionic bonding and defined ions as charged species.
+19:37:17 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Ionic Bond (same frame)
+19:37:17 INFO    copilot.presentation.engine: no image for 'Ionic Bond': has an image
+  [SLIDE] update 'Ionic Bond' [definition] v7 (4 items)
+  [   85.2s] Species carrying positive charge are cotenced and carrying negative charge are called anence. (602 ms)
+  [SLIDE] update 'Ionic Bond' [definition] v8 (5 items)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (elaboration) acts=definition,definition hint=key_points lines=1 via groq_alt#main 1322 ms
+               Defined cations as positively charged species and anions as negatively charged species.
+  [HEARD] 'cotenced' -> 'cation' corrected on the slide (0.9)
+  [HEARD] 'anence' -> 'anion' corrected on the slide (0.9)
+19:37:25 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Ionic Bond (same frame)
+19:37:25 INFO    copilot.presentation.engine: concern e54620afa31e (transcription, applied=True): 1 element(s); slide shows 'cation'
+19:37:25 INFO    copilot.presentation.engine: concern 8e27d96ee162 (transcription, applied=True): 1 element(s); slide shows 'anion'
+19:37:25 INFO    copilot.presentation.engine: no image for 'Ionic Bond': two concepts side by side
+  [SLIDE] update 'Ionic Bond' [definition] v9 (4 items)
+  [SLIDE] update 'Ionic Bond' [definition] v10 (4 items)
+  [SLIDE] add    'Ionic Bond' [concept] v1 (2 items)
+  [   92.9s] General characteristics of ionic compounds are ionic compounds are usually solid in nature. Ionic compounds have high melting and boiling points. Ionic compounds are soluble in water. (839 ms)
+  [  106.2s] polar solvents like water but insoluble in non-polar solvents like benzene, CCl4 etc. (732 ms)
+  [  118.9s] and the compounds have crystal structure. (567 ms)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#main 1971 ms
+               Listed general characteristics of ionic compounds: solid state, high melting/boiling points, and water solubility.
+19:37:53 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Ionic Bond (same frame)
+19:37:53 INFO    copilot.presentation.engine: no image for 'Ionic Bond': two concepts side by side
+  [SLIDE] update 'Ionic Bond' [concept] v2 (3 items)
+  [  123.5s] We wanna go one hour a second. (861 ms)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#main 1671 ms
+               Elaborated on solubility properties of ionic compounds and noted their crystal structure.
+19:38:00 INFO    copilot.presentation.engine: revised S2: Anion: Species carrying negative charge
+19:38:00 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Ionic Bond (same frame)
+19:38:00 INFO    copilot.presentation.engine: no image for 'Ionic Bond': two concepts side by side
+  [SLIDE] update 'Ionic Bond' [concept] v3 (6 items)
+  [  127.4s] This cycle is based upon the fact that formation of an ionic compound may occur either by direct combination of the elements or by an alternate process in which (772 ms)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#main 1163 ms
+               Introduced two pathways for ionic compound formation: direct combination and alternate processes.
+19:38:17 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Ionic Bond (same frame)
+  [SLIDE] add    'Ionic Bond' [key_points] v1 (2 items)
+19:38:17 INFO    copilot.presentation.engine: image search 'ionic crystal lattice' (diagram) for 'Ionic Bond'
+19:38:18 INFO    copilot.presentation.engine: image 'ionic crystal lattice': none (no usable candidates)
+  [IMAGE] 'ionic crystal lattice' -> none (no usable candidates) (1.8 s)
+  [  137.2s] The reactants are vaporized to convert into gaseous state. The gaseous atoms are converted into ions. The gaseous ions are combined to form ionic lattice of molecules. (639 ms)
+  [SLIDE] update 'Ionic Bond' [key_points] v2 (3 items)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (elaboration) acts=process hint=process_flow lines=1 via groq_alt#main 1241 ms
+               Described the alternate process for ionic compound formation involving vaporization, ionization, and lattice formation.
+19:38:25 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Ionic Bond (same frame)
+19:38:25 INFO    copilot.presentation.engine: no image for 'Ionic Bond': process needs the full width
+  [SLIDE] update 'Ionic Bond' [key_points] v3 (2 items)
+  [SLIDE] update 'Ionic Bond' [key_points] v4 (5 items)
+  [  152.4s] the covalent bond, a chemical bond formed between two atoms by mutual sharing of electrons between them so as to complete their updates on the plates. (878 ms)
+  [SLIDE] update 'Ionic Bond' [key_points] v5 (6 items)
+  [  163.7s] is known as covalent bond. (340 ms)
+  [SLIDE] update 'Ionic Bond' [key_points] v6 (6 items)
+  [  165.7s] and the number of electrons contributed by each atom is known as covalency. (758 ms)
+  [SLIDE] update 'Ionic Bond' [key_points] v7 (6 items)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (sibling_concept) acts=definition,definition hint=definition lines=3 via groq_alt#main 1600 ms
+               Defined covalent bond as electron sharing and covalency as the number of shared electrons per atom.
+  [HEARD] 'updates on the plates' -> 'octets' corrected on the slide (0.9)
+19:38:44 INFO    copilot.presentation.engine: planner: continue Chemical Bonding > Covalent Bond (new facet)
+19:38:44 INFO    copilot.presentation.engine: concern 9579528b7652 (transcription, applied=True): 0 element(s); slide shows 'octets'
+19:38:44 INFO    copilot.presentation.engine: no image for 'Covalent Bond': two concepts side by side
+  [SLIDE] update 'Ionic Bond' [key_points] v8 (5 items)
+  [SLIDE] add    'Covalent Bond' [concept] v1 (2 items)
+  [  171.6s] example the formation of CL2 (450 ms)
+  [  174.3s] Cl plus Cl gives Cl2 (567 ms)
+  [  177.7s] In covalent bonding, the shared pair of electrons present between the atoms are called bond pairs, while unshared or non-bonding pairs are called bond pairs. (932 ms)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=example,definition,definition hint=example lines=3 via groq_alt#main 2498 ms
+               Illustrated covalent bond formation with chlorine and defined bond pairs and lone pairs.
+  [CONCERN] (factual) unshared or non-bonding pairs are called bond pairs -> Unshared or non-bonding pairs are called lone pairs. (0.95, slide shows the correction)
+19:39:01 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:39:01 INFO    copilot.presentation.engine: concern 0699872b4f59 (factual, applied=True): 1 element(s); slide shows 'lone pairs'
+19:39:01 INFO    copilot.presentation.engine: no image for 'Covalent Bond': two concepts side by side
+  [SLIDE] update 'Covalent Bond' [concept] v2 (5 items)
+  [  187.7s] Electron pairs are known as (601 ms)
+  [  190.5s] I am FIPS. (1077 ms)
+  [  192.5s] Luntis, sorry. (983 ms)
+19:39:07 WARNING copilot.llm.router: llm groq_alt#main failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m1y7z7r3esjaek71dw1q6b5z` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 878,
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=definition hint=definition lines=1 via groq_alt#4 2026 ms
+               Identified electron pairs as the shared units in covalent bonds.
+19:39:08 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:39:08 INFO    copilot.presentation.engine: no image for 'Covalent Bond': two concepts side by side
+  [SLIDE] update 'Covalent Bond' [concept] v3 (6 items)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (digression) acts=- hint=none lines=1 via groq_alt#4 903 ms
+               No new chemical content was introduced in the new lines.
+19:39:15 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > Covalent Bond (digression)
+  [  196.4s] types of covalent bond, non-polar covalent bond. If the covalent bond is formed between two homonuclear atoms, that is between atoms of exactly equal electronegativity, e.g. H2Cl2 etc. (1093 ms)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (same_concept) acts=- hint=none lines=1 via groq_alt#4 1275 ms
+               No new chemical content was introduced; the teacher corrected a mispronunciation.
+19:39:23 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > Covalent Bond (nothing to display)
+19:39:36 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Covalent Bond' -> same_concept
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (same_concept) acts=definition hint=definition lines=1 via groq_alt#main 1777 ms
+               Defined non-polar covalent bonds as those formed between homonuclear atoms with equal electronegativity, using H₂ and Cl₂ as examples.
+19:39:36 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+  [SLIDE] update 'Covalent Bond' [concept] v4 (6 items)
+  [SLIDE] add    'Covalent Bond' [members] v1 (3 items)
+19:39:36 INFO    copilot.presentation.engine: image search 'Non-polar covalent bond' (diagram) for 'Covalent Bond'
+  [  211.2s] polar covalent bond. If the covalent bond is formed between the different atoms, the shared pair is displaced towards the most more electronegative atom causing greater concentration of electron density around the (880 ms)
+19:39:38 INFO    copilot.presentation.engine: image 'Non-polar covalent bond': none (no usable candidates)
+  [IMAGE] 'Non-polar covalent bond' -> none (no usable candidates) (1.4 s)
+  [  225.3s] more electronegative atom such a covalent bond develops some ionic (631 ms)
+  [  231.7s] character and is called polar covalent bond. Example HCL (612 ms)
+19:39:56 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Covalent Bond' -> same_concept
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (same_concept) acts=definition hint=definition lines=3 via groq_alt#main 1461 ms
+               Defined polar covalent bonds as occurring between different atoms with unequal electronegativity, using HCl as an example.
+19:39:56 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+  [SLIDE] update 'Covalent Bond' [members] v2 (5 items)
+19:39:56 INFO    copilot.presentation.engine: image search 'Polar covalent bond HCl' (diagram) for 'Covalent Bond'
+19:39:57 INFO    copilot.presentation.engine: image 'Polar covalent bond HCl': none (no usable candidates)
+  [IMAGE] 'Polar covalent bond HCl' -> none (no usable candidates) (1.5 s)
+  [  237.4s] properties of covalent bond. In general, covalent bonds exist in the liquid or gaseous state at room temperature due to magnetic of (545 ms)
+  [SLIDE] update 'Covalent Bond' [members] v3 (6 items)
+  [  246.9s] or magnitude of electro molecular forces. (552 ms)
+  [SLIDE] update 'Covalent Bond' [members] v4 (6 items)
+  [  250.1s] Covalent compounds have low melting and boiling points. Covalent compounds are generally (672 ms)
+  [SLIDE] update 'Covalent Bond' [members] v5 (6 items)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#main 1449 ms
+               Described general physical properties of covalent compounds, noting they are liquids or gases at room temperature with low melting and boiling points.
+  [HEARD] 'magnetic of or magnitude of electro molecular forces' -> 'magnitude of intermolecular forces' corrected on the slide (0.6)
+19:40:17 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:40:17 INFO    copilot.presentation.engine: concern a08d6e81bf41 (transcription, applied=True): 0 element(s); slide shows 'magnitude of intermolecular forces'
+19:40:17 INFO    copilot.presentation.engine: no image for 'Covalent Bond': nothing relevant found for 'Polar covalent bond HCl' before
+  [SLIDE] update 'Covalent Bond' [members] v6 (5 items)
+  [SLIDE] update 'Covalent Bond' [members] v7 (7 items)
+  [  256.6s] poor conductors of electricity because they do not contain free electrons or ions to conduct electricity they are soluble in polar non-polar solvents like benzene but usually insoluble in water (884 ms)
+  [  272.9s] Let us study what characteristics (515 ms)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#main 1062 ms
+               Explained that covalent compounds are poor electrical conductors due to lack of free charge carriers and are soluble in non-polar solvents but insoluble in water.
+19:40:27 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:40:27 INFO    copilot.presentation.engine: member 'Non-polar covalent bond' explained in depth: its own slide under Chemical Bonding > Covalent Bond
+19:40:27 INFO    copilot.presentation.engine: no image for 'Non-polar covalent bond': nothing relevant found for 'Polar covalent bond HCl' before
+  [SLIDE] update 'Covalent Bond' [members] v8 (10 items)
+  [SLIDE] add    'Non-polar covalent bond' [key_points] v1 (1 items)
+  [  275.4s] first bond length. In a covalently bonded molecule, distance between the nuclei of the two atoms is known as the bond length. (819 ms)
+19:40:39 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Covalent Bond' -> same_concept
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (same_concept) acts=definition hint=definition lines=2 via groq_alt#main 932 ms
+               Defined bond length as the distance between the nuclei of two covalently bonded atoms.
+19:40:39 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:40:39 INFO    copilot.presentation.engine: slide 'Covalent Bond' waits for the min dwell time
+19:40:39 INFO    copilot.presentation.engine: image search 'covalent bond length' (diagram) for 'Covalent Bond'
+  [SLIDE] add    'Covalent Bond' [members] v1 (1 items)
+19:40:41 INFO    copilot.presentation.engine: image 'covalent bond length': none (no usable candidates)
+  [IMAGE] 'covalent bond length' -> none (no usable candidates) (1.4 s)
+  [  284.0s] bond length increases with increase in the size of bonded atoms and decrease with increase in the number of bonds between bonded atoms (775 ms)
+  [SLIDE] update 'Covalent Bond' [members] v2 (1 items)
+  [  294.0s] burning (278 ms)
+  [SLIDE] update 'Covalent Bond' [members] v3 (1 items)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1059 ms
+               Explained that bond length increases with atom size and decreases with bond multiplicity.
+19:40:47 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+  [SLIDE] update 'Covalent Bond' [members] v4 (3 items)
+19:40:47 INFO    copilot.presentation.engine: image search 'bond length diagram' (diagram) for 'Covalent Bond'
+  [  295.7s] in a covalently bonded molecule. (478 ms)
+  [  298.0s] having more than two atoms the bonds form an angle with each other (724 ms)
+19:40:55 INFO    copilot.visuals.finder: image search 'bond length diagram' (diagram): 6 candidate(s), 3 accepted, 7.32 s {'search_s': 1.53, 'download_s': 2.13, 'clip_s': 0.12, 'full_s': 3.52, 'total_s': 7.32}
+  [IMAGE] 'bond length diagram' -> File:Hbond lengths unannotated.svg (7.3 s)
+19:40:55 INFO    copilot.presentation.engine: image 'bond length diagram' on 'Covalent Bond': File:Hbond lengths unannotated.svg
+  [SLIDE] update 'Covalent Bond' [members] v5 (4 items)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (digression) acts=- hint=none lines=1 via groq_alt#main 700 ms
+               Teacher mentioned burning, likely as a transition or aside.
+19:40:55 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > Covalent Bond (digression)
+  [  303.1s] which is known as Born-Angle (324 ms)
+  [  305.3s] In general, an increase in the size of central bond or central atom decreases the bond angle. (795 ms)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=definition hint=definition lines=2 via groq_alt#4 1060 ms
+               Defined bond angle as the angle formed between bonds in multi-atom covalent molecules.
+19:41:03 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:41:03 INFO    copilot.presentation.engine: no image for 'Covalent Bond': two concepts side by side
+  [SLIDE] update 'Covalent Bond' [concept] v6 (4 items)
+  [  311.7s] factors affecting board angle are first loom pair repulsion second (628 ms)
+  [  317.7s] hybridization of center atom (545 ms)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#main 1290 ms
+               Clarified that the term 'Bond Angle' is the standard name for the angle between bonds.
+  [HEARD] 'Born-Angle' -> 'Bond Angle' corrected on the slide (0.8)
+19:41:12 INFO    copilot.presentation.engine: revised S2: Bond angle: Angle formed between bonds in a multi-atom covalent molecule (also called Bond Angle)
+19:41:12 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:41:12 INFO    copilot.presentation.engine: concern 7a2baedd86d9 (transcription, applied=True): 2 element(s); slide shows 'Bond Angle'
+19:41:12 INFO    copilot.presentation.engine: no image for 'Covalent Bond': two concepts side by side
+  [SLIDE] update 'Covalent Bond' [concept] v7 (4 items)
+  [SLIDE] update 'Covalent Bond' [concept] v8 (5 items)
+  [  320.9s] be determined by the x-ray diffraction method (514 ms)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1391 ms
+               Explained that increasing the size of the central atom generally decreases the bond angle.
+19:41:20 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:41:20 INFO    copilot.presentation.engine: no image for 'Covalent Bond': two concepts side by side
+  [SLIDE] update 'Covalent Bond' [concept] v9 (6 items)
+  [  327.8s] the bond order it is defined as the number of covalent bonds present in a molecule bond order equals (747 ms)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=classification hint=key_points lines=2 via groq_alt#main 1298 ms
+               Identified lone pair repulsion and hybridization of the central atom as factors affecting bond angle.
+  [HEARD] 'board angle, loom pair' -> 'bond angle, lone pair' corrected on the slide (0.9)
+19:41:28 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:41:28 INFO    copilot.presentation.engine: concern a6dd77c7534d (transcription, applied=True): 0 element(s); slide shows 'bond angle, lone pair'
+  [SLIDE] add    'Covalent Bond' [hierarchy] v1 (1 items)
+19:41:28 INFO    copilot.presentation.engine: image search 'bond angle molecular geometry' (diagram) for 'Covalent Bond'
+19:41:30 INFO    copilot.visuals.finder: image search 'bond angle molecular geometry' (diagram): 1 candidate(s), 1 accepted, 2.69 s {'search_s': 1.63, 'download_s': 0.54, 'clip_s': 0.04, 'full_s': 0.48, 'total_s': 2.69}
+  [IMAGE] 'bond angle molecular geometry' -> File:Water molecule dimensions.svg (2.7 s)
+19:41:30 INFO    copilot.presentation.engine: image 'bond angle molecular geometry' on 'Covalent Bond': File:Water molecule dimensions.svg
+  [SLIDE] update 'Covalent Bond' [hierarchy] v2 (2 items)
+  [  335.9s] half of number of electrons in bonding orbitals minus number of electrons in anti-bonding orbitals (732 ms)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 932 ms
+               Teacher stated that bond angles are determined using the X-ray diffraction method.
+19:41:35 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:41:35 INFO    copilot.presentation.engine: no image for 'Covalent Bond': has an image
+  [SLIDE] update 'Covalent Bond' [hierarchy] v3 (3 items)
+  [  343.7s] bond order is inversely proportional to bond length. (581 ms)
+  [UNDERSTAND] Chemical Bonding > Bond Order (sibling_concept) acts=definition hint=definition lines=1 via groq_alt#main 1234 ms
+               Defined bond order as the number of covalent bonds in a molecule.
+19:41:44 INFO    copilot.presentation.engine: planner: continue Chemical Bonding > Bond Order (new facet)
+  [SLIDE] add    'Bond Order' [definition] v1 (1 items)
+  [UNDERSTAND] Chemical Bonding > Bond Order (elaboration) acts=formula hint=formula lines=1 via groq_alt#4 2821 ms
+               Provided the formula for calculating bond order using bonding and anti-bonding electrons.
+19:41:53 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Bond Order (same frame)
+  [SLIDE] update 'Bond Order' [definition] v2 (2 items)
+19:41:53 INFO    copilot.presentation.engine: image search 'Molecular Orbital Diagram' (diagram) for 'Bond Order'
+19:41:58 INFO    copilot.visuals.finder: image search 'Molecular Orbital Diagram': 1 slow download(s) dropped
+  [  352.3s] Bond enthalpy, it is the amount of energy released when one mole of covalent bond is formed while the bond dissociation enthalpy is the amount of energy required to break one mole of bonds of the same kind. (954 ms)
+  [  367.2s] As. (345 ms)
+  [UNDERSTAND] Chemical Bonding > Bond Order (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#main 1191 ms
+               Stated that bond order is inversely proportional to bond length.
+19:41:59 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Bond Order (same frame)
+  [SLIDE] update 'Bond Order' [definition] v3 (3 items)
+19:42:00 INFO    copilot.presentation.engine: image search 'bond order length graph' (diagram) for 'Bond Order'
+19:42:00 INFO    copilot.visuals.finder: image search 'Molecular Orbital Diagram' (diagram): 6 candidate(s), 3 accepted, 7.17 s {'search_s': 1.77, 'download_s': 2.73, 'clip_s': 0.12, 'full_s': 2.52, 'total_s': 7.17}
+  [IMAGE] 'Molecular Orbital Diagram' -> File:Molecular Orbitals for Water.png (7.2 s)
+19:42:00 INFO    copilot.presentation.engine: no room for an image on 'Bond Order'
+  [  368.3s] to separate the bonded atom in the gaseous state. (548 ms)
+19:42:02 INFO    copilot.presentation.engine: image 'bond order length graph': none (no usable candidates)
+  [IMAGE] 'bond order length graph' -> none (no usable candidates) (2.1 s)
+  [UNDERSTAND] Chemical Bonding > Bond Enthalpy (sibling_concept) acts=definition,definition hint=definition lines=1 via groq_alt#4 1283 ms
+               Defined bond enthalpy as energy released during bond formation and bond dissociation enthalpy as energy required for bond breaking.
+19:42:08 INFO    copilot.presentation.engine: planner: continue Chemical Bonding > Bond Enthalpy (new facet)
+  [SLIDE] add    'Bond Enthalpy' [definition] v1 (2 items)
+19:42:08 INFO    copilot.presentation.engine: image search 'Bond Enthalpy Diagram' (diagram) for 'Bond Enthalpy'
+  [  375.4s] The Born Elipathy (1479 ms)
+19:42:10 INFO    copilot.visuals.finder: image search 'Bond Enthalpy Diagram' (diagram): 1 candidate(s), 0 accepted, 2.29 s {'search_s': 1.76, 'download_s': 0.49, 'clip_s': 0.04, 'full_s': 0.0, 'total_s': 2.29}
+19:42:10 INFO    copilot.presentation.engine: image 'Bond Enthalpy Diagram': none (no relevant image)
+  [IMAGE] 'Bond Enthalpy Diagram' -> none (no relevant image) (2.3 s)
+  [  377.3s] enthalpy and bond dissociation enthalpy are equal in magnitude and opposite in direction. (666 ms)
+  [UNDERSTAND] Chemical Bonding > Bond Enthalpy (same_concept) acts=- hint=none lines=1 via groq_alt#main 1588 ms
+               No new content provided.
+19:42:16 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > Bond Enthalpy (nothing to display)
+  [  385.2s] bond dissociation enthalpy is determined by the thermal or (679 ms)
+  [UNDERSTAND] Chemical Bonding > Bond Enthalpy (elaboration) acts=- hint=definition lines=1 via groq_alt#4 1005 ms
+               Clarified that bond enthalpy involves separating bonded atoms in the gaseous state.
+19:42:23 INFO    copilot.presentation.engine: revised S2: Energy required to break one mole of bonds in gaseous state
+19:42:23 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > Bond Enthalpy (nothing to display)
+  [SLIDE] update 'Bond Enthalpy' [definition] v2 (2 items)
+  [  391.5s] septoscopic methods (290 ms)
+  [UNDERSTAND] Chemical Bonding > Born-Haber Cycle (sibling_concept) acts=transition hint=none lines=1 via groq_alt#main 1241 ms
+               Introduced the Born-Haber Cycle as the next topic.
+  [HEARD] 'Elipathy' -> 'Haber Cycle' corrected on the slide (0.9)
+19:42:32 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > Born-Haber Cycle (nothing to display)
+19:42:32 INFO    copilot.presentation.engine: concern a5a726bf270f (transcription, applied=True): 0 element(s); slide shows 'Haber Cycle'
+  [  395.1s] Fazan's rule, the partial covalent character of ionic bonds was discussed by Fazan's rules. (767 ms)
+  [  403.6s] in terms of following rules (332 ms)
+  [UNDERSTAND] Chemical Bonding > Bond Enthalpy (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1144 ms
+               Clarified that bond enthalpy and bond dissociation enthalpy are equal in magnitude but opposite in direction.
+19:42:39 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Bond Enthalpy (same frame)
+19:42:39 INFO    copilot.presentation.engine: no image for 'Bond Enthalpy': nothing relevant found for 'Bond Enthalpy Diagram' before
+  [SLIDE] update 'Bond Enthalpy' [definition] v3 (4 items)
+  [  405.6s] The smaller the size of kataion and the larger the size of the anion, the greater the covalent character of an ionic bond. (814 ms)
+  [UNDERSTAND] Chemical Bonding > Bond Enthalpy (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#main 1579 ms
+               Mentioned that bond dissociation enthalpy is determined by thermal methods.
+19:42:48 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Bond Enthalpy (same frame)
+19:42:48 INFO    copilot.presentation.engine: no image for 'Bond Enthalpy': nothing relevant found for 'Bond Enthalpy Diagram' before
+  [SLIDE] update 'Bond Enthalpy' [definition] v4 (5 items)
+  [  413.3s] the greater the charge on the keterion or anion the greater the covalent character of the ionic bond (682 ms)
+  [UNDERSTAND] Chemical Bonding > Bond Enthalpy (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1321 ms
+               Clarified that bond enthalpy is also determined by spectroscopic methods.
+  [HEARD] 'septoscopic' -> 'spectroscopic' corrected on the slide (0.9)
+19:42:56 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Bond Enthalpy (same frame)
+19:42:56 INFO    copilot.presentation.engine: concern 4ee7e44d0030 (transcription, applied=True): 1 element(s); slide shows 'spectroscopic'
+19:42:56 INFO    copilot.presentation.engine: no image for 'Bond Enthalpy': nothing relevant found for 'Bond Enthalpy Diagram' before
+  [SLIDE] update 'Bond Enthalpy' [definition] v5 (6 items)
+  [  420.7s] Let us understand resonance. According to the concept of resonance, a single levi structure cannot explain all the properties of the molecules. (708 ms)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (sibling_concept) acts=explanation hint=key_points lines=1 via groq_alt#main 1576 ms
+               Introduced Fajan's rules to explain the partial covalent character present in ionic bonds.
+  [HEARD] "Fazan's" -> "Fajan's" corrected on the slide (0.9)
+19:43:04 INFO    copilot.presentation.engine: planner: continue Chemical Bonding > Ionic Bond (new facet)
+19:43:04 INFO    copilot.presentation.engine: concern fe0a636f7f3b (transcription, applied=True): 1 element(s); slide shows "Fajan's"
+  [SLIDE] add    'Ionic Bond' [key_points] v1 (1 items)
+19:43:04 INFO    copilot.presentation.engine: image search 'Ionic lattice formation' (diagram) for 'Ionic Bond'
+19:43:06 INFO    copilot.presentation.engine: image 'Ionic lattice formation': none (no usable candidates)
+  [IMAGE] 'Ionic lattice formation' -> none (no usable candidates) (2.2 s)
+  [  429.4s] the molecule is then supposed to have many structures each of which can explain most of the properties (668 ms)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (elaboration) acts=transition hint=none lines=1 via groq_alt#4 1237 ms
+               Teacher prepares to list the specific Fajan's rules.
+19:43:12 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > Ionic Bond (nothing to display)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#main 1303 ms
+               Explained that smaller cations and larger anions increase the covalent character of ionic bonds.
+  [HEARD] 'kataion' -> 'cation' corrected on the slide (0.9)
+19:43:20 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Ionic Bond (same frame)
+19:43:20 INFO    copilot.presentation.engine: concern 0166693d50ff (transcription, applied=True): 1 element(s); slide shows 'cation'
+19:43:20 INFO    copilot.presentation.engine: no image for 'Ionic Bond': nothing relevant found for 'Ionic lattice formation' before
+  [SLIDE] update 'Ionic Bond' [key_points] v2 (2 items)
+  [UNDERSTAND] Chemical Bonding > Ionic Bond (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1418 ms
+               Explained that higher charges on ions increase the covalent character of ionic bonds.
+  [HEARD] 'keterion' -> 'cation' corrected on the slide (0.9)
+19:43:28 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Ionic Bond (same frame)
+19:43:28 INFO    copilot.presentation.engine: concern ccef446030cd (transcription, applied=True): 1 element(s); slide shows 'cation'
+19:43:28 INFO    copilot.presentation.engine: no image for 'Ionic Bond': nothing relevant found for 'Ionic lattice formation' before
+  [SLIDE] update 'Ionic Bond' [key_points] v3 (3 items)
+  [  442.8s] the actual structure lies in between all these contributing structures and is called resonance hybrid and the different individual structures are called resonating structures or canonical structure (787 ms)
+  [  454.8s] This phenomenon is known as resonance. (563 ms)
+  [UNDERSTAND] Chemical Bonding > Resonance (sibling_concept) acts=definition hint=concept lines=1 via groq_alt#main 2173 ms
+               Introduced resonance as the concept that a single Lewis structure is insufficient to explain all molecular properties.
+  [HEARD] 'levi' -> 'Lewis' corrected on the slide (0.9)
+19:43:36 INFO    copilot.presentation.engine: planner: continue Chemical Bonding > Resonance (new facet)
+19:43:36 INFO    copilot.presentation.engine: concern 6277d70ac8ab (transcription, applied=True): 1 element(s); slide shows 'Lewis'
+  [SLIDE] add    'Resonance' [definition] v1 (1 items)
+19:43:36 INFO    copilot.presentation.engine: image search 'Benzene resonance structures' (diagram) for 'Resonance'
+19:43:38 INFO    copilot.presentation.engine: image 'Benzene resonance structures': none (no usable candidates)
+  [IMAGE] 'Benzene resonance structures' -> none (no usable candidates) (1.7 s)
+  [  461.0s] Let's study Dipole moment. It is defined as the product of the magnitude of the charge and the distance between the center of positive and negative charge. (807 ms)
+  [SLIDE] update 'Resonance' [definition] v2 (1 items)
+  [UNDERSTAND] Chemical Bonding > Resonance (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1212 ms
+               Explained that resonance involves multiple structures, each explaining most molecular properties.
+19:43:44 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Resonance (same frame)
+19:43:44 INFO    copilot.presentation.engine: no image for 'Resonance': nothing relevant found for 'Benzene resonance structures' before
+  [SLIDE] update 'Resonance' [definition] v3 (3 items)
+  [  470.7s] mu equals charge times distance of separation that is mu equals q times r (665 ms)
+  [SLIDE] update 'Resonance' [definition] v4 (3 items)
+  [  478.6s] Dipole movement is expressed in Debi (510 ms)
+  [UNDERSTAND] Chemical Bonding > Resonance (elaboration) acts=definition,definition hint=concept lines=2 via groq_alt#main 2937 ms
+               Defined resonance hybrid as the actual structure and canonical structures as the individual contributing forms.
+19:43:53 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Resonance (same frame)
+  [SLIDE] update 'Resonance' [definition] v5 (4 items)
+  [SLIDE] add    'Resonance' [members] v1 (1 items)
+19:43:53 INFO    copilot.presentation.engine: image search 'Benzene resonance hybrid' (diagram) for 'Resonance'
+19:43:54 INFO    copilot.visuals.finder: image source failed: HTTPStatusError("Server error '503 Backend fetch failed' for url 'https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&generator=search&gsrsearch=Benzene+resonance+hybrid&gsrlimit=3&prop=pageimages%7Cdescription&piprop=name&pilicense=free'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503")
+19:43:54 INFO    copilot.visuals.finder: image source failed: HTTPStatusError("Server error '503 Backend fetch failed' for url 'https://commons.wikimedia.org/w/api.php?action=query&format=json&formatversion=2&generator=search&gsrnamespace=6&gsrsearch=Benzene+resonance+hybrid+diagram+filetype%3Abitmap%7Cdrawing&gsrlimit=8&gsroffset=0&prop=imageinfo&iiprop=url%7Csize%7Cmime%7Cextmetadata&iiurlwidth=330&iiextmetadatafilter=LicenseShortName%7CArtist%7CCategories%7CImageDescription%7CRestrictions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503")
+19:43:54 INFO    copilot.visuals.finder: image search 'Benzene resonance hybrid': network error (every image source failed): no image
+19:43:54 INFO    copilot.presentation.engine: image 'Benzene resonance hybrid': none (network: NetworkError)
+  [IMAGE] 'Benzene resonance hybrid' -> none (network: NetworkError) (0.5 s)
+  [  483.2s] that is capital D (304 ms)
+  [UNDERSTAND] Dipole Moment > Definition (new_topic) acts=definition hint=definition lines=1 via groq_alt#4 1183 ms
+               Introduced dipole moment as the product of charge magnitude and separation distance.
+19:44:00 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Resonance (new topic not yet confirmed)
+19:44:00 INFO    copilot.presentation.engine: no image for 'Resonance': two concepts side by side
+  [SLIDE] update 'Resonance' [concept] v2 (2 items)
+  [  485.0s] 1D equals 1 into 10 to the power minus 18 (532 ms)
+  [  489.5s] issue centimeter (280 ms)
+  [UNDERSTAND] Dipole Moment > Definition (elaboration) acts=formula,explanation hint=formula lines=2 via groq_alt#main 4067 ms
+               Defined the dipole moment formula (μ = q × r) and stated its unit as Debye.
+  [HEARD] 'movement, Debi' -> 'moment, Debye' corrected on the slide (0.9)
+19:44:10 INFO    copilot.presentation.engine: planner: new Dipole Moment > Definition (new topic confirmed (boundary cue/shift))
+19:44:10 INFO    copilot.presentation.engine: moving 1 item(s) of 'Dipole Moment' to the new topic's slide
+19:44:10 INFO    copilot.presentation.engine: concern 228c868be6d9 (transcription, applied=True): 0 element(s); slide shows 'moment, Debye'
+  [SLIDE] update 'Resonance' [members] v3 (1 items)
+  [SLIDE] add    'What is dipole moment?' [definition] v1 (3 items)
+19:44:10 INFO    copilot.presentation.engine: image search 'dipole moment vector' (diagram) for 'What is dipole moment?'
+  [  494.7s] that equals 3.33564 into 10 to the power minus 30 coulomb meter (670 ms)
+  [UNDERSTAND] Dipole Moment > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1000 ms
+               Clarified that the symbol for the Debye unit is a capital D.
+19:44:15 INFO    copilot.presentation.engine: planner: update Dipole Moment > Definition (same frame)
+19:44:15 INFO    copilot.presentation.engine: no image for 'What is dipole moment?': search running
+  [SLIDE] update 'What is dipole moment?' [definition] v2 (4 items)
+19:44:16 INFO    copilot.visuals.finder: image search 'dipole moment vector' (diagram): 3 candidate(s), 3 accepted, 5.39 s {'search_s': 1.96, 'download_s': 1.43, 'clip_s': 0.06, 'full_s': 1.92, 'total_s': 5.39}
+  [IMAGE] 'dipole moment vector' -> File:VFPt dipoles electric.svg (5.4 s)
+19:44:16 INFO    copilot.presentation.engine: no room for an image on 'What is dipole moment?'
+  [  504.9s] applications of dipole moment are (760 ms)
+  [  507.7s] direct pull movement is helpful in predicting the geometry of the molecule (610 ms)
+  [UNDERSTAND] Dipole Moment > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1596 ms
+               Defined the value of 1 Debye as 10⁻¹⁸ Coulomb-meter.
+  [HEARD] '1 into 10 to the power minus 18' -> '10⁻¹⁸ Coulomb-meter' corrected on the slide (0.6)
+19:44:24 INFO    copilot.presentation.engine: planner: update Dipole Moment > Definition (same frame)
+19:44:24 INFO    copilot.presentation.engine: slide 'What is dipole moment?' waits for the min dwell time
+19:44:24 INFO    copilot.presentation.engine: concern 5b8df7493129 (transcription, applied=True): 1 element(s); slide shows '10⁻¹⁸ Coulomb-meter'
+  [SLIDE] update 'What is dipole moment?' [definition] v3 (4 items)
+19:44:24 INFO    copilot.presentation.engine: image 'dipole moment vector' kept on 'What is dipole moment?' (same visual as this topic's image)
+  [SLIDE] add    'What is dipole moment?' [key_points] v1 (2 items)
+  [  511.7s] Dipole movement helps in determining the polarity. (503 ms)
+  [UNDERSTAND] Dipole Moment > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#main 1848 ms
+               Corrected the unit definition of 1 Debye to statcoulomb-centimeter.
+  [CONCERN] (factual) 1 Debye equals 10⁻¹⁸ Coulomb-meter -> 1 Debye equals 10⁻¹⁸ statcoulomb-centimeter (or 3.336 × 10⁻³⁰ C·m) (0.95, slide shows the correction)
+19:44:32 INFO    copilot.presentation.engine: revised S1: 1 Debye equals 10⁻¹⁸ statcoulomb-centimeter
+19:44:32 INFO    copilot.presentation.engine: planner: update Dipole Moment > Definition (same frame)
+19:44:32 INFO    copilot.presentation.engine: concern 561f787399a2 (factual, applied=True): 1 element(s); slide shows 'statcoulomb-centimeter'
+19:44:32 INFO    copilot.presentation.engine: no image for 'What is dipole moment?': has an image
+  [SLIDE] update 'What is dipole moment?' [key_points] v2 (2 items)
+19:44:38 WARNING copilot.llm.router: LLM groq_alt now uses GROQ_API_KEY_5 (GROQ_API_KEY_main is spent)
+  [UNDERSTAND] Dipole Moment > Definition (elaboration) acts=definition hint=definition lines=1 via groq_alt#5 2217 ms
+               Provided the SI equivalent of 1 Debye as 3.33564 × 10⁻³⁰ Coulomb-meter.
+19:44:41 INFO    copilot.presentation.engine: planner: update Dipole Moment > Definition (same frame)
+19:44:41 INFO    copilot.presentation.engine: no image for 'What is dipole moment?': has an image
+  [SLIDE] update 'What is dipole moment?' [key_points] v3 (3 items)
+  [  530.6s] Let's study the valence bond theory of covalent bond. (716 ms)
+  [UNDERSTAND] Dipole Moment > Applications (sibling_concept) acts=transition hint=none lines=1 via groq_alt#5 1470 ms
+               Teacher announced the transition to applications of dipole moment.
+19:44:48 INFO    copilot.presentation.engine: planner: noop Dipole Moment > Applications (nothing to display)
+  [UNDERSTAND] Dipole Moment > Applications (same_concept) acts=explanation hint=key_points lines=1 via groq_alt#5 1456 ms
+               Dipole moment is used to predict the geometry of molecules.
+  [HEARD] 'direct pull movement' -> 'Dipole moment' corrected on the slide (0.8)
+19:44:56 INFO    copilot.presentation.engine: planner: continue Dipole Moment > Applications (new facet)
+19:44:56 INFO    copilot.presentation.engine: concern 4aecbdbd7a72 (transcription, applied=True): 1 element(s); slide shows 'Dipole moment'
+  [SLIDE] add    'Applications' [key_points] v1 (1 items)
+  [  533.8s] According to this theory, a covalent bond is formed by the overlapping of two half-filled atomic orbitals having electrons with opposite spins. It is based on the wave nature of electrons. (844 ms)
+  [SLIDE] update 'Applications' [key_points] v2 (2 items)
+  [  546.8s] sigma bond this type of covalent bond is formed by head (605 ms)
+  [SLIDE] update 'Applications' [key_points] v3 (2 items)
+  [UNDERSTAND] Dipole Moment > Applications (same_concept) acts=explanation hint=key_points lines=1 via groq_alt#5 1193 ms
+               Dipole moment is used to determine the polarity of molecules.
+19:45:04 INFO    copilot.presentation.engine: planner: update Dipole Moment > Applications (same frame)
+  [SLIDE] update 'Applications' [key_points] v4 (3 items)
+19:45:04 INFO    copilot.presentation.engine: image search 'molecular polarity' (diagram) for 'Applications'
+  [  551.3s] on overlap that is end-to-end overlap (563 ms)
+  [SLIDE] update 'Applications' [key_points] v5 (2 items)
+19:45:06 INFO    copilot.presentation.engine: image 'molecular polarity': none (no usable candidates)
+  [IMAGE] 'molecular polarity' -> none (no usable candidates) (2.6 s)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (new_topic) acts=transition hint=none lines=1 via groq_alt#5 1627 ms
+               Teacher announced the transition to studying the valence bond theory of covalent bonds.
+19:45:12 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > Covalent Bond (new topic announced)
+  [  554.6s] along the internuclear axis, sigma bond can be formed by any one of the following types of combinations of atomic orbitals. (753 ms)
+  [  563.5s] SS Overlapping, SP Overlapping or PP Overlapping (621 ms)
+19:45:20 WARNING copilot.llm.router: llm openrouter_main failed: 404 {"error":{"message":"This model is unavailable for free. The paid version is available now - use this slug instead: qwen/qwen3.8-27b","code":404},"user_id":"user_3KFQZ7vlGz4Vc3Jm1Patd57S9Ak"}
+19:45:20 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily quota spent); groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#5: skipped (tpm); groq_alt#main: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (daily quota spent); openrouter_main: Rejected
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily qu 1492 ms
+19:45:20 INFO    copilot.presentation.engine: planner: new Chemical Bonding > Covalent Bond (new topic confirmed (two interpretations agree))
+  [SLIDE] add    'Covalent Bond' [key_points] v1 (2 items)
+19:45:20 INFO    copilot.presentation.engine: no image 'X-ray diffraction apparatus' on 'Covalent Bond': not about the slide (similarity 0.19)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1276 ms
+               Specified that covalent bonds form via end-to-end overlap of atomic orbitals.
+19:45:28 INFO    copilot.presentation.engine: revised S1: Formed by end-to-end overlap of half-filled orbitals with opposite spin
+19:45:28 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+  [SLIDE] update 'Covalent Bond' [key_points] v2 (2 items)
+  [SLIDE] update 'Covalent Bond' [key_points] v3 (3 items)
+19:45:28 INFO    copilot.presentation.engine: image search 'sigma bond orbital overlap' (diagram) for 'Covalent Bond'
+19:45:29 INFO    copilot.presentation.engine: image 'sigma bond orbital overlap': none (no usable candidates)
+  [IMAGE] 'sigma bond orbital overlap' -> none (no usable candidates) (1.8 s)
+  [  570.0s] The strength of sigma bond depends upon the extent of overlapping between atomic orbitals. The greater the extent of overlapping, the stronger is the sigma bond. (836 ms)
+  [SLIDE] update 'Covalent Bond' [key_points] v4 (4 items)
+  [  581.8s] the pi board (496 ms)
+  [SLIDE] update 'Covalent Bond' [key_points] v5 (3 items)
+19:45:34 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily quota spent); groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#5: skipped (tpm); groq_alt#main: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (daily quota spent); openrouter_main: skipped (cooldown 285s)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (same_concept) acts=- hint=key_points lines=2 via FALLBACK llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily qu 1 ms
+19:45:34 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > Covalent Bond (nothing to display)
+  [  583.4s] It is formed by the sideways or lateral overlapping between three atomic orbitals. (737 ms)
+  [  589.3s] Biobond is a weaker bond than sigma bond. (641 ms)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1926 ms
+               Explained that sigma bond strength is directly proportional to the extent of orbital overlap.
+19:45:44 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+  [SLIDE] update 'Covalent Bond' [key_points] v6 (5 items)
+19:45:44 INFO    copilot.presentation.engine: image search 'orbital overlap diagram' (diagram) for 'Covalent Bond'
+19:45:46 INFO    copilot.visuals.finder: image search 'orbital overlap diagram' (diagram): 1 candidate(s), 0 accepted, 2.05 s {'search_s': 1.45, 'download_s': 0.56, 'clip_s': 0.04, 'full_s': 0.0, 'total_s': 2.05}
+19:45:46 INFO    copilot.presentation.engine: image 'orbital overlap diagram': none (no relevant image)
+  [IMAGE] 'orbital overlap diagram' -> none (no relevant image) (2.0 s)
+19:45:50 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily quota spent); groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#5: skipped (tpm); groq_alt#main: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (daily quota spent); openrouter_main: skipped (cooldown 269s)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily qu 1 ms
+19:45:50 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > Covalent Bond (nothing to display)
+  [  597.3s] Limitation of valence bond theory are (622 ms)
+  [  601.1s] it fails to explain the magnetic properties of some molecules and bonding in electron deficient compounds. (690 ms)
+19:46:00 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Covalent Bond' -> same_concept
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (same_concept) acts=definition hint=definition lines=1 via groq_alt#5 1522 ms
+               Defined pi bonds as resulting from sideways overlap of atomic orbitals.
+  [HEARD] 'three' -> 'two' corrected on the slide (0.8)
+19:46:00 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:46:00 INFO    copilot.presentation.engine: concern 1ea7765ee8f0 (transcription, applied=True): 0 element(s); slide shows 'two'
+  [SLIDE] update 'Covalent Bond' [key_points] v7 (6 items)
+19:46:00 INFO    copilot.presentation.engine: image search 'pi bond orbital overlap' (diagram) for 'Covalent Bond'
+19:46:02 INFO    copilot.presentation.engine: image 'pi bond orbital overlap': none (no usable candidates)
+  [IMAGE] 'pi bond orbital overlap' -> none (no usable candidates) (1.7 s)
+19:46:06 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily quota spent); groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#5: skipped (tpm); groq_alt#main: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (daily quota spent); openrouter_main: skipped (cooldown 253s)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (same_concept) acts=definition hint=definition lines=1 via FALLBACK llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily qu 1 ms
+19:46:06 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:46:06 INFO    copilot.presentation.engine: no image for 'Covalent Bond': nothing relevant found for 'pi bond orbital overlap' before
+  [SLIDE] update 'Covalent Bond' [key_points] v8 (6 items)
+  [SLIDE] add    'Covalent Bond' [members] v1 (1 items)
+  [  621.1s] Let us study the states of matter. (656 ms)
+  [SLIDE] update 'Covalent Bond' [members] v2 (1 items)
+  [  623.6s] 5 states of matter are known. (336 ms)
+  [UNDERSTAND] Chemical Bonding > Covalent Bond (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#5 3254 ms
+               Valence bond theory fails to explain magnetic properties and bonding in electron-deficient compounds.
+19:46:18 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Covalent Bond (same frame)
+19:46:18 INFO    copilot.presentation.engine: no image for 'Covalent Bond': nothing relevant found for 'pi bond orbital overlap' before
+  [SLIDE] update 'Covalent Bond' [members] v3 (3 items)
+  [  626.5s] that are solid, liquid, gas, plasma and both are in instant condensate. (618 ms)
+19:46:26 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily quota spent); groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#5: skipped (tpm); groq_alt#main: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (daily quota spent); openrouter_main: skipped (cooldown 234s)
+  [UNDERSTAND] Chemical Bonding > States of Matter (sibling_concept) acts=- hint=key_points lines=3 via FALLBACK llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily qu 2 ms
+19:46:26 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > States of Matter (nothing to display)
+  [SLIDE] update 'Covalent Bond' [members] v4 (3 items)
+  [  632.5s] Out of these, solid, liquid and gas are commonly found while remaining two are found only under specific conditions. (645 ms)
+19:46:35 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'States of Matter' -> same_concept
+  [UNDERSTAND] Chemical Bonding > States of Matter (same_concept) acts=explanation hint=key_points lines=1 via groq_alt#5 1170 ms
+               Teacher distinguished common states of matter (solid, liquid, gas) from rare states requiring specific conditions.
+19:46:35 INFO    copilot.presentation.engine: planner: continue Chemical Bonding > States of Matter (new facet)
+  [SLIDE] add    'States of Matter' [key_points] v1 (2 items)
+19:46:35 INFO    copilot.presentation.engine: image search 'states of matter' (diagram) for 'States of Matter'
+19:46:40 INFO    copilot.visuals.finder: image search 'states of matter' (diagram): 4 candidate(s), 3 accepted, 4.35 s {'search_s': 1.78, 'download_s': 1.01, 'clip_s': 0.08, 'full_s': 1.48, 'total_s': 4.35}
+  [IMAGE] 'states of matter' -> File:Matter Diagram.PNG (4.3 s)
+19:46:40 INFO    copilot.presentation.engine: image 'states of matter' on 'States of Matter': File:Matter Diagram.PNG
+  [SLIDE] update 'States of Matter' [key_points] v2 (3 items)
+  [  649.2s] Interconversion of states of matter. Belting point. This is the temperature at which a matter converts from its solid state to liquid state. It decreases in the presence of impurity. (798 ms)
+  [SLIDE] update 'States of Matter' [key_points] v3 (4 items)
+  [  660.4s] boiling point this is the temperature at which the vapor (560 ms)
+  [SLIDE] update 'States of Matter' [key_points] v4 (4 items)
+  [  664.4s] pressure (281 ms)
+  [SLIDE] update 'States of Matter' [key_points] v5 (4 items)
+  [  665.9s] of a liquid becomes equal to the atmospheric pressure (540 ms)
+  [SLIDE] update 'States of Matter' [key_points] v6 (4 items)
+  [  669.3s] it increases in the presence of impurity and with rising pressure boiling point of water is 100 degrees Celsius. (800 ms)
+  [SLIDE] update 'States of Matter' [key_points] v7 (4 items)
+19:47:10 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'States of Matter' -> same_concept
+  [UNDERSTAND] Chemical Bonding > States of Matter (same_concept) acts=definition,explanation,definition,explanation hint=key_points lines=5 via groq_alt#5 2005 ms
+               Defined melting and boiling points, noting impurities lower melting point but raise boiling point.
+  [HEARD] 'Belting' -> 'Melting' corrected on the slide (0.9)
+19:47:10 INFO    copilot.presentation.engine: planner: update Chemical Bonding > States of Matter (same frame)
+19:47:10 INFO    copilot.presentation.engine: concern 16f12b514522 (transcription, applied=True): 2 element(s); slide shows 'Melting'
+  [SLIDE] update 'States of Matter' [key_points] v8 (3 items)
+  [SLIDE] update 'States of Matter' [key_points] v9 (5 items)
+  [SLIDE] add    'States of Matter' [members] v1 (3 items)
+19:47:10 INFO    copilot.presentation.engine: image 'states of matter' kept on 'States of Matter' (same visual as this topic's image)
+  [SLIDE] update 'States of Matter' [members] v2 (4 items)
+  [  677.2s] freezing point at this temperature the matter converts from its liquid state into solid state (689 ms)
+  [  683.8s] freezing point of water is 0 degrees celsius (523 ms)
+  [  688.2s] It is the process of conversion of liquid into vapour at any temperature. (709 ms)
+19:47:28 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'States of Matter' -> same_concept
+  [UNDERSTAND] Chemical Bonding > States of Matter (same_concept) acts=definition,other,definition hint=key_points lines=3 via groq_alt#5 1259 ms
+               Defined freezing point and vaporization, noting water freezes at 0°C.
+19:47:28 INFO    copilot.presentation.engine: planner: update Chemical Bonding > States of Matter (same frame)
+  [SLIDE] update 'States of Matter' [concept] v3 (5 items)
+  [SLIDE] add    'States of Matter' [members] v1 (1 items)
+19:47:28 INFO    copilot.presentation.engine: image search 'water phase change' (diagram) for 'States of Matter'
+  [  694.5s] Due to evaporation, water droplets appear on the outer surface of a glass containing ice cold water. (631 ms)
+  [SLIDE] update 'States of Matter' [members] v2 (1 items)
+19:47:32 INFO    copilot.visuals.finder: image search 'water phase change' (diagram): 1 candidate(s), 1 accepted, 3.95 s {'search_s': 1.66, 'download_s': 1.56, 'clip_s': 0.03, 'full_s': 0.68, 'total_s': 3.95}
+  [IMAGE] 'water phase change' -> File:Water Phase Change Diagram.png (4.0 s)
+19:47:32 INFO    copilot.presentation.engine: image 'water phase change' on 'States of Matter': File:Water Phase Change Diagram.png
+  [SLIDE] update 'States of Matter' [members] v3 (2 items)
+  [  700.9s] Water kept in earthen pots becomes cold during summer. (587 ms)
+  [  705.0s] Desert Cooler cools better on a hot day Friday. (628 ms)
+19:47:41 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Due to evaporation, water droplets appear on the outer surface of a glass containing ice cold water']
+  [UNDERSTAND] Chemical Bonding > States of Matter (elaboration) acts=explanation,explanation hint=example lines=3 via groq_alt#5 1033 ms
+               Provided real-world examples of evaporation and condensation, including cooling effects in earthen pots and desert coolers.
+19:47:41 INFO    copilot.presentation.engine: planner: update Chemical Bonding > States of Matter (same frame)
+19:47:41 INFO    copilot.presentation.engine: no image for 'States of Matter': has an image
+  [SLIDE] update 'States of Matter' [members] v4 (2 items)
+  [SLIDE] update 'States of Matter' [members] v5 (6 items)
+  [  715.4s] Let us understand the intermolecular forces. The intermolecular force of attraction existing among the molecules of a substance are called intermolecular forces. (814 ms)
+  [  725.3s] greater the intermolecular force, higher is the melting and boiling point. Attractive intermolecular forces are known as Van der Waals forces. (722 ms)
+  [UNDERSTAND] Chemical Bonding > Intermolecular Forces (sibling_concept) acts=definition,explanation hint=key_points lines=2 via groq_alt#5 1753 ms
+               Defined intermolecular forces as attractions between molecules and noted that stronger forces result in higher melting and boiling points.
+19:48:08 INFO    copilot.presentation.engine: planner: continue Chemical Bonding > Intermolecular Forces (new facet)
+  [SLIDE] add    'Intermolecular Forces' [definition] v1 (3 items)
+19:48:08 INFO    copilot.presentation.engine: image search 'Intermolecular forces diagram' (diagram) for 'Intermolecular Forces'
+19:48:11 INFO    copilot.visuals.finder: image search 'Intermolecular forces diagram' (diagram): 1 candidate(s), 0 accepted, 2.93 s {'search_s': 1.96, 'download_s': 0.93, 'clip_s': 0.04, 'full_s': 0.0, 'total_s': 2.93}
+19:48:11 INFO    copilot.presentation.engine: image 'Intermolecular forces diagram': none (no relevant image)
+  [IMAGE] 'Intermolecular forces diagram' -> none (no relevant image) (2.9 s)
+  [  740.4s] the board. (1493 ms)
 [PAUSE] paused: what is said now is not put on slides (Resume to continue)
-  [   37.8s] (paused, not used) Perfectly open too. (604 ms)
-17:30:25 INFO    copilot.understanding.service: paused: not interpreted: Perfectly open too.
-  [   43.9s] (paused, not used) It open? Hello. (632 ms)
-17:30:32 INFO    copilot.understanding.service: paused: not interpreted: It open? Hello.
-  [   46.8s] (paused, not used) I'll level. (456 ms)
-17:30:34 INFO    copilot.understanding.service: paused: not interpreted: I'll level.
-  [   49.1s] (paused, not used) What's up with your neck? (790 ms)
-17:30:37 INFO    copilot.understanding.service: paused: not interpreted: What's up with your neck?
-  [   51.5s] (paused, not used) Yeah, you're the one who's connecting. (2261 ms)
-17:30:41 INFO    copilot.understanding.service: paused: not interpreted: Yeah, you're the one who's connecting.
-  [   53.8s] (paused, not used) I don't know. I don't know. (770 ms)
-17:30:42 INFO    copilot.understanding.service: paused: not interpreted: I don't know. I don't know.
-  [   55.7s] (paused, not used) This the game? (588 ms)
-17:30:43 INFO    copilot.understanding.service: paused: not interpreted: This the game?
-  [   58.1s] (paused, not used) Do you know what it is? I don't know. I don't know if it's a blank or glossy. Let's go. (1318 ms)
-17:30:51 INFO    copilot.understanding.service: paused: not interpreted: Do you know what it is? I don't know. I don't know if it's a blank or glossy. Let's go.
-  [   63.8s] (paused, not used) Why are you saying that? Because I am listening (872 ms)
-17:30:53 INFO    copilot.understanding.service: paused: not interpreted: Why are you saying that? Because I am listening
-  [   66.5s] (paused, not used) It's a net travel You (1673 ms)
-17:30:55 INFO    copilot.understanding.service: paused: not interpreted: It's a net travel You
+  [UNDERSTAND] Chemical Bonding > Intermolecular Forces (same_concept) acts=- hint=none lines=1 via groq_alt#5 953 ms
+               Teacher referred to the board.
+19:48:18 INFO    copilot.presentation.engine: planner: noop Chemical Bonding > Intermolecular Forces (nothing to display)
+  [  747.4s] (paused, not used) okay (484 ms)
+19:48:29 INFO    copilot.understanding.service: paused: not interpreted: okay
+  [  760.0s] (paused, not used) Class on, we're done here. Cool. (723 ms)
+19:48:33 INFO    copilot.understanding.service: paused: not interpreted: Class on, we're done here. Cool.
+  [  763.1s] (paused, not used) I don't know what to say. (1819 ms)
+19:48:39 INFO    copilot.understanding.service: paused: not interpreted: I don't know what to say.
+  [  772.3s] (dropped: filler_hallucination) Okay.
+  [  774.8s] (paused, not used) you can't (299 ms)
+19:48:46 INFO    copilot.understanding.service: paused: not interpreted: you can't
 [LIVE]  resumed
-  [   68.7s] (dropped: filler_hallucination) Bye.
-  [   71.4s] Hello everyone, let us learn about atoms. Atoms are the basic building block of matter and molecules. (920 ms)
-  [   77.9s] from when two or more atoms chemically bond together. What is an atom? An atom is the smallest unit of an element that keeps the chemical property of that element. (997 ms)
-17:31:17 WARNING copilot.llm.router: llm groq_main#5 failed: connect failed: ConnectTimeout
-  [UNDERSTAND] Atoms > Definition (new_topic) acts=definition,definition hint=definition lines=2 via groq_alt#main 3680 ms
-               Defined atoms as the basic building blocks of matter and the smallest unit of an element retaining its chemical properties.
-17:31:19 INFO    copilot.presentation.engine: planner: new Atoms > Definition (first content slide)
-  [SLIDE] add    'What are atoms?' [definition] v1 (2 items)
-  [   88.5s] structure it has a central nucleus and outer shell nucleus contains positive (699 ms)
-  [SLIDE] update 'What are atoms?' [definition] v2 (3 items)
-  [   94.8s] protons and neutrons and neutrons (577 ms)
-  [SLIDE] update 'What are atoms?' [definition] v3 (3 items)
-  [   98.9s] Electrons are negative particles that orbit the nucleus in shell. (690 ms)
-  [SLIDE] update 'What are atoms?' [definition] v4 (3 items)
-  [UNDERSTAND] Atoms > Structure (sub_concept) acts=explanation hint=none lines=3 via groq_alt#main 1486 ms
-               Described atom structure: nucleus with protons/neutrons and orbiting electrons.
-17:31:31 INFO    copilot.presentation.engine: planner: continue Atoms > Structure (new facet)
-17:31:31 INFO    copilot.presentation.engine: slide 'Structure' waits for the min dwell time
-  [SLIDE] update 'What are atoms?' [definition] v5 (2 items)
-17:31:31 INFO    copilot.presentation.engine: image search 'atom structure diagram' (diagram) for 'Structure'
-  [IMAGE] 'atom structure diagram' -> File:Bohr atom model.svg (0.0 s, cached)
-17:31:31 INFO    copilot.presentation.engine: image 'atom structure diagram' on 'Structure': File:Bohr atom model.svg
-  [SLIDE] add    'Structure' [key_points] v1 (4 items)
-  [  107.4s] Let us learn the digestive system (569 ms)
-  [  110.8s] The human digestive system is a continuous tube and a group of organs that break down food into energy, growth nutrients and repair materials. (948 ms)
-  [  121.2s] the main step of digestion (478 ms)
-  [  123.3s] Hello. (1858 ms)
-  [UNDERSTAND] Digestive System > Definition (new_topic) acts=transition,definition,other hint=definition lines=3 via groq_alt#main 1639 ms
-               Introduced the human digestive system as a tube and organ group that breaks down food for energy and growth.
-17:31:53 INFO    copilot.presentation.engine: planner: new Digestive System > Definition (new topic confirmed (boundary cue/shift))
-  [SLIDE] add    'What is human digestive system?' [definition] v1 (1 items)
-17:31:53 INFO    copilot.presentation.engine: image search 'human digestive system' (diagram) for 'What is human digestive system?'
-  [IMAGE] 'human digestive system' -> File:Digestive system diagram en.svg (0.1 s, cached)
-17:31:53 INFO    copilot.presentation.engine: image 'human digestive system' on 'What is human digestive system?': File:Digestive system diagram en.svg
-  [SLIDE] update 'What is human digestive system?' [definition] v2 (2 items)
-  [  124.3s] you cheap food and mix it with saliva, saliva starts breaking into starch (707 ms)
-  [  130.0s] Peace of Vegas, muscles push the water or food down into your stomach using a wave motion called (816 ms)
-  [  137.5s] query stylus (620 ms)
-  [UNDERSTAND] Digestive System > Process (sibling_concept) acts=process hint=process_flow lines=3 via groq_alt#main 1397 ms
-               Described the initial digestive process: chewing, saliva breaking down starch, and peristalsis moving food to the stomach.
-  [HEARD] 'Peace of Vegas' -> 'Esophagus' corrected on the slide (0.8)
-  [HEARD] 'water or food' -> 'food' corrected on the slide (0.6)
-17:32:07 INFO    copilot.presentation.engine: planner: continue Digestive System > Process (new facet)
-17:32:07 INFO    copilot.presentation.engine: slide 'How digestive system works' waits for the min dwell time
-17:32:07 INFO    copilot.presentation.engine: concern d33e7a8dd299 (transcription, applied=True): 0 element(s); slide shows 'Esophagus'
-17:32:07 INFO    copilot.presentation.engine: concern 034046b69744 (transcription, applied=True): 2 element(s); slide shows 'food'
-17:32:07 INFO    copilot.presentation.engine: no image for 'How digestive system works': process needs the full width
-  [SLIDE] add    'How digestive system works' [process_flow] v1 (3 items)
-  [  139.5s] stomach, strong acids and enzymes mix with the food and turn it into the liquid mixture. (763 ms)
-  [UNDERSTAND] Digestive System > Process (same_concept) acts=process hint=process_flow lines=2 via groq_alt#main 1416 ms
-               Described how stomach acids and enzymes convert food into a liquid mixture.
-17:32:15 INFO    copilot.presentation.engine: planner: update Digestive System > Process (same frame)
-17:32:15 INFO    copilot.presentation.engine: no image for 'How digestive system works': process needs the full width
-  [SLIDE] update 'How digestive system works' [process_flow] v2 (4 items)
-  [  147.3s] So while you test it (520 ms)
-  [  149.0s] digestive juices from the pancreas, liver and bowel glider enters here to finish breaking down food. (915 ms)
-  [  156.7s] tiny finger like parts called villi absorb nutrients from your blood. (736 ms)
-  [  161.7s] into your blood. (475 ms)
-17:32:29 WARNING copilot.llm.router: llm groq_main#5 failed: connect failed: ConnectTimeout
-  [UNDERSTAND] Digestive System > Process (same_concept) acts=process hint=process_flow lines=2 via groq_alt#main 3228 ms
-               Described how digestive juices from the pancreas, liver, and small intestine finish breaking down food.
-  [HEARD] 'bowel glider' -> 'small intestine' corrected on the slide (0.6)
-17:32:31 INFO    copilot.presentation.engine: planner: update Digestive System > Process (same frame)
-17:32:31 INFO    copilot.presentation.engine: concern 783d4ebeddbf (transcription, applied=True): 0 element(s); slide shows 'small intestine'
-17:32:31 INFO    copilot.presentation.engine: no image for 'How digestive system works': process needs the full width
-  [SLIDE] update 'How digestive system works' [process_flow] v3 (5 items)
-  [  163.6s] large intestine. This part absorbs water from left core waste. It turns the waste into solid stool. (840 ms)
-  [  170.8s] rectum and anus. Your body stores solid waste. (667 ms)
-  [UNDERSTAND] Digestive System > Process (same_concept) acts=process,process hint=process_flow lines=3 via groq_alt#main 1711 ms
-               Described how villi absorb nutrients into the blood and the large intestine absorbs water to form stool.
-  [HEARD] 'from your blood' -> 'into the bloodstream' corrected on the slide (0.6)
-  [HEARD] 'left core waste' -> 'liquid waste' corrected on the slide (0.7)
-17:32:42 INFO    copilot.presentation.engine: planner: update Digestive System > Process (same frame)
-17:32:42 INFO    copilot.presentation.engine: concern dda0428f31f6 (transcription, applied=True): 1 element(s); slide shows 'into the bloodstream'
-17:32:42 INFO    copilot.presentation.engine: concern 1e7abfb47fff (transcription, applied=True): 0 element(s); slide shows 'liquid waste'
-17:32:42 INFO    copilot.presentation.engine: no image for 'How digestive system works': process needs the full width
-  [SLIDE] update 'How digestive system works' [process_flow] v4 (6 items)
-  [SLIDE] add    'How digestive system works' [process_flow] v1 (2 items)
-  [  175.1s] here before it leaves the body (481 ms)
-  [UNDERSTAND] Digestive System > Process (same_concept) acts=process hint=process_flow lines=2 via groq_alt#main 1159 ms
-               Described how solid waste is stored in the rectum and expelled through the anus.
-17:33:00 INFO    copilot.presentation.engine: planner: update Digestive System > Process (same frame)
-17:33:00 INFO    copilot.presentation.engine: no image for 'How digestive system works': process needs the full width
-  [SLIDE] update 'How digestive system works' [process_flow] v2 (4 items)
-  [  187.0s] Let us learn the kinematic equation of motion. Kinematics is the branch of chemical mechanisms that describe the motion of objects such as position, velocity and acceleration. (1017 ms)
-  [  199.1s] without looking at the force or masses that caused the motion. (1076 ms)
-17:33:09 WARNING copilot.llm.router: llm groq_alt#main failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m1y7z7r3esjaek71dw1q6b5z` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 663,
-  [UNDERSTAND] Kinematics > Definition (new_topic) acts=transition,definition hint=definition lines=1 via groq_alt#4 1690 ms
-               Introduced kinematics as the branch of physics describing object motion.
-  [CONCERN] (factual) Kinematics is the branch of chemical mechanisms -> Kinematics is the branch of physics that describes the motion of objects. (0.95, slide shows the correction)
-17:33:10 INFO    copilot.presentation.engine: planner: new Kinematics > Definition (new topic confirmed (boundary cue/shift))
-17:33:10 INFO    copilot.presentation.engine: concern ed4426c2ea3b (factual, applied=True): 1 element(s); slide shows 'physics'
-  [SLIDE] add    'What is kinematics?' [definition] v1 (1 items)
-  [  203.0s] The core concepts are (458 ms)
-  [  205.3s] distance vs. displacement, speed vs. velocity and acceleration. (692 ms)
-  [UNDERSTAND] Kinematics > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 835 ms
-               Clarified that kinematics ignores the forces and masses causing motion.
-17:33:17 INFO    copilot.presentation.engine: planner: update Kinematics > Definition (same frame)
-  [SLIDE] update 'What is kinematics?' [definition] v2 (2 items)
-  [UNDERSTAND] Kinematics > Definition (elaboration) acts=- hint=none lines=1 via groq_alt#main 822 ms
-               Teacher began listing core concepts of kinematics.
-17:33:25 INFO    copilot.presentation.engine: planner: noop Kinematics > Definition (nothing to display)
-  [  211.0s] The key kinematic equations are, v equals to u plus a t, s u t plus, s equals u t plus half a t square and v square equals u square plus two a s. (1145 ms)
-  [SLIDE] update 'What is kinematics?' [definition] v3 (3 items)
-17:33:35 WARNING copilot.llm.router: llm groq_main#5 failed: connect failed: ConnectTimeout
-  [UNDERSTAND] Kinematics > Core Concepts (sub_concept) acts=classification hint=key_points lines=1 via groq_alt#main 3059 ms
-               Listed the core concepts of kinematics: distance vs. displacement, speed vs. velocity, and acceleration.
-17:33:36 INFO    copilot.presentation.engine: planner: continue Kinematics > Core Concepts (new facet)
-  [SLIDE] add    'Core Concepts' [hierarchy] v1 (1 items)
-  [  230.7s] You said later. (652 ms)
-  [SLIDE] update 'What is kinematics?' [definition] v4 (2 items)
-  [  233.2s] Bye, David. (446 ms)
-17:33:43 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Core Concepts' -> same_concept
-  [UNDERSTAND] Kinematics > Core Concepts (same_concept) acts=formula,formula,formula hint=formula lines=1 via groq_alt#4 2022 ms
-               Introduced the three key kinematic equations for velocity, displacement, and final velocity squared.
-17:33:43 INFO    copilot.presentation.engine: planner: update Kinematics > Core Concepts (same frame)
-17:33:43 INFO    copilot.presentation.engine: slide 'Core Concepts' waits for the min dwell time
-17:33:43 INFO    copilot.presentation.engine: slide 'Core Concepts' waits for the min dwell time
-17:33:43 INFO    copilot.presentation.engine: slide 'Core Concepts' waits for the min dwell time
-  [SLIDE] update 'Core Concepts' [hierarchy] v2 (1 items)
-  [SLIDE] add    'Core Concepts' [formula] v1 (1 items)
-  [SLIDE] add    'Core Concepts' [formula] v1 (1 items)
-  [UNDERSTAND] Kinematics > Core Concepts (digression) acts=other hint=none lines=2 via groq_alt#main 975 ms
-               Teacher addressed a student and ended the interaction.
-17:33:50 INFO    copilot.presentation.engine: planner: noop Kinematics > Core Concepts (digression)
-  [  244.6s] In front of it. (840 ms)
-  [SLIDE] add    'Core Concepts' [formula] v1 (1 items)
-  [  250.6s] It's real. (646 ms)
-[PAUSE] paused: what is said now is not put on slides (Resume to continue)
-  [  252.4s] (paused, not used) Thanks. (1302 ms)
-17:34:00 INFO    copilot.understanding.service: paused: not interpreted: Thanks.
-  [  253.5s] (paused, not used) And now we switch to the next video. (556 ms)
-17:34:02 INFO    copilot.understanding.service: paused: not interpreted: And now we switch to the next video.
-  [UNDERSTAND] Kinematics > Core Concepts (same_concept) acts=- hint=none lines=1 via groq_alt#main 4984 ms
-               Teacher gave a brief instruction regarding student positioning.
-17:34:02 INFO    copilot.presentation.engine: planner: noop Kinematics > Core Concepts (nothing to display)
-  [  256.1s] (paused, not used) Hello? (490 ms)
-17:34:04 INFO    copilot.understanding.service: paused: not interpreted: Hello?
-  [  258.3s] (paused, not used) Bye, I love you. Bye, nahub. (606 ms)
-17:34:07 INFO    copilot.understanding.service: paused: not interpreted: Bye, I love you. Bye, nahub.
-  [  260.9s] (paused, not used) Stay clear. (480 ms)
-17:34:09 INFO    copilot.understanding.service: paused: not interpreted: Stay clear.
-  [  265.0s] (paused, not used) I'll call you back later. Bye Nihir. (2423 ms)
-17:34:16 INFO    copilot.understanding.service: paused: not interpreted: I'll call you back later. Bye Nihir.
-  [  268.0s] (paused, not used) Edit (559 ms)
-17:34:16 INFO    copilot.understanding.service: paused: not interpreted: Edit
-  [UNDERSTAND] Kinematics > Core Concepts (same_concept) acts=- hint=none lines=1 via groq_alt#main 1120 ms
-               Teacher made a brief, unclear remark.
-17:34:17 INFO    copilot.presentation.engine: planner: noop Kinematics > Core Concepts (nothing to display)
-  [  271.2s] (paused, not used) Wait till the next (520 ms)
-17:34:19 INFO    copilot.understanding.service: paused: not interpreted: Wait till the next
-17:34:19 INFO    copilot.presentation.engine: teacher edit_text on 'What is human digestive system?': e1b71fb7e7eb 'Continuous tube and organs that break down food into energy, growth nutrients, and repair materials hello'
-  [SLIDE] update 'What is human digestive system?' [definition] v3 (2 items)
-  [  272.8s] (paused, not used) um (1451 ms)
-17:34:22 INFO    copilot.understanding.service: paused: not interpreted: um
-  [  275.8s] (paused, not used) I'm sorry, I'm not able to hear you. (2021 ms)
-17:34:26 INFO    copilot.understanding.service: paused: not interpreted: I'm sorry, I'm not able to hear you.
-17:34:27 INFO    copilot.presentation.engine: teacher edit_text on 'What is human digestive system?': e1b71fb7e7eb 'Continuous tube and organs that break down food into energy, growth nutrients, and repair materials'
-  [SLIDE] update 'What is human digestive system?' [definition] v4 (2 items)
-  [  278.4s] (paused, not used) So, if you are not a live PPT, then you should not have any issues. If you have any definition, then you should not have any issues. If you are a teacher, then you should not have any issues. (8166 ms)
-17:34:43 INFO    copilot.understanding.service: paused: not interpreted: So, if you are not a live PPT, then you should not have any issues. If you have any definition, then you should not have any issues. If you are a teacher, then you should not have any issues.
-  [  289.5s] (paused, not used) Why is that? Madam, I don't know what you are talking about. Ah, the multilingual next start, good luck. (3567 ms)
-17:34:44 INFO    copilot.understanding.service: paused: not interpreted: Why is that? Madam, I don't know what you are talking about. Ah, the multilingual next start, good luck.
-  [  294.8s] (paused, not used) I am not sure if you have heard of the name of the J.J. teacher, but I have heard of the name of the J.J. teacher, so let's see what is the name of the teacher. (6495 ms)
-17:34:59 INFO    copilot.understanding.service: paused: not interpreted: I am not sure if you have heard of the name of the J.J. teacher, but I have heard of the name of the J.J. teacher, so let's see what is the name of the teacher.
-  [  306.9s] (paused, not used) Ani, you can see the image of Ani in the Google's app, and we will see you in the next video. Thank you (7303 ms)
-17:35:09 INFO    copilot.understanding.service: paused: not interpreted: Ani, you can see the image of Ani in the Google's app, and we will see you in the next video. Thank you
-  [  316.4s] (paused, not used) I'll play a photo now (5886 ms)
-17:35:09 INFO    copilot.understanding.service: paused: not interpreted: I'll play a photo now
-17:35:09 INFO    copilot.display.server: teacher upload 'WIN_20240501_21_45_49_Pro.jpg' -> 2ae9d7d10696a1fa (1280x720)
-17:35:09 INFO    copilot.presentation.engine: teacher image on 'What is human digestive system?'
-  [SLIDE] update 'What is human digestive system?' [definition] v5 (2 items)
-  [  318.0s] (paused, not used) I don't know. (4564 ms)
-17:35:10 INFO    copilot.understanding.service: paused: not interpreted: I don't know.
-  [  320.8s] (paused, not used) We direct put the drag and drop curl (1723 ms)
-17:35:10 INFO    copilot.understanding.service: paused: not interpreted: We direct put the drag and drop curl
-  [  325.0s] (paused, not used) Ali (412 ms)
-17:35:12 INFO    copilot.understanding.service: paused: not interpreted: Ali
-  [  326.8s] (dropped: empty) 
-  [  329.6s] (dropped: filler_hallucination) Bye.
-  [  331.6s] (paused, not used) That's all. (428 ms)
-17:35:19 INFO    copilot.understanding.service: paused: not interpreted: That's all.
-17:35:20 INFO    copilot.presentation.engine: teacher stepped to image 1/2 on 'What is human digestive system?'
-  [SLIDE] update 'What is human digestive system?' [definition] v6 (2 items)
-  [  334.0s] (paused, not used) Anyway, these are government payment sessions. (633 ms)
-17:35:23 INFO    copilot.understanding.service: paused: not interpreted: Anyway, these are government payment sessions.
-  [  338.7s] (paused, not used) Any more, any more, any more? (636 ms)
-17:35:27 INFO    copilot.understanding.service: paused: not interpreted: Any more, any more, any more?
-  [  341.6s] (paused, not used) Assalamu Alaikum, Wa Alaykum Wa Alaykum, Wa Alaykum Wa Alaykum Wa Alaykum Wa Alaykum (8188 ms)
-17:35:38 INFO    copilot.understanding.service: paused: not interpreted: Assalamu Alaikum, Wa Alaykum Wa Alaykum, Wa Alaykum Wa Alaykum Wa Alaykum Wa Alaykum
-  [  346.3s] (paused, not used) steps away. (5607 ms)
-17:35:39 INFO    copilot.understanding.service: paused: not interpreted: steps away.
-  [  348.1s] (paused, not used) We end up... (4441 ms)
-17:35:39 INFO    copilot.understanding.service: paused: not interpreted: We end up...
-  [  349.4s] (paused, not used) Music (3491 ms)
-17:35:40 INFO    copilot.understanding.service: paused: not interpreted: Music
-  [  353.4s] (paused, not used) Thank you very much. (541 ms)
-17:35:43 INFO    copilot.understanding.service: paused: not interpreted: Thank you very much.
-  [  356.5s] (paused, not used) I'm gonna ask you to tell me what it is. I'm gonna ask you to tell me. What is it? It's the 4th? Yeah, the 4th is the 4th. But you are in high school. (9982 ms)
-17:36:00 INFO    copilot.understanding.service: paused: not interpreted: I'm gonna ask you to tell me what it is. I'm gonna ask you to tell me. What is it? It's the 4th? Yeah, the 4th is the 4th. But you are in high school.
-  [  365.3s] (paused, not used) load sky force is on time (6919 ms)
-17:36:04 INFO    copilot.understanding.service: paused: not interpreted: load sky force is on time
-  [  371.6s] (paused, not used) Say LLM Lakhdum. (1120 ms)
-17:36:04 INFO    copilot.understanding.service: paused: not interpreted: Say LLM Lakhdum.
-  [  378.4s] (paused, not used) Have a good day! (540 ms)
-17:36:06 INFO    copilot.understanding.service: paused: not interpreted: Have a good day!
-  [  379.9s] (paused, not used) And what's your favorite movie? Jiminy. No, Jiminy. (2623 ms)
-17:36:13 INFO    copilot.understanding.service: paused: not interpreted: And what's your favorite movie? Jiminy. No, Jiminy.
-  [  384.4s] (paused, not used) Ooh la la. (1828 ms)
-17:36:13 INFO    copilot.understanding.service: paused: not interpreted: Ooh la la.
-  [  387.0s] (paused, not used) It was a paid album, I think it was a free album (2291 ms)
-17:36:19 INFO    copilot.understanding.service: paused: not interpreted: It was a paid album, I think it was a free album
-  [  391.3s] (paused, not used) The door's been leaked. (722 ms)
-17:36:19 INFO    copilot.understanding.service: paused: not interpreted: The door's been leaked.
-  [  393.8s] (paused, not used) I am going to try to get a little bit of growth. (2264 ms)
-17:36:24 INFO    copilot.understanding.service: paused: not interpreted: I am going to try to get a little bit of growth.
-  [  404.7s] (paused, not used) You're not going to be able to. (649 ms)
-17:36:33 INFO    copilot.understanding.service: paused: not interpreted: You're not going to be able to.
-  [  406.7s] (paused, not used) I have to control the end panel (1826 ms)
-17:36:36 INFO    copilot.understanding.service: paused: not interpreted: I have to control the end panel
-  [  414.6s] (paused, not used) find image, add image, slide blank (5842 ms)
-17:36:54 INFO    copilot.understanding.service: paused: not interpreted: find image, add image, slide blank
-  [  423.0s] (paused, not used) Love. (4357 ms)
-17:36:55 INFO    copilot.understanding.service: paused: not interpreted: Love.
-  [  425.1s] (paused, not used) Let's see. (2780 ms)
-17:36:55 INFO    copilot.understanding.service: paused: not interpreted: Let's see.
-  [  427.6s] (paused, not used) Link to others (1070 ms)
-17:36:56 INFO    copilot.understanding.service: paused: not interpreted: Link to others
-  [  430.6s] (paused, not used) and he is like (559 ms)
-17:37:03 INFO    copilot.understanding.service: paused: not interpreted: and he is like
-  [  440.8s] (paused, not used) Whatever. See ya. (629 ms)
-17:37:09 INFO    copilot.understanding.service: paused: not interpreted: Whatever. See ya.
-  [  443.9s] (paused, not used) Celebrate, Elliot. (463 ms)
-17:37:11 INFO    copilot.understanding.service: paused: not interpreted: Celebrate, Elliot.
-  [  445.8s] (dropped: filler_hallucination) Hmm.
-  [  448.9s] (paused, not used) with you. (689 ms)
-17:37:16 INFO    copilot.understanding.service: paused: not interpreted: with you.
-  [  450.2s] (paused, not used) Bye, good night! Bye, good night! (1961 ms)
-17:37:22 INFO    copilot.understanding.service: paused: not interpreted: Bye, good night! Bye, good night!
-  [  457.2s] (dropped: empty) 
-17:38:20 INFO    copilot.presentation.engine: concern ed4426c2ea3b dismissed: slide shows 'physics'
-  [  533.2s] (paused, not used) I will. (740 ms)
-17:38:41 INFO    copilot.understanding.service: paused: not interpreted: I will.
-  [  536.3s] (paused, not used) I would. (521 ms)
-17:38:43 INFO    copilot.understanding.service: paused: not interpreted: I would.
-  [  552.1s] (paused, not used) Yes, please do. (1654 ms)
-17:39:01 INFO    copilot.understanding.service: paused: not interpreted: Yes, please do.
-  [  556.5s] (paused, not used) it is supporting you (2184 ms)
-17:39:06 INFO    copilot.understanding.service: paused: not interpreted: it is supporting you
-  [  559.6s] (paused, not used) We will see you in a few minutes. (2429 ms)
-17:39:09 INFO    copilot.understanding.service: paused: not interpreted: We will see you in a few minutes.
-  [  562.7s] (paused, not used) So let's get up to this, you know. (609 ms)
-17:39:11 INFO    copilot.understanding.service: paused: not interpreted: So let's get up to this, you know.
-  [  567.2s] (paused, not used) It is the good talk now. (703 ms)
-17:39:15 INFO    copilot.understanding.service: paused: not interpreted: It is the good talk now.
-  [  576.9s] (paused, not used) power (1342 ms)
-17:39:25 INFO    copilot.understanding.service: paused: not interpreted: power
-  [  581.5s] (paused, not used) What's going on? (573 ms)
-17:39:29 INFO    copilot.understanding.service: paused: not interpreted: What's going on?
-  [  586.6s] (paused, not used) the mac is clear (6237 ms)
-17:39:46 INFO    copilot.understanding.service: paused: not interpreted: the mac is clear
-  [  595.4s] (paused, not used) And if you want to watch more of our videos, you can subscribe to our channel. Thank you very much for watching. (4021 ms)
-17:39:51 INFO    copilot.understanding.service: paused: not interpreted: And if you want to watch more of our videos, you can subscribe to our channel. Thank you very much for watching.
-  [  604.6s] (paused, not used) Those are the laptop, the French laptop is full (765 ms)
-17:39:53 INFO    copilot.understanding.service: paused: not interpreted: Those are the laptop, the French laptop is full
-  [  625.6s] (paused, not used) I think that's it, I'm done (2096 ms)
-17:40:16 INFO    copilot.understanding.service: paused: not interpreted: I think that's it, I'm done
-  [  629.1s] (paused, not used) Banders Ratwood (1894 ms)
-17:40:18 INFO    copilot.understanding.service: paused: not interpreted: Banders Ratwood
-  [  631.9s] (paused, not used) Bye-bye. (472 ms)
-17:40:19 INFO    copilot.understanding.service: paused: not interpreted: Bye-bye.
-  [  635.2s] (paused, not used) No, I don't want to hear it, I don't want to hear it. I want to hear the starting point of the video. (4285 ms)
-17:40:31 INFO    copilot.understanding.service: paused: not interpreted: No, I don't want to hear it, I don't want to hear it. I want to hear the starting point of the video.
-  [  641.2s] (paused, not used) We'll try to do the challenge. (3217 ms)
-17:40:31 INFO    copilot.understanding.service: paused: not interpreted: We'll try to do the challenge.
-  [  642.7s] (dropped: filler_hallucination) Bye.
-  [  645.4s] (paused, not used) I will see you in the next workshop (2025 ms)
-17:40:35 INFO    copilot.understanding.service: paused: not interpreted: I will see you in the next workshop
-  [  651.4s] (paused, not used) part 2 where it goes to (595 ms)
-17:40:39 INFO    copilot.understanding.service: paused: not interpreted: part 2 where it goes to
-  [  653.7s] (paused, not used) foot posted only form bhansa laden (2137 ms)
-17:40:44 INFO    copilot.understanding.service: paused: not interpreted: foot posted only form bhansa laden
-  [  662.2s] (dropped: filler_hallucination) Hmm.
-  [  663.4s] (paused, not used) I will see you in the next video. (2504 ms)
-17:40:55 INFO    copilot.understanding.service: paused: not interpreted: I will see you in the next video.
-  [  669.1s] (paused, not used) I'll see you in the next video. (771 ms)
-17:40:57 INFO    copilot.understanding.service: paused: not interpreted: I'll see you in the next video.
-  [  673.8s] (paused, not used) So, have a nice day. (1712 ms)
-17:41:03 INFO    copilot.understanding.service: paused: not interpreted: So, have a nice day.
-  [  699.0s] (paused, not used) Because I didn't have any content on it, so I will try to make it more mechanical. (3571 ms)
-17:41:41 INFO    copilot.understanding.service: paused: not interpreted: Because I didn't have any content on it, so I will try to make it more mechanical.
-  [  713.4s] (paused, not used) Can you take a photo with me? (1981 ms)
-17:41:43 INFO    copilot.understanding.service: paused: not interpreted: Can you take a photo with me?
-  [  718.9s] (paused, not used) So I am meeting with the other guys (1952 ms)
-17:41:48 INFO    copilot.understanding.service: paused: not interpreted: So I am meeting with the other guys
-  [  741.0s] (paused, not used) I have to do a task (1821 ms)
-17:42:10 INFO    copilot.understanding.service: paused: not interpreted: I have to do a task
-  [  746.1s] (paused, not used) Go shut up. (1469 ms)
-17:42:14 INFO    copilot.understanding.service: paused: not interpreted: Go shut up.
-  [  748.5s] (paused, not used) and then you can see the difference between the two. So, you can see the same thing in the Microsoft programming. You can see the task is done and the task is done. (8640 ms)
-17:42:33 INFO    copilot.understanding.service: paused: not interpreted: and then you can see the difference between the two. So, you can see the same thing in the Microsoft programming. You can see the task is done and the task is done.
-  [  760.2s] (paused, not used) I am going to show you the whole thing (6632 ms)
-17:42:35 INFO    copilot.understanding.service: paused: not interpreted: I am going to show you the whole thing
-  [  774.0s] (paused, not used) I will fix everything in the next video, I am going to play a great match, but I will not be able to confirm it. (6713 ms)
-17:42:54 INFO    copilot.understanding.service: paused: not interpreted: I will fix everything in the next video, I am going to play a great match, but I will not be able to confirm it.
-  [  782.0s] (paused, not used) I don't know how many people are here, but I'm sure they'll be able to see me in the next video. (4812 ms)
-17:42:57 INFO    copilot.understanding.service: paused: not interpreted: I don't know how many people are here, but I'm sure they'll be able to see me in the next video.
-  [  791.4s] (paused, not used) See you then. (646 ms)
-17:42:59 INFO    copilot.understanding.service: paused: not interpreted: See you then.
-  [  795.6s] (paused, not used) Thank you for watching, I'll see you in the next video. (1616 ms)
-17:43:07 INFO    copilot.understanding.service: paused: not interpreted: Thank you for watching, I'll see you in the next video.
-
-[ENDED] interrupted
-(.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> 
+  [  781.1s] Dipole induced dipole forces act between the polar molecules having permanent dipole and the molecules lacking permanent dipole. (698 ms)
+  [SLIDE] update 'Intermolecular Forces' [definition] v2 (4 items)
+19:49:16 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Intermolecular Forces' -> same_concept
+  [UNDERSTAND] Chemical Bonding > Intermolecular Forces (same_concept) acts=definition hint=concept lines=1 via groq_alt#5 1419 ms
+               Defined dipole-induced dipole forces as attractions between polar and non-polar molecules.
+19:49:16 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Intermolecular Forces (same frame)
+  [SLIDE] update 'Intermolecular Forces' [definition] v3 (3 items)
+  [SLIDE] update 'Intermolecular Forces' [definition] v4 (3 items)
+  [SLIDE] add    'Intermolecular Forces' [members] v1 (1 items)
+19:49:16 INFO    copilot.presentation.engine: image search 'dipole induced dipole interaction' (diagram) for 'Intermolecular Forces'
+  [  792.1s] the hydrogen bond it is a special case of dipole-dipole interaction this is found in molecules in which higher polar NH OH and or HF bonds are present the strength of HF (841 ms)
+  [SLIDE] update 'Intermolecular Forces' [members] v2 (1 items)
+19:49:18 INFO    copilot.presentation.engine: image 'dipole induced dipole interaction': none (no usable candidates)
+  [IMAGE] 'dipole induced dipole interaction' -> none (no usable candidates) (1.9 s)
+  [  804.3s] is determined by the columbic interaction between the lone pair electrons of the atomic (733 ms)
+  [SLIDE] update 'Intermolecular Forces' [members] v3 (1 items)
+  [  818.1s] The thermal energy is the energy of a body arising from motion of its atom. (589 ms)
+  [SLIDE] update 'Intermolecular Forces' [members] v4 (1 items)
+19:49:34 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Intermolecular Forces' -> same_concept
+  [UNDERSTAND] Chemical Bonding > Intermolecular Forces (same_concept) acts=definition hint=definition lines=2 via groq_alt#5 1079 ms
+               Defined hydrogen bonding as a special dipole-dipole interaction occurring in molecules with N-H, O-H, or H-F bonds.
+19:49:34 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Intermolecular Forces (same frame)
+19:49:34 INFO    copilot.presentation.engine: no image for 'Intermolecular Forces': two concepts side by side
+  [SLIDE] update 'Intermolecular Forces' [concept] v5 (2 items)
+  [UNDERSTAND] Chemical Bonding > Intermolecular Forces (elaboration) acts=definition hint=definition lines=1 via groq_alt#5 1076 ms
+               Defined thermal energy as the energy arising from atomic motion.
+19:49:42 INFO    copilot.presentation.engine: planner: update Chemical Bonding > Intermolecular Forces (same frame)
+19:49:42 INFO    copilot.presentation.engine: no image for 'Intermolecular Forces': two concepts side by side
+  [SLIDE] update 'Intermolecular Forces' [concept] v6 (3 items)
+  [  840.4s] Let's study the Boyle's law. (511 ms)
+  [  842.4s] The volume of a given mass of a gas is inversely proportional to its pressure at constant temperature. That is V is inversely proportional to P. (836 ms)
+  [  852.4s] k is a constant (308 ms)
+  [  854.5s] or VP equals skip (496 ms)
+  [UNDERSTAND] Boyle's Law > Definition (new_topic) acts=definition,formula hint=definition lines=3 via groq_alt#5 1504 ms
+               Introduced Boyle's Law, stating that gas volume is inversely proportional to pressure at constant temperature.
+19:50:10 INFO    copilot.presentation.engine: planner: new Boyle's Law > Definition (new topic confirmed (boundary cue/shift))
+  [SLIDE] add    "What is boyle's Law?" [definition] v1 (2 items)
+19:50:10 INFO    copilot.presentation.engine: image search "Boyle's Law diagram" (diagram) for "What is boyle's Law?"
+19:50:14 INFO    copilot.visuals.finder: image search "Boyle's Law diagram": 1 slow download(s) dropped
+19:50:15 INFO    copilot.visuals.finder: image search "Boyle's Law diagram" (diagram): 2 candidate(s), 1 accepted, 5.53 s {'search_s': 2.1, 'download_s': 2.4, 'clip_s': 0.06, 'full_s': 0.97, 'total_s': 5.53}
+  [IMAGE] "Boyle's Law diagram" -> File:Boyles law experiment.png (5.5 s)
+19:50:15 INFO    copilot.presentation.engine: image "Boyle's Law diagram" on "What is boyle's Law?": File:Boyles law experiment.png
+  [SLIDE] update "What is boyle's Law?" [definition] v2 (3 items)
+  [  857.6s] where k is the constant and its value depends on mass, temperature and nature of gas. Therefore, P1V1 equals P2V2. (742 ms)
+  [UNDERSTAND] Boyle's Law > Definition (elaboration) acts=formula,formula hint=formula lines=2 via groq_alt#5 1399 ms
+               Introduced the constant k in Boyle's Law and the comparative formula P1V1 = P2V2.
+19:50:19 INFO    copilot.presentation.engine: planner: update Boyle's Law > Definition (same frame)
+19:50:19 INFO    copilot.presentation.engine: slide "What is boyle's Law?" waits for the min dwell time
+19:50:19 INFO    copilot.presentation.engine: no image for "What is boyle's Law?": formula needs the full width
+  [SLIDE] update "What is boyle's Law?" [definition] v3 (3 items)
+  [SLIDE] add    "What is boyle's Law?" [formula] v1 (2 items)
+  [  867.7s] Charles law the volume of a given mass of a gas increased or decreased by 1 by 273 of its volume of each degree rise or fall of temperature respectively at constant pressure (719 ms)
+  [  881.2s] vt equals v0 1 plus t by 273 at constant p. (677 ms)
+  [UNDERSTAND] Charles's Law > Definition (new_topic) acts=definition,formula hint=definition lines=2 via groq_alt#5 1606 ms
+               Defined Charles's Law and provided the formula relating gas volume to temperature at constant pressure.
+19:50:39 INFO    copilot.presentation.engine: planner: update Boyle's Law > Definition (new topic not yet confirmed)
+19:50:39 INFO    copilot.presentation.engine: no image for "What is boyle's Law?": formula needs the full width
+  [SLIDE] update "What is boyle's Law?" [formula] v2 (3 items)
+  [SLIDE] add    "What is boyle's Law?" [formula] v1 (1 items)
+  [  888.8s] the volume of a given mass of a gas is directly proportional to the absolute temperature at constant pressure. (788 ms)
+  [  895.8s] So V1 upon T1 equals V2 upon T2. (588 ms)
+19:50:53 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The volume of a given mass of a gas is directly proportional to the absolute temperature at constant pressure']
+  [UNDERSTAND] Charles's Law > Definition (elaboration) acts=formula,explanation hint=formula lines=2 via groq_alt#5 2803 ms
+               Provided the comparative formula for Charles's Law relating volume and temperature.
+19:50:53 INFO    copilot.presentation.engine: planner: new Charles's Law > Definition (new topic confirmed (two interpretations agree))
+19:50:53 INFO    copilot.presentation.engine: moving 2 item(s) of "Charles's Law" to the new topic's slide
+19:50:53 INFO    copilot.presentation.engine: slide "What is charles's Law?" waits for the min dwell time
+19:50:53 INFO    copilot.presentation.engine: slide "What is charles's Law?" waits for the min dwell time
+  [SLIDE] update "What is boyle's Law?" [formula] v3 (2 items)
+19:50:53 INFO    copilot.presentation.engine: image search 'Charles Law graph' (diagram) for "What is charles's Law?"
+19:50:55 INFO    copilot.presentation.engine: image 'Charles Law graph': none (no usable candidates)
+  [IMAGE] 'Charles Law graph' -> none (no usable candidates) (1.6 s)
+  [  903.1s] Gay-Lukas law, the presence of a given mass of gas increases or decreases by 1 by 273 of its pressure for each degree rise or fall. (770 ms)
+  [UNDERSTAND] Charles's Law > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1512 ms
+               Explained that gas volume changes by 1/273 of its value for each degree temperature change.
+  [HEARD] 'Gay-Lukas' -> "Gay-Lussac's" corrected on the slide (0.9)
+  [CONCERN] (factual) increases or decreases by 1 by 273 of its pressure -> increases or decreases by 1/273 of its volume (0.95, slide shows the correction)
+19:51:06 INFO    copilot.presentation.engine: planner: update Charles's Law > Definition (same frame)
+19:51:06 INFO    copilot.presentation.engine: concern 96da752c4ba0 (transcription, applied=True): 0 element(s); slide shows "Gay-Lussac's"
+19:51:06 INFO    copilot.presentation.engine: concern 1b8741b13f49 (factual, applied=True): 1 element(s); slide shows 'volume'
+19:51:06 INFO    copilot.presentation.engine: no image for "What is charles's Law?": nothing relevant found for 'Charles Law graph' before
+  [  914.2s] of temperature respectively at constant volume. (571 ms)
+  [SLIDE] add    "What is charles's Law?" [definition] v1 (3 items)
+  [  917.9s] So PT equals P0 1 plus T by 273 at constant V. (646 ms)
+  [SLIDE] add    "What is charles's Law?" [key_points] v1 (2 items)
+  [SLIDE] update "What is charles's Law?" [key_points] v2 (3 items)
+19:51:15 WARNING copilot.llm.router: llm groq_alt#5 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m4800crme1rsrmqcnrkr6mwq` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 698,
+19:51:15 WARNING copilot.llm.router: llm openrouter_main failed: 404 {"error":{"message":"This model is unavailable for free. The paid version is available now - use this slug instead: qwen/qwen3.8-27b","code":404},"user_id":"user_3KFQZ7vlGz4Vc3Jm1Patd57S9Ak"}
+19:51:15 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily quota spent); groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#5: RateLimited; groq_alt#main: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (daily quota spent); openrouter_main: Rejected
+  [UNDERSTAND] Charles's Law > Definition (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily qu 1131 ms
+19:51:15 INFO    copilot.presentation.engine: planner: update Charles's Law > Definition (same frame)
+19:51:15 INFO    copilot.presentation.engine: no image for "What is charles's Law?": nothing relevant found for 'Charles Law graph' before
+  [SLIDE] update "What is charles's Law?" [key_points] v3 (2 items)
+  [SLIDE] update "What is charles's Law?" [key_points] v4 (3 items)
+  [  928.7s] Have a great day. (528 ms)
+  [  930.2s] It states that equal volume of all gases under the same condition of temperature and pressure contain equal number of molecules. (913 ms)
+  [  938.3s] V is directly proportional to N. (514 ms)
+  [  940.9s] V by N equals give (336 ms)
+  [UNDERSTAND] Avogadro's Law > Definition (new_topic) acts=definition hint=definition lines=3 via groq_alt#5 1936 ms
+               Defined Avogadro's Law, stating that equal volumes of gases at the same temperature and pressure contain equal numbers of molecules.
+19:51:35 INFO    copilot.presentation.engine: planner: new Avogadro's Law > Definition (new topic confirmed (boundary cue/shift))
+  [SLIDE] add    "What is avogadro's Law?" [definition] v1 (1 items)
+  [  945.9s] Molar gas volume, the volume of 1 mole of a gas that is 22.4 liter at STP 0 degree in 180 is known as the molar gas volume. (795 ms)
+  [SLIDE] update "What is avogadro's Law?" [definition] v2 (1 items)
+  [UNDERSTAND] Avogadro's Law > Molar Gas Volume (sub_concept) acts=definition hint=definition lines=2 via groq_alt#5 1295 ms
+               Defined molar gas volume as 22.4 liters for one mole of gas at STP.
+  [HEARD] 'in 180' -> '1 atm' corrected on the slide (0.8)
+19:51:48 INFO    copilot.presentation.engine: planner: continue Avogadro's Law > Molar Gas Volume (new facet)
+19:51:48 INFO    copilot.presentation.engine: slide 'Molar Gas Volume' waits for the min dwell time
+19:51:48 INFO    copilot.presentation.engine: concern a66a3fa07ef1 (transcription, applied=True): 1 element(s); slide shows '1 atm'
+  [SLIDE] update "What is avogadro's Law?" [definition] v3 (1 items)
+  [SLIDE] add    'Molar Gas Volume' [definition] v1 (1 items)
+  [  965.5s] Let us study the kinetic theory of gases. (683 ms)
+  [SLIDE] update 'Molar Gas Volume' [definition] v2 (1 items)
+  [  968.6s] The main assumption in this theory are the gas consist of large number of small particles called molecule. (695 ms)
+  [SLIDE] update 'Molar Gas Volume' [definition] v3 (1 items)
+  [UNDERSTAND] Kinetic Theory of Gases > Definition (new_topic) acts=transition,definition hint=definition lines=2 via groq_alt#5 1196 ms
+               Introduced the Kinetic Theory of Gases, stating that gases consist of large numbers of small particles called molecules.
+19:52:13 INFO    copilot.presentation.engine: planner: update Avogadro's Law > Molar Gas Volume (new topic not yet confirmed)
+  [SLIDE] update 'Molar Gas Volume' [definition] v4 (1 items)
+  [SLIDE] update 'Molar Gas Volume' [concept] v5 (2 items)
+  [  975.2s] volume occupied by gas molecules is negligible as compared to the total volume of the gas. There is continuous rapid random motion of gas molecules. (726 ms)
+  [UNDERSTAND] Kinetic Theory of Gases > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1181 ms
+               Added that gas molecule volume is negligible and molecules move in continuous rapid random motion.
+19:52:21 INFO    copilot.presentation.engine: planner: new Kinetic Theory of Gases > Definition (new topic confirmed (two interpretations agree))
+19:52:21 INFO    copilot.presentation.engine: moving 1 item(s) of 'Kinetic Theory of Gases' to the new topic's slide
+  [SLIDE] update 'Molar Gas Volume' [definition] v6 (1 items)
+  [SLIDE] add    'What are kinetic Theory of Gases?' [definition] v1 (3 items)
+19:52:21 INFO    copilot.presentation.engine: image search 'gas molecule motion' (diagram) for 'What are kinetic Theory of Gases?'
+  [  986.7s] the molecules collide with each other and with the world of container. (718 ms)
+  [SLIDE] update 'What are kinetic Theory of Gases?' [definition] v2 (4 items)
+19:52:23 INFO    copilot.presentation.engine: image 'gas molecule motion': none (no usable candidates)
+  [IMAGE] 'gas molecule motion' -> none (no usable candidates) (2.8 s)
+  [UNDERSTAND] Kinetic Theory of Gases > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1169 ms
+               Added that gas molecules collide with each other and the container walls.
+  [HEARD] 'world of container' -> 'walls of container' corrected on the slide (0.9)
+19:52:35 INFO    copilot.presentation.engine: planner: update Kinetic Theory of Gases > Definition (same frame)
+19:52:35 INFO    copilot.presentation.engine: concern a177e60dbba4 (transcription, applied=True): 0 element(s); slide shows 'walls of container'
+19:52:35 INFO    copilot.presentation.engine: no image for 'What are kinetic Theory of Gases?': nothing relevant found for 'gas molecule motion' before
+  [SLIDE] update 'What are kinetic Theory of Gases?' [definition] v3 (3 items)
+  [SLIDE] update 'What are kinetic Theory of Gases?' [definition] v4 (4 items)
+  [  990.9s] the molecules are perfectly elastic bodies and there is no loss of kinetic energy during collisions. There are no attractive forces between the gaseous molecules. The pressure exerted by the gas is due to the (688 ms)
+  [SLIDE] update 'What are kinetic Theory of Gases?' [definition] v5 (5 items)
+  [ 1005.2s] bombardment of gas molecules against the walls of the container. The different molecules possess different velocities and hence different energies. The average key is directly proportional to the absolute temperature. (817 ms)
+  [SLIDE] update 'What are kinetic Theory of Gases?' [definition] v6 (5 items)
+  [UNDERSTAND] Kinetic Theory of Gases > Definition (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#5 1072 ms
+               Elaborated on Kinetic Theory assumptions: elastic collisions, no intermolecular forces, pressure from bombardment, and kinetic energy proportional to temperature.
+19:52:50 INFO    copilot.presentation.engine: planner: update Kinetic Theory of Gases > Definition (same frame)
+19:52:50 INFO    copilot.presentation.engine: no image for 'What are kinetic Theory of Gases?': nothing relevant found for 'gas molecule motion' before
+  [SLIDE] update 'What are kinetic Theory of Gases?' [definition] v7 (4 items)
+  [SLIDE] update 'What are kinetic Theory of Gases?' [definition] v8 (7 items)
+  [SLIDE] add    'What are kinetic Theory of Gases?' [key_points] v1 (3 items)
+  [ 1018.0s] ke equals 3 by 2 times RT (499 ms)
+  [ 1027.1s] velocities of a gas molecule. (686 ms)
+  [ 1029.9s] first most probable velocity. (480 ms)
+  [UNDERSTAND] Kinetic Theory of Gases > Molecular Velocities (sibling_concept) acts=formula,classification hint=key_points lines=3 via groq_alt#5 1300 ms
+               Introduced the formula for average kinetic energy and began classifying molecular velocities, starting with most probable velocity.
+19:53:05 INFO    copilot.presentation.engine: planner: continue Kinetic Theory of Gases > Molecular Velocities (new facet)
+19:53:05 INFO    copilot.presentation.engine: no image for 'Molecular Velocities': formula needs the full width
+  [SLIDE] add    'Molecular Velocities' [formula] v1 (2 items)
+  [ 1032.6s] it is alpha equals under root 2RT upon m (579 ms)
+  [ 1037.2s] the average velocity v equals under root 8RT upon pi m (620 ms)
+  [UNDERSTAND] Kinetic Theory of Gases > Molecular Velocities (elaboration) acts=formula,formula hint=formula lines=2 via groq_alt#5 1978 ms
+               Introduced formulas for most probable and average molecular velocities.
+  [HEARD] 'alpha, m' -> 'v_p, M' corrected on the slide (0.8)
+  [HEARD] 'm' -> 'M' corrected on the slide (0.8)
+19:53:28 INFO    copilot.presentation.engine: planner: update Kinetic Theory of Gases > Molecular Velocities (same frame)
+19:53:28 INFO    copilot.presentation.engine: concern 0a13d3442ba2 (transcription, applied=True): 0 element(s); slide shows 'v_p, M'
+19:53:28 INFO    copilot.presentation.engine: concern d97bdf67e02d (transcription, applied=True): 1 element(s); slide shows 'M'
+19:53:28 INFO    copilot.presentation.engine: no image for 'Molecular Velocities': formula needs the full width
+  [SLIDE] update 'Molecular Velocities' [formula] v2 (2 items)
+  [SLIDE] add    'Molecular Velocities' [formula] v1 (2 items)
+  [ 1046.2s] root mean square velocity urms equals under root n1 c1 square plus n2 c2 square plus n3 c3 square and so on upon n1 plus n2 plus n3 and so on. (965 ms)
+19:53:34 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily quota spent); groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#5: skipped (tpm); groq_alt#main: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (daily quota spent); openrouter_main: skipped (cooldown 162s)
+  [UNDERSTAND] Kinetic Theory of Gases > Molecular Velocities (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#5: skipped (daily quota spent); groq_main#main: skipped (daily qu 1 ms
+19:53:34 INFO    copilot.presentation.engine: planner: noop Kinetic Theory of Gases > Molecular Velocities (nothing to display)
+19:54:15 INFO    copilot.presentation.engine: concern 0699872b4f59 dismissed: slide shows 'lone pairs'
+19:54:16 INFO    copilot.presentation.engine: concern 561f787399a2 dismissed: slide shows 'statcoulomb-centimeter'
+19:54:17 INFO    copilot.presentation.engine: concern 1b8741b13f49 dismissed: slide shows 'volume'
