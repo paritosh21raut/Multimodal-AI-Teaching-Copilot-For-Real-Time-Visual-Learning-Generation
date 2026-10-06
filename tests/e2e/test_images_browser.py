@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
 from display_harness import browser_page, display_harness, wait_for_slide  # noqa: E402
 
-from copilot.core.events import ImageReady, InterpretationReady  # noqa: E402
+from copilot.core.events import ImageReady, ImageRequested, InterpretationReady  # noqa: E402
 from copilot.core.interpretation import ContentItems, DiscourseAct, Interpretation  # noqa: E402
 from copilot.core.state import LectureSetup, LectureStateStore  # noqa: E402
 from copilot.presentation.engine import PresentationEngine, PresentationSettings  # noqa: E402
@@ -87,10 +87,36 @@ async def test_teacher_image_controls_and_layout(tmp_path):
         async with browser_page(f"{h.url}/control", 1600, 1000) as control, browser_page(f"{h.url}/display") as display:
             await wait_for_slide(control, sid)
             await wait_for_slide(display, sid)
-            # no image yet: only "Add image" (and a small "or drop one on the slide") floats on the preview
+            # no image yet: "Find image" + "Add image" (and a small "or drop one") float on the preview
             bar = await control.inner_text(".preview .image-bar")
-            assert "Add image" in bar and "drop" in bar and "Change" not in bar
+            assert "Find image" in bar and "Add image" in bar and "drop" in bar and "Change" not in bar
             await control.screenshot(path=str(ART / "images_control_empty.png"))
+
+            # 0. Find image: a search for the slide's topic; nothing relevant → a short note, the slide stays as it was
+            asked = []
+
+            async def on_request(e):
+                asked.append(e)
+            h.bus.subscribe("test-find", on_request, [ImageRequested])
+            await control.click(".image-bar >> text=Find image")
+            await control.wait_for_selector(".preview .image-status >> text=Finding an image")
+            await h.settle()
+            assert [(r.query, r.reason) for r in asked] == [("Saturn", "change")]
+            await h.bus.publish(ImageReady(request_id=asked[0].request_id, slide_id=sid, query="Saturn",
+                                           images=[], reason="no relevant image"))
+            await control.wait_for_selector(".preview .image-status >> text=No suitable image found")
+
+            # the teacher controls (dock): slide position, Pin toggles on and off
+            assert (await control.inner_text(".dock .count")).strip() == "1 / 1"
+            await control.click(".dock button[title='Pin (P)']")
+            await control.wait_for_selector(".dock button.on[title='Pin (P)']")
+            assert h.deck.pinned
+            await control.mouse.move(5, 5)
+            await control.wait_for_timeout(300)  # colour transition
+            await control.screenshot(path=str(ART / "control_dock_pinned.png"))
+            await control.click(".dock button[title='Pin (P)']")
+            await control.wait_for_selector(".dock button.on", state="detached")
+            assert not h.deck.pinned
 
             # 1. drag a file over the slide: the drop zone appears where the image will go, content moves left
             png = picture((20, 130, 90), (800, 1000), "teacher")

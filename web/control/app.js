@@ -44,10 +44,17 @@ const ICON = {
   upload: "M12 16V5M7 10l5-5 5 5M5 19h14",
   remove: "M6 6l12 12M18 6L6 18",
   add: "M12 5v14M5 12h14",
+  find: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4",
+  pin: "M9 3h6M10 3v6l-4 4h12l-4-4V3M12 13v8",
+  freeze: "M12 2v20M3.3 7l17.4 10M20.7 7L3.3 17M9 4l3 3 3-3M9 20l3-3 3 3",
+  blank: "M3 5h18v12H3zM8 21h8M12 17v4M5 3l14 16",
+  newSlide: "M4 5h16v14H4zM12 9v6M9 12h6",
+  end: "M7 7h10v10H7z",
 };
 
 // Small status line on the preview (bottom left): searching, nothing found after Change, upload errors.
-function useStatus(status, notice, onNotice) {
+// `request` is what started the search: auto, or change (the teacher's Find image / Change).
+function useStatus(status, notice, onNotice, hasImage) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {  // re-render when a short-lived message should disappear
     const t = setTimeout(() => setNow(Date.now()), 4200);
@@ -55,13 +62,16 @@ function useStatus(status, notice, onNotice) {
   }, [status, notice]);
   useEffect(() => { if (!notice) return; const t = setTimeout(() => onNotice(""), 6000); return () => clearTimeout(t); }, [notice]);
   if (notice) return { text: notice, error: true };
-  if (status && status.state === "searching") return { text: status.reason === "change" ? "Finding another image…" : "Finding an image…", busy: true };
-  if (status && status.state === "none" && status.reason === "change" && now - status.at < 4000) return { text: "No other image found" };
+  const asked = status && status.request === "change";
+  if (status && status.state === "searching") return { text: asked && hasImage ? "Finding another image…" : "Finding an image…", busy: true };
+  if (status && status.state === "none" && asked && now - status.at < 4000) {
+    return { text: hasImage ? "No other image found" : "No suitable image found" };
+  }
   return null;
 }
 
-// The image controls float on the preview (bottom right): Add image when the slide has none; otherwise
-// previous / next (images this slide has shown), Change, Upload, Remove.
+// The image controls float on the preview (bottom right): Find image / Add image when the slide has none;
+// otherwise previous / next (images this slide has shown), Change, Upload, Remove.
 function ImageBar({ spec, image, choices, status, send, onNotice }) {
   const input = useRef(null);
   const pick = async (e) => {
@@ -72,14 +82,17 @@ function ImageBar({ spec, image, choices, status, send, onNotice }) {
   };
   const cmd = (kind) => () => { onNotice(""); send(kind, { slide_id: spec.id }); };
   const file = html`<input ref=${input} type="file" accept=${UPLOAD_TYPES.join(",")} hidden onChange=${pick} />`;
+  const busy = status && status.state === "searching";
   if (!image) {
     return html`<div class="image-bar">
       ${file}
-      <button class="add" onClick=${() => input.current.click()} title="Choose an image file for this slide">${svg(ICON.add)}Add image</button>
-      <span class="or">or drop one on the slide</span>
+      <button class="add" onClick=${cmd("change_image")} disabled=${busy} title="Search for an image for this slide">
+        ${svg(ICON.find, busy ? "pulse" : "")}Find image</button>
+      <span class="sep"></span>
+      <button onClick=${() => input.current.click()} title="Choose an image file for this slide">${svg(ICON.add)}Add image</button>
+      <span class="or">or drop one</span>
     </div>`;
   }
-  const busy = status && status.state === "searching";
   const many = choices && choices.count > 1;
   return html`<div class="image-bar">
     ${file}
@@ -102,7 +115,7 @@ function Preview({ spec, deck, slides, choices, status, send, notice, onNotice }
   const zoomed = deck && deck.zoom ? imageOf(slides[deck.zoom]) : null;
   const canDrop = spec && spec.layout !== "title" && !zoomed;
   const image = imageOf(spec);
-  const line = useStatus(status, notice, onNotice);
+  const line = useStatus(status, notice, onNotice, !!image);
   const drop = async (e) => {
     e.preventDefault();
     depth.current = 0;
@@ -135,6 +148,49 @@ function Preview({ spec, deck, slides, choices, status, send, notice, onNotice }
       ${deck.frozen && html`<span class="flag warn">FROZEN</span>`}
       ${deck.pinned && html`<span class="flag">PINNED</span>`}
     </div>`}
+  </div>`;
+}
+
+// Teacher controls under the preview. DOCK_CONTROLS = false brings back the earlier plain button row (kept on
+// purpose: the teacher may prefer it; its styles are `.buttons` in control.css).
+const DOCK_CONTROLS = true;
+const endLecture = (send) => () => confirm("End the lecture?") && send("end");
+
+function Dock({ deck, send, toggle }) {
+  const ids = deck ? deck.slide_ids : [];
+  const at = deck ? ids.indexOf(deck.live_id) : -1;
+  const flag = (name, on, off, key, icon, label, warn) => {
+    const active = !!(deck && deck[name]);
+    return html`<button class=${(active ? "on" : "") + (warn ? " warn" : "")} aria-pressed=${active}
+      onClick=${toggle(on, off, name)} title=${`${label} (${key})`}>${svg(icon)}<span>${label}</span></button>`;
+  };
+  return html`<div class="dock">
+    <div class="group">
+      <button class="icon" onClick=${() => send("prev")} disabled=${at <= 0} title="Previous slide (←)">${svg(ICON.prev)}</button>
+      <span class="count">${ids.length ? `${at + 1} / ${ids.length}` : "– / –"}</span>
+      <button class="icon" onClick=${() => send("next")} disabled=${at < 0 || at >= ids.length - 1} title="Next slide (→)">${svg(ICON.next)}</button>
+    </div>
+    <div class="group">
+      ${flag("pinned", "pin", "unpin", "P", ICON.pin, "Pin")}
+      ${flag("frozen", "freeze", "unfreeze", "F", ICON.freeze, "Freeze", true)}
+      ${flag("blank", "blank", "unblank", "B", ICON.blank, "Blank", true)}
+    </div>
+    <div class="group">
+      <button onClick=${() => send("force_new_slide")} title="Start a new slide (N)">${svg(ICON.newSlide)}<span>New slide</span></button>
+    </div>
+    <button class="end" onClick=${endLecture(send)} title="End the lecture">${svg(ICON.end)}<span>End lecture</span></button>
+  </div>`;
+}
+
+function ClassicButtons({ deck, send, toggle }) {
+  return html`<div class="buttons">
+    <button onClick=${() => send("prev")} title="←">◀ Prev</button>
+    <button onClick=${() => send("next")} title="→">Next ▶</button>
+    <button class=${deck && deck.pinned ? "on" : ""} onClick=${toggle("pin", "unpin", "pinned")} title="P">Pin</button>
+    <button class=${deck && deck.frozen ? "on" : ""} onClick=${toggle("freeze", "unfreeze", "frozen")} title="F">Freeze</button>
+    <button class=${deck && deck.blank ? "on" : ""} onClick=${toggle("blank", "unblank", "blank")} title="B">Blank</button>
+    <button onClick=${() => send("force_new_slide")} title="N">New slide</button>
+    <button class="danger" onClick=${endLecture(send)}>End lecture</button>
   </div>`;
 }
 
@@ -233,15 +289,8 @@ function App() {
       <section class="left">
         <${Preview} spec=${liveSpec} deck=${deck} slides=${state.slides} send=${send} notice=${notice} onNotice=${setNotice}
           status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} />
-        <div class="buttons">
-          <button onClick=${() => send("prev")} title="←">◀ Prev</button>
-          <button onClick=${() => send("next")} title="→">Next ▶</button>
-          <button class=${deck && deck.pinned ? "on" : ""} onClick=${toggle("pin", "unpin", "pinned")} title="P">Pin</button>
-          <button class=${deck && deck.frozen ? "on" : ""} onClick=${toggle("freeze", "unfreeze", "frozen")} title="F">Freeze</button>
-          <button class=${deck && deck.blank ? "on" : ""} onClick=${toggle("blank", "unblank", "blank")} title="B">Blank</button>
-          <button onClick=${() => send("force_new_slide")} title="N">New slide</button>
-          <button class="danger" onClick=${() => confirm("End the lecture?") && send("end")}>End lecture</button>
-        </div>
+        ${DOCK_CONTROLS ? html`<${Dock} deck=${deck} send=${send} toggle=${toggle} />`
+                        : html`<${ClassicButtons} deck=${deck} send=${send} toggle=${toggle} />`}
         <ol class="deck">
           ${ids.map((id, i) => {
             const s = state.slides[id];

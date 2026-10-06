@@ -31,7 +31,9 @@ InterpretationReady(visual hint) → engine: hint remembered per frame → visua
 | `visuals/service.py` | bus wiring, CLIP loads in the background at start; network down / CLIP missing → no images, logged |
 
 Teacher: Remove (the frame gets no automatic image again), Change (next accepted candidate, then a deeper search
-excluding all shown), own image by drag & drop / file picker (`/api/upload` → `set_image`; on a full slide the last
+excluding all shown), Find image on a slide without one (same command: unused candidates, else a search for the
+model's hint or the slide's topic — also where the policy said no; past the first results if they were not
+relevant), own image by drag & drop / file picker (`/api/upload` → `set_image`; on a full slide the last
 content moves to the next part). Layout: `display.md` § Images.
 
 ## Generated diagrams

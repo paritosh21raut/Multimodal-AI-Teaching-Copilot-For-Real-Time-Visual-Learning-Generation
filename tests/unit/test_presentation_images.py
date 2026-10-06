@@ -97,6 +97,42 @@ async def test_change_image_cycles_candidates_then_searches_deeper():
     assert image(deck.get(sid)).image_id == f"{7:016x}"
 
 
+async def test_find_image_on_a_slide_without_one():
+    """The teacher's Find image (change_image on a slide with no image) searches even where the policy said no."""
+    change = lambda sid: CommandReceived(command=Command(kind="change_image", args={"slide_id": sid}))  # noqa: E731
+    # no hint: the slide's topic
+    bus, deck, eng, reqs = await setup()
+    await send(bus, ready("Solar System", "Saturn", [SATURN], relation="new_topic"))
+    sid = deck.live.id
+    assert reqs.items == []
+    await send(bus, change(sid))
+    r = reqs.items[-1]
+    assert (r.query, r.kind, r.reason, r.deeper) == ("Saturn", "photo", "change", False)
+    await answer(bus, r, [img(5)])
+    assert image(deck.get(sid)).image_id == f"{5:016x}"
+    # an abstract hint the policy refused: the teacher asked, so it is searched
+    bus, deck, eng, reqs = await setup()
+    await send(bus, with_visual(ready("Energy", "Kinetic Energy", [act("explanation", points=["KE is energy of motion"])],
+                                      relation="new_topic"), "kinetic energy", "diagram"))
+    assert reqs.items == []
+    await send(bus, change(deck.live.id))
+    assert (reqs.items[-1].query, reqs.items[-1].kind) == ("kinetic energy", "diagram")
+    # the automatic search found nothing relevant: past its first results
+    bus, deck, eng, reqs = await setup()
+    await send(bus, with_visual(ready("Solar System", "Saturn", [SATURN], relation="new_topic"), "Saturn"))
+    await answer(bus, reqs.items[0], [], reason="no relevant image")
+    await send(bus, change(deck.live.id))
+    assert reqs.items[-1].query == "Saturn" and reqs.items[-1].deeper
+    # the teacher removed the automatic image: Find offers the next candidate, not the removed one
+    bus, deck, eng, reqs = await setup()
+    await send(bus, with_visual(ready("Solar System", "Saturn", [SATURN], relation="new_topic"), "Saturn"))
+    await answer(bus, reqs.items[0], [img(1), img(2)])
+    sid = deck.live.id
+    await send(bus, CommandReceived(command=Command(kind="remove_image", args={"slide_id": sid})))
+    await send(bus, change(sid))
+    assert image(deck.get(sid)).image_id == f"{2:016x}" and len(reqs.items) == 1
+
+
 async def test_teacher_image_on_a_full_slide_moves_the_last_content_to_the_next_part():
     bus, deck, eng, reqs = await setup()
     pts = [f"Saturn fact {i}: its rings are made of ice and rock pieces" for i in range(8)]

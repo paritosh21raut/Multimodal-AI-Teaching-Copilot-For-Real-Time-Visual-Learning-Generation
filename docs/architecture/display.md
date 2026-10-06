@@ -45,12 +45,14 @@ backoff capped at 2 s), so no duplicate tabs. `--no-open` disables it. Test: `te
 - `GET /media/<16 hex>.jpg`: only re-encoded files of our image cache (`data/cache/images`); no hot-linking.
 - `POST /api/upload` (raw body, `Content-Type` image/jpeg|png|webp|gif, ≤ 10 MB): stores a validated, re-encoded copy,
   returns `{image_id, url, width, height, aspect, alt}`; no state change — `/control` then sends `set_image`.
-- `/control` image controls float on the preview (bottom right, a small glass bar, no extra row): **Add image**
-  (file picker) + "or drop one on the slide" when the slide has none; with an image: ‹ n / m › (every image this
-  slide has shown, `image_prev` / `image_next`), **Change**, upload (own file), remove. A small chip bottom left shows
-  "Finding an image…", "No other image found" (after Change) or an upload error. Dragging a file over the preview
-  shows the slide as it will look with a dashed drop zone where the image goes; drop → upload → `set_image`. The hub
-  sends `image_status` and `image_choices` to the control view only.
+- `/control` image controls float on the preview (bottom right, a small glass bar, no extra row): **Find image**
+  (`change_image` on a slide without one: a search even where the policy said no) · **Add image** (file picker) +
+  "or drop one" when the slide has none; with an image: ‹ n / m › (every image this slide has shown, `image_prev` /
+  `image_next`), **Change**, upload (own file), remove. A small chip bottom left shows "Finding an image…",
+  "No other image found" / "No suitable image found" (after Change / Find) or an upload error. Dragging a file over
+  the preview shows the slide as it will look with a dashed drop zone where the image goes; drop → upload →
+  `set_image`. The hub sends `image_status` (`state`, `request` = auto | change, `reason` = why none) and
+  `image_choices` to the control view only.
 - Zoom: clicking the image in the preview sends `zoom_image`; the deck sets `DeckState.zoom`; /display shows the
   image filling the stage (slide background, as large as its aspect allows), /control shows the same inside its
   preview with "← Back to slide (Esc)". Esc, a click on the image or Back → `unzoom_image`; navigation or the image
@@ -58,5 +60,8 @@ backoff capped at 2 s), so no duplicate tabs. `--no-open` disables it. Test: `te
 
 ## Teacher controls
 Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `F` freeze, `P` pin, `B` blank,
-`N` force new slide, `Esc` end lecture. The terminal also accepts `Enter` (start) and `q` (end).
+`N` force new slide (End lecture: button only; `Esc` closes a zoomed image). The terminal also accepts `Enter` (start) and `q` (end).
+The buttons are a dock under the preview in the image bar's style: pill groups ‹ n / m › · Pin Freeze Blank (on =
+filled; Freeze/Blank in the warning colour) · New slide, End lecture on the right. `DOCK_CONTROLS = false` in
+`web/control/app.js` brings back the earlier plain button row (kept until the teacher has chosen).
 Controls send `Command` messages over the WebSocket → `CommandReceived` events; the UI never mutates state.

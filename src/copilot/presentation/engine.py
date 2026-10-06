@@ -856,7 +856,9 @@ class PresentationEngine:
             await self._show_image(spec, block, teacher=True)
             log.info("teacher image on %r", spec.title)
             return
-        # change_image: the next accepted candidate, then a deeper search for the same scenario
+        # change_image: the next accepted candidate, then a deeper search for the same scenario. On a slide without
+        # an image it is the teacher's "Find image": the topic's unused candidates, else a search for the model's
+        # hint or the slide's topic (also where the policy said no, or the teacher removed the automatic image)
         if cur is not None:
             fv.shown_ids.add(cur.image_id)
         nxt = next((c for c in fv.candidates if c.image_id not in fv.shown_ids), None)
@@ -864,5 +866,9 @@ class PresentationEngine:
             await self._replace_image(spec, nxt, fv)
             return
         generic = ("definition", "meaning", "overview", "introduction", "process", "importance")
-        query = fv.query or (meta.frame.topic if meta.frame.facet.lower() in generic else meta.frame.facet)
-        await self._request_image(spec.id, query, fv.kind, fv, "change", deeper=bool(fv.query))
+        hinted = fv.hint.query if fv.hint is not None and fv.hint.query else ""
+        kind = fv.kind if fv.query else (fv.hint.kind if hinted else "photo")
+        facet = meta.frame.facet
+        query = fv.query or hinted or (meta.frame.topic if not facet or facet.lower() in generic else facet) or spec.title
+        deeper = bool(fv.query) or norm_query(query) in fv.no_match  # its first results were offered or not relevant
+        await self._request_image(spec.id, query, kind, fv, "change", deeper=deeper)

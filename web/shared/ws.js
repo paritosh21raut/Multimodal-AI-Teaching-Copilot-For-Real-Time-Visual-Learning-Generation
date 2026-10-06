@@ -63,7 +63,7 @@ export function reduce(state, msg) {
         : { ...state, concerns: [...state.concerns, msg.concern] };
     case "concern_resolved": return { ...state, concerns: state.concerns.filter((c) => c.id !== msg.id) };
     case "image_status":  // control only: image search state per slide (F-007b)
-      return { ...state, images: { ...state.images, [msg.slide_id]: { state: msg.state, reason: msg.reason, at: Date.now() } } };
+      return { ...state, images: { ...state.images, [msg.slide_id]: { state: msg.state, request: msg.request, reason: msg.reason, at: Date.now() } } };
     case "image_choices":  // control only: images this slide has shown, for the previous / next arrows
       return { ...state, choices: { ...state.choices, [msg.slide_id]: { index: msg.index, count: msg.count } } };
     default: return state;

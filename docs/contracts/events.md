@@ -35,7 +35,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 `Command.kind`: `start, end, pause, resume, next, prev, goto, freeze, unfreeze, pin, unpin, blank, unblank,
 force_new_slide, resolve_concern(id, action), remove_image(slide_id), change_image(slide_id),
 set_image(slide_id, image_id, aspect, alt), image_prev(slide_id), image_next(slide_id), zoom_image(slide_id),
-unzoom_image` (image commands: F-007b; `set_image` follows `POST /api/upload`; zoom is a deck display flag).
+unzoom_image` (image commands: F-007b; `change_image` on a slide without an image = the teacher's Find image; `set_image` follows `POST /api/upload`; zoom is a deck display flag).
 
 `Interpretation` (`core/interpretation.py`): `topic, subtopic, relation, acts[{act, lines, items, added}],
 representation_hint, meta_lines, concerns[{claim, issue, suggested_correction, confidence, lines, kind, wrong, right}], revisions[{ref, text}], level_estimate,

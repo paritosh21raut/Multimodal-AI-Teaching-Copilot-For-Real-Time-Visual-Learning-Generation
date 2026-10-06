@@ -75,6 +75,7 @@ class DisplayHub:
         self.transcript: deque[dict] = deque(maxlen=TRANSCRIPT_LINES)
         self.concerns: dict[str, dict] = {}  # open concerns (control view only; never sent to the display)
         self.image_choices: dict[str, dict] = {}  # slide_id -> {index, count} (control only)
+        self._image_requests: dict[str, str] = {}  # running image searches: request_id -> auto | change
         self.connects: dict[str, int] = {"display": 0, "control": 0}  # connections ever made, per role
 
     def attach(self) -> None:
@@ -175,11 +176,13 @@ class DisplayHub:
                 self.concerns[event.concern_id] = c
                 self._broadcast({"type": "concern", "concern": c}, roles=("control",))
         elif isinstance(event, ImageRequested):  # control only: the teacher sees "searching…" under the slide
+            self._image_requests[event.request_id] = event.reason
             self._broadcast({"type": "image_status", "slide_id": event.slide_id, "state": "searching",
-                             "reason": event.reason}, key=("image", event.slide_id), roles=("control",))
-        elif isinstance(event, ImageReady):
+                             "request": event.reason, "reason": ""}, key=("image", event.slide_id), roles=("control",))
+        elif isinstance(event, ImageReady):  # request: auto | change (the teacher's Find / Change); reason: why none
             self._broadcast({"type": "image_status", "slide_id": event.slide_id,
-                             "state": "found" if event.images else "none", "reason": event.reason},
+                             "state": "found" if event.images else "none",
+                             "request": self._image_requests.pop(event.request_id, "auto"), "reason": event.reason},
                             key=("image", event.slide_id), roles=("control",))
         elif isinstance(event, ImageChoices):  # control only: the previous / next image arrows
             self.image_choices[event.slide_id] = {"index": event.index, "count": event.count}

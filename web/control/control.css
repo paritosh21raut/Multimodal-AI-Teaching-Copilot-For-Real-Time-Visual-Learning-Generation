@@ -49,6 +49,7 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); 
 .image-bar .sep { width: 1px; height: 18px; background: var(--line); margin: 0 4px; }
 .ico { width: 16px; height: 16px; flex: none; }
 .ico.spin { animation: spin 0.9s linear infinite; }
+.ico.pulse { animation: blink 1.2s ease-in-out infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes bar-in { from { opacity: 0; transform: translateY(4px); } }
 
@@ -75,11 +76,37 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); 
 }
 .back .ico { width: 18px; height: 18px; }
 .back kbd { font: 600 11px var(--font-text); color: var(--muted); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; }
-.buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 button { font: inherit; font-weight: 600; padding: 9px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
 button:hover { border-color: var(--accent); }
+/* earlier plain button row (DOCK_CONTROLS = false in app.js) */
+.buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 button.danger { margin-left: auto; color: var(--accent-2); }
+
+/* teacher controls: pill groups in the style of the image bar */
+.dock { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.dock .group, .dock .end {
+  display: inline-flex; align-items: center; gap: 2px; padding: 4px; border-radius: 999px;
+  background: var(--surface); border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+}
+.dock button {
+  display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px;
+  font-size: 13px; font-weight: 600; border: 0; border-radius: 999px; background: transparent; color: var(--ink);
+  transition: background 140ms ease, color 140ms ease;
+}
+.dock button.icon { width: 34px; padding: 0; justify-content: center; }
+.dock button:hover:not(:disabled) { background: var(--accent-soft); color: var(--accent); }
+.dock button:disabled { opacity: 0.35; cursor: default; }
+.dock button.on { background: var(--accent); color: var(--accent-ink); }
+.dock button.on.warn { background: var(--accent-2); color: var(--bg); }
+.dock button.on:hover { background: var(--accent); color: var(--accent-ink); filter: brightness(1.06); }
+.dock button.on.warn:hover { background: var(--accent-2); color: var(--bg); }
+.dock .count { font-size: 12px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 44px; text-align: center; }
+.dock .end { margin-left: auto; padding: 0; }
+.dock button.end { height: 42px; padding: 0 18px 0 16px; color: var(--accent-2); }
+.dock button.end:hover { background: var(--accent-2-soft); color: var(--accent-2); }
+.dock .end .ico { width: 14px; height: 14px; }
 
 .deck { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 30vh; overflow: auto; }
 .deck li { display: flex; gap: 10px; align-items: baseline; padding: 8px 12px; border-radius: 8px; background: var(--surface); cursor: pointer; border: 1px solid transparent; }

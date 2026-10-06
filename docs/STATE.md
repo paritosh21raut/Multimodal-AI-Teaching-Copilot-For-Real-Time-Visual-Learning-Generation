@@ -1,10 +1,16 @@
 # Current State
 
-_Last updated: 2026-10-06 (late morning): **V1b images (F-007b): visual hint live (A/B passed), real-LLM run of
-human_body + zero-token replay verified; /control round 2 (floating image bar, previous/next, zoom) done.** Next: user
-test of V1b in a live lecture; then V1c (F-007c)._
+_Last updated: 2026-10-06 (afternoon): **V1b images (F-007b) accepted by the user (commit 950e8d1); round 3: Find
+image on slides without one, teacher controls restyled as a dock (old row behind `DOCK_CONTROLS`).** Next: user
+checks the dock (keep or revert); then V1c (F-007c) or V2 — user's choice._
 
 ## Now
+- **V1b round 3 (2026-10-06):** empty image bar = Find image · Add image · "or drop one"; Find = `change_image` on a
+  slide without an image (unused candidates, else hint / topic search, deeper after "no relevant image").
+  Hub `image_status` now carries `request` (auto | change) — the "No other image found" chip never showed before
+  (it checked `reason`, which is the why-none text). Controls dock (pill groups, slide n / m, on = filled);
+  `DOCK_CONTROLS = false` in `web/control/app.js` restores the old row (verified by screenshot). 385 fast + 11
+  browser + 5 slow. 0 LLM tokens.
 - **V1b (F-007b "Measured"):** CLIP int8 on CPU ≈ 0.7 s / 8 candidates (target 1.5 s); Wikipedia + Commons sources,
   filters, disk cache, `/media`, policy, engine wiring (`ImageRequested`/`ImageReady`), image layout, `/control`
   drag & drop (drop zone) / Add / Change / Remove image, `/api/upload`. 30-concept labelled set: first image relevant
