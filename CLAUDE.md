@@ -53,7 +53,9 @@ Original requirements: `docs/brief/master-prompt.md` (read only when requirement
 ## Commands
 ```bash
 .venv/Scripts/python -m pip install -e ".[dev]"     # install
-.venv/Scripts/python -m pip install -e ".[dev,audio,display,understanding]"   # full stack
+.venv/Scripts/python -m pip install -e ".[dev,audio,display,understanding,images]"   # full stack
+.venv/Scripts/python tools/screenshot_lessons.py light human_body solar   # scripted lessons + real image search (0 LLM tokens)
+.venv/Scripts/python tools/prompt_ab.py --dry <session>[:i,j]   # rebuild recorded prompts (0 tokens); without --dry: real A/B
 .venv/Scripts/python -m pytest                      # fast tests
 .venv/Scripts/python -m pytest -m slow              # + GPU/model tests
 .venv/Scripts/python -m pytest -m browser           # real Edge via Playwright (display)

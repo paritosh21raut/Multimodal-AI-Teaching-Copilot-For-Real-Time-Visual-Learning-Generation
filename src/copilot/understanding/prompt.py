@@ -9,7 +9,7 @@ from copilot.core.state import LectureState
 from copilot.core.textutil import approx_tokens
 from copilot.understanding.gate import BufferedLine
 
-SYSTEM_PROMPT = """You turn a live classroom lecture into clear projector slides that follow the teacher.
+_SYSTEM_TEMPLATE = """You turn a live classroom lecture into clear projector slides that follow the teacher.
 You get the lecture context, the CURRENT SLIDE (its items numbered [S1], [S2], ...) and a few NEW numbered
 transcript lines from speech recognition (they can be fragments of one sentence). Reply with ONE JSON object only.
 
@@ -69,7 +69,7 @@ Truthful slides (concerns):
 
 Also: representation_hint (definition, concept, key_points, process_flow, comparison, timeline, hierarchy,
 cause_effect, formula, example, application, narrative, none); summary_delta (one sentence, max 25 words, on
-what the NEW lines taught); level_estimate (e.g. "Grade 7"; keep a given grade); subject_estimate.
+what the NEW lines taught); level_estimate (e.g. "Grade 7"; keep a given grade); subject_estimate.{visual_rule}
 
 JSON shape:
 {"topic": "", "subtopic": "", "relation": "", "acts": [{"act": "", "lines": [1], "items": {"term": "",
@@ -79,8 +79,24 @@ JSON shape:
 "causes": [{"cause": "", "effect": ""}], "examples": [""]}, "added": false}], "revisions": [{"ref": "S1",
 "text": ""}], "representation_hint": "", "meta_lines": [], "concerns": [{"kind": "factual", "claim": "",
 "issue": "", "suggested_correction": "", "wrong": "", "right": "", "confidence": 0.9, "lines": [1]}],
-"level_estimate": "", "subject_estimate": "", "summary_delta": ""}
+"level_estimate": "", "subject_estimate": "", "summary_delta": ""{visual_shape}}}
 Omit empty fields; revisions and concerns are [] when there are none."""
+
+# F-007b: the image hint. Kept apart so the A/B tool can rebuild the previous prompt exactly (tools/prompt_ab.py).
+VISUAL_RULE = """
+visual: {"query": "2-4 words", "kind": "photo" or "diagram"} ONLY when the NEW lines teach a concrete thing
+students should see (organ, planet, animal, plant part, apparatus, place) or a physical process or structure a
+diagram shows; omit it for abstract ideas, equations and definitions of abstract terms."""
+VISUAL_SHAPE = ', "visual": {"query": "", "kind": ""}'
+
+
+def system_prompt(visual: bool = True) -> str:
+    return _SYSTEM_TEMPLATE.replace("{visual_rule}", VISUAL_RULE if visual else "").replace(
+        "{visual_shape}}}", (VISUAL_SHAPE if visual else "") + "}")
+
+
+# The visual rule goes live only after the old-vs-new A/B on gpt-oss-120b (F-007b step 4) passes.
+SYSTEM_PROMPT = system_prompt(visual=False)
 
 OUTLINE_MAX_TOKENS = 150
 SUMMARY_MAX_TOKENS = 120

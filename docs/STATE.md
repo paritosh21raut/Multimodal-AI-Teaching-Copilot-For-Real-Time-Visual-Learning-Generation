@@ -1,10 +1,19 @@
 # Current State
 
-_Last updated: 2026-10-06 (late): **V1a round 2** (user's 7 issues from live mic tests) fixed and verified: real
-formula parser, equations in text, concept columns, bullets/numbers, peer pairing, stale-tab reload, formula-JSON
-parsing. Next: user re-test with the mic, then V1b images (F-007b)._
+_Last updated: 2026-10-06 (morning): **V1b images (F-007b) built, zero-token verified; prompt A/B + real-LLM runs
+pending (Groq quota).** Next: add Groq keys or wait for the quota → `tools/prompt_ab.py` A/B → adopt the visual rule
+if it passes → real runs of `human_body.txt` + `solar_system.txt`._
 
 ## Now
+- **V1b (F-007b "Measured"):** CLIP int8 on CPU ≈ 0.7 s / 8 candidates (target 1.5 s); Wikipedia + Commons sources,
+  filters, disk cache, `/media`, policy, engine wiring (`ImageRequested`/`ImageReady`), image layout, `/control`
+  drag & drop (drop zone) / Add / Change / Remove image, `/api/upload`. 30-concept labelled set: first image relevant
+  in 28/28 answered. Lessons (real image service, 0 LLM tokens): human body 4/5 slides with an image, solar 2/3,
+  physics 0/4. Status: **unit + browser tested, zero-token runtime-verified; the LLM visual hint is NOT live yet**
+  (`prompt.SYSTEM_PROMPT = system_prompt(False)` until the A/B passes). Tokens this session: 10,420 (qwen3.8-27b, an
+  unintended app smoke run that fell through to `groq_alt`); the A/B tool sent nothing.
+- **Groq quota:** `.env` has only `GROQ_API_KEY_3`; its gpt-oss-120b quota was 197,976/200,000 on 2026-10-06 07:00
+  (frees ≈ 2026-10-07 01:50). OpenRouter backup still 404 (untouched, user decision).
 - **V1a round 2 (F-007a "Round 2"):** root causes + fixes for all 7 user issues; 323 fast + 9 browser tests; replays of
   the 5 live sessions (0 tokens) + real Groq energy ×2 / kinematics (≈ 43k tokens incl. a 2.2k probe), 0 fallbacks.
   Biggest find: gpt-oss-120b flattens `items.formula` → half the formulas were silently dropped since M3 (fixed).

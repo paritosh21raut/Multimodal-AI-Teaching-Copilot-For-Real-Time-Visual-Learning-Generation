@@ -22,6 +22,8 @@ from copilot.core.events import (
     ConcernResolved,
     DeckState,
     Event,
+    ImageReady,
+    ImageRequested,
     LifecycleChanged,
     SlideOverflow,
     SlidePatch,
@@ -77,7 +79,7 @@ class DisplayHub:
         self._bus.subscribe(
             "display_hub", self._on_event,
             [SlidePatch, DeckState, LifecycleChanged, TranscriptFinal, UtteranceDropped, ConcernRaised,
-             ConcernResolved],
+             ConcernResolved, ImageRequested, ImageReady],
         )
         # Audio levels are high-rate and only matter "now": drop old ones if the hub lags.
         self._bus.subscribe("display_hub_audio", self._on_event, [AudioLevel], queue_size=4, overflow="drop_oldest")
@@ -169,6 +171,13 @@ class DisplayHub:
                 c = {**c, "status": event.status, "applied": event.status == "accepted"}
                 self.concerns[event.concern_id] = c
                 self._broadcast({"type": "concern", "concern": c}, roles=("control",))
+        elif isinstance(event, ImageRequested):  # control only: the teacher sees "searching…" under the slide
+            self._broadcast({"type": "image_status", "slide_id": event.slide_id, "state": "searching",
+                             "reason": event.reason}, key=("image", event.slide_id), roles=("control",))
+        elif isinstance(event, ImageReady):
+            self._broadcast({"type": "image_status", "slide_id": event.slide_id,
+                             "state": "found" if event.images else "none", "reason": event.reason},
+                            key=("image", event.slide_id), roles=("control",))
         elif isinstance(event, AudioLevel):
             self._broadcast({"type": "audio", "rms": event.rms, "speaking": event.speaking},
                             key=("audio",), roles=("control",))

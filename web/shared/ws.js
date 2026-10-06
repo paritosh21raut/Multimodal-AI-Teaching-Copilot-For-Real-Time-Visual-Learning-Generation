@@ -41,7 +41,7 @@ export function connect(role, onMessage, onStatus) {
 }
 
 // Reducer shared by both pages: applies server messages to a plain state object.
-export const initialState = { theme: "light", lifecycle: "starting", slides: {}, deck: null, transcript: [], audio: null, connected: false, concerns: [] };
+export const initialState = { theme: "light", lifecycle: "starting", slides: {}, deck: null, transcript: [], audio: null, connected: false, concerns: [], images: {} };
 
 export function reduce(state, msg) {
   switch (msg.type) {
@@ -62,6 +62,8 @@ export function reduce(state, msg) {
         ? { ...state, concerns: state.concerns.map((c) => (c.id === msg.concern.id ? msg.concern : c)) }
         : { ...state, concerns: [...state.concerns, msg.concern] };
     case "concern_resolved": return { ...state, concerns: state.concerns.filter((c) => c.id !== msg.id) };
+    case "image_status":  // control only: image search state per slide (F-007b)
+      return { ...state, images: { ...state.images, [msg.slide_id]: { state: msg.state, reason: msg.reason } } };
     default: return state;
   }
 }

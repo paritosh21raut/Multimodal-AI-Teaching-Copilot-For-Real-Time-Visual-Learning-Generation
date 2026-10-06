@@ -186,12 +186,16 @@ class GroupsBlock(_Model):
 
 
 class ImageBlock(_Model):
+    """An image beside the slide content (image layout, F-007b). Served by our server (/media/<image_id>.jpg)."""
     type: Literal["image"] = "image"
     id: str = Field(default_factory=new_id)
     url: str
     alt: str
-    credit: str = ""
+    credit: str = ""    # not shown on slides for now (user 2026-10-06); kept for exports
     licence: str = ""
+    aspect: float = 4 / 3  # width / height: the layout reserves the image box before the file has loaded
+    origin: Literal["auto", "teacher"] = "auto"
+    image_id: str = ""  # image cache id
 
 
 Block = Annotated[

@@ -8,9 +8,11 @@ from __future__ import annotations
 import asyncio
 import socket
 from contextlib import asynccontextmanager
-from typing import AsyncIterator
+from pathlib import Path
+from typing import AsyncIterator, Optional
 
 from copilot.core.bus import EventBus
+from copilot.core.config import PROJECT_ROOT
 from copilot.display.hub import DisplayHub
 from copilot.display.server import DisplayServer
 from copilot.presentation.deck import Deck
@@ -35,13 +37,16 @@ class Harness:
 
 
 @asynccontextmanager
-async def display_harness(theme: str = "light") -> AsyncIterator[Harness]:
+async def display_harness(theme: str = "light", media_dir: Optional[Path] = None) -> AsyncIterator[Harness]:
+    """media_dir: image cache served under /media (default: the app's cache, so cached lecture images show)."""
+    from copilot.visuals.cache import ImageCache
+
     bus = EventBus()
     deck = Deck(bus)
     deck.attach()
     hub = DisplayHub(bus, theme=theme)
     hub.attach()
-    server = DisplayServer(hub, port=free_port())
+    server = DisplayServer(hub, port=free_port(), media=ImageCache(media_dir or PROJECT_ROOT / "data/cache/images"))
     await server.start()
     harness = Harness(bus, deck, hub, server)
     try:

@@ -25,22 +25,27 @@ from copilot.core.events import (
     ConcernResolved,
     DeckState,
     Event,
+    ImageReady,
+    ImageRequested,
     InterpretationReady,
     Lifecycle,
     LifecycleChanged,
     SlideContextChanged,
     SlideOverflow,
+    new_id,
 )
 from copilot.core.state import Concern, LectureStateStore
 from copilot.presentation.composer import (
-    BODY_BUDGET_PX, body_height, clear_provisional, describe, element_texts, fits, frame_slide, is_small, merge,
-    remove_elements, revise_item,
-    set_provisional, substitute, teacher_items, title_slide,
+    BODY_BUDGET_PX, body_height, clear_provisional, describe, element_texts, fits, fits_unshrunk, frame_slide,
+    image_of, is_small, merge, remove_elements, revise_item, set_provisional, split_to_fit, substitute,
+    teacher_items, title_slide, with_image, without_image,
 )
 from copilot.presentation.content import Piece, clean, pieces_and_chain
 from copilot.presentation.deck import Deck
 from copilot.presentation.planner import Decision, Frame, Signal, Working, decide
-from copilot.presentation.spec import SlideSpec
+from copilot.presentation.spec import ImageBlock, SlideSpec
+from copilot.visuals.policy import FrameVisual, blocked, norm_query
+from copilot.visuals.policy import decide as image_decision
 
 log = logging.getLogger(__name__)
 
@@ -48,6 +53,7 @@ TICK_S = 0.25
 APPLY_WAIT_S = 5.0
 MAX_SIGNALS = 300
 MAX_CORRECTIONS = 100
+IMAGE_RETRY_S = 60.0  # lecture seconds before a failed image search (network, timeout) is tried again
 
 
 @dataclass
@@ -155,12 +161,14 @@ class PresentationEngine:
         self._live_since = 0.0
         self._context: tuple[str, dict[str, str]] = ("", {})
         self._tasks: list[asyncio.Task] = []
+        self._visuals: list[tuple[Frame, FrameVisual]] = []      # per frame: its image, candidates, teacher choices
+        self._image_requests: dict[str, tuple[str, str]] = {}   # request id -> (slide id, reason)
 
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
         self.bus.subscribe("presentation", self._on_event, [
             InterpretationReady, ConceptSignal, CommandReceived, ConcernResolved, SlideOverflow,
-            LifecycleChanged, DeckState,
+            LifecycleChanged, DeckState, ImageReady,
         ])
         self._tasks = [asyncio.create_task(self._ticker(), name="presentation:ticker")]
 
@@ -191,6 +199,10 @@ class PresentationEngine:
             elif isinstance(event, CommandReceived):
                 if event.command.kind == "force_new_slide":
                     await self._force_new()
+                elif event.command.kind in ("remove_image", "change_image", "set_image"):
+                    await self._on_image_command(event.command.kind, event.command.args)
+            elif isinstance(event, ImageReady):
+                await self._on_image_ready(event)
             elif isinstance(event, SlideOverflow):
                 meta = self._meta.get(event.slide_id)
                 spec = self._spec(event.slide_id)
@@ -388,6 +400,7 @@ class PresentationEngine:
         self._placements = []
         moved: list[Piece] = []
         removed: set[tuple[str, str]] = set()
+        nav: Optional[str] = None
         try:
             nav = self._navigated_back_to(Frame.of(it))
             if nav is not None:  # the teacher went back to the slide this content belongs to: update it there
@@ -427,6 +440,10 @@ class PresentationEngine:
         line_of = {sid: n for n, sid in enumerate(ev.segment_ids, start=1)}
         await self._track_corrections([c for c in snap.concerns if c.request_id == ev.request_id], line_of,
                                       [(p, ks) for p, ks in placements if not any(p is m for m in moved)], revised)
+        if it.visual is not None:  # remembered per frame: a new topic's first unit may still wait on the old slide
+            self._fv(Frame.of(it)).hint = it.visual
+        if nav is None and self._working_id and (placements or it.visual is not None):
+            await self._consider_image(self._working_id)
 
     async def _take_back(self, t: Tentative) -> tuple[list[Piece], set[tuple[str, str]]]:
         """Remove a confirmed topic's early items from the slides they were shown on; the caller places them on the
@@ -605,8 +622,13 @@ class PresentationEngine:
             ids_before = {(cur.id, e) for e in element_texts(cur)}
             finished: list[SlideSpec] = []
             full = (not cur_new) and self._meta.get(cur.id, SlideMeta(frame)).full
+            before = cur
             cur, left = merge(cur, piece, full=full)
-            if left is not None and not full and is_small(left):
+            if left is not None and image_of(before) is not None and teacher_items(before) > 0:
+                # beside an image the type may shrink to take a piece; when even that is not enough the slide
+                # stays as it was and the whole piece opens the next part (user 2026-10-06)
+                cur, left = before, piece
+            elif left is not None and not full and is_small(left):
                 cur, left = merge(cur, left, squeeze=True)  # one short item: squeeze it in, no lonely next part
             while left is not None:
                 nxt = frame_slide(frame.topic, frame.facet, continuation_of=cur.id)
@@ -645,3 +667,174 @@ class PresentationEngine:
             await self._commit(spec)
             if spec.id not in self._meta:
                 self._meta[spec.id] = SlideMeta(frame)
+
+    # ---- images (F-007b) ----------------------------------------------------------------------------
+    def _fv(self, frame: Frame) -> FrameVisual:
+        for f, v in self._visuals:
+            if f.same(frame):
+                return v
+        v = FrameVisual()
+        self._visuals.append((frame, v))
+        return v
+
+    async def _consider_image(self, slide_id: str) -> None:
+        """After content reached a slide: the policy decides whether it gets an image (search / keep / none), with
+        the model's latest hint for the slide's frame."""
+        spec, meta = self._spec(slide_id), self._meta.get(slide_id)
+        if spec is None or meta is None or meta.is_title:
+            return
+        fv = self._fv(meta.frame)
+        img = image_of(spec)
+        if img is not None and img.origin == "auto" and blocked(spec):
+            # a full-width diagram (process, comparison, formula ...) arrived: the automatic image yields to it
+            await self._commit(without_image(spec))
+            log.info("image removed from %r: %s", spec.title, blocked(spec))
+            return
+        hint = fv.hint
+        d = image_decision(spec, hint, fv)
+        if d.action == "keep" and fv.image is not None:
+            if await self._show_image(spec, fv.image, teacher=False):
+                log.info("image %r kept on %r (%s)", fv.query, spec.title, d.reason)
+        elif d.action == "search":
+            if self.now() < fv.retry_at:
+                return  # the last search failed (network, timeout): not again on every unit
+            fv.pending = d.query
+            await self._request_image(spec.id, d.query, d.kind, fv, "auto")
+            log.info("image search %r (%s) for %r", d.query, d.kind, spec.title)
+        elif hint is not None:
+            log.info("no image for %r: %s", spec.title, d.reason)
+
+    async def _request_image(self, slide_id: str, query: str, kind: str, fv: FrameVisual, reason: str,
+                             deeper: bool = False) -> None:
+        rid = new_id()
+        self._image_requests[rid] = (slide_id, reason)
+        await self.bus.publish(ImageRequested(request_id=rid, slide_id=slide_id, query=query,
+                                              kind=kind if kind in ("photo", "diagram") else "photo",
+                                              exclude=sorted(fv.shown_ids), deeper=deeper, reason=reason))
+
+    async def _show_image(self, spec: SlideSpec, image: ImageBlock, teacher: bool) -> bool:
+        """Put the image on the slide. Automatic: only when the content still fits at the default type size.
+        The teacher's choice: the type may shrink; if even that is not enough, the last content moves to the next
+        part (the image never shrinks the content out of sight)."""
+        new = with_image(spec, image.model_copy(update={"id": new_id()}))
+        if not teacher and not fits_unshrunk(new):
+            log.info("no room for an image on %r", spec.title)
+            return False
+        if teacher and not fits(new):
+            new, moved = split_to_fit(new)
+            if moved:
+                await self._commit(new)
+                await self._open_tail(new, moved)
+                return True
+        await self._commit(new)
+        return True
+
+    async def _open_tail(self, head: SlideSpec, blocks: list) -> None:
+        """Content that no longer fits beside the teacher's image continues on the next part, right after it."""
+        meta = self._meta[head.id]
+        part = self._last_part(meta.frame, head) + 1
+        if head.part is None:
+            head = head.model_copy(update={"part": 1})
+            await self._commit(head)
+        tail = frame_slide(meta.frame.topic, meta.frame.facet, continuation_of=head.id)
+        tail = tail.model_copy(update={"title": head.title, "part": part, "blocks": blocks, "layout": head.layout})
+        self._meta[tail.id] = SlideMeta(meta.frame)
+        await self.deck.add(tail, activate=False, after=head.id)
+        self.stats.slides += 1
+        if self._working_id == head.id:
+            self._working_id = tail.id  # new content continues after the moved content
+        log.info("teacher image on %r: %d block(s) moved to part %d", head.title, len(blocks), part)
+
+    @staticmethod
+    def _block(img: dict, query: str) -> ImageBlock:
+        w, h = img.get("width") or 4, img.get("height") or 3
+        return ImageBlock(url=f"/media/{img['id']}.jpg", alt=img.get("alt") or query, image_id=img["id"],
+                          credit=(img.get("author") or "")[:120], licence=img.get("licence") or "",
+                          aspect=round(w / h, 3), origin="auto")
+
+    async def _on_image_ready(self, ev: ImageReady) -> None:
+        slide_id, reason = self._image_requests.pop(ev.request_id, (ev.slide_id, "auto"))
+        meta = self._meta.get(slide_id)
+        if meta is None:
+            return
+        fv = self._fv(meta.frame)
+        if norm_query(fv.pending) == norm_query(ev.query):
+            fv.pending = ""
+        blocks = [self._block(i, ev.query) for i in ev.images]
+        if not blocks:
+            if reason == "auto" and ev.reason in ("no relevant image", "no usable candidates", "no match (cached)"):
+                fv.no_match.add(norm_query(ev.query))
+            elif reason == "auto":  # timeout / network / no relevance model: try again later, not on every unit
+                fv.retry_at = self.now() + IMAGE_RETRY_S
+            log.info("image %r: none (%s)", ev.query, ev.reason)
+            return
+        fv.query, fv.kind = ev.query, ev.kind
+        known = {c.image_id for c in fv.candidates}
+        fv.candidates += [b for b in blocks if b.image_id not in known]
+        spec = self._spec(slide_id)
+        if reason == "change":
+            fresh = [b for b in blocks if b.image_id not in fv.shown_ids]
+            if spec is not None and fresh:
+                await self._replace_image(spec, fresh[0], fv)
+            return
+        if fv.removed:
+            return
+        # the content may have moved on to the next part while the search ran: then the frame's working slide
+        targets = [x.id for x in (spec, self._spec(self._working_id)) if x is not None
+                   and x.id in self._meta and self._meta[x.id].frame.same(meta.frame)]
+        for target in dict.fromkeys(targets):
+            t = self._spec(target)
+            if t is None or image_of(t) is not None or blocked(t):
+                continue
+            if await self._show_image(t, blocks[0], teacher=False):
+                fv.image = blocks[0]
+                fv.shown_ids.add(blocks[0].image_id)
+                log.info("image %r on %r: %s", ev.query, t.title, ev.images[0].get("title", ""))
+                return
+        fv.image = fv.image or blocks[0]  # no room now: a later part of this topic may take it
+
+    async def _replace_image(self, spec: SlideSpec, block: ImageBlock, fv: FrameVisual) -> None:
+        fv.shown_ids.add(block.image_id)
+        if await self._show_image(spec, block, teacher=True):
+            fv.image = block
+
+    async def _on_image_command(self, kind: str, args: dict) -> None:
+        slide_id = args.get("slide_id")
+        spec = self._spec(slide_id) if isinstance(slide_id, str) else None
+        meta = self._meta.get(slide_id) if isinstance(slide_id, str) else None
+        if spec is None or meta is None or meta.is_title:
+            log.warning("%s: unknown or title slide %r", kind, slide_id)
+            return
+        fv = self._fv(meta.frame)
+        cur = image_of(spec)
+        if kind == "remove_image":
+            if cur is not None:
+                await self._commit(without_image(spec))
+                if cur.origin == "auto":
+                    fv.removed, fv.image = True, None  # the teacher does not want this topic's picture
+                log.info("teacher removed the image of %r", spec.title)
+            return
+        if kind == "set_image":
+            image_id = str(args.get("image_id") or "")
+            if not re.fullmatch(r"[0-9a-f]{16}", image_id):
+                log.warning("set_image: bad image id %r", image_id)
+                return
+            try:
+                aspect = min(5.0, max(0.2, float(args.get("aspect") or 4 / 3)))
+            except (TypeError, ValueError):
+                aspect = 4 / 3
+            block = ImageBlock(url=f"/media/{image_id}.jpg", alt=str(args.get("alt") or spec.title)[:120],
+                               image_id=image_id, aspect=aspect, origin="teacher")
+            await self._show_image(spec, block, teacher=True)
+            log.info("teacher image on %r", spec.title)
+            return
+        # change_image: the next accepted candidate, then a deeper search for the same scenario
+        if cur is not None:
+            fv.shown_ids.add(cur.image_id)
+        nxt = next((c for c in fv.candidates if c.image_id not in fv.shown_ids), None)
+        if nxt is not None:
+            await self._replace_image(spec, nxt, fv)
+            return
+        generic = ("definition", "meaning", "overview", "introduction", "process", "importance")
+        query = fv.query or (meta.frame.topic if meta.frame.facet.lower() in generic else meta.frame.facet)
+        await self._request_image(spec.id, query, fv.kind, fv, "change", deeper=bool(fv.query))

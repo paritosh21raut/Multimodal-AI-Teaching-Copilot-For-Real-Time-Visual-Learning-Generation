@@ -25,15 +25,19 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `ConcernResolved` | state store | `concern_id`, `status` (accepted/kept/dismissed) |
 | `SlideContextChanged` | presentation engine | `text` (working-slide summary with `[S1]..` items → `LectureState.slide_context` → prompt), `refs` (S-ref → slide/item id) |
 | `SlideOverflow` | display hub (from `/display`) | `slide_id`, `version` (auto-fit failed; planner continues on a new slide) |
+| `ImageRequested` | presentation engine | `request_id`, `slide_id`, `query`, `kind` (photo/diagram), `exclude` (image ids already offered), `deeper`, `reason` (auto/change) — F-007b |
+| `ImageReady` | image service | `request_id`, `slide_id`, `query`, `kind`, `images` (≤ 3 `CachedImage` dumps, best first), `reason` (why none), `cached`, `seconds` |
 | `ErrorRaised` | any | `component`, `error`, `fatal` |
 
 `TranscriptSegment`: `id, text, start, end, confidence, language="en", source="mic"|"sim"`.
 
 `Command.kind`: `start, end, pause, resume, next, prev, goto, freeze, unfreeze, pin, unpin, blank, unblank,
-force_new_slide, resolve_concern(id, action)`.
+force_new_slide, resolve_concern(id, action), remove_image(slide_id), change_image(slide_id),
+set_image(slide_id, image_id, aspect, alt)` (image commands: F-007b; `set_image` follows `POST /api/upload`).
 
 `Interpretation` (`core/interpretation.py`): `topic, subtopic, relation, acts[{act, lines, items, added}],
 representation_hint, meta_lines, concerns[{claim, issue, suggested_correction, confidence, lines, kind, wrong, right}], revisions[{ref, text}], level_estimate,
-subject_estimate, summary_delta`. `items`: `term, definition, points, steps, compare, pairs[{aspect,left,right}],
+subject_estimate, summary_delta, visual{query, kind: photo|diagram}?` (`visual`: the image hint, F-007b; lenient:
+`{}`/`"none"`/blank query → None). `items`: `term, definition, points, steps, compare, pairs[{aspect,left,right}],
 events[{when,what}], formula{expression, variables[{symbol,meaning}]}, causes[{cause,effect}], examples, label,
 facts[{label,value}], groups[{label,items}]`.

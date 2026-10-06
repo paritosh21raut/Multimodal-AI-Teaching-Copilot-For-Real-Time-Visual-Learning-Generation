@@ -20,6 +20,16 @@
 - `tests/fixtures/llm/`: recorded LLM responses keyed by prompt hash.
 - `tests/fixtures/audio/`: short WAVs for STT tests (generated or recorded).
 
+- `tests/fixtures/http/*.json`: recorded image-search HTTP exchanges (JSON + 256 px images), made with
+  `tools/image_eval.py --record NAME QUERY KIND`; replayed by an httpx transport in `tests/unit/test_visuals_finder.py`.
+
+## Image tools (F-007b)
+- `tools/bench_clip.py`: CLIP latency (int8/fp32, 2/4 threads) + score matrix.
+- `tools/image_eval.py`: 30 labelled concepts, real network + CLIP → `artifacts/image_eval/sheet.html` (look at it).
+- `tools/prompt_ab.py [--dry] SESSION[:i,j] …`: rebuilds recorded prompts (must match the logged size), runs the new
+  prompt on gpt-oss-120b; the old arm is the recorded answer (0 tokens). Refuses when the quota cannot cover it.
+- `tools/screenshot_lessons.py [theme] [lesson …]`: scripted lessons incl. visual hints + the real image service.
+
 ## Rules
 - Don't mock the component under test. Mock only external boundaries (network LLM, mic).
 - Assertions check behaviour (e.g. "≤ 3 slides for the 5-min photosynthesis segment"), not implementation details.

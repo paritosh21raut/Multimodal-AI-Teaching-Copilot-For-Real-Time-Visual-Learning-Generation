@@ -284,11 +284,43 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .def-col .list-bullets .point .num.bullet { height: calc(var(--fs-small) * 1.1 * var(--fit) * 1.33); }
 .def-col .example { padding: 24px 30px; font-size: calc(var(--fs-small) * 1.1 * var(--fit)); }
 
-/* ---------- image ---------- */
-.figure { margin: 0; display: grid; gap: 12px; }
-.figure img { width: 100%; max-height: 640px; object-fit: contain; border-radius: var(--radius); background: var(--surface-2); opacity: 0; transition: opacity 500ms var(--ease); }
+/* ---------- image layout (F-007b) ----------
+   Content column | image column. The image column has a fixed width (--img-col, mirrored by composer.image_column_px)
+   so the content never reflows when the picture loads; the picture keeps its aspect ratio at the largest size that
+   fits the column and the body height (container units), never overlapping the content. */
+.slide-body.with-image {
+  grid-template-columns: minmax(0, 1fr) var(--img-col, 720px);
+  column-gap: 56px; align-items: safe center; align-content: safe center; container-type: size;
+}
+/* "safe": content taller than the body overflows at the bottom (measured by the auto-fit, which then shrinks the
+   type), never upwards into the title where scrollHeight cannot see it */
+.slide-body.with-image .main { align-content: safe center; }
+.image-col { height: 100%; min-height: 0; display: grid; place-items: center; }
+.figure {
+  --aspect: 1.333;
+  margin: 0; position: relative;
+  width: min(100%, calc(100cqh * var(--aspect)));
+  aspect-ratio: var(--aspect);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: enter var(--t-enter) var(--ease) both;
+}
+.figure img { display: block; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 500ms var(--ease); }
 .figure img.loaded { opacity: 1; }
-.figure figcaption { font-size: 18px; color: var(--muted); }
+/* the teacher drags a file over the slide in /control: where the image will go */
+.figure.ghost {
+  background: color-mix(in srgb, var(--accent-soft) 70%, transparent);
+  box-shadow: none; overflow: visible;
+  outline: 5px dashed var(--accent); outline-offset: -5px;
+  display: grid; place-items: center;
+  animation: ghost-in 220ms var(--ease) both;
+}
+.figure.ghost .drop-hint { display: grid; justify-items: center; gap: 18px; color: var(--accent); font-size: 30px; font-weight: 600; text-align: center; padding: 24px; }
+.figure.ghost svg { width: 84px; height: 84px; animation: nudge 1.4s var(--ease) infinite; }
+@keyframes ghost-in { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes nudge { 50% { transform: translateY(-8px); } }
 
 /* ---------- blank / waiting ---------- */
 .waiting { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 34px; letter-spacing: 0.02em; }

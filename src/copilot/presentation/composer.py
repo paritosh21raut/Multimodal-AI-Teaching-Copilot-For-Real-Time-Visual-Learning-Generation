@@ -18,12 +18,13 @@ from dataclasses import replace
 from difflib import SequenceMatcher
 from typing import Callable, Optional
 
+from copilot.core.events import new_id
 from copilot.core.memory import title_key, titles_match
 from copilot.presentation.content import Piece
 from copilot.presentation.mathtext import has_fraction, to_latex, visible_length
 from copilot.presentation.spec import (
     Block, CalloutBlock, CauseEffectBlock, CauseLink, Column, ComparisonBlock, DefinitionBlock, ExampleBlock, Fact,
-    FactsBlock, FormulaBlock, Group, GroupsBlock, HierarchyBlock, Item, PointsBlock, ProcessBlock, Row,
+    FactsBlock, FormulaBlock, Group, GroupsBlock, HierarchyBlock, ImageBlock, Item, PointsBlock, ProcessBlock, Row,
     SlideSpec, Step, TimelineBlock, TimelineEvent, TreeNode, Variable,
 )
 
@@ -36,6 +37,7 @@ BODY_BUDGET_PX = 700       # slide body height at the default type size (auto-fi
 BODY_WIDTH_PX = 1696
 MAIN_WIDTH_ASIDE_PX = 1040  # main column when an aside (example/callout) is shown
 BLOCK_GAP_PX = 32
+IMAGE_GAP_PX = 56           # image layout (F-007b): content column | image column (mirrors slide.css .with-image)
 LAYOUT_FOR = {"definition": "definition", "points": "key_points", "steps": "process_flow",
               "comparison": "comparison", "timeline": "timeline", "formula": "formula", "causes": "cause_effect",
               "example": "example", "facts": "facts", "groups": "groups", "tree": "hierarchy"}
@@ -166,8 +168,24 @@ def _cpl(width_px: float, font_px: float) -> float:
     return width_px / (font_px * 0.5)  # average glyph ≈ 0.5 em for Segoe UI
 
 
-def block_height(b: Block, width: float = BODY_WIDTH_PX) -> float:
-    """Estimated rendered height (design px at the default type size)."""
+def image_column_px(aspect: float) -> float:
+    """Width of the image column (mirrors slide.js imageColumn): wider for landscape images, and a tall image takes
+    only the width it needs at the body height, so the content keeps the rest."""
+    widest = 720.0 if aspect >= 1.25 else 600.0
+    return float(round(min(widest, max(380.0, BODY_BUDGET_PX * aspect))))
+
+
+def image_of(spec: SlideSpec) -> Optional[ImageBlock]:
+    return next((b for b in spec.blocks if b.type == "image"), None)
+
+
+def content_width(spec: SlideSpec) -> float:
+    img = image_of(spec)
+    return BODY_WIDTH_PX - image_column_px(img.aspect) - IMAGE_GAP_PX if img is not None else BODY_WIDTH_PX
+
+
+def block_height(b: Block, width: float = BODY_WIDTH_PX, narrow: bool = False) -> float:
+    """Estimated rendered height (design px at the default type size). narrow: beside an image (facts in 2 columns)."""
     if b.type == "definition":
         h = 88 + 57 * _lines(b.definition, _cpl(width - 116, 42))
         if b.notes:
@@ -187,7 +205,7 @@ def block_height(b: Block, width: float = BODY_WIDTH_PX) -> float:
         return h + sum(52 + 45 * _lines(t, cpl) for t in items) + 20 * (len(items) - 1)
     if b.type == "facts":
         n = len(b.facts)
-        per_row = 4 if n != 3 and all(len(f.value) <= 24 for f in b.facts) else 3
+        per_row = 2 if narrow else 4 if n != 3 and all(len(f.value) <= 24 for f in b.facts) else 3
         tile = (width - 24 * (per_row - 1)) / per_row - 68
         rows = [b.facts[i:i + per_row] for i in range(0, n, per_row)]
         heights = [max(56 + 33 * _lines(f.label, _cpl(tile, 26)) + 48 * _lines(f.value or "x", _cpl(tile, 42))
@@ -220,12 +238,16 @@ def block_height(b: Block, width: float = BODY_WIDTH_PX) -> float:
     if b.type in SECONDARY:
         return 110 + 45 * _lines(b.text, _cpl(width - 80, 34))
     if b.type == "image":
-        return 500
+        col = image_column_px(b.aspect)
+        return min(BODY_BUDGET_PX, col / max(0.2, b.aspect))
     return 120
 
 
 def _split(blocks: list) -> tuple[list, list]:
-    """(main, aside) exactly as slide.js splitBlocks lays them out."""
+    """(main, aside) exactly as slide.js splitBlocks lays them out. With an image (image layout) everything else is
+    the content column and the image is alone in its column."""
+    if any(b.type == "image" for b in blocks):
+        return [b for b in blocks if b.type != "image"], [b for b in blocks if b.type == "image"][:1]
     if len(blocks) < 2 or any(b.type in FULL_WIDTH for b in blocks) \
             or sum(1 for b in blocks if b.type == "definition") > 1:
         return blocks, []
@@ -236,7 +258,9 @@ def _split(blocks: list) -> tuple[list, list]:
 
 def body_height(spec: SlideSpec) -> float:
     main, aside = _split(list(spec.blocks))
-    width = MAIN_WIDTH_ASIDE_PX if aside else BODY_WIDTH_PX
+    img = image_of(spec)
+    narrow = img is not None
+    width = content_width(spec) if narrow else MAIN_WIDTH_ASIDE_PX if aside else BODY_WIDTH_PX
     defs = [b for b in main if b.type == "definition"]
     if len(defs) > 1:  # side by side (slide.js def-pair): one column per concept, each half wide
         half = width / 2 - 18
@@ -245,9 +269,11 @@ def body_height(spec: SlideSpec) -> float:
         pair = max(80 + block_height(d, half)  # + the term heading above each card
                    + sum(_column_block_height(b, half) + 24 for b in main if getattr(b, "about", "") == d.id)
                    for d in defs)
-        h_main = pair + sum(block_height(b, width) for b in rest) + BLOCK_GAP_PX * len(rest)
+        h_main = pair + sum(block_height(b, width, narrow) for b in rest) + BLOCK_GAP_PX * len(rest)
     else:
-        h_main = sum(block_height(b, width) for b in main) + BLOCK_GAP_PX * max(0, len(main) - 1)
+        h_main = sum(block_height(b, width, narrow) for b in main) + BLOCK_GAP_PX * max(0, len(main) - 1)
+    if img is not None:
+        return max(h_main, block_height(img))
     h_aside = sum(block_height(b, BODY_WIDTH_PX - MAIN_WIDTH_ASIDE_PX - 36) for b in aside) \
         + BLOCK_GAP_PX * max(0, len(aside) - 1)
     return max(h_main, h_aside)
@@ -267,7 +293,64 @@ SQUEEZE = 1.25             # display auto-fit shrinks the type down to 0.8 (= 1.
 
 
 def fits(spec: SlideSpec) -> bool:
-    return body_height(spec) <= _budget[0]
+    # beside an image the type may shrink first (auto-fit down to 0.8) before content moves to the next part
+    # (user 2026-10-06); without an image only merge(..., squeeze=True) allows that
+    budget = max(_budget[0], BODY_BUDGET_PX * SQUEEZE) if image_of(spec) is not None else _budget[0]
+    return body_height(spec) <= budget
+
+
+def fits_unshrunk(spec: SlideSpec) -> bool:
+    """Fits at the default type size (an automatic image is only added when nothing has to shrink)."""
+    return body_height(spec) <= BODY_BUDGET_PX
+
+
+def with_image(spec: SlideSpec, image: ImageBlock) -> SlideSpec:
+    """Put (or replace) the slide's image; it is always the last block (layout follows the first)."""
+    return _with_layout(spec.model_copy(update={"blocks": [b for b in spec.blocks if b.type != "image"] + [image]}))
+
+
+def without_image(spec: SlideSpec) -> SlideSpec:
+    return _with_layout(spec.model_copy(update={"blocks": [b for b in spec.blocks if b.type != "image"]}))
+
+
+_SPLIT_LISTS = {"points": "items", "facts": "facts", "process": "steps"}
+
+
+def split_to_fit(spec: SlideSpec) -> tuple[SlideSpec, list[Block]]:
+    """Move the last content off a slide until it fits (the teacher put an image on a full slide). Items move one
+    at a time from the end (ids kept, so the display animates them in on the next part); a block is moved whole
+    when it cannot be split. Returns (the slide, moved blocks in order — [] when nothing had to move)."""
+    cur = spec
+    moved: list[Block] = []   # in slide order
+    origin: dict[str, int] = {}  # source block id -> index in moved
+    while not fits(cur):
+        content = [b for b in cur.blocks if b.type != "image"]
+        if not content:
+            break
+        last = content[-1]
+        field_name = _SPLIT_LISTS.get(last.type)
+        items = getattr(last, field_name) if field_name else []
+        if field_name and len(items) > 1:
+            kept = last.model_copy(update={field_name: items[:-1]})
+            cur = _replace_block(cur, last, kept)
+            if last.id in origin:
+                tgt = moved[origin[last.id]]
+                moved[origin[last.id]] = tgt.model_copy(update={field_name: [items[-1], *getattr(tgt, field_name)]})
+            else:
+                moved.insert(0, last.model_copy(update={"id": new_id(), field_name: [items[-1]]}))
+                origin = {k: v + 1 for k, v in origin.items()}
+                origin[last.id] = 0
+        elif len(content) > 1:
+            cur = _with_layout(cur.model_copy(update={"blocks": [b for b in cur.blocks if b is not last]}))
+            if last.id in origin:  # its items moved already: the rest of the block joins them
+                tgt = moved[origin[last.id]]
+                moved[origin[last.id]] = tgt.model_copy(update={field_name: [*items, *getattr(tgt, field_name)]})
+            else:
+                moved.insert(0, last)
+                origin = {k: v + 1 for k, v in origin.items()}
+        else:
+            break  # one unsplittable block: it stays (the display's auto-fit shrinks it)
+    return _with_layout(cur), moved
 
 
 def is_small(piece: Piece) -> bool:
@@ -319,7 +402,7 @@ def teacher_items(spec: SlideSpec) -> int:
             n += len(b.facts)
         elif b.type == "groups":
             n += len(b.groups)
-        else:
+        elif b.type != "image":  # an image is not the teacher's content: an image-only slide is still empty
             n += 1
     return n
 
@@ -335,7 +418,7 @@ def has_added(spec: SlideSpec) -> bool:
 
 
 def _is_empty(spec: SlideSpec) -> bool:
-    return teacher_items(spec) == 0 and not any(b.type not in ("points", "definition") for b in spec.blocks)
+    return teacher_items(spec) == 0 and not any(b.type not in ("points", "definition", "image") for b in spec.blocks)
 
 
 def _texts_on(spec: SlideSpec) -> list[str]:
@@ -423,7 +506,8 @@ def merge(spec: SlideSpec, piece: Piece, *, full: bool = False, squeeze: bool = 
     if full and not _is_empty(spec):
         return spec, piece
     if _is_empty(spec):  # nothing from the teacher yet (maybe a provisional item): the piece shapes the slide
-        spec = spec.model_copy(update={"layout": LAYOUT_FOR[piece.kind], "blocks": []})
+        spec = spec.model_copy(update={"layout": LAYOUT_FOR[piece.kind],
+                                       "blocks": [b for b in spec.blocks if b.type == "image"]})
     column = _column_for(spec, piece)
     if column is not None:
         out, left = _merge_column(spec, piece, column)
@@ -901,7 +985,7 @@ def element_texts(spec: SlideSpec) -> dict[str, str]:
             out.update({e.id: f"{e.when} {e.label}" for e in b.events})
         elif b.type == "cause_effect":
             out.update({l.id: f"{l.cause} {l.effect}" for l in b.links})
-        else:
+        elif b.type != "image":  # an image has no slide text (never a correction target, never in the prompt)
             out[b.id] = getattr(b, "text", "") or getattr(b, "spoken", "") or getattr(b, "latex", "")
     return out
 
@@ -958,6 +1042,8 @@ def remove_elements(spec: SlideSpec, ids: set[str]) -> SlideSpec:
             if not b.links:
                 continue
         blocks.append(b)
+    if all(b.type == "image" for b in blocks):
+        blocks = []  # an image without the content it illustrated does not stay
     return _with_layout(spec.model_copy(update={"blocks": blocks}))
 
 

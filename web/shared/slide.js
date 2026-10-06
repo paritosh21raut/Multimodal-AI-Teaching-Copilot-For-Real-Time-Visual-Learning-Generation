@@ -123,8 +123,10 @@ function Formula({ b }) {
 }
 
 // Fact tiles: short attribute facts about named things ("Smallest planet" / "Mercury").
-function Facts({ b }) {
-  const cols = b.facts.length === 3 || b.facts.some((f) => f.value.length > 24) ? 3 : Math.min(4, Math.max(1, b.facts.length));
+function Facts({ b, narrow }) {
+  // beside an image: at most 4 tiles in 2 columns (policy), full type size (composer: block_height narrow=True)
+  const cols = narrow ? Math.min(2, b.facts.length)
+    : b.facts.length === 3 || b.facts.some((f) => f.value.length > 24) ? 3 : Math.min(4, Math.max(1, b.facts.length));
   return html`<div class="facts">
     ${b.heading && html`<div class="points-heading">${rich(b.heading)}</div>`}
     <div class="facts-grid" style=${{ "--cols": cols }}>
@@ -149,18 +151,36 @@ function Groups({ b }) {
   </div>`;
 }
 
+// The image of the image layout (F-007b): the box has the image's aspect ratio before the file loads (no reflow),
+// the picture fades in. No credit line on slides (user 2026-10-06; licence and author are kept for exports).
+// A `ghost` block is the drop zone /control shows while the teacher drags a file over the slide.
 function Figure({ b }) {
   const [loaded, setLoaded] = useState(false);
-  return html`<figure class="figure">
+  const style = { "--aspect": b.aspect || 4 / 3 };
+  if (b.ghost) {
+    return html`<figure class="figure ghost" style=${style}>
+      <div class="drop-hint"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 32V12M15 21l9-9 9 9M10 36h28"
+        fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>${b.alt || "Drop to place the image here"}</span></div>
+    </figure>`;
+  }
+  return html`<figure class="figure" style=${style}>
     <img src=${b.url} alt=${b.alt} class=${loaded ? "loaded" : ""} onLoad=${() => setLoaded(true)} />
-    ${(b.credit || b.licence) && html`<figcaption>${[b.credit, b.licence].filter(Boolean).join(" · ")}</figcaption>`}
   </figure>`;
 }
 
-function Block({ b, wide, termInTitle }) {
+// Mirrors composer.image_column_px: wider column for landscape images; a tall image takes only the width it needs.
+const BODY_BUDGET_PX = 700;
+export const imageColumn = (aspect) => {
+  const a = aspect || 4 / 3;
+  return Math.round(Math.min(a >= 1.25 ? 720 : 600, Math.max(380, BODY_BUDGET_PX * a)));
+};
+
+function Block({ b, wide, termInTitle, narrow }) {
   switch (b.type) {
     case "definition": return html`<${Definition} b=${b} termInTitle=${termInTitle} />`;
     case "points": return html`<${Points} b=${b} wide=${wide} />`;
+    case "facts": return html`<${Facts} b=${b} narrow=${narrow} />`;
     case "process": return html`<${Process} b=${b} />`;
     case "comparison": return html`<${Comparison} b=${b} />`;
     case "timeline": return html`<${Timeline} b=${b} />`;
@@ -168,7 +188,6 @@ function Block({ b, wide, termInTitle }) {
     case "hierarchy": return html`<div class="tree"><${TreeNode} n=${b.root} root /></div>`;
     case "formula": return html`<${Formula} b=${b} />`;
     case "image": return html`<${Figure} b=${b} />`;
-    case "facts": return html`<${Facts} b=${b} />`;
     case "groups": return html`<${Groups} b=${b} />`;
     case "example": return html`<div class="example enter"><span class="label">Example</span>
       ${b.title && html`<span class="title">${rich(b.title)}</span>`}${mixed(b.text, b.math)}</div>`;
@@ -179,12 +198,15 @@ function Block({ b, wide, termInTitle }) {
 }
 
 // Secondary blocks go into the right-hand aside when the primary block leaves room for one.
-const ASIDE_TYPES = new Set(["callout", "example", "image"]);
+// With an image (image layout, F-007b) the image has the right-hand column alone and everything else is content.
+const ASIDE_TYPES = new Set(["callout", "example"]);
 const FULL_WIDTH_PRIMARY = new Set(["process", "comparison", "timeline", "hierarchy", "cause_effect", "formula", "facts", "groups"]);
 const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
 export const partLabel = (n) => (n ? ROMAN[n] || String(n) : "");
 
 function splitBlocks(blocks) {
+  const image = blocks.find((b) => b.type === "image");
+  if (image) return { main: blocks.filter((b) => b.type !== "image"), aside: [], image };
   if (blocks.length < 2) return { main: blocks, aside: [] };
   const [primary, ...rest] = blocks;
   // wide content anywhere (a diagram, tiles, two definitions side by side) needs the full width: stack instead
@@ -214,7 +236,9 @@ export function Slide({ spec, phase = "", onOverflow }) {
     const el = bodyRef.current;
     if (!el) return;
     const overflow = el.scrollHeight > el.clientHeight + 2;
-    const content = [...el.children].reduce((h, c) => Math.max(h, c.scrollHeight), 0);
+    // the image column always fills the body height: only the content decides whether the type may grow
+    const content = [...el.children].filter((c) => !c.classList.contains("image-col"))
+      .reduce((h, c) => Math.max(h, c.scrollHeight), 0);
     if (overflow) {
       if (fit.idx > 0) setFit({ idx: fit.idx - 1, done: true });
       else onOverflow && onOverflow(spec.id);
@@ -233,7 +257,7 @@ export function Slide({ spec, phase = "", onOverflow }) {
       </div>
     </section>`;
   }
-  const { main, aside } = splitBlocks(spec.blocks);
+  const { main, aside, image } = splitBlocks(spec.blocks);
   const defs = spec.blocks.filter((b) => b.type === "definition");
   const def = spec.layout === "definition" && defs.length === 1 && defs[0];
   const title = def ? def.term : spec.title;
@@ -250,15 +274,18 @@ export function Slide({ spec, phase = "", onOverflow }) {
       </div>`}
       <h1 class="slide-title">${rich(title)}${spec.part && html`<span class="part" title=${`Part ${spec.part}`}>${partLabel(spec.part)}</span>`}</h1>
     </header>
-    <div ref=${bodyRef} class=${"slide-body" + (aside.length ? " with-aside" : "")}>
+    <div ref=${bodyRef} class=${"slide-body" + (aside.length ? " with-aside" : "") + (image ? " with-image" : "")}
+      style=${image ? { "--img-col": `${imageColumn(image.aspect)}px` } : null}>
       <div class="main">
         ${pairDefs && html`<div class="def-pair">${defs.map((d) => html`<div key=${d.id} class="def-col">
           <${Definition} b=${d} termInTitle=${false} />
           ${spec.blocks.filter((b) => b.about === d.id).map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} />`)}
         </div>`)}</div>`}
-        ${mainRest.map((b) => html`<${Block} key=${b.id} b=${b} wide=${!aside.length} termInTitle=${!!def} />`)}
+        ${mainRest.map((b) => html`<${Block} key=${b.id} b=${b} wide=${!aside.length && !image} narrow=${!!image}
+          termInTitle=${!!def} />`)}
       </div>
       ${aside.length > 0 && html`<div class="aside">${aside.map((b) => html`<${Block} key=${b.id} b=${b} />`)}</div>`}
+      ${image && html`<div class="image-col"><${Figure} key=${image.id} b=${image} /></div>`}
     </div>
   </section>`;
 }

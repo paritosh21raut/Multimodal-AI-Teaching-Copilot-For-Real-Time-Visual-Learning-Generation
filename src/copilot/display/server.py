@@ -7,16 +7,20 @@ import hashlib
 import json
 import logging
 import re
+import urllib.parse
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import uvicorn
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from copilot.core.config import PROJECT_ROOT
 from copilot.display.hub import Connection, DisplayHub
+
+if TYPE_CHECKING:
+    from copilot.visuals.cache import ImageCache
 
 log = logging.getLogger(__name__)
 
@@ -85,8 +89,52 @@ def versioned_page(page: Path, web_root: Path) -> str:
     return html.replace("</head>", f"  {meta}\n  {importmap}\n  {ERROR_BANNER}\n</head>", 1)
 
 
-def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT) -> FastAPI:
+UPLOAD_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+_MEDIA_NAME = re.compile(r"[0-9a-f]{16}\.jpg")
+
+
+def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
+               upload_max_bytes: int = 10 * 1024 * 1024) -> FastAPI:
     app = FastAPI(title="Teaching Copilot", docs_url=None, redoc_url=None)
+
+    @app.get("/media/{name}")
+    async def media_file(name: str):
+        # only our cache's re-encoded JPEGs, by content id: never a path, never another site (F-007b)
+        if media is None or not _MEDIA_NAME.fullmatch(name) or not (media.root / name).is_file():
+            return Response(status_code=404)
+        return FileResponse(media.root / name, media_type="image/jpeg",
+                            headers={"Cache-Control": "public, max-age=86400"})
+
+    @app.post("/api/upload")
+    async def upload(request: Request):
+        """The teacher's own image (drag & drop / Add image in /control). Stores a validated, re-encoded copy and
+        returns its id; putting it on a slide is a separate `set_image` command (the UI never changes state)."""
+        if media is None:
+            return JSONResponse({"error": "images are not available"}, status_code=503)
+        ctype = request.headers.get("content-type", "").split(";")[0].strip().lower()
+        if ctype not in UPLOAD_TYPES:
+            return JSONResponse({"error": "use a JPEG, PNG, WebP or GIF image"}, status_code=415)
+        declared = int(request.headers.get("content-length") or 0)
+        if declared > upload_max_bytes:
+            return JSONResponse({"error": f"image larger than {upload_max_bytes // (1024 * 1024)} MB"}, status_code=413)
+        data = bytearray()
+        async for chunk in request.stream():
+            data += chunk
+            if len(data) > upload_max_bytes:
+                return JSONResponse({"error": f"image larger than {upload_max_bytes // (1024 * 1024)} MB"},
+                                    status_code=413)
+        from copilot.visuals.cache import BadImage, CachedImage
+
+        name = urllib.parse.unquote(request.headers.get("x-file-name", ""))[:120]  # the client URL-encodes it
+        try:
+            img = await asyncio.to_thread(media.store_bytes, bytes(data), hashlib.sha1(bytes(data)).hexdigest(),
+                                          CachedImage(id="", width=0, height=0, source="teacher", title=name,
+                                                      alt=Path(name).stem.replace("_", " ")))
+        except BadImage as e:
+            return JSONResponse({"error": str(e)}, status_code=422)
+        log.info("teacher upload %r -> %s (%dx%d)", name, img.id, img.width, img.height)
+        return JSONResponse({"image_id": img.id, "url": img.url, "width": img.width, "height": img.height,
+                             "aspect": round(img.aspect, 3), "alt": img.alt})
 
     @app.get("/")
     async def root():
@@ -163,10 +211,12 @@ class _EmbeddedServer(uvicorn.Server):
 
 class DisplayServer:
     def __init__(self, hub: DisplayHub, host: str = "127.0.0.1", port: int = 8765,
-                 web_root: Path = WEB_ROOT) -> None:
+                 web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
+                 upload_max_bytes: int = 10 * 1024 * 1024) -> None:
         self.host, self.port = host, port
         self._server = _EmbeddedServer(
-            uvicorn.Config(create_app(hub, web_root), host=host, port=port, log_level="warning", lifespan="off")
+            uvicorn.Config(create_app(hub, web_root, media, upload_max_bytes), host=host, port=port,
+                           log_level="warning", lifespan="off")
         )
         self._task: Optional[asyncio.Task] = None
 

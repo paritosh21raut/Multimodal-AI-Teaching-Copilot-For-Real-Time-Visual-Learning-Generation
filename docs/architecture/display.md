@@ -37,6 +37,19 @@ backoff capped at 2 s), so no duplicate tabs. `--no-open` disables it. Test: `te
   and display (0 tokens); `tools/export_transcript.py <session> <name>` saves a live transcript as a fixture.
 - `tools/replay_session.py <session>` replays a recorded session's slide patches into Edge and reports console errors.
 
+## Images (F-007b)
+- Image layout: content column | image column (`slide-body.with-image`); the column width comes from the image's
+  aspect (`imageColumn` = `composer.image_column_px`: ≤ 720 px landscape, ≤ 600 px otherwise, a tall image only as
+  wide as it needs); the picture keeps its aspect at the largest size that fits (container units), fades in, no
+  credit line. `safe center` alignment: overflowing content goes down (measured by auto-fit), never into the title.
+- `GET /media/<16 hex>.jpg`: only re-encoded files of our image cache (`data/cache/images`); no hot-linking.
+- `POST /api/upload` (raw body, `Content-Type` image/jpeg|png|webp|gif, ≤ 10 MB): stores a validated, re-encoded copy,
+  returns `{image_id, url, width, height, aspect, alt}`; no state change — `/control` then sends `set_image`.
+- `/control` image bar under the preview: status (finding / none / automatic / yours), **Add image** (file picker;
+  "Use my image" when there is one), **Change image**, **Remove image**. Dragging a file over the preview shows the
+  slide as it will look with a dashed drop zone where the image goes; drop → upload → `set_image`. The hub sends
+  `image_status` (searching / found / none) to the control view only.
+
 ## Teacher controls
 Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `F` freeze, `P` pin, `B` blank,
 `N` force new slide, `Esc` end lecture. The terminal also accepts `Enter` (start) and `q` (end).

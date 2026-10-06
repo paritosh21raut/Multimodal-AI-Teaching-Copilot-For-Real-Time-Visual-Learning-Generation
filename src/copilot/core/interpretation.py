@@ -115,6 +115,23 @@ class Revision(_Lenient):
     text: str
 
 
+class VisualHint(_Lenient):
+    """The model's suggestion that a picture helps (F-007b): a concrete thing (photo) or a process/structure
+    (diagram). Only a hint — presentation's image policy decides."""
+    query: str = ""
+    kind: Literal["photo", "diagram"] = "photo"
+
+    @field_validator("kind", mode="before")
+    @classmethod
+    def _kind(cls, v: object) -> object:
+        return v if v in ("photo", "diagram") else "photo"
+
+    @field_validator("query")
+    @classmethod
+    def _query(cls, v: str) -> str:
+        return " ".join(v.split())[:60]
+
+
 class Interpretation(_Lenient):
     topic: str
     subtopic: str = ""
@@ -127,6 +144,17 @@ class Interpretation(_Lenient):
     level_estimate: str = ""
     subject_estimate: str = ""
     summary_delta: str = ""
+    visual: Optional[VisualHint] = None
+
+    @field_validator("visual", mode="before")
+    @classmethod
+    def _visual(cls, v: object) -> object:
+        # models write {} / {"query": ""} / "none" / a bare string for "no picture": all mean None
+        if isinstance(v, str):
+            return {"query": v} if v.strip() and v.strip().lower() not in ("none", "null", "no") else None
+        if isinstance(v, dict) and not str(v.get("query") or "").strip():
+            return None
+        return v
 
     @field_validator("topic")
     @classmethod

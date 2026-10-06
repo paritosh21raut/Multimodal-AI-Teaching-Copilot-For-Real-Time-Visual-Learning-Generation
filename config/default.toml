@@ -23,6 +23,16 @@ provisional = true         # fast path: keyword teaser on the live slide until t
 provisional_ttl_s = 20.0
 title_slide = true         # title slide at LIVE when an expected topic is given
 
+[images]
+enabled = true             # automatic images (F-007b); the teacher's own images work either way
+cache_dir = "data/cache/images"
+clip_dir = "models/clip"
+budget_s = 8.0             # whole search (sources + downloads + CLIP); after that: no image
+min_similarity = 0.22      # CLIP int8 cosine floor (labelled set, F-007b)
+min_margin = 0.01          # over the best generic distractor ("a logo", "a map", ...)
+openverse = false          # user 2026-10-06: only if it proves educational
+upload_max_mb = 10
+
 [bus]
 default_queue_size = 1000
 

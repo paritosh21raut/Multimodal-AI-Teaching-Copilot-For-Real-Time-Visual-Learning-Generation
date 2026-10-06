@@ -20,6 +20,7 @@ from copilot.core.events import (
     CommandReceived,
     ConcernRaised,
     Event,
+    ImageReady,
     InterpretationReady,
     Lifecycle,
     LifecycleChanged,
@@ -112,6 +113,7 @@ class App:
         self.understanding_enabled = understanding
         self.understanding = None
         self.presentation = None
+        self.images = None  # visuals.service.ImageService (F-007b)
         self._http = None
         self.display_enabled = display
         self.open_pages = open_pages
@@ -215,6 +217,30 @@ class App:
                 speed=self.speed if self.simulate or self.audio_file else 1.0,
             )
             self.presentation.attach()
+            self._init_images()
+
+    def _init_images(self) -> None:
+        """Automatic images (F-007b): needs the `images` extra (Pillow) and the CLIP model (loads in the background)."""
+        if not self.config.get("images", "enabled", True):
+            print("[INIT]  images: automatic images off (config)", flush=True)
+            return
+        try:
+            import PIL  # noqa: F401
+
+            from copilot.visuals.service import ImageService
+        except ImportError as e:
+            print(f"[INIT]  images: off ({e}; pip install -e \".[images]\")", flush=True)
+            return
+        self.images = ImageService.from_config(self.bus, self.config)
+        self.images.attach()
+        self.bus.subscribe("terminal_images", self._print_image, [ImageReady])
+        print("[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background", flush=True)
+
+    async def _print_image(self, event: Event) -> None:
+        if isinstance(event, ImageReady):
+            found = event.images[0].get("title", "") if event.images else f"none ({event.reason})"
+            print(f"  [IMAGE] {event.query!r} -> {found} ({event.seconds:.1f} s{', cached' if event.cached else ''})",
+                  flush=True)
 
     async def _print_understanding(self, event: Event) -> None:
         if isinstance(event, InterpretationReady):
@@ -263,8 +289,12 @@ class App:
         hub = DisplayHub(self.bus, theme=self.store.snapshot().setup.theme if self.store else "light")
         hub.attach()
         self.hub = hub
+        from copilot.visuals.service import cache_from_config
+
         self.server = DisplayServer(
-            hub, self.config.get("display", "host", "127.0.0.1"), int(self.config.get("display", "port", 8765))
+            hub, self.config.get("display", "host", "127.0.0.1"), int(self.config.get("display", "port", 8765)),
+            media=cache_from_config(self.config),
+            upload_max_bytes=int(float(self.config.get("images", "upload_max_mb", 10)) * 1024 * 1024),
         )
         await self.server.start()
         self._server_started = asyncio.get_running_loop().time()
@@ -422,6 +452,8 @@ class App:
             self._opener.cancel()
         if self.presentation is not None:
             await self.presentation.stop()
+        if self.images is not None:
+            await self.images.stop()
         if self.understanding is not None:
             await self.understanding.stop()
         if self._http is not None:
@@ -465,6 +497,10 @@ class App:
                 print(f"        presentation: {ps.slides} slides; planner ops {dict(ps.ops)}; "
                       f"revisions {ps.revisions}, corrections shown {ps.corrections_shown}, "
                       f"shown as said {ps.shown_as_said}", flush=True)
+                if self.images is not None:
+                    shown = sum(1 for sp in self.deck.slides if any(b.type == "image" for b in sp.blocks))
+                    print(f"        images: {self.images.stats}; slides with an image {shown}/{len(self.deck.slides)}",
+                          flush=True)
                 for i, spec in enumerate(self.deck.slides, 1):
                     part = f" [part {spec.part}]" if spec.part else ""
                     print(f"          {i}. [{spec.layout}] {spec.title}{part}  (v{spec.version}, "

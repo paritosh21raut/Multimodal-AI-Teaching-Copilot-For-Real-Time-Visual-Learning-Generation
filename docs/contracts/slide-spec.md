@@ -24,7 +24,7 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
   cause_effect { links[{id, cause, effect}] }
   formula      { latex, spoken, variables[{symbol, meaning, unit?, latex?}] }   # latex from mathtext (F-007a)
   example      { title?, text }
-  image        { url, alt, credit, licence }
+  image        { url, alt, credit, licence, aspect, origin: auto|teacher, image_id }   # F-007b
   callout      { kind: note|tip|key, text }
   simulation   { template, params }          # V3
   storyboard   { scenes[] }                  # V4
@@ -45,5 +45,9 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
   kinds) | `letters` (a) b) options), also set by `annotate`.
 - `about` (formula, points, example, facts): id of a definition block when two concepts are defined side by side;
   the display draws one column per concept (definition + its blocks), the rest full width below (F-007a, issue 6).
+- `image` (F-007b): at most one, always the last block; `url` = `/media/<image_id>.jpg` (our server). A slide with
+  an image uses the image layout (content | image column); without one, today's layouts. Not content: it never
+  counts as a teacher item, never enters the prompt or correction targets, and does not stay on a slide whose content
+  was removed. Beside an image the type may shrink to 0.8 before content opens the next part.
 - Builder: `presentation.composer` (space-based height model, F-005). Overflow continues on the next part of the
   same frame: same title, `part` badge, never "(cont.)". Two `definition` blocks render side by side.

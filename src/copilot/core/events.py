@@ -60,6 +60,7 @@ CommandKind = Literal[
     "start", "end", "pause", "resume", "next", "prev", "goto",
     "freeze", "unfreeze", "pin", "unpin", "blank", "unblank",
     "force_new_slide", "resolve_concern",
+    "remove_image", "change_image", "set_image",  # F-007b, args {slide_id[, image_id]}
 ]
 
 
@@ -191,6 +192,29 @@ class SlideOverflow(Event):
     version: int = 0
 
 
+class ImageRequested(Event):
+    """Presentation asks the image service for pictures (F-007b). Never blocks a slide."""
+    request_id: str
+    slide_id: str
+    query: str
+    kind: Literal["photo", "diagram"] = "photo"
+    exclude: list[str] = Field(default_factory=list)  # image ids already offered for this topic
+    deeper: bool = False   # past the first results (Change image after the candidates ran out)
+    reason: str = "auto"   # auto | change
+
+
+class ImageReady(Event):
+    """The search result: up to 3 cached images (visuals.cache.CachedImage dumps, best first) or none + why."""
+    request_id: str
+    slide_id: str
+    query: str
+    kind: str = "photo"
+    images: list[dict[str, Any]] = Field(default_factory=list)
+    reason: str = ""        # why there is none ("timeout", "no relevant image", "network: ...")
+    cached: bool = False
+    seconds: float = 0.0
+
+
 class ErrorRaised(Event):
     component: str
     error: str
@@ -203,7 +227,7 @@ EVENT_TYPES: dict[str, type[Event]] = {
         LifecycleChanged, TranscriptFinal, AudioLevel, AudioDeviceLost, UtteranceDropped,
         CommandReceived, StateChanged, SlidePatch, DeckState, ErrorRaised,
         UtteranceClassified, ConceptSignal, InterpretRequested, InterpretationReady, LLMCallFailed,
-        ConcernRaised, ConcernResolved, SlideContextChanged, SlideOverflow,
+        ConcernRaised, ConcernResolved, SlideContextChanged, SlideOverflow, ImageRequested, ImageReady,
     )
 }
 

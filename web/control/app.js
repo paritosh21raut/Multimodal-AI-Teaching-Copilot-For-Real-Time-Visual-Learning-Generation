@@ -1,6 +1,6 @@
 // /control — the teacher's laptop view: live preview, deck, controls, transcript, status.
 // It never changes state itself; every action is a command sent to the server.
-import { html, render, useEffect, useReducer, useRef } from "../vendor/htm-preact-standalone.mjs";
+import { html, render, useEffect, useReducer, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
 import { Slide, partLabel, useStageScale } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
 
@@ -10,12 +10,54 @@ const KEYS = {
   n: ["force_new_slide"],
 };
 
-function Preview({ spec, deck }) {
+// ---- images (F-007b): the teacher's own image (drag & drop / Add image), Change image, Remove image ----
+const UPLOAD_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const UPLOAD_MAX_MB = 10;
+const hasFiles = (e) => e.dataTransfer && [...e.dataTransfer.types].includes("Files");
+
+// Upload the file (the server stores a re-encoded copy), then ask the server to put it on the slide.
+async function placeImage(file, slideId, send) {
+  if (!UPLOAD_TYPES.includes(file.type)) throw new Error("Use a JPEG, PNG, WebP or GIF image");
+  if (file.size > UPLOAD_MAX_MB * 1024 * 1024) throw new Error(`The image is larger than ${UPLOAD_MAX_MB} MB`);
+  const r = await fetch("/api/upload", {
+    method: "POST", body: file, headers: { "Content-Type": file.type, "X-File-Name": encodeURIComponent(file.name).slice(0, 120) },
+  });
+  const res = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(res.error || `Upload failed (${r.status})`);
+  send("set_image", { slide_id: slideId, image_id: res.image_id, aspect: res.aspect, alt: res.alt });
+}
+
+// While a file is dragged over the slide: the slide as it will look, with the image's place drawn as a drop zone.
+const withGhost = (spec, label) => ({
+  ...spec,
+  blocks: [...spec.blocks.filter((b) => b.type !== "image"),
+    { type: "image", id: "ghost", url: "", alt: label, aspect: 4 / 3, ghost: true }],
+});
+
+function Preview({ spec, deck, send, onNotice }) {
   const ref = useRef(null);
   const scale = useStageScale(ref);
-  return html`<div class="preview" ref=${ref}>
+  const [drag, setDrag] = useState(null); // null | "over" | "uploading"
+  const depth = useRef(0);
+  const canDrop = spec && spec.layout !== "title";
+  const drop = async (e) => {
+    e.preventDefault();
+    depth.current = 0;
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!file || !canDrop) { setDrag(null); return; }
+    setDrag("uploading");
+    try { await placeImage(file, spec.id, send); onNotice(""); }
+    catch (err) { onNotice(err.message); }
+    finally { setDrag(null); }
+  };
+  const shown = drag && canDrop ? withGhost(spec, drag === "uploading" ? "Placing the image…" : "Drop to place the image here") : spec;
+  return html`<div class=${"preview" + (drag ? " dragging" : "")} ref=${ref}
+      onDragEnter=${(e) => { if (!hasFiles(e)) return; e.preventDefault(); depth.current += 1; if (drag !== "uploading") setDrag("over"); }}
+      onDragOver=${(e) => { if (hasFiles(e)) { e.preventDefault(); e.dataTransfer.dropEffect = canDrop ? "copy" : "none"; } }}
+      onDragLeave=${() => { depth.current = Math.max(0, depth.current - 1); if (!depth.current && drag === "over") setDrag(null); }}
+      onDrop=${drop}>
     <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
-      ${spec ? html`<${Slide} key=${spec.id} spec=${spec} />` : html`<div class="waiting">No slide yet</div>`}
+      ${shown ? html`<${Slide} key=${spec.id} spec=${shown} />` : html`<div class="waiting">No slide yet</div>`}
     </div>
     ${deck && (deck.blank || deck.frozen || deck.pinned) && html`<div class="flags">
       ${deck.blank && html`<span class="flag warn">BLANK</span>`}
@@ -67,10 +109,42 @@ function Concerns({ concerns, send }) {
   </section>`;
 }
 
+const SEARCH_TEXT = { searching: "Finding an image…", none: "No suitable image found" };
+
+function ImageTools({ spec, status, send, notice, onNotice }) {
+  const input = useRef(null);
+  if (!spec || spec.layout === "title") return null;
+  const image = spec.blocks.find((b) => b.type === "image");
+  const pick = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    try { await placeImage(file, spec.id, send); onNotice(""); } catch (err) { onNotice(err.message); }
+  };
+  const info = notice || (status && SEARCH_TEXT[status.state]) || (image ? (image.origin === "teacher" ? "Your image" : "Image chosen automatically") : "No image · drag one onto the slide or");
+  return html`<div class="image-tools">
+    <span class="label">Image</span>
+    <span class=${"info" + (notice ? " error" : "")}>${info}</span>
+    <input ref=${input} type="file" accept=${UPLOAD_TYPES.join(",")} hidden onChange=${pick} />
+    <button onClick=${() => input.current.click()} title="Choose an image file for this slide">${image ? "Use my image" : "Add image"}</button>
+    ${image && html`<button onClick=${() => { onNotice(""); send("change_image", { slide_id: spec.id }); }}
+      disabled=${status && status.state === "searching"} title="Show a different image for this topic">Change image</button>
+      <button onClick=${() => { onNotice(""); send("remove_image", { slide_id: spec.id }); }} title="Take the image off this slide">Remove image</button>`}
+  </div>`;
+}
+
 function App() {
   const [state, dispatch] = useReducer(reduce, initialState);
+  const [notice, setNotice] = useState("");
   const conn = useRef(null);
   const send = (kind, args = {}) => conn.current && conn.current.send({ type: "command", kind, args });
+
+  useEffect(() => {  // a file dropped next to the preview must not make the browser open it (and leave the page)
+    const stop = (e) => { if (hasFiles(e)) e.preventDefault(); };
+    window.addEventListener("dragover", stop);
+    window.addEventListener("drop", stop);
+    return () => { window.removeEventListener("dragover", stop); window.removeEventListener("drop", stop); };
+  }, []);
 
   useEffect(() => {
     conn.current = connect("control", dispatch, (s) => dispatch({ type: "connection", connected: s === "connected" }));
@@ -109,7 +183,9 @@ function App() {
     </header>
     <main class="grid">
       <section class="left">
-        <${Preview} spec=${liveSpec} deck=${deck} />
+        <${Preview} spec=${liveSpec} deck=${deck} send=${send} onNotice=${setNotice} />
+        <${ImageTools} spec=${liveSpec} status=${liveSpec && state.images[liveSpec.id]} send=${send}
+          notice=${notice} onNotice=${setNotice} />
         <div class="buttons">
           <button onClick=${() => send("prev")} title="←">◀ Prev</button>
           <button onClick=${() => send("next")} title="→">Next ▶</button>
