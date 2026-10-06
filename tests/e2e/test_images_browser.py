@@ -87,6 +87,10 @@ async def test_teacher_image_controls_and_layout(tmp_path):
         async with browser_page(f"{h.url}/control", 1600, 1000) as control, browser_page(f"{h.url}/display") as display:
             await wait_for_slide(control, sid)
             await wait_for_slide(display, sid)
+            # no image yet: only "Add image" (and a small "or drop one on the slide") floats on the preview
+            bar = await control.inner_text(".preview .image-bar")
+            assert "Add image" in bar and "drop" in bar and "Change" not in bar
+            await control.screenshot(path=str(ART / "images_control_empty.png"))
 
             # 1. drag a file over the slide: the drop zone appears where the image will go, content moves left
             png = picture((20, 130, 90), (800, 1000), "teacher")
@@ -116,11 +120,11 @@ async def test_teacher_image_controls_and_layout(tmp_path):
 
             # 3. a wrong file type is refused with a message, nothing changes
             await drag_file(control, ".preview", b"%PDF-1.4", "notes.pdf", "application/pdf", drop=True)
-            await control.wait_for_selector(".image-tools .info.error")
+            await control.wait_for_selector(".preview .image-status.error")
             assert next(b for b in h.deck.get(sid).blocks if b.type == "image").origin == "teacher"
 
             # 4. Remove image → the slide goes back to the normal layout
-            await control.click("text=Remove image")
+            await control.click(".image-bar button[title='Take the image off this slide']")
             await display.wait_for_function("() => !document.querySelector('.slide .figure')")
             assert not any(b.type == "image" for b in h.deck.get(sid).blocks)
 
@@ -132,7 +136,7 @@ async def test_teacher_image_controls_and_layout(tmp_path):
             await display.wait_for_function("() => !!document.querySelector('.slide .figure img.loaded')")
             first = await figure_src(display)
             assert first == auto[0].url
-            await control.click("text=Change image")
+            await control.click(".image-bar >> text=Change")
             await display.wait_for_function(f"() => document.querySelector('.slide .figure img')?.getAttribute('src') === '{auto[1].url}'")
             await display.wait_for_timeout(800)
             await display.screenshot(path=str(ART / "images_display_auto.png"))
@@ -140,13 +144,48 @@ async def test_teacher_image_controls_and_layout(tmp_path):
             # 6. Add image / Use my image via the file picker
             picked = tmp_path / "picked.jpg"
             Image.open(io.BytesIO(picture((200, 160, 30), (1200, 700), "picked"))).save(picked, "JPEG")
-            await control.set_input_files(".image-tools input[type=file]", str(picked))
+            await control.set_input_files(".image-bar input[type=file]", str(picked))
             await display.wait_for_function(
                 "() => { const i = document.querySelector('.slide .figure img'); return i && !i.getAttribute('src').includes('"
                 + auto[1].id + "'); }")
+            picked_src = await figure_src(display)
             assert next(b for b in h.deck.get(sid).blocks if b.type == "image").origin == "teacher"
             await control.wait_for_timeout(800)
             await control.screenshot(path=str(ART / "images_control_picked.png"))
+
+            # 7. previous / next: every image this slide showed (dropped, auto, changed, picked) = 4
+            await control.wait_for_function("() => document.querySelector('.image-bar .count')?.textContent.trim() === '4 / 4'")
+            await control.click(".image-bar button[title='Previous image']")
+            await display.wait_for_function(f"() => document.querySelector('.slide .figure img')?.getAttribute('src') === '{auto[1].url}'")
+            await control.wait_for_function("() => document.querySelector('.image-bar .count')?.textContent.trim() === '3 / 4'")
+            await control.click(".image-bar button[title='Next image']")
+            await display.wait_for_function(f"() => document.querySelector('.slide .figure img')?.getAttribute('src') === '{picked_src}'")
+            assert await control.is_disabled(".image-bar button[title='Next image']")
+
+            # 8. click the image in /control: full screen on the display; /control shows it inside the preview only
+            for close in ("Escape", ".zoomed", ".back"):
+                await control.click(".preview .slide .figure")
+                await display.wait_for_function("() => !!document.querySelector('.zoomed img.loaded')")
+                await control.wait_for_function("() => !!document.querySelector('.preview .zoomed img.loaded')")
+                assert h.deck.zoom == sid
+                if close == "Escape":
+                    full = await display.evaluate("""() => { const z = document.querySelector('.zoomed img').getBoundingClientRect();
+                        return {w: z.width / innerWidth, h: z.height / innerHeight}; }""")
+                    assert full["w"] > 0.8 or full["h"] > 0.8, full  # fills the projector
+                    inside = await control.evaluate("""() => { const z = document.querySelector('.zoomed').getBoundingClientRect(),
+                        p = document.querySelector('.preview').getBoundingClientRect();
+                        return z.left >= p.left - 1 && z.right <= p.right + 1 && z.bottom <= p.bottom + 1; }""")
+                    assert inside  # not full screen in the /control window
+                    assert await control.query_selector(".image-bar") is None
+                    await display.wait_for_timeout(500)
+                    await display.screenshot(path=str(ART / "images_display_zoomed.png"))
+                    await control.screenshot(path=str(ART / "images_control_zoomed.png"))
+                    await control.keyboard.press("Escape")
+                else:
+                    await control.click(close)
+                await display.wait_for_function("() => !document.querySelector('.zoomed')")
+                await control.wait_for_function("() => !document.querySelector('.zoomed')")
+                assert h.deck.zoom is None
             assert not control.errors and not display.errors, (control.errors, display.errors)
         await eng.stop()
 

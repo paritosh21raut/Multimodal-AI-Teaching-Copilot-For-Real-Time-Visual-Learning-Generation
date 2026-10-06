@@ -32,8 +32,13 @@ _ABSTRACT = {"energy", "force", "forces", "velocity", "speed", "acceleration", "
              "current", "voltage", "resistance", "charge", "matter", "chemistry", "physics", "biology", "science"}
 
 
+# words about the picture, not its subject ("speed and velocity diagram" is as abstract as "speed and velocity")
+_FILLER = {"of", "the", "and", "a", "an", "in", "vs", "versus", "diagram", "diagrams", "photo", "photos", "image",
+           "images", "picture", "pictures", "illustration", "chart"}
+
+
 def is_abstract(query: str) -> bool:
-    words = [w for w in re.findall(r"[a-z]+", query.lower()) if w not in ("of", "the", "and", "a", "an", "in")]
+    words = [w for w in re.findall(r"[a-z]+", query.lower()) if w not in _FILLER]
     return not words or all(w in _ABSTRACT for w in words)
 
 

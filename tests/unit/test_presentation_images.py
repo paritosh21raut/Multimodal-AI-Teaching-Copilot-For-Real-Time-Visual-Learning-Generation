@@ -3,7 +3,7 @@ own image; content growing beside an image. Real bus, store, deck; the image ser
 (the real service + finder run in test_images_end_to_end)."""
 from __future__ import annotations
 
-from copilot.core.events import Command, CommandReceived, ImageReady, ImageRequested
+from copilot.core.events import Command, CommandReceived, ImageChoices, ImageReady, ImageRequested
 from copilot.core.interpretation import ContentItems, DiscourseAct, Fact, Formula, Interpretation, VisualHint
 from tests.unit.test_presentation_engine import make, ready, send
 
@@ -176,6 +176,63 @@ async def test_title_slide_never_takes_an_image():
     await send(bus, CommandReceived(command=Command(kind="set_image", args={
         "slide_id": sid, "image_id": "00000000000000aa"})))
     assert image(deck.get(sid)) is None
+
+
+class Choices:
+    def __init__(self, bus):
+        self.last: dict[str, tuple[int, int]] = {}
+        bus.subscribe("test-choices", self._on, [ImageChoices])
+
+    async def _on(self, ev):
+        self.last[ev.slide_id] = (ev.index, ev.count)
+
+
+async def test_previous_and_next_step_through_every_image_the_slide_showed():
+    bus, deck, eng, reqs = await setup()
+    choices = Choices(bus)
+    await send(bus, with_visual(ready("Solar System", "Saturn", [SATURN], relation="new_topic"), "Saturn"))
+    await answer(bus, reqs.items[0], [img(1), img(2)])
+    sid = deck.live.id
+    cmd = lambda kind, **a: send(bus, CommandReceived(command=Command(kind=kind, args={"slide_id": sid, **a})))  # noqa: E731
+    await cmd("change_image")                                  # auto 2
+    await cmd("set_image", image_id="00000000000000aa")        # the teacher's own
+    assert choices.last[sid] == (2, 3) and image(deck.get(sid)).image_id == "00000000000000aa"
+    await cmd("image_prev")
+    assert image(deck.get(sid)).image_id == f"{2:016x}" and choices.last[sid] == (1, 3)
+    await cmd("image_prev")
+    await cmd("image_prev")                                    # already the first: nothing happens
+    assert image(deck.get(sid)).image_id == f"{1:016x}" and choices.last[sid] == (0, 3)
+    await cmd("image_next")
+    await cmd("image_next")
+    await cmd("image_next")                                    # already the last
+    assert image(deck.get(sid)).image_id == "00000000000000aa" and choices.last[sid] == (2, 3)
+    # a new image after stepping back goes to the end; nothing is lost
+    await cmd("image_prev")
+    await cmd("set_image", image_id="00000000000000bb")
+    assert choices.last[sid] == (3, 4)
+    # an image shown again is not added twice
+    await cmd("set_image", image_id="00000000000000aa")
+    assert choices.last[sid] == (2, 4)
+
+
+async def test_zoom_is_a_display_flag_that_ends_on_back_navigation_or_when_the_image_goes():
+    bus, deck, eng, reqs = await setup()
+    await send(bus, with_visual(ready("Solar System", "Saturn", [SATURN], relation="new_topic"), "Saturn"))
+    sid = deck.live.id
+    zoom = CommandReceived(command=Command(kind="zoom_image", args={"slide_id": sid}))
+    await send(bus, zoom)
+    assert deck.zoom is None  # no image on the slide yet: nothing to zoom
+    await answer(bus, reqs.items[0], [img(1)])
+    await send(bus, zoom)
+    assert deck.zoom == sid and deck.state_event().zoom == sid
+    await send(bus, CommandReceived(command=Command(kind="unzoom_image")))
+    assert deck.zoom is None
+    await send(bus, zoom)
+    await send(bus, CommandReceived(command=Command(kind="prev")))
+    assert deck.zoom is None
+    await send(bus, zoom)
+    await send(bus, CommandReceived(command=Command(kind="remove_image", args={"slide_id": sid})))
+    assert deck.zoom is None and image(deck.get(sid)) is None
 
 
 async def test_interpretation_contract_carries_the_hint():

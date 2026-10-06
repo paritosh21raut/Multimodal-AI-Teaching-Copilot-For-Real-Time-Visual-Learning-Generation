@@ -154,7 +154,7 @@ function Groups({ b }) {
 // The image of the image layout (F-007b): the box has the image's aspect ratio before the file loads (no reflow),
 // the picture fades in. No credit line on slides (user 2026-10-06; licence and author are kept for exports).
 // A `ghost` block is the drop zone /control shows while the teacher drags a file over the slide.
-function Figure({ b }) {
+function Figure({ b, onClick }) {
   const [loaded, setLoaded] = useState(false);
   const style = { "--aspect": b.aspect || 4 / 3 };
   if (b.ghost) {
@@ -164,10 +164,23 @@ function Figure({ b }) {
         <span>${b.alt || "Drop to place the image here"}</span></div>
     </figure>`;
   }
-  return html`<figure class="figure" style=${style}>
+  return html`<figure class=${"figure" + (onClick ? " zoomable" : "")} style=${style}
+      onClick=${onClick} title=${onClick ? "Show full screen on the display" : undefined}>
     <img src=${b.url} alt=${b.alt} class=${loaded ? "loaded" : ""} onLoad=${() => setLoaded(true)} />
   </figure>`;
 }
+
+// The slide's image filling the 1920x1080 stage (the teacher clicked it in /control). Both pages render it the same
+// way; only /control passes onClose (click on it = back to the slide).
+export function ZoomedImage({ image, onClose }) {
+  const [loaded, setLoaded] = useState(false);
+  return html`<div class=${"zoomed" + (onClose ? " closable" : "")} onClick=${onClose}>
+    <img src=${image.url} alt=${image.alt} class=${loaded ? "loaded" : ""} onLoad=${() => setLoaded(true)}
+      style=${{ "--aspect": image.aspect || 4 / 3 }} />
+  </div>`;
+}
+
+export const imageOf = (spec) => (spec && spec.blocks ? spec.blocks.find((b) => b.type === "image") : null);
 
 // Mirrors composer.image_column_px: wider column for landscape images; a tall image takes only the width it needs.
 const BODY_BUDGET_PX = 700;
@@ -221,7 +234,7 @@ const FIT_STEPS = [0.8, 0.9, 1, 1.15, 1.3];
 const FIT_DEFAULT = 2;
 const SPARSE_RATIO = 0.6; // content filling less than this share of the body may grow
 
-export function Slide({ spec, phase = "", onOverflow }) {
+export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
   const bodyRef = useRef(null);
   const [fit, setFit] = useState({ idx: FIT_DEFAULT, done: false });
   const lastKey = useRef(null);
@@ -285,7 +298,8 @@ export function Slide({ spec, phase = "", onOverflow }) {
           termInTitle=${!!def} />`)}
       </div>
       ${aside.length > 0 && html`<div class="aside">${aside.map((b) => html`<${Block} key=${b.id} b=${b} />`)}</div>`}
-      ${image && html`<div class="image-col"><${Figure} key=${image.id} b=${image} /></div>`}
+      ${image && html`<div class="image-col"><${Figure} key=${image.id} b=${image}
+        onClick=${onImageClick && !image.ghost ? () => onImageClick(image) : undefined} /></div>`}
     </div>
   </section>`;
 }

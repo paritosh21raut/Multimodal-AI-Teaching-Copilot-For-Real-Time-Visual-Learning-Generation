@@ -25,6 +25,7 @@ from copilot.core.events import (
     ConcernResolved,
     DeckState,
     Event,
+    ImageChoices,
     ImageReady,
     ImageRequested,
     InterpretationReady,
@@ -163,6 +164,7 @@ class PresentationEngine:
         self._tasks: list[asyncio.Task] = []
         self._visuals: list[tuple[Frame, FrameVisual]] = []      # per frame: its image, candidates, teacher choices
         self._image_requests: dict[str, tuple[str, str]] = {}   # request id -> (slide id, reason)
+        self._image_history: dict[str, tuple[list[ImageBlock], int]] = {}  # slide id -> (images it showed, current)
 
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
@@ -199,7 +201,7 @@ class PresentationEngine:
             elif isinstance(event, CommandReceived):
                 if event.command.kind == "force_new_slide":
                     await self._force_new()
-                elif event.command.kind in ("remove_image", "change_image", "set_image"):
+                elif event.command.kind in ("remove_image", "change_image", "set_image", "image_prev", "image_next"):
                     await self._on_image_command(event.command.kind, event.command.args)
             elif isinstance(event, ImageReady):
                 await self._on_image_ready(event)
@@ -712,22 +714,45 @@ class PresentationEngine:
                                               kind=kind if kind in ("photo", "diagram") else "photo",
                                               exclude=sorted(fv.shown_ids), deeper=deeper, reason=reason))
 
-    async def _show_image(self, spec: SlideSpec, image: ImageBlock, teacher: bool) -> bool:
+    async def _show_image(self, spec: SlideSpec, image: ImageBlock, teacher: bool, remember: bool = True) -> bool:
         """Put the image on the slide. Automatic: only when the content still fits at the default type size.
         The teacher's choice: the type may shrink; if even that is not enough, the last content moves to the next
-        part (the image never shrinks the content out of sight)."""
+        part (the image never shrinks the content out of sight). Every image shown joins the slide's history
+        (the teacher's previous / next arrows) unless it is a step through that history."""
         new = with_image(spec, image.model_copy(update={"id": new_id()}))
         if not teacher and not fits_unshrunk(new):
             log.info("no room for an image on %r", spec.title)
             return False
+        moved: list = []
         if teacher and not fits(new):
             new, moved = split_to_fit(new)
-            if moved:
-                await self._commit(new)
-                await self._open_tail(new, moved)
-                return True
         await self._commit(new)
+        if moved:
+            await self._open_tail(new, moved)
+        if remember:
+            await self._remember_image(spec.id, image)
         return True
+
+    async def _remember_image(self, slide_id: str, image: ImageBlock) -> None:
+        images, _ = self._image_history.get(slide_id, ([], -1))
+        at = next((i for i, b in enumerate(images) if b.image_id == image.image_id), None)
+        if at is None:  # a new image goes to the end, also after the teacher stepped back (nothing is lost)
+            images, at = images + [image], len(images)
+        self._image_history[slide_id] = (images, at)
+        await self.bus.publish(ImageChoices(slide_id=slide_id, index=at, count=len(images)))
+
+    async def _step_image(self, spec: SlideSpec, fv: FrameVisual, step: int) -> None:
+        images, at = self._image_history.get(spec.id, ([], -1))
+        to = at + step
+        if not 0 <= to < len(images):
+            return
+        block = images[to]
+        if await self._show_image(spec, block, teacher=True, remember=False):
+            self._image_history[spec.id] = (images, to)
+            if block.origin == "auto":
+                fv.image = block
+            await self.bus.publish(ImageChoices(slide_id=spec.id, index=to, count=len(images)))
+            log.info("teacher stepped to image %d/%d on %r", to + 1, len(images), spec.title)
 
     async def _open_tail(self, head: SlideSpec, blocks: list) -> None:
         """Content that no longer fits beside the teacher's image continues on the next part, right after it."""
@@ -807,6 +832,9 @@ class PresentationEngine:
             return
         fv = self._fv(meta.frame)
         cur = image_of(spec)
+        if kind in ("image_prev", "image_next"):
+            await self._step_image(spec, fv, -1 if kind == "image_prev" else 1)
+            return
         if kind == "remove_image":
             if cur is not None:
                 await self._commit(without_image(spec))

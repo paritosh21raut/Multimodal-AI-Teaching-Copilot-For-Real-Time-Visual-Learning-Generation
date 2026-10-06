@@ -95,8 +95,9 @@ def system_prompt(visual: bool = True) -> str:
         "{visual_shape}}}", (VISUAL_SHAPE if visual else "") + "}")
 
 
-# The visual rule goes live only after the old-vs-new A/B on gpt-oss-120b (F-007b step 4) passes.
-SYSTEM_PROMPT = system_prompt(visual=False)
+# The visual rule is live since the old-vs-new A/B on gpt-oss-120b passed (F-007b step 4, 2026-10-06: 11/11 valid,
+# no difference the rule caused; +86 prompt tokens per call).
+SYSTEM_PROMPT = system_prompt(visual=True)
 
 OUTLINE_MAX_TOKENS = 150
 SUMMARY_MAX_TOKENS = 120

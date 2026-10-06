@@ -41,12 +41,12 @@ export function connect(role, onMessage, onStatus) {
 }
 
 // Reducer shared by both pages: applies server messages to a plain state object.
-export const initialState = { theme: "light", lifecycle: "starting", slides: {}, deck: null, transcript: [], audio: null, connected: false, concerns: [], images: {} };
+export const initialState = { theme: "light", lifecycle: "starting", slides: {}, deck: null, transcript: [], audio: null, connected: false, concerns: [], images: {}, choices: {} };
 
 export function reduce(state, msg) {
   switch (msg.type) {
     case "hello":
-      return { ...state, theme: msg.theme, lifecycle: msg.lifecycle, slides: msg.slides || {}, deck: msg.deck, transcript: msg.transcript || [], concerns: msg.concerns || [] };
+      return { ...state, theme: msg.theme, lifecycle: msg.lifecycle, slides: msg.slides || {}, deck: msg.deck, transcript: msg.transcript || [], concerns: msg.concerns || [], choices: msg.image_choices || {} };
     case "patch": {
       const cur = state.slides[msg.slide_id];
       if (cur && cur.version >= msg.version) return state; // stale
@@ -63,7 +63,9 @@ export function reduce(state, msg) {
         : { ...state, concerns: [...state.concerns, msg.concern] };
     case "concern_resolved": return { ...state, concerns: state.concerns.filter((c) => c.id !== msg.id) };
     case "image_status":  // control only: image search state per slide (F-007b)
-      return { ...state, images: { ...state.images, [msg.slide_id]: { state: msg.state, reason: msg.reason } } };
+      return { ...state, images: { ...state.images, [msg.slide_id]: { state: msg.state, reason: msg.reason, at: Date.now() } } };
+    case "image_choices":  // control only: images this slide has shown, for the previous / next arrows
+      return { ...state, choices: { ...state.choices, [msg.slide_id]: { index: msg.index, count: msg.count } } };
     default: return state;
   }
 }

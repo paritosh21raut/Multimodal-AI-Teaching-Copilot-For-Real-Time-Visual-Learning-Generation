@@ -19,7 +19,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `LLMCallFailed` | llm | `provider`, `error`, `will_retry` |
 | `StateChanged` | state store | `version`, `changes` (topic/subtopic/outline/concerns) |
 | `SlidePatch` | deck | `slide_id`, `version`, `op` (add/update), `spec` (SlideSpec dump) |
-| `DeckState` | deck | `live_id`, `slide_ids`, `following`, `pinned`, `frozen`, `blank` |
+| `DeckState` | deck | `live_id`, `slide_ids`, `following`, `pinned`, `frozen`, `blank`, `zoom` (slide whose image fills the display, or null) |
 | `CommandReceived` | display/terminal | `command: Command` |
 | `ConcernRaised` | state store | `concern` (Concern dump) |
 | `ConcernResolved` | state store | `concern_id`, `status` (accepted/kept/dismissed) |
@@ -27,13 +27,15 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `SlideOverflow` | display hub (from `/display`) | `slide_id`, `version` (auto-fit failed; planner continues on a new slide) |
 | `ImageRequested` | presentation engine | `request_id`, `slide_id`, `query`, `kind` (photo/diagram), `exclude` (image ids already offered), `deeper`, `reason` (auto/change) — F-007b |
 | `ImageReady` | image service | `request_id`, `slide_id`, `query`, `kind`, `images` (≤ 3 `CachedImage` dumps, best first), `reason` (why none), `cached`, `seconds` |
+| `ImageChoices` | presentation engine | `slide_id`, `index`, `count` — the images this slide has shown, for the previous / next arrows (control only) |
 | `ErrorRaised` | any | `component`, `error`, `fatal` |
 
 `TranscriptSegment`: `id, text, start, end, confidence, language="en", source="mic"|"sim"`.
 
 `Command.kind`: `start, end, pause, resume, next, prev, goto, freeze, unfreeze, pin, unpin, blank, unblank,
 force_new_slide, resolve_concern(id, action), remove_image(slide_id), change_image(slide_id),
-set_image(slide_id, image_id, aspect, alt)` (image commands: F-007b; `set_image` follows `POST /api/upload`).
+set_image(slide_id, image_id, aspect, alt), image_prev(slide_id), image_next(slide_id), zoom_image(slide_id),
+unzoom_image` (image commands: F-007b; `set_image` follows `POST /api/upload`; zoom is a deck display flag).
 
 `Interpretation` (`core/interpretation.py`): `topic, subtopic, relation, acts[{act, lines, items, added}],
 representation_hint, meta_lines, concerns[{claim, issue, suggested_correction, confidence, lines, kind, wrong, right}], revisions[{ref, text}], level_estimate,

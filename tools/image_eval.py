@@ -25,6 +25,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+from copilot.visuals import sources  # noqa: E402
 from copilot.visuals.cache import ImageCache  # noqa: E402
 from copilot.visuals.clip import ClipScorer  # noqa: E402
 from copilot.visuals.finder import FinderSettings, ImageFinder  # noqa: E402
@@ -100,7 +101,16 @@ async def record(name: str, query: str, kind: str) -> None:
     rec = Recorder()
     cache_dir = OUT / "record_cache"
     shutil.rmtree(cache_dir, ignore_errors=True)
-    r = await ImageFinder(ImageCache(cache_dir), scorer(), FinderSettings(), transport=rec).find(query, kind)
+    # a generous budget: the fixture must hold every exchange even when the network is slow while recording
+    finder = ImageFinder(ImageCache(cache_dir), scorer(), FinderSettings(budget_s=40, http_timeout_s=20,
+                                                                         full_reserve_s=15), transport=rec)
+    r = await finder.find(query, kind)
+    # every candidate's full-size file too: a test with a fake scorer may choose other candidates than real CLIP did
+    async with sources.client(20.0, rec) as c:
+        logged = {e["url"] for e in rec.log}
+        for cand in await finder._candidates(c, query, kind, False):
+            if cand.image_url not in logged:
+                await finder._download(c, cand.image_url)
     target = ROOT / "tests" / "fixtures" / "http" / f"{name}.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps({"query": query, "kind": kind, "exchanges": rec.log}, indent=1), encoding="utf-8")

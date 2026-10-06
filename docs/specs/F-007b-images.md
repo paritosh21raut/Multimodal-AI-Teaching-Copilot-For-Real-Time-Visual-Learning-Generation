@@ -84,7 +84,8 @@ slightly better (wider gaps), int8 is enough with the filters + distractor margi
 **Step 2 — sources, filters, cache** (`visuals/{sources,filters,cache,finder}.py`; `tools/image_eval.py`, 30
 labelled concepts from the fixture lectures, real network, contact sheet `artifacts/image_eval/sheet.html`):
 - Search ≈ 1.5–2.5 s, downloads ≈ 1–2 s, CLIP ≈ 0.2–0.7 s → 2.5–6 s per query (budget 8 s; slow downloads are
-  dropped at the deadline, the rest is still ranked).
+  dropped at the deadline, the rest is still ranked). Since the live run: 330 px previews for CLIP, 960 px only for
+  the chosen images (see "Real-LLM run" below).
 - Found by looking at the sheet and fixed: diagrams with Persian/Arabic/Greek/… labels (language codes in file
   names + `X-language` categories; a diagram's file name must name the query in English), autopsy / cancer images
   (blocklist), off-topic matches ("Rock cycle" for water cycle: every distinctive query word must appear in the
@@ -100,13 +101,19 @@ image layout (`composer.image_column_px/image_of/with_image/split_to_fit`; `fits
 image; `fits_unshrunk` for automatic images). An image is never content (`teacher_items`, `element_texts`,
 `remove_elements`).
 
-**Step 4 — prompt A/B: NOT RUN yet (quota).** `VISUAL_RULE` (+ ≈ 86 prompt tokens/call) is written and kept apart
-(`prompt.system_prompt(visual)`); production still uses the old prompt (`SYSTEM_PROMPT = system_prompt(False)`).
-`tools/prompt_ab.py --dry` rebuilt 40 recorded units of 6 sessions exactly (logged prompt size matched; the
-photosynthesis session differs by its setup header and is excluded). The live run was refused: the only key in
-`.env` (`GROQ_API_KEY_3`) had 197,976/200,000 gpt-oss-120b tokens used (frees ≈ 2026-10-07 01:50). Chosen units:
+**Step 4 — prompt A/B: PASSED (2026-10-06), visual rule live.** `tools/prompt_ab.py --dry` rebuilt 40 recorded units
+of 6 sessions exactly (logged prompt size matched). Real run, gpt-oss-120b, units
 `20261005-232616-f7cb:1,2,6,8 20261005-233249-77ea:5,7 20261006-015047-44b7:1,2 20261006-014301-5830:1
-20261006-020147-a3e0:0 20261006-015722-69aa:1` (6 concrete, 5 abstract), ≈ 28k tokens.
+20261006-020147-a3e0:0 20261006-015722-69aa:1` (6 concrete, 5 abstract), results `artifacts/prompt_ab/20261006-0921*.json`
+and `-0924*.json`:
+- Validity 11/11 (0 repaired). Same topic 10/11, same relation 10/11 (differences are naming variance).
+- Hints: Sun (photo), Saturn rings (photo), stomach diagram, "speed and velocity diagram" (abstract → refused by the
+  policy, which now ignores picture words like "diagram"); none for kinetic/potential energy, quadratic, neutralisation.
+- Truthfulness: one new-arm answer added the quadratic formula the teacher only named; re-sending the OLD prompt
+  (`--old`) gave the same addition → sampling variance of the model, not the rule (open issue outside V1b).
+- Tokens: 8,925 + 15,299 + 2,084 (old-prompt check) = 26,308. The first run sent 4 units, then the only key with quota
+  hit its 8k TPM and 7 units fell back unsent (0 tokens); `prompt_ab.py` now paces by tokens.
+`SYSTEM_PROMPT = system_prompt(True)` (+ ≈ 86 prompt tokens/call).
 
 **Step 5 — engine wiring:** `ImageRequested` / `ImageReady`; hint remembered per frame (a new topic's first unit can
 wait on the previous slide — found in the solar lesson: Galaxies lost its hint); search result applied to the
@@ -131,8 +138,36 @@ Tests: 380 fast, 11 browser, 5 slow. Self-review fixes: failed searches (network
 seconds before a retry (the remembered hint would otherwise search on every unit); no image on title slides;
 uploaded file names decoded for the alt text.
 
-**Not verified yet:** prompt A/B; real-LLM runs (human body, solar system) with the visual rule; relevance of
-model-written queries; share of slides with images in a real lecture.
+**Real-LLM run (2026-10-06, `tools/screenshot_app.py --lecture --simulate tests/fixtures/lectures/human_body.txt
+--speed 1`, session 20261006-093559-e5ce):** 18 interpretations, 0 fallbacks, 38,892 tokens (23,881 gpt-oss-120b +
+15,011 qwen3.8-27b when the one fresh key hit its TPM). Model queries: "human heart", "human heart chambers", "human
+lungs anatomy", "digestive tract diagram", "human skeleton" — all concrete and on topic. Only 1/4 slides got an
+image: two searches lost every candidate ("downloads failed": eight 960 px downloads took 3–19 s on a slow link) and
+"human heart" was cached as "no relevant image" although most previews had not arrived. Skeleton (6 fact tiles) and
+the breathing process correctly got none.
+Fixes: candidates are judged on 330 px previews (≈ 15–60 KB) and only the chosen ≤ 3 are downloaded at 960 px (best
+first, alone); an incomplete search is "incomplete", never remembered as "no relevant image".
+Zero-token replay of the same session with the fixed finder (`tools/replay_interpretations.py
+20261006-093559-e5ce light --images`, fresh cache): 4/4 searches found an image; heart diagram, lungs, digestive
+system (all relevant); the breathing process went to Lungs part II at full width (user answer 3); skeleton none.
+The solar-system real run was skipped to stay inside the token budget (the A/B and this run used ≈ 65k).
+
+**/control round 2 (user, 2026-10-06):** the image tools no longer take a row: a small floating bar on the preview
+(bottom right) — "Add image · or drop one on the slide" without an image; ‹ n / m › · Change · upload · remove with
+one. No auto/teacher label. Status (searching, nothing else found, upload errors) as a small chip bottom left.
+- Previous / next: every image a slide has shown (automatic, Change, the teacher's own) in order; a new one goes to
+  the end, nothing is lost (`image_prev` / `image_next`, `ImageChoices` → control only).
+- Click the image in the preview: it fills the projector (`zoom_image` → `DeckState.zoom`); /control shows the same
+  inside its preview (never full window) with a "Back to slide" button; Esc, a click on the image or Back ends it
+  (`unzoom_image`); navigation or the image leaving the slide also ends it. New content keeps arriving behind it.
+- Verified: `tests/e2e/test_images_browser.py` (arrows 4/4 → 3/4 → 4/4, zoom ≥ 80 % of the projector, inside the
+  preview on /control, all three ways back), unit tests for the history and zoom rules, screenshots light + dark
+  (`artifacts/app/images_*`, `dark_*`). Bug found by the test: a small file stayed small when zoomed → sized from
+  the aspect ratio.
+Tests: 384 fast, 11 browser, 5 slow.
+
+**Not verified yet:** solar-system real-LLM run; share of slides with images over more real lectures; the new
+download path on a fast network in a full live run (replay only).
 
 ## Risks
 - Relevance (the main risk) → threshold tuned on a labelled set; when unsure, no image.

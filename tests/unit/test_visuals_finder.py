@@ -31,9 +31,11 @@ class Replay(httpx.AsyncBaseTransport):
         self.data = json.loads((HTTP / f"{name}.json").read_text(encoding="utf-8"))
         self.by_url = {e["url"]: e for e in self.data["exchanges"]}
         self.calls = 0
+        self.urls: list[str] = []
 
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
         self.calls += 1
+        self.urls.append(str(request.url))
         e = self.by_url.get(str(request.url))
         if e is None:
             return httpx.Response(404, request=request)
@@ -171,6 +173,27 @@ async def test_finder_heart_diagram(tmp_path):
     # exclude (the teacher removed one): the others remain
     rest = await f2.find("human heart", "diagram", exclude=[r.images[0].id])
     assert r.images[0].id not in [i.id for i in rest.images]
+
+
+async def test_finder_judges_small_previews_and_downloads_only_the_chosen_at_full_size(tmp_path):
+    t = Replay("saturn_photo")
+    r = await ImageFinder(ImageCache(tmp_path), FakeScorer(match=True), transport=t).find("Saturn", "photo")
+    pictures = [u for u in t.urls if "/wikipedia/commons/" in u]
+    previews = [u for u in pictures if "/330px-" in u]
+    full = [u for u in pictures if "/960px-" in u]
+    assert len(previews) >= 4 and 1 <= len(full) <= 3 and len(r.images) == len(full)
+    assert all(not u.endswith(".jpg") or "/thumb/" in u for u in previews)
+
+
+def test_full_size_url():
+    from copilot.visuals.sources import _full_url
+    thumb = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Saturn.jpg/330px-Saturn.jpg"
+    orig = "https://upload.wikimedia.org/wikipedia/commons/a/ab/Saturn.jpg"
+    assert _full_url({"thumburl": thumb, "url": orig, "width": 4000}).endswith("/960px-Saturn.jpg")
+    assert _full_url({"thumburl": thumb, "url": orig, "width": 800}) == orig  # no wider than 960: the original
+    svg = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Heart.svg/330px-Heart.svg.png"
+    assert _full_url({"thumburl": svg, "url": "x.svg", "width": 500, "mime": "image/svg+xml"}).endswith(
+        "/960px-Heart.svg.png")  # an SVG is rasterised at any width
 
 
 async def test_finder_rejects_when_clip_does_not_match(tmp_path):

@@ -19,6 +19,10 @@ WIKIPEDIA_API = "https://en.wikipedia.org/w/api.php"
 COMMONS_API = "https://commons.wikimedia.org/w/api.php"
 OPENVERSE_API = "https://api.openverse.org/v1/images/"
 THUMB_WIDTH = 960  # enough for the image column on a 1920 px stage; Commons rasterises SVG at this width
+# CLIP looks at 224 px: candidates are judged on a small standard-size thumbnail (≈ 15-60 KB instead of 100-600 KB;
+# live run 2026-10-06: eight 960 px downloads took 3-19 s on a slow link and two searches lost every candidate);
+# only the chosen images are then downloaded at THUMB_WIDTH
+PREVIEW_WIDTH = 330
 _META = "LicenseShortName|Artist|Categories|ImageDescription|Restrictions"
 
 
@@ -26,8 +30,9 @@ _META = "LicenseShortName|Artist|Categories|ImageDescription|Restrictions"
 class Candidate:
     source: str            # wikipedia | commons | openverse
     title: str             # "File:Heart diagram-en.svg" (or the Openverse title)
-    image_url: str         # the thumbnail we download (never hot-linked by the display)
+    image_url: str         # the picture we show, THUMB_WIDTH wide (downloaded and cached, never hot-linked)
     page_url: str = ""
+    preview_url: str = ""  # a small version for the relevance check ("" = use image_url)
     width: int = 0         # original size (0 = unknown; SVG = its nominal size)
     height: int = 0
     mime: str = ""
@@ -58,11 +63,12 @@ def _from_imageinfo(page: dict, source: str, rank: int) -> Optional[Candidate]:
     ii = infos[0]
     meta = ii.get("extmetadata") or {}
     get = lambda k: _text((meta.get(k) or {}).get("value", ""))  # noqa: E731
-    url = ii.get("thumburl") or ii.get("url") or ""
-    if not url:
+    preview = ii.get("thumburl") or ii.get("url") or ""  # requested at PREVIEW_WIDTH
+    if not preview:
         return None
     return Candidate(
-        source=source, title=page.get("title", ""), image_url=url, page_url=ii.get("descriptionurl", ""),
+        source=source, title=page.get("title", ""), image_url=_full_url(ii), preview_url=preview,
+        page_url=ii.get("descriptionurl", ""),
         width=int(ii.get("width") or 0), height=int(ii.get("height") or 0), mime=ii.get("mime", ""),
         licence=get("LicenseShortName"), author=get("Artist"),
         categories=(meta.get("Categories") or {}).get("value", ""), description=get("ImageDescription")[:300],
@@ -70,11 +76,20 @@ def _from_imageinfo(page: dict, source: str, rank: int) -> Optional[Candidate]:
     )
 
 
+def _full_url(ii: dict) -> str:
+    """The THUMB_WIDTH version: the same thumbnail path at another width when the original is wider (an SVG is
+    rasterised at any width); otherwise the original file, which is no wider than that."""
+    thumb, original = ii.get("thumburl") or "", ii.get("url") or ""
+    if "/thumb/" in thumb and (int(ii.get("width") or 0) > THUMB_WIDTH or ii.get("mime") == "image/svg+xml"):
+        return re.sub(r"/\d+px-", f"/{THUMB_WIDTH}px-", thumb, count=1)
+    return original or thumb
+
+
 async def commons_search(c: httpx.AsyncClient, query: str, limit: int = 8, offset: int = 0) -> list[Candidate]:
     r = await c.get(COMMONS_API, params={
         "action": "query", "format": "json", "formatversion": 2, "generator": "search", "gsrnamespace": 6,
         "gsrsearch": f"{query} filetype:bitmap|drawing", "gsrlimit": limit, "gsroffset": offset, "prop": "imageinfo",
-        "iiprop": "url|size|mime|extmetadata", "iiurlwidth": THUMB_WIDTH, "iiextmetadatafilter": _META})
+        "iiprop": "url|size|mime|extmetadata", "iiurlwidth": PREVIEW_WIDTH, "iiextmetadatafilter": _META})
     r.raise_for_status()
     pages = sorted((r.json().get("query") or {}).get("pages") or [], key=lambda p: p.get("index", 0))
     return [c for i, p in enumerate(pages) if (c := _from_imageinfo(p, "commons", offset + i))]
@@ -86,7 +101,7 @@ async def commons_files(c: httpx.AsyncClient, titles: list[str]) -> dict[str, Ca
         return {}
     r = await c.get(COMMONS_API, params={
         "action": "query", "format": "json", "formatversion": 2, "titles": "|".join(titles), "prop": "imageinfo",
-        "iiprop": "url|size|mime|extmetadata", "iiurlwidth": THUMB_WIDTH, "iiextmetadatafilter": _META})
+        "iiprop": "url|size|mime|extmetadata", "iiurlwidth": PREVIEW_WIDTH, "iiextmetadatafilter": _META})
     r.raise_for_status()
     out = {}
     for p in (r.json().get("query") or {}).get("pages") or []:

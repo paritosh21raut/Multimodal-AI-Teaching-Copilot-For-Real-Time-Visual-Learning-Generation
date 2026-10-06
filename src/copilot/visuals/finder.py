@@ -1,7 +1,7 @@
 """ImageFinder: query → up to 3 relevant, cached images, or none (F-007b, ADR-0007).
 
-sources (concurrent) → metadata filters → download ≤ 8 thumbnails → CLIP on CPU → accept only clear matches →
-cache. The whole search has one time budget (8 s); on any network problem or timeout the answer is "no image"
+sources (concurrent) → metadata filters → download ≤ 8 small previews (330 px) → CLIP on CPU → accept only clear
+matches → download the chosen ≤ 3 at full size (960 px, best first) → cache. The whole search has one time budget (8 s); on any network problem or timeout the answer is "no image"
 (logged, never an error on screen). "When unsure: no image" — a candidate must match the query better than every
 generic distractor (logo, map, text page, portrait ...) and pass an absolute similarity floor.
 """
@@ -41,7 +41,8 @@ class FinderSettings:
     min_similarity: float = 0.22   # CLIP ViT-B/32 int8 cosine (tuned on the labelled set, F-007b)
     min_margin: float = 0.01       # over the best distractor prompt
     alt_within: float = 0.03       # Change-image alternatives must score close to the best one
-    clip_reserve_s: float = 2.0    # of the budget, kept for CLIP + caching after the downloads
+    clip_reserve_s: float = 1.0    # of the budget, kept for CLIP after the preview downloads (≈ 0.7 s for 8)
+    full_reserve_s: float = 2.5    # ... and for downloading the chosen image(s) at full size
     openverse: bool = False
 
 
@@ -108,39 +109,43 @@ class ImageFinder:
             if not kept:
                 return FindResult([], "no usable candidates", rejected=rejected, timings=timings)
             t1 = time.perf_counter()
-            # downloads get what is left of the budget minus the CLIP reserve; slow ones are dropped, not waited for
-            left = self.s.budget_s - self.s.clip_reserve_s - (t1 - t0)
-            tasks = [asyncio.create_task(self._download(c, k)) for k in kept]
-            done, late = await asyncio.wait(tasks, timeout=max(0.5, left))
-            for t in late:
-                t.cancel()
-            if late:
-                log.info("image search %r: %d slow download(s) dropped", query, len(late))
-            loaded = [t.result() if t in done else None for t in tasks]
+            # previews get what is left of the budget minus the CLIP and full-size reserves; slow ones are dropped
+            left = self.s.budget_s - self.s.clip_reserve_s - self.s.full_reserve_s - (t1 - t0)
+            loaded = await self._download_all(c, [k.preview_url or k.image_url for k in kept], max(0.5, left), query)
             timings["download_s"] = time.perf_counter() - t1
-        pairs = [(k, img) for k, img in zip(kept, loaded) if img is not None]
-        if not pairs:
+            pairs = [(k, img) for k, img in zip(kept, loaded) if img is not None]
+            if not pairs:
+                return FindResult([], "downloads failed", rejected=rejected, timings=timings)
+            if self.scorer is None:
+                return FindResult([], "no relevance model", rejected=rejected, timings=timings)
+            t2 = time.perf_counter()
+            scored = await asyncio.to_thread(self._score, query, kind, pairs)
+            timings["clip_s"] = time.perf_counter() - t2
+            accepted = []
+            for (cand, img), (sim, margin) in zip(pairs, scored):
+                if sim < self.s.min_similarity or margin < self.s.min_margin:
+                    rejected.append((cand.title, f"clip {sim:.3f} margin {margin:+.3f}"))
+                    continue
+                accepted.append((sim + prior(cand, query, kind), cand, img))
+            accepted.sort(key=lambda x: -x[0])
+            accepted = [a for a in accepted if a[0] >= accepted[0][0] - self.s.alt_within] if accepted else []
+            t3 = time.perf_counter()
+            chosen = await self._full_size(c, accepted[: self.s.keep], t0, query)
+            timings["full_s"] = time.perf_counter() - t3
+        if accepted and not chosen:  # relevant images exist but none arrived in time: not "nothing relevant"
             return FindResult([], "downloads failed", rejected=rejected, timings=timings)
-        if self.scorer is None:
-            return FindResult([], "no relevance model", rejected=rejected, timings=timings)
-        t2 = time.perf_counter()
-        scored = await asyncio.to_thread(self._score, query, kind, pairs)
-        timings["clip_s"] = time.perf_counter() - t2
-        accepted = []
-        for (cand, img), (sim, margin) in zip(pairs, scored):
-            if sim < self.s.min_similarity or margin < self.s.min_margin:
-                rejected.append((cand.title, f"clip {sim:.3f} margin {margin:+.3f}"))
-                continue
-            accepted.append((sim + prior(cand, query, kind), cand, img))
-        accepted.sort(key=lambda x: -x[0])
-        accepted = [a for a in accepted if a[0] >= accepted[0][0] - self.s.alt_within] if accepted else []
+        if not accepted and len(pairs) < len(kept):
+            # nothing matched among the previews that arrived, but some did not: unknown, not "no relevant image"
+            # (that answer is remembered for good); the engine tries again later
+            return FindResult([], f"incomplete: {len(pairs)} of {len(kept)} previews", rejected=rejected,
+                              timings=timings)
         images = []
-        for score, cand, img in accepted[: self.s.keep]:
+        for score, cand, img in chosen:
             meta = CachedImage(id="", width=0, height=0, alt=query, source=cand.source, title=cand.title,
                                page_url=cand.page_url, licence=cand.licence, author=cand.author[:200], query=query,
                                score=round(score, 4))
             images.append(await asyncio.to_thread(self.cache.store, img, cand.image_url, meta))
-        if not deeper:
+        if not deeper and len(chosen) == len(accepted[: self.s.keep]):  # a partial answer is not remembered
             self.cache.save_query(query, kind, images)
         images = [i for i in images if i.id not in exclude]
         timings["total_s"] = time.perf_counter() - t0
@@ -172,13 +177,41 @@ class ImageFinder:
             out += [x[i] for x in lists if i < len(x)]
         return out
 
-    async def _download(self, c: httpx.AsyncClient, cand: Candidate):
+    async def _download_all(self, c: httpx.AsyncClient, urls: list[str], timeout: float, query: str) -> list:
+        tasks = [asyncio.create_task(self._download(c, u)) for u in urls]
+        done, late = await asyncio.wait(tasks, timeout=timeout)
+        for t in late:
+            t.cancel()
+        if late:
+            log.info("image search %r: %d slow download(s) dropped", query, len(late))
+        return [t.result() if t in done else None for t in tasks]
+
+    async def _full_size(self, c: httpx.AsyncClient, accepted: list, t0: float, query: str) -> list:
+        """The chosen images at full size, best first: the best one alone (all the bandwidth), then the alternatives
+        together, each within what is left of the budget (an alternative takes over when the best one does not
+        arrive). A candidate whose preview already is the full image is reused."""
+        out = []
+        for group in (accepted[:1], accepted[1:]):
+            if not group:
+                continue
+            left = self.s.budget_s - (time.perf_counter() - t0) - 0.3  # caching after
+            urls = [cand.image_url if (cand.preview_url or cand.image_url) != cand.image_url else None
+                    for _, cand, _ in group]
+            fetch = [u for u in urls if u]
+            got = iter(await self._download_all(c, fetch, left, query) if fetch and left > 0.2 else [None] * len(fetch))
+            for (score, cand, preview), url in zip(group, urls):
+                img = next(got) if url else preview
+                if img is not None:
+                    out.append((score, cand, img))
+        return out
+
+    async def _download(self, c: httpx.AsyncClient, url: str):
         try:
-            r = await c.get(cand.image_url)
+            r = await c.get(url)
             r.raise_for_status()
             return await asyncio.to_thread(decode, r.content)
         except (httpx.HTTPError, BadImage) as e:
-            log.info("image download failed %s: %s", cand.title, e)
+            log.info("image download failed %s: %s", url[-80:], e)
             return None
 
     def _score(self, query: str, kind: str, pairs: list) -> list[tuple[float, float]]:

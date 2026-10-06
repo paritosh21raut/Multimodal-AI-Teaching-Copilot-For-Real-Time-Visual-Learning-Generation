@@ -1,7 +1,7 @@
 // /control — the teacher's laptop view: live preview, deck, controls, transcript, status.
 // It never changes state itself; every action is a command sent to the server.
 import { html, render, useEffect, useReducer, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
-import { Slide, partLabel, useStageScale } from "../shared/slide.js";
+import { Slide, ZoomedImage, imageOf, partLabel, useStageScale } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
 
 const KEYS = {
@@ -34,12 +34,75 @@ const withGhost = (spec, label) => ({
     { type: "image", id: "ghost", url: "", alt: label, aspect: 4 / 3, ghost: true }],
 });
 
-function Preview({ spec, deck, send, onNotice }) {
+const svg = (d, cls = "") => html`<svg class=${"ico " + cls} viewBox="0 0 24 24" aria-hidden="true"><path d=${d}
+  fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const ICON = {
+  back: "M19 12H5M11 18l-6-6 6-6",
+  prev: "M15 18l-6-6 6-6",
+  next: "M9 6l6 6-6 6",
+  change: "M20 11a8 8 0 0 0-14.6-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.6 4.5L20 16M20 20v-4h-4",
+  upload: "M12 16V5M7 10l5-5 5 5M5 19h14",
+  remove: "M6 6l12 12M18 6L6 18",
+  add: "M12 5v14M5 12h14",
+};
+
+// Small status line on the preview (bottom left): searching, nothing found after Change, upload errors.
+function useStatus(status, notice, onNotice) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {  // re-render when a short-lived message should disappear
+    const t = setTimeout(() => setNow(Date.now()), 4200);
+    return () => clearTimeout(t);
+  }, [status, notice]);
+  useEffect(() => { if (!notice) return; const t = setTimeout(() => onNotice(""), 6000); return () => clearTimeout(t); }, [notice]);
+  if (notice) return { text: notice, error: true };
+  if (status && status.state === "searching") return { text: status.reason === "change" ? "Finding another image…" : "Finding an image…", busy: true };
+  if (status && status.state === "none" && status.reason === "change" && now - status.at < 4000) return { text: "No other image found" };
+  return null;
+}
+
+// The image controls float on the preview (bottom right): Add image when the slide has none; otherwise
+// previous / next (images this slide has shown), Change, Upload, Remove.
+function ImageBar({ spec, image, choices, status, send, onNotice }) {
+  const input = useRef(null);
+  const pick = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    try { await placeImage(file, spec.id, send); onNotice(""); } catch (err) { onNotice(err.message); }
+  };
+  const cmd = (kind) => () => { onNotice(""); send(kind, { slide_id: spec.id }); };
+  const file = html`<input ref=${input} type="file" accept=${UPLOAD_TYPES.join(",")} hidden onChange=${pick} />`;
+  if (!image) {
+    return html`<div class="image-bar">
+      ${file}
+      <button class="add" onClick=${() => input.current.click()} title="Choose an image file for this slide">${svg(ICON.add)}Add image</button>
+      <span class="or">or drop one on the slide</span>
+    </div>`;
+  }
+  const busy = status && status.state === "searching";
+  const many = choices && choices.count > 1;
+  return html`<div class="image-bar">
+    ${file}
+    ${many && html`<div class="steps">
+      <button class="icon" disabled=${choices.index <= 0} onClick=${cmd("image_prev")} title="Previous image">${svg(ICON.prev)}</button>
+      <span class="count">${choices.index + 1} / ${choices.count}</span>
+      <button class="icon" disabled=${choices.index >= choices.count - 1} onClick=${cmd("image_next")} title="Next image">${svg(ICON.next)}</button>
+    </div><span class="sep"></span>`}
+    <button onClick=${cmd("change_image")} disabled=${busy} title="Find a different image for this topic">${svg(ICON.change, busy ? "spin" : "")}Change</button>
+    <button class="icon" onClick=${() => input.current.click()} title="Use an image file of your own">${svg(ICON.upload)}</button>
+    <button class="icon" onClick=${cmd("remove_image")} title="Take the image off this slide">${svg(ICON.remove)}</button>
+  </div>`;
+}
+
+function Preview({ spec, deck, slides, choices, status, send, notice, onNotice }) {
   const ref = useRef(null);
   const scale = useStageScale(ref);
   const [drag, setDrag] = useState(null); // null | "over" | "uploading"
   const depth = useRef(0);
-  const canDrop = spec && spec.layout !== "title";
+  const zoomed = deck && deck.zoom ? imageOf(slides[deck.zoom]) : null;
+  const canDrop = spec && spec.layout !== "title" && !zoomed;
+  const image = imageOf(spec);
+  const line = useStatus(status, notice, onNotice);
   const drop = async (e) => {
     e.preventDefault();
     depth.current = 0;
@@ -57,8 +120,16 @@ function Preview({ spec, deck, send, onNotice }) {
       onDragLeave=${() => { depth.current = Math.max(0, depth.current - 1); if (!depth.current && drag === "over") setDrag(null); }}
       onDrop=${drop}>
     <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
-      ${shown ? html`<${Slide} key=${spec.id} spec=${shown} />` : html`<div class="waiting">No slide yet</div>`}
+      ${shown ? html`<${Slide} key=${spec.id} spec=${shown}
+        onImageClick=${drag ? undefined : () => send("zoom_image", { slide_id: spec.id })} />` : html`<div class="waiting">No slide yet</div>`}
+      ${zoomed && html`<${ZoomedImage} key=${zoomed.image_id || zoomed.url} image=${zoomed} onClose=${() => send("unzoom_image")} />`}
     </div>
+    ${zoomed && html`<button class="back" onClick=${() => send("unzoom_image")} title="Back to the slide (Esc)">
+      ${svg(ICON.back)}<span>Back to slide</span><kbd>Esc</kbd></button>`}
+    ${spec && spec.layout !== "title" && !zoomed && !drag && html`<${ImageBar} spec=${spec} image=${image}
+      choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`}
+    ${line && !drag && html`<div class=${"image-status" + (line.error ? " error" : "")}>
+      ${line.busy && html`<span class="dot"></span>`}${line.text}</div>`}
     ${deck && (deck.blank || deck.frozen || deck.pinned) && html`<div class="flags">
       ${deck.blank && html`<span class="flag warn">BLANK</span>`}
       ${deck.frozen && html`<span class="flag warn">FROZEN</span>`}
@@ -109,30 +180,6 @@ function Concerns({ concerns, send }) {
   </section>`;
 }
 
-const SEARCH_TEXT = { searching: "Finding an image…", none: "No suitable image found" };
-
-function ImageTools({ spec, status, send, notice, onNotice }) {
-  const input = useRef(null);
-  if (!spec || spec.layout === "title") return null;
-  const image = spec.blocks.find((b) => b.type === "image");
-  const pick = async (e) => {
-    const file = e.target.files && e.target.files[0];
-    e.target.value = "";
-    if (!file) return;
-    try { await placeImage(file, spec.id, send); onNotice(""); } catch (err) { onNotice(err.message); }
-  };
-  const info = notice || (status && SEARCH_TEXT[status.state]) || (image ? (image.origin === "teacher" ? "Your image" : "Image chosen automatically") : "No image · drag one onto the slide or");
-  return html`<div class="image-tools">
-    <span class="label">Image</span>
-    <span class=${"info" + (notice ? " error" : "")}>${info}</span>
-    <input ref=${input} type="file" accept=${UPLOAD_TYPES.join(",")} hidden onChange=${pick} />
-    <button onClick=${() => input.current.click()} title="Choose an image file for this slide">${image ? "Use my image" : "Add image"}</button>
-    ${image && html`<button onClick=${() => { onNotice(""); send("change_image", { slide_id: spec.id }); }}
-      disabled=${status && status.state === "searching"} title="Show a different image for this topic">Change image</button>
-      <button onClick=${() => { onNotice(""); send("remove_image", { slide_id: spec.id }); }} title="Take the image off this slide">Remove image</button>`}
-  </div>`;
-}
-
 function App() {
   const [state, dispatch] = useReducer(reduce, initialState);
   const [notice, setNotice] = useState("");
@@ -156,6 +203,7 @@ function App() {
   useEffect(() => {
     const onKey = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.key === "Escape") { if (deck && deck.zoom) { e.preventDefault(); send("unzoom_image"); } return; }
       const k = KEYS[e.key] || KEYS[e.key.toLowerCase()];
       if (!k) return;
       e.preventDefault();
@@ -183,9 +231,8 @@ function App() {
     </header>
     <main class="grid">
       <section class="left">
-        <${Preview} spec=${liveSpec} deck=${deck} send=${send} onNotice=${setNotice} />
-        <${ImageTools} spec=${liveSpec} status=${liveSpec && state.images[liveSpec.id]} send=${send}
-          notice=${notice} onNotice=${setNotice} />
+        <${Preview} spec=${liveSpec} deck=${deck} slides=${state.slides} send=${send} notice=${notice} onNotice=${setNotice}
+          status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} />
         <div class="buttons">
           <button onClick=${() => send("prev")} title="←">◀ Prev</button>
           <button onClick=${() => send("next")} title="→">Next ▶</button>

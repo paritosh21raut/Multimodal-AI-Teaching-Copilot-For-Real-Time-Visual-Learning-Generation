@@ -61,6 +61,8 @@ CommandKind = Literal[
     "freeze", "unfreeze", "pin", "unpin", "blank", "unblank",
     "force_new_slide", "resolve_concern",
     "remove_image", "change_image", "set_image",  # F-007b, args {slide_id[, image_id]}
+    "image_prev", "image_next",                   # step through the images this slide has shown, args {slide_id}
+    "zoom_image", "unzoom_image",                 # the slide's image full screen on the display, args {slide_id}
 ]
 
 
@@ -125,6 +127,7 @@ class DeckState(Event):
     pinned: bool
     frozen: bool
     blank: bool
+    zoom: Optional[str] = None  # slide whose image fills the display (teacher clicked it in /control)
 
 
 UtteranceKind = Literal["content", "classroom_management", "meta", "filler", "question_to_class"]
@@ -215,6 +218,13 @@ class ImageReady(Event):
     seconds: float = 0.0
 
 
+class ImageChoices(Event):
+    """The images a slide has shown, for the teacher's previous / next arrows in /control (index into count)."""
+    slide_id: str
+    index: int
+    count: int
+
+
 class ErrorRaised(Event):
     component: str
     error: str
@@ -228,6 +238,7 @@ EVENT_TYPES: dict[str, type[Event]] = {
         CommandReceived, StateChanged, SlidePatch, DeckState, ErrorRaised,
         UtteranceClassified, ConceptSignal, InterpretRequested, InterpretationReady, LLMCallFailed,
         ConcernRaised, ConcernResolved, SlideContextChanged, SlideOverflow, ImageRequested, ImageReady,
+        ImageChoices,
     )
 }
 

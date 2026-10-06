@@ -321,6 +321,27 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .figure.ghost svg { width: 84px; height: 84px; animation: nudge 1.4s var(--ease) infinite; }
 @keyframes ghost-in { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
 @keyframes nudge { 50% { transform: translateY(-8px); } }
+.figure.zoomable { cursor: zoom-in; transition: transform 200ms var(--ease), box-shadow 200ms var(--ease); }
+.figure.zoomable:hover { transform: scale(1.012); box-shadow: 0 0 0 6px var(--accent-soft), var(--shadow); }
+
+/* the image full screen: the whole stage, on the slide background, as large as its aspect ratio allows */
+.zoomed {
+  position: absolute; inset: 0; z-index: 5;
+  display: grid; place-items: center; padding: 44px;
+  background: var(--bg);
+  animation: zoom-bg 260ms var(--ease) both;
+}
+/* as large as the stage allows (1920x1080 minus the padding), also when the file is smaller than that */
+.zoomed img {
+  --aspect: 1.333;
+  display: block; width: min(1832px, calc(992px * var(--aspect))); height: auto; aspect-ratio: var(--aspect);
+  object-fit: contain;
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  opacity: 0; transform: scale(0.96); transition: opacity 320ms var(--ease), transform 320ms var(--ease);
+}
+.zoomed img.loaded { opacity: 1; transform: none; }
+.zoomed.closable { cursor: zoom-out; }
+@keyframes zoom-bg { from { opacity: 0; } to { opacity: 1; } }
 
 /* ---------- blank / waiting ---------- */
 .waiting { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 34px; letter-spacing: 0.02em; }

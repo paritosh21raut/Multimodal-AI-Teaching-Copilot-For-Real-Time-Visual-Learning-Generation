@@ -8,6 +8,8 @@ Display flags:
 - pinned:    stay on the current slide; in-place updates still show; new slides queue behind it
 - frozen:    the projector keeps exactly what it shows now (the display client holds its last render)
 - blank:     the projector shows an empty screen
+- zoom:      a slide's image fills the projector (the teacher clicked it in /control); ends on Back / Esc, on
+             navigation, or when that image leaves the slide. New content keeps arriving behind it.
 """
 from __future__ import annotations
 
@@ -21,7 +23,12 @@ from copilot.presentation.spec import SlideSpec
 
 log = logging.getLogger(__name__)
 
-NAV_COMMANDS = {"next", "prev", "goto", "pin", "unpin", "freeze", "unfreeze", "blank", "unblank"}
+NAV_COMMANDS = {"next", "prev", "goto", "pin", "unpin", "freeze", "unfreeze", "blank", "unblank",
+                "zoom_image", "unzoom_image"}
+
+
+def _has_image(spec: SlideSpec) -> bool:
+    return any(b.type == "image" for b in spec.blocks)
 
 
 class Deck:
@@ -34,6 +41,7 @@ class Deck:
         self.pinned = False
         self.frozen = False
         self.blank = False
+        self.zoom: Optional[str] = None
 
     def attach(self) -> None:
         self._bus.subscribe("deck", self._on_command, [CommandReceived])
@@ -53,7 +61,7 @@ class Deck:
     def state_event(self) -> DeckState:
         return DeckState(
             live_id=self.live_id, slide_ids=list(self._order), following=self.following,
-            pinned=self.pinned, frozen=self.frozen, blank=self.blank,
+            pinned=self.pinned, frozen=self.frozen, blank=self.blank, zoom=self.zoom,
         )
 
     # ---- slide ops (planner) --------------------------------------------------------------
@@ -81,6 +89,9 @@ class Deck:
         spec = annotate(spec).model_copy(update={"version": old.version + 1})
         self._slides[spec.id] = spec
         await self._bus.publish(SlidePatch(slide_id=spec.id, version=spec.version, op="update", spec=spec.model_dump()))
+        if self.zoom == spec.id and not _has_image(spec):  # the zoomed image was removed (or yielded to a diagram)
+            self.zoom = None
+            await self._publish_state()
         return spec
 
     async def remove(self, slide_id: str) -> None:
@@ -90,6 +101,8 @@ class Deck:
         idx = self._order.index(slide_id)
         self._order.remove(slide_id)
         del self._slides[slide_id]
+        if self.zoom == slide_id:
+            self.zoom = None
         if self.live_id == slide_id:
             self.live_id = self._order[min(idx, len(self._order) - 1)] if self._order else None
         await self._publish_state()
@@ -120,6 +133,18 @@ class Deck:
                 target = self._order.index(target_id)
             self.live_id = self._order[target]
             self.following = target == len(self._order) - 1
+            self.zoom = None  # moving through the deck shows slides again
+            return True
+        if kind == "zoom_image":
+            target_id = args.get("slide_id")
+            if target_id not in self._slides or not _has_image(self._slides[target_id]) or self.zoom == target_id:
+                return False
+            self.zoom = target_id
+            return True
+        if kind == "unzoom_image":
+            if self.zoom is None:
+                return False
+            self.zoom = None
             return True
         flag, value = {
             "pin": ("pinned", True), "unpin": ("pinned", False),

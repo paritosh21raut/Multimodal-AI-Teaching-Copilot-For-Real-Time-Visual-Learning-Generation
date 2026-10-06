@@ -80,6 +80,8 @@ def test_decide():
 def test_is_abstract():
     assert is_abstract("kinetic energy") and is_abstract("velocity") and is_abstract("")
     assert not is_abstract("human heart") and not is_abstract("states of matter")
+    # A/B 2026-10-06: the model asked for "speed and velocity diagram"; picture words do not make it concrete
+    assert is_abstract("speed and velocity diagram") and not is_abstract("stomach diagram")
 
 
 # ---- image layout space model -----------------------------------------------------------------------------------------

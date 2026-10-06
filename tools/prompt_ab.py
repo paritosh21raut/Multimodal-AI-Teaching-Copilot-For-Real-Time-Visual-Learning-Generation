@@ -2,6 +2,7 @@
 
     .venv/Scripts/python tools/prompt_ab.py --dry SESSION[:i,j] ...    # rebuild prompts, 0 tokens
     .venv/Scripts/python tools/prompt_ab.py SESSION[:i,j] ...          # new prompt on gpt-oss-120b (real Groq)
+    .venv/Scripts/python tools/prompt_ab.py --old SESSION[:i,j] ...    # the old prompt again (sampling variance)
 
 A recorded session is replayed into a LectureStateStore; at every InterpretRequested the prompt is rebuilt from
 that state and the request's transcript lines. The OLD arm is what the model returned live (recorded
@@ -118,6 +119,7 @@ def select(units: list[Unit], spec: str) -> list[Unit]:
 
 async def main(args: list[str]) -> None:
     dry = "--dry" in args
+    resend_old = "--old" in args  # send the OLD prompt again (is a difference the rule or sampling variance?)
     specs = [a for a in args if not a.startswith("--")]
     cfg = load_config()
     settings = InterpreterSettings(**{k: v for k, v in cfg.section("understanding").items()
@@ -160,7 +162,7 @@ async def main(args: list[str]) -> None:
         interp = Interpreter(router, settings)
         for u in chosen:
             calls.clear()
-            prompt = build(u, True, settings)
+            prompt = build(u, not resend_old, settings)
             t0 = time.perf_counter()
             res = await interp.interpret(u.state, u.lines, prompt)
             used = sum(c.response.prompt_tokens + c.response.completion_tokens for c in calls)
@@ -177,7 +179,9 @@ async def main(args: list[str]) -> None:
                   f"({n['relation']})")
             print("  OLD: " + "\n       ".join(o["items"]))
             print("  NEW: " + "\n       ".join(n["items"]))
-            await asyncio.sleep(2.0)  # stay far below the 8k TPM per key
+            # stay below the 8k TPM of one key (2026-10-06: only one key had quota; 2 s pacing hit the TPM limit
+            # after 4 units and the rest fell back without being sent)
+            await asyncio.sleep(max(2.0, 60.0 * used / 7000))
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / f"{time.strftime('%Y%m%d-%H%M%S')}.json"
     path.write_text(json.dumps(results, indent=1, ensure_ascii=False), encoding="utf-8")

@@ -45,10 +45,16 @@ backoff capped at 2 s), so no duplicate tabs. `--no-open` disables it. Test: `te
 - `GET /media/<16 hex>.jpg`: only re-encoded files of our image cache (`data/cache/images`); no hot-linking.
 - `POST /api/upload` (raw body, `Content-Type` image/jpeg|png|webp|gif, ≤ 10 MB): stores a validated, re-encoded copy,
   returns `{image_id, url, width, height, aspect, alt}`; no state change — `/control` then sends `set_image`.
-- `/control` image bar under the preview: status (finding / none / automatic / yours), **Add image** (file picker;
-  "Use my image" when there is one), **Change image**, **Remove image**. Dragging a file over the preview shows the
-  slide as it will look with a dashed drop zone where the image goes; drop → upload → `set_image`. The hub sends
-  `image_status` (searching / found / none) to the control view only.
+- `/control` image controls float on the preview (bottom right, a small glass bar, no extra row): **Add image**
+  (file picker) + "or drop one on the slide" when the slide has none; with an image: ‹ n / m › (every image this
+  slide has shown, `image_prev` / `image_next`), **Change**, upload (own file), remove. A small chip bottom left shows
+  "Finding an image…", "No other image found" (after Change) or an upload error. Dragging a file over the preview
+  shows the slide as it will look with a dashed drop zone where the image goes; drop → upload → `set_image`. The hub
+  sends `image_status` and `image_choices` to the control view only.
+- Zoom: clicking the image in the preview sends `zoom_image`; the deck sets `DeckState.zoom`; /display shows the
+  image filling the stage (slide background, as large as its aspect allows), /control shows the same inside its
+  preview with "← Back to slide (Esc)". Esc, a click on the image or Back → `unzoom_image`; navigation or the image
+  leaving the slide also ends it; blank still wins.
 
 ## Teacher controls
 Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `F` freeze, `P` pin, `B` blank,

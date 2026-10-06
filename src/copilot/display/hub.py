@@ -22,6 +22,7 @@ from copilot.core.events import (
     ConcernResolved,
     DeckState,
     Event,
+    ImageChoices,
     ImageReady,
     ImageRequested,
     LifecycleChanged,
@@ -73,13 +74,14 @@ class DisplayHub:
         self.lifecycle = "starting"
         self.transcript: deque[dict] = deque(maxlen=TRANSCRIPT_LINES)
         self.concerns: dict[str, dict] = {}  # open concerns (control view only; never sent to the display)
+        self.image_choices: dict[str, dict] = {}  # slide_id -> {index, count} (control only)
         self.connects: dict[str, int] = {"display": 0, "control": 0}  # connections ever made, per role
 
     def attach(self) -> None:
         self._bus.subscribe(
             "display_hub", self._on_event,
             [SlidePatch, DeckState, LifecycleChanged, TranscriptFinal, UtteranceDropped, ConcernRaised,
-             ConcernResolved, ImageRequested, ImageReady],
+             ConcernResolved, ImageRequested, ImageReady, ImageChoices],
         )
         # Audio levels are high-rate and only matter "now": drop old ones if the hub lags.
         self._bus.subscribe("display_hub_audio", self._on_event, [AudioLevel], queue_size=4, overflow="drop_oldest")
@@ -107,6 +109,7 @@ class DisplayHub:
         }
         if role == "control":  # doubtful claims never reach the projector
             msg["concerns"] = list(self.concerns.values())
+            msg["image_choices"] = dict(self.image_choices)
         return msg
 
     async def handle_client_message(self, conn: Connection, msg: dict) -> Optional[str]:
@@ -141,7 +144,7 @@ class DisplayHub:
             self._broadcast({"type": "patch", "slide_id": event.slide_id, "version": event.version, "spec": event.spec},
                             key=("patch", event.slide_id))
         elif isinstance(event, DeckState):
-            self.deck = event.model_dump(include={"live_id", "slide_ids", "following", "pinned", "frozen", "blank"})
+            self.deck = event.model_dump(include={"live_id", "slide_ids", "following", "pinned", "frozen", "blank", "zoom"})
             for sid in [s for s in self.slides if s not in event.slide_ids]:  # removed slides
                 del self.slides[sid]
             self._broadcast({"type": "deck", "deck": self.deck}, key=("deck",))
@@ -178,6 +181,10 @@ class DisplayHub:
             self._broadcast({"type": "image_status", "slide_id": event.slide_id,
                              "state": "found" if event.images else "none", "reason": event.reason},
                             key=("image", event.slide_id), roles=("control",))
+        elif isinstance(event, ImageChoices):  # control only: the previous / next image arrows
+            self.image_choices[event.slide_id] = {"index": event.index, "count": event.count}
+            self._broadcast({"type": "image_choices", "slide_id": event.slide_id, "index": event.index,
+                             "count": event.count}, key=("choices", event.slide_id), roles=("control",))
         elif isinstance(event, AudioLevel):
             self._broadcast({"type": "audio", "rms": event.rms, "speaking": event.speaking},
                             key=("audio",), roles=("control",))

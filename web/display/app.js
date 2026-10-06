@@ -1,6 +1,6 @@
 // /display — the projector view. Shows only the live slide; no controls, no chrome.
 import { html, render, useEffect, useReducer, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
-import { Slide, useStageScale } from "../shared/slide.js";
+import { Slide, ZoomedImage, imageOf, useStageScale } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
 
 const SLIDE_MS = 380;
@@ -62,9 +62,12 @@ function App() {
   const layers = useSlideTransition(shown);
 
   const waiting = !shown && !(deck && deck.blank);
+  // the teacher clicked the slide's image in /control: it fills the screen until Back / Esc (blank still wins)
+  const zoomed = deck && deck.zoom && !deck.blank ? imageOf(state.slides[deck.zoom]) : null;
   return html`<div class="viewport" ref=${containerRef}>
     <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
       ${layers.map((l) => html`<${Slide} key=${l.spec.id} spec=${l.spec} phase=${l.phase} onOverflow=${onOverflow} />`)}
+      ${zoomed && html`<${ZoomedImage} key=${zoomed.image_id || zoomed.url} image=${zoomed} />`}
       ${waiting && html`<div class="waiting"><span><span class="dot"></span>${
         state.lifecycle === "live" ? "Listening…" : state.connected ? "Waiting for the lecture to start" : "Connecting…"}</span></div>`}
     </div>

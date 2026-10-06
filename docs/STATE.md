@@ -1,19 +1,25 @@
 # Current State
 
-_Last updated: 2026-10-06 (morning): **V1b images (F-007b) built, zero-token verified; prompt A/B + real-LLM runs
-pending (Groq quota).** Next: add Groq keys or wait for the quota → `tools/prompt_ab.py` A/B → adopt the visual rule
-if it passes → real runs of `human_body.txt` + `solar_system.txt`._
+_Last updated: 2026-10-06 (late morning): **V1b images (F-007b): visual hint live (A/B passed), real-LLM run of
+human_body + zero-token replay verified; /control round 2 (floating image bar, previous/next, zoom) done.** Next: user
+test of V1b in a live lecture; then V1c (F-007c)._
 
 ## Now
 - **V1b (F-007b "Measured"):** CLIP int8 on CPU ≈ 0.7 s / 8 candidates (target 1.5 s); Wikipedia + Commons sources,
   filters, disk cache, `/media`, policy, engine wiring (`ImageRequested`/`ImageReady`), image layout, `/control`
   drag & drop (drop zone) / Add / Change / Remove image, `/api/upload`. 30-concept labelled set: first image relevant
   in 28/28 answered. Lessons (real image service, 0 LLM tokens): human body 4/5 slides with an image, solar 2/3,
-  physics 0/4. Status: **unit + browser tested, zero-token runtime-verified; the LLM visual hint is NOT live yet**
-  (`prompt.SYSTEM_PROMPT = system_prompt(False)` until the A/B passes). Tokens this session: 10,420 (qwen3.8-27b, an
-  unintended app smoke run that fell through to `groq_alt`); the A/B tool sent nothing.
-- **Groq quota:** `.env` has only `GROQ_API_KEY_3`; its gpt-oss-120b quota was 197,976/200,000 on 2026-10-06 07:00
-  (frees ≈ 2026-10-07 01:50). OpenRouter backup still 404 (untouched, user decision).
+  physics 0/4.
+- **V1b round 2 (2026-10-06):** prompt A/B passed (11/11 valid; the one untruthful addition also comes from the old
+  prompt) → `SYSTEM_PROMPT = system_prompt(True)`. Real Groq `human_body.txt`: model queries all concrete and on topic,
+  but only 1/4 slides got an image (slow link: full-size downloads of every candidate missed the budget) → previews
+  at 330 px for CLIP, full size only for the chosen; replay of that session (0 tokens): 4/4 found, 3/5 slides with a
+  relevant image. /control: image tools float on the preview, previous/next through a slide's images, click → image
+  full screen on /display (inside the preview on /control, Back / Esc / click). 384 fast + 11 browser + 5 slow.
+  Tokens today: 10,420 (earlier smoke run) + 26,308 (A/B) + 38,892 (human_body run) = 75,620. Solar real run skipped
+  (budget).
+- **Groq quota (2026-10-06 ≈ 09:40):** keys 2 and 3 nearly spent on gpt-oss-120b, key 4 ≈ 145k left. A single key
+  hits the 8k TPM in a live lecture → some calls go to qwen3.8-27b. OpenRouter backup still 404 (untouched).
 - **V1a round 2 (F-007a "Round 2"):** root causes + fixes for all 7 user issues; 323 fast + 9 browser tests; replays of
   the 5 live sessions (0 tokens) + real Groq energy ×2 / kinematics (≈ 43k tokens incl. a 2.2k probe), 0 fallbacks.
   Biggest find: gpt-oss-120b flattens `items.formula` → half the formulas were silently dropped since M3 (fixed).
@@ -72,7 +78,7 @@ if it passes → real runs of `human_body.txt` + `solar_system.txt`._
 | Lecture understanding + LLM | 88 | M3 + live-mic fixes (VAD pause, fragment hold, grounding guard, process prompt, facet-question cue, empty-act fill); verified on the fixture with real Groq; gate fixes replay-tested on the real-mic session, not yet re-run live |
 | Presentation engine | 85 | content/composer/planner/engine: continuity, space-based layout, parts, dwell, new-topic confirmation + tentative move, revisions, truthful corrections, provisional fast path, force-new, pin/nav-back, overflow; verified on 3 lectures with real LLM + screenshots |
 | Live display + control view | 82 | + fact tiles, group cards, side-by-side definitions, part badges, concern card (said / correct / shown, switchable), overflow reporting; KaTeX formulas + chemical subscripts (V1a); images pending (V1b) |
-| Visual system (images/diagrams) | 10 | SVG/CSS diagram layouts (process, timeline, tree, causal) exist; image retrieval not started |
+| Visual system (images/diagrams) | 60 | V1b: retrieval (Wikipedia/Commons + CLIP on CPU), policy, image layout, teacher controls (drop, add, change, previous/next, remove, zoom); one real-LLM lecture + replay verified; generated diagrams not started |
 | Reference materials | 0 | not started |
 | Post-lecture outputs | 0 | not started |
 | Concept Simulation mode | 0 | not started |
@@ -83,6 +89,7 @@ if it passes → real runs of `human_body.txt` + `solar_system.txt`._
 | Item | Unit | Integration | Runtime |
 |---|---|---|---|
 | EventBus, config, state store, event log, simulator | ✅ | ✅ | ✅ |
+| V1b images: finder (previews → CLIP → full size), policy, engine, layout, /control (drop, add, change, ‹ ›, remove, zoom) | ✅ 384 total | ✅ Edge (2 image tests) | ✅ real Groq human_body (queries) + zero-token replay with real image search (4/4 found); A/B 11/11 valid |
 | V1a: formulas → KaTeX (`mathtext`, `rich.js`), chemical subscripts, layout polish, dropped-point fix | ✅ 52 + 9 | ✅ Edge (3 tests) | ✅ 0 tokens: display set, physics lesson, real app; real LLM (qwen) force_motion |
 | V1a round 2: parser (fractions, brackets, ions, spoken), equations in text, concept columns, list styles, peer pairing, flattened-formula parsing, math-aware guard, stale-tab reload | ✅ 323 total | ✅ Edge (9 tests) | ✅ replays of 5 live sessions; real Groq energy ×2 + kinematics |
 | Several Groq keys, daily quota ledger, `[QUOTA]` at startup | ✅ | – | ✅ photosynthesis real run, quota printed |
