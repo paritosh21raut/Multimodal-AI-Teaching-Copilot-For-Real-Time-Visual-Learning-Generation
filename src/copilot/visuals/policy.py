@@ -5,8 +5,10 @@ policy decides. Need, not quota (user 2026-10-06): solar system, organs, apparat
 no. When unsure: no image.
 
 Never: title slides, slides without teacher content yet, slides with a full-width diagram (process flow,
-comparison, timeline, cause-effect, formula, tree) or groups, more than 4 fact tiles, two definitions side by side
-(concept columns), an abstract query ("energy", "velocity"), a frame where the teacher removed the image.
+comparison, timeline, cause-effect, a formula that opens the slide or a second formula) or groups, more than 4 fact
+tiles, two definitions side by side (concept columns, member cards), an abstract query ("energy", "velocity"), a
+frame where the teacher removed the image. A tree beside an image is one card; a formula after text goes below the
+text and the image.
 A later part of the same frame keeps the frame's image while the content is still about it (no new hint), gets a
 new one when the hint names something else, and none when its content is abstract (user answer 3).
 """
@@ -20,7 +22,9 @@ from copilot.core.interpretation import VisualHint
 from copilot.presentation.composer import teacher_items
 from copilot.presentation.spec import ImageBlock, SlideSpec
 
-NO_IMAGE_BESIDE = {"process", "comparison", "timeline", "cause_effect", "formula", "hierarchy", "groups"}
+# A classification tree beside an image is drawn as one card (label + kinds); a formula after text goes full width
+# under the text and the image (live test 2026-10-06: the female organs and the photosynthesis intro lost their image).
+NO_IMAGE_BESIDE = {"process", "comparison", "timeline", "cause_effect", "groups"}
 MAX_FACT_TILES = 4
 # words that name ideas, not things: a picture search for them returns noise
 _ABSTRACT = {"energy", "force", "forces", "velocity", "speed", "acceleration", "motion", "work", "power", "momentum",
@@ -44,6 +48,32 @@ def is_abstract(query: str) -> bool:
 
 def norm_query(query: str) -> str:
     return " ".join(re.findall(r"[a-z0-9]+", query.lower()))
+
+
+# facets that name a side of a topic, not a thing: "photosynthesis process diagram" says nothing about its importance
+_GENERIC_FACETS = {"definition", "meaning", "introduction", "overview", "process", "importance", "types", "kinds",
+                   "components", "parts", "examples", "applications", "uses", "advantages", "disadvantages",
+                   "benefits", "features", "properties", "structure", "functions", "summary", "history", "challenges"}
+
+
+def names_a_thing(facet: str) -> bool:
+    """"Female Reproductive System", "Black Holes" — not a side of the topic ("Process", "Types") or an idea."""
+    return bool(facet.strip()) and facet.strip().lower() not in _GENERIC_FACETS and not is_abstract(facet)
+
+
+def sibling_hint(facet: str, siblings: list[tuple[str, VisualHint]]) -> Optional[VisualHint]:
+    """A subtopic without the model's picture hint whose sibling under the same topic got one that names the sibling
+    ("female reproductive system"): the same kind of picture for this subtopic ("male reproductive system"). Live
+    test 2026-10-06: the female system had a diagram, the male one none. Only for subtopics that name things."""
+    if not names_a_thing(facet):
+        return None
+    for sib, hint in reversed(siblings):
+        if not names_a_thing(sib) or norm_query(sib) == norm_query(facet):
+            continue
+        m = re.search(r"\b" + re.escape(sib.strip()) + r"\b", hint.query, re.IGNORECASE)
+        if m:
+            return VisualHint(query=hint.query[:m.start()] + facet.strip() + hint.query[m.end():], kind=hint.kind)
+    return None
 
 
 @dataclass
@@ -75,9 +105,12 @@ def blocked(spec: SlideSpec) -> Optional[str]:
         return "title slide"
     if teacher_items(spec) == 0:
         return "no content yet"
-    for b in spec.blocks:
+    content = [b for b in spec.blocks if b.type != "image"]
+    for i, b in enumerate(content):
         if b.type in NO_IMAGE_BESIDE:
             return f"{b.type} needs the full width"
+        if b.type == "formula" and (i == 0 or sum(1 for x in content if x.type == "formula") > 1):
+            return "formula needs the full width"
         if b.type == "facts" and len(b.facts) > MAX_FACT_TILES:
             return f"{len(b.facts)} fact tiles"
     if sum(1 for b in spec.blocks if b.type == "definition") > 1:

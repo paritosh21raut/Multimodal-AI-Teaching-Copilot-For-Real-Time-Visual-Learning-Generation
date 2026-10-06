@@ -272,6 +272,10 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .def-pair .def { align-content: start; gap: 20px; }
 .def-pair .def-term { font-size: calc(var(--fs-lead) * 1.15 * var(--fit)); }
 .def-pair .def-body { font-size: calc(var(--fs-body) * var(--fit)); padding: 34px 40px 34px 52px; box-sizing: border-box; }
+/* the members of a set (types, components): one card, or 3 per row, 2x2, 3x2 (composer.grid_columns) */
+.def-pair.cols-1 { grid-template-columns: minmax(0, 1fr); }
+.def-pair.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.def-pair.cols-3 .def-term { font-size: calc(var(--fs-lead) * var(--fit)); line-height: 1.05; }
 /* a concept column: definition, then its own formula / points / examples (live energy test 2026-10-06) */
 .def-col { display: grid; gap: 24px; align-content: start; min-width: 0; }
 .def-col .formula { gap: 18px; }
@@ -297,6 +301,11 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 /* "safe": content taller than the body overflows at the bottom (measured by the auto-fit, which then shrinks the
    type), never upwards into the title where scrollHeight cannot see it */
 .slide-body.with-image .main { align-content: safe center; }
+/* text | image on top, the formula full width below (composer.image_top; the image at most 380 px tall) */
+.slide-body.image-top { align-content: safe center; gap: 32px; }
+.image-top-row { display: grid; grid-template-columns: minmax(0, 1fr) var(--img-col, 720px); column-gap: 56px; align-items: center; }
+.image-top-row .image-col { height: auto; }
+.image-top-row .figure { width: min(100%, calc(380px * var(--aspect))); }
 .image-col { height: 100%; min-height: 0; display: grid; place-items: center; }
 .figure {
   --aspect: 1.333;

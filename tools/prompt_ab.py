@@ -1,8 +1,10 @@
-"""Old-vs-new interpretation prompt A/B on recorded lecture units (F-007b step 4).
+"""Old-vs-new interpretation prompt A/B on recorded lecture units (F-007b step 4; round 4 step B: hierarchy rules).
 
     .venv/Scripts/python tools/prompt_ab.py --dry SESSION[:i,j] ...    # rebuild prompts, 0 tokens
     .venv/Scripts/python tools/prompt_ab.py SESSION[:i,j] ...          # new prompt on gpt-oss-120b (real Groq)
     .venv/Scripts/python tools/prompt_ab.py --old SESSION[:i,j] ...    # the old prompt again (sampling variance)
+    .venv/Scripts/python tools/prompt_ab.py --both SESSION[:i,j] ...   # old AND new prompt on gpt-oss-120b (sessions
+                                                                       # whose live answers came from another model)
 
 A recorded session is replayed into a LectureStateStore; at every InterpretRequested the prompt is rebuilt from
 that state and the request's transcript lines. The OLD arm is what the model returned live (recorded
@@ -81,9 +83,10 @@ async def rebuild(session: str) -> list[Unit]:
     return units
 
 
-def build(u: Unit, visual: bool, settings: InterpreterSettings) -> P.BuiltPrompt:
+def build(u: Unit, new: bool, settings: InterpreterSettings) -> P.BuiltPrompt:
+    """OLD = the live prompt (visual rule on, hierarchy rules off); NEW = with the hierarchy rules (round 4 step B)."""
     saved = P.SYSTEM_PROMPT
-    P.SYSTEM_PROMPT = P.system_prompt(visual)  # build_prompt reads the module constant
+    P.SYSTEM_PROMPT = P.system_prompt(visual=True, hierarchy=new)  # build_prompt reads the module constant
     try:
         return P.build_prompt(u.state, u.lines, dynamic_budget=settings.dynamic_budget_tokens,
                               total_budget=settings.prompt_budget_tokens)
@@ -120,6 +123,9 @@ def select(units: list[Unit], spec: str) -> list[Unit]:
 async def main(args: list[str]) -> None:
     dry = "--dry" in args
     resend_old = "--old" in args  # send the OLD prompt again (is a difference the rule or sampling variance?)
+    # send BOTH prompts to gpt-oss-120b: for sessions whose live answers came from another model or the fallback
+    # (live test 2026-10-06 ran on qwen only), so both arms are the same model
+    both = "--both" in args
     specs = [a for a in args if not a.startswith("--")]
     cfg = load_config()
     settings = InterpreterSettings(**{k: v for k, v in cfg.section("understanding").items()
@@ -135,7 +141,8 @@ async def main(args: list[str]) -> None:
             print(f"{session}#{u.index}: old prompt {old.tokens} tok {match}; new {new.tokens}; "
                   f"{u.old_provider or 'fallback'} | {u.old.topic} > {u.old.subtopic} | "
                   f"{' / '.join(l.text for l in u.lines)[:110]}")
-            if old.tokens == u.recorded_tokens and not u.old_fallback and u.old_provider.startswith("groq_main"):
+            if old.tokens == u.recorded_tokens and (both or (not u.old_fallback
+                                                             and u.old_provider.startswith("groq_main"))):
                 chosen.append(u)
     print(f"{len(chosen)} unit(s) usable for the A/B")
     if dry or not chosen:
@@ -153,7 +160,7 @@ async def main(args: list[str]) -> None:
             return r
 
         router.complete = complete  # type: ignore[method-assign]
-        need = 2600 * len(chosen)  # ≈ prompt + output per unit
+        need = 2600 * len(chosen) * (2 if both else 1)  # ≈ prompt + output per call
         free = sum(max(0, q["tpd"] - q["used"]) for q in router.quota() if not q["spent"])
         print(f"quota: {router.quota()}; need ≈ {need}, free {free}")
         if free < need:
@@ -161,6 +168,15 @@ async def main(args: list[str]) -> None:
             return
         interp = Interpreter(router, settings)
         for u in chosen:
+            old_it = u.old
+            if both:
+                calls.clear()
+                res_old = await interp.interpret(u.state, u.lines, build(u, False, settings))
+                old_used = sum(c.response.prompt_tokens + c.response.completion_tokens for c in calls)
+                spent += old_used
+                old_it = res_old.interpretation
+                print(f"  (old arm resent: {old_used} tokens via {res_old.provider}, valid={not res_old.fallback})")
+                await asyncio.sleep(max(2.0, 60.0 * old_used / 7000))
             calls.clear()
             prompt = build(u, not resend_old, settings)
             t0 = time.perf_counter()
@@ -168,7 +184,7 @@ async def main(args: list[str]) -> None:
             used = sum(c.response.prompt_tokens + c.response.completion_tokens for c in calls)
             spent += used
             row = {"unit": f"{u.session}#{u.index}", "lines": [l.text for l in u.lines],
-                   "old": summary(u.old), "new": summary(res.interpretation), "new_provider": res.provider,
+                   "old": summary(old_it), "new": summary(res.interpretation), "new_provider": res.provider,
                    "valid": not res.fallback, "fallback_reason": res.fallback_reason, "repaired": res.repaired, "tokens": used,
                    "seconds": round(time.perf_counter() - t0, 1)}
             results.append(row)
@@ -190,7 +206,7 @@ async def main(args: list[str]) -> None:
           f"{sum(r['repaired'] for r in results)}, same topic {agree('topic')}, same subtopic {agree('subtopic')}, "
           f"same relation {agree('relation')}, same act kinds {agree('kinds')}, with visual "
           f"{sum(bool(r['new']['visual']) for r in results)}; real tokens {spent} "
-          f"(≈ {approx_tokens(P.VISUAL_RULE + P.VISUAL_SHAPE)} prompt tokens added per call) → {path}")
+          f"(≈ {approx_tokens(P.HIERARCHY_RULE)} prompt tokens added per call) → {path}")
 
 
 if __name__ == "__main__":

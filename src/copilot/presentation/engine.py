@@ -38,14 +38,14 @@ from copilot.core.events import (
 from copilot.core.state import Concern, LectureStateStore
 from copilot.presentation.composer import (
     BODY_BUDGET_PX, body_height, clear_provisional, describe, element_texts, fits, fits_unshrunk, frame_slide,
-    image_of, is_small, merge, rejoin, remove_elements, revise_item, set_provisional, split_to_fit, substitute,
-    teacher_items, title_slide, with_image, without_image,
+    image_of, is_about, is_small, member_of, merge, rejoin, remove_elements, revise_item, set_provisional,
+    split_to_fit, substitute, teacher_items, title_slide, with_image, without_image,
 )
 from copilot.presentation.content import Piece, clean, pieces_and_chain
 from copilot.presentation.deck import Deck
 from copilot.presentation.planner import Decision, Frame, Signal, Working, decide
 from copilot.presentation.spec import ImageBlock, SlideSpec
-from copilot.visuals.policy import FrameVisual, blocked, norm_query
+from copilot.visuals.policy import FrameVisual, blocked, names_a_thing, norm_query, sibling_hint
 from copilot.visuals.policy import decide as image_decision
 
 log = logging.getLogger(__name__)
@@ -86,6 +86,7 @@ class SlideMeta:
     is_title: bool = False
     full: bool = False  # the display reported overflow: nothing more is added ...
     full_items: int = 0  # ... while the slide holds at least as many items as then (it may have shrunk since)
+    member: str = ""     # the slide of one member of the frame's set, explained in depth (titled by it, no part)
 
 
 @dataclass
@@ -434,7 +435,7 @@ class PresentationEngine:
                         Frame(d.candidate, ""))):
                     self._tentative = None
                 if d.op != "noop":
-                    await self._apply(d, working, pieces)
+                    await self._apply(d, working, pieces, it.relation)
                     if d.candidate is not None:
                         placed = {k for _, ks in self._placements for k in ks}
                         if self._tentative is None:
@@ -570,10 +571,14 @@ class PresentationEngine:
         log.info("concern %s %s: slide shows %r", ev.concern_id, ev.status,
                  corr.right if corr.showing_right else corr.wrong)
 
-    async def _apply(self, d: Decision, working: Optional[Working], pieces: list[Piece]) -> Optional[str]:
+    async def _apply(self, d: Decision, working: Optional[Working], pieces: list[Piece],
+                     relation: str = "") -> Optional[str]:
         """Carry out a decision; returns the id of the slide the content went to."""
         frame = d.frame
-        if d.op == "continue" and self._absorbs(pieces):
+        # a narrower concept with a name of its own (the female reproductive system) is no supporting content: it
+        # gets its own slide like its siblings (live test 2026-10-06: female stayed on the definition, male did not)
+        own = relation == "sub_concept" and names_a_thing(frame.facet)
+        if d.op == "continue" and not own and self._absorbs(pieces):
             # a sparse definition slide takes its supporting content (the branches of chemistry under its
             # definition) instead of a new, equally sparse slide replacing it seconds later
             spec = self._spec(self._working_id)
@@ -628,9 +633,16 @@ class PresentationEngine:
         for another frame (navigated-back slide) never becomes the working slide nor takes the screen.
         Records which elements each piece produced (self._placements) for corrections and tentative moves."""
         cur, cur_new = spec, is_new
+        cur_member = self._meta[cur.id].member if cur.id in self._meta else ""
         for piece in pieces:
             ids_before = {(cur.id, e) for e in element_texts(cur)}
             finished: list[SlideSpec] = []
+            if cur_member and not is_about(piece, cur_member):
+                # the teacher is back at the set after one member in depth: the set continues on its next part
+                await self._finish(cur, cur_new, frame, exempt, adopt, cur_member)
+                finished.append(cur)
+                exempt = False
+                cur, cur_new, cur_member = await self._set_part(frame, cur), True, ""
             m = self._meta.get(cur.id, SlideMeta(frame))
             # overflow applies to the slide as reported: after a revision made it smaller (live test 2026-10-06:
             # 7 items reported, then 6) new content may join it again instead of opening a lonely next part
@@ -644,36 +656,63 @@ class PresentationEngine:
             elif left is not None and not full and is_small(left):
                 cur, left = merge(cur, left, squeeze=True)  # one short item: squeeze it in, no lonely next part
             while left is not None:
+                # details of one member that no longer fit its card: that member is explained in depth and gets its
+                # own slide, titled by it, under the same crumb (Topic — Types); the set continues afterwards
+                member = member_of(cur, left) if not cur_member else None
+                nxt_member = cur_member or (member.term if member is not None else "")
                 nxt = frame_slide(frame.topic, frame.facet, continuation_of=cur.id)
-                nxt = nxt.model_copy(update={"title": cur.title})
+                nxt = nxt.model_copy(update={"title": member.term if member is not None else cur.title})
                 nxt, rest = merge(nxt, left)
                 if not nxt.blocks or rest == left:
                     log.error("piece does not fit an empty slide; dropped: %s", left.all_text()[:3])
                     break
-                part = self._last_part(frame, cur) + 1  # numbered only once the next part really has content
-                if cur.part is None:
+                # a member's slides are not parts of the set; the set's parts are numbered once the next has content
+                part = None if nxt_member else self._last_part(frame, cur) + 1
+                if cur.part is None and not nxt_member:
                     cur = cur.model_copy(update={"part": 1})
-                await self._finish(cur, cur_new, frame, exempt, adopt)
+                await self._finish(cur, cur_new, frame, exempt, adopt, cur_member)
                 finished.append(cur)
                 exempt = False
-                cur, cur_new = nxt.model_copy(update={"part": part}), True
+                if member is not None:
+                    log.info("member %r explained in depth: its own slide under %s > %s", member.term, frame.topic,
+                             frame.facet)
+                cur, cur_new, cur_member = nxt.model_copy(update={"part": part}), True, nxt_member
                 left = rest
             if self._placements is not None:
                 produced = {(s.id, e) for s in finished + [cur] for e in element_texts(s)} - ids_before
                 self._placements.append((piece, produced))
-        await self._finish(cur, cur_new, frame, exempt, adopt)
+        await self._finish(cur, cur_new, frame, exempt, adopt, cur_member)
         return cur.id
+
+    async def _set_part(self, frame: Frame, cur: SlideSpec) -> SlideSpec:
+        """An empty next part of a frame's set (after a member's own slide): the set's title, the next part number."""
+        first = self._first_part(frame)
+        await self._number_first_part(frame)
+        nxt = frame_slide(frame.topic, frame.facet, continuation_of=cur.id)
+        return nxt.model_copy(update={"title": first.title if first is not None else nxt.title,
+                                      "part": self._last_part(frame, cur) + 1})
+
+    def _first_part(self, frame: Frame) -> Optional[SlideSpec]:
+        return next((s for s in self._all_specs() if s.id in self._meta and self._meta[s.id].frame.same(frame)
+                     and not self._meta[s.id].member and not self._meta[s.id].is_title), None)
+
+    async def _number_first_part(self, frame: Frame) -> None:
+        first = self._first_part(frame)
+        if first is not None and first.part is None:
+            await self._commit(first.model_copy(update={"part": 1}))
 
     def _last_part(self, frame: Frame, cur: SlideSpec) -> int:
         """Highest part number of this frame so far (a navigated-back part I must not create a second II)."""
-        parts = [s.part or 1 for s in self._all_specs() if s.id in self._meta and self._meta[s.id].frame.same(frame)]
+        parts = [s.part or 1 for s in self._all_specs() if s.id in self._meta and self._meta[s.id].frame.same(frame)
+                 and not self._meta[s.id].member]  # a member's own slide is no part of the set
         return max(parts + [cur.part or 1])
 
-    async def _finish(self, spec: SlideSpec, is_new: bool, frame: Frame, exempt: bool, adopt: bool = True) -> None:
+    async def _finish(self, spec: SlideSpec, is_new: bool, frame: Frame, exempt: bool, adopt: bool = True,
+                      member: str = "") -> None:
         if is_new:
             if not spec.blocks:
                 return
-            await self._open(spec, SlideMeta(frame), exempt, adopt)
+            await self._open(spec, SlideMeta(frame, member=member), exempt, adopt)
             if adopt:
                 self._working_id = spec.id
         else:
@@ -704,6 +743,12 @@ class PresentationEngine:
             log.info("image removed from %r: %s", spec.title, blocked(spec))
             return
         hint = fv.hint
+        if hint is None and fv.image is None and not fv.removed:
+            hint = sibling_hint(meta.frame.facet, [(f.facet, v.hint) for f, v in self._visuals
+                                                   if v.hint is not None and f.same_topic(meta.frame)
+                                                   and not f.same(meta.frame)])
+            if hint is not None:
+                log.info("image hint %r for %r from its sibling subtopic", hint.query, spec.title)
         d = image_decision(spec, hint, fv)
         if d.action == "keep" and fv.image is not None:
             if await self._about(fv.query, spec) and await self._show_image(spec, fv.image, teacher=False):

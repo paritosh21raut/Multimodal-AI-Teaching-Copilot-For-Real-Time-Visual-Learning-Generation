@@ -32,13 +32,17 @@ log = logging.getLogger(__name__)
 
 # Hard caps per block (readability), on top of the space budget.
 CAPACITY = {"points": 8, "notes": 2, "steps": 6, "columns": 3, "rows": 6, "events": 6, "links": 4,
-            "variables": 4, "secondary": 2, "facts": 8, "groups": 4, "group_items": 8, "tree": 6, "definitions": 2}
+            "variables": 4, "secondary": 2, "facts": 8, "groups": 4, "group_items": 8, "tree": 6, "definitions": 6,
+            "member_points": 3}
 BODY_BUDGET_PX = 740       # slide body height at the default type size (auto-fit can still shrink to 0.8); measured
                            # 754-763 px in Edge on 29 slides of the live test 2026-10-06 (700 left lonely last parts)
 BODY_WIDTH_PX = 1696
 MAIN_WIDTH_ASIDE_PX = 1040  # main column when an aside (example/callout) is shown
 BLOCK_GAP_PX = 32
 IMAGE_GAP_PX = 56           # image layout (F-007b): content column | image column (mirrors slide.css .with-image)
+IMAGE_HEIGHT_PX = BODY_BUDGET_PX  # image column sizing (mirrors slide.js imageColumn)
+IMAGE_TOP_MAX_PX = 380      # an image beside the text above a formula (slide.css .image-top) is at most this tall
+MEMBER_GAP_PX = 36          # member cards / concept columns (slide.css .def-pair)
 LAYOUT_FOR = {"definition": "definition", "points": "key_points", "steps": "process_flow",
               "comparison": "comparison", "timeline": "timeline", "formula": "formula", "causes": "cause_effect",
               "example": "example", "facts": "facts", "groups": "groups", "tree": "hierarchy"}
@@ -174,7 +178,7 @@ def image_column_px(aspect: float) -> float:
     """Width of the image column (mirrors slide.js imageColumn): wider for landscape images, and a tall image takes
     only the width it needs at the body height, so the content keeps the rest."""
     widest = 720.0 if aspect >= 1.25 else 600.0
-    return float(round(min(widest, max(380.0, BODY_BUDGET_PX * aspect))))
+    return float(round(min(widest, max(380.0, IMAGE_HEIGHT_PX * aspect))))
 
 
 def image_of(spec: SlideSpec) -> Optional[ImageBlock]:
@@ -220,6 +224,9 @@ def block_height(b: Block, width: float = BODY_WIDTH_PX, narrow: bool = False) -
         tallest = max(math.ceil(sum(len(i.text) + 4 for i in g.items) / _cpl(width_each - 60, 30)) for g in b.groups)
         return (44 if b.heading else 0) + 110 + 46 * tallest
     if b.type == "hierarchy":
+        if narrow:  # beside an image the classification is one card: its label, then the kinds as chips
+            chips = math.ceil(sum(len(c.label) + 4 for c in b.root.children) / _cpl(width - 60, 30))
+            return 110 + 46 * max(1, chips)
         depth = 1 + (1 if b.root.children else 0) + (1 if any(c.children for c in b.root.children) else 0)
         return 110 + 120 * (depth - 1)
     if b.type == "process":
@@ -245,12 +252,12 @@ def block_height(b: Block, width: float = BODY_WIDTH_PX, narrow: bool = False) -
     return 120
 
 
-def _split(blocks: list) -> tuple[list, list]:
+def _split(blocks: list, members: bool = False) -> tuple[list, list]:
     """(main, aside) exactly as slide.js splitBlocks lays them out. With an image (image layout) everything else is
-    the content column and the image is alone in its column."""
+    the content column and the image is alone in its column. Member cards take the full width (no aside)."""
     if any(b.type == "image" for b in blocks):
         return [b for b in blocks if b.type != "image"], [b for b in blocks if b.type == "image"][:1]
-    if len(blocks) < 2 or any(b.type in FULL_WIDTH for b in blocks) \
+    if len(blocks) < 2 or members or any(b.type in FULL_WIDTH for b in blocks) \
             or sum(1 for b in blocks if b.type == "definition") > 1:
         return blocks, []
     main = [blocks[0]] + [b for b in blocks[1:] if b.type not in SECONDARY + ("image",)]
@@ -258,20 +265,62 @@ def _split(blocks: list) -> tuple[list, list]:
     return main, aside
 
 
+def grid_columns(n: int) -> int:
+    """Member cards per row (mirrors slide.js): 1 | 2 | 3 | 2×2 | 3 + 2 | 3×2."""
+    return 1 if n <= 1 else 3 if n == 3 or n >= 5 else 2
+
+
+def _member_height(d: DefinitionBlock, width: float, cols: int) -> float:
+    """A member card (slide.css .def-pair): the term as its heading, then the meaning card at body size."""
+    term_px = 42 if cols >= 3 else 48.3
+    h = 20 + term_px * 1.1 * _lines(d.term, _cpl(width, term_px * 1.1))
+    h += 68 + 46 * _lines(d.definition, _cpl(width - 92, 34))
+    if d.notes:
+        h += 20 + 50 * math.ceil(sum(len(n.text) + 6 for n in d.notes) / _cpl(width, 26))
+    return h
+
+
+def image_top(blocks: list) -> bool:
+    """Image layout with a formula (mirrors slide.js): the text above the formula sits beside the image, the formula
+    and what follows it take the full width below (live test 2026-10-06: the photosynthesis intro had no image)."""
+    if not any(b.type == "image" for b in blocks):
+        return False
+    rest = [b for b in blocks if b.type != "image"]
+    at = next((i for i, b in enumerate(rest) if b.type == "formula"), None)
+    return at is not None and at > 0
+
+
 def body_height(spec: SlideSpec) -> float:
-    main, aside = _split(list(spec.blocks))
+    blocks = list(spec.blocks)
     img = image_of(spec)
+    if img is not None and image_top(blocks):
+        rest = [b for b in blocks if b.type != "image"]
+        at = next(i for i, b in enumerate(rest) if b.type == "formula")
+        top, below = rest[:at], rest[at:]
+        width = content_width(spec)
+        h_top = sum(block_height(b, width, True) for b in top) + BLOCK_GAP_PX * (len(top) - 1)
+        h_img = min(IMAGE_TOP_MAX_PX, image_column_px(img.aspect) / max(0.2, img.aspect))
+        h_below = sum(block_height(b) for b in below) + BLOCK_GAP_PX * (len(below) - 1)
+        return max(h_top, h_img) + BLOCK_GAP_PX + h_below
+    members = spec.layout == "members"
+    main, aside = _split(blocks, members)
     narrow = img is not None
     width = content_width(spec) if narrow else MAIN_WIDTH_ASIDE_PX if aside else BODY_WIDTH_PX
     defs = [b for b in main if b.type == "definition"]
-    if len(defs) > 1:  # side by side (slide.js def-pair): one column per concept, each half wide
-        half = width / 2 - 18
+    if len(defs) > 1 or (members and defs):
+        # side by side (slide.js def-pair): a column / card per concept, each with its own formula / points / examples
+        cols = grid_columns(len(defs))
+        w = (width - MEMBER_GAP_PX * (cols - 1)) / cols
         ids = {d.id for d in defs}
         rest = [b for b in main if b.type != "definition" and getattr(b, "about", "") not in ids]
-        pair = max(80 + block_height(d, half)  # + the term heading above each card
-                   + sum(_column_block_height(b, half) + 24 for b in main if getattr(b, "about", "") == d.id)
-                   for d in defs)
-        h_main = pair + sum(block_height(b, width, narrow) for b in rest) + BLOCK_GAP_PX * len(rest)
+
+        def card(d: DefinitionBlock) -> float:
+            head = 80 + block_height(d, w) if len(defs) == 2 else _member_height(d, w, cols)  # + the term heading
+            return head + sum(_column_block_height(b, w) + 24 for b in main if getattr(b, "about", "") == d.id)
+
+        rows = [defs[i:i + cols] for i in range(0, len(defs), cols)]
+        grid = sum(max(card(d) for d in row) for row in rows) + MEMBER_GAP_PX * (len(rows) - 1)
+        h_main = grid + sum(block_height(b, width, narrow) for b in rest) + BLOCK_GAP_PX * len(rest)
     else:
         h_main = sum(block_height(b, width, narrow) for b in main) + BLOCK_GAP_PX * max(0, len(main) - 1)
     if img is not None:
@@ -387,12 +436,31 @@ def _replace_block(spec: SlideSpec, old, new) -> SlideSpec:
     return spec.model_copy(update={"blocks": [new if b is old else b for b in spec.blocks]})
 
 
+SUBJECT_FACETS = DEFINITION_FACETS + ("introduction", "overview")
+
+
+def is_subject(spec: SlideSpec, term: str) -> bool:
+    """Is the slide about this term itself (its definition slide, the term as title), or is the term one member of
+    the set its facet lists ("Types": PAN, LAN ...; "Components": nodes ...; live test 2026-10-06 titled the
+    Components slide "Nodes" and split the network types over three slides)?"""
+    facet = (spec.facet or "").strip()
+    if not facet or facet.lower() in SUBJECT_FACETS:
+        return True
+    return titles_match(term, facet) or titles_match(term, spec.subtitle or "")
+
+
 def _with_layout(spec: SlideSpec) -> SlideSpec:
-    """Layout follows the first block (the renderer styles by it); several definitions are a plain concept."""
+    """Layout follows the first block (the renderer styles by it); several definitions are a plain concept, and a
+    slide that starts with one member of its facet's set shows it as a member card under the facet's title."""
     if not spec.blocks:
         return spec
-    defs = sum(1 for b in spec.blocks if b.type == "definition")
-    layout = "concept" if defs > 1 else BLOCK_LAYOUT.get(spec.blocks[0].type, "concept")
+    defs = [b for b in spec.blocks if b.type == "definition"]
+    if len(defs) > 1:
+        layout = "concept"
+    elif defs and spec.blocks[0] is defs[0] and not is_subject(spec, defs[0].term):
+        layout = "members"
+    else:
+        layout = BLOCK_LAYOUT.get(spec.blocks[0].type, "concept")
     return spec if spec.layout == layout else spec.model_copy(update={"layout": layout})
 
 
@@ -564,14 +632,16 @@ def _column_for(spec: SlideSpec, piece: Piece):
     if piece.kind not in _COLUMN_KINDS:
         return None
     defs = [b for b in spec.blocks if b.type == "definition"]
-    if len(defs) != 2:
-        return None
+    if len(defs) < 2 and not (defs and spec.layout == "members"):
+        return None  # one member card takes its details too (the nodes' end / intermediary devices)
+    if len(defs) > 2 and piece.kind == "formula":
+        return None  # member cards hold no formulas
     texts = piece.texts if piece.kind != "formula" else ()
     mentioned = [d for d in defs if _mentions(texts, d.term)]
     if len(mentioned) == 1:
         return mentioned[0]
-    if len(mentioned) == 2:
-        return None  # about both: full width below
+    if len(mentioned) > 1:
+        return None  # about several: full width below
     for segment in reversed(piece.about.split("\n") if piece.about else []):  # the newest named concept first
         named = [d for d in defs if _names(segment, d.term) or _mentions((segment,), d.term)]
         if len(named) == 1:
@@ -579,6 +649,23 @@ def _column_for(spec: SlideSpec, piece: Piece):
         if named:
             return None
     return None
+
+
+def member_of(spec: SlideSpec, piece: Piece) -> Optional[DefinitionBlock]:
+    """The member card (of a slide listing a set's members) that a piece is about; None for concept columns."""
+    defs = sum(1 for b in spec.blocks if b.type == "definition")
+    if spec.layout != "members" and defs < 3:
+        return None
+    return _column_for(spec, piece)
+
+
+def is_about(piece: Piece, term: str) -> bool:
+    """Is the piece about this concept (its definition again, a mention, or the concept the lecture named)?"""
+    if piece.kind == "definition":
+        return titles_match(piece.term, term)
+    if _mentions(piece.texts, term):
+        return True
+    return any(_names(s, term) or _mentions((s,), term) for s in piece.about.split("\n") if s)
 
 
 def _merge_column(spec: SlideSpec, piece: Piece, db: DefinitionBlock) -> tuple[SlideSpec, Optional[Piece]]:
@@ -606,15 +693,18 @@ def _merge_column(spec: SlideSpec, piece: Piece, db: DefinitionBlock) -> tuple[S
                 else _add_block(spec, ExampleBlock(text=text, about=db.id)))
         return (cand, None) if fits(cand) else (spec, piece)
     pb = next((b for b in mine if b.type == "points"), None)
+    defs = sum(1 for b in spec.blocks if b.type == "definition")
+    # a member card among several keeps a few details; a member explained in more depth gets its own slide
+    limit = CAPACITY["member_points"] if defs > 2 else CAPACITY["points"]
     if pb is not None:
-        room = max(0, CAPACITY["points"] - len(pb.items))
+        room = max(0, limit - len(pb.items))
         out, rest = _greedy(spec, fresh[:room], lambda ts: _replace_block(
             spec, pb, pb.model_copy(update={"items": pb.items + _items(ts, piece.added)})))
         rest += fresh[room:]
     else:
-        out, rest = _greedy(spec, fresh[:CAPACITY["points"]], lambda ts: _add_block(
+        out, rest = _greedy(spec, fresh[:limit], lambda ts: _add_block(
             spec, PointsBlock(items=_items(ts, piece.added), about=db.id)))
-        rest += fresh[CAPACITY["points"]:]
+        rest += fresh[limit:]
     if out is spec:
         return spec, piece
     return out, piece.with_texts(rest) if rest else None
@@ -708,15 +798,27 @@ def _merge_definition(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optiona
     # The topic's own definition is no peer: live kinematics test 2026-10-06 paired "Kinematics" with "Distance" and
     # pushed "Displacement" to another slide; now distance + displacement go together on the next part.
     # exact key: "Kinetic energy" is a peer concept under the topic "Energy", not the topic itself
-    topic_def = len(defs) == 1 and bool(title_key(defs[0].term)) and title_key(defs[0].term) == title_key(spec.subtitle or "")
-    if len(defs) == 1 and not topic_def and all(b.type in ("definition",) + SECONDARY for b in spec.blocks) \
-            and not any(not n.provisional for n in defs[0].notes):
-        spec = clear_provisional(spec)  # a teaser note must not block the pairing
-        cand = _add_block(spec, block)
+    # More members of one set (PAN, LAN, MAN, WAN under "Types"): member cards on the same slide, up to 6 (live test
+    # 2026-10-06 split them over three slides). An automatic image yields to them (the image policy blocks images
+    # beside several definitions); member cards hold no formulas, so concept columns with formulas stay two.
+    topic_def = any(title_key(d.term) and title_key(d.term) == title_key(spec.subtitle or "") for d in defs)
+    img = image_of(spec)
+    base = without_image(spec) if img is not None and img.origin == "auto" else spec
+    ids = {d.id for d in defs}
+    others = [b for b in base.blocks if b.type not in ("definition", "image")]
+    if len(defs) < CAPACITY["definitions"] and not topic_def \
+            and all(b.type in SECONDARY or getattr(b, "about", "") in ids for b in others) \
+            and (len(defs) > 1 or not any(not n.provisional for n in defs[0].notes)) \
+            and (len(defs) < 2 or not any(b.type == "formula" for b in others)):
+        base = clear_provisional(base)  # a teaser note must not block the pairing
+        cand = _add_block(base, block)
         cand = cand.model_copy(update={"blocks": [b for b in cand.blocks if b.type == "definition"]
                                        + [b for b in cand.blocks if b.type != "definition"]})
-        if spec.title == what_is(_lower_term(defs[0].term)):  # "What is distance?" → "Distance and displacement"
+        if len(defs) == 1 and spec.title == what_is(_lower_term(defs[0].term)):
+            # "What is distance?" → "Distance and displacement"
             cand = cand.model_copy(update={"title": f"{cap(defs[0].term)} and {_lower_term(piece.term)}"})
+        elif len(defs) == 2 and spec.title == f"{cap(defs[0].term)} and {_lower_term(defs[1].term)}":
+            cand = cand.model_copy(update={"title": slide_title(spec.subtitle, spec.facet or "")})
         if fits(cand):
             return _with_layout(cand), None
     return spec, piece
@@ -744,22 +846,44 @@ def _merge_facts(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Pie
     return out, replace(piece, pairs=tuple(rest)) if rest else None
 
 
+def classification_label(label: str, topic: str) -> str:
+    """A group's label among several classifications of one thing: "Microcontroller types by bit width" -> "By bit
+    width", "Microcontroller Architecture Types" -> "Architecture Types" (the crumb already names the topic)."""
+    m = re.search(r"\bby\s+(\S.*)$", label, re.IGNORECASE)
+    if m:
+        return "By " + m.group(1)
+    words, topic_key = label.split(), title_key(topic)
+    while len(words) > 1 and title_key(words[0]) and title_key(words[0]) <= topic_key:
+        words = words[1:]
+    return cap(" ".join(words))
+
+
 def _merge_groups(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:
+    orig = spec
+    hb = _find(spec, "hierarchy")
+    if hb is not None and _find(spec, "groups") is None:
+        # several classifications of one thing (by bits, by memory, by instruction set ...) are one set of group
+        # cards; the classification shown as a tree so far becomes the first card (same ids: nothing re-animates)
+        spec = _replace_block(spec, hb, GroupsBlock(id=hb.id, groups=[Group(
+            id=hb.root.id, label=hb.root.label, items=[Item(id=c.id, text=c.label) for c in hb.root.children])]))
     gb = _find(spec, "groups")
     if gb is not None:
         groups = list(gb.groups)
         for label, items in piece.groups:
-            g = next((x for x in groups if titles_match(x.label, label)), None)
+            short = classification_label(label, spec.subtitle)
+            g = next((x for x in groups if titles_match(x.label, label) or titles_match(x.label, short)), None)
             if g is None:
                 if len(groups) >= CAPACITY["groups"]:
                     log.info("groups block full; %r continues on the next part", label)
-                    return spec, piece
+                    return orig, piece
                 groups.append(Group(label=label, items=_items(list(items[:CAPACITY["group_items"]]), piece.added)))
             else:
                 fresh = _new([i.text for i in g.items], items)[: max(0, CAPACITY["group_items"] - len(g.items))]
                 groups[groups.index(g)] = g.model_copy(update={"items": g.items + _items(fresh, piece.added)})
+        if len(groups) > 1:
+            groups = [g.model_copy(update={"label": classification_label(g.label, spec.subtitle)}) for g in groups]
         cand = _replace_block(spec, gb, gb.model_copy(update={"groups": groups}))
-        return (cand, None) if fits(cand) or len(spec.blocks) == 1 else (spec, piece)
+        return (cand, None) if fits(cand) or len(spec.blocks) == 1 else (orig, piece)
     block = GroupsBlock(heading=piece.term, groups=[
         Group(label=lb, items=_items(list(its[:CAPACITY["group_items"]]), piece.added))
         for lb, its in piece.groups[:CAPACITY["groups"]]])
@@ -777,7 +901,8 @@ def _merge_tree(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piec
             log.info("tree %r is full; not shown: %s", hb.root.label, all_fresh[room:])
         root = hb.root.model_copy(update={"children": hb.root.children + [TreeNode(label=t) for t in fresh]})
         return _replace_block(spec, hb, hb.model_copy(update={"root": root})), None
-    if hb is not None:  # a second classification on the slide: both read best as named groups
+    if hb is not None or _find(spec, "groups") is not None:
+        # a further classification on the slide: all of them read best as named groups side by side
         return _merge_groups(spec, Piece("groups", lines=piece.lines, added=piece.added,
                                          groups=((piece.term, piece.texts),)))
     if any(b.type in LARGE for b in spec.blocks):
@@ -787,9 +912,11 @@ def _merge_tree(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piec
     cand = _add_block(spec, block)
     if fits(cand) or not spec.blocks:
         return cand, None
-    # no room for the diagram: the kinds as a labelled list may still fit
-    return _merge_points(spec, Piece("points", lines=piece.lines, added=piece.added, term=piece.term,
-                                     texts=piece.texts))
+    # no room for the diagram: the kinds as a labelled list may still fit, all of them (live test 2026-10-06:
+    # "Ovaries" alone under "Female reproductive organs", the other five on the next part)
+    out, left = _merge_points(spec, Piece("points", lines=piece.lines, added=piece.added, term=piece.term,
+                                          texts=piece.texts))
+    return (out, None) if left is None else (spec, piece)
 
 
 def _merge_steps(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:

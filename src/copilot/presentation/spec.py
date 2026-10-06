@@ -9,7 +9,7 @@ from copilot.core.events import new_id
 
 Layout = Literal[
     "title", "concept", "definition", "key_points", "process_flow", "comparison", "timeline",
-    "hierarchy", "cause_effect", "formula", "example", "application", "narrative", "facts", "groups",
+    "hierarchy", "cause_effect", "formula", "example", "application", "narrative", "facts", "groups", "members",
 ]
 
 

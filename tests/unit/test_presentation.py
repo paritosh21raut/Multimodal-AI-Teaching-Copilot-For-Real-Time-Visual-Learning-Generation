@@ -191,7 +191,9 @@ def test_facts_and_a_definition_may_join_a_slide_with_a_diagram():
     s, left = merge(s, Piece("definition", term="Molecule", definition="Simplest particle with independent existence"))
     assert left is None and [b.type for b in s.blocks] == ["hierarchy", "definition"]
     s, left = merge(s, Piece("tree", term="States", texts=("Solid", "Liquid")))
-    assert left is None and s.blocks[-1].type == "groups"                # a second classification: groups
+    # a second classification: both are group cards in one block, where the tree was (verify round 4, issue 4)
+    assert left is None and [b.type for b in s.blocks] == ["groups", "definition"]
+    assert [g.label for g in s.blocks[0].groups] == ["Types of molecules", "States"]
 
 
 def test_announced_topic_is_remembered_by_a_noop():

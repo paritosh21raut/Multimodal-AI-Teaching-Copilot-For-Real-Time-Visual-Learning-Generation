@@ -297,7 +297,8 @@ async def test_an_image_is_only_placed_on_a_slide_it_is_about():
     reqs = Requests(bus)
     await send(bus, with_visual(ready("Digestive System", "Definition", DIGESTIVE, relation="new_topic"),
                                 "human digestive system diagram", "diagram"))
-    assert reqs.items == []  # part I has a full-width tree
+    # part I (definition + organs) may take its diagram: a tree beside an image is one card (verify round 4, issue 8)
+    assert [r.slide_id for r in reqs.items] in ([], [deck.live.id])
     await send(bus, ready("Digestive System", "Definition", QUADRATIC))
     quad = deck.slides[-1]
     assert quad.title.lower().startswith("what is the quadratic") or "quadratic" in quad.title.lower()

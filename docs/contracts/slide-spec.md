@@ -8,7 +8,7 @@ SlideSpec
   title, subtitle?, continuation_of?                 # continuity link to the previous slide of the same concept
   part?                                              # 1, 2, 3 … when a frame spans slides (badge I / II / III)
   layout: concept | definition | key_points | process_flow | comparison | timeline |
-          hierarchy | cause_effect | formula | example | application | narrative | title
+          hierarchy | cause_effect | formula | example | application | narrative | facts | groups | members | title
   blocks: list[Block]                                # one primary + optional secondary
   language = "en", theme_hint?
 
@@ -43,11 +43,20 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
   `presentation.annotate` in the Deck for every published spec ("" = none); the display renders prose as text and
   each span with KaTeX. `PointsBlock.style`: `bullets` (default) | `numbers` (counted / ordered lists, labelled
   kinds) | `letters` (a) b) options), also set by `annotate`.
-- `about` (formula, points, example, facts): id of a definition block when two concepts are defined side by side;
-  the display draws one column per concept (definition + its blocks), the rest full width below (F-007a, issue 6).
+- `about` (formula, points, example, facts): id of a definition block when concepts are defined side by side;
+  the display draws one column / card per concept (definition + its blocks), the rest full width below (F-007a,
+  issue 6).
+- Members of a set (verify round 4 step B): several `definition` blocks are cards side by side — 2 | 3 | 2×2 | 3+2
+  | 3×2 (≤ 6; `composer.grid_columns` = slide.js). Layout `members`: ONE definition that is a member of the slide's
+  facet (facet "Types", term "PAN"; not a definition / introduction facet, not the facet or topic itself) — a card
+  under the facet's title instead of the term as title; its details (`about`) stay in the card.
+- A `hierarchy` beside an image renders as one card (label + kinds as chips). A `formula` after other content beside
+  an image: that content and the image share the top row (image ≤ 380 px tall), the formula and what follows go
+  full width below (`composer.image_top` = slide.js `splitBlocks`).
 - `image` (F-007b): at most one, always the last block; `url` = `/media/<image_id>.jpg` (our server). A slide with
   an image uses the image layout (content | image column); without one, today's layouts. Not content: it never
   counts as a teacher item, never enters the prompt or correction targets, and does not stay on a slide whose content
   was removed. Beside an image the type may shrink to 0.8 before content opens the next part.
 - Builder: `presentation.composer` (space-based height model, F-005). Overflow continues on the next part of the
-  same frame: same title, `part` badge, never "(cont.)". Two `definition` blocks render side by side.
+  same frame: same title, `part` badge, never "(cont.)". Several `definition` blocks render side by side. A member
+  explained in depth continues on a slide titled by the member (no `part`, same crumb); the set's next part follows.

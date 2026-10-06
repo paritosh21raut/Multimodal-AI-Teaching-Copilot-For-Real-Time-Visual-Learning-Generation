@@ -1,0 +1,56 @@
+# Excerpt of the live test 20261006-112149-411e (multitopic_live.txt), lines as heard (mis-hearings kept).
+# Verify round 4 step B: the members of a set (network types, components), several classifications of one thing
+# (microcontroller types), an intro with a formula (photosynthesis), sibling subtopics (female / male).
+Let us learn about computer networks.
+A computer network is a system of connected devices that communicate
+[pause 1.1]
+with two shared data, hardware resource and services over wired or wireless links.
+type of computer networks are
+[pause 4.0]
+PAN, Personal Area Network, connects personal devices like phones, laptops within a short range of about 10 meters.
+LAN, local area network links computers within a single room.
+office building or school.
+Man, Metropolitan Area Network covers a larger area like a town or a city.
+when wide area network connects computers across large physical distances, countries or the whole globe such as the internet.
+The key components are
+first nodes
+These are the devices attached to a network including end devices.
+computers and smartphone printers and intermediary devices like routers and switches.
+Second, transmission media, physical cables like fiber optics, twisted pair or wireless signals like Wi-Fi or radio waves that carry data.
+protocols set of rules that dictate how data is formatted transmitted and received
+[pause 6.0]
+Let us learn about microcontroller.
+[pause 2.0]
+A microcontroller or MCU is a small computer on a single integrated circuit that is designed to control specific tasks with electronic systems. It combines the functions of Central Processing Unit CPU.
+[pause 4.6]
+Let's start with the types of microcontroller
+[pause 1.1]
+there are variety of microcontroller classified in different types
+First classification of micro-computers by the number of bits
+they can be 8 bit, 16 bit or 32 bit microcontrollers
+then classification of microcontroller on memory type it can be embedded memory microcontroller or external memory microcontroller
+classification of microcontrollers by instruction set
+First, Sis.
+that is complex introduction set computer.
+then risk that is reduce instruction set computer.
+then classification of microcontroller by architecture
+of memory
+First Harvard Memory Architecture
+Second, One new memory architecture
+[pause 6.0]
+Let us study photosynthesis. Photosynthesis is the biological process where plants, algae and some bacteria convert sunlight, water and carbon dioxide into glucose and oxygen.
+the chemical reaction is 6CO2 plus 12 6H2O plus light energy gives C6H12O6 plus 6O2 molecules
+[pause 6.0]
+The human reproductive system is a collection of internal and external organs and glands that work together to produce offspring and sex hormones.
+The female reproductive system The female system produces eggs, support fertilization
+and provides a safe place for baby to grow during pregnancy.
+the ovaries, fallopian tubes, uterus, cervix, vagina, vulva are the organs in the reproductive system.
+[pause 1.1]
+mean reproductive systems are
+[pause 1.5]
+The male reproductance system stores and delivers sperm to fertilize a female egg.
+[pause 1.8]
+testis or testicles
+[pause 1.0]
+and penis are the organs in it
+[pause 6.0]

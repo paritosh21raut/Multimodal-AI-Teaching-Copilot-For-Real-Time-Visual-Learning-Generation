@@ -1,6 +1,7 @@
 # Current State
 
-_Last updated: 2026-10-06 (evening): **V1b verify round 4, step A (correctness, 0 LLM tokens) done** after the user's
+_Last updated: 2026-10-06 (evening): **V1b verify round 4, step B (hierarchy + layouts) done**; step A (correctness,
+0 LLM tokens) done before it, after the user's
 12–15 min multi-topic live test (session 20261006-112149-411e, fixture `tests/fixtures/lectures/multitopic_live.txt`).
 Agreed plan: A correctness → B hierarchy + layouts (issues 1, 2, 4, 5, 8; prompt A/B + small live run) → C UI (pause
 replaces freeze, first-slide glass state, zoom Back top-right, old control row removed, transcription concerns
@@ -9,6 +10,32 @@ viewer role, control token; live slide editing; lecture structure tree in /contr
 Then V1c._
 
 ## Now
+- **Verify round 4, step B (2026-10-06 evening), 67,465 LLM tokens (A/B 27,942 + live run ≈ 39,523, gpt-oss-120b
+  on `GROQ_API_KEY_main`, 3 calls borrowed `_5`):**
+  - Issues 1–2, members of a set: a defined member of a facet's set ("Types": PAN …; "Components": nodes …) is a card
+    under the facet's title (layout `members`, not the term as title); further members join as cards (2 | 3 | 2×2 |
+    3+2 | 3×2, ≤ 6); an automatic image yields to them; a member's details stay in its card (≤ 3 with 3+ cards); a
+    member explained in depth continues on its own slide (titled by it, same crumb, no part), then the set's next
+    part. Kinds given as "Name – meaning" in a classification are defined members (live run: PAN). Concept columns
+    with formulas (energy) unchanged.
+  - Issue 4: several classifications of one thing are ONE groups block (the first tree becomes its first card, labels
+    "By bit width", "By memory type" …). The model still mixes "by instruction set" with "by memory architecture".
+  - Issue 5: a formula after text beside an image: text + image on top (image ≤ 380 px), formula full width below.
+  - Issue 8: a tree beside an image is one card (female organs keep the image); a subtopic that names a thing and has
+    no hint takes its sibling's query ("Male Reproductive System"); a `sub_concept` that names a thing is not absorbed
+    into the sparse definition slide (female had no slide of its own); a tree that does not fit moves whole.
+  - Image column: slide.js now sizes it from 740 like the composer (step A left 700 there).
+  - Prompt: a hierarchy rule ("members of a set keep its subtopic") passed the A/B (`prompt_ab.py --both`, 6 units:
+    subtopic right in 3 more) but the live run (`hierarchy_live.txt`) showed it over-applied (components stayed under
+    "Types", PAN as a list item) → NOT live (`system_prompt(hierarchy=True)` keeps it for a later attempt).
+  - Verified: 410 fast + 12 Edge tests (10 new step-B tests; the 8 layout/image ones fail on the step-A code); replays with real
+    images of the live test and the live run (screenshots inspected: Types 4 cards, Components 3 cards with the
+    nodes' details, MCU types one set of group cards, photosynthesis intro with image above the formula, male system
+    image from the sibling hint); no-image replays of 5 sessions old vs new: energy and kinematics identical,
+    chemistry identical, the rest only the intended changes.
+  - Open: the model's subtopic mistakes (components under "Types" in the live run; female organs in the male unit
+    because the gate joined the lines); fallback still cannot open a new topic (Chemistry under Atoms, quadratic under
+    Digestive) — not done in B.
 - **Verify round 4, step A (2026-10-06 evening), 0 LLM tokens:** the live run used only qwen on one key and 25 of ~75
   units fell back. Root causes and fixes (each with a test that fails before / passes after):
   - Keys: `GROQ_API_KEY_main` was never read (only `GROQ_API_KEY`, `_2`…`_9`). Now any `GROQ_API_KEY_<name>`, in
@@ -123,6 +150,7 @@ Then V1c._
 | Item | Unit | Integration | Runtime |
 |---|---|---|---|
 | EventBus, config, state store, event log, simulator | ✅ | ✅ | ✅ |
+| Verify round 4 step B: member cards (≤ 6) + member in depth, classifications as one groups block, image above a formula, tree beside an image, sibling image hint, sub_concept not absorbed, whole trees | ✅ 410 total | ✅ Edge (12) | ✅ A/B 27,942 tok + live run ≈ 39.5k tok (hierarchy prompt rule rejected); replays with real images inspected; 5-session old/new diff |
 | Verify round 4 step A: keys (any name, .env order, one active key, minute wait/borrow), /display without animation frames, fallback, coverage stems, headings, C++, empty groups, image relevance, image tail back, overflow hold, 740 px budget | ✅ 400 total | ✅ Edge (12) + slow embedder calibration | ✅ 0 tokens: `[QUOTA]` with real .env; replay of 20261006-112149-411e with real images + current fallback |
 | V1b images: finder (previews → CLIP → full size), policy, engine, layout, /control (drop, add, change, ‹ ›, remove, zoom) | ✅ 384 total | ✅ Edge (2 image tests) | ✅ real Groq human_body (queries) + zero-token replay with real image search (4/4 found); A/B 11/11 valid |
 | V1a: formulas → KaTeX (`mathtext`, `rich.js`), chemical subscripts, layout polish, dropped-point fix | ✅ 52 + 9 | ✅ Edge (3 tests) | ✅ 0 tokens: display set, physics lesson, real app; real LLM (qwen) force_motion |

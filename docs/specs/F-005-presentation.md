@@ -34,7 +34,9 @@ Frame of a slide = (topic, facet). Facet = subtopic (or the topic). Titles compa
   title slide, teacher `force_new_slide`.
 - **Sparse definition slide absorbs supporting content**: a `continue` whose pieces are only tree / groups / facts /
   points / example stays on the working slide when that slide is just a definition filling ≤ 45 % of the space and
-  everything fits (e.g. "Chemistry" definition + "Branches of chemistry" tree). A new definition never is absorbed.
+  everything fits (e.g. "Chemistry" definition + "Branches of chemistry" tree). A new definition never is absorbed,
+  nor a `sub_concept` whose facet names a thing ("Female Reproductive System": its own slide like its sibling;
+  round 4, issue 8 — in every recorded session the branches came as `sibling_concept`).
 - **Teacher flags**: pinned → new slides queue; frozen → the display holds its render; navigated back to a slide of
   the same frame → updated in place (never adopted as working slide); `force_new_slide` → next part now.
 
@@ -49,10 +51,20 @@ Frame of a slide = (topic, facet). Facet = subtopic (or the topic). Titles compa
   groups have no members shows the group names as its kinds.
 - The display's overflow report holds while the slide has at least as many items as when it was reported.
 - At most one large diagram (process, comparison, timeline, cause-effect, formula, tree) per slide; facts, points,
-  groups and definitions may sit next to it when space allows. A second classification becomes groups.
+  groups and definitions may sit next to it when space allows. Several classifications of one thing (by bits, by
+  memory type, by architecture) are ONE groups block: the first one's tree becomes its first card (same ids) and the
+  labels lose the repeated subject ("Microcontroller types by bit width" → "By bit width"; round 4, issue 4). A tree
+  that does not fit moves whole to the next part (its kinds as a list only when all of them fit; "Ovaries" alone).
 - Definitions: same term → extra text as a point; a word part ("photo" of "photosynthesis", "X means …") → note chip;
   a peer concept defined alongside (element + compound, atom + molecule) → two definition cards side by side;
   a new term on a slide with other content → a definition card below it if room, else the next part.
+- **Members of a set** (round 4, issues 1–2): on a slide whose facet lists a set ("Types", "Components"), a defined
+  member is a card under the facet's title (layout `members`), not the slide's title; the next members join as cards
+  (2 | 3 | 2×2 | 3+2 | 3×2, ≤ 6) while they fit and the slide holds only definitions, their details and examples (no
+  formula once there are 3). An automatic image yields to them. A member's details (`about`) stay in its card: ≤ 3
+  points once there are 3+ cards. **Depth**: details that no longer fit their card → the member's own slide, titled
+  by it, same crumb (Topic — Types), no part badge; content that is not about that member → the set's next part
+  (set title, part 2; part 1 numbered then). The topic's own definition is never a member.
 - **Parts**: overflow of a frame continues on a slide with the same title and `part` = 2, 3, … (part 1 is numbered
   then); the display shows a small roman-numeral badge (I, II, III), never "(cont.)".
 - Near-duplicates: same content words (plural-folded) and ≥ 0.85 similarity, or whole-word containment

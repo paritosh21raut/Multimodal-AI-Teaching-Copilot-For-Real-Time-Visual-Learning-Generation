@@ -1,7 +1,7 @@
 """Replay a recorded session's interpretations (as the LLM returned them) through the CURRENT presentation engine and
 display, and screenshot every slide → artifacts/replay/<session>_<theme>_NN.png. Zero LLM tokens.
 
-    .venv/Scripts/python tools/replay_interpretations.py <session_id> [light|dark] [--images]
+    .venv/Scripts/python tools/replay_interpretations.py <session_id> [light|dark] [--images] [--log]
 
 --images: the real image service runs too (Wikipedia/Commons + CLIP, a fresh cache in artifacts/replay/images:
 network, zero LLM tokens). The image relevance check uses the real MiniLM embedder, as in the app.
@@ -113,6 +113,10 @@ async def replay(session_id: str, theme: str, with_images: bool = False) -> list
 
 
 if __name__ == "__main__":
+    if "--log" in sys.argv:  # the engine's decisions (planner, placement, images) on stderr
+        import logging
+        logging.basicConfig(level=logging.WARNING, format="%(name)s: %(message)s")
+        logging.getLogger("copilot.presentation").setLevel(logging.INFO)
     OUT.mkdir(parents=True, exist_ok=True)
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     asyncio.run(replay(args[0], args[1] if len(args) > 1 else "light", "--images" in sys.argv))

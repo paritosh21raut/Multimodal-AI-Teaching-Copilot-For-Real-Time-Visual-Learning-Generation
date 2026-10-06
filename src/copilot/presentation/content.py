@@ -98,6 +98,20 @@ def cap(text: str) -> str:
     return text[:1].upper() + text[1:] if text else text
 
 
+# "PAN (Personal Area Network) – connects personal devices within ~10 m": a member named, then what it is. Not the
+# colon form: "Physical: solid, liquid, gas" is a named group with its kinds (chemistry live 2026-10-05).
+_MEMBER = re.compile(r"^(?P<term>[^–—:]{1,50}?)\s+[–—-]\s+(?P<text>\S.{8,})$")
+
+
+def _members(points: tuple[str, ...]) -> Optional[list[tuple[str, str]]]:
+    """The kinds of a classification given each with its meaning are the members of a set, each defined (live run
+    2026-10-06: the network types came as "PAN (…) – connects personal devices …")."""
+    found = [m for m in (_MEMBER.match(p) for p in points) if m]
+    if not points or len(found) != len(points) or any(len(m.group("term").split()) > 6 for m in found):
+        return None
+    return [(m.group("term").strip(), m.group("text").strip()) for m in found]
+
+
 def pieces_from_act(act: DiscourseAct) -> list[Piece]:
     it = act.items
     base = dict(lines=tuple(act.lines), added=act.added)
@@ -105,6 +119,9 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
     if act.act in NO_CONTENT_ACTS:
         return out  # transitions and questions never put text on the slide
     points = _texts(it.points)
+    members = _members(points) if act.act == "classification" and not it.groups else None
+    if members:
+        return [Piece("definition", term=term, definition=text, **base) for term, text in members]
     steps = _texts(it.steps)
     if act.act == "process" and not steps and points:
         steps, points = points, ()  # a process given as points is still a process

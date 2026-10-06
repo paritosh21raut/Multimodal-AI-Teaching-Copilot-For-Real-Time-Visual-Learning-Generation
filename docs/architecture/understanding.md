@@ -105,7 +105,14 @@ right = shown) when the model did not raise one itself (details: F-004). Nothing
   (`[QUOTA]`, before Enter), not on the teacher's screen.
 - System prompt unchanged from 0e8bff5 (≈ 1.55k tokens): a 13 % shorter version was A/B-tested on gpt-oss-120b
   (11 recorded units, 2026-10-05) and was less truthful in 3 of 11 (silent mis-hearing fix, corrected fact missing
-  from acts, an unsaid explanation added), so it was not adopted.
+  from acts, an unsaid explanation added), so it was not adopted. Added since: the visual rule (F-007b, +86 tokens).
+  Tried and NOT adopted (round 4 step B): a hierarchy rule ("the members of a set the teacher goes through one by one
+  keep that set's subtopic; a member the teacher defines is still a definition act", +51 tokens). Its A/B resent
+  BOTH prompts to gpt-oss-120b on 6 units of the live test (`tools/prompt_ab.py --both`, 27,942 tokens): 6/6 valid,
+  subtopic right in 3 more units, none worse, but one member came without its definition. The live run
+  (`hierarchy_live.txt`, ≈ 39.5k tokens) showed it over-applied: the components stayed under "Types" and PAN again
+  came as a list item. Kept behind `system_prompt(hierarchy=True)` for a later attempt; the composer's member cards
+  are the fix. A rule "one act per basis of a classification" changed nothing and was dropped.
 - Strict JSON: schema in the prompt + Pydantic validation; one repair attempt; on failure, a deterministic
   fallback interpretation (topic unchanged; only complete spoken sentences, tidied, as key points; fragments are not
   shown). The fallback is logged, never hidden. Since the live test 2026-10-06 (25 fallback units): sentences are

@@ -183,7 +183,7 @@ export function ZoomedImage({ image, onClose }) {
 export const imageOf = (spec) => (spec && spec.blocks ? spec.blocks.find((b) => b.type === "image") : null);
 
 // Mirrors composer.image_column_px: wider column for landscape images; a tall image takes only the width it needs.
-const BODY_BUDGET_PX = 700;
+const BODY_BUDGET_PX = 740; // composer.IMAGE_HEIGHT_PX (the body is 754-763 px tall in Edge)
 export const imageColumn = (aspect) => {
   const a = aspect || 4 / 3;
   return Math.round(Math.min(a >= 1.25 ? 720 : 600, Math.max(380, BODY_BUDGET_PX * a)));
@@ -198,7 +198,12 @@ function Block({ b, wide, termInTitle, narrow }) {
     case "comparison": return html`<${Comparison} b=${b} />`;
     case "timeline": return html`<${Timeline} b=${b} />`;
     case "cause_effect": return html`<${CauseEffect} b=${b} />`;
-    case "hierarchy": return html`<div class="tree"><${TreeNode} n=${b.root} root /></div>`;
+    case "hierarchy": return narrow
+      // beside an image a classification is one card: its label, the kinds as chips (composer.block_height)
+      ? html`<div class="groups"><div class="group enter"><div class="group-label">${rich(b.root.label)}</div>
+          <div class="group-items">${b.root.children.map((c) => html`<span key=${c.id} class="group-item enter">${rich(c.label)}</span>`)}</div>
+        </div></div>`
+      : html`<div class="tree"><${TreeNode} n=${b.root} root /></div>`;
     case "formula": return html`<${Formula} b=${b} />`;
     case "image": return html`<${Figure} b=${b} />`;
     case "groups": return html`<${Groups} b=${b} />`;
@@ -217,10 +222,16 @@ const FULL_WIDTH_PRIMARY = new Set(["process", "comparison", "timeline", "hierar
 const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
 export const partLabel = (n) => (n ? ROMAN[n] || String(n) : "");
 
-function splitBlocks(blocks) {
+function splitBlocks(blocks, members) {
   const image = blocks.find((b) => b.type === "image");
-  if (image) return { main: blocks.filter((b) => b.type !== "image"), aside: [], image };
-  if (blocks.length < 2) return { main: blocks, aside: [] };
+  if (image) {
+    const rest = blocks.filter((b) => b.type !== "image");
+    // a formula after text: the text sits beside the image, the formula and what follows go full width below
+    const at = rest.findIndex((b) => b.type === "formula");
+    if (at > 0) return { main: rest.slice(0, at), below: rest.slice(at), aside: [], image };
+    return { main: rest, aside: [], image };
+  }
+  if (blocks.length < 2 || members) return { main: blocks, aside: [] };
   const [primary, ...rest] = blocks;
   // wide content anywhere (a diagram, tiles, two definitions side by side) needs the full width: stack instead
   if (blocks.some((b) => FULL_WIDTH_PRIMARY.has(b.type)) || blocks.filter((b) => b.type === "definition").length > 1)
@@ -270,14 +281,20 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
       </div>
     </section>`;
   }
-  const { main, aside, image } = splitBlocks(spec.blocks);
+  const members = spec.layout === "members";
+  const { main, below, aside, image } = splitBlocks(spec.blocks, members);
   const defs = spec.blocks.filter((b) => b.type === "definition");
   const def = spec.layout === "definition" && defs.length === 1 && defs[0];
   const title = def ? def.term : spec.title;
-  // Two concepts defined together (elements and compounds): side-by-side definition cards.
-  const pairDefs = defs.length > 1 ? new Set(defs.map((d) => d.id)) : null;
+  // Concepts defined together (elements and compounds) or the members of a set (the types of networks): definition
+  // cards side by side, 1 | 2 | 3 | 2x2 | 3x2 (composer.grid_columns) ...
+  const pairDefs = defs.length > 1 || (members && defs.length) ? new Set(defs.map((d) => d.id)) : null;
+  const gridCols = defs.length <= 1 ? 1 : defs.length === 3 || defs.length >= 5 ? 3 : 2;
   // ... each concept is a column: its definition, then its own formula / points / examples (block.about = def id)
   const mainRest = pairDefs ? main.filter((b) => !pairDefs.has(b.id) && !pairDefs.has(b.about)) : main;
+  const bodyClass = "slide-body" + (aside.length ? " with-aside" : "") + (image ? (below ? " image-top" : " with-image") : "");
+  const figure = image && html`<div class="image-col"><${Figure} key=${image.id} b=${image}
+    onClick=${onImageClick && !image.ghost ? () => onImageClick(image) : undefined} /></div>`;
   return html`<section data-slide=${spec.id} class=${`slide layout-${spec.layout} ${phase}`} style=${style}>
     <header class="slide-head">
       ${(spec.facet || spec.continuation_of) && html`<div class="crumb">
@@ -287,10 +304,16 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
       </div>`}
       <h1 class="slide-title">${rich(title)}${spec.part && html`<span class="part" title=${`Part ${spec.part}`}>${partLabel(spec.part)}</span>`}</h1>
     </header>
-    <div ref=${bodyRef} class=${"slide-body" + (aside.length ? " with-aside" : "") + (image ? " with-image" : "")}
+    <div ref=${bodyRef} class=${bodyClass}
       style=${image ? { "--img-col": `${imageColumn(image.aspect)}px` } : null}>
-      <div class="main">
-        ${pairDefs && html`<div class="def-pair">${defs.map((d) => html`<div key=${d.id} class="def-col">
+      ${below ? html`<div class="image-top-row">
+          <div class="main">${main.map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} narrow=${true}
+            termInTitle=${!!def} />`)}</div>
+          ${figure}
+        </div>
+        <div class="main below">${below.map((b) => html`<${Block} key=${b.id} b=${b} wide=${true} />`)}</div>`
+      : html`<div class="main">
+        ${pairDefs && html`<div class=${`def-pair cols-${gridCols}`}>${defs.map((d) => html`<div key=${d.id} class="def-col">
           <${Definition} b=${d} termInTitle=${false} />
           ${spec.blocks.filter((b) => b.about === d.id).map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} />`)}
         </div>`)}</div>`}
@@ -298,8 +321,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
           termInTitle=${!!def} />`)}
       </div>
       ${aside.length > 0 && html`<div class="aside">${aside.map((b) => html`<${Block} key=${b.id} b=${b} />`)}</div>`}
-      ${image && html`<div class="image-col"><${Figure} key=${image.id} b=${image}
-        onClick=${onImageClick && !image.ghost ? () => onImageClick(image) : undefined} /></div>`}
+      ${figure}`}
     </div>
   </section>`;
 }

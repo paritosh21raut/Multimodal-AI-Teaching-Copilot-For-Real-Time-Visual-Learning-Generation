@@ -17,7 +17,7 @@ Topic and continuity:
 - topic = the main subject (e.g. "Photosynthesis"). subtopic = the concept or facet now being taught: a facet
   ("Definition", "Process", "Importance") or a concept name ("Matter", "Planets"). Two concepts introduced
   together get one subtopic naming both ("Elements and Compounds"); a newly introduced term or concept
-  ("natural satellites") gets its own subtopic. Reuse the exact outline title while the
+  ("natural satellites") gets its own subtopic.{hierarchy_rule} Reuse the exact outline title while the
   teacher stays on it. Titles: 1-4 words, Title Case.
 - A line tagged (announces: X) names what the teacher moves to next: use X as the new topic (new_topic) when it is
   not part of the CURRENT topic (e.g. galaxies after the solar system), else as the new subtopic.
@@ -90,14 +90,28 @@ diagram shows; omit it for abstract ideas, equations and definitions of abstract
 VISUAL_SHAPE = ', "visual": {"query": "", "kind": ""}'
 
 
-def system_prompt(visual: bool = True) -> str:
+# Verify round 4 step B: tried, NOT live. Goal: the members of a set stay one subtopic (the model had opened subtopics
+# "Wide Area Network", "Instruction Set" and put "Nodes" under "Types"). A/B on gpt-oss-120b, both arms resent
+# (tools/prompt_ab.py --both, 6 units, 27,942 tokens): 6/6 valid, subtopic right in 3 more units, none worse; one
+# unit gave only the member's name ("PAN") → a definition clause was added. The live run (hierarchy_live.txt, ≈ 39.5k
+# tokens) then showed the rule over-applied: "The key components are …" stayed under "Types" (nodes, media, protocols
+# as members of the network types) and PAN again came as a list item, not a definition. Off; the composer's member
+# cards handle the members whatever the subtopic stability. A rule "one act per basis of a classification" changed
+# nothing in the A/B (CISC / RISC / Harvard still mixed) and was dropped.
+HIERARCHY_RULE = """ The members of a set the
+  teacher goes through one by one (its types, components or parts) keep that set's subtopic ("Types"); a member the
+  teacher defines is still a definition act (term + definition)."""
+
+
+def system_prompt(visual: bool = True, hierarchy: bool = True) -> str:
     return _SYSTEM_TEMPLATE.replace("{visual_rule}", VISUAL_RULE if visual else "").replace(
-        "{visual_shape}}}", (VISUAL_SHAPE if visual else "") + "}")
+        "{visual_shape}}}", (VISUAL_SHAPE if visual else "") + "}").replace(
+        "{hierarchy_rule}", HIERARCHY_RULE if hierarchy else "")
 
 
 # The visual rule is live since the old-vs-new A/B on gpt-oss-120b passed (F-007b step 4, 2026-10-06: 11/11 valid,
-# no difference the rule caused; +86 prompt tokens per call).
-SYSTEM_PROMPT = system_prompt(visual=True)
+# no difference the rule caused; +86 prompt tokens per call). The hierarchy rule is off (see above).
+SYSTEM_PROMPT = system_prompt(visual=True, hierarchy=False)
 
 OUTLINE_MAX_TOKENS = 150
 SUMMARY_MAX_TOKENS = 120
