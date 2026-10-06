@@ -169,3 +169,42 @@ async def test_pages_stamp_every_client_file_with_a_version(stack):
             assert 'src="/web/' in html and '.js?v=' in html and 'slide.css?v=' in html
             assert html.index("charset") < 1024 and html.index("importmap") < html.index("<body>")
             assert 'id="load-error"' in html or "load-error" in html               # visible error banner
+
+
+async def test_misheard_words_are_corrected_without_a_card(stack):
+    """User 2026-10-06: spelling / pronunciation (transcription) fixes happen silently (terminal log only); only
+    factual, conceptual or formula mistakes reach the teacher as a card."""
+    from copilot.core.events import ConcernRaised
+
+    bus, deck, hub, server = stack
+    heard = {"id": "t1", "claim": "6H2", "issue": "misheard", "status": "open", "kind": "transcription",
+             "confidence": 0.9, "wrong": "6H2", "right": "6H2O", "applied": True}
+    wrong = {"id": "f1", "claim": "Plants take in oxygen", "issue": "reversed", "status": "open", "kind": "factual",
+             "confidence": 0.9, "suggested_correction": "carbon dioxide", "applied": True}
+    await bus.publish(ConcernRaised(concern=heard))
+    await bus.publish(ConcernRaised(concern=wrong))
+    await bus.drain()
+    async with websockets.connect(f"ws://127.0.0.1:{server.port}/ws?role=control") as c:
+        hello = await recv_until(c, lambda m: m["type"] == "hello")
+    assert [x["id"] for x in hello["concerns"]] == ["f1"] and list(hub.concerns) == ["f1"]
+
+
+async def test_speech_while_paused_is_marked_in_the_transcript(stack):
+    from copilot.core.events import Lifecycle, LifecycleChanged, TranscriptFinal, TranscriptSegment
+
+    bus, deck, hub, server = stack
+
+    async def say(text, t):
+        await bus.publish(TranscriptFinal(segment=TranscriptSegment(text=text, start=t, end=t + 1)))
+
+    await bus.publish(LifecycleChanged(state=Lifecycle.LIVE))
+    await say("Chlorophyll is green.", 1.0)
+    await bus.publish(LifecycleChanged(state=Lifecycle.PAUSED))
+    await say("Lunch is at twelve.", 5.0)
+    await bus.publish(LifecycleChanged(state=Lifecycle.LIVE))
+    await say("Light energy is absorbed.", 9.0)
+    await deck.add(spec("a", "one"))
+    await bus.drain()
+    assert [(x["text"], x.get("dropped")) for x in hub.transcript] == [
+        ("Chlorophyll is green.", None), ("Lunch is at twelve.", "paused"), ("Light energy is absorbed.", None)]
+    assert "frozen" not in hub.deck

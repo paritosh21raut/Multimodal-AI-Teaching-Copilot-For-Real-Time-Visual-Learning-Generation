@@ -31,7 +31,6 @@ function useSlideTransition(spec) {
 
 function App() {
   const [state, dispatch] = useReducer(reduce, initialState);
-  const frozenSpec = useRef(null);
   const containerRef = useRef(null);
   const scale = useStageScale(containerRef);
   const conn = useRef(null);
@@ -55,10 +54,7 @@ function App() {
 
   const deck = state.deck;
   const liveSpec = deck && deck.live_id ? state.slides[deck.live_id] : null;
-  // Frozen: hold exactly what was on screen when the teacher froze the display.
-  if (deck && deck.frozen) { if (!frozenSpec.current) frozenSpec.current = liveSpec; }
-  else frozenSpec.current = null;
-  const shown = deck && deck.blank ? null : (frozenSpec.current || liveSpec);
+  const shown = deck && deck.blank ? null : liveSpec;
   const layers = useSlideTransition(shown);
 
   const waiting = !shown && !(deck && deck.blank);
@@ -68,9 +64,18 @@ function App() {
     <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
       ${layers.map((l) => html`<${Slide} key=${l.spec.id} spec=${l.spec} phase=${l.phase} onOverflow=${onOverflow} />`)}
       ${zoomed && html`<${ZoomedImage} key=${zoomed.image_id || zoomed.url} image=${zoomed} />`}
-      ${waiting && html`<div class="waiting"><span><span class="dot"></span>${
-        state.lifecycle === "live" ? "Listening…" : state.connected ? "Waiting for the lecture to start" : "Connecting…"}</span></div>`}
+      ${waiting && html`<${Glass} />`}
     </div>
+  </div>`;
+}
+
+// Before the first slide (user 2026-10-06): no "preparing" text, which looks dull; soft light moves behind a frosted
+// pane, so the projector visibly works while the first slide is prepared. Only here: between slides the previous
+// slide stays on screen.
+function Glass() {
+  return html`<div class="glass" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
+    <div class="pane"><span class="sheen"></span></div>
   </div>`;
 }
 

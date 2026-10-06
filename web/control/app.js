@@ -6,9 +6,14 @@ import { connect, initialState, reduce } from "../shared/ws.js";
 
 const KEYS = {
   ArrowRight: ["next"], ArrowLeft: ["prev"],
-  f: ["freeze", "unfreeze", "frozen"], p: ["pin", "unpin", "pinned"], b: ["blank", "unblank", "blank"],
+  p: ["pin", "unpin", "pinned"], b: ["blank", "unblank", "blank"],
   n: ["force_new_slide"],
 };
+
+// Pause (replaces Freeze, user 2026-10-06): a break in the lecture. What is said while paused is not put on slides;
+// the teacher can still navigate and edit. It is the lecture's state (lifecycle), not a display flag.
+const canPause = (lifecycle) => lifecycle === "live" || lifecycle === "paused";
+const pauseCommand = (lifecycle) => (lifecycle === "paused" ? "resume" : "pause");
 
 // ---- images (F-007b): the teacher's own image (drag & drop / Add image), Change image, Remove image ----
 const UPLOAD_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -46,7 +51,7 @@ const ICON = {
   add: "M12 5v14M5 12h14",
   find: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4",
   pin: "M9 3h6M10 3v6l-4 4h12l-4-4V3M12 13v8",
-  freeze: "M12 2v20M3.3 7l17.4 10M20.7 7L3.3 17M9 4l3 3 3-3M9 20l3-3 3 3",
+  pause: "M8.5 5v14M15.5 5v14",
   blank: "M3 5h18v12H3zM8 21h8M12 17v4M5 3l14 16",
   newSlide: "M4 5h16v14H4zM12 9v6M9 12h6",
   end: "M7 7h10v10H7z",
@@ -107,7 +112,7 @@ function ImageBar({ spec, image, choices, status, send, onNotice }) {
   </div>`;
 }
 
-function Preview({ spec, deck, slides, choices, status, send, notice, onNotice }) {
+function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice }) {
   const ref = useRef(null);
   const scale = useStageScale(ref);
   const [drag, setDrag] = useState(null); // null | "over" | "uploading"
@@ -143,23 +148,22 @@ function Preview({ spec, deck, slides, choices, status, send, notice, onNotice }
       choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`}
     ${line && !drag && html`<div class=${"image-status" + (line.error ? " error" : "")}>
       ${line.busy && html`<span class="dot"></span>`}${line.text}</div>`}
-    ${deck && (deck.blank || deck.frozen || deck.pinned) && html`<div class="flags">
-      ${deck.blank && html`<span class="flag warn">BLANK</span>`}
-      ${deck.frozen && html`<span class="flag warn">FROZEN</span>`}
-      ${deck.pinned && html`<span class="flag">PINNED</span>`}
+    ${(lifecycle === "paused" || (deck && (deck.blank || deck.pinned))) && !zoomed && html`<div class="flags">
+      ${lifecycle === "paused" && html`<span class="flag paused">PAUSED</span>`}
+      ${deck && deck.blank && html`<span class="flag warn">BLANK</span>`}
+      ${deck && deck.pinned && html`<span class="flag">PINNED</span>`}
     </div>`}
   </div>`;
 }
 
-// Teacher controls under the preview. DOCK_CONTROLS = false brings back the earlier plain button row (kept on
-// purpose: the teacher may prefer it; its styles are `.buttons` in control.css).
-const DOCK_CONTROLS = true;
+// Teacher controls under the preview.
 const endLecture = (send) => () => confirm("End the lecture?") && send("end");
 
-function Dock({ deck, send, toggle }) {
+function Dock({ deck, lifecycle, send, toggle }) {
   const ids = deck ? deck.slide_ids : [];
   const at = deck ? ids.indexOf(deck.live_id) : -1;
-  const flag = (name, on, off, key, icon, label, warn) => {
+  const paused = lifecycle === "paused";
+  const flag =(name, on, off, key, icon, label, warn) => {
     const active = !!(deck && deck[name]);
     return html`<button class=${(active ? "on" : "") + (warn ? " warn" : "")} aria-pressed=${active}
       onClick=${toggle(on, off, name)} title=${`${label} (${key})`}>${svg(icon)}<span>${label}</span></button>`;
@@ -172,25 +176,16 @@ function Dock({ deck, send, toggle }) {
     </div>
     <div class="group">
       ${flag("pinned", "pin", "unpin", "P", ICON.pin, "Pin")}
-      ${flag("frozen", "freeze", "unfreeze", "F", ICON.freeze, "Freeze", true)}
+      <button class=${"pause" + (paused ? " on" : "")} aria-pressed=${paused} disabled=${!canPause(lifecycle)}
+        onClick=${() => send(pauseCommand(lifecycle))}
+        title=${paused ? "Resume the lecture (Space)" : "Pause: what you say is not put on slides (Space)"}>
+        ${svg(ICON.pause)}<span>${paused ? "Paused" : "Pause"}</span></button>
       ${flag("blank", "blank", "unblank", "B", ICON.blank, "Blank", true)}
     </div>
     <div class="group">
       <button onClick=${() => send("force_new_slide")} title="Start a new slide (N)">${svg(ICON.newSlide)}<span>New slide</span></button>
     </div>
     <button class="end" onClick=${endLecture(send)} title="End the lecture">${svg(ICON.end)}<span>End lecture</span></button>
-  </div>`;
-}
-
-function ClassicButtons({ deck, send, toggle }) {
-  return html`<div class="buttons">
-    <button onClick=${() => send("prev")} title="←">◀ Prev</button>
-    <button onClick=${() => send("next")} title="→">Next ▶</button>
-    <button class=${deck && deck.pinned ? "on" : ""} onClick=${toggle("pin", "unpin", "pinned")} title="P">Pin</button>
-    <button class=${deck && deck.frozen ? "on" : ""} onClick=${toggle("freeze", "unfreeze", "frozen")} title="F">Freeze</button>
-    <button class=${deck && deck.blank ? "on" : ""} onClick=${toggle("blank", "unblank", "blank")} title="B">Blank</button>
-    <button onClick=${() => send("force_new_slide")} title="N">New slide</button>
-    <button class="danger" onClick=${endLecture(send)}>End lecture</button>
   </div>`;
 }
 
@@ -202,37 +197,29 @@ function Meter({ audio }) {
   </div>`;
 }
 
-// Mistakes and suspected mis-hearings: the projector stays truthful (it shows the correction when the model is
-// confident); this panel tells the teacher what was said and what the slide shows, with a one-click switch.
+// Factual, conceptual or formula mistakes (user 2026-10-06): the projector shows the correction when the model is
+// confident, otherwise what the teacher said; the card says both and offers the one switch. Nothing to approve:
+// the card can just be closed. Misheard words are corrected without a card (the server never sends them).
 function Concerns({ concerns, send }) {
   if (!concerns.length) return null;
   const act = (id, action) => send("resolve_concern", { id, action });
   return html`<section class="concerns">
-    <h2>Check this <span class="count">${concerns.length}</span></h2>
-    ${concerns.map((c) => {
-      const mishear = c.kind === "transcription";
-      const shows = c.applied ? (c.right || c.suggested_correction) : (c.wrong || c.claim);
-      return html`<article key=${c.id} class=${"concern " + (c.kind || "factual")}>
-        <div class="concern-head">
-          <span class="kind">${mishear ? "Possible mis-hearing" : "Possible mistake"}</span>
-          <span class="conf">${Math.round((c.confidence || 0) * 100)}%</span>
-        </div>
-        <p class="said"><span>${mishear ? "Heard" : "You said"}</span> “${c.claim}”</p>
-        ${c.suggested_correction && html`<p class="fix"><span>Correct</span> ${c.suggested_correction}</p>`}
-        ${c.issue && html`<p class="issue">${c.issue}</p>`}
-        <p class=${"status " + (c.applied ? "fixed" : "as-said")}>
-          ${c.applied ? "The slide shows the correction" : "The slide shows what you said"}${shows ? `: “${shows}”` : ""}
-        </p>
-        <div class="concern-actions">
-          ${c.applied
-            ? html`<button class="accept" onClick=${() => act(c.id, "dismiss")} title="Keep the correction on the slide">OK</button>
-                   <button onClick=${() => act(c.id, "keep")} title="Put back what you said">Show as I said</button>`
-            : html`<button class="accept" disabled=${!c.suggested_correction} onClick=${() => act(c.id, "accept")}
-                     title="Show the corrected version on the slide">Show correction</button>
-                   <button onClick=${() => act(c.id, "dismiss")} title="Keep what you said">OK</button>`}
-        </div>
-      </article>`;
-    })}
+    <h2>Possible mistakes <span class="count">${concerns.length}</span></h2>
+    ${concerns.map((c) => html`<article key=${c.id} class=${"concern" + (c.applied ? " fixed" : " as-said")}>
+      <button class="close" onClick=${() => act(c.id, "dismiss")} title="Close this card" aria-label="Close">${svg(ICON.remove)}</button>
+      <p class="said"><span>You said</span> “${c.claim}”</p>
+      ${c.applied
+        ? html`<p class="shows"><span>The slide shows</span> “${c.suggested_correction || c.right}”</p>`
+        : html`<p class="shows"><span>The slide shows what you said</span></p>
+               ${c.suggested_correction && html`<p class="fix"><span>Correct</span> ${c.suggested_correction}</p>`}`}
+      ${c.issue && html`<p class="issue">${c.issue}</p>`}
+      <div class="concern-actions">
+        ${c.applied
+          ? html`<button onClick=${() => act(c.id, "keep")} title="Put back what you said on the slide">Show what I said</button>`
+          : html`<button class="accept" disabled=${!c.suggested_correction} onClick=${() => act(c.id, "accept")}
+                   title="Show the corrected version on the slide">Show correction</button>`}
+      </div>
+    </article>`)}
   </section>`;
 }
 
@@ -260,6 +247,11 @@ function App() {
     const onKey = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
       if (e.key === "Escape") { if (deck && deck.zoom) { e.preventDefault(); send("unzoom_image"); } return; }
+      if (e.key === " ") {
+        e.preventDefault();  // also keeps Space from pressing the focused button a second time
+        if (canPause(state.lifecycle)) send(pauseCommand(state.lifecycle));
+        return;
+      }
       const k = KEYS[e.key] || KEYS[e.key.toLowerCase()];
       if (!k) return;
       e.preventDefault();
@@ -268,7 +260,7 @@ function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [deck]);
+  }, [deck, state.lifecycle]);
 
   const transcriptRef = useRef(null);
   useEffect(() => { const el = transcriptRef.current; if (el) el.scrollTop = el.scrollHeight; }, [state.transcript.length]);
@@ -287,10 +279,10 @@ function App() {
     </header>
     <main class="grid">
       <section class="left">
-        <${Preview} spec=${liveSpec} deck=${deck} slides=${state.slides} send=${send} notice=${notice} onNotice=${setNotice}
+        <${Preview} spec=${liveSpec} deck=${deck} lifecycle=${state.lifecycle} slides=${state.slides} send=${send}
+          notice=${notice} onNotice=${setNotice}
           status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} />
-        ${DOCK_CONTROLS ? html`<${Dock} deck=${deck} send=${send} toggle=${toggle} />`
-                        : html`<${ClassicButtons} deck=${deck} send=${send} toggle=${toggle} />`}
+        <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle} />
         <ol class="deck">
           ${ids.map((id, i) => {
             const s = state.slides[id];
@@ -308,7 +300,7 @@ function App() {
             <span class="ts">${formatTime(l.t)}</span>${l.dropped ? `(${l.dropped}) ${l.text || ""}` : l.text}
           </p>`)}
         </div>
-        <p class="hint">Keys: ← → navigate · P pin · F freeze · B blank · N new slide</p>
+        <p class="hint">Keys: ← → navigate · Space pause / resume · P pin · B blank · N new slide</p>
       </section>
     </main>
   </div>`;

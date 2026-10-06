@@ -76,13 +76,13 @@ async def test_flags_and_redundant_commands_publish_only_changes():
     await deck.add(slide("a"))
     await bus.drain()  # make sure the add's own DeckState is already recorded
     n = len(events)
-    await cmd(bus, "freeze")
-    await cmd(bus, "freeze")  # no change → no event
+    await cmd(bus, "pin")
+    await cmd(bus, "pin")  # no change → no event
     await cmd(bus, "blank")
     await cmd(bus, "goto", slide_id="missing")  # ignored
     await bus.close()
     states = [e for e in events[n:] if isinstance(e, DeckState)]
-    assert [(s.frozen, s.blank) for s in states] == [(True, False), (True, True)]
+    assert [(s.pinned, s.blank) for s in states] == [(True, False), (True, True)]
 
 
 async def test_update_unknown_and_duplicate_add_raise():

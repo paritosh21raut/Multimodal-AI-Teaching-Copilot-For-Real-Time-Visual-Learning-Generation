@@ -16,8 +16,9 @@
 7. **Language-aware interfaces.** Text-bearing contracts carry a `language` field (English only for now).
 8. **Teacher is the authority; the projector is truthful.** Display content comes from the lecture, written as
    clear slide text (not transcript copies; definitions exact). Additions are small and level-appropriate. A
-   wrong or mis-heard statement is shown corrected (when the model is confident) and always reported in the
-   Control View with what was said; the teacher can switch back with one click. Nothing is corrected silently.
+   factual, conceptual or formula mistake is shown corrected (when the model is confident) and always reported in
+   the Control View with what was said; the teacher can switch back with one click. Misheard words (spelling /
+   pronunciation) are corrected without a card and logged in the terminal (user decision 2026-10-06).
 
 ## Code
 - Python 3.10, type hints everywhere, Pydantic v2 models for all contracts.

@@ -1,7 +1,7 @@
 # Current State
 
-_Last updated: 2026-10-06 (evening): **V1b verify round 4, step B (hierarchy + layouts) done**; step A (correctness,
-0 LLM tokens) done before it, after the user's
+_Last updated: 2026-10-06 (evening): **V1b verify round 4, step C (UI) done**; steps A (correctness) and B
+(hierarchy + layouts) before it, after the user's
 12–15 min multi-topic live test (session 20261006-112149-411e, fixture `tests/fixtures/lectures/multitopic_live.txt`).
 Agreed plan: A correctness → B hierarchy + layouts (issues 1, 2, 4, 5, 8; prompt A/B + small live run) → C UI (pause
 replaces freeze, first-slide glass state, zoom Back top-right, old control row removed, transcription concerns
@@ -10,6 +10,22 @@ viewer role, control token; live slide editing; lecture structure tree in /contr
 Then V1c._
 
 ## Now
+- **Verify round 4, step C (2026-10-06 evening), 0 LLM tokens:**
+  - Pause replaces Freeze: `pause` / `resume` → the app switches the lifecycle LIVE ⇄ PAUSED; the understanding
+    service drops lines heard while paused (lines heard before are still interpreted); the hub marks them
+    "(paused)" in the /control transcript, the terminal "(paused, not used)". Dock button with a pause icon, blue when
+    on (`--pause` token), PAUSED flag on the preview, `Space` key. Navigation and image controls keep working.
+    `freeze`/`unfreeze` and `DeckState.frozen` are removed (deck test now checks pin/blank; the display browser
+    test lost its freeze half).
+  - /display before the first slide: no text; coloured light drifts behind a framed frosted pane (CSS only).
+  - Zoom: "Back to slide (Esc)" top right of the preview; the flags hide while zoomed.
+  - The old control button row (`DOCK_CONTROLS = false`) and its CSS are removed.
+  - Mistake cards: factual / conceptual / formula only — "You said … · The slide shows …" with one switch (Show what
+    I said ⇄ Show correction) and × to close; no OK / approval. Transcription concerns never reach /control; applied
+    silently at ≥ 0.4 (all 86 recorded ones were) and logged as `[HEARD] wrong -> right`. RULES.md rule 8 updated.
+  - Verified: 415 fast + 16 Edge tests (7 new; the 4 UI ones fail on the old web files); real app with a simulated
+    lecture (no LLM): Pause / Resume clicked in Edge, terminal and transcript checked; screenshots inspected.
+  - Not exercised live: Pause with the microphone and the real LLM (unit-tested at the service with the real bus).
 - **Verify round 4, step B (2026-10-06 evening), 67,465 LLM tokens (A/B 27,942 + live run ≈ 39,523, gpt-oss-120b
   on `GROQ_API_KEY_main`, 3 calls borrowed `_5`):**
   - Issues 1–2, members of a set: a defined member of a facet's set ("Types": PAN …; "Components": nodes …) is a card
@@ -164,10 +180,11 @@ Then V1c._
 | Segmenter, VAD, Whisper engine and guard, speech pipeline | ✅ | ✅ (GPU) | ✅ WAV real time: p50 ≈ 650 ms, VRAM ~1.1 GB |
 | M1 review fixes (forced-split loss, stop hangs, mic leak, device "0", watchdog) | ✅ regression tests | – | – |
 | Real mic (human voice, Intel SST array) | – | – | ✅ mic_check rms −37.5 dBFS, accurate transcript, conf 0.92; live run 7 segments, 0 dropped, STT p50 781 / p95 971 ms |
-| SlideSpec validation, Deck ops/navigation/pin/freeze/blank | ✅ | – | ✅ |
+| SlideSpec validation, Deck ops/navigation/pin/blank | ✅ | – | ✅ |
+| Round 4 step C: Pause (lifecycle LIVE ⇄ PAUSED, speech in the break not interpreted), first-slide glass, zoom Back top right, mistake cards (no transcription cards) | ✅ `test_pause.py`, hub tests | ✅ `-m browser` control + display (fail on the old web files) | ✅ real app (`--simulate --no-understanding`): Pause/Resume clicked in Edge, terminal "(paused, not used)", transcript "(paused)"; screenshots inspected (glass light + dark, paused dock, cards, Back) |
 | DisplayHub + server: hello, patch fan-out, reconnect snapshot, commands, role check, coalescing | ✅ | ✅ (real WebSockets) | ✅ |
 | Display in Edge: 100 rapid in-place patches → 0 nodes re-created, no console errors | – | ✅ `-m browser` | ✅ |
-| Display: freeze holds, blank, navigation, self-reconnect after a server drop | – | ✅ `-m browser` | ✅ |
+| Display: blank, navigation, self-reconnect after a server drop (freeze removed in step C) | – | ✅ `-m browser` | ✅ |
 | All 9 layouts × 2 themes (screenshots inspected) | – | – | ✅ `artifacts/display/` |
 | Control view (live preview, transcript, deck, keys) | – | – | ✅ `artifacts/app/` |
 | Utterance filter, concept tracker, gate/buffer (cuts, seal, cap, no loss) | ✅ | ✅ | ✅ |

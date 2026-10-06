@@ -1,608 +1,148 @@
 (.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> python -m copilot
 [INIT]  loading speech model medium.en on cuda ...
-[INIT]  speech model ready (4.3 s)
+[INIT]  speech model ready (4.0 s)
 [INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
 [INIT]  concept embedder ready (0.2 s)
-[INIT]  LLM providers: groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> openrouter_main
+[INIT]  LLM providers: groq_main#main -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_alt#main -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> openrouter_main
 [INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
 
 [QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
-        groq_main#2        openai/gpt-oss-120b             2k of 200k tokens ok
-        groq_main#3        openai/gpt-oss-120b             2k of 200k tokens ok
-        groq_main#4        openai/gpt-oss-120b             1k of 200k tokens ok
-        groq_alt#2         qwen/qwen3.8-27b                1k of 200k tokens ok
-        groq_alt#3         qwen/qwen3.8-27b               34k of 200k tokens ok
-        groq_alt#4         qwen/qwen3.8-27b              163k of 200k tokens ok
-        openrouter_main    qwen/qwen3.8-27b:free        not tracked          ok
-        enough for about 25 lecture minutes
+        GROQ_API_KEY_main      openai/gpt-oss-120b            87k of 200k tokens IN USE
+        GROQ_API_KEY_2         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~6.9 h
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~9.7 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~17.4 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b           191k of 200k tokens ok
+        GROQ_API_KEY_main      qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_2         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~7.3 h
+        GROQ_API_KEY_3         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~10.2 h
+        GROQ_API_KEY_4         qwen/qwen3.8-27b               69k of 200k tokens ok
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        OPENROUTER_API_KEY     qwen/qwen3.8-27b:free        not tracked          IN USE
+        enough for about 93 lecture minutes
 
-[READY] session 20261006-112149-411e
+[READY] session 20261006-160025-13fe
         classroom display: http://localhost:8765/display   (projector, full screen: F11)
         teacher control:   http://localhost:8765/control
         Press Enter (or Start in the control view) to begin; q + Enter to quit.
-11:21:54 INFO    copilot.visuals.service: CLIP ready in 0.4 s (CPU)
-[OPEN]  http://localhost:8765/control
-[OPEN]  http://localhost:8765/display
+16:00:30 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
 
 [LIVE]  lecture started. Type q + Enter to end.
-  [    1.9s] Let us learn about computer networks. (587 ms)
-  [    5.2s] A computer network is a system of connected devices that communicate (662 ms)
-  [   10.3s] um (277 ms)
-  [   12.2s] with two shared data, hardware resource and services over wired or wireless links. (576 ms)
-  [UNDERSTAND] Computer Networks > Definition (new_topic) acts=definition hint=definition lines=3 via groq_alt#3 934 ms
-               Defined a computer network as connected devices sharing resources over links.
-11:22:49 INFO    copilot.presentation.engine: planner: new Computer Networks > Definition (first content slide)
-  [SLIDE] add    'What is computer network?' [definition] v1 (1 items)
-  [   18.7s] type of computer networks are (460 ms)
-  [SLIDE] update 'What is computer network?' [definition] v2 (1 items)
-  [   25.2s] PAN, Personal Area Network, connects personal devices like phones, laptops within a short range of about 10 meters. (719 ms)
-  [SLIDE] update 'What is computer network?' [definition] v3 (1 items)
-  [UNDERSTAND] Computer Networks > Types (sibling_concept) acts=definition hint=definition lines=2 via groq_alt#3 1146 ms
-               Introduced Personal Area Networks (PAN) as short-range connections for personal devices.
-11:23:04 INFO    copilot.presentation.engine: planner: continue Computer Networks > Types (new facet)
-11:23:04 INFO    copilot.presentation.engine: image search 'Personal Area Network' (diagram) for 'Types'
-  [SLIDE] update 'What is computer network?' [definition] v4 (1 items)
-  [SLIDE] add    'Types' [definition] v1 (1 items)
-  [   32.5s] LAN, local area network links computers within a single room. (622 ms)
-  [SLIDE] update 'Types' [definition] v2 (1 items)
-11:23:09 INFO    copilot.visuals.finder: image search 'Personal Area Network' (diagram): 1 candidate(s), 1 accepted, 4.29 s {'search_s': 1.71, 'download_s': 0.79, 'clip_s': 0.03, 'full_s': 1.75, 'total_s': 4.29}
-11:23:09 INFO    copilot.presentation.engine: image 'Personal Area Network' on 'Types': File:Data Networks classification by spatial scope.svg
-  [IMAGE] 'Personal Area Network' -> File:Data Networks classification by spatial scope.svg (4.3 s)
-  [SLIDE] update 'Types' [definition] v3 (2 items)
-  [   39.1s] office building or school. (328 ms)
-11:23:12 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Types' -> same_concept
-  [UNDERSTAND] Computer Networks > Types (same_concept) acts=definition hint=definition lines=2 via groq_alt#3 828 ms
-               Defined Local Area Networks (LAN) as connecting computers within a single room, office, or school.
-11:23:12 INFO    copilot.presentation.engine: planner: update Computer Networks > Types (same frame)
-11:23:12 INFO    copilot.presentation.engine: slide 'Types' waits for the min dwell time
-11:23:12 INFO    copilot.presentation.engine: image 'Personal Area Network' kept on 'Types' (same visual as this topic's image)
-  [SLIDE] update 'Types' [definition] v4 (2 items)
-  [SLIDE] update 'Types' [definition] v5 (2 items)
-  [SLIDE] add    'Types' [definition] v1 (2 items)
-  [   41.9s] Man, Metropolitan Area Network covers a larger area like a town or a city. (700 ms)
-  [   49.3s] when wide area network connects computers across large physical distances, countries or the whole globe such as the internet. (782 ms)
-  [   58.9s] The key components are (484 ms)
-11:23:31 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Types' -> same_concept
-  [UNDERSTAND] Computer Networks > Types (same_concept) acts=definition,definition hint=key_points lines=2 via groq_alt#3 1079 ms
-               Defined Metropolitan Area Networks (MAN) as covering towns/cities and Wide Area Networks (WAN) as connecting computers across large distances or the globe.
-11:23:31 INFO    copilot.presentation.engine: planner: update Computer Networks > Types (same frame)
-11:23:31 INFO    copilot.presentation.engine: no image for 'Types': two concepts side by side
-  [SLIDE] add    'Types' [concept] v1 (2 items)
-  [   61.4s] first nodes (300 ms)
-  [   63.1s] These are the devices attached to a network including end devices. (564 ms)
-  [UNDERSTAND] Computer Networks > Components (sibling_concept) acts=definition hint=concept lines=3 via groq_alt#3 885 ms
-               Introduced nodes as the key components of a network, defined as attached devices including end devices.
-11:23:43 INFO    copilot.presentation.engine: planner: continue Computer Networks > Components (new facet)
-11:23:43 INFO    copilot.presentation.engine: slide 'Components' waits for the min dwell time
-  [   67.8s] computers and smartphone printers and intermediary devices like routers and switches. (701 ms)
-  [SLIDE] add    'Components' [definition] v1 (1 items)
-  [UNDERSTAND] Computer Networks > Components (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#3 1368 ms
-               Classified network nodes into end devices (computers, printers) and intermediary devices (routers, switches).
-11:23:52 INFO    copilot.presentation.engine: planner: update Computer Networks > Components (same frame)
-  [SLIDE] update 'Components' [definition] v2 (3 items)
-  [   74.7s] Second, transmission media, physical cables like fiber optics, twisted pair or wireless signals like Wi-Fi or radio waves that carry data. (749 ms)
-  [SLIDE] update 'Components' [definition] v3 (4 items)
-  [   85.3s] protocols set of rules that dictate how data is formatted transmitted and received (700 ms)
-  [SLIDE] update 'Components' [definition] v4 (4 items)
-  [   93.3s] The code use is. (293 ms)
-  [UNDERSTAND] Computer Networks > Components (same_concept) acts=definition,definition hint=key_points lines=3 via groq_alt#3 919 ms
-               Defined transmission media as physical or wireless data carriers and protocols as rules for data handling.
-11:24:08 INFO    copilot.presentation.engine: planner: update Computer Networks > Components (same frame)
-  [SLIDE] update 'Components' [definition] v5 (3 items)
-  [SLIDE] update 'Components' [definition] v6 (3 items)
-  [SLIDE] add    'Components' [concept] v1 (2 items)
-  [   95.1s] Resource sharing allows multiple users to share hardware like printers or storage devices to lower cost. (669 ms)
-  [  102.6s] Data and communication enables fast files exchange web browsing emails and video calls (634 ms)
-  [  109.4s] Cloud access provides scalable access to remote services applications and remote services. (622 ms)
-11:24:27 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Resource sharing allows multiple users to share hardware like printers or storage devices to lower cost']
-  [UNDERSTAND] Computer Networks > Benefits (sibling_concept) acts=explanation,explanation hint=key_points lines=3 via groq_alt#3 952 ms
-               Explained the benefits of computer networks, including resource sharing, fast communication, and cloud access.
-11:24:27 INFO    copilot.presentation.engine: planner: continue Computer Networks > Benefits (new facet)
-  [SLIDE] add    'Benefits' [key_points] v1 (4 items)
-  [  129.4s] Let us learn about microcontroller. (576 ms)
-  [SLIDE] update 'Benefits' [key_points] v2 (5 items)
-  [UNDERSTAND] Microcontroller > Introduction (new_topic) acts=transition hint=none lines=1 via groq_alt#3 2186 ms
-               Teacher announced the start of a new topic on microcontrollers.
-11:24:45 INFO    copilot.presentation.engine: planner: noop Microcontroller > Introduction (new topic announced)
-  [SLIDE] update 'Benefits' [key_points] v3 (4 items)
-  [  141.4s] A microcontroller or MCU is a small computer on a single integrated circuit that is designed to control specific tasks with electronic systems. It combines the functions of Central Processing Unit CPU. (922 ms)
-  [SLIDE] update 'Benefits' [key_points] v4 (5 items)
-  [  155.2s] memory and input-output interfaces. (314 ms)
-  [SLIDE] update 'Benefits' [key_points] v5 (5 items)
-  [  158.4s] All on a single chip (321 ms)
-  [SLIDE] update 'Benefits' [key_points] v6 (5 items)
-11:25:24 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['It combines the functions of Central Processing Unit CPU']
-  [UNDERSTAND] Microcontroller > Introduction (new_topic) acts=definition,explanation,explanation hint=definition lines=3 via groq_alt#3 1225 ms
-               Defined a microcontroller as a single-chip computer combining CPU, memory, and I/O for specific tasks.
-11:25:24 INFO    copilot.presentation.engine: planner: new Microcontroller > Introduction (new topic confirmed (two interpretations agree))
-11:25:24 INFO    copilot.presentation.engine: image search 'microcontroller chip' (photo) for 'Microcontroller'
-  [SLIDE] update 'Benefits' [key_points] v7 (4 items)
-  [SLIDE] add    'Microcontroller' [definition] v1 (4 items)
-  [  162.3s] A typical microcontroller consists of a processor core, volatile and non-volatile memory, input output peripherals and various communication interfaces. The processor core is responsible for executing instructions and controlling the other components of the processor. (862 ms)
-  [SLIDE] update 'Microcontroller' [definition] v2 (5 items)
-11:25:30 INFO    copilot.visuals.finder: image search 'microcontroller chip' (photo): 3 candidate(s), 3 accepted, 6.01 s {'search_s': 1.75, 'download_s': 1.1, 'clip_s': 0.07, 'full_s': 3.06, 'total_s': 6.01}
-11:25:30 INFO    copilot.presentation.engine: no room for an image on 'Microcontroller'
-  [IMAGE] 'microcontroller chip' -> File:MK38P70 and MBM2716.jpg (6.0 s)
-  [  177.2s] microcontroller. The memory is used to store data and program code while the input output peripherals are used to interact with the external environment. (852 ms)
-  [SLIDE] update 'Microcontroller' [definition] v3 (5 items)
-  [UNDERSTAND] Microcontroller > Introduction (elaboration) acts=classification,explanation hint=hierarchy lines=2 via groq_alt#3 1094 ms
-               Listed typical microcontroller components and explained the specific functions of the processor core, memory, and I/O peripherals.
-11:25:37 INFO    copilot.presentation.engine: planner: update Microcontroller > Introduction (same frame)
-11:25:37 INFO    copilot.presentation.engine: slide 'Microcontroller' waits for the min dwell time
-11:25:37 INFO    copilot.presentation.engine: image search 'microcontroller block diagram' (diagram) for 'Microcontroller'
-  [SLIDE] update 'Microcontroller' [definition] v4 (4 items)
-  [SLIDE] update 'Microcontroller' [definition] v5 (5 items)
-  [SLIDE] add    'Microcontroller' [key_points] v1 (6 items)
-11:25:40 INFO    copilot.visuals.finder: image search 'microcontroller block diagram' (diagram): 2 candidate(s), 1 accepted, 3.61 s {'search_s': 1.53, 'download_s': 1.08, 'clip_s': 0.05, 'full_s': 0.92, 'total_s': 3.61}
-11:25:40 INFO    copilot.presentation.engine: no room for an image on 'Microcontroller'
-  [IMAGE] 'microcontroller block diagram' -> File:68HC11 Block Diagram.jpg (3.6 s)
-  [  189.5s] Let's understand why are microcontrollers useful. (625 ms)
-  [SLIDE] update 'Microcontroller' [key_points] v2 (7 items)
-  [  192.8s] they are programmable so you can make them do different tasks (569 ms)
-  [SLIDE] update 'Microcontroller' [key_points] v3 (7 items)
-  [  197.0s] Common programming languages used are C, C++ and assembly language. (668 ms)
-  [SLIDE] update 'Microcontroller' [key_points] v4 (7 items)
-  [UNDERSTAND] Microcontroller > Introduction (elaboration) acts=explanation,classification hint=key_points lines=3 via groq_alt#3 1572 ms
-               Explained that microcontrollers are programmable for various tasks and listed common programming languages like C, C++, and Assembly.
-11:25:56 INFO    copilot.presentation.engine: planner: update Microcontroller > Introduction (same frame)
-11:25:56 INFO    copilot.presentation.engine: image 'microcontroller block diagram' kept on 'Microcontroller' (same visual as this topic's image)
-  [SLIDE] update 'Microcontroller' [key_points] v5 (6 items)
-  [SLIDE] update 'Microcontroller' [key_points] v6 (7 items)
-  [SLIDE] add    'Microcontroller' [key_points] v1 (2 items)
-  [SLIDE] update 'Microcontroller' [key_points] v2 (3 items)
-  [  201.2s] They are often low power which is great for devices that runs on batteries. They are small, cheap and perfect for controlling devices over a long time. (721 ms)
-  [SLIDE] update 'Microcontroller' [key_points] v3 (4 items)
-  [UNDERSTAND] Microcontroller > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#3 807 ms
-               Highlighted microcontroller advantages: low power, small size, low cost, and suitability for long-term battery-operated control.
-11:26:03 INFO    copilot.presentation.engine: planner: update Microcontroller > Introduction (same frame)
-11:26:03 INFO    copilot.presentation.engine: no image for 'Microcontroller': has an image
-  [SLIDE] update 'Microcontroller' [key_points] v4 (3 items)
-  [SLIDE] update 'Microcontroller' [key_points] v5 (6 items)
-  [  212.0s] Most microcontrollers are embedded meaning they are difficult or built inside other devices. (594 ms)
-  [SLIDE] update 'Microcontroller' [key_points] v6 (7 items)
-11:26:08 INFO    copilot.presentation.engine: slide 4f35b28a5636 overflows on the display; further content continues on a new slide
-  [UNDERSTAND] Microcontroller > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#3 1257 ms
-               Explained that most microcontrollers are embedded within other devices.
-11:26:11 INFO    copilot.presentation.engine: planner: update Microcontroller > Introduction (same frame)
-11:26:11 INFO    copilot.presentation.engine: image 'microcontroller block diagram' kept on 'Microcontroller' (same visual as this topic's image)
-  [SLIDE] update 'Microcontroller' [key_points] v7 (6 items)
-  [SLIDE] add    'Microcontroller' [key_points] v1 (1 items)
-  [SLIDE] update 'Microcontroller' [key_points] v2 (2 items)
-  [  222.8s] Let's start with the types of microcontroller (679 ms)
-  [  226.9s] there are variety of microcontroller classified in different types (531 ms)
-  [SLIDE] update 'Microcontroller' [key_points] v3 (3 items)
-  [  231.7s] First classification of micro-computers by the number of bits (675 ms)
-  [SLIDE] update 'Microcontroller' [key_points] v4 (3 items)
-  [  236.7s] they can be 8 bit, 16 bit or 32 bit microcontrollers (559 ms)
-  [SLIDE] update 'Microcontroller' [key_points] v5 (3 items)
-  [  241.3s] then classification of microcontroller on memory type it can be embedded memory microcontroller or external memory microcontroller (619 ms)
-  [SLIDE] update 'Microcontroller' [key_points] v6 (3 items)
-  [UNDERSTAND] Microcontroller > Types (sibling_concept) acts=classification hint=key_points lines=3 via groq_alt#3 1245 ms
-               Classified microcontrollers into 8-bit, 16-bit, and 32-bit types based on their bit width.
-11:26:40 INFO    copilot.presentation.engine: planner: continue Microcontroller > Types (new facet)
-  [SLIDE] add    'Types' [hierarchy] v1 (1 items)
-  [  250.5s] classification of microcontrollers by instruction set (514 ms)
-  [SLIDE] update 'Microcontroller' [key_points] v7 (2 items)
-  [  254.5s] First, Sis. (650 ms)
-  [UNDERSTAND] Microcontroller > Types (elaboration) acts=classification,classification hint=hierarchy lines=2 via groq_alt#4 1374 ms
-               Classified microcontrollers by memory type (embedded vs. external) and introduced classification by instruction set.
-11:26:48 INFO    copilot.presentation.engine: planner: noop Microcontroller > Types (nothing to display)
-  [  256.5s] that is complex introduction set computer. (604 ms)
-  [  260.4s] then risk that is reduce instruction set computer. (550 ms)
-  [UNDERSTAND] Microcontroller > Types (same_concept) acts=- hint=none lines=1 via groq_alt#4 644 ms
-               Teacher addressed a student, likely transitioning to the next point.
-11:26:55 INFO    copilot.presentation.engine: planner: noop Microcontroller > Types (nothing to display)
-  [  265.5s] then classification of microcontroller by architecture (569 ms)
-  [  269.3s] of memory (285 ms)
-  [  271.0s] First Harvard Memory Architecture (479 ms)
-  [  274.0s] Second, One new memory architecture (550 ms)
-11:27:10 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Types' -> same_concept
-  [UNDERSTAND] Microcontroller > Types (same_concept) acts=classification hint=hierarchy lines=6 via groq_alt#4 2245 ms
-               Classified microcontrollers by architecture into CISC, RISC, Harvard, and Von Neumann types.
-  [CONCERN] (transcription) that is complex introduction set computer -> Complex Instruction Set Computer (CISC) (0.9)
-  [CONCERN] (transcription) One new memory architecture -> Von Neumann Memory Architecture (0.8)
-11:27:10 INFO    copilot.presentation.engine: planner: update Microcontroller > Types (same frame)
-11:27:10 INFO    copilot.presentation.engine: concern 427d794434f4 (transcription, applied=True): 2 element(s); slide shows 'instruction'
-11:27:10 INFO    copilot.presentation.engine: concern d4861bd30fc3 (transcription, applied=True): 1 element(s); slide shows 'Von Neumann'
-  [SLIDE] update 'Types' [hierarchy] v2 (2 items)
-  [  278.9s] The properties of microcontroller are, microcontroller devices are capable of having words longer than 16 bit. (721 ms)
-  [  286.0s] Microcontroller consists of RAM, ROM, timer, input-output ports (652 ms)
-  [  291.4s] etc. Microcontroller ROM is used for program storage and RAM is used for data storage. (723 ms)
-  [UNDERSTAND] Microcontroller > Components (sibling_concept) acts=explanation,classification,explanation hint=key_points lines=3 via groq_alt#4 2693 ms
-               Listed microcontroller components (RAM, ROM, Timer, I/O) and defined ROM for program storage and RAM for data storage.
-11:27:30 INFO    copilot.presentation.engine: planner: continue Microcontroller > Components (new facet)
-  [SLIDE] add    'Components' [key_points] v1 (4 items)
-  [  297.7s] It is designed by using CISC architecture. The power consumption of modern microcontroller is significantly lower and have operating voltage range from 1.8 to 5.5 volts. (842 ms)
-  [SLIDE] update 'Components' [key_points] v2 (5 items)
-  [  311.6s] the latest features of microcontroller are is flash memory like (532 ms)
-  [SLIDE] update 'Components' [key_points] v3 (5 items)
-  [  316.6s] Eeprom or Eeprom (575 ms)
-  [SLIDE] update 'Components' [key_points] v4 (5 items)
-  [UNDERSTAND] Microcontroller > Components (elaboration) acts=explanation,explanation hint=key_points lines=3 via groq_alt#4 1697 ms
-               Described modern microcontroller voltage range and introduced flash memory and EEPROM as latest features.
-11:28:00 INFO    copilot.presentation.engine: planner: update Microcontroller > Components (same frame)
-  [SLIDE] update 'Components' [key_points] v5 (4 items)
-  [SLIDE] update 'Components' [key_points] v6 (8 items)
-  [  324.7s] The issues in microcontrollers are the timing issues, power issues, heat issues, noise issues, code issues, security issues and compatibility issues. (689 ms)
-  [UNDERSTAND] Microcontroller > Challenges (sibling_concept) acts=classification hint=key_points lines=1 via groq_alt#4 1015 ms
-               Listed seven key issues in microcontrollers including timing, power, heat, noise, code, security, and compatibility.
-11:28:07 INFO    copilot.presentation.engine: planner: continue Microcontroller > Challenges (new facet)
-  [SLIDE] add    'Challenges' [key_points] v1 (7 items)
-  [  344.2s] Let us study photosynthesis. Photosynthesis is the biological process where plants, algae and some bacteria convert sunlight, water and carbon dioxide into glucose and oxygen. (724 ms)
-  [  356.1s] the chemical reaction is 6CO2 plus 12 6H2O plus light energy gives C6H12O6 plus 6O2 molecules (776 ms)
-  [  366.8s] reactors (277 ms)
-  [  368.2s] 6 molecules of carbon dioxide and 6 molecules of hydrogen (598 ms)
-  [UNDERSTAND] Photosynthesis > Definition (new_topic) acts=definition,formula hint=formula lines=4 via groq_alt#4 1564 ms
-               Defined photosynthesis and provided the balanced chemical equation for the process.
-  [CONCERN] (transcription) 6CO2 plus 12 6H2O -> 6CO₂ + 12H₂O (0.9)
-11:28:45 INFO    copilot.presentation.engine: planner: new Photosynthesis > Definition (new topic confirmed (boundary cue/shift))
-11:28:45 INFO    copilot.presentation.engine: concern 54cefc523772 (transcription, applied=True): 1 element(s); slide shows '12H₂O'
-11:28:45 INFO    copilot.presentation.engine: no image for 'What is photosynthesis?': formula needs the full width
-  [SLIDE] add    'What is photosynthesis?' [definition] v1 (2 items)
-  [  373.1s] the product is glucose C6H12O6 used for energy growth and 6 molecules of oxygen (710 ms)
-  [  381.6s] Oxygen is released as a by-product (557 ms)
-  [  385.1s] how this process works light absorption chlorophyll a green color pigment (634 ms)
-  [  390.9s] found inside cell structure called chloroplasts in plant leaves captures energy from sunlight (595 ms)
-  [UNDERSTAND] Photosynthesis > Process (sibling_concept) acts=explanation,process hint=process_flow lines=4 via groq_alt#4 1301 ms
-               Explained that photosynthesis produces glucose for energy and oxygen as a by-product, initiated by chlorophyll in chloroplasts absorbing sunlight.
-11:29:11 INFO    copilot.presentation.engine: planner: continue Photosynthesis > Process (new facet)
-11:29:11 INFO    copilot.presentation.engine: no image for 'How photosynthesis works': process needs the full width
-  [SLIDE] add    'How photosynthesis works' [key_points] v1 (5 items)
-  [  398.7s] Water and gas intakes. Plants absorb water through their air, through the roots from the soil and take in carbon dioxide from the air through tiny leaves, pores, coiled stomata. (806 ms)
-  [SLIDE] update 'How photosynthesis works' [key_points] v2 (6 items)
-  [UNDERSTAND] Photosynthesis > Process (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 3942 ms
-               Explained that plants absorb water via roots and carbon dioxide via stomata.
-  [CONCERN] (transcription) through their air, through the roots -> Plants absorb water through their roots (0.6)
-  [CONCERN] (transcription) tiny leaves, pores, coiled stomata -> tiny pores called stomata (0.7)
-11:29:24 INFO    copilot.presentation.engine: planner: update Photosynthesis > Process (same frame)
-11:29:24 INFO    copilot.presentation.engine: concern 933ce362865a (transcription, applied=True): 1 element(s); slide shows 'roots'
-11:29:24 INFO    copilot.presentation.engine: concern b3a055af1808 (transcription, applied=True): 0 element(s); slide shows 'called'
-11:29:24 INFO    copilot.presentation.engine: no image for 'How photosynthesis works': process needs the full width
-  [SLIDE] update 'How photosynthesis works' [key_points] v3 (5 items)
-  [SLIDE] update 'How photosynthesis works' [key_points] v4 (7 items)
-  [  417.0s] That's cool. (473 ms)
-  [  419.8s] for Azure Communication (547 ms)
-11:29:32 WARNING copilot.llm.router: llm groq_alt#4 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m47n5jhaek9sdgt85z510g09` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 532,
-11:29:34 WARNING copilot.llm.router: llm openrouter_main failed: 404 {"error":{"message":"This model is unavailable for free. The paid version is available now - use this slug instead: qwen/qwen3.8-27b","code":404},"user_id":"user_3KFQZ7vlGz4Vc3Jm1Patd57S9Ak"}
-11:29:34 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: RateLimited; openrouter_main: Rejected
-  [UNDERSTAND] Photosynthesis > Process (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 3347 ms
-11:29:34 INFO    copilot.presentation.engine: planner: noop Photosynthesis > Process (nothing to display)
-  [  421.5s] 5G communication is the 5th generation global wireless standard. (545 ms)
-  [UNDERSTAND] 5G Communication > Definition (new_topic) acts=definition hint=definition lines=2 via groq_alt#4 891 ms
-               Defined 5G communication as the fifth generation global wireless standard.
-11:29:40 INFO    copilot.presentation.engine: planner: new 5G Communication > Definition (new topic confirmed (boundary cue/shift))
-  [SLIDE] add    'What is 5G Communication?' [definition] v1 (1 items)
-  [  426.7s] delivering faster speed, low latency and massive network capacity compared to 4G LTE. (670 ms)
-  [SLIDE] update 'What is 5G Communication?' [definition] v2 (1 items)
-  [  433.2s] Key capabilities are speed, latency and capacity. (562 ms)
-  [SLIDE] update 'What is 5G Communication?' [definition] v3 (1 items)
-  [UNDERSTAND] 5G Communication > Definition (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#4 910 ms
-               Highlighted 5G's key capabilities: faster speed, low latency, and massive capacity compared to 4G.
-11:29:55 INFO    copilot.presentation.engine: planner: update 5G Communication > Definition (same frame)
-  [SLIDE] update 'What is 5G Communication?' [definition] v4 (1 items)
-  [SLIDE] update 'What is 5G Communication?' [definition] v5 (4 items)
-  [  437.6s] the core application scenario enhance mobile broadband ultra reliable low latency communication massive machine type communication (594 ms)
-  [SLIDE] update 'What is 5G Communication?' [definition] v6 (5 items)
-  [  455.2s] Let's learn about Digestive System. (501 ms)
-  [SLIDE] update 'What is 5G Communication?' [definition] v7 (4 items)
-  [UNDERSTAND] 5G Communication > Definition (elaboration) acts=classification hint=key_points lines=1 via groq_alt#4 1063 ms
-               Identified the three core 5G application scenarios: enhanced mobile broadband, ultra-reliable low-latency communication, and massive machine-type communication.
-11:30:08 INFO    copilot.presentation.engine: planner: update 5G Communication > Definition (same frame)
-  [SLIDE] update 'What is 5G Communication?' [definition] v8 (7 items)
-  [  457.8s] It is a continuous tube and network of organs that break down food in tiny nutrients your body uses for energy, growth and repair. Main parts of the tract are mouth, (817 ms)
-  [  470.5s] isophagus, stomach, small intestine, large intestine and rectum. (652 ms)
-  [UNDERSTAND] Digestive System > Definition (new_topic) acts=definition,classification hint=hierarchy lines=3 via groq_alt#4 1409 ms
-               Defined the digestive system as a tube and organ network for breaking down food. Listed its main parts: mouth, esophagus, stomach, intestines, and rectum.
-  [CONCERN] (transcription) isophagus -> Esophagus (0.95)
-11:30:27 INFO    copilot.presentation.engine: planner: new Digestive System > Definition (new topic confirmed (boundary cue/shift))
-11:30:27 INFO    copilot.presentation.engine: concern 0f2b69a1dc0e (transcription, applied=True): 1 element(s); slide shows 'Esophagus'
-11:30:27 INFO    copilot.presentation.engine: no image for 'What is digestive System?': hierarchy needs the full width
-  [SLIDE] add    'What is digestive System?' [definition] v1 (2 items)
-  [  476.9s] the helper organs are liver (494 ms)
-  [  479.8s] Galbladder pancreas (498 ms)
-  [UNDERSTAND] Digestive System > Definition (elaboration) acts=classification hint=key_points lines=2 via groq_alt#4 1571 ms
-               Identified the liver, gallbladder, and pancreas as helper organs of the digestive system.
-  [CONCERN] (transcription) Galbladder -> Gallbladder (0.9)
-11:30:49 INFO    copilot.presentation.engine: planner: update Digestive System > Definition (same frame)
-11:30:49 INFO    copilot.presentation.engine: concern 67c8106e59b8 (transcription, applied=True): 1 element(s); slide shows 'Gallbladder'
-11:30:49 INFO    copilot.presentation.engine: no image for 'What is digestive System?': hierarchy needs the full width
-  [SLIDE] update 'What is digestive System?' [definition] v2 (3 items)
-  [  499.1s] The quadratic equation is the second degree of polynomial equation in a single variable. (612 ms)
-  [  504.7s] its standard form is ax square plus bx plus c (568 ms)
-  [  509.1s] where x represents the unknown variable and a, b, c are numerical coefficients. (581 ms)
-11:31:06 WARNING copilot.llm.router: llm groq_alt#4 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m47n5jhaek9sdgt85z510g09` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 337,
-11:31:06 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: RateLimited; openrouter_main: skipped (cooldown 208s)
-  [UNDERSTAND] Digestive System > Definition (same_concept) acts=definition hint=definition lines=3 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 314 ms
-11:31:06 INFO    copilot.presentation.engine: planner: update Digestive System > Definition (same frame)
-11:31:07 INFO    copilot.presentation.engine: image search 'human digestive system diagram' (diagram) for 'What is the quadratic equation?'
-  [SLIDE] update 'What is digestive System?' [definition] v3 (3 items)
-  [SLIDE] add    'What is the quadratic equation?' [definition] v1 (1 items)
-  [  514.8s] the formula is x=-b +/- under root b square-4ac upon 2a (722 ms)
-  [SLIDE] update 'What is the quadratic equation?' [definition] v2 (1 items)
-11:31:14 INFO    copilot.visuals.finder: image search 'human digestive system diagram' (diagram): 2 candidate(s), 2 accepted, 7.47 s {'search_s': 1.71, 'download_s': 1.28, 'clip_s': 0.05, 'full_s': 4.42, 'total_s': 7.47}
-11:31:14 INFO    copilot.presentation.engine: image 'human digestive system diagram' on 'What is the quadratic equation?': File:Digestive system diagram edit.svg
-  [IMAGE] 'human digestive system diagram' -> File:Digestive system diagram edit.svg (7.5 s)
-  [SLIDE] update 'What is the quadratic equation?' [definition] v3 (2 items)
-  [  526.2s] the expression inside the square root b square minus 4ac is known as discriminant (613 ms)
-  [  533.6s] If discriminant is greater than zero, two distinct real roots are formed. If discriminant equals zero, one repeated (652 ms)
-  [UNDERSTAND] Quadratic Equation > Formula (new_topic) acts=formula,definition hint=formula lines=2 via groq_alt#4 1199 ms
-               Introduced the quadratic formula and defined the discriminant as the term under the square root.
-11:31:31 INFO    copilot.presentation.engine: planner: update Digestive System > Definition (new topic not yet confirmed)
-11:31:31 INFO    copilot.presentation.engine: image 'human digestive system diagram' kept on 'What is discriminant?' (same visual as this topic's image)
-  [SLIDE] update 'What is the quadratic equation?' [definition] v4 (2 items)
-  [SLIDE] update 'What is the quadratic equation?' [definition] v5 (3 items)
-  [SLIDE] add    'What is discriminant?' [definition] v1 (1 items)
-  [SLIDE] update 'What is discriminant?' [definition] v2 (2 items)
-  [  541.3s] Real root is form. (466 ms)
-  [UNDERSTAND] Quadratic Equation > Formula (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#4 885 ms
-               Explained how the discriminant's value determines the number and nature of the roots.
-11:31:39 INFO    copilot.presentation.engine: planner: new Quadratic Equation > Formula (new topic confirmed (two interpretations agree))
-11:31:39 INFO    copilot.presentation.engine: moving 2 item(s) of 'Quadratic Equation' to the new topic's slide
-11:31:39 INFO    copilot.presentation.engine: slide 'Formula' waits for the min dwell time
-  [SLIDE] update 'What is the quadratic equation?' [definition] v6 (2 items)
-  [  544.9s] Discrement is less than zero. Two complex imaginary roots are formed. (421 ms)
-11:31:46 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (tpm); openrouter_main: skipped (cooldown 168s)
-  [UNDERSTAND] Quadratic Equation > Formula (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 1 ms
-11:31:46 INFO    copilot.presentation.engine: planner: update Quadratic Equation > Formula (same frame)
-  [SLIDE] add    'Formula' [formula] v1 (6 items)
-  [  561.2s] Let's study the solar system, the gravitational system of the Sun and the objects that orbited, including 8 planets, dwarf planets and countless moons, asteroids and comets. (810 ms)
-  [UNDERSTAND] Solar System > Definition (new_topic) acts=definition,classification hint=definition lines=1 via groq_alt#4 1202 ms
-               Introduced the solar system as the Sun's gravitational system, listing its main components: planets, dwarf planets, moons, asteroids, and comets.
-11:32:18 INFO    copilot.presentation.engine: planner: new Solar System > Definition (new topic confirmed (boundary cue/shift))
-11:32:18 INFO    copilot.presentation.engine: no image for 'What is solar System?': hierarchy needs the full width
-  [SLIDE] add    'What is solar System?' [definition] v1 (2 items)
-  [  574.7s] The sun, the yellow dwarf star at the center that holds 99.8% of the system's mass age, formed about 4.6 billion years ago from the collapsing cold. (615 ms)
-  [  587.6s] cloud of interstellar gas industry. (314 ms)
-  [UNDERSTAND] Solar System > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1163 ms
-               Described the Sun as a yellow dwarf star holding 99.8% of the system's mass, formed 4.6 billion years ago.
-  [CONCERN] (transcription) formed about 4.6 billion years ago from the collapsing cold -> formed about 4.6 billion years ago from a collapsing cloud (0.8)
-11:32:26 INFO    copilot.presentation.engine: planner: update Solar System > Definition (same frame)
-11:32:26 INFO    copilot.presentation.engine: concern 58bdfa2ca438 (transcription, applied=True): 0 element(s); slide shows 'cloud'
-11:32:26 INFO    copilot.presentation.engine: no image for 'What is solar System?': hierarchy needs the full width
-  [SLIDE] update 'What is solar System?' [definition] v2 (5 items)
-  [  590.4s] location situated in the Orion arm of the Milky Way galaxy taking about (692 ms)
-  [  596.6s] 230 million years to complete one galactic orbit. (375 ms)
-  [  600.5s] The total planets are 8 planets. (588 ms)
-  [UNDERSTAND] Solar System > Definition (elaboration) acts=explanation hint=narrative lines=1 via groq_alt#4 1112 ms
-               Explained that the solar system formed from a cloud of interstellar gas and dust.
-  [CONCERN] (transcription) cloud of interstellar gas industry -> cloud of interstellar gas and dust (0.6)
-11:32:34 INFO    copilot.presentation.engine: planner: update Solar System > Definition (same frame)
-11:32:34 INFO    copilot.presentation.engine: concern d582f6851246 (transcription, applied=True): 0 element(s); slide shows 'dust'
-11:32:34 INFO    copilot.presentation.engine: no image for 'What is solar System?': hierarchy needs the full width
-  [SLIDE] update 'What is solar System?' [definition] v3 (6 items)
-  [  604.6s] 1st Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus and Neptune (630 ms)
-11:32:40 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (tpm); openrouter_main: skipped (cooldown 114s)
-  [UNDERSTAND] Solar System > Definition (same_concept) acts=explanation hint=key_points lines=3 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 0 ms
-11:32:40 INFO    copilot.presentation.engine: planner: update Solar System > Definition (same frame)
-11:32:40 INFO    copilot.presentation.engine: no image for 'What is solar System?': hierarchy needs the full width
-  [SLIDE] update 'What is solar System?' [definition] v4 (7 items)
-  [  612.9s] Other objects in space are dwarf planets, asteroid belts, (663 ms)
-  [  618.0s] Kupor belt and earth cloud (609 ms)
-  [UNDERSTAND] Solar System > Definition (elaboration) acts=classification,explanation hint=key_points lines=3 via groq_alt#4 1926 ms
-               Listed the eight planets in order and mentioned dwarf planets, asteroid belts, the Kuiper belt, and the Oort cloud as other solar system objects.
-  [CONCERN] (transcription) Kupor belt and earth cloud -> Kuiper belt and Oort cloud (0.6)
-11:33:00 INFO    copilot.presentation.engine: planner: update Solar System > Definition (same frame)
-11:33:00 INFO    copilot.presentation.engine: slide 'What is solar System?' waits for the min dwell time
-11:33:00 INFO    copilot.presentation.engine: concern baa6251f6a25 (transcription, applied=True): 0 element(s); slide shows 'Kuiper belt and Oort cloud'
-11:33:00 INFO    copilot.presentation.engine: image search 'Sun star' (photo) for 'What is solar System?'
-  [SLIDE] update 'What is solar System?' [definition] v5 (7 items)
-  [SLIDE] add    'What is solar System?' [key_points] v1 (8 items)
-11:33:06 INFO    copilot.visuals.finder: image search 'Sun star' (photo): 3 candidate(s), 2 accepted, 5.46 s {'search_s': 2.1, 'download_s': 1.56, 'clip_s': 0.06, 'full_s': 1.71, 'total_s': 5.46}
-11:33:06 INFO    copilot.presentation.engine: image 'Sun star' on 'What is solar System?': File:The Sun by the Atmospheric Imaging Assembly of NASA's Solar Dynamics Observatory - 20100819.jpg
-  [IMAGE] 'Sun star' -> File:The Sun by the Atmospheric Imaging Assembly of NASA's Solar Dynamics Observatory - 20100819.jpg (5.5 s)
-  [SLIDE] add    'What is solar System?' [key_points] v1 (2 items)
-  [  636.9s] I love you. (527 ms)
-  [  640.1s] I brought up your system, and it brought in me a lot of... (865 ms)
-  [  643.6s] I thought sexual will be equal to sexual will be equal to sexual will (716 ms)
-  [UNDERSTAND] Solar System > Definition (digression) acts=- hint=none lines=2 via groq_alt#4 1642 ms
-               Teacher made personal remarks unrelated to the solar system content.
-11:33:22 INFO    copilot.presentation.engine: planner: noop Solar System > Definition (digression)
-  [  651.3s] The human reproductive system is a collection of internal and external organs and glands that work together to produce offspring and sex hormones. (668 ms)
-  [UNDERSTAND] Human Reproductive System > Definition (new_topic) acts=definition hint=definition lines=2 via groq_alt#4 2148 ms
-               Defined the human reproductive system as organs and glands producing offspring and sex hormones.
-11:33:35 INFO    copilot.presentation.engine: planner: new Human Reproductive System > Definition (new topic confirmed (boundary cue/shift))
-  [SLIDE] add    'What is human Reproductive System?' [definition] v1 (1 items)
-  [  660.5s] The female reproductive system The female system produces eggs, support fertilization (656 ms)
-  [SLIDE] update 'What is human Reproductive System?' [definition] v2 (1 items)
-  [  667.1s] and provides a safe place for baby to grow during pregnancy. (630 ms)
-  [SLIDE] update 'What is human Reproductive System?' [definition] v3 (1 items)
-  [UNDERSTAND] Human Reproductive System > Female Reproductive System (sub_concept) acts=explanation hint=key_points lines=2 via groq_alt#4 964 ms
-               Described the female reproductive system's roles in egg production, fertilization support, and pregnancy.
-11:33:49 INFO    copilot.presentation.engine: planner: continue Human Reproductive System > Female Reproductive System (new facet)
-11:33:49 INFO    copilot.presentation.engine: supporting Female Reproductive System content stays on the sparse definition slide 'What is human Reproductive System?'
-11:33:49 INFO    copilot.presentation.engine: image search 'female reproductive system' (diagram) for 'What is human Reproductive System?'
-  [SLIDE] update 'What is human Reproductive System?' [definition] v4 (1 items)
-  [SLIDE] update 'What is human Reproductive System?' [definition] v5 (4 items)
-  [  672.0s] the ovaries, fallopian tubes, uterus, cervix, vagina, vulva are the organs in the reproductive system. (518 ms)
-  [SLIDE] update 'What is human Reproductive System?' [definition] v6 (5 items)
-  [  682.4s] mean reproductive systems are (479 ms)
-  [SLIDE] update 'What is human Reproductive System?' [definition] v7 (5 items)
-11:33:57 INFO    copilot.visuals.finder: image search 'female reproductive system': 2 slow download(s) dropped
-11:33:57 INFO    copilot.visuals.finder: image search 'female reproductive system' (diagram): 4 candidate(s), 1 accepted, 7.71 s {'search_s': 1.84, 'download_s': 2.13, 'clip_s': 0.08, 'full_s': 3.65, 'total_s': 7.71}
-11:33:57 INFO    copilot.presentation.engine: no room for an image on 'What is human Reproductive System?'
-  [IMAGE] 'female reproductive system' -> File:Female reproductive system lateral 1.png (7.7 s)
-  [UNDERSTAND] Human Reproductive System > Female Reproductive System (elaboration) acts=classification hint=key_points lines=1 via groq_alt#4 1736 ms
-               Listed the specific organs of the female reproductive system.
-11:33:58 INFO    copilot.presentation.engine: planner: update Human Reproductive System > Female Reproductive System (same frame)
-11:33:58 INFO    copilot.presentation.engine: image 'female reproductive system' kept on 'What is human Reproductive System?' (same visual as this topic's image)
-  [SLIDE] update 'What is human Reproductive System?' [definition] v8 (7 items)
-  [SLIDE] add    'What is human Reproductive System?' [key_points] v1 (4 items)
-  [SLIDE] update 'What is human Reproductive System?' [key_points] v2 (5 items)
-  [  685.9s] The male reproductance system stores and delivers sperm to fertilize a female egg. (420 ms)
-  [SLIDE] update 'What is human Reproductive System?' [definition] v9 (6 items)
-  [SLIDE] update 'What is human Reproductive System?' [key_points] v3 (6 items)
-  [  692.3s] testis or testicles (504 ms)
-  [SLIDE] update 'What is human Reproductive System?' [key_points] v4 (6 items)
-  [UNDERSTAND] Human Reproductive System > Male Reproductive System (sibling_concept) acts=definition hint=definition lines=2 via groq_alt#4 934 ms
-               Defined the male reproductive system's role in storing and delivering sperm for fertilization.
-11:34:05 INFO    copilot.presentation.engine: planner: continue Human Reproductive System > Male Reproductive System (new facet)
-11:34:05 INFO    copilot.presentation.engine: slide 'Male Reproductive System' waits for the min dwell time
-  [  695.3s] F D I miss. Vast difference. (648 ms)
-  [SLIDE] update 'What is human Reproductive System?' [key_points] v5 (5 items)
-  [  699.1s] like cesare glands. (354 ms)
-11:34:13 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (tpm); openrouter_main: skipped (cooldown 22s)
-  [UNDERSTAND] Human Reproductive System > Male Reproductive System (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 1 ms
-11:34:13 INFO    copilot.presentation.engine: planner: noop Human Reproductive System > Male Reproductive System (nothing to display)
-  [SLIDE] add    'Male Reproductive System' [definition] v1 (1 items)
-  [  700.8s] and penis are the organs in it (603 ms)
-  [  706.2s] Let's go (584 ms)
-  [UNDERSTAND] Human Reproductive System > Male Reproductive System (digression) acts=- hint=none lines=1 via groq_alt#4 865 ms
-               Teacher made unclear personal remarks unrelated to the lesson content.
-11:34:21 INFO    copilot.presentation.engine: planner: noop Human Reproductive System > Male Reproductive System (digression)
-11:34:29 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (tpm); openrouter_main: skipped (cooldown 6s)
-  [UNDERSTAND] Human Reproductive System > Male Reproductive System (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 1 ms
-11:34:29 INFO    copilot.presentation.engine: planner: noop Human Reproductive System > Male Reproductive System (nothing to display)
-  [UNDERSTAND] Human Reproductive System > Male Reproductive System (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1038 ms
-               Identified the penis as an organ of the male reproductive system.
-11:34:38 INFO    copilot.presentation.engine: planner: update Human Reproductive System > Male Reproductive System (same frame)
-  [SLIDE] update 'Male Reproductive System' [definition] v2 (2 items)
-  [  713.2s] A signal system in engineering refers to the combination of information carrying physical quantities and the physical or mathematical processes that manipulates them. (828 ms)
-  [  725.3s] what is a signal? A signal is any part physical quantity or function that varies with time, space or another independent variable to convey information. (698 ms)
-11:34:45 WARNING copilot.llm.router: llm openrouter_main failed: 404 {"error":{"message":"This model is unavailable for free. The paid version is available now - use this slug instead: qwen/qwen3.8-27b","code":404},"user_id":"user_3KFQZ7vlGz4Vc3Jm1Patd57S9Ak"}
-11:34:45 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (tpm); openrouter_main: Rejected
-  [UNDERSTAND] Human Reproductive System > Male Reproductive System (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 854 ms
-11:34:45 INFO    copilot.presentation.engine: planner: noop Human Reproductive System > Male Reproductive System (nothing to display)
-  [UNDERSTAND] Signal System > Definition (new_topic) acts=definition,definition hint=definition lines=2 via groq_alt#4 1173 ms
-               Defined signal systems as combinations of information-carrying quantities and their manipulation processes. Defined signals as physical quantities varying to convey information.
-11:34:54 INFO    copilot.presentation.engine: planner: new Signal System > Definition (new topic confirmed (boundary cue/shift))
-  [SLIDE] add    'What is signal System?' [definition] v1 (2 items)
-  [  735.9s] There are two types of signal, analog and digital. The analog signal is the continuous time signal that varies smoothly and uninterruptedly over time. Digital signal, discrete time signals represent a (906 ms)
-  [SLIDE] update 'What is signal System?' [definition] v2 (3 items)
-  [  749.7s] by distinct values at specific intervals. (336 ms)
-11:35:02 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (tpm); openrouter_main: skipped (cooldown 283s)
-  [SLIDE] update 'What is signal System?' [definition] v3 (2 items)
-  [UNDERSTAND] Signal System > Definition (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 0 ms
-11:35:02 INFO    copilot.presentation.engine: planner: noop Signal System > Definition (nothing to display)
-  [  753.2s] commonly used in computers. (534 ms)
-  [UNDERSTAND] Signal System > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1446 ms
-               Clarified that signals are defined by distinct values at specific intervals.
-11:35:12 INFO    copilot.presentation.engine: planner: update Signal System > Definition (same frame)
-  [SLIDE] update 'What is signal System?' [definition] v4 (3 items)
-11:35:18 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (tpm); openrouter_main: skipped (cooldown 267s)
-  [UNDERSTAND] Signal System > Definition (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 1 ms
-11:35:18 INFO    copilot.presentation.engine: planner: noop Signal System > Definition (nothing to display)
-  [  755.9s] What is a system? A system is an interconnected arrangement of physical devices, circuits or algorithms that accepts an input signal, processes it and produces an output signal. (768 ms)
-  [SLIDE] update 'What is signal System?' [definition] v5 (4 items)
-  [UNDERSTAND] Signal System > Definition (elaboration) acts=definition hint=definition lines=1 via groq_alt#4 963 ms
-               Defined a system as an interconnected arrangement that processes input signals to produce output.
-11:35:27 INFO    copilot.presentation.engine: planner: update Signal System > Definition (same frame)
-  [SLIDE] update 'What is signal System?' [definition] v6 (3 items)
-  [SLIDE] update 'What is signal System?' [definition] v7 (4 items)
-  [  778.0s] sexual illness (590 ms)
-  [  781.1s] Ah, sexual illness. (314 ms)
-11:35:35 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (tpm); openrouter_main: skipped (cooldown 251s)
-  [UNDERSTAND] Signal System > Definition (same_concept) acts=- hint=key_points lines=2 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 1 ms
-11:35:35 INFO    copilot.presentation.engine: planner: noop Signal System > Definition (nothing to display)
-  [  786.3s] focusing is looking to plan a little better. (821 ms)
-  [UNDERSTAND] Signal System > Definition (digression) acts=- hint=none lines=1 via groq_alt#4 958 ms
-               Teacher made a brief aside about planning, unrelated to the signal system definition.
-11:35:44 INFO    copilot.presentation.engine: planner: noop Signal System > Definition (digression)
-  [  790.3s] cell. Let's learn about this cell in biology. A cell is the smallest basic structural and functional unit of all living organisms. You can read a complete overview on Wikipedia. Main types of cells are (947 ms)
-  [  805.1s] prokaryotic cells and eukaryotic cells (583 ms)
-  [  808.9s] key parts of a cell are cell membrane (585 ms)
-  [  812.1s] cytoplasm, nucleus and organelle. (583 ms)
-11:36:06 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['You can read a complete overview on Wikipedia']
-  [UNDERSTAND] Cell > Definition (new_topic) acts=definition,classification,classification,explanation hint=hierarchy lines=4 via groq_alt#4 1572 ms
-               Defined cells as the basic unit of life, classified into prokaryotic and eukaryotic types, and listed key parts including membrane, cytoplasm, nucleus, and organelles.
-11:36:06 INFO    copilot.presentation.engine: planner: new Cell > Definition (new topic confirmed (boundary cue/shift))
-11:36:06 INFO    copilot.presentation.engine: no image for 'What is cell?': groups needs the full width
-  [SLIDE] add    'What is cell?' [definition] v1 (3 items)
-  [  821.1s] That's one of the... (626 ms)
-  [UNDERSTAND] Cell > Definition (same_concept) acts=- hint=none lines=1 via groq_alt#4 1056 ms
-               Teacher began a transition or elaboration with an incomplete phrase.
-11:36:19 INFO    copilot.presentation.engine: planner: noop Cell > Definition (nothing to display)
-  [  836.3s] Let's learn about atoms. An atom is the basic building block of matter and the smallest unit of a chemical element that keeps its unique properties. (807 ms)
-  [  845.6s] structure of item includes nucleus (593 ms)
-  [  849.7s] which holds protons and neutrons (574 ms)
-  [  852.7s] Proton are the positively charged particles inside the nucleus while neutrons (666 ms)
-  [  858.0s] Has no (299 ms)
-  [UNDERSTAND] Atoms > Definition (new_topic) acts=definition,explanation hint=definition lines=4 via groq_alt#4 1504 ms
-               Defined atoms as the basic building blocks of matter and described their nucleus containing protons and neutrons.
-11:36:50 INFO    copilot.presentation.engine: planner: new Atoms > Definition (new topic confirmed (boundary cue/shift))
-11:36:50 INFO    copilot.presentation.engine: image search 'atom structure diagram' (diagram) for 'What is atom?'
-  [SLIDE] add    'What is atom?' [definition] v1 (4 items)
-11:36:53 INFO    copilot.visuals.finder: image search 'atom structure diagram' (diagram): 2 candidate(s), 1 accepted, 3.04 s {'search_s': 1.76, 'download_s': 0.8, 'clip_s': 0.05, 'full_s': 0.41, 'total_s': 3.04}
-11:36:53 INFO    copilot.presentation.engine: image 'atom structure diagram' on 'What is atom?': File:Bohr atom model.svg
-  [IMAGE] 'atom structure diagram' -> File:Bohr atom model.svg (3.0 s)
-  [SLIDE] update 'What is atom?' [definition] v2 (5 items)
-  [  859.4s] let's charge on them electrons are tiny negative charge particles that (586 ms)
-  [  865.1s] moves around the nucleus. (365 ms)
-  [  867.1s] in an electron cloud. Key properties atomic number, ion and isotopes. (641 ms)
-  [  875.3s] That's not bad. (561 ms)
-11:37:07 WARNING copilot.llm.router: llm groq_alt#4 failed: timeout after 6.0s (ReadTimeout) (retrying)
-  [  877.5s] sexual illness (493 ms)
-11:37:10 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectTimeout
-11:37:10 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: Transient; groq_alt#4: Unavailable; openrouter_main: skipped (cooldown 156s)
-  [UNDERSTAND] Atoms > Definition (same_concept) acts=- hint=key_points lines=3 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 8934 ms
-11:37:10 INFO    copilot.presentation.engine: planner: noop Atoms > Definition (nothing to display)
-11:37:10 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 60s); openrouter_main: skipped (cooldown 156s)
-  [UNDERSTAND] Atoms > Definition (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 0 ms
-11:37:10 INFO    copilot.presentation.engine: planner: noop Atoms > Definition (nothing to display)
-11:37:18 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 52s); openrouter_main: skipped (cooldown 148s)
-  [UNDERSTAND] Atoms > Definition (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 0 ms
-11:37:18 INFO    copilot.presentation.engine: planner: noop Atoms > Definition (nothing to display)
-  [  880.3s] the basic concepts of chemistry. Chemistry is the branch of science which deals with the composition structure and properties of matter. (805 ms)
-  [  888.5s] branch of chemistry (312 ms)
-  [  890.7s] in organic chemistry, organic chemistry, physical chemistry and analytical chemistry. (696 ms)
-11:37:26 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 44s); openrouter_main: skipped (cooldown 140s)
-  [UNDERSTAND] Atoms > Definition (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 0 ms
-11:37:26 INFO    copilot.presentation.engine: planner: noop Atoms > Definition (nothing to display)
-  [  897.0s] Let's learn about MATLAB. (523 ms)
-11:37:34 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 36s); openrouter_main: skipped (cooldown 132s)
-  [UNDERSTAND] Atoms > Definition (same_concept) acts=- hint=key_points lines=3 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 1 ms
-11:37:34 INFO    copilot.presentation.engine: planner: noop Atoms > Definition (nothing to display)
-  [  898.8s] Anything which occupies some space and has some mass is called matter. It is made up of small particles which have space between them. The matter particles attract each other and are in the state of continuous motion. (916 ms)
-11:37:42 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 28s); openrouter_main: skipped (cooldown 124s)
-  [UNDERSTAND] Atoms > MATLAB (sibling_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 1 ms
-11:37:42 INFO    copilot.presentation.engine: planner: noop Atoms > MATLAB (nothing to display)
-  [  911.8s] Pure substances, they are the characteristics difference from the mixture. (663 ms)
-11:37:50 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 20s); openrouter_main: skipped (cooldown 116s)
-  [UNDERSTAND] Atoms > MATLAB (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 1 ms
-11:37:50 INFO    copilot.presentation.engine: planner: continue Atoms > MATLAB (new facet)
-  [SLIDE] add    'MATLAB' [key_points] v1 (3 items)
-  [  916.2s] they have fixed composition whereas mixtures may contain the component in any ratio and their composition. (698 ms)
-  [SLIDE] update 'MATLAB' [key_points] v2 (4 items)
-  [  924.9s] elements (480 ms)
-  [SLIDE] update 'MATLAB' [key_points] v3 (4 items)
-11:37:58 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 12s); openrouter_main: skipped (cooldown 108s)
-  [UNDERSTAND] Atoms > MATLAB (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 1 ms
-11:37:58 INFO    copilot.presentation.engine: planner: update Atoms > MATLAB (same frame)
-  [SLIDE] update 'MATLAB' [key_points] v4 (5 items)
-  [  927.4s] It is the simplest form of pure substance which can neither be decomposed nor be built by simpler substances by ordinary physical and chemical methods. Compounds. It is (976 ms)
-  [SLIDE] update 'MATLAB' [key_points] v5 (5 items)
-11:38:18 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectTimeout
-11:38:18 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: Unavailable; openrouter_main: skipped (cooldown 87s)
-  [UNDERSTAND] Atoms > MATLAB (same_concept) acts=- hint=key_points lines=2 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 2017 ms
-11:38:18 INFO    copilot.presentation.engine: planner: noop Atoms > MATLAB (nothing to display)
-  [SLIDE] update 'MATLAB' [key_points] v6 (4 items)
-  [  939.6s] also the form of matter which can be formed by combining two or more elements in a definite ratio by mass. It can be decomposed into its constituent elements by suitable chemical methods. (941 ms)
-  [SLIDE] update 'MATLAB' [key_points] v7 (5 items)
-  [  952.4s] types of compounds are inorganic and organic compounds. (552 ms)
-11:38:26 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 53s); openrouter_main: skipped (cooldown 80s)
-  [SLIDE] update 'MATLAB' [key_points] v8 (5 items)
-  [UNDERSTAND] Atoms > MATLAB (same_concept) acts=- hint=key_points lines=2 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 0 ms
-11:38:26 INFO    copilot.presentation.engine: planner: noop Atoms > MATLAB (nothing to display)
-  [SLIDE] update 'MATLAB' [key_points] v9 (4 items)
-  [  956.6s] mixtures they are used of two or more pure substances they can possess variable composition and can be separated into their components by some physical method (718 ms)
-  [SLIDE] update 'MATLAB' [key_points] v10 (5 items)
-  [  968.8s] Mixture separation methods are filtration, distillation, sublimation. (654 ms)
-  [SLIDE] update 'MATLAB' [key_points] v11 (5 items)
-11:38:44 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 34s); openrouter_main: skipped (cooldown 61s)
-  [UNDERSTAND] Atoms > MATLAB (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 0 ms
-11:38:44 INFO    copilot.presentation.engine: planner: update Atoms > MATLAB (same frame)
-  [SLIDE] update 'MATLAB' [key_points] v12 (4 items)
-  [SLIDE] update 'MATLAB' [key_points] v13 (5 items)
-  [  978.6s] crystallization magnetic separation at mollisus (685 ms)
-  [  985.8s] like (590 ms)
-11:38:57 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 21s); openrouter_main: skipped (cooldown 48s)
-  [UNDERSTAND] Atoms > MATLAB (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 1 ms
-11:38:57 INFO    copilot.presentation.engine: planner: noop Atoms > MATLAB (nothing to display)
-  [  988.2s] Thank you very much. (612 ms)
-11:39:05 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 13s); openrouter_main: skipped (cooldown 40s)
-  [UNDERSTAND] Atoms > MATLAB (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 0 ms
-11:39:05 INFO    copilot.presentation.engine: planner: noop Atoms > MATLAB (nothing to display)
-  [  990.8s] No, it's not. It's a waste of time. (1877 ms)
-11:39:13 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_alt#2: skipped (daily quota spent); groq_alt#3: skipped (daily quota spent); groq_alt#4: skipped (cooldown 5s); openrouter_main: skipped (cooldown 32s)
-  [UNDERSTAND] Atoms > MATLAB (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota 0 ms
-11:39:13 INFO    copilot.presentation.engine: planner: update Atoms > MATLAB (same frame)
-  [SLIDE] update 'MATLAB' [key_points] v14 (6 items)
+  [   13.8s] basic concepts of chemistry (469 ms)
+  [   16.3s] In chemistry, it is the branch of science which deals with the composition, structure and properties of matter. (604 ms)
+  [UNDERSTAND] Chemistry > Definition (new_topic) acts=definition hint=definition lines=2 via groq_main#main 1374 ms
+               Chemistry is defined as the science studying matter's composition, structure, and properties.
+16:01:13 INFO    copilot.presentation.engine: planner: new Chemistry > Definition (first content slide)
+  [SLIDE] add    'What is chemistry?' [definition] v1 (1 items)
+  [   24.1s] branch of chemistry are inorganic, organic, physical and analytical chemistry. (721 ms)
+  [SLIDE] update 'What is chemistry?' [definition] v2 (1 items)
+16:01:21 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Definition' -> same_concept
+  [UNDERSTAND] Chemistry > Definition (same_concept) acts=classification hint=hierarchy lines=1 via groq_main#main 1401 ms
+               Chemistry includes inorganic, organic, physical, and analytical branches.
+16:01:21 INFO    copilot.presentation.engine: planner: update Chemistry > Definition (same frame)
+  [SLIDE] update 'What is chemistry?' [definition] v3 (1 items)
+  [SLIDE] update 'What is chemistry?' [definition] v4 (2 items)
+  [   32.2s] Let's talk about Mato. (609 ms)
+  [   34.1s] Anything which occupies some space and has some mass is called matter. It is made up of small particles which have space between them. The matter particles attract each other and are in the state of continuous motion. (933 ms)
+  [   48.3s] classification of matter (406 ms)
+  [UNDERSTAND] Chemistry > Mato (sibling_concept) acts=transition hint=none lines=1 via groq_main#main 2531 ms
+               Teacher announced the next subtopic, Mato.
+16:01:39 INFO    copilot.presentation.engine: planner: noop Chemistry > Mato (nothing to display)
+  [   50.0s] Matter can be classified into two subgroups. First, physical classification. Second, chemical classification. (808 ms)
+  [UNDERSTAND] Chemistry > Classification of Matter (sibling_concept) acts=definition,classification hint=hierarchy lines=3 via groq_main#main 1749 ms
+               Matter is defined and then classified into physical and chemical categories
+16:01:49 INFO    copilot.presentation.engine: planner: continue Chemistry > Classification of Matter (new facet)
+  [SLIDE] add    'Classification of Matter' [definition] v1 (2 items)
+16:01:49 INFO    copilot.presentation.engine: image search 'matter particles diagram' (diagram) for 'Classification of Matter'
+  [   58.7s] Physical classification can further be classified into solid, liquid or gas. (652 ms)
+16:01:55 INFO    copilot.visuals.finder: image search 'matter particles diagram' (diagram): 2 candidate(s), 1 accepted, 5.89 s {'search_s': 1.7, 'download_s': 1.99, 'clip_s': 0.05, 'full_s': 2.13, 'total_s': 5.89}
+  [IMAGE] 'matter particles diagram' -> File:System of a natural cycle of matter automatisms, the spiral wave-particle form, by Alexander Makeyev.jpg (5.9 s)
+16:01:55 INFO    copilot.presentation.engine: image 'matter particles diagram' on 'Classification of Matter': File:System of a natural cycle of matter automatisms, the spiral wave-particle form, by Alexander Makeyev.jpg
+  [SLIDE] update 'Classification of Matter' [definition] v2 (3 items)
+  [   63.5s] while chemical classification can be classified into pure substances and mixtures. (608 ms)
+  [UNDERSTAND] Chemistry > Classification of Matter (elaboration) acts=classification,classification hint=hierarchy lines=2 via groq_main#main 1776 ms
+               Physical classification splits into solid, liquid, gas; chemical classification splits into pure substances and mixtures.
+16:01:59 INFO    copilot.presentation.engine: planner: update Chemistry > Classification of Matter (same frame)
+16:01:59 INFO    copilot.presentation.engine: image removed from 'Classification of Matter': groups needs the full width
+  [SLIDE] update 'Classification of Matter' [definition] v3 (3 items)
+  [SLIDE] update 'Classification of Matter' [definition] v4 (2 items)
+  [   72.0s] Your substances. (516 ms)
+  [   74.1s] they are characterised different from the mixtures they have fixed composition whereas mixtures may contain the component in any ratio (861 ms)
+  [   85.0s] and the composition is variable. (334 ms)
+  [   87.6s] elements in (314 ms)
+  [UNDERSTAND] Chemistry > Classification of Matter (same_concept) acts=definition,definition hint=definition lines=3 via groq_main#main 2023 ms
+               Pure substances have fixed composition; mixtures have variable composition.
+16:02:18 INFO    copilot.presentation.engine: planner: update Chemistry > Classification of Matter (same frame)
+16:02:18 INFO    copilot.presentation.engine: no image for 'Classification of Matter': two concepts side by side
+  [SLIDE] update 'Classification of Matter' [definition] v5 (2 items)
+  [SLIDE] add    'Classification of Matter' [concept] v1 (2 items)
+  [   89.6s] It is the simplest form of pure substance which can neither be decomposed nor be built from simpler substances by ordinary physical and chemical methods. (778 ms)
+  [UNDERSTAND] Chemistry > Elements (sibling_concept) acts=definition hint=definition lines=2 via groq_main#main 1685 ms
+               Introduced the definition of an element as the simplest pure substance.
+16:02:31 INFO    copilot.presentation.engine: planner: continue Chemistry > Elements (new facet)
+16:02:31 INFO    copilot.presentation.engine: slide 'Elements' waits for the min dwell time
+16:02:31 INFO    copilot.presentation.engine: image search 'element symbol' (photo) for 'Elements'
+  [SLIDE] add    'Elements' [definition] v1 (1 items)
+  [  101.3s] compounds it is also the form of matter which (511 ms)
+  [SLIDE] update 'Elements' [definition] v2 (1 items)
+16:02:35 INFO    copilot.visuals.finder: image search 'element symbol' (photo): 2 candidate(s), 1 accepted, 4.32 s {'search_s': 2.41, 'download_s': 0.84, 'clip_s': 0.05, 'full_s': 1.01, 'total_s': 4.32}
+  [IMAGE] 'element symbol' -> File:Dalton's Element List.jpg (4.3 s)
+16:02:35 INFO    copilot.presentation.engine: image 'element symbol' on 'Elements': File:Dalton's Element List.jpg
+  [SLIDE] update 'Elements' [definition] v3 (2 items)
+  [  105.8s] which can be formed by combining two or more (587 ms)
+  [UNDERSTAND] Chemistry > Compounds (sibling_concept) acts=definition hint=definition lines=2 via groq_main#main 1120 ms
+               Introduced the definition of a compound as matter formed by combining two or more elements.
+16:02:53 INFO    copilot.presentation.engine: planner: continue Chemistry > Compounds (new facet)
+  [SLIDE] update 'Elements' [definition] v4 (2 items)
+  [SLIDE] add    'Compounds' [definition] v1 (1 items)
+  [  110.6s] elements in the definite ratio by mass. It can be decomposed into two into its constituent elements by suitable chemical methods. Example what is made up of hydrogen and oxygen in the ratio of 1 is to 8 by mass. (992 ms)
+  [SLIDE] update 'Compounds' [definition] v2 (1 items)
+  [  124.9s] Compounds can be of two types. (549 ms)
+  [SLIDE] update 'Compounds' [definition] v3 (1 items)
+  [  127.9s] inorganic compounds and organic compounds. (484 ms)
+  [SLIDE] update 'Compounds' [definition] v4 (1 items)
+  [UNDERSTAND] Chemistry > Compounds (elaboration) acts=explanation,classification,example hint=none lines=3 via groq_main#main 1757 ms
+               Added composition ratio, decomposition, and the two main types of compounds with a water example.
+16:03:02 INFO    copilot.presentation.engine: planner: update Chemistry > Compounds (same frame)
+  [SLIDE] update 'Compounds' [definition] v5 (1 items)
+  [SLIDE] update 'Compounds' [definition] v6 (5 items)
+16:03:02 INFO    copilot.presentation.engine: no image 'water molecule' on 'Compounds': not about the slide (similarity 0.25)
+  [  131.6s] mixtures they are made up of two or more substances (680 ms)
+  [  135.2s] they can possess variable composition and can be separated into their components by some physical methods (627 ms)
+  [  142.4s] They are of two types, homogeneous and heterogeneous. (609 ms)
+  [UNDERSTAND] Chemistry > Mixtures (sibling_concept) acts=definition,classification hint=none lines=3 via groq_main#main 1301 ms
+               Introduced mixtures as combinations of substances with variable composition and their two types
+16:03:16 INFO    copilot.presentation.engine: planner: continue Chemistry > Mixtures (new facet)
+  [SLIDE] add    'Mixtures' [definition] v1 (2 items)
+  [  151.2s] So mixture separation methods are (497 ms)
+  [  153.4s] filtration, distillation, sublimation. (552 ms)
+  [  157.2s] crystallization, magnetic separation and atmolysis. (685 ms)
+  [UNDERSTAND] Chemistry > Mixtures (elaboration) acts=explanation hint=key_points lines=3 via groq_main#main 1772 ms
+               Teacher listed common separation methods for mixtures.
+  [HEARD] 'atmolysis' -> 'atomolysis' corrected on the slide (0.5)
+16:03:32 INFO    copilot.presentation.engine: planner: update Chemistry > Mixtures (same frame)
+16:03:32 INFO    copilot.presentation.engine: concern 0aaf7babdadd (transcription, applied=True): 1 element(s); slide shows 'atomolysis'
+  [SLIDE] update 'Mixtures' [definition] v2 (4 items)
+  [SLIDE] add    'Mixtures' [key_points] v1 (4 items)
+  [SLIDE] update 'Mixtures' [key_points] v2 (4 items)
+  [  163.1s] Now let's discuss atoms and molecules. (489 ms)
+  [UNDERSTAND] Chemistry > Atoms and Molecules (new_topic) acts=transition hint=none lines=1 via groq_main#main 1109 ms
+               Teacher announced moving to atoms and molecules
+16:03:47 INFO    copilot.presentation.engine: planner: noop Chemistry > Atoms and Molecules (nothing to display)
+  [  166.0s] Atom is the smallest particle of an element which can take part in a chemical reaction. It may or may not be capable of independent existence. While molecule is the simplest particle of matter that has independent existence. (886 ms)
+  [SLIDE] update 'Mixtures' [key_points] v3 (5 items)
+  [  180.9s] it may be hetero homotomic diatomic triatomic or hetero atomic (715 ms)
+  [SLIDE] update 'Mixtures' [key_points] v4 (5 items)
+  [UNDERSTAND] Chemistry > Atoms and Molecules (same_concept) acts=definition,definition,classification hint=none lines=2 via groq_main#main 1649 ms
+               Defined atoms and molecules and listed common molecule classifications
+16:04:09 INFO    copilot.presentation.engine: planner: continue Chemistry > Atoms and Molecules (new facet)
+16:04:09 INFO    copilot.presentation.engine: no image for 'Atoms and Molecules': two concepts side by side
+  [SLIDE] update 'Mixtures' [key_points] v5 (4 items)
+  [SLIDE] add    'Atoms and Molecules' [concept] v1 (3 items)
+16:07:08 INFO    copilot.visuals.finder: image search 'element symbol' (photo): 2 candidate(s), 1 accepted, 7.61 s {'search_s': 1.47, 'download_s': 1.31, 'clip_s': 0.05, 'full_s': 4.76, 'total_s': 7.61}
+  [IMAGE] 'element symbol' -> File:Reutter de Rosemont; chemical symbols Wellcome L0014471.jpg (7.6 s)
+  [SLIDE] update 'Elements' [definition] v5 (2 items)
+16:07:12 INFO    copilot.presentation.engine: teacher stepped to image 1/2 on 'Elements'
+  [SLIDE] update 'Elements' [definition] v6 (2 items)
+
+[ENDED] interrupted
+(.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> 

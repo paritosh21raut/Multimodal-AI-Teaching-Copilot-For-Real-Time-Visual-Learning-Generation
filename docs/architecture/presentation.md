@@ -20,7 +20,8 @@ Input: the `Interpretation` + current slide + `ConceptSignal` + teacher commands
 | sub_concept / sibling_concept | `continue` (new facet), unless the current slide is nearly empty → `retitle/update` |
 | new_topic, confirmed | `new` slide (title-level change) |
 | digression / meta only | `noop` |
-| teacher freeze/pin | queue ops; apply on unfreeze |
+| teacher pin | new slides queue behind the pinned slide; apply on unpin |
+| lecture paused | nothing new arrives (the understanding service drops what is said during the pause) |
 
 **Hysteresis / stability rules**
 - Minimum dwell time per slide (default 20 s) before a non-teacher-forced slide change.

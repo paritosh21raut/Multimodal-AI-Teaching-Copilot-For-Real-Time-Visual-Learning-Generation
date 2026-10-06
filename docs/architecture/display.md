@@ -58,13 +58,26 @@ backoff capped at 2 s), so no duplicate tabs. `--no-open` disables it. Test: `te
   `image_choices` to the control view only.
 - Zoom: clicking the image in the preview sends `zoom_image`; the deck sets `DeckState.zoom`; /display shows the
   image filling the stage (slide background, as large as its aspect allows), /control shows the same inside its
-  preview with "← Back to slide (Esc)". Esc, a click on the image or Back → `unzoom_image`; navigation or the image
-  leaving the slide also ends it; blank still wins.
+  preview with "← Back to slide (Esc)" at the top right (round 4 step C; it was top left, hard to reach). Esc, a
+  click on the image or Back → `unzoom_image`; navigation or the image leaving the slide also ends it; blank still
+  wins.
+- Before the first slide /display shows no text: soft coloured light drifts behind a framed frosted pane
+  (`.glass`, CSS animation only), so the projector visibly works (user 2026-10-06: "something happening behind the
+  glass"). Between slides the previous slide stays; blank is an empty screen.
 
 ## Teacher controls
-Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `F` freeze, `P` pin, `B` blank,
-`N` force new slide (End lecture: button only; `Esc` closes a zoomed image). The terminal also accepts `Enter` (start) and `q` (end).
-The buttons are a dock under the preview in the image bar's style: pill groups ‹ n / m › · Pin Freeze Blank (on =
-filled; Freeze/Blank in the warning colour) · New slide, End lecture on the right. `DOCK_CONTROLS = false` in
-`web/control/app.js` brings back the earlier plain button row (kept until the teacher has chosen).
+Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `Space` pause / resume, `P` pin,
+`B` blank, `N` force new slide (End lecture: button only; `Esc` closes a zoomed image). The terminal also accepts
+`Enter` (start) and `q` (end).
+The buttons are a dock under the preview in the image bar's style: pill groups ‹ n / m › · Pin Pause Blank (on =
+filled; Blank in the warning colour, Pause in blue) · New slide, End lecture on the right. The earlier plain button
+row is removed (the teacher chose the dock).
+- **Pause** (replaces Freeze, user 2026-10-06): `pause` / `resume` commands → the app switches the lifecycle
+  LIVE ⇄ PAUSED. While paused the understanding service does not buffer new transcript lines (lines already heard are
+  still interpreted), so nothing said in the break reaches a slide; the transcript shows those lines greyed
+  "(paused)", the terminal "(paused, not used)". Navigation, images and the other controls keep working. The
+  projector keeps showing the live slide.
 Controls send `Command` messages over the WebSocket → `CommandReceived` events; the UI never mutates state.
+- Mistake cards: only factual / conceptual / formula concerns ("You said X · The slide shows Y", one switch:
+  Show what I said ⇄ Show correction, × closes the card; nothing to approve). Transcription concerns are never sent
+  to /control (the hub drops them); the terminal logs them as `[HEARD] wrong -> right`.

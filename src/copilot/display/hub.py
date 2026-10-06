@@ -73,7 +73,7 @@ class DisplayHub:
         self.deck: Optional[dict] = None
         self.lifecycle = "starting"
         self.transcript: deque[dict] = deque(maxlen=TRANSCRIPT_LINES)
-        self.concerns: dict[str, dict] = {}  # open concerns (control view only; never sent to the display)
+        self.concerns: dict[str, dict] = {}  # open mistake cards (control view only; never sent to the display)
         self.image_choices: dict[str, dict] = {}  # slide_id -> {index, count} (control only)
         self._image_requests: dict[str, str] = {}  # running image searches: request_id -> auto | change
         self.connects: dict[str, int] = {"display": 0, "control": 0}  # connections ever made, per role
@@ -145,7 +145,7 @@ class DisplayHub:
             self._broadcast({"type": "patch", "slide_id": event.slide_id, "version": event.version, "spec": event.spec},
                             key=("patch", event.slide_id))
         elif isinstance(event, DeckState):
-            self.deck = event.model_dump(include={"live_id", "slide_ids", "following", "pinned", "frozen", "blank", "zoom"})
+            self.deck = event.model_dump(include={"live_id", "slide_ids", "following", "pinned", "blank", "zoom"})
             for sid in [s for s in self.slides if s not in event.slide_ids]:  # removed slides
                 del self.slides[sid]
             self._broadcast({"type": "deck", "deck": self.deck}, key=("deck",))
@@ -154,6 +154,8 @@ class DisplayHub:
             self._broadcast({"type": "lifecycle", "lifecycle": self.lifecycle}, key=("lifecycle",))
         elif isinstance(event, TranscriptFinal):
             line = {"t": event.segment.start, "text": event.segment.text, "latency_ms": event.stt_latency_ms}
+            if self.lifecycle == "paused":  # said during a pause: shown to the teacher, not interpreted
+                line["dropped"] = "paused"
             self.transcript.append(line)
             self._broadcast({"type": "transcript", "line": line}, roles=("control",))
         elif isinstance(event, UtteranceDropped):
@@ -162,7 +164,9 @@ class DisplayHub:
             self._broadcast({"type": "transcript", "line": line}, roles=("control",))
         elif isinstance(event, ConcernRaised):
             c = event.concern
-            if c.get("status", "open") == "open":
+            # misheard words (spelling / pronunciation) are corrected without asking (user 2026-10-06; terminal
+            # log only); the teacher sees a card only for a factual, conceptual or formula mistake
+            if c.get("status", "open") == "open" and c.get("kind") != "transcription":
                 self.concerns[c["id"]] = c
                 self._broadcast({"type": "concern", "concern": c}, roles=("control",))
         elif isinstance(event, ConcernResolved):

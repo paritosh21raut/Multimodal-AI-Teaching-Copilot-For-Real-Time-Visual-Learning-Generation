@@ -6,8 +6,8 @@ arrive as CommandReceived events. Every change is published as SlidePatch / Deck
 Display flags:
 - following: the live slide jumps to each new slide (off when the teacher navigates back)
 - pinned:    stay on the current slide; in-place updates still show; new slides queue behind it
-- frozen:    the projector keeps exactly what it shows now (the display client holds its last render)
 - blank:     the projector shows an empty screen
+(Freeze was replaced by Pause, user 2026-10-06: a lifecycle state, not a display flag; see app/main.py.)
 - zoom:      a slide's image fills the projector (the teacher clicked it in /control); ends on Back / Esc, on
              navigation, or when that image leaves the slide. New content keeps arriving behind it.
 """
@@ -23,8 +23,7 @@ from copilot.presentation.spec import SlideSpec
 
 log = logging.getLogger(__name__)
 
-NAV_COMMANDS = {"next", "prev", "goto", "pin", "unpin", "freeze", "unfreeze", "blank", "unblank",
-                "zoom_image", "unzoom_image"}
+NAV_COMMANDS = {"next", "prev", "goto", "pin", "unpin", "blank", "unblank", "zoom_image", "unzoom_image"}
 
 
 def _has_image(spec: SlideSpec) -> bool:
@@ -39,7 +38,6 @@ class Deck:
         self.live_id: Optional[str] = None
         self.following = True
         self.pinned = False
-        self.frozen = False
         self.blank = False
         self.zoom: Optional[str] = None
 
@@ -61,7 +59,7 @@ class Deck:
     def state_event(self) -> DeckState:
         return DeckState(
             live_id=self.live_id, slide_ids=list(self._order), following=self.following,
-            pinned=self.pinned, frozen=self.frozen, blank=self.blank, zoom=self.zoom,
+            pinned=self.pinned, blank=self.blank, zoom=self.zoom,
         )
 
     # ---- slide ops (planner) --------------------------------------------------------------
@@ -148,7 +146,6 @@ class Deck:
             return True
         flag, value = {
             "pin": ("pinned", True), "unpin": ("pinned", False),
-            "freeze": ("frozen", True), "unfreeze": ("frozen", False),
             "blank": ("blank", True), "unblank": ("blank", False),
         }[kind]
         if getattr(self, flag) == value:

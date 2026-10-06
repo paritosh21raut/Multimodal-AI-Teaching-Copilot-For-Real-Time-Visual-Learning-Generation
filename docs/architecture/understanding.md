@@ -73,15 +73,19 @@ A `relation` given as an act name ("transition") is read as `same_concept` inste
 
 ## Grounding guard
 Formula-like tokens the model changed from what was said get a `transcription` concern (wrong = heard,
-right = shown) when the model did not raise one itself (details: F-004). Nothing is corrected silently.
+right = shown) when the model did not raise one itself (details: F-004). Transcription concerns are applied without a
+card for the teacher (user 2026-10-06) and logged in the terminal (`[HEARD]`).
 
 ## Incorrect statements (truthful slides)
 - Acts carry the corrected content; each concern carries `claim`, `suggested_correction` and the minimal differing
   words `wrong` / `right`. The store marks a concern `applied` when confident (factual ≥ 0.75, transcription ≥ 0.4);
   otherwise the projector shows what the teacher said. Concern text itself never reaches the projector.
-- The Control View shows what was said, the correct form and what the slide shows, with OK / Show as I said
-  (or Show correction / OK) → `resolve_concern` → `ConcernResolved` → the presentation engine switches the words
-  in place (F-005). Teacher self-corrections are not concerns.
+- Factual / conceptual / formula concerns only: the Control View shows what was said and what the slide shows, with
+  Show what I said / Show correction (× closes; no approval asked; round 4 step C, replacing OK / Show as I said)
+  → `resolve_concern` → `ConcernResolved` → the presentation engine switches the words in place (F-005). Teacher
+  self-corrections are not concerns.
+- Pause (round 4 step C): while the lecture is PAUSED the service drops new `TranscriptFinal` lines before the
+  filter (counted as `paused_segments`); lines buffered before the pause are still interpreted.
 
 ## LLM layer (`copilot.llm`)
 - Router: Groq gpt-oss-120b → Groq qwen3.8-27b (separate 8k-TPM bucket) → OpenRouter free model (50 req/day, backup).

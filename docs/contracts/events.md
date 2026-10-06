@@ -19,7 +19,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `LLMCallFailed` | llm | `provider`, `error`, `will_retry` |
 | `StateChanged` | state store | `version`, `changes` (topic/subtopic/outline/concerns) |
 | `SlidePatch` | deck | `slide_id`, `version`, `op` (add/update), `spec` (SlideSpec dump) |
-| `DeckState` | deck | `live_id`, `slide_ids`, `following`, `pinned`, `frozen`, `blank`, `zoom` (slide whose image fills the display, or null) |
+| `DeckState` | deck | `live_id`, `slide_ids`, `following`, `pinned`, `blank`, `zoom` (slide whose image fills the display, or null) |
 | `CommandReceived` | display/terminal | `command: Command` |
 | `ConcernRaised` | state store | `concern` (Concern dump) |
 | `ConcernResolved` | state store | `concern_id`, `status` (accepted/kept/dismissed) |
@@ -32,7 +32,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 
 `TranscriptSegment`: `id, text, start, end, confidence, language="en", source="mic"|"sim"`.
 
-`Command.kind`: `start, end, pause, resume, next, prev, goto, freeze, unfreeze, pin, unpin, blank, unblank,
+`Command.kind`: `start, end, pause, resume (lifecycle LIVE ⇄ PAUSED; replaced freeze/unfreeze), next, prev, goto, pin, unpin, blank, unblank,
 force_new_slide, resolve_concern(id, action), remove_image(slide_id), change_image(slide_id),
 set_image(slide_id, image_id, aspect, alt), image_prev(slide_id), image_next(slide_id), zoom_image(slide_id),
 unzoom_image` (image commands: F-007b; `change_image` on a slide without an image = the teacher's Find image; `set_image` follows `POST /api/upload`; zoom is a deck display flag).

@@ -15,6 +15,7 @@ from copilot.core.events import Command, CommandReceived  # noqa: E402
 from copilot.presentation.spec import Item, PointsBlock, SlideSpec  # noqa: E402
 
 pytestmark = pytest.mark.browser
+ART = Path(__file__).resolve().parents[2] / "artifacts" / "app"
 
 
 def points(slide_id, texts):
@@ -87,22 +88,35 @@ async def test_slide_change_completes_in_a_window_the_browser_does_not_paint():
         assert page.errors == []
 
 
-async def test_freeze_blank_and_navigation_on_projector():
+async def test_first_slide_is_awaited_behind_glass_without_text():
+    """User 2026-10-06: before the first slide the projector must not look frozen, and no "preparing" text:
+    something moves behind a glass pane. Between slides nothing is shown (the previous slide stays)."""
+    async with display_harness() as h, browser_page(f"{h.url}/display") as page:
+        await page.wait_for_selector(".glass .blob", timeout=5000)
+        moving = await page.evaluate("""() => [...document.querySelectorAll('.glass .blob')]
+            .map(b => getComputedStyle(b).animationName).filter(n => n && n !== 'none').length""")
+        assert moving >= 2
+        assert (await page.inner_text(".viewport")).strip() == ""   # no words on the projector
+        await page.screenshot(path=str(ART / "display_first_slide_glass.png"))
+        await h.deck.add(points("a", ["alpha"]))
+        await h.settle()
+        await wait_for_slide(page, "a")
+        await page.wait_for_selector(".glass", state="detached", timeout=3000)
+        await command(h, "blank")   # blank is empty, not the glass
+        await page.wait_for_function("() => document.querySelectorAll('.slide').length === 0", timeout=3000)
+        assert await page.query_selector(".glass") is None
+        assert page.errors == []
+
+
+async def test_blank_and_navigation_on_projector():
     async with display_harness() as h, browser_page(f"{h.url}/display") as page:
         await h.deck.add(points("a", ["alpha"]))
         await h.settle()
         await wait_for_slide(page, "a")
-
-        await command(h, "freeze")
-        await h.deck.update(points("a", ["alpha", "changed while frozen"]))
+        await h.deck.update(points("a", ["alpha", "changed later"]))
         await h.deck.add(points("b", ["beta"]))
         await h.settle()
-        await asyncio.sleep(0.5)
-        # item text only: the list marker is a bullet or a number depending on the list (F-007a follow-up)
-        assert await page.locator(".point > span:last-child").all_inner_texts() == ["alpha"]  # held exactly
-
-        await command(h, "unfreeze")
-        await wait_for_slide(page, "b")  # catches up with the live slide
+        await wait_for_slide(page, "b")
 
         await command(h, "blank")
         await page.wait_for_function("() => document.querySelectorAll('.slide').length === 0", timeout=3000)
@@ -112,7 +126,7 @@ async def test_freeze_blank_and_navigation_on_projector():
         await command(h, "prev")
         await wait_for_slide(page, "a")
         texts = await page.locator(".slide:not(.is-leaving) .point > span:last-child").all_inner_texts()
-        assert texts == ["alpha", "changed while frozen"]
+        assert texts == ["alpha", "changed later"]
         assert page.errors == []
 
 

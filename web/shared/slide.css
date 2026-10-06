@@ -356,5 +356,44 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 
 /* ---------- blank / waiting ---------- */
 .waiting { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 34px; letter-spacing: 0.02em; }
-.waiting .dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); margin-right: 18px; animation: pulse 1.6s ease-in-out infinite; }
-@keyframes pulse { 50% { opacity: 0.25; transform: scale(0.8); } }
+
+/* before the first slide (/display): light drifting behind a frosted pane, no text (user 2026-10-06) */
+.glass { position: absolute; inset: 0; overflow: hidden; background: var(--bg); animation: glass-in 900ms var(--ease) both; }
+.glass .blob {
+  position: absolute; width: 900px; height: 900px; border-radius: 50%; opacity: 0.9;
+  animation: drift 16s ease-in-out infinite alternate;
+}
+.glass .b1 { left: -80px; top: -140px; background: radial-gradient(circle, var(--accent) 0%, transparent 62%); }
+.glass .b2 { right: -120px; top: 80px; background: radial-gradient(circle, var(--pause) 0%, transparent 62%);
+  animation-duration: 21s; animation-delay: -7s; }
+.glass .b3 { left: 560px; bottom: -360px; background: radial-gradient(circle, var(--accent-2) 0%, transparent 60%);
+  opacity: 0.75; animation-duration: 25s; animation-delay: -13s; }
+.glass .b4 { left: 700px; top: 160px; width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 64%); opacity: 0.55;
+  animation-name: drift-small; animation-duration: 13s; animation-delay: -4s; }
+/* the glass: a framed frosted pane with a light edge */
+.glass .pane {
+  position: absolute; inset: 64px; overflow: hidden; border-radius: 44px;
+  background: color-mix(in srgb, var(--surface) 22%, transparent);
+  backdrop-filter: blur(40px) saturate(1.5); -webkit-backdrop-filter: blur(40px) saturate(1.5);
+  border: 2px solid color-mix(in srgb, var(--surface) 65%, transparent);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.12), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+}
+/* a soft band of light passes over the glass now and then */
+.glass .sheen {
+  position: absolute; top: -40%; bottom: -40%; width: 420px; left: -600px; transform: rotate(14deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+  animation: sheen 6s var(--ease) 0.8s infinite;
+}
+@keyframes glass-in { from { opacity: 0; } }
+@keyframes drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(260px, 120px) scale(1.12); }
+  100% { transform: translate(-120px, 220px) scale(0.92); }
+}
+@keyframes drift-small {
+  0% { transform: translate(0, 0) scale(0.9); }
+  100% { transform: translate(-280px, 160px) scale(1.15); }
+}
+@keyframes sheen { 0% { left: -600px; } 45%, 100% { left: 2300px; } }
+@media (prefers-reduced-motion: reduce) { .glass .blob { animation-duration: 60s; } .glass .sheen { display: none; } }

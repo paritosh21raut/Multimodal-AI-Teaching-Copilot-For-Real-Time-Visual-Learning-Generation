@@ -21,6 +21,8 @@ from copilot.core.events import (
     ErrorRaised,
     InterpretationReady,
     InterpretRequested,
+    Lifecycle,
+    LifecycleChanged,
     TranscriptFinal,
     UtteranceClassified,
     UtteranceDropped,
@@ -86,6 +88,7 @@ class UnderstandingStats:
     repaired: int = 0
     sent_segments: int = 0
     excluded_segments: int = 0
+    paused_segments: int = 0  # said while the teacher had paused the lecture: not interpreted
     max_calls_per_minute: int = 0
     max_prompt_tokens: int = 0
     call_wall_times: deque = field(default_factory=lambda: deque(maxlen=STATS_HISTORY))  # monotonic at send
@@ -136,11 +139,13 @@ class UnderstandingService:
         self._last_transcript = clock()  # wall time of the latest transcript of any kind (for the VAD grace)
         self._last_voice: Optional[float] = None  # wall time of the latest AudioLevel(voice=True)
         self._embed_warned = False
+        self._paused = False  # the teacher paused the lecture (a break): new speech is not interpreted
         self._tasks: list[asyncio.Task] = []
 
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
-        self.bus.subscribe("understanding", self._on_event, [TranscriptFinal, AudioLevel, UtteranceDropped])
+        self.bus.subscribe("understanding", self._on_event,
+                           [TranscriptFinal, AudioLevel, UtteranceDropped, LifecycleChanged])
         self._tasks = [
             asyncio.create_task(self._worker(), name="understanding:worker"),
             asyncio.create_task(self._ticker(), name="understanding:ticker"),
@@ -189,6 +194,11 @@ class UnderstandingService:
         return vad_silence(self.clock(), self._last_voice, self._last_transcript, self.speed)
 
     async def _on_event(self, event) -> None:
+        if isinstance(event, LifecycleChanged):
+            # Pause (user 2026-10-06): what was said before it is still interpreted (it is buffered); what is said
+            # during it never reaches the buffer, so no slide is made from it. Resume continues normally.
+            self._paused = event.state == Lifecycle.PAUSED
+            return
         if isinstance(event, AudioLevel):
             if event.voice:
                 self._last_voice = self.clock()
@@ -198,6 +208,10 @@ class UnderstandingService:
         if isinstance(event, UtteranceDropped):
             return
         assert isinstance(event, TranscriptFinal)
+        if self._paused:
+            self.stats.paused_segments += 1
+            log.info("paused: not interpreted: %s", event.segment.text)
+            return
         seg = event.segment
         c = self.filter.classify(seg.text)
         await self.bus.publish(UtteranceClassified(segment_id=seg.id, kind=c.kind, maybe_meta=c.maybe_meta, rule=c.rule))

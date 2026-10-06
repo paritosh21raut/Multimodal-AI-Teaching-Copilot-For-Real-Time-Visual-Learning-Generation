@@ -37,7 +37,7 @@ Frame of a slide = (topic, facet). Facet = subtopic (or the topic). Titles compa
   everything fits (e.g. "Chemistry" definition + "Branches of chemistry" tree). A new definition never is absorbed,
   nor a `sub_concept` whose facet names a thing ("Female Reproductive System": its own slide like its sibling;
   round 4, issue 8 — in every recorded session the branches came as `sibling_concept`).
-- **Teacher flags**: pinned → new slides queue; frozen → the display holds its render; navigated back to a slide of
+- **Teacher flags**: pinned → new slides queue; paused lecture → nothing new arrives; navigated back to a slide of
   the same frame → updated in place (never adopted as working slide); `force_new_slide` → next part now.
 
 ## Composition (space, not slot counts)
@@ -86,9 +86,11 @@ the engine rewrites the item in place (same id → the display updates only that
 - The store sets `applied` = confidence ≥ 0.75 (factual) or ≥ 0.4 (transcription). Not applied → the engine
   substitutes `right` → `wrong` in that unit's new elements, so the projector shows what the teacher said.
 - If the model raised a correction but left the wrong words in its items, the engine applies it.
-- Control view card: "You said / Heard", "Correct", and what the slide shows; buttons **OK** / **Show as I said**
-  (applied) or **Show correction** / **OK** (not applied) → `resolve_concern{id, action: dismiss|keep|accept}` →
-  store → `ConcernResolved` → engine toggles the words in the tracked elements.
+- Control view card (factual / conceptual / formula only; round 4 step C): "You said …", "The slide shows …" (or
+  "The slide shows what you said" + "Correct …"); one button **Show what I said** (applied) or **Show correction**
+  (not applied), × closes the card; nothing to approve → `resolve_concern{id, action: keep|accept|dismiss}` →
+  store → `ConcernResolved` → engine toggles the words in the tracked elements. Transcription concerns get no card
+  (applied silently when ≥ 0.4, terminal `[HEARD]` line); in all recorded sessions all 86 were ≥ 0.4.
 - Self-corrections by the teacher ("Uranus, sorry, Neptune") are used as corrected, not raised.
 
 ## Events added

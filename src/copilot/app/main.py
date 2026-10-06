@@ -81,6 +81,16 @@ def text_similarity(embedder):
     return similarity
 
 
+def lifecycle_for_command(kind: str, now: Lifecycle) -> Optional[Lifecycle]:
+    """Pause / Resume (replaces Freeze, user 2026-10-06): a break in a running lecture. While PAUSED the
+    understanding service discards what is said; navigation and editing still work. None: nothing changes."""
+    if kind == "pause" and now == Lifecycle.LIVE:
+        return Lifecycle.PAUSED
+    if kind == "resume" and now == Lifecycle.PAUSED:
+        return Lifecycle.LIVE
+    return None
+
+
 def pages_to_open(connects: dict[str, int]) -> list[str]:
     """Roles with no page connected since the server started (a reconnecting old tab counts as connected)."""
     return [role for role, _ in PAGES if not connects.get(role)]
@@ -156,8 +166,10 @@ class App:
         self._stop = asyncio.Event()
         self._start_requested = asyncio.Event()
         self.deck = Deck(self.bus)
+        self._now = Lifecycle.STARTING
 
     async def _lifecycle(self, state: Lifecycle, reason: str = "") -> None:
+        self._now = state
         await self.bus.publish(LifecycleChanged(state=state, reason=reason))
 
     def _setup(self, script_setup: dict[str, str]) -> LectureSetup:
@@ -267,8 +279,14 @@ class App:
                 print(f"               {it.summary_delta}", flush=True)
         elif isinstance(event, ConcernRaised):
             c = event.concern
-            print(f"  [CONCERN] ({c.get('kind')}) {c.get('claim')} -> {c.get('suggested_correction')} "
-                  f"({c.get('confidence')})", flush=True)
+            if c.get("kind") == "transcription":  # misheard words: no card for the teacher, only this log line
+                shown = "corrected on the slide" if c.get("applied") else "kept as heard (low confidence)"
+                print(f"  [HEARD] {c.get('wrong') or c.get('claim')!r} -> {c.get('right') or c.get('suggested_correction')!r}"
+                      f" {shown} ({c.get('confidence')})", flush=True)
+            else:
+                print(f"  [CONCERN] ({c.get('kind')}) {c.get('claim')} -> {c.get('suggested_correction')} "
+                      f"({c.get('confidence')}, slide shows {'the correction' if c.get('applied') else 'as said'})",
+                      flush=True)
 
     async def _print_slide(self, event: Event) -> None:
         if isinstance(event, SlidePatch):
@@ -282,7 +300,8 @@ class App:
         if isinstance(event, TranscriptFinal):
             seg = event.segment
             lat = f" ({event.stt_latency_ms:.0f} ms)" if event.stt_latency_ms is not None else ""
-            print(f"  [{seg.start:7.1f}s] {seg.text}{lat}", flush=True)
+            paused = "(paused, not used) " if self._now == Lifecycle.PAUSED else ""
+            print(f"  [{seg.start:7.1f}s] {paused}{seg.text}{lat}", flush=True)
         elif isinstance(event, UtteranceDropped):
             print(f"  [{event.start:7.1f}s] (dropped: {event.reason}) {event.text}", flush=True)
         elif isinstance(event, AudioDeviceLost):
@@ -294,6 +313,12 @@ class App:
             self._start_requested.set()
         elif event.command.kind == "end":
             self._stop.set()
+        else:
+            nxt = lifecycle_for_command(event.command.kind, self._now)
+            if nxt is not None:
+                await self._lifecycle(nxt, "teacher")
+                print("[PAUSE] paused: what is said now is not put on slides (Resume to continue)"
+                      if nxt == Lifecycle.PAUSED else "[LIVE]  resumed", flush=True)
 
     async def _start_display(self) -> None:
         from copilot.display.hub import DisplayHub

@@ -1,7 +1,7 @@
 """PresentationEngine: InterpretationReady + ConceptSignal + teacher commands → Deck (F-005).
 
 Deterministic. Owns the planner state (working slide, dwell queue, corrections, new-topic candidate) and is the
-only caller of Deck.add/update in a real lecture. Display flags (pin/freeze/blank/navigation) stay in the Deck.
+only caller of Deck.add/update in a real lecture. Display flags (pin/blank/navigation) stay in the Deck.
 
 Truthful projector: interpretations carry the corrected content. A concern says what the teacher actually said
 (`wrong`) and what the slide shows instead (`right`). When the model is not confident enough the slide shows what
