@@ -16,11 +16,21 @@ backoff capped at 2 s), so no duplicate tabs. `--no-open` disables it. Test: `te
 | URL | Who | Shows |
 |---|---|---|
 | `/display` | projector | the live slide only; nothing else |
-| `/control` | teacher laptop | status, mic level, live transcript, deck thumbnails, concerns, controls, latency/LLM stats |
+| `/control` | teacher laptop | status, mic level, live preview (editable), dock, mistake cards, lecture structure, transcript strip, Share |
+| `/view` | students (shared link, F-008) | the projector page as a viewer: live slide only, sends nothing, no transcript |
+
+Access (F-008, ADR-0009): only a direct localhost request (loopback, localhost Host, no proxy headers) is the
+teacher's; from the tunnel or the LAN, `/control`, `/display` (→ `/view`), `/api/upload` and the control/display
+WebSocket roles need the per-run teacher key (`/control?key=…` from the terminal → HttpOnly cookie). `/` goes to
+`/control` locally, `/view` otherwise.
 
 ## Rendering rules (visual quality)
 - 16:9 stage scaled to the viewport; a design-token system (type scale, spacing, color roles) per theme (light/dark).
 - One layout component per representation; layouts are designed, not generic bullets.
+- Definition: a card with a small "Definition" tab on its top edge and a soft accent tint from the corner (no side bar,
+  user 2026-10-06); concepts side by side / member cards: each one card, the term as its heading. Note / key idea:
+  a plain labelled card like the example (no colour fill). A tree of several levels: the divided kinds tinted, their
+  kinds below them; beside an image it becomes one chip card per divided kind.
 - Auto-fit: measure overflow → step down the type scale within limits → otherwise ask the server to split (`overflow` event).
 - Transitions: new slide = cross-fade/slide; in-slide update = FLIP animation + fade-in of new items only;
   no full re-render, so there is no flicker. Images fade in only after they are loaded. The new slide fades in by a
@@ -78,6 +88,17 @@ row is removed (the teacher chose the dock).
   "(paused)", the terminal "(paused, not used)". Navigation, images and the other controls keep working. The
   projector keeps showing the live slide.
 Controls send `Command` messages over the WebSocket → `CommandReceived` events; the UI never mutates state.
+- **Layout (round 4 step D):** header (status, Share with students, Open classroom display) · left: preview + dock
+  (‹ n / m › · Pin Pause Blank · New slide, Add point · End lecture with a "leave" icon) · right: mistake cards +
+  **lecture structure** (topic → facet → slides with part badges, live slide highlighted, click = `goto`; it replaced
+  the plain slide list) · bottom: **transcript strip** (last line; click expands to the whole transcript). One column
+  below 980 px.
+- **Live slide editing:** hovering an element marked `data-edit` in the preview shows an outline and pencil / bin
+  (title: pencil only; formula: bin only); the pencil opens an edit box over it (Enter saves, Esc cancels, leaving it
+  saves); Add point opens one at the bottom. Commands `edit_text` / `delete_item` / `add_point`; the engine keeps the
+  teacher's text final (F-005 "Teacher edits").
+- **Share with students:** `share_start` → `ShareChanged` (starting → on with the `/view` link | failed with why);
+  the header shows the link, Copy, "n watching" (viewer connections), Stop (`share_stop`).
 - Mistake cards: only factual / conceptual / formula concerns ("You said X · The slide shows Y", one switch:
   Show what I said ⇄ Show correction, × closes the card; nothing to approve). Transcription concerns are never sent
   to /control (the hub drops them); the terminal logs them as `[HEARD] wrong -> right`.

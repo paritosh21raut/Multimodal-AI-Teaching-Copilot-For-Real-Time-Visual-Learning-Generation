@@ -37,9 +37,9 @@ from copilot.core.events import (
 )
 from copilot.core.state import Concern, LectureStateStore
 from copilot.presentation.composer import (
-    BODY_BUDGET_PX, body_height, clear_provisional, describe, element_texts, fits, fits_unshrunk, frame_slide,
-    image_of, is_about, is_small, member_of, merge, rejoin, remove_elements, revise_item, set_provisional,
-    split_to_fit, substitute, teacher_items, title_slide, with_image, without_image,
+    BODY_BUDGET_PX, TERM_SUFFIX, add_point, body_height, clear_provisional, describe, edit_text, element_texts, fits,
+    fits_unshrunk, frame_slide, image_of, is_about, is_duplicate, is_small, member_of, merge, rejoin, remove_elements,
+    revise_item, set_provisional, split_to_fit, substitute, teacher_items, title_slide, with_image, without_image,
 )
 from copilot.presentation.content import Piece, clean, pieces_and_chain
 from copilot.presentation.deck import Deck
@@ -59,6 +59,7 @@ IMAGE_RETRY_S = 60.0  # lecture seconds before a failed image search (network, t
 # put "human digestive system diagram" on the quadratic-equation slide (0.07); the weakest right pairing recorded
 # so far is 0.33 (stomata diagram / photosynthesis process slide). Only clearly unrelated images are stopped.
 IMAGE_MIN_RELEVANCE = 0.25
+MAX_EDIT_CHARS = 300  # one edited / added element (F-008)
 
 
 @dataclass
@@ -174,6 +175,12 @@ class PresentationEngine:
         self._image_requests: dict[str, tuple[str, str]] = {}   # request id -> (slide id, reason)
         self._image_history: dict[str, tuple[list[ImageBlock], int]] = {}  # slide id -> (images it showed, current)
         self._tails: dict[str, tuple[str, list]] = {}  # slide id -> (next part, blocks moved there for an image)
+        # the teacher's edits are final (F-008): the elements the teacher wrote (ids are unique across slides, so they
+        # stay the teacher's when a block moves to another part), slides whose title the teacher wrote, and per slide
+        # the texts the teacher deleted or replaced (they do not come back there)
+        self._teacher: set[str] = set()
+        self._teacher_titles: set[str] = set()
+        self._dismissed: dict[str, list[str]] = {}
 
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
@@ -212,6 +219,8 @@ class PresentationEngine:
                     await self._force_new()
                 elif event.command.kind in ("remove_image", "change_image", "set_image", "image_prev", "image_next"):
                     await self._on_image_command(event.command.kind, event.command.args)
+                elif event.command.kind in ("edit_text", "delete_item", "add_point"):
+                    await self._on_edit(event.command.kind, event.command.args)
             elif isinstance(event, ImageReady):
                 await self._on_image_ready(event)
             elif isinstance(event, SlideOverflow):
@@ -300,6 +309,7 @@ class PresentationEngine:
             self._pending.append(spec)
 
     async def _commit(self, spec: SlideSpec) -> None:
+        spec = self._without_dismissed(spec)
         for i, p in enumerate(self._pending):
             if p.id == spec.id:
                 self._pending[i] = spec
@@ -307,6 +317,73 @@ class PresentationEngine:
         old = self._spec(spec.id)
         if old is not None and old.model_dump(exclude={"version"}) != spec.model_dump(exclude={"version"}):
             await self.deck.update(spec)
+
+    # ---- the teacher's edits (F-008) --------------------------------------------------------------------
+    def _locked(self) -> set[str]:
+        """Element ids the system must not change (a card's term edit locks the whole card)."""
+        return {x.removesuffix(TERM_SUFFIX) for x in self._teacher}
+
+    def _without_dismissed(self, spec: SlideSpec) -> SlideSpec:
+        """New content repeating what the teacher deleted or replaced on this slide is left out."""
+        gone = self._dismissed.get(spec.id)
+        if not gone:
+            return spec
+        old = self._spec(spec.id)
+        before = set(element_texts(old)) if old is not None else set()
+        mine = self._locked()
+        drop = {eid for eid, text in element_texts(spec).items()
+                if eid not in before and eid not in mine and any(is_duplicate(text, g) for g in gone)}
+        if drop:
+            log.info("left out on %r (the teacher deleted or replaced it): %s", spec.title,
+                     [element_texts(spec)[e] for e in drop])
+            spec = remove_elements(spec, drop)
+        return spec
+
+    async def _on_edit(self, kind: str, args: dict) -> None:
+        """The teacher's edit, final: the element is the teacher's from now on (revisions, correction switches,
+        moves and retitles leave it alone) and the text it replaced or deleted does not come back on this slide."""
+        slide_id = args.get("slide_id")
+        spec = self._spec(slide_id) if isinstance(slide_id, str) else None
+        if spec is None:
+            log.warning("%s: unknown slide %r", kind, slide_id)
+            return
+        item_id = str(args.get("item_id") or "")
+        text = clean(str(args.get("text") or ""), MAX_EDIT_CHARS)
+        texts = element_texts(spec)
+        gone = self._dismissed.setdefault(spec.id, [])
+        if kind == "add_point":
+            if not text:
+                return
+            new, item_id = add_point(spec, text)
+            self._teacher.add(item_id)
+        elif kind == "delete_item":
+            if item_id not in texts:
+                log.warning("delete_item: %r is not on %r", item_id, spec.title)
+                return
+            gone.append(texts[item_id])
+            new = remove_elements(spec, {item_id})
+        elif item_id == "title":
+            if not text:
+                return
+            defs = [b for b in spec.blocks if b.type == "definition"]
+            if spec.layout == "definition" and len(defs) == 1:  # the slide shows the term as its title
+                new = edit_text(spec, defs[0].id + TERM_SUFFIX, text)
+                self._teacher.add(defs[0].id + TERM_SUFFIX)
+            else:
+                new = spec.model_copy(update={"title": text})
+            self._teacher_titles.add(spec.id)
+        else:
+            new = edit_text(spec, item_id, text) if text else None
+            if new is None:
+                log.warning("edit_text: %r is not an editable element of %r", item_id, spec.title)
+                return
+            old = texts.get(item_id, "")  # a term edit replaces no content
+            if old and not is_duplicate(old, text):
+                gone.append(old)
+            self._teacher.add(item_id)
+        self.stats.ops["teacher_" + kind] += 1
+        log.info("teacher %s on %r: %s %r", kind, spec.title, item_id, text)
+        await self._commit(new)
 
     async def _publish_context(self) -> None:
         spec = self._spec(self._working_id)
@@ -465,7 +542,8 @@ class PresentationEngine:
             by_slide.setdefault(sid, set()).add(eid)
         for sid, ids in by_slide.items():
             spec = self._spec(sid)
-            if spec is None:
+            ids = ids - self._locked()  # what the teacher edited stays where the teacher edited it
+            if spec is None or not ids:
                 continue
             left = remove_elements(spec, ids)
             if left.blocks:
@@ -501,6 +579,9 @@ class PresentationEngine:
             if not target or not text or "/" not in target:
                 continue
             slide_id, item_id = target.split("/", 1)
+            if item_id in self._locked():
+                log.info("revision %s -> %s: the teacher's text stays", r.ref, target)
+                continue
             spec = self._spec(slide_id)
             new = revise_item(spec, item_id, text) if spec is not None else None
             if new is None:
@@ -554,7 +635,8 @@ class PresentationEngine:
             by_slide.setdefault(sid, set()).add(eid)
         for sid, ids in by_slide.items():
             spec = self._spec(sid)
-            if spec is not None:
+            ids = ids - self._locked()  # the teacher's own text is never switched
+            if spec is not None and ids:
                 await self._commit(substitute(spec, ids, old, new))
         corr.showing_right = show_right
         if not show_right:
@@ -594,7 +676,8 @@ class PresentationEngine:
             spec = self._spec(self._working_id)
             assert spec is not None
             fresh = frame_slide(frame.topic, frame.facet)
-            spec = spec.model_copy(update={"title": fresh.title, "subtitle": fresh.subtitle, "facet": fresh.facet})
+            title = spec.title if spec.id in self._teacher_titles else fresh.title  # the teacher's title stays
+            spec = spec.model_copy(update={"title": title, "subtitle": fresh.subtitle, "facet": fresh.facet})
             self._meta[spec.id].frame = frame
             return await self._place(spec, False, frame, pieces)
         spec = self._spec(self._working_id)

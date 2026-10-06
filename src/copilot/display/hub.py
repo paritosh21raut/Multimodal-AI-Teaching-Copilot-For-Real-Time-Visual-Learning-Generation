@@ -26,6 +26,7 @@ from copilot.core.events import (
     ImageReady,
     ImageRequested,
     LifecycleChanged,
+    ShareChanged,
     SlideOverflow,
     SlidePatch,
     TranscriptFinal,
@@ -34,7 +35,8 @@ from copilot.core.events import (
 
 log = logging.getLogger(__name__)
 
-Role = Literal["display", "control"]
+Role = Literal["display", "control", "viewer"]  # viewer: a student's /view page (F-008), receives what the display does
+SLIDE_ROLES: tuple[Role, ...] = ("display", "control", "viewer")
 TRANSCRIPT_LINES = 40
 
 
@@ -76,13 +78,14 @@ class DisplayHub:
         self.concerns: dict[str, dict] = {}  # open mistake cards (control view only; never sent to the display)
         self.image_choices: dict[str, dict] = {}  # slide_id -> {index, count} (control only)
         self._image_requests: dict[str, str] = {}  # running image searches: request_id -> auto | change
-        self.connects: dict[str, int] = {"display": 0, "control": 0}  # connections ever made, per role
+        self.connects: dict[str, int] = {"display": 0, "control": 0, "viewer": 0}  # connections ever made, per role
+        self.share: dict = {"state": "off", "url": "", "detail": ""}  # control only (F-008)
 
     def attach(self) -> None:
         self._bus.subscribe(
             "display_hub", self._on_event,
             [SlidePatch, DeckState, LifecycleChanged, TranscriptFinal, UtteranceDropped, ConcernRaised,
-             ConcernResolved, ImageRequested, ImageReady, ImageChoices],
+             ConcernResolved, ImageRequested, ImageReady, ImageChoices, ShareChanged],
         )
         # Audio levels are high-rate and only matter "now": drop old ones if the hub lags.
         self._bus.subscribe("display_hub_audio", self._on_event, [AudioLevel], queue_size=4, overflow="drop_oldest")
@@ -93,11 +96,22 @@ class DisplayHub:
         self.connections.add(conn)
         self.connects[role] = self.connects.get(role, 0) + 1
         conn.push(self.hello(role))
+        if role == "viewer":
+            self._viewers_changed()
         return conn
 
     def disconnect(self, conn: Connection) -> None:
         conn.closed = True
         self.connections.discard(conn)
+        if conn.role == "viewer":
+            self._viewers_changed()
+
+    @property
+    def viewers(self) -> int:
+        return sum(1 for c in self.connections if c.role == "viewer")
+
+    def _viewers_changed(self) -> None:  # the teacher sees how many students are watching
+        self._broadcast({"type": "viewers", "count": self.viewers}, key=("viewers",), roles=("control",))
 
     def hello(self, role: Role = "display") -> dict:  # fail closed: concerns only on explicit request
         msg = {
@@ -106,15 +120,19 @@ class DisplayHub:
             "lifecycle": self.lifecycle,
             "slides": self.slides,
             "deck": self.deck,
-            "transcript": list(self.transcript),
+            "transcript": list(self.transcript) if role != "viewer" else [],  # students get the slides only
         }
         if role == "control":  # doubtful claims never reach the projector
             msg["concerns"] = list(self.concerns.values())
             msg["image_choices"] = dict(self.image_choices)
+            msg["share"] = dict(self.share)
+            msg["viewers"] = self.viewers
         return msg
 
     async def handle_client_message(self, conn: Connection, msg: dict) -> Optional[str]:
         """Returns an error string for the client, or None."""
+        if conn.role == "viewer":  # a student's page only watches
+            return "view only"
         if msg.get("type") == "overflow":  # display auto-fit could not fit the slide
             slide_id = msg.get("slide_id")
             if not isinstance(slide_id, str) or slide_id not in self.slides:
@@ -134,7 +152,7 @@ class DisplayHub:
         return None
 
     # ---- bus side ------------------------------------------------------------------------
-    def _broadcast(self, msg: dict, key: Any = None, roles: tuple[Role, ...] = ("display", "control")) -> None:
+    def _broadcast(self, msg: dict, key: Any = None, roles: tuple[Role, ...] = SLIDE_ROLES) -> None:
         for conn in list(self.connections):
             if conn.role in roles:
                 conn.push(msg, key)
@@ -192,6 +210,9 @@ class DisplayHub:
             self.image_choices[event.slide_id] = {"index": event.index, "count": event.count}
             self._broadcast({"type": "image_choices", "slide_id": event.slide_id, "index": event.index,
                              "count": event.count}, key=("choices", event.slide_id), roles=("control",))
+        elif isinstance(event, ShareChanged):  # control only: the student link and its state
+            self.share = {"state": event.state, "url": event.url, "detail": event.detail}
+            self._broadcast({"type": "share", **self.share}, key=("share",), roles=("control",))
         elif isinstance(event, AudioLevel):
             self._broadcast({"type": "audio", "rms": event.rms, "speaking": event.speaking},
                             key=("audio",), roles=("control",))

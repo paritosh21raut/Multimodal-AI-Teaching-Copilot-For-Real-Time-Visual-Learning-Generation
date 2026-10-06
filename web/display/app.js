@@ -4,6 +4,8 @@ import { Slide, ZoomedImage, imageOf, useStageScale } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
 
 const SLIDE_MS = 380;
+// /view: the same page for students on the shared link (F-008): it only watches, it sends nothing back
+const VIEWER = location.pathname === "/view";
 
 function useSlideTransition(spec) {
   // Keeps the outgoing slide mounted while it fades out; the incoming one fades in by a CSS animation (is-new).
@@ -37,17 +39,18 @@ function App() {
   const reported = useRef(new Set());
 
   useEffect(() => {
-    conn.current = connect("display", dispatch, (s) => dispatch({ type: "connection", connected: s === "connected" }));
+    conn.current = connect(VIEWER ? "viewer" : "display", dispatch, (s) => dispatch({ type: "connection", connected: s === "connected" }));
     return () => conn.current.close();
   }, []);
   useEffect(() => { document.documentElement.dataset.theme = state.theme; }, [state.theme]);
+  useEffect(() => { if (VIEWER) { document.title = "Live lecture"; document.body.style.cursor = "auto"; } }, []);
 
   // Auto-fit could not fit the slide even at the smallest type step: tell the server (once per version),
   // so the planner continues on a new slide instead of adding more here.
   const onOverflow = (id) => {
     const spec = state.slides[id];
     const key = `${id}@${spec ? spec.version : 0}`;
-    if (reported.current.has(key) || !conn.current) return;
+    if (VIEWER || reported.current.has(key) || !conn.current) return;  // a student's screen size decides nothing
     reported.current.add(key);
     conn.current.send({ type: "overflow", slide_id: id, version: spec ? spec.version : 0 });
   };

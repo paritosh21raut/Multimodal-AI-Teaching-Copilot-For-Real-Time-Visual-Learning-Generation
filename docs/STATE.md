@@ -1,7 +1,8 @@
 # Current State
 
-_Last updated: 2026-10-06 (evening): **V1b verify round 4, step C (UI) done**; steps A (correctness) and B
-(hierarchy + layouts) before it, after the user's
+_Last updated: 2026-10-06 (night): **V1b verify round 4, step D (features) done** + the user's design notes on the
+step-C test (definition card, End lecture icon, classification as one tree, note card); steps A (correctness), B
+(hierarchy + layouts) and C (UI) before it, after the user's
 12–15 min multi-topic live test (session 20261006-112149-411e, fixture `tests/fixtures/lectures/multitopic_live.txt`).
 Agreed plan: A correctness → B hierarchy + layouts (issues 1, 2, 4, 5, 8; prompt A/B + small live run) → C UI (pause
 replaces freeze, first-slide glass state, zoom Back top-right, old control row removed, transcription concerns
@@ -10,6 +11,36 @@ viewer role, control token; live slide editing; lecture structure tree in /contr
 Then V1c._
 
 ## Now
+- **Verify round 4, step D (2026-10-06 night), 0 LLM tokens** (spec `docs/specs/F-008-control-features.md`,
+  ADR-0009). The user's step-C test (session 20261006-160025-13fe, `verify_results/`) was good; their notes:
+  - Definition card: no green side bar; a card with a "Definition" tab on its top edge and a soft tint from the corner;
+    concepts side by side / member cards are one card each (term as heading). Composer height 88 → 92 px.
+  - End lecture: a "leave" icon instead of the stop square.
+  - Classification of matter was three equal group cards → a kind of a classification divided further grows the
+    tree a level (`composer.subdivide`: Matter → Physical (Solid, Liquid, Gas) / Chemical (Pure substances,
+    Mixtures)); ≤ 3 levels, only while it fits the width; other bases (by bit width / by instruction set) stay group
+    cards; a tree of several levels takes no automatic image. Replay old vs new on 3 sessions: only this slide changed.
+  - Note (and key idea) cards: plain labelled card like the example, no colour fill.
+  - **Share with students:** /control button → Cloudflare quick tunnel (`display/share.py`, cloudflared downloaded
+    once to `data/bin/`) → `https://….trycloudflare.com/view` (viewer role: slides only, sends nothing, no transcript),
+    Copy, "n watching", Stop. Teacher key: only a direct localhost request is trusted; through the tunnel / LAN
+    `/control`, `/display`, uploads and the control/display WebSocket need the per-run key (`/control?key=…`, printed
+    in the terminal, then an HttpOnly cookie).
+  - **Live slide editing:** hover an item in the /control preview → pencil / bin (title: pencil; formula: bin);
+    **Add point** in the dock. Commands `edit_text`, `delete_item`, `add_point`. Final: revisions, correction switches,
+    tentative moves and retitles never change the teacher's elements or title; deleted / replaced text does not come
+    back on that slide.
+  - **Lecture structure** (right column, replaces the slide list): topic → facet → slides, live slide highlighted,
+    click = goto; one column below 980 px. **Transcript** strip at the bottom: last line, click to expand.
+  - Verified: 432 fast + 19 Edge tests (17 new; the new tests fail on the old code: missing functions / commands);
+    real app + real tunnel (`--simulate --demo-slides --no-understanding`): Share → link in 17 s, a separate browser
+    profile opened it through the internet and saw the live slide, "1 watching"; through the tunnel /control → 403,
+    /display → /view, control WebSocket refused; with the key /control connected; Stop. Screenshots inspected
+    (replays light + dark with real images, control light/dark/narrow, editing, student view).
+  - First runtime run found a real bug: the link was checked through this PC's DNS before it existed, the "no such
+    name" answer stayed cached → now waits for "Registered tunnel connection" and checks over DNS-over-HTTPS.
+  - Not exercised live: editing during a real-LLM lecture (verified in Edge with the real engine in-process); the
+    presentation engine exists only with understanding on, so `--no-understanding` runs cannot edit.
 - **Verify round 4, step C (2026-10-06 evening), 0 LLM tokens:**
   - Pause replaces Freeze: `pause` / `resume` → the app switches the lifecycle LIVE ⇄ PAUSED; the understanding
     service drops lines heard while paused (lines heard before are still interpreted); the hub marks them
@@ -166,6 +197,7 @@ Then V1c._
 | Item | Unit | Integration | Runtime |
 |---|---|---|---|
 | EventBus, config, state store, event log, simulator | ✅ | ✅ | ✅ |
+| Verify round 4 step D: share (quick tunnel, viewer role, teacher key), live editing (final), structure tree, transcript strip; definition card, End icon, sub-classification tree, plain note card | ✅ 432 total (`test_teacher_edits`, `test_sub_classification`) | ✅ `test_share_access` (real server, tunnel headers) + Edge `test_control_features_browser` | ✅ real app + real Cloudflare tunnel (student profile, refused / keyed control); replays light + dark with real images |
 | Verify round 4 step B: member cards (≤ 6) + member in depth, classifications as one groups block, image above a formula, tree beside an image, sibling image hint, sub_concept not absorbed, whole trees | ✅ 410 total | ✅ Edge (12) | ✅ A/B 27,942 tok + live run ≈ 39.5k tok (hierarchy prompt rule rejected); replays with real images inspected; 5-session old/new diff |
 | Verify round 4 step A: keys (any name, .env order, one active key, minute wait/borrow), /display without animation frames, fallback, coverage stems, headings, C++, empty groups, image relevance, image tail back, overflow hold, 740 px budget | ✅ 400 total | ✅ Edge (12) + slow embedder calibration | ✅ 0 tokens: `[QUOTA]` with real .env; replay of 20261006-112149-411e with real images + current fallback |
 | V1b images: finder (previews → CLIP → full size), policy, engine, layout, /control (drop, add, change, ‹ ›, remove, zoom) | ✅ 384 total | ✅ Edge (2 image tests) | ✅ real Groq human_body (queries) + zero-token replay with real image search (4/4 found); A/B 11/11 valid |
@@ -186,7 +218,7 @@ Then V1c._
 | Display in Edge: 100 rapid in-place patches → 0 nodes re-created, no console errors | – | ✅ `-m browser` | ✅ |
 | Display: blank, navigation, self-reconnect after a server drop (freeze removed in step C) | – | ✅ `-m browser` | ✅ |
 | All 9 layouts × 2 themes (screenshots inspected) | – | – | ✅ `artifacts/display/` |
-| Control view (live preview, transcript, deck, keys) | – | – | ✅ `artifacts/app/` |
+| Control view (live preview, dock, structure tree, transcript strip, share, editing, keys) | – | ✅ Edge | ✅ `artifacts/app/` |
 | Utterance filter, concept tracker, gate/buffer (cuts, seal, cap, no loss) | ✅ | ✅ | ✅ |
 | LLM router: 429 cooldown, timeout+retry, hard total timeout, malformed bodies, TPM/RPM, per-model output cap | ✅ (mock HTTP) | – | ✅ real Groq + OpenRouter fall-through |
 | Interpreter: validation, repair within budget, deterministic fallback, sanitising | ✅ | ✅ | ✅ 0 fallbacks in real runs |
@@ -210,7 +242,8 @@ Then V1c._
 - `src/copilot/stt/`: engine, pipeline, factory, cuda_dlls
 - `src/copilot/presentation/`: spec (SlideSpec), deck, content (acts → pieces), composer (height model, merge, titles,
   provisional, revise/substitute/remove), planner (frame decision), engine (PresentationEngine), mathtext (formula → LaTeX), demo (scripted + stress)
-- `src/copilot/display/`: hub (WebSocket fan-out, coalescing outbox), server (FastAPI/uvicorn embedded)
+- `src/copilot/display/`: hub (WebSocket fan-out, coalescing outbox; roles display / control / viewer), server
+  (FastAPI/uvicorn embedded; `/view`, teacher key), share (Cloudflare quick tunnel, F-008)
 - `src/copilot/core/`: interpretation (Interpretation contract), memory (outline matching, rolling summary), textutil
 - `src/copilot/llm/`: providers (OpenAI-compatible), ratelimit, router (`build_router` from config `[llm]`)
 - `src/copilot/understanding/`: filter, embedder (MiniLM ONNX), tracker, gate, prompt, grounding, interpreter, service

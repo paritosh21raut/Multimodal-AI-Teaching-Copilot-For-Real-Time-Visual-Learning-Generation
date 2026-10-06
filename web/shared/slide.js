@@ -11,12 +11,14 @@ const ARROW = html`<svg class="arrow" viewBox="0 0 56 40" aria-hidden="true">
 const itemClass = (it, base) =>
   [base, "enter", it.provisional && "provisional", it.added && "added", it.emphasis && "emph"].filter(Boolean).join(" ");
 
-function Definition({ b, termInTitle }) {
-  return html`<div class="def enter">
-    ${!termInTitle && html`<div class="def-term enter">${rich(b.term)}</div>`}
-    <div class="def-body enter">${mixed(b.definition, b.math)}</div>
+// A definition: a card with a small "Definition" tab on its top edge (user 2026-10-06: the green side bar was
+// dull). Concepts side by side / members of a set (`card`): the whole column is one card, the term its heading.
+function Definition({ b, termInTitle, card }) {
+  return html`<div class=${"def enter" + (card ? " def-card" : "")}>
+    ${!termInTitle && html`<div class="def-term enter" data-edit=${card ? b.id + ":term" : undefined}>${rich(b.term)}</div>`}
+    <div class="def-body enter" data-edit=${b.id}>${!card && html`<span class="def-tab">Definition</span>`}${mixed(b.definition, b.math)}</div>
     ${b.notes.length > 0 && html`<div class="def-notes">
-      ${b.notes.map((n) => html`<span key=${n.id} class=${itemClass(n, "def-note")}>${mixed(n.text, n.math)}</span>`)}
+      ${b.notes.map((n) => html`<span key=${n.id} class=${itemClass(n, "def-note")} data-edit=${n.id}>${mixed(n.text, n.math)}</span>`)}
     </div>`}
   </div>`;
 }
@@ -40,7 +42,8 @@ function Points({ b, wide }) {
   return html`<div class="points">
     ${b.heading && html`<div class="points-heading">${rich(b.heading)}</div>`}
     <ol class=${`points-list list-${style} ${cols}`}>
-      ${markers(b.items, style).map(([it, mark]) => html`<li key=${it.id} class=${itemClass(it, "point")}>
+      ${markers(b.items, style).map(([it, mark]) => html`<li key=${it.id} class=${itemClass(it, "point")}
+          data-edit=${it.provisional ? undefined : it.id}>
         ${it.provisional ? html`<span class="num ghost"></span>`
           : mark ? html`<span class="num">${mark}</span>` : html`<span class="num bullet"></span>`}<span>${mixed(strip(it.text), strip(it.math))}</span>
       </li>`)}
@@ -60,7 +63,7 @@ function Process({ b }) {
   return html`<div class="process">
     <div class=${"process-row" + (b.steps.length >= 5 ? " many" : "")}>
       ${b.steps.map((s, i) => { const { label, detail } = stepText(s); return html`<div key=${s.id} class="step enter">
-        <div class="step-card">
+        <div class="step-card" data-edit=${s.id}>
           <span class="step-no">STEP ${i + 1}</span>
           <span class=${"step-label" + (label.length > LONG_STEP ? " long" : "")}>${mixed(label, s.math)}</span>
           ${detail && html`<span class="step-detail">${rich(detail)}</span>`}
@@ -102,11 +105,30 @@ function CauseEffect({ b }) {
 }
 
 function TreeNode({ n, root }) {
-  return html`<div class=${root ? "tree-root" : "tree-sub enter"}>
-    <div class="tree-node">${rich(n.label)}</div>
+  return html`<div class=${(root ? "tree-root" : "tree-sub enter") + (n.children.length ? " has-kids" : "")}>
+    <div class="tree-node" data-edit=${n.id}>${rich(n.label)}</div>
     ${n.children.length > 0 && html`<div class="tree-children">
       ${n.children.map((c) => html`<${TreeNode} key=${c.id} n=${c} />`)}
     </div>`}
+  </div>`;
+}
+
+const Chips = ({ label, labelId, kids }) => html`<div class="group enter">
+  <div class="group-label" data-edit=${labelId}>${rich(label)}</div>
+  <div class="group-items">${kids.map((c) => html`<span key=${c.id} class="group-item enter" data-edit=${c.id}>${rich(c.label)}</span>`)}</div>
+</div>`;
+
+// Beside an image a classification is one card: its label, the kinds as chips; a tree of several levels is a card
+// per divided kind under the tree's label (composer.block_height mirrors both).
+function NarrowTree({ root }) {
+  const divided = root.children.filter((c) => c.children.length);
+  if (!divided.length) return html`<div class="groups"><${Chips} label=${root.label} labelId=${root.id} kids=${root.children} /></div>`;
+  const leaves = root.children.filter((c) => !c.children.length);
+  return html`<div class="groups narrow-tree">
+    <div class="points-heading" data-edit=${root.id}>${rich(root.label)}</div>
+    ${divided.map((c) => html`<${Chips} key=${c.id} label=${c.label} labelId=${c.id} kids=${c.children} />`)}
+    ${leaves.length > 0 && html`<div class="group-items">${leaves.map((c) => html`<span key=${c.id}
+      class="group-item enter" data-edit=${c.id}>${rich(c.label)}</span>`)}</div>`}
   </div>`;
 }
 
@@ -114,7 +136,7 @@ function TreeNode({ n, root }) {
 // formulas inside it use the slide font (slide.css), so a word equation looks like the rest of the slide.
 function Formula({ b }) {
   return html`<div class="formula">
-    <div class="formula-eq enter"><${Tex} latex=${b.latex} text=${b.spoken || b.latex} /></div>
+    <div class="formula-eq enter" data-edit=${b.id} data-delete-only="1"><${Tex} latex=${b.latex} text=${b.spoken || b.latex} /></div>
     ${b.variables.length > 0 && html`<div class="formula-vars">
       ${b.variables.map((v) => html`<span key=${v.symbol} class="var enter"><${Tex} cls="sym" latex=${v.latex} text=${v.symbol} />
         <span class="meaning">${rich(v.meaning)}</span>${v.unit && html`<span class="unit">${v.unit}</span>`}</span>`)}
@@ -130,7 +152,7 @@ function Facts({ b, narrow }) {
   return html`<div class="facts">
     ${b.heading && html`<div class="points-heading">${rich(b.heading)}</div>`}
     <div class="facts-grid" style=${{ "--cols": cols }}>
-      ${b.facts.map((f) => html`<div key=${f.id} class="fact enter">
+      ${b.facts.map((f) => html`<div key=${f.id} class="fact enter" data-edit=${f.id}>
         <span class="fact-label">${rich(f.label)}</span>
         ${f.value && html`<span class="fact-value">${rich(f.value)}</span>`}
       </div>`)}
@@ -144,8 +166,9 @@ function Groups({ b }) {
     ${b.heading && html`<div class="points-heading">${rich(b.heading)}</div>`}
     <div class="groups-row">
       ${b.groups.map((g) => html`<div key=${g.id} class="group enter">
-        <div class="group-label">${rich(g.label)}</div>
-        <div class="group-items">${g.items.map((i) => html`<span key=${i.id} class=${itemClass(i, "group-item")}>${rich(i.text)}</span>`)}</div>
+        <div class="group-label" data-edit=${g.id}>${rich(g.label)}</div>
+        <div class="group-items">${g.items.map((i) => html`<span key=${i.id} class=${itemClass(i, "group-item")}
+          data-edit=${i.id}>${rich(i.text)}</span>`)}</div>
       </div>`)}
     </div>
   </div>`;
@@ -198,18 +221,15 @@ function Block({ b, wide, termInTitle, narrow }) {
     case "comparison": return html`<${Comparison} b=${b} />`;
     case "timeline": return html`<${Timeline} b=${b} />`;
     case "cause_effect": return html`<${CauseEffect} b=${b} />`;
-    case "hierarchy": return narrow
-      // beside an image a classification is one card: its label, the kinds as chips (composer.block_height)
-      ? html`<div class="groups"><div class="group enter"><div class="group-label">${rich(b.root.label)}</div>
-          <div class="group-items">${b.root.children.map((c) => html`<span key=${c.id} class="group-item enter">${rich(c.label)}</span>`)}</div>
-        </div></div>`
+    case "hierarchy": return narrow ? html`<${NarrowTree} root=${b.root} />`
       : html`<div class="tree"><${TreeNode} n=${b.root} root /></div>`;
     case "formula": return html`<${Formula} b=${b} />`;
     case "image": return html`<${Figure} b=${b} />`;
     case "groups": return html`<${Groups} b=${b} />`;
-    case "example": return html`<div class="example enter"><span class="label">Example</span>
+    case "example": return html`<div class="example enter" data-edit=${b.id}><span class="label">Example</span>
       ${b.title && html`<span class="title">${rich(b.title)}</span>`}${mixed(b.text, b.math)}</div>`;
-    case "callout": return html`<div class="callout enter"><span class="label">${
+    // a note is labelled like an example, on a plain card (user 2026-10-06: the coloured note card looked bad)
+    case "callout": return html`<div class=${"callout enter " + b.kind} data-edit=${b.id}><span class="label">${
       { key: "Key idea", tip: "Remember", note: "Note" }[b.kind]}</span>${mixed(b.text, b.math)}</div>`;
     default: return null;
   }
@@ -276,7 +296,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
     return html`<section data-slide=${spec.id} class=${`slide layout-title ${phase}`} style=${style}>
       <div class="slide-head">
         <div class="rule"></div>
-        <h1 class="slide-title">${rich(spec.title)}</h1>
+        <h1 class="slide-title"><span data-edit="title">${rich(spec.title)}</span></h1>
         ${spec.subtitle && html`<p class="slide-subtitle">${spec.subtitle}</p>`}
       </div>
     </section>`;
@@ -302,7 +322,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
         ${spec.facet && html`<span class="sep"></span><span class="facet">${spec.facet}</span>`}
         ${spec.continuation_of && !spec.facet && html`<span class="cont">continued</span>`}
       </div>`}
-      <h1 class="slide-title">${rich(title)}${spec.part && html`<span class="part" title=${`Part ${spec.part}`}>${partLabel(spec.part)}</span>`}</h1>
+      <h1 class="slide-title"><span data-edit="title">${rich(title)}</span>${spec.part && html`<span class="part" title=${`Part ${spec.part}`}>${partLabel(spec.part)}</span>`}</h1>
     </header>
     <div ref=${bodyRef} class=${bodyClass}
       style=${image ? { "--img-col": `${imageColumn(image.aspect)}px` } : null}>
@@ -314,7 +334,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
         <div class="main below">${below.map((b) => html`<${Block} key=${b.id} b=${b} wide=${true} />`)}</div>`
       : html`<div class="main">
         ${pairDefs && html`<div class=${`def-pair cols-${gridCols}`}>${defs.map((d) => html`<div key=${d.id} class="def-col">
-          <${Definition} b=${d} termInTitle=${false} />
+          <${Definition} b=${d} termInTitle=${false} card />
           ${spec.blocks.filter((b) => b.about === d.id).map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} />`)}
         </div>`)}</div>`}
         ${mainRest.map((b) => html`<${Block} key=${b.id} b=${b} wide=${!aside.length && !image} narrow=${!!image}
@@ -324,6 +344,53 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
       ${figure}`}
     </div>
   </section>`;
+}
+
+// The title the slide shows: a single definition's term on a definition slide, otherwise the slide title.
+export function shownTitle(spec) {
+  if (!spec) return "";
+  const defs = (spec.blocks || []).filter((b) => b.type === "definition");
+  return spec.layout === "definition" && defs.length === 1 ? defs[0].term : spec.title;
+}
+
+// The text the teacher edits for an element marked data-edit (live editing in /control, round 4 step D): the same
+// ids the server's composer.edit_text uses. null = no such element on this slide.
+export function editableText(spec, id) {
+  if (!spec) return null;
+  if (id === "title") return shownTitle(spec);
+  let found = null;
+  const walk = (n) => { if (n.id === id) found = n.label; n.children.forEach(walk); };
+  for (const b of spec.blocks) {
+    if (b.type === "definition") {
+      if (id === b.id) return b.definition;
+      if (id === `${b.id}:term`) return b.term;
+      const n = b.notes.find((x) => x.id === id);
+      if (n) return n.text;
+    } else if (b.type === "points") {
+      const i = b.items.find((x) => x.id === id);
+      if (i) return i.text;
+    } else if (b.type === "process") {
+      const s = b.steps.find((x) => x.id === id);
+      if (s) return s.label;
+    } else if (b.type === "facts") {
+      const f = b.facts.find((x) => x.id === id);
+      if (f) return f.value ? `${f.label}: ${f.value}` : f.label;
+    } else if (b.type === "groups") {
+      for (const g of b.groups) {
+        if (g.id === id) return g.label;
+        const i = g.items.find((x) => x.id === id);
+        if (i) return i.text;
+      }
+    } else if (b.type === "hierarchy") {
+      walk(b.root);
+      if (found !== null) return found;
+    } else if ((b.type === "example" || b.type === "callout") && b.id === id) {
+      return b.text;
+    } else if (b.type === "formula" && b.id === id) {
+      return b.spoken || b.latex;
+    }
+  }
+  return null;
 }
 
 // Scales the 1920x1080 stage to fit its container, letterboxed and centred.

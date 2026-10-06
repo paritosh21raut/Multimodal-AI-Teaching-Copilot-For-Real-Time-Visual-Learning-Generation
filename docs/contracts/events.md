@@ -28,6 +28,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `ImageRequested` | presentation engine | `request_id`, `slide_id`, `query`, `kind` (photo/diagram), `exclude` (image ids already offered), `deeper`, `reason` (auto/change) — F-007b |
 | `ImageReady` | image service | `request_id`, `slide_id`, `query`, `kind`, `images` (≤ 3 `CachedImage` dumps, best first), `reason` (why none), `cached`, `seconds` |
 | `ImageChoices` | presentation engine | `slide_id`, `index`, `count` — the images this slide has shown, for the previous / next arrows (control only) |
+| `ShareChanged` | share service (F-008) | `state` (off/starting/on/failed), `url` (`<tunnel>/view` while on), `detail` (progress or why it failed) |
 | `ErrorRaised` | any | `component`, `error`, `fatal` |
 
 `TranscriptSegment`: `id, text, start, end, confidence, language="en", source="mic"|"sim"`.
@@ -35,7 +36,8 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 `Command.kind`: `start, end, pause, resume (lifecycle LIVE ⇄ PAUSED; replaced freeze/unfreeze), next, prev, goto, pin, unpin, blank, unblank,
 force_new_slide, resolve_concern(id, action), remove_image(slide_id), change_image(slide_id),
 set_image(slide_id, image_id, aspect, alt), image_prev(slide_id), image_next(slide_id), zoom_image(slide_id),
-unzoom_image` (image commands: F-007b; `change_image` on a slide without an image = the teacher's Find image; `set_image` follows `POST /api/upload`; zoom is a deck display flag).
+unzoom_image, edit_text(slide_id, item_id = title | element id | <definition id>:term, text), delete_item(slide_id,
+item_id), add_point(slide_id, text), share_start, share_stop` (editing and sharing: F-008; image commands: F-007b; `change_image` on a slide without an image = the teacher's Find image; `set_image` follows `POST /api/upload`; zoom is a deck display flag).
 
 `Interpretation` (`core/interpretation.py`): `topic, subtopic, relation, acts[{act, lines, items, added}],
 representation_hint, meta_lines, concerns[{claim, issue, suggested_correction, confidence, lines, kind, wrong, right}], revisions[{ref, text}], level_estimate,

@@ -1,8 +1,10 @@
-html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font-text); font-size: 15px; }
+html, body, #root { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font-text); font-size: 15px; }
 * { box-sizing: border-box; }
-.control { display: grid; grid-template-rows: auto 1fr; height: 100%; }
+/* header · preview + dock | mistakes + lecture structure · transcript strip at the bottom (F-008) */
+.control { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 100%; }
 
-.bar { display: flex; align-items: center; gap: 12px; padding: 10px 18px; border-bottom: 1px solid var(--line); background: var(--surface); }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 18px; border-bottom: 1px solid var(--line); background: var(--surface); }
+.bar .spacer { flex: 1; }
 .bar strong { font-size: 16px; margin-right: 8px; }
 .pill { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
 .pill.live, .pill.ok { background: var(--accent-soft); color: var(--accent); }
@@ -11,11 +13,19 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); 
 .meter { width: 160px; height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
 .meter-fill { height: 100%; background: var(--muted); transition: width 120ms linear; }
 .meter-fill.speaking { background: var(--accent); }
-.open-display { margin-left: auto; color: var(--accent); text-decoration: none; font-weight: 600; }
+.open-display { color: var(--accent); text-decoration: none; font-weight: 600; white-space: nowrap; }
 
-.grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr); gap: 18px; padding: 18px; min-height: 0; }
+.grid { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(280px, 1fr); gap: 18px; padding: 18px; min-height: 0; overflow: auto; }
 .left, .right { display: grid; gap: 14px; align-content: start; min-height: 0; }
-.right { grid-template-rows: auto auto 1fr auto; }
+/* the preview (16:9, overflow hidden) keeps its height when the transcript opens: a scroll container's automatic
+   minimum height is 0, so an auto row let the dock slide over the preview */
+.left { grid-auto-rows: max-content; }
+.right { grid-template-rows: auto minmax(0, 1fr); }
+/* a narrow window: one column, the structure under the controls */
+@media (max-width: 980px) {
+  .grid { grid-template-columns: minmax(0, 1fr); grid-auto-rows: max-content; }
+  .right { grid-template-rows: auto auto; }
+}
 
 .preview { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: var(--bg); }
 .preview .stage { position: absolute; left: 50%; top: 50%; transform-origin: center center; }
@@ -108,19 +118,77 @@ button:hover { border-color: var(--accent); }
 .dock button.end:hover { background: var(--accent-2-soft); color: var(--accent-2); }
 .dock .end .ico { width: 14px; height: 14px; }
 
-.deck { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 30vh; overflow: auto; }
-.deck li { display: flex; gap: 10px; align-items: baseline; padding: 8px 12px; border-radius: 8px; background: var(--surface); cursor: pointer; border: 1px solid transparent; }
-.deck li.live { border-color: var(--accent); }
-.deck .n { color: var(--muted); font-variant-numeric: tabular-nums; width: 22px; }
-.deck .t { font-weight: 600; }
-.deck .f { color: var(--muted); font-size: 13px; }
-
 h2 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
-.transcript { overflow: auto; background: var(--surface); border-radius: 10px; padding: 12px 14px; min-height: 200px; }
-.transcript p { margin: 0 0 8px; line-height: 1.4; }
-.transcript p.dropped { color: var(--muted); font-style: italic; }
-.transcript .ts { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 10px; font-size: 13px; }
+h2 .muted { margin-left: 6px; font-weight: 500; letter-spacing: 0.02em; text-transform: none; }
 .hint { margin: 0; color: var(--muted); font-size: 13px; }
+
+/* ---- lecture structure (F-008): topic → facet → slides; click shows the slide ---- */
+.structure { display: grid; gap: 10px; align-content: start; min-height: 0; grid-template-rows: auto minmax(0, 1fr); }
+.structure .empty { margin: 0; color: var(--muted); font-size: 14px; }
+.structure ol { list-style: none; margin: 0; padding: 0; }
+.structure .topics { overflow: auto; min-height: 0; display: grid; gap: 14px; align-content: start; padding: 12px; border-radius: 10px; background: var(--surface); border: 1px solid color-mix(in srgb, var(--line) 80%, transparent); }
+.topic-name { font-weight: 700; font-size: 15px; color: var(--accent); margin-bottom: 6px; overflow-wrap: anywhere; }
+.structure .facets { display: grid; gap: 4px; border-left: 2px solid var(--line); margin-left: 6px; padding-left: 10px; }
+.facet-name { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding: 6px 0 2px 2px; overflow-wrap: anywhere; }
+.slides { display: grid; gap: 2px; }
+.slide-row { display: flex; align-items: baseline; gap: 8px; padding: 6px 8px; border-radius: 8px; cursor: pointer; min-width: 0; }
+.slide-row:hover { background: var(--surface-2); }
+.slide-row.live { background: var(--accent-soft); }
+.slide-row.live .t { color: var(--accent); }
+.slide-row .n { flex: none; width: 20px; text-align: right; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.slide-row .t { font-weight: 600; font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slide-row .part { flex: none; font-size: 11px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 7px; }
+.slide-row.live .part { background: var(--surface); }
+
+/* ---- transcript strip at the bottom (F-008): the last line; click to read it all ---- */
+.transcript-strip { border-top: 1px solid var(--line); background: var(--surface); }
+.strip-head {
+  display: flex; align-items: center; gap: 14px; width: 100%; min-width: 0; padding: 10px 18px;
+  border: 0; border-radius: 0; background: transparent; text-align: left; font-weight: 400; cursor: pointer;
+}
+.strip-head:hover { background: var(--surface-2); }
+.strip-head h2 { flex: none; }
+.strip-head .last { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2, var(--ink)); }
+.strip-head .last.dropped { color: var(--muted); font-style: italic; }
+.strip-head .chev { margin-left: auto; color: var(--muted); transition: transform 160ms ease; }
+.transcript-strip.open .chev { transform: rotate(180deg); }
+.transcript { overflow: auto; height: 36vh; padding: 4px 18px 14px; }
+.transcript p { margin: 0 0 8px; line-height: 1.4; max-width: 110ch; }
+.transcript p.dropped { color: var(--muted); font-style: italic; }
+.transcript .ts, .strip-head .ts { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 10px; font-size: 13px; }
+
+/* ---- share with students (F-008) ---- */
+.share { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.share > button { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 14px; border-radius: 999px; font-size: 13px; color: var(--accent); }
+.share > button:disabled { color: var(--muted); cursor: default; }
+.share-error { font-size: 12px; color: var(--accent-2); max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.share.on { padding: 3px 4px 3px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); max-width: 100%; }
+.share.on .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: blink 1.6s ease-in-out infinite; }
+.share.on .link { color: var(--accent); font-weight: 700; font-size: 13px; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; max-width: 340px; }
+.share.on .viewers { flex: none; font-size: 12px; font-weight: 600; color: var(--ink-2, var(--ink)); }
+.share.on button.icon { flex: none; width: 28px; height: 28px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 999px; background: transparent; color: var(--accent); }
+.share.on button.icon:hover { background: var(--surface); }
+
+/* ---- live slide editing (F-008): outline + pencil / bin over the hovered item; the edit box over it ---- */
+.edit-outline { position: absolute; z-index: 3; pointer-events: none; border: 2px solid var(--accent); border-radius: 8px; box-shadow: 0 0 0 3px var(--accent-soft); }
+.edit-tools {
+  position: absolute; z-index: 4; display: inline-flex; gap: 2px; padding: 2px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--line); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  animation: bar-in 140ms ease both;
+}
+.edit-tools button.icon { width: 28px; height: 28px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 999px; background: transparent; color: var(--ink); }
+.edit-tools button.icon:hover { background: var(--accent-soft); color: var(--accent); }
+.edit-tools button.danger:hover { background: var(--accent-2-soft); color: var(--accent-2); }
+.edit-box {
+  position: absolute; z-index: 5; display: grid; gap: 4px; padding: 6px; border-radius: 10px;
+  background: var(--surface); border: 2px solid var(--accent); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+.edit-box.new { left: 12px; right: 12px; bottom: 56px; }
+.edit-box textarea {
+  width: 100%; min-height: 34px; resize: vertical; border: 0; outline: none; background: transparent; color: var(--ink);
+  font: 500 15px/1.4 var(--font-text); padding: 4px 6px;
+}
+.edit-hint { font-size: 11px; color: var(--muted); padding: 0 6px 2px; }
 
 .concerns { display: grid; gap: 10px; }
 .concerns h2 .count { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--accent-2); color: #fff; font-size: 11px; }
@@ -134,7 +202,6 @@ h2 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08
 .concern .close { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 999px; background: transparent; color: var(--muted); }
 .concern .close:hover { background: var(--surface-2); color: var(--ink); }
 .concern .close .ico { width: 14px; height: 14px; }
-.deck .t .part { font-size: 11px; font-weight: 700; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 1px 7px; margin-left: 4px; }
 .concern .issue { color: var(--ink-2, var(--muted)); font-size: 14px; }
 .concern-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 .concern-actions button { padding: 6px 10px; font-size: 13px; }

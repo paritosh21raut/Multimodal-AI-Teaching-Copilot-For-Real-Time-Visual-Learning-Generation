@@ -7,6 +7,7 @@ import hashlib
 import json
 import logging
 import re
+import secrets
 import urllib.parse
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
@@ -92,10 +93,39 @@ def versioned_page(page: Path, web_root: Path) -> str:
 UPLOAD_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
 _MEDIA_NAME = re.compile(r"[0-9a-f]{16}\.jpg")
 
+# ---- who may control (F-008) ----------------------------------------------------------------------------
+# The Cloudflare tunnel connects from this machine, so the client address alone cannot tell a student from the
+# teacher: a request is local only from the loopback address, addressed to localhost, with no proxy headers (the
+# tunnel always adds them; a client cannot remove what Cloudflare's edge adds). Anything else needs the teacher key.
+KEY_COOKIE = "copilot_key"
+PROXY_HEADERS = ("cf-ray", "cf-connecting-ip", "cf-visitor", "x-forwarded-for", "x-forwarded-host", "forwarded")
+LOOPBACK = {"127.0.0.1", "::1"}
+LOCAL_NAMES = {"localhost", "127.0.0.1", "::1"}
+
+FORBIDDEN_PAGE = """<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport"
+content="width=device-width, initial-scale=1"><title>Teacher only</title></head><body style="font:17px/1.5 system-ui,
+sans-serif;margin:12vh auto;max-width:560px;padding:0 16px;color:#16191d;background:#f6f3ec"><h1 style="font-size:24px">
+This page is for the teacher</h1><p>Students: open the <a href="/view">live slide</a>.</p></body></html>"""
+
+
+def is_local(client_host: Optional[str], headers) -> bool:
+    if client_host not in LOOPBACK or any(h in headers for h in PROXY_HEADERS):
+        return False
+    host = headers.get("host", "")
+    name = host.rsplit(":", 1)[0] if not host.startswith("[") else host[1:].split("]", 1)[0]
+    return name.lower() in LOCAL_NAMES
+
 
 def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
-               upload_max_bytes: int = 10 * 1024 * 1024) -> FastAPI:
+               upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None) -> FastAPI:
+    """control_key: the teacher key for /control, /display, uploads and commands from outside this machine
+    (None = no check, the in-process test harness)."""
     app = FastAPI(title="Teaching Copilot", docs_url=None, redoc_url=None)
+
+    def trusted(conn) -> bool:  # an HTTP request or a WebSocket
+        if control_key is None or is_local(conn.client.host if conn.client else None, conn.headers):
+            return True
+        return secrets.compare_digest(conn.cookies.get(KEY_COOKIE, ""), control_key)
 
     @app.get("/media/{name}")
     async def media_file(name: str):
@@ -109,6 +139,8 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
     async def upload(request: Request):
         """The teacher's own image (drag & drop / Add image in /control). Stores a validated, re-encoded copy and
         returns its id; putting it on a slide is a separate `set_image` command (the UI never changes state)."""
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
         if media is None:
             return JSONResponse({"error": "images are not available"}, status_code=503)
         ctype = request.headers.get("content-type", "").split(";")[0].strip().lower()
@@ -137,20 +169,36 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
                              "aspect": round(img.aspect, 3), "alt": img.alt})
 
     @app.get("/")
-    async def root():
-        return RedirectResponse("/control")
+    async def root(request: Request):
+        return RedirectResponse("/control" if trusted(request) else "/view")
 
     @app.get("/favicon.ico")
     async def favicon():
         return Response(status_code=204)
 
     @app.get("/display")
-    async def display_page():
+    async def display_page(request: Request):
+        if not trusted(request):  # the projector page reports layout overflow; students get the view page
+            return RedirectResponse("/view")
+        return HTMLResponse(versioned_page(web_root / "display" / "index.html", web_root),
+                            headers={"Cache-Control": "no-store"})
+
+    @app.get("/view")
+    async def view_page():
+        # students (shared link): the projector page as a viewer — the live slide only, nothing sent back
         return HTMLResponse(versioned_page(web_root / "display" / "index.html", web_root),
                             headers={"Cache-Control": "no-store"})
 
     @app.get("/control")
-    async def control_page():
+    async def control_page(request: Request, key: str = ""):
+        if not trusted(request):
+            if control_key is not None and key and secrets.compare_digest(key, control_key):
+                # the teacher's link from the terminal: remember the key in a cookie, drop it from the address bar
+                response = RedirectResponse("/control")
+                response.set_cookie(KEY_COOKIE, control_key, httponly=True, samesite="strict",
+                                    secure=request.headers.get("x-forwarded-proto", request.url.scheme) == "https")
+                return response
+            return HTMLResponse(FORBIDDEN_PAGE, status_code=403)
         return HTMLResponse(versioned_page(web_root / "control" / "index.html", web_root),
                             headers={"Cache-Control": "no-store"})
 
@@ -166,8 +214,8 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
 
     @app.websocket("/ws")
     async def ws(websocket: WebSocket, role: str = "display"):
-        if role not in ("display", "control"):
-            await websocket.close(code=1008)
+        if role not in ("display", "control", "viewer") or (role != "viewer" and not trusted(websocket)):
+            await websocket.close(code=1008)  # policy violation: students are viewers
             return
         await websocket.accept()
         conn = hub.connect(role)  # type: ignore[arg-type]
@@ -212,10 +260,11 @@ class _EmbeddedServer(uvicorn.Server):
 class DisplayServer:
     def __init__(self, hub: DisplayHub, host: str = "127.0.0.1", port: int = 8765,
                  web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
-                 upload_max_bytes: int = 10 * 1024 * 1024) -> None:
+                 upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None) -> None:
         self.host, self.port = host, port
+        self.control_key = control_key
         self._server = _EmbeddedServer(
-            uvicorn.Config(create_app(hub, web_root, media, upload_max_bytes), host=host, port=port,
+            uvicorn.Config(create_app(hub, web_root, media, upload_max_bytes, control_key), host=host, port=port,
                            log_level="warning", lifespan="off")
         )
         self._task: Optional[asyncio.Task] = None

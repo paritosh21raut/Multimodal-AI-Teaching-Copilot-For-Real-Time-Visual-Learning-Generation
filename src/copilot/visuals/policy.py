@@ -109,6 +109,8 @@ def blocked(spec: SlideSpec) -> Optional[str]:
     for i, b in enumerate(content):
         if b.type in NO_IMAGE_BESIDE:
             return f"{b.type} needs the full width"
+        if b.type == "hierarchy" and any(c.children for c in b.root.children):
+            return "a tree of several levels needs the full width"
         if b.type == "formula" and (i == 0 or sum(1 for x in content if x.type == "formula") > 1):
             return "formula needs the full width"
         if b.type == "facts" and len(b.facts) > MAX_FACT_TILES:

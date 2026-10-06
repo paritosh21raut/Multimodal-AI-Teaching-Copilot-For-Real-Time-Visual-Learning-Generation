@@ -1,7 +1,7 @@
 // /control — the teacher's laptop view: live preview, deck, controls, transcript, status.
 // It never changes state itself; every action is a command sent to the server.
 import { html, render, useEffect, useReducer, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
-import { Slide, ZoomedImage, imageOf, partLabel, useStageScale } from "../shared/slide.js";
+import { Slide, ZoomedImage, editableText, imageOf, partLabel, shownTitle, useStageScale } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
 
 const KEYS = {
@@ -54,8 +54,93 @@ const ICON = {
   pause: "M8.5 5v14M15.5 5v14",
   blank: "M3 5h18v12H3zM8 21h8M12 17v4M5 3l14 16",
   newSlide: "M4 5h16v14H4zM12 9v6M9 12h6",
-  end: "M7 7h10v10H7z",
+  end: "M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M9 8l-4 4 4 4M5 12h11",  // leave (a stop square meant nothing)
+  edit: "M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4",
+  bin: "M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13M10 11v6M14 11v6",
+  point: "M5 7h.01M9 7h10M5 12h.01M9 12h10M5 17h.01M9 17h6M19 15v6M16 18h6",
+  share: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z",
+  copy: "M9 9h11v11H9zM5 15H4V4h11v1",
+  stop: "M6 6l12 12M18 6L6 18",
+  chevron: "M6 9l6 6 6-6",
 };
+
+// ---- live slide editing (F-008): hover an item of the preview → pencil / bin; the title → pencil; Add point ----
+// Every change is a command; the server keeps the teacher's text final (the lecture never rewrites it).
+function EditLayer({ host, spec, send, adding, onAdded }) {
+  const [hover, setHover] = useState(null);  // {id, box, deleteOnly}
+  const [edit, setEdit] = useState(null);    // {id, box, text}
+  const area = useRef(null);
+  const boxOf = (el) => {
+    const p = host.current.getBoundingClientRect(), r = el.getBoundingClientRect();
+    return { left: r.left - p.left, top: r.top - p.top, width: r.width, height: r.height };
+  };
+  const find = (id) => host.current && host.current.querySelector(`.stage [data-edit="${CSS.escape(id)}"]`);
+  useEffect(() => {
+    const el = host.current;
+    if (!el) return undefined;
+    const move = (e) => {
+      if (edit || e.target.closest(".edit-tools")) return;  // keep the tools while the pointer is on them
+      const t = e.target.closest(".stage [data-edit]");
+      if (!t) { setHover(null); return; }
+      const id = t.dataset.edit;
+      setHover((h) => (h && h.id === id ? h : { id, box: boxOf(t), deleteOnly: !!t.dataset.deleteOnly }));
+    };
+    const leave = () => setHover(null);
+    el.addEventListener("mousemove", move);
+    el.addEventListener("mouseleave", leave);
+    return () => { el.removeEventListener("mousemove", move); el.removeEventListener("mouseleave", leave); };
+  }, [edit]);
+  useEffect(() => { setHover(null); setEdit(null); }, [spec.id]);  // another slide: nothing stale
+  useEffect(() => {  // the slide changed in place: follow the element, or forget it when it is gone
+    if (hover) { const t = find(hover.id); setHover(t ? { ...hover, box: boxOf(t) } : null); }
+  }, [spec]);
+  useEffect(() => { if (adding) setEdit({ id: "__new", box: null, text: "" }); }, [adding]);
+  useEffect(() => {
+    if (!edit || !area.current) return;
+    area.current.focus();
+    if (edit.id !== "__new") area.current.select();
+  }, [edit && edit.id]);
+
+  const done = useRef(false);  // Enter, then the blur of the closing box: one command, not two
+  const start = (h) => { done.current = false; setEdit({ id: h.id, box: h.box, text: editableText(spec, h.id) || "" }); setHover(null); };
+  useEffect(() => { if (adding) done.current = false; }, [adding]);
+  const close = () => { done.current = true; if (edit && edit.id === "__new") onAdded(); setEdit(null); };
+  const save = () => {
+    if (!edit || done.current) return;
+    const text = edit.text.trim();
+    if (edit.id === "__new") { if (text) send("add_point", { slide_id: spec.id, text }); }
+    else if (text && text !== editableText(spec, edit.id)) send("edit_text", { slide_id: spec.id, item_id: edit.id, text });
+    close();
+  };
+  const keys = (e) => {
+    e.stopPropagation();  // Space, arrows and letters are text here, not lecture controls
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); save(); }
+    else if (e.key === "Escape") { e.preventDefault(); close(); }
+  };
+
+  if (edit) {
+    const b = edit.box;
+    const style = b ? { left: `${b.left - 6}px`, top: `${b.top - 6}px`, width: `${Math.max(b.width + 12, 320)}px`,
+      minHeight: `${Math.max(b.height + 12, 46)}px` } : null;
+    return html`<div class=${"edit-box" + (b ? "" : " new")} style=${style}>
+      <textarea ref=${area} value=${edit.text} rows=${b ? Math.max(1, Math.round(b.height / 30)) : 2}
+        placeholder=${edit.id === "__new" ? "Type the new point" : ""}
+        onInput=${(e) => setEdit({ ...edit, text: e.target.value })} onKeyDown=${keys} onBlur=${save}></textarea>
+      <span class="edit-hint">${edit.id === "__new" ? "Enter adds the point" : "Enter saves"} · Esc cancels</span>
+    </div>`;
+  }
+  if (!hover) return null;
+  const b = hover.box;
+  const top = b.top > 40 ? b.top - 36 : b.top + 4;
+  return html`
+    <div class="edit-outline" style=${{ left: `${b.left - 4}px`, top: `${b.top - 4}px`, width: `${b.width + 8}px`, height: `${b.height + 8}px` }}></div>
+    <div class="edit-tools" style=${{ left: `${Math.max(4, b.left + b.width - (hover.deleteOnly || hover.id === "title" ? 32 : 64))}px`, top: `${top}px` }}>
+      ${!hover.deleteOnly && html`<button class="icon" title="Edit (your text stays as you write it)" aria-label="Edit"
+        onClick=${() => start(hover)}>${svg(ICON.edit)}</button>`}
+      ${hover.id !== "title" && html`<button class="icon danger" title="Delete from the slide" aria-label="Delete"
+        onClick=${() => { send("delete_item", { slide_id: spec.id, item_id: hover.id }); setHover(null); }}>${svg(ICON.bin)}</button>`}
+    </div>`;
+}
 
 // Small status line on the preview (bottom left): searching, nothing found after Change, upload errors.
 // `request` is what started the search: auto, or change (the teacher's Find image / Change).
@@ -112,7 +197,7 @@ function ImageBar({ spec, image, choices, status, send, onNotice }) {
   </div>`;
 }
 
-function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice }) {
+function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice, adding, onAdded }) {
   const ref = useRef(null);
   const scale = useStageScale(ref);
   const [drag, setDrag] = useState(null); // null | "over" | "uploading"
@@ -142,6 +227,7 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
         onImageClick=${drag ? undefined : () => send("zoom_image", { slide_id: spec.id })} />` : html`<div class="waiting">No slide yet</div>`}
       ${zoomed && html`<${ZoomedImage} key=${zoomed.image_id || zoomed.url} image=${zoomed} onClose=${() => send("unzoom_image")} />`}
     </div>
+    ${spec && !zoomed && !drag && html`<${EditLayer} host=${ref} spec=${spec} send=${send} adding=${adding} onAdded=${onAdded} />`}
     ${zoomed && html`<button class="back" onClick=${() => send("unzoom_image")} title="Back to the slide (Esc)">
       ${svg(ICON.back)}<span>Back to slide</span><kbd>Esc</kbd></button>`}
     ${spec && spec.layout !== "title" && !zoomed && !drag && html`<${ImageBar} spec=${spec} image=${image}
@@ -159,7 +245,7 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
 // Teacher controls under the preview.
 const endLecture = (send) => () => confirm("End the lecture?") && send("end");
 
-function Dock({ deck, lifecycle, send, toggle }) {
+function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd }) {
   const ids = deck ? deck.slide_ids : [];
   const at = deck ? ids.indexOf(deck.live_id) : -1;
   const paused = lifecycle === "paused";
@@ -184,6 +270,8 @@ function Dock({ deck, lifecycle, send, toggle }) {
     </div>
     <div class="group">
       <button onClick=${() => send("force_new_slide")} title="Start a new slide (N)">${svg(ICON.newSlide)}<span>New slide</span></button>
+      <button class="add-point" onClick=${onAdd} disabled=${!canAdd} title="Add a point of your own to this slide">
+        ${svg(ICON.point)}<span>Add point</span></button>
     </div>
     <button class="end" onClick=${endLecture(send)} title="End the lecture">${svg(ICON.end)}<span>End lecture</span></button>
   </div>`;
@@ -223,9 +311,102 @@ function Concerns({ concerns, send }) {
   </section>`;
 }
 
+// ---- lecture structure (F-008): topic → facet → slides, from the deck; click a slide to show it ----
+function outline(ids, slides) {
+  const topics = [];
+  ids.forEach((id, i) => {
+    const s = slides[id];
+    if (!s) return;
+    const topic = s.layout === "title" ? s.title : s.subtitle || s.title;
+    let t = topics[topics.length - 1];
+    if (!t || t.name.toLowerCase() !== topic.toLowerCase()) topics.push((t = { name: topic, facets: [] }));
+    const facet = s.layout === "title" ? "" : s.facet || "";
+    let f = t.facets[t.facets.length - 1];
+    if (!f || f.name.toLowerCase() !== facet.toLowerCase()) t.facets.push((f = { name: facet, slides: [] }));
+    f.slides.push({ id, n: i + 1, title: shownTitle(s), part: s.part });
+  });
+  return topics;
+}
+
+function Structure({ deck, slides, send }) {
+  const ids = deck ? deck.slide_ids : [];
+  const live = deck && deck.live_id;
+  const liveRef = useRef(null);
+  useEffect(() => { liveRef.current && liveRef.current.scrollIntoView({ block: "nearest" }); }, [live]);
+  const row = (s, label) => html`<li key=${s.id} ref=${s.id === live ? liveRef : null}
+      class=${"slide-row" + (s.id === live ? " live" : "")} onClick=${() => send("goto", { slide_id: s.id })}
+      title=${`Show slide ${s.n} on the display`}>
+    <span class="n">${s.n}</span><span class="t">${label || s.title}</span>${s.part && html`<span class="part">${partLabel(s.part)}</span>`}
+  </li>`;
+  return html`<section class="structure">
+    <h2>Lecture structure ${ids.length > 0 && html`<span class="muted">${ids.length} slide${ids.length > 1 ? "s" : ""}</span>`}</h2>
+    ${!ids.length ? html`<p class="empty">The slides appear here as the lecture goes on.</p>` : html`<ol class="topics">
+      ${outline(ids, slides).map((t, ti) => html`<li key=${ti} class="topic">
+        <div class="topic-name">${t.name}</div>
+        <ol class="facets">${t.facets.map((f, fi) => {
+          // a facet with one slide of the same name is one row; otherwise the facet heads its slides
+          const single = f.slides.length === 1 && (!f.name || f.slides[0].title.toLowerCase() === f.name.toLowerCase());
+          return single ? row(f.slides[0]) : html`<li key=${fi} class="facet">
+            ${f.name && html`<div class="facet-name">${f.name}</div>`}
+            <ol class="slides">${f.slides.map((s) => row(s))}</ol>
+          </li>`;
+        })}</ol>
+      </li>`)}
+    </ol>`}
+  </section>`;
+}
+
+// ---- transcript (F-008): a strip at the bottom with the last line; click to read it all ----
+function TranscriptStrip({ lines }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => { const el = ref.current; if (el) el.scrollTop = el.scrollHeight; }, [lines.length, open]);
+  const last = lines[lines.length - 1];
+  const text = (l) => (l.dropped ? `(${l.dropped}) ${l.text || ""}` : l.text);
+  return html`<footer class=${"transcript-strip" + (open ? " open" : "")}>
+    <button class="strip-head" onClick=${() => setOpen(!open)} aria-expanded=${open}
+        title=${open ? "Hide the transcript" : "Show the whole transcript"}>
+      <h2>Transcript</h2>
+      ${!open && html`<span class=${"last" + (last && last.dropped ? " dropped" : "")}>${last
+        ? html`<span class="ts">${formatTime(last.t)}</span>${text(last)}` : "Nothing heard yet"}</span>`}
+      ${svg(ICON.chevron, "chev")}
+    </button>
+    ${open && html`<div class="transcript" ref=${ref}>
+      ${lines.map((l, i) => html`<p key=${i} class=${l.dropped ? "dropped" : ""}>
+        <span class="ts">${formatTime(l.t)}</span>${text(l)}</p>`)}
+    </div>`}
+  </footer>`;
+}
+
+// ---- share with students (F-008): a Cloudflare quick tunnel to /view ----
+function Share({ share, viewers, send }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(share.url); setCopied(true); setTimeout(() => setCopied(false), 1600); }
+    catch (e) { window.prompt("Copy the link for the students:", share.url); }
+  };
+  if (share.state === "on") {
+    return html`<div class="share on">
+      <span class="dot"></span>
+      <a class="link" href=${share.url} target="_blank" rel="noopener" title="The students open this link">${share.url.replace(/^https:\/\//, "")}</a>
+      <button class="icon" onClick=${copy} title="Copy the link">${svg(copied ? "M5 12l5 5 9-10" : ICON.copy)}</button>
+      <span class="viewers" title="Students watching now">${viewers} watching</span>
+      <button class="icon" onClick=${() => send("share_stop")} title="Stop sharing">${svg(ICON.stop)}</button>
+    </div>`;
+  }
+  const starting = share.state === "starting";
+  return html`<div class="share">
+    <button onClick=${() => send("share_start")} disabled=${starting}
+        title="Make a link students can open on their own devices (view only)">
+      ${svg(ICON.share, starting ? "pulse" : "")}<span>${starting ? share.detail || "Starting…" : "Share with students"}</span></button>
+    ${share.state === "failed" && html`<span class="share-error" title=${share.detail}>Could not share: ${share.detail}</span>`}
+  </div>`;
+}
+
 function App() {
   const [state, dispatch] = useReducer(reduce, initialState);
   const [notice, setNotice] = useState("");
+  const [adding, setAdding] = useState(false);
   const conn = useRef(null);
   const send = (kind, args = {}) => conn.current && conn.current.send({ type: "command", kind, args });
 
@@ -262,12 +443,9 @@ function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, [deck, state.lifecycle]);
 
-  const transcriptRef = useRef(null);
-  useEffect(() => { const el = transcriptRef.current; if (el) el.scrollTop = el.scrollHeight; }, [state.transcript.length]);
-
   const liveSpec = deck && deck.live_id ? state.slides[deck.live_id] : null;
-  const ids = deck ? deck.slide_ids : [];
   const toggle = (on, off, flag) => () => send(deck && deck[flag] ? off : on);
+  useEffect(() => setAdding(false), [liveSpec && liveSpec.id]);
 
   return html`<div class="control">
     <header class="bar">
@@ -275,34 +453,25 @@ function App() {
       <span class=${"pill " + state.lifecycle}>${state.lifecycle}</span>
       <span class=${"pill " + (state.connected ? "ok" : "bad")}>${state.connected ? "connected" : "offline"}</span>
       <${Meter} audio=${state.audio} />
+      <span class="spacer"></span>
+      <${Share} share=${state.share} viewers=${state.viewers} send=${send} />
       <a class="open-display" href="/display" target="classroom-display">Open classroom display ↗</a>
     </header>
     <main class="grid">
       <section class="left">
         <${Preview} spec=${liveSpec} deck=${deck} lifecycle=${state.lifecycle} slides=${state.slides} send=${send}
-          notice=${notice} onNotice=${setNotice}
+          notice=${notice} onNotice=${setNotice} adding=${adding} onAdded=${() => setAdding(false)}
           status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} />
-        <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle} />
-        <ol class="deck">
-          ${ids.map((id, i) => {
-            const s = state.slides[id];
-            return html`<li key=${id} class=${id === (deck && deck.live_id) ? "live" : ""} onClick=${() => send("goto", { slide_id: id })}>
-              <span class="n">${i + 1}</span><span class="t">${s ? s.title : "…"}${s && s.part ? html` <span class="part">${partLabel(s.part)}</span>` : ""}</span>${s && s.facet && html`<span class="f">${s.facet}</span>`}
-            </li>`;
-          })}
-        </ol>
+        <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle}
+          canAdd=${!!liveSpec && !(deck && deck.zoom)} onAdd=${() => setAdding(true)} />
+        <p class="hint">Keys: ← → navigate · Space pause / resume · P pin · B blank · N new slide · hover a slide item to edit it</p>
       </section>
       <section class="right">
         <${Concerns} concerns=${state.concerns} send=${send} />
-        <h2>Transcript</h2>
-        <div class="transcript" ref=${transcriptRef}>
-          ${state.transcript.map((l, i) => html`<p key=${i} class=${l.dropped ? "dropped" : ""}>
-            <span class="ts">${formatTime(l.t)}</span>${l.dropped ? `(${l.dropped}) ${l.text || ""}` : l.text}
-          </p>`)}
-        </div>
-        <p class="hint">Keys: ← → navigate · Space pause / resume · P pin · B blank · N new slide</p>
+        <${Structure} deck=${deck} slides=${state.slides} send=${send} />
       </section>
     </main>
+    <${TranscriptStrip} lines=${state.transcript} />
   </div>`;
 }
 

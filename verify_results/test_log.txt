@@ -1,148 +1,370 @@
 (.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> python -m copilot
 [INIT]  loading speech model medium.en on cuda ...
-[INIT]  speech model ready (4.0 s)
+[INIT]  speech model ready (7.3 s)
 [INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
-[INIT]  concept embedder ready (0.2 s)
+[INIT]  concept embedder ready (0.4 s)
 [INIT]  LLM providers: groq_main#main -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_alt#main -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> openrouter_main
 [INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
 
 [QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
-        GROQ_API_KEY_main      openai/gpt-oss-120b            87k of 200k tokens IN USE
-        GROQ_API_KEY_2         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~6.9 h
-        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~9.7 h
-        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~17.4 h
-        GROQ_API_KEY_5         openai/gpt-oss-120b           191k of 200k tokens ok
-        GROQ_API_KEY_main      qwen/qwen3.8-27b              200k of 200k tokens IN USE
-        GROQ_API_KEY_2         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~7.3 h
-        GROQ_API_KEY_3         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~10.2 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b           137k of 200k tokens IN USE
+        GROQ_API_KEY_main      openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~21.5 h
+        GROQ_API_KEY_2         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~5.4 h
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~8.2 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~15.9 h
+        GROQ_API_KEY_main      qwen/qwen3.8-27b              198k of 200k tokens IN USE
+        GROQ_API_KEY_2         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~5.8 h
+        GROQ_API_KEY_3         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~8.7 h
         GROQ_API_KEY_4         qwen/qwen3.8-27b               69k of 200k tokens ok
         GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
         OPENROUTER_API_KEY     qwen/qwen3.8-27b:free        not tracked          IN USE
-        enough for about 93 lecture minutes
+        enough for about 76 lecture minutes
 
-[READY] session 20261006-160025-13fe
+[READY] session 20261006-172934-8aa4
         classroom display: http://localhost:8765/display   (projector, full screen: F11)
         teacher control:   http://localhost:8765/control
         Press Enter (or Start in the control view) to begin; q + Enter to quit.
-16:00:30 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+17:29:44 INFO    copilot.visuals.service: CLIP ready in 1.1 s (CPU)
 
 [LIVE]  lecture started. Type q + Enter to end.
-  [   13.8s] basic concepts of chemistry (469 ms)
-  [   16.3s] In chemistry, it is the branch of science which deals with the composition, structure and properties of matter. (604 ms)
-  [UNDERSTAND] Chemistry > Definition (new_topic) acts=definition hint=definition lines=2 via groq_main#main 1374 ms
-               Chemistry is defined as the science studying matter's composition, structure, and properties.
-16:01:13 INFO    copilot.presentation.engine: planner: new Chemistry > Definition (first content slide)
-  [SLIDE] add    'What is chemistry?' [definition] v1 (1 items)
-  [   24.1s] branch of chemistry are inorganic, organic, physical and analytical chemistry. (721 ms)
-  [SLIDE] update 'What is chemistry?' [definition] v2 (1 items)
-16:01:21 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Definition' -> same_concept
-  [UNDERSTAND] Chemistry > Definition (same_concept) acts=classification hint=hierarchy lines=1 via groq_main#main 1401 ms
-               Chemistry includes inorganic, organic, physical, and analytical branches.
-16:01:21 INFO    copilot.presentation.engine: planner: update Chemistry > Definition (same frame)
-  [SLIDE] update 'What is chemistry?' [definition] v3 (1 items)
-  [SLIDE] update 'What is chemistry?' [definition] v4 (2 items)
-  [   32.2s] Let's talk about Mato. (609 ms)
-  [   34.1s] Anything which occupies some space and has some mass is called matter. It is made up of small particles which have space between them. The matter particles attract each other and are in the state of continuous motion. (933 ms)
-  [   48.3s] classification of matter (406 ms)
-  [UNDERSTAND] Chemistry > Mato (sibling_concept) acts=transition hint=none lines=1 via groq_main#main 2531 ms
-               Teacher announced the next subtopic, Mato.
-16:01:39 INFO    copilot.presentation.engine: planner: noop Chemistry > Mato (nothing to display)
-  [   50.0s] Matter can be classified into two subgroups. First, physical classification. Second, chemical classification. (808 ms)
-  [UNDERSTAND] Chemistry > Classification of Matter (sibling_concept) acts=definition,classification hint=hierarchy lines=3 via groq_main#main 1749 ms
-               Matter is defined and then classified into physical and chemical categories
-16:01:49 INFO    copilot.presentation.engine: planner: continue Chemistry > Classification of Matter (new facet)
-  [SLIDE] add    'Classification of Matter' [definition] v1 (2 items)
-16:01:49 INFO    copilot.presentation.engine: image search 'matter particles diagram' (diagram) for 'Classification of Matter'
-  [   58.7s] Physical classification can further be classified into solid, liquid or gas. (652 ms)
-16:01:55 INFO    copilot.visuals.finder: image search 'matter particles diagram' (diagram): 2 candidate(s), 1 accepted, 5.89 s {'search_s': 1.7, 'download_s': 1.99, 'clip_s': 0.05, 'full_s': 2.13, 'total_s': 5.89}
-  [IMAGE] 'matter particles diagram' -> File:System of a natural cycle of matter automatisms, the spiral wave-particle form, by Alexander Makeyev.jpg (5.9 s)
-16:01:55 INFO    copilot.presentation.engine: image 'matter particles diagram' on 'Classification of Matter': File:System of a natural cycle of matter automatisms, the spiral wave-particle form, by Alexander Makeyev.jpg
-  [SLIDE] update 'Classification of Matter' [definition] v2 (3 items)
-  [   63.5s] while chemical classification can be classified into pure substances and mixtures. (608 ms)
-  [UNDERSTAND] Chemistry > Classification of Matter (elaboration) acts=classification,classification hint=hierarchy lines=2 via groq_main#main 1776 ms
-               Physical classification splits into solid, liquid, gas; chemical classification splits into pure substances and mixtures.
-16:01:59 INFO    copilot.presentation.engine: planner: update Chemistry > Classification of Matter (same frame)
-16:01:59 INFO    copilot.presentation.engine: image removed from 'Classification of Matter': groups needs the full width
-  [SLIDE] update 'Classification of Matter' [definition] v3 (3 items)
-  [SLIDE] update 'Classification of Matter' [definition] v4 (2 items)
-  [   72.0s] Your substances. (516 ms)
-  [   74.1s] they are characterised different from the mixtures they have fixed composition whereas mixtures may contain the component in any ratio (861 ms)
-  [   85.0s] and the composition is variable. (334 ms)
-  [   87.6s] elements in (314 ms)
-  [UNDERSTAND] Chemistry > Classification of Matter (same_concept) acts=definition,definition hint=definition lines=3 via groq_main#main 2023 ms
-               Pure substances have fixed composition; mixtures have variable composition.
-16:02:18 INFO    copilot.presentation.engine: planner: update Chemistry > Classification of Matter (same frame)
-16:02:18 INFO    copilot.presentation.engine: no image for 'Classification of Matter': two concepts side by side
-  [SLIDE] update 'Classification of Matter' [definition] v5 (2 items)
-  [SLIDE] add    'Classification of Matter' [concept] v1 (2 items)
-  [   89.6s] It is the simplest form of pure substance which can neither be decomposed nor be built from simpler substances by ordinary physical and chemical methods. (778 ms)
-  [UNDERSTAND] Chemistry > Elements (sibling_concept) acts=definition hint=definition lines=2 via groq_main#main 1685 ms
-               Introduced the definition of an element as the simplest pure substance.
-16:02:31 INFO    copilot.presentation.engine: planner: continue Chemistry > Elements (new facet)
-16:02:31 INFO    copilot.presentation.engine: slide 'Elements' waits for the min dwell time
-16:02:31 INFO    copilot.presentation.engine: image search 'element symbol' (photo) for 'Elements'
-  [SLIDE] add    'Elements' [definition] v1 (1 items)
-  [  101.3s] compounds it is also the form of matter which (511 ms)
-  [SLIDE] update 'Elements' [definition] v2 (1 items)
-16:02:35 INFO    copilot.visuals.finder: image search 'element symbol' (photo): 2 candidate(s), 1 accepted, 4.32 s {'search_s': 2.41, 'download_s': 0.84, 'clip_s': 0.05, 'full_s': 1.01, 'total_s': 4.32}
-  [IMAGE] 'element symbol' -> File:Dalton's Element List.jpg (4.3 s)
-16:02:35 INFO    copilot.presentation.engine: image 'element symbol' on 'Elements': File:Dalton's Element List.jpg
-  [SLIDE] update 'Elements' [definition] v3 (2 items)
-  [  105.8s] which can be formed by combining two or more (587 ms)
-  [UNDERSTAND] Chemistry > Compounds (sibling_concept) acts=definition hint=definition lines=2 via groq_main#main 1120 ms
-               Introduced the definition of a compound as matter formed by combining two or more elements.
-16:02:53 INFO    copilot.presentation.engine: planner: continue Chemistry > Compounds (new facet)
-  [SLIDE] update 'Elements' [definition] v4 (2 items)
-  [SLIDE] add    'Compounds' [definition] v1 (1 items)
-  [  110.6s] elements in the definite ratio by mass. It can be decomposed into two into its constituent elements by suitable chemical methods. Example what is made up of hydrogen and oxygen in the ratio of 1 is to 8 by mass. (992 ms)
-  [SLIDE] update 'Compounds' [definition] v2 (1 items)
-  [  124.9s] Compounds can be of two types. (549 ms)
-  [SLIDE] update 'Compounds' [definition] v3 (1 items)
-  [  127.9s] inorganic compounds and organic compounds. (484 ms)
-  [SLIDE] update 'Compounds' [definition] v4 (1 items)
-  [UNDERSTAND] Chemistry > Compounds (elaboration) acts=explanation,classification,example hint=none lines=3 via groq_main#main 1757 ms
-               Added composition ratio, decomposition, and the two main types of compounds with a water example.
-16:03:02 INFO    copilot.presentation.engine: planner: update Chemistry > Compounds (same frame)
-  [SLIDE] update 'Compounds' [definition] v5 (1 items)
-  [SLIDE] update 'Compounds' [definition] v6 (5 items)
-16:03:02 INFO    copilot.presentation.engine: no image 'water molecule' on 'Compounds': not about the slide (similarity 0.25)
-  [  131.6s] mixtures they are made up of two or more substances (680 ms)
-  [  135.2s] they can possess variable composition and can be separated into their components by some physical methods (627 ms)
-  [  142.4s] They are of two types, homogeneous and heterogeneous. (609 ms)
-  [UNDERSTAND] Chemistry > Mixtures (sibling_concept) acts=definition,classification hint=none lines=3 via groq_main#main 1301 ms
-               Introduced mixtures as combinations of substances with variable composition and their two types
-16:03:16 INFO    copilot.presentation.engine: planner: continue Chemistry > Mixtures (new facet)
-  [SLIDE] add    'Mixtures' [definition] v1 (2 items)
-  [  151.2s] So mixture separation methods are (497 ms)
-  [  153.4s] filtration, distillation, sublimation. (552 ms)
-  [  157.2s] crystallization, magnetic separation and atmolysis. (685 ms)
-  [UNDERSTAND] Chemistry > Mixtures (elaboration) acts=explanation hint=key_points lines=3 via groq_main#main 1772 ms
-               Teacher listed common separation methods for mixtures.
-  [HEARD] 'atmolysis' -> 'atomolysis' corrected on the slide (0.5)
-16:03:32 INFO    copilot.presentation.engine: planner: update Chemistry > Mixtures (same frame)
-16:03:32 INFO    copilot.presentation.engine: concern 0aaf7babdadd (transcription, applied=True): 1 element(s); slide shows 'atomolysis'
-  [SLIDE] update 'Mixtures' [definition] v2 (4 items)
-  [SLIDE] add    'Mixtures' [key_points] v1 (4 items)
-  [SLIDE] update 'Mixtures' [key_points] v2 (4 items)
-  [  163.1s] Now let's discuss atoms and molecules. (489 ms)
-  [UNDERSTAND] Chemistry > Atoms and Molecules (new_topic) acts=transition hint=none lines=1 via groq_main#main 1109 ms
-               Teacher announced moving to atoms and molecules
-16:03:47 INFO    copilot.presentation.engine: planner: noop Chemistry > Atoms and Molecules (nothing to display)
-  [  166.0s] Atom is the smallest particle of an element which can take part in a chemical reaction. It may or may not be capable of independent existence. While molecule is the simplest particle of matter that has independent existence. (886 ms)
-  [SLIDE] update 'Mixtures' [key_points] v3 (5 items)
-  [  180.9s] it may be hetero homotomic diatomic triatomic or hetero atomic (715 ms)
-  [SLIDE] update 'Mixtures' [key_points] v4 (5 items)
-  [UNDERSTAND] Chemistry > Atoms and Molecules (same_concept) acts=definition,definition,classification hint=none lines=2 via groq_main#main 1649 ms
-               Defined atoms and molecules and listed common molecule classifications
-16:04:09 INFO    copilot.presentation.engine: planner: continue Chemistry > Atoms and Molecules (new facet)
-16:04:09 INFO    copilot.presentation.engine: no image for 'Atoms and Molecules': two concepts side by side
-  [SLIDE] update 'Mixtures' [key_points] v5 (4 items)
-  [SLIDE] add    'Atoms and Molecules' [concept] v1 (3 items)
-16:07:08 INFO    copilot.visuals.finder: image search 'element symbol' (photo): 2 candidate(s), 1 accepted, 7.61 s {'search_s': 1.47, 'download_s': 1.31, 'clip_s': 0.05, 'full_s': 4.76, 'total_s': 7.61}
-  [IMAGE] 'element symbol' -> File:Reutter de Rosemont; chemical symbols Wellcome L0014471.jpg (7.6 s)
-  [SLIDE] update 'Elements' [definition] v5 (2 items)
-16:07:12 INFO    copilot.presentation.engine: teacher stepped to image 1/2 on 'Elements'
-  [SLIDE] update 'Elements' [definition] v6 (2 items)
+[SHARE] starting the link ...
+[SHARE] waiting for the link to answer ...
+17:30:04 INFO    copilot.display.share: sharing https://incentive-keno-private-certificates.trycloudflare.com/view
+[SHARE] students: https://incentive-keno-private-certificates.trycloudflare.com/view
+        teacher control from another device: https://incentive-keno-private-certificates.trycloudflare.com/control?key=nP1t551tKVNxvcKNXcphxdls
+[PAUSE] paused: what is said now is not put on slides (Resume to continue)
+  [   37.8s] (paused, not used) Perfectly open too. (604 ms)
+17:30:25 INFO    copilot.understanding.service: paused: not interpreted: Perfectly open too.
+  [   43.9s] (paused, not used) It open? Hello. (632 ms)
+17:30:32 INFO    copilot.understanding.service: paused: not interpreted: It open? Hello.
+  [   46.8s] (paused, not used) I'll level. (456 ms)
+17:30:34 INFO    copilot.understanding.service: paused: not interpreted: I'll level.
+  [   49.1s] (paused, not used) What's up with your neck? (790 ms)
+17:30:37 INFO    copilot.understanding.service: paused: not interpreted: What's up with your neck?
+  [   51.5s] (paused, not used) Yeah, you're the one who's connecting. (2261 ms)
+17:30:41 INFO    copilot.understanding.service: paused: not interpreted: Yeah, you're the one who's connecting.
+  [   53.8s] (paused, not used) I don't know. I don't know. (770 ms)
+17:30:42 INFO    copilot.understanding.service: paused: not interpreted: I don't know. I don't know.
+  [   55.7s] (paused, not used) This the game? (588 ms)
+17:30:43 INFO    copilot.understanding.service: paused: not interpreted: This the game?
+  [   58.1s] (paused, not used) Do you know what it is? I don't know. I don't know if it's a blank or glossy. Let's go. (1318 ms)
+17:30:51 INFO    copilot.understanding.service: paused: not interpreted: Do you know what it is? I don't know. I don't know if it's a blank or glossy. Let's go.
+  [   63.8s] (paused, not used) Why are you saying that? Because I am listening (872 ms)
+17:30:53 INFO    copilot.understanding.service: paused: not interpreted: Why are you saying that? Because I am listening
+  [   66.5s] (paused, not used) It's a net travel You (1673 ms)
+17:30:55 INFO    copilot.understanding.service: paused: not interpreted: It's a net travel You
+[LIVE]  resumed
+  [   68.7s] (dropped: filler_hallucination) Bye.
+  [   71.4s] Hello everyone, let us learn about atoms. Atoms are the basic building block of matter and molecules. (920 ms)
+  [   77.9s] from when two or more atoms chemically bond together. What is an atom? An atom is the smallest unit of an element that keeps the chemical property of that element. (997 ms)
+17:31:17 WARNING copilot.llm.router: llm groq_main#5 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Atoms > Definition (new_topic) acts=definition,definition hint=definition lines=2 via groq_alt#main 3680 ms
+               Defined atoms as the basic building blocks of matter and the smallest unit of an element retaining its chemical properties.
+17:31:19 INFO    copilot.presentation.engine: planner: new Atoms > Definition (first content slide)
+  [SLIDE] add    'What are atoms?' [definition] v1 (2 items)
+  [   88.5s] structure it has a central nucleus and outer shell nucleus contains positive (699 ms)
+  [SLIDE] update 'What are atoms?' [definition] v2 (3 items)
+  [   94.8s] protons and neutrons and neutrons (577 ms)
+  [SLIDE] update 'What are atoms?' [definition] v3 (3 items)
+  [   98.9s] Electrons are negative particles that orbit the nucleus in shell. (690 ms)
+  [SLIDE] update 'What are atoms?' [definition] v4 (3 items)
+  [UNDERSTAND] Atoms > Structure (sub_concept) acts=explanation hint=none lines=3 via groq_alt#main 1486 ms
+               Described atom structure: nucleus with protons/neutrons and orbiting electrons.
+17:31:31 INFO    copilot.presentation.engine: planner: continue Atoms > Structure (new facet)
+17:31:31 INFO    copilot.presentation.engine: slide 'Structure' waits for the min dwell time
+  [SLIDE] update 'What are atoms?' [definition] v5 (2 items)
+17:31:31 INFO    copilot.presentation.engine: image search 'atom structure diagram' (diagram) for 'Structure'
+  [IMAGE] 'atom structure diagram' -> File:Bohr atom model.svg (0.0 s, cached)
+17:31:31 INFO    copilot.presentation.engine: image 'atom structure diagram' on 'Structure': File:Bohr atom model.svg
+  [SLIDE] add    'Structure' [key_points] v1 (4 items)
+  [  107.4s] Let us learn the digestive system (569 ms)
+  [  110.8s] The human digestive system is a continuous tube and a group of organs that break down food into energy, growth nutrients and repair materials. (948 ms)
+  [  121.2s] the main step of digestion (478 ms)
+  [  123.3s] Hello. (1858 ms)
+  [UNDERSTAND] Digestive System > Definition (new_topic) acts=transition,definition,other hint=definition lines=3 via groq_alt#main 1639 ms
+               Introduced the human digestive system as a tube and organ group that breaks down food for energy and growth.
+17:31:53 INFO    copilot.presentation.engine: planner: new Digestive System > Definition (new topic confirmed (boundary cue/shift))
+  [SLIDE] add    'What is human digestive system?' [definition] v1 (1 items)
+17:31:53 INFO    copilot.presentation.engine: image search 'human digestive system' (diagram) for 'What is human digestive system?'
+  [IMAGE] 'human digestive system' -> File:Digestive system diagram en.svg (0.1 s, cached)
+17:31:53 INFO    copilot.presentation.engine: image 'human digestive system' on 'What is human digestive system?': File:Digestive system diagram en.svg
+  [SLIDE] update 'What is human digestive system?' [definition] v2 (2 items)
+  [  124.3s] you cheap food and mix it with saliva, saliva starts breaking into starch (707 ms)
+  [  130.0s] Peace of Vegas, muscles push the water or food down into your stomach using a wave motion called (816 ms)
+  [  137.5s] query stylus (620 ms)
+  [UNDERSTAND] Digestive System > Process (sibling_concept) acts=process hint=process_flow lines=3 via groq_alt#main 1397 ms
+               Described the initial digestive process: chewing, saliva breaking down starch, and peristalsis moving food to the stomach.
+  [HEARD] 'Peace of Vegas' -> 'Esophagus' corrected on the slide (0.8)
+  [HEARD] 'water or food' -> 'food' corrected on the slide (0.6)
+17:32:07 INFO    copilot.presentation.engine: planner: continue Digestive System > Process (new facet)
+17:32:07 INFO    copilot.presentation.engine: slide 'How digestive system works' waits for the min dwell time
+17:32:07 INFO    copilot.presentation.engine: concern d33e7a8dd299 (transcription, applied=True): 0 element(s); slide shows 'Esophagus'
+17:32:07 INFO    copilot.presentation.engine: concern 034046b69744 (transcription, applied=True): 2 element(s); slide shows 'food'
+17:32:07 INFO    copilot.presentation.engine: no image for 'How digestive system works': process needs the full width
+  [SLIDE] add    'How digestive system works' [process_flow] v1 (3 items)
+  [  139.5s] stomach, strong acids and enzymes mix with the food and turn it into the liquid mixture. (763 ms)
+  [UNDERSTAND] Digestive System > Process (same_concept) acts=process hint=process_flow lines=2 via groq_alt#main 1416 ms
+               Described how stomach acids and enzymes convert food into a liquid mixture.
+17:32:15 INFO    copilot.presentation.engine: planner: update Digestive System > Process (same frame)
+17:32:15 INFO    copilot.presentation.engine: no image for 'How digestive system works': process needs the full width
+  [SLIDE] update 'How digestive system works' [process_flow] v2 (4 items)
+  [  147.3s] So while you test it (520 ms)
+  [  149.0s] digestive juices from the pancreas, liver and bowel glider enters here to finish breaking down food. (915 ms)
+  [  156.7s] tiny finger like parts called villi absorb nutrients from your blood. (736 ms)
+  [  161.7s] into your blood. (475 ms)
+17:32:29 WARNING copilot.llm.router: llm groq_main#5 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Digestive System > Process (same_concept) acts=process hint=process_flow lines=2 via groq_alt#main 3228 ms
+               Described how digestive juices from the pancreas, liver, and small intestine finish breaking down food.
+  [HEARD] 'bowel glider' -> 'small intestine' corrected on the slide (0.6)
+17:32:31 INFO    copilot.presentation.engine: planner: update Digestive System > Process (same frame)
+17:32:31 INFO    copilot.presentation.engine: concern 783d4ebeddbf (transcription, applied=True): 0 element(s); slide shows 'small intestine'
+17:32:31 INFO    copilot.presentation.engine: no image for 'How digestive system works': process needs the full width
+  [SLIDE] update 'How digestive system works' [process_flow] v3 (5 items)
+  [  163.6s] large intestine. This part absorbs water from left core waste. It turns the waste into solid stool. (840 ms)
+  [  170.8s] rectum and anus. Your body stores solid waste. (667 ms)
+  [UNDERSTAND] Digestive System > Process (same_concept) acts=process,process hint=process_flow lines=3 via groq_alt#main 1711 ms
+               Described how villi absorb nutrients into the blood and the large intestine absorbs water to form stool.
+  [HEARD] 'from your blood' -> 'into the bloodstream' corrected on the slide (0.6)
+  [HEARD] 'left core waste' -> 'liquid waste' corrected on the slide (0.7)
+17:32:42 INFO    copilot.presentation.engine: planner: update Digestive System > Process (same frame)
+17:32:42 INFO    copilot.presentation.engine: concern dda0428f31f6 (transcription, applied=True): 1 element(s); slide shows 'into the bloodstream'
+17:32:42 INFO    copilot.presentation.engine: concern 1e7abfb47fff (transcription, applied=True): 0 element(s); slide shows 'liquid waste'
+17:32:42 INFO    copilot.presentation.engine: no image for 'How digestive system works': process needs the full width
+  [SLIDE] update 'How digestive system works' [process_flow] v4 (6 items)
+  [SLIDE] add    'How digestive system works' [process_flow] v1 (2 items)
+  [  175.1s] here before it leaves the body (481 ms)
+  [UNDERSTAND] Digestive System > Process (same_concept) acts=process hint=process_flow lines=2 via groq_alt#main 1159 ms
+               Described how solid waste is stored in the rectum and expelled through the anus.
+17:33:00 INFO    copilot.presentation.engine: planner: update Digestive System > Process (same frame)
+17:33:00 INFO    copilot.presentation.engine: no image for 'How digestive system works': process needs the full width
+  [SLIDE] update 'How digestive system works' [process_flow] v2 (4 items)
+  [  187.0s] Let us learn the kinematic equation of motion. Kinematics is the branch of chemical mechanisms that describe the motion of objects such as position, velocity and acceleration. (1017 ms)
+  [  199.1s] without looking at the force or masses that caused the motion. (1076 ms)
+17:33:09 WARNING copilot.llm.router: llm groq_alt#main failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m1y7z7r3esjaek71dw1q6b5z` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 663,
+  [UNDERSTAND] Kinematics > Definition (new_topic) acts=transition,definition hint=definition lines=1 via groq_alt#4 1690 ms
+               Introduced kinematics as the branch of physics describing object motion.
+  [CONCERN] (factual) Kinematics is the branch of chemical mechanisms -> Kinematics is the branch of physics that describes the motion of objects. (0.95, slide shows the correction)
+17:33:10 INFO    copilot.presentation.engine: planner: new Kinematics > Definition (new topic confirmed (boundary cue/shift))
+17:33:10 INFO    copilot.presentation.engine: concern ed4426c2ea3b (factual, applied=True): 1 element(s); slide shows 'physics'
+  [SLIDE] add    'What is kinematics?' [definition] v1 (1 items)
+  [  203.0s] The core concepts are (458 ms)
+  [  205.3s] distance vs. displacement, speed vs. velocity and acceleration. (692 ms)
+  [UNDERSTAND] Kinematics > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 835 ms
+               Clarified that kinematics ignores the forces and masses causing motion.
+17:33:17 INFO    copilot.presentation.engine: planner: update Kinematics > Definition (same frame)
+  [SLIDE] update 'What is kinematics?' [definition] v2 (2 items)
+  [UNDERSTAND] Kinematics > Definition (elaboration) acts=- hint=none lines=1 via groq_alt#main 822 ms
+               Teacher began listing core concepts of kinematics.
+17:33:25 INFO    copilot.presentation.engine: planner: noop Kinematics > Definition (nothing to display)
+  [  211.0s] The key kinematic equations are, v equals to u plus a t, s u t plus, s equals u t plus half a t square and v square equals u square plus two a s. (1145 ms)
+  [SLIDE] update 'What is kinematics?' [definition] v3 (3 items)
+17:33:35 WARNING copilot.llm.router: llm groq_main#5 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Kinematics > Core Concepts (sub_concept) acts=classification hint=key_points lines=1 via groq_alt#main 3059 ms
+               Listed the core concepts of kinematics: distance vs. displacement, speed vs. velocity, and acceleration.
+17:33:36 INFO    copilot.presentation.engine: planner: continue Kinematics > Core Concepts (new facet)
+  [SLIDE] add    'Core Concepts' [hierarchy] v1 (1 items)
+  [  230.7s] You said later. (652 ms)
+  [SLIDE] update 'What is kinematics?' [definition] v4 (2 items)
+  [  233.2s] Bye, David. (446 ms)
+17:33:43 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Core Concepts' -> same_concept
+  [UNDERSTAND] Kinematics > Core Concepts (same_concept) acts=formula,formula,formula hint=formula lines=1 via groq_alt#4 2022 ms
+               Introduced the three key kinematic equations for velocity, displacement, and final velocity squared.
+17:33:43 INFO    copilot.presentation.engine: planner: update Kinematics > Core Concepts (same frame)
+17:33:43 INFO    copilot.presentation.engine: slide 'Core Concepts' waits for the min dwell time
+17:33:43 INFO    copilot.presentation.engine: slide 'Core Concepts' waits for the min dwell time
+17:33:43 INFO    copilot.presentation.engine: slide 'Core Concepts' waits for the min dwell time
+  [SLIDE] update 'Core Concepts' [hierarchy] v2 (1 items)
+  [SLIDE] add    'Core Concepts' [formula] v1 (1 items)
+  [SLIDE] add    'Core Concepts' [formula] v1 (1 items)
+  [UNDERSTAND] Kinematics > Core Concepts (digression) acts=other hint=none lines=2 via groq_alt#main 975 ms
+               Teacher addressed a student and ended the interaction.
+17:33:50 INFO    copilot.presentation.engine: planner: noop Kinematics > Core Concepts (digression)
+  [  244.6s] In front of it. (840 ms)
+  [SLIDE] add    'Core Concepts' [formula] v1 (1 items)
+  [  250.6s] It's real. (646 ms)
+[PAUSE] paused: what is said now is not put on slides (Resume to continue)
+  [  252.4s] (paused, not used) Thanks. (1302 ms)
+17:34:00 INFO    copilot.understanding.service: paused: not interpreted: Thanks.
+  [  253.5s] (paused, not used) And now we switch to the next video. (556 ms)
+17:34:02 INFO    copilot.understanding.service: paused: not interpreted: And now we switch to the next video.
+  [UNDERSTAND] Kinematics > Core Concepts (same_concept) acts=- hint=none lines=1 via groq_alt#main 4984 ms
+               Teacher gave a brief instruction regarding student positioning.
+17:34:02 INFO    copilot.presentation.engine: planner: noop Kinematics > Core Concepts (nothing to display)
+  [  256.1s] (paused, not used) Hello? (490 ms)
+17:34:04 INFO    copilot.understanding.service: paused: not interpreted: Hello?
+  [  258.3s] (paused, not used) Bye, I love you. Bye, nahub. (606 ms)
+17:34:07 INFO    copilot.understanding.service: paused: not interpreted: Bye, I love you. Bye, nahub.
+  [  260.9s] (paused, not used) Stay clear. (480 ms)
+17:34:09 INFO    copilot.understanding.service: paused: not interpreted: Stay clear.
+  [  265.0s] (paused, not used) I'll call you back later. Bye Nihir. (2423 ms)
+17:34:16 INFO    copilot.understanding.service: paused: not interpreted: I'll call you back later. Bye Nihir.
+  [  268.0s] (paused, not used) Edit (559 ms)
+17:34:16 INFO    copilot.understanding.service: paused: not interpreted: Edit
+  [UNDERSTAND] Kinematics > Core Concepts (same_concept) acts=- hint=none lines=1 via groq_alt#main 1120 ms
+               Teacher made a brief, unclear remark.
+17:34:17 INFO    copilot.presentation.engine: planner: noop Kinematics > Core Concepts (nothing to display)
+  [  271.2s] (paused, not used) Wait till the next (520 ms)
+17:34:19 INFO    copilot.understanding.service: paused: not interpreted: Wait till the next
+17:34:19 INFO    copilot.presentation.engine: teacher edit_text on 'What is human digestive system?': e1b71fb7e7eb 'Continuous tube and organs that break down food into energy, growth nutrients, and repair materials hello'
+  [SLIDE] update 'What is human digestive system?' [definition] v3 (2 items)
+  [  272.8s] (paused, not used) um (1451 ms)
+17:34:22 INFO    copilot.understanding.service: paused: not interpreted: um
+  [  275.8s] (paused, not used) I'm sorry, I'm not able to hear you. (2021 ms)
+17:34:26 INFO    copilot.understanding.service: paused: not interpreted: I'm sorry, I'm not able to hear you.
+17:34:27 INFO    copilot.presentation.engine: teacher edit_text on 'What is human digestive system?': e1b71fb7e7eb 'Continuous tube and organs that break down food into energy, growth nutrients, and repair materials'
+  [SLIDE] update 'What is human digestive system?' [definition] v4 (2 items)
+  [  278.4s] (paused, not used) So, if you are not a live PPT, then you should not have any issues. If you have any definition, then you should not have any issues. If you are a teacher, then you should not have any issues. (8166 ms)
+17:34:43 INFO    copilot.understanding.service: paused: not interpreted: So, if you are not a live PPT, then you should not have any issues. If you have any definition, then you should not have any issues. If you are a teacher, then you should not have any issues.
+  [  289.5s] (paused, not used) Why is that? Madam, I don't know what you are talking about. Ah, the multilingual next start, good luck. (3567 ms)
+17:34:44 INFO    copilot.understanding.service: paused: not interpreted: Why is that? Madam, I don't know what you are talking about. Ah, the multilingual next start, good luck.
+  [  294.8s] (paused, not used) I am not sure if you have heard of the name of the J.J. teacher, but I have heard of the name of the J.J. teacher, so let's see what is the name of the teacher. (6495 ms)
+17:34:59 INFO    copilot.understanding.service: paused: not interpreted: I am not sure if you have heard of the name of the J.J. teacher, but I have heard of the name of the J.J. teacher, so let's see what is the name of the teacher.
+  [  306.9s] (paused, not used) Ani, you can see the image of Ani in the Google's app, and we will see you in the next video. Thank you (7303 ms)
+17:35:09 INFO    copilot.understanding.service: paused: not interpreted: Ani, you can see the image of Ani in the Google's app, and we will see you in the next video. Thank you
+  [  316.4s] (paused, not used) I'll play a photo now (5886 ms)
+17:35:09 INFO    copilot.understanding.service: paused: not interpreted: I'll play a photo now
+17:35:09 INFO    copilot.display.server: teacher upload 'WIN_20240501_21_45_49_Pro.jpg' -> 2ae9d7d10696a1fa (1280x720)
+17:35:09 INFO    copilot.presentation.engine: teacher image on 'What is human digestive system?'
+  [SLIDE] update 'What is human digestive system?' [definition] v5 (2 items)
+  [  318.0s] (paused, not used) I don't know. (4564 ms)
+17:35:10 INFO    copilot.understanding.service: paused: not interpreted: I don't know.
+  [  320.8s] (paused, not used) We direct put the drag and drop curl (1723 ms)
+17:35:10 INFO    copilot.understanding.service: paused: not interpreted: We direct put the drag and drop curl
+  [  325.0s] (paused, not used) Ali (412 ms)
+17:35:12 INFO    copilot.understanding.service: paused: not interpreted: Ali
+  [  326.8s] (dropped: empty) 
+  [  329.6s] (dropped: filler_hallucination) Bye.
+  [  331.6s] (paused, not used) That's all. (428 ms)
+17:35:19 INFO    copilot.understanding.service: paused: not interpreted: That's all.
+17:35:20 INFO    copilot.presentation.engine: teacher stepped to image 1/2 on 'What is human digestive system?'
+  [SLIDE] update 'What is human digestive system?' [definition] v6 (2 items)
+  [  334.0s] (paused, not used) Anyway, these are government payment sessions. (633 ms)
+17:35:23 INFO    copilot.understanding.service: paused: not interpreted: Anyway, these are government payment sessions.
+  [  338.7s] (paused, not used) Any more, any more, any more? (636 ms)
+17:35:27 INFO    copilot.understanding.service: paused: not interpreted: Any more, any more, any more?
+  [  341.6s] (paused, not used) Assalamu Alaikum, Wa Alaykum Wa Alaykum, Wa Alaykum Wa Alaykum Wa Alaykum Wa Alaykum (8188 ms)
+17:35:38 INFO    copilot.understanding.service: paused: not interpreted: Assalamu Alaikum, Wa Alaykum Wa Alaykum, Wa Alaykum Wa Alaykum Wa Alaykum Wa Alaykum
+  [  346.3s] (paused, not used) steps away. (5607 ms)
+17:35:39 INFO    copilot.understanding.service: paused: not interpreted: steps away.
+  [  348.1s] (paused, not used) We end up... (4441 ms)
+17:35:39 INFO    copilot.understanding.service: paused: not interpreted: We end up...
+  [  349.4s] (paused, not used) Music (3491 ms)
+17:35:40 INFO    copilot.understanding.service: paused: not interpreted: Music
+  [  353.4s] (paused, not used) Thank you very much. (541 ms)
+17:35:43 INFO    copilot.understanding.service: paused: not interpreted: Thank you very much.
+  [  356.5s] (paused, not used) I'm gonna ask you to tell me what it is. I'm gonna ask you to tell me. What is it? It's the 4th? Yeah, the 4th is the 4th. But you are in high school. (9982 ms)
+17:36:00 INFO    copilot.understanding.service: paused: not interpreted: I'm gonna ask you to tell me what it is. I'm gonna ask you to tell me. What is it? It's the 4th? Yeah, the 4th is the 4th. But you are in high school.
+  [  365.3s] (paused, not used) load sky force is on time (6919 ms)
+17:36:04 INFO    copilot.understanding.service: paused: not interpreted: load sky force is on time
+  [  371.6s] (paused, not used) Say LLM Lakhdum. (1120 ms)
+17:36:04 INFO    copilot.understanding.service: paused: not interpreted: Say LLM Lakhdum.
+  [  378.4s] (paused, not used) Have a good day! (540 ms)
+17:36:06 INFO    copilot.understanding.service: paused: not interpreted: Have a good day!
+  [  379.9s] (paused, not used) And what's your favorite movie? Jiminy. No, Jiminy. (2623 ms)
+17:36:13 INFO    copilot.understanding.service: paused: not interpreted: And what's your favorite movie? Jiminy. No, Jiminy.
+  [  384.4s] (paused, not used) Ooh la la. (1828 ms)
+17:36:13 INFO    copilot.understanding.service: paused: not interpreted: Ooh la la.
+  [  387.0s] (paused, not used) It was a paid album, I think it was a free album (2291 ms)
+17:36:19 INFO    copilot.understanding.service: paused: not interpreted: It was a paid album, I think it was a free album
+  [  391.3s] (paused, not used) The door's been leaked. (722 ms)
+17:36:19 INFO    copilot.understanding.service: paused: not interpreted: The door's been leaked.
+  [  393.8s] (paused, not used) I am going to try to get a little bit of growth. (2264 ms)
+17:36:24 INFO    copilot.understanding.service: paused: not interpreted: I am going to try to get a little bit of growth.
+  [  404.7s] (paused, not used) You're not going to be able to. (649 ms)
+17:36:33 INFO    copilot.understanding.service: paused: not interpreted: You're not going to be able to.
+  [  406.7s] (paused, not used) I have to control the end panel (1826 ms)
+17:36:36 INFO    copilot.understanding.service: paused: not interpreted: I have to control the end panel
+  [  414.6s] (paused, not used) find image, add image, slide blank (5842 ms)
+17:36:54 INFO    copilot.understanding.service: paused: not interpreted: find image, add image, slide blank
+  [  423.0s] (paused, not used) Love. (4357 ms)
+17:36:55 INFO    copilot.understanding.service: paused: not interpreted: Love.
+  [  425.1s] (paused, not used) Let's see. (2780 ms)
+17:36:55 INFO    copilot.understanding.service: paused: not interpreted: Let's see.
+  [  427.6s] (paused, not used) Link to others (1070 ms)
+17:36:56 INFO    copilot.understanding.service: paused: not interpreted: Link to others
+  [  430.6s] (paused, not used) and he is like (559 ms)
+17:37:03 INFO    copilot.understanding.service: paused: not interpreted: and he is like
+  [  440.8s] (paused, not used) Whatever. See ya. (629 ms)
+17:37:09 INFO    copilot.understanding.service: paused: not interpreted: Whatever. See ya.
+  [  443.9s] (paused, not used) Celebrate, Elliot. (463 ms)
+17:37:11 INFO    copilot.understanding.service: paused: not interpreted: Celebrate, Elliot.
+  [  445.8s] (dropped: filler_hallucination) Hmm.
+  [  448.9s] (paused, not used) with you. (689 ms)
+17:37:16 INFO    copilot.understanding.service: paused: not interpreted: with you.
+  [  450.2s] (paused, not used) Bye, good night! Bye, good night! (1961 ms)
+17:37:22 INFO    copilot.understanding.service: paused: not interpreted: Bye, good night! Bye, good night!
+  [  457.2s] (dropped: empty) 
+17:38:20 INFO    copilot.presentation.engine: concern ed4426c2ea3b dismissed: slide shows 'physics'
+  [  533.2s] (paused, not used) I will. (740 ms)
+17:38:41 INFO    copilot.understanding.service: paused: not interpreted: I will.
+  [  536.3s] (paused, not used) I would. (521 ms)
+17:38:43 INFO    copilot.understanding.service: paused: not interpreted: I would.
+  [  552.1s] (paused, not used) Yes, please do. (1654 ms)
+17:39:01 INFO    copilot.understanding.service: paused: not interpreted: Yes, please do.
+  [  556.5s] (paused, not used) it is supporting you (2184 ms)
+17:39:06 INFO    copilot.understanding.service: paused: not interpreted: it is supporting you
+  [  559.6s] (paused, not used) We will see you in a few minutes. (2429 ms)
+17:39:09 INFO    copilot.understanding.service: paused: not interpreted: We will see you in a few minutes.
+  [  562.7s] (paused, not used) So let's get up to this, you know. (609 ms)
+17:39:11 INFO    copilot.understanding.service: paused: not interpreted: So let's get up to this, you know.
+  [  567.2s] (paused, not used) It is the good talk now. (703 ms)
+17:39:15 INFO    copilot.understanding.service: paused: not interpreted: It is the good talk now.
+  [  576.9s] (paused, not used) power (1342 ms)
+17:39:25 INFO    copilot.understanding.service: paused: not interpreted: power
+  [  581.5s] (paused, not used) What's going on? (573 ms)
+17:39:29 INFO    copilot.understanding.service: paused: not interpreted: What's going on?
+  [  586.6s] (paused, not used) the mac is clear (6237 ms)
+17:39:46 INFO    copilot.understanding.service: paused: not interpreted: the mac is clear
+  [  595.4s] (paused, not used) And if you want to watch more of our videos, you can subscribe to our channel. Thank you very much for watching. (4021 ms)
+17:39:51 INFO    copilot.understanding.service: paused: not interpreted: And if you want to watch more of our videos, you can subscribe to our channel. Thank you very much for watching.
+  [  604.6s] (paused, not used) Those are the laptop, the French laptop is full (765 ms)
+17:39:53 INFO    copilot.understanding.service: paused: not interpreted: Those are the laptop, the French laptop is full
+  [  625.6s] (paused, not used) I think that's it, I'm done (2096 ms)
+17:40:16 INFO    copilot.understanding.service: paused: not interpreted: I think that's it, I'm done
+  [  629.1s] (paused, not used) Banders Ratwood (1894 ms)
+17:40:18 INFO    copilot.understanding.service: paused: not interpreted: Banders Ratwood
+  [  631.9s] (paused, not used) Bye-bye. (472 ms)
+17:40:19 INFO    copilot.understanding.service: paused: not interpreted: Bye-bye.
+  [  635.2s] (paused, not used) No, I don't want to hear it, I don't want to hear it. I want to hear the starting point of the video. (4285 ms)
+17:40:31 INFO    copilot.understanding.service: paused: not interpreted: No, I don't want to hear it, I don't want to hear it. I want to hear the starting point of the video.
+  [  641.2s] (paused, not used) We'll try to do the challenge. (3217 ms)
+17:40:31 INFO    copilot.understanding.service: paused: not interpreted: We'll try to do the challenge.
+  [  642.7s] (dropped: filler_hallucination) Bye.
+  [  645.4s] (paused, not used) I will see you in the next workshop (2025 ms)
+17:40:35 INFO    copilot.understanding.service: paused: not interpreted: I will see you in the next workshop
+  [  651.4s] (paused, not used) part 2 where it goes to (595 ms)
+17:40:39 INFO    copilot.understanding.service: paused: not interpreted: part 2 where it goes to
+  [  653.7s] (paused, not used) foot posted only form bhansa laden (2137 ms)
+17:40:44 INFO    copilot.understanding.service: paused: not interpreted: foot posted only form bhansa laden
+  [  662.2s] (dropped: filler_hallucination) Hmm.
+  [  663.4s] (paused, not used) I will see you in the next video. (2504 ms)
+17:40:55 INFO    copilot.understanding.service: paused: not interpreted: I will see you in the next video.
+  [  669.1s] (paused, not used) I'll see you in the next video. (771 ms)
+17:40:57 INFO    copilot.understanding.service: paused: not interpreted: I'll see you in the next video.
+  [  673.8s] (paused, not used) So, have a nice day. (1712 ms)
+17:41:03 INFO    copilot.understanding.service: paused: not interpreted: So, have a nice day.
+  [  699.0s] (paused, not used) Because I didn't have any content on it, so I will try to make it more mechanical. (3571 ms)
+17:41:41 INFO    copilot.understanding.service: paused: not interpreted: Because I didn't have any content on it, so I will try to make it more mechanical.
+  [  713.4s] (paused, not used) Can you take a photo with me? (1981 ms)
+17:41:43 INFO    copilot.understanding.service: paused: not interpreted: Can you take a photo with me?
+  [  718.9s] (paused, not used) So I am meeting with the other guys (1952 ms)
+17:41:48 INFO    copilot.understanding.service: paused: not interpreted: So I am meeting with the other guys
+  [  741.0s] (paused, not used) I have to do a task (1821 ms)
+17:42:10 INFO    copilot.understanding.service: paused: not interpreted: I have to do a task
+  [  746.1s] (paused, not used) Go shut up. (1469 ms)
+17:42:14 INFO    copilot.understanding.service: paused: not interpreted: Go shut up.
+  [  748.5s] (paused, not used) and then you can see the difference between the two. So, you can see the same thing in the Microsoft programming. You can see the task is done and the task is done. (8640 ms)
+17:42:33 INFO    copilot.understanding.service: paused: not interpreted: and then you can see the difference between the two. So, you can see the same thing in the Microsoft programming. You can see the task is done and the task is done.
+  [  760.2s] (paused, not used) I am going to show you the whole thing (6632 ms)
+17:42:35 INFO    copilot.understanding.service: paused: not interpreted: I am going to show you the whole thing
+  [  774.0s] (paused, not used) I will fix everything in the next video, I am going to play a great match, but I will not be able to confirm it. (6713 ms)
+17:42:54 INFO    copilot.understanding.service: paused: not interpreted: I will fix everything in the next video, I am going to play a great match, but I will not be able to confirm it.
+  [  782.0s] (paused, not used) I don't know how many people are here, but I'm sure they'll be able to see me in the next video. (4812 ms)
+17:42:57 INFO    copilot.understanding.service: paused: not interpreted: I don't know how many people are here, but I'm sure they'll be able to see me in the next video.
+  [  791.4s] (paused, not used) See you then. (646 ms)
+17:42:59 INFO    copilot.understanding.service: paused: not interpreted: See you then.
+  [  795.6s] (paused, not used) Thank you for watching, I'll see you in the next video. (1616 ms)
+17:43:07 INFO    copilot.understanding.service: paused: not interpreted: Thank you for watching, I'll see you in the next video.
 
 [ENDED] interrupted
 (.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> 

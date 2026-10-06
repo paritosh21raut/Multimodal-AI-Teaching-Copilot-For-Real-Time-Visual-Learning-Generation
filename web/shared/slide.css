@@ -73,17 +73,25 @@
   color: var(--accent);
 }
 .def-term .pos { font-size: 0.36em; font-weight: 500; color: var(--muted); letter-spacing: 0.04em; margin-left: 18px; vertical-align: middle; }
+/* a card with a "Definition" tab on its top edge and a soft tint from the corner (user 2026-10-06: no side bar);
+   the margin keeps the tab clear of the title on a full slide (composer.block_height: 92 px + the lines) */
 .def-body {
-  position: relative;
-  background: var(--surface);
+  position: relative; margin-top: 16px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--accent-soft) 75%, transparent) 0%, transparent 55%),
+    var(--surface);
+  border: 2px solid color-mix(in srgb, var(--accent) 22%, transparent);
   border-radius: var(--radius);
-  padding: 44px 52px 44px 64px;
+  padding: 38px 58px 38px;
   box-shadow: var(--shadow);
   font-size: calc(var(--fs-lead) * var(--fit)); line-height: 1.36; color: var(--ink);
 }
-.def-body::before {
-  content: ""; position: absolute; left: 0; top: 28px; bottom: 28px; width: 10px;
-  border-radius: 0 6px 6px 0; background: var(--accent);
+.def-tab {
+  position: absolute; top: -17px; left: 46px;
+  padding: 7px 18px 6px; border-radius: 999px;
+  background: var(--accent); color: var(--accent-ink);
+  font-family: var(--font-text); font-size: 19px; font-weight: 700; letter-spacing: 0.12em; line-height: 1.1;
+  text-transform: uppercase;
 }
 .def-notes { display: flex; flex-wrap: wrap; gap: 14px 18px; }
 .def-note {
@@ -126,8 +134,9 @@
 .point.emph .num { background: rgba(255, 255, 255, 0.18); color: inherit; }
 
 /* ---------- callout / example ---------- */
+/* a note / key idea is a plain labelled card like an example, not a coloured one (user 2026-10-06) */
 .callout {
-  border-radius: var(--radius); padding: 34px 40px; background: var(--accent-2-soft);
+  border-radius: var(--radius); padding: 34px 40px; background: var(--surface); box-shadow: var(--shadow);
   font-size: calc(var(--fs-body) * var(--fit)); line-height: 1.35; color: var(--ink);
 }
 .callout .label, .example .label {
@@ -140,6 +149,7 @@
   font-size: calc(var(--fs-body) * var(--fit)); line-height: 1.35;
 }
 .example .title { font-weight: 650; display: block; margin-bottom: 8px; }
+.callout .label { color: var(--accent); }
 
 /* ---------- process ---------- */
 .process { display: grid; gap: 26px; }
@@ -212,6 +222,16 @@
 .tree-children > .tree-sub:last-child::after { right: 50%; }
 .tree-children > .tree-sub:only-child::after { display: none; }
 .tree-children .tree-children .tree-node { font-weight: 500; font-size: calc(var(--fs-small) * var(--fit)); }
+/* a tree of several levels (a kind divided further: matter -> physical -> solid, liquid, gas): the divided kinds are
+   tinted so each branch reads as a group under its parent */
+.tree-sub.has-kids > .tree-node { background: var(--accent-soft); color: var(--accent); box-shadow: none; font-weight: 650; }
+.tree-sub.has-kids > .tree-children { gap: 18px; }
+.tree-sub.has-kids > .tree-children > .tree-sub::after { left: -9px; right: -9px; }
+.tree-sub.has-kids > .tree-children > .tree-sub:first-child::after { left: 50%; }
+.tree-sub.has-kids > .tree-children > .tree-sub:last-child::after { right: 50%; }
+.tree-sub.has-kids > .tree-children .tree-node { padding: 16px 26px; }
+/* beside an image: one card per divided kind under the tree's label */
+.narrow-tree { gap: 22px; }
 
 /* ---------- formula (KaTeX; words and chemical formulas in the slide font) ---------- */
 .formula { display: grid; gap: 34px; justify-items: center; }
@@ -271,7 +291,19 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .def-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: stretch; }
 .def-pair .def { align-content: start; gap: 20px; }
 .def-pair .def-term { font-size: calc(var(--fs-lead) * 1.15 * var(--fit)); }
-.def-pair .def-body { font-size: calc(var(--fs-body) * var(--fit)); padding: 34px 40px 34px 52px; box-sizing: border-box; }
+/* each concept is one card: the term as its heading, then the meaning (composer._member_height) */
+.def.def-card {
+  gap: 14px; padding: 30px 40px 34px; border-radius: var(--radius); box-shadow: var(--shadow);
+  background:
+    radial-gradient(130% 120% at 0% 0%, color-mix(in srgb, var(--accent-soft) 70%, transparent) 0%, transparent 50%),
+    var(--surface);
+  border: 2px solid color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.def-card .def-term { line-height: 1.08; }
+.def-pair .def-card .def-body {
+  background: none; border: 0; box-shadow: none; padding: 0; border-radius: 0; margin: 0;
+  font-size: calc(var(--fs-body) * var(--fit)); color: var(--ink-2);
+}
 /* the members of a set (types, components): one card, or 3 per row, 2x2, 3x2 (composer.grid_columns) */
 .def-pair.cols-1 { grid-template-columns: minmax(0, 1fr); }
 .def-pair.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }

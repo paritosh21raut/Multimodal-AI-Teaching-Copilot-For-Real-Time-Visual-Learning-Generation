@@ -50,7 +50,8 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
   | 3×2 (≤ 6; `composer.grid_columns` = slide.js). Layout `members`: ONE definition that is a member of the slide's
   facet (facet "Types", term "PAN"; not a definition / introduction facet, not the facet or topic itself) — a card
   under the facet's title instead of the term as title; its details (`about`) stay in the card.
-- A `hierarchy` beside an image renders as one card (label + kinds as chips). A `formula` after other content beside
+- A `hierarchy` may have up to 3 levels (a kind divided further, `composer.subdivide`). Beside an image it renders as
+  one card (label + kinds as chips); with several levels, a chip card per divided kind. A `formula` after other content beside
   an image: that content and the image share the top row (image ≤ 380 px tall), the formula and what follows go
   full width below (`composer.image_top` = slide.js `splitBlocks`).
 - `image` (F-007b): at most one, always the last block; `url` = `/media/<image_id>.jpg` (our server). A slide with

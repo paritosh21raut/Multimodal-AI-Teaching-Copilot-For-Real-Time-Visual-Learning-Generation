@@ -6,8 +6,9 @@
   `concept`, `key_points`, `process_flow`. The others are defined in the model but render as a labelled placeholder until V1.
 - `presentation/deck.py`: `Deck` holds slides, live index, pinned/blank flags (freeze was replaced by Pause, round 4 step C); produces `SlidePatch` events; navigation.
 - `display/server.py`: FastAPI app in the same asyncio loop (uvicorn `Server.serve()` task), static files from `web/`.
-  - `GET /display`, `GET /control`, `GET /api/state` (full snapshot)
-  - `WS /ws?role=display|control`: server → client messages
+  - `GET /display`, `GET /control`, `GET /view` (students, F-008), `GET /api/state` (full snapshot)
+  - `WS /ws?role=display|control|viewer` (viewer: slides only, may send nothing; teacher key from outside, F-008):
+    server → client messages
     - `hello` {deck, live, theme, lifecycle}
     - `patch` {slide_id, version, spec, live}
     - `live` {slide_id}

@@ -63,6 +63,8 @@ CommandKind = Literal[
     "remove_image", "change_image", "set_image",  # F-007b, args {slide_id[, image_id]}
     "image_prev", "image_next",                   # step through the images this slide has shown, args {slide_id}
     "zoom_image", "unzoom_image",                 # the slide's image full screen on the display, args {slide_id}
+    "edit_text", "delete_item", "add_point",      # live slide editing, F-008: {slide_id, item_id[, text]} / {slide_id, text}
+    "share_start", "share_stop",                  # share /view with students over a Cloudflare quick tunnel (F-008)
 ]
 
 
@@ -222,6 +224,13 @@ class ImageChoices(Event):
     slide_id: str
     index: int
     count: int
+
+
+class ShareChanged(Event):
+    """Sharing the live slide with students (F-008): the public /view link of the Cloudflare quick tunnel."""
+    state: Literal["off", "starting", "on", "failed"]
+    url: str = ""     # <tunnel>/view while on
+    detail: str = ""  # progress ("downloading cloudflared") or why it failed
 
 
 class ErrorRaised(Event):

@@ -15,6 +15,11 @@ output_language = "en"
 host = "127.0.0.1"         # 0.0.0.0 to allow other devices on the LAN
 port = 8765
 demo_interval_s = 3.0
+# Share with students (F-008): a Cloudflare quick tunnel to /view, no account. cloudflared is looked up here, then on
+# PATH, then in data/bin (downloaded there on the first share from this URL).
+cloudflared = ""
+cloudflared_url = "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe"
+share_start_timeout_s = 45.0
 
 [presentation]
 min_dwell_s = 15.0         # an automatic slide change waits until the live slide was up this long (lecture time)

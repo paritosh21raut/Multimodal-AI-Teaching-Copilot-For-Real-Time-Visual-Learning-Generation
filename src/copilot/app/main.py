@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import logging
+import secrets
 import sys
 import threading
 import time
@@ -24,6 +25,7 @@ from copilot.core.events import (
     InterpretationReady,
     Lifecycle,
     LifecycleChanged,
+    ShareChanged,
     SlidePatch,
     TranscriptFinal,
     UtteranceDropped,
@@ -167,6 +169,8 @@ class App:
         self._start_requested = asyncio.Event()
         self.deck = Deck(self.bus)
         self._now = Lifecycle.STARTING
+        self.share = None  # display.share.ShareService (F-008)
+        self.control_key = secrets.token_urlsafe(18)  # the teacher key for /control from outside this machine
 
     async def _lifecycle(self, state: Lifecycle, reason: str = "") -> None:
         self._now = state
@@ -333,9 +337,34 @@ class App:
             hub, self.config.get("display", "host", "127.0.0.1"), int(self.config.get("display", "port", 8765)),
             media=cache_from_config(self.config),
             upload_max_bytes=int(float(self.config.get("images", "upload_max_mb", 10)) * 1024 * 1024),
+            control_key=self.control_key,
         )
         await self.server.start()
         self._server_started = asyncio.get_running_loop().time()
+        from copilot.display.share import ShareService
+
+        self.share = ShareService(
+            self.bus, f"http://127.0.0.1:{self.server.port}",
+            PROJECT_ROOT / self.config.get("app", "data_dir", "data") / "bin",
+            configured=self.config.get("display", "cloudflared", ""),
+            download_url=self.config.get("display", "cloudflared_url", ""),
+            start_timeout_s=float(self.config.get("display", "share_start_timeout_s", 45.0)))
+        self.share.attach()
+        self.bus.subscribe("terminal_share", self._print_share, [ShareChanged])
+
+    async def _print_share(self, event: Event) -> None:
+        if not isinstance(event, ShareChanged):
+            return
+        if event.state == "on":
+            base = event.url.removesuffix("/view")
+            print(f"[SHARE] students: {event.url}", flush=True)
+            print(f"        teacher control from another device: {base}/control?key={self.control_key}", flush=True)
+        elif event.state == "failed":
+            print(f"[SHARE] could not share: {event.detail}", flush=True)
+        elif event.state == "off":
+            print("[SHARE] stopped", flush=True)
+        else:
+            print(f"[SHARE] {event.detail} ...", flush=True)
 
     async def run(self) -> int:
         script = parse_script(self.simulate) if self.simulate else None
@@ -492,6 +521,8 @@ class App:
             await self.presentation.stop()
         if self.images is not None:
             await self.images.stop()
+        if self.share is not None:
+            await self.share.stop()  # the students' link closes with the lecture
         if self.understanding is not None:
             await self.understanding.stop()
         if self._http is not None:

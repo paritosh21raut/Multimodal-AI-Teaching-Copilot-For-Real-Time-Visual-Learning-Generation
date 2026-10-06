@@ -55,6 +55,14 @@ Frame of a slide = (topic, facet). Facet = subtopic (or the topic). Titles compa
   memory type, by architecture) are ONE groups block: the first one's tree becomes its first card (same ids) and the
   labels lose the repeated subject ("Microcontroller types by bit width" → "By bit width"; round 4, issue 4). A tree
   that does not fit moves whole to the next part (its kinds as a list only when all of them fit; "Ovaries" alone).
+  **Sub-classification** (round 4 step D, user 2026-10-06): a classification whose label names one kind of the tree
+  on the slide ("Physical classification" under "Classification of matter") grows the tree a level
+  (`composer.subdivide`, same ids) instead of group cards; at most 3 levels and only while the estimated width fits
+  (`tree_width` ≤ 1696 px), else the group cards as before. A tree of several levels takes no automatic image.
+- **Teacher edits** (F-008): `edit_text` / `delete_item` / `add_point` from /control → `composer.edit_text` /
+  `remove_elements` / `add_point`. The engine records the teacher's element ids (global, so they stay the teacher's
+  when a block moves to another part) and titles: revisions, correction switches, tentative moves and retitles skip
+  them; text the teacher deleted or replaced is kept per slide and new near-duplicates of it are left out there.
 - Definitions: same term → extra text as a point; a word part ("photo" of "photosynthesis", "X means …") → note chip;
   a peer concept defined alongside (element + compound, atom + molecule) → two definition cards side by side;
   a new term on a slide with other content → a definition card below it if room, else the next part.

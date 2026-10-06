@@ -193,7 +193,7 @@ def content_width(spec: SlideSpec) -> float:
 def block_height(b: Block, width: float = BODY_WIDTH_PX, narrow: bool = False) -> float:
     """Estimated rendered height (design px at the default type size). narrow: beside an image (facts in 2 columns)."""
     if b.type == "definition":
-        h = 88 + 57 * _lines(b.definition, _cpl(width - 116, 42))
+        h = 92 + 57 * _lines(b.definition, _cpl(width - 116, 42))  # card + its "Definition" tab (slide.css)
         if b.notes:
             h += 30 + 64 * math.ceil(sum(len(n.text) + 6 for n in b.notes) / _cpl(width, 26))
         return h
@@ -224,11 +224,17 @@ def block_height(b: Block, width: float = BODY_WIDTH_PX, narrow: bool = False) -
         tallest = max(math.ceil(sum(len(i.text) + 4 for i in g.items) / _cpl(width_each - 60, 30)) for g in b.groups)
         return (44 if b.heading else 0) + 110 + 46 * tallest
     if b.type == "hierarchy":
+        if narrow and any(c.children for c in b.root.children):
+            # beside an image a tree of several levels is a card per divided kind (slide.js), stacked
+            cards = [c for c in b.root.children if c.children]
+            leaves = [c for c in b.root.children if not c.children]
+            return (44 + sum(110 + 46 * math.ceil(sum(len(k.label) + 4 for k in c.children) / _cpl(width - 60, 30))
+                             for c in cards) + 22 * len(cards)
+                    + (46 * math.ceil(sum(len(k.label) + 4 for k in leaves) / _cpl(width, 30)) if leaves else 0))
         if narrow:  # beside an image the classification is one card: its label, then the kinds as chips
             chips = math.ceil(sum(len(c.label) + 4 for c in b.root.children) / _cpl(width - 60, 30))
             return 110 + 46 * max(1, chips)
-        depth = 1 + (1 if b.root.children else 0) + (1 if any(c.children for c in b.root.children) else 0)
-        return 110 + 120 * (depth - 1)
+        return 110 + 120 * (tree_depth(b.root) - 1)
     if b.type == "process":
         longest = max((len(s.label) for s in b.steps), default=10)
         per = (width - 56 * max(0, len(b.steps) - 1)) / max(1, len(b.steps))
@@ -858,10 +864,65 @@ def classification_label(label: str, topic: str) -> str:
     return cap(" ".join(words))
 
 
+# ---- sub-classifications (verify round 4 step D, user 2026-10-06) -------------------------------------
+# A kind of a classification divided further ("Matter" -> physical / chemical; physical -> solid, liquid, gas) grows
+# the tree a level instead of turning it into equal group cards: the chart shows what belongs under what.
+TREE_GAP_PX = 28        # slide.css .tree-children gap
+TREE_NODE_PAD_PX = 68   # .tree-node horizontal padding
+TREE_MAX_DEPTH = 3      # the root and two levels below it
+_TREE_FONT = (42, 34, 26)  # root, first level, deeper levels (slide.css)
+
+
+def tree_depth(n: TreeNode) -> int:
+    return 1 + max((tree_depth(c) for c in n.children), default=0)
+
+
+def tree_width(n: TreeNode, level: int = 0) -> float:
+    """Estimated width of the drawn tree (design px): a node is as wide as its label or as all its children."""
+    own = len(n.label) * _TREE_FONT[min(level, 2)] * 0.55 + TREE_NODE_PAD_PX
+    if not n.children:
+        return own
+    kids = sum(tree_width(c, level + 1) for c in n.children) + TREE_GAP_PX * (len(n.children) - 1)
+    return max(own, kids)
+
+
+def subdivide(root: TreeNode, divisions: tuple[tuple[str, tuple[str, ...]], ...]) -> Optional[TreeNode]:
+    """The tree with each division's kinds under the node it divides (same ids for what was there: nothing
+    re-animates), or None when a division names no single node below the root, or the tree gets too deep or too
+    wide for the slide."""
+    def find(n: TreeNode, label: str, level: int) -> list[str]:
+        hits = [n.id] if level > 0 and titles_match(n.label, label) else []
+        return hits + [h for c in n.children for h in find(c, label, level + 1)]
+
+    targets: dict[str, tuple[str, ...]] = {}
+    for label, kinds in divisions:
+        hits = find(root, label, 0)
+        if len(hits) != 1 or not kinds:
+            return None
+        targets[hits[0]] = kinds
+
+    def grow(n: TreeNode) -> TreeNode:
+        children = [grow(c) for c in n.children]
+        if n.id in targets:
+            fresh = _new([c.label for c in children], targets[n.id])[: max(0, CAPACITY["tree"] - len(children))]
+            children += [TreeNode(label=cap(t)) for t in fresh]
+        return n.model_copy(update={"children": children})
+
+    out = grow(root)
+    if tree_depth(out) > TREE_MAX_DEPTH or tree_width(out) > BODY_WIDTH_PX:
+        log.info("tree %r would be too deep or too wide with %s", root.label, [d for d, _ in divisions])
+        return None
+    return out
+
+
 def _merge_groups(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:
     orig = spec
     hb = _find(spec, "hierarchy")
     if hb is not None and _find(spec, "groups") is None:
+        grown = subdivide(hb.root, piece.groups)
+        if grown is not None:  # the kinds of the tree's own kinds: one tree, a level deeper
+            cand = _replace_block(spec, hb, hb.model_copy(update={"root": grown}))
+            return (cand, None) if fits(cand) or len(spec.blocks) == 1 else (orig, piece)
         # several classifications of one thing (by bits, by memory, by instruction set ...) are one set of group
         # cards; the classification shown as a tree so far becomes the first card (same ids: nothing re-animates)
         spec = _replace_block(spec, hb, GroupsBlock(id=hb.id, groups=[Group(
@@ -901,6 +962,12 @@ def _merge_tree(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piec
             log.info("tree %r is full; not shown: %s", hb.root.label, all_fresh[room:])
         root = hb.root.model_copy(update={"children": hb.root.children + [TreeNode(label=t) for t in fresh]})
         return _replace_block(spec, hb, hb.model_copy(update={"root": root})), None
+    if hb is not None:
+        grown = subdivide(hb.root, ((piece.term, piece.texts),))
+        if grown is not None:  # one of the tree's kinds divided further
+            cand = _replace_block(spec, hb, hb.model_copy(update={"root": grown}))
+            if fits(cand) or len(spec.blocks) == 1:
+                return cand, None
     if hb is not None or _find(spec, "groups") is not None:
         # a further classification on the slide: all of them read best as named groups side by side
         return _merge_groups(spec, Piece("groups", lines=piece.lines, added=piece.added,
@@ -1100,6 +1167,62 @@ def revise_item(spec: SlideSpec, item_id: str, text: str) -> Optional[SlideSpec]
             hit = True
         blocks.append(b)
     return spec.model_copy(update={"blocks": blocks}) if hit else None
+
+
+# ---- the teacher's edits (live slide editing in /control, F-008) ----------------------------------------
+TERM_SUFFIX = ":term"  # "<definition id>:term" = the term of a definition card
+
+
+def edit_text(spec: SlideSpec, item_id: str, text: str) -> Optional[SlideSpec]:
+    """The teacher's text for one element, exactly as typed (same id: only that text changes on the display).
+    None if the element is not on this slide or cannot be edited as text (a formula, an image)."""
+    def walk(n: TreeNode) -> TreeNode:
+        return n.model_copy(update={"label": text if n.id == item_id else n.label,
+                                    "children": [walk(c) for c in n.children]})
+
+    blocks, hit = [], False
+    for b in spec.blocks:
+        new = b
+        if b.type == "definition":
+            if item_id == b.id + TERM_SUFFIX:
+                new = b.model_copy(update={"term": text})
+            elif item_id == b.id:
+                new = b.model_copy(update={"definition": text})
+            elif any(n.id == item_id for n in b.notes):
+                new = b.model_copy(update={"notes": [n.model_copy(update={"text": text, "provisional": False})
+                                                     if n.id == item_id else n for n in b.notes]})
+        elif b.type == "points" and any(i.id == item_id for i in b.items):
+            new = b.model_copy(update={"items": [i.model_copy(update={"text": text, "provisional": False, "added": False})
+                                                 if i.id == item_id else i for i in b.items]})
+        elif b.type == "process" and any(s.id == item_id for s in b.steps):
+            new = b.model_copy(update={"steps": [s.model_copy(update={"label": text, "detail": ""})
+                                                 if s.id == item_id else s for s in b.steps]})
+        elif b.type == "facts" and any(f.id == item_id for f in b.facts):
+            label, sep, value = text.partition(":")
+            new = b.model_copy(update={"facts": [
+                f.model_copy(update={"label": label.strip() if sep else text, "value": value.strip() if sep else ""})
+                if f.id == item_id else f for f in b.facts]})
+        elif b.type == "groups" and any(g.id == item_id or any(i.id == item_id for i in g.items) for g in b.groups):
+            new = b.model_copy(update={"groups": [g.model_copy(update={
+                "label": text if g.id == item_id else g.label,
+                "items": [i.model_copy(update={"text": text}) if i.id == item_id else i for i in g.items]})
+                for g in b.groups]})
+        elif b.type == "hierarchy" and item_id in element_texts(spec.model_copy(update={"blocks": [b]})):
+            new = b.model_copy(update={"root": walk(b.root)})
+        elif b.type in SECONDARY and b.id == item_id:
+            new = b.model_copy(update={"text": text})
+        hit = hit or new is not b
+        blocks.append(new)
+    return spec.model_copy(update={"blocks": blocks}) if hit else None
+
+
+def add_point(spec: SlideSpec, text: str) -> tuple[SlideSpec, str]:
+    """A point the teacher adds: to the slide's own list (not a concept column's), else a new list at the end."""
+    item = Item(text=text)
+    pb = _find(spec, "points")
+    if pb is not None:
+        return _replace_block(spec, pb, pb.model_copy(update={"items": [*pb.items, item]})), item.id
+    return _add_block(spec, PointsBlock(items=[item])), item.id
 
 
 def element_texts(spec: SlideSpec) -> dict[str, str]:
