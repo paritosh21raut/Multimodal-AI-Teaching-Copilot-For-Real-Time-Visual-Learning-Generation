@@ -97,10 +97,23 @@ async def test_first_slide_is_awaited_behind_glass_without_text():
             .map(b => getComputedStyle(b).animationName).filter(n => n && n !== 'none').length""")
         assert moving >= 2
         assert (await page.inner_text(".viewport")).strip() == ""   # no words on the projector
+        # round 5 (user 2026-10-06): anticipation, like an image being generated: light runs around a slide-shaped
+        # glass card, and a slide's outline (crumb, title, lines, picture) is drawn inside it piece by piece
+        drawn = await page.evaluate("""() => ({
+            ring: getComputedStyle(document.querySelector('.glass .ring')).animationName,
+            pieces: [...document.querySelectorAll('.glass .sk')].filter(e => getComputedStyle(e).animationName
+                .includes('glass-build')).length,
+            card: document.querySelector('.glass .card').getBoundingClientRect().width })""")
+        assert drawn["ring"] == "glass-spin" and drawn["pieces"] >= 6 and drawn["card"] > 0
+        await page.wait_for_timeout(1800)  # a few pieces drawn
         await page.screenshot(path=str(ART / "display_first_slide_glass.png"))
         await h.deck.add(points("a", ["alpha"]))
         await h.settle()
         await wait_for_slide(page, "a")
+        # the glass clears over the first slide, then goes
+        await page.wait_for_selector(".glass.leaving", timeout=2000)
+        await page.wait_for_timeout(300)
+        await page.screenshot(path=str(ART / "display_first_slide_glass_clearing.png"))
         await page.wait_for_selector(".glass", state="detached", timeout=3000)
         await command(h, "blank")   # blank is empty, not the glass
         await page.wait_for_function("() => document.querySelectorAll('.slide').length === 0", timeout=3000)

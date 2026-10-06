@@ -106,17 +106,18 @@ async def test_teacher_image_controls_and_layout(tmp_path):
                                            images=[], reason="no relevant image"))
             await control.wait_for_selector(".preview .image-status >> text=No suitable image found")
 
-            # the teacher controls (dock): slide position, Pin toggles on and off
+            # the teacher controls (dock): slide position, Blank toggles on and off (Pin removed, user 2026-10-06)
             assert (await control.inner_text(".dock .count")).strip() == "1 / 1"
-            await control.click(".dock button[title='Pin (P)']")
-            await control.wait_for_selector(".dock button.on[title='Pin (P)']")
-            assert h.deck.pinned
+            assert await control.query_selector(".dock button[title^='Pin']") is None
+            await control.click(".dock button[title='Blank (B)']")
+            await control.wait_for_selector(".dock button.on[title='Blank (B)']")
+            assert h.deck.blank
             await control.mouse.move(5, 5)
             await control.wait_for_timeout(300)  # colour transition
-            await control.screenshot(path=str(ART / "control_dock_pinned.png"))
-            await control.click(".dock button[title='Pin (P)']")
+            await control.screenshot(path=str(ART / "control_dock_blank.png"))
+            await control.click(".dock button[title='Blank (B)']")
             await control.wait_for_selector(".dock button.on", state="detached")
-            assert not h.deck.pinned
+            assert not h.deck.blank
 
             # 1. drag a file over the slide: the drop zone appears where the image will go, content moves left
             png = picture((20, 130, 90), (800, 1000), "teacher")

@@ -59,18 +59,42 @@ function stepText(s) {
   return m && m[1].split(" ").length <= 4 ? { label: m[1], detail: m[2] } : { label: s.label, detail: "" };
 }
 
+// Up to 6 steps in one row; 7-10 in two rows, the longer first (mirrors composer.process_rows). Round 5 (user
+// 2026-10-06): a whole process on one slide; a longer one continues on the next part and keeps counting (b.start).
+function processRows(n) {
+  if (n <= 6) return n ? [[0, n]] : [];
+  const k = Math.ceil(n / 2);
+  return [[0, k], [k, n]];
+}
+
+// from the end of row 1 back to the start of row 2 (both rows share the column grid, so the ends line up)
+function Turn({ cols }) {
+  const right = 100 - 50 / cols, left = 50 / cols;
+  return html`<div class="process-turn" aria-hidden="true">
+    <svg viewBox="0 0 100 40" preserveAspectRatio="none"><path d=${`M${right} 0 V20 H${left} V40`}
+      fill="none" stroke="currentColor" stroke-width="3" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>
+    <span class="turn-head" style=${{ left: `calc(${left}% - 20px)` }}></span>
+  </div>`;
+}
+
 function Process({ b }) {
-  return html`<div class="process">
-    <div class=${"process-row" + (b.steps.length >= 5 ? " many" : "")}>
-      ${b.steps.map((s, i) => { const { label, detail } = stepText(s); return html`<div key=${s.id} class="step enter">
-        <div class="step-card" data-edit=${s.id}>
-          <span class="step-no">STEP ${i + 1}</span>
-          <span class=${"step-label" + (label.length > LONG_STEP ? " long" : "")}>${mixed(label, s.math)}</span>
-          ${detail && html`<span class="step-detail">${rich(detail)}</span>`}
-        </div>
-        ${i < b.steps.length - 1 && ARROW}
-      </div>`; })}
-    </div>
+  const rows = processRows(b.steps.length);
+  const cols = rows.length ? Math.max(...rows.map(([a, z]) => z - a)) : 1;
+  const start = b.start || 1;
+  const row = ([a, z]) => html`<div class=${"process-row" + (cols >= 5 ? " many" : "") + (rows.length > 1 ? " grid" : "")}
+      style=${rows.length > 1 ? { "--cols": cols } : null}>
+    ${b.steps.slice(a, z).map((s, j) => { const { label, detail } = stepText(s); return html`<div key=${s.id} class="step enter">
+      <div class="step-card" data-edit=${s.id}>
+        <span class="step-no">STEP ${start + a + j}</span>
+        <span class=${"step-label" + (label.length > LONG_STEP ? " long" : "")}>${mixed(label, s.math)}</span>
+        ${detail && html`<span class="step-detail">${rich(detail)}</span>`}
+      </div>
+      ${a + j < z - 1 && ARROW}
+    </div>`; })}
+  </div>`;
+  return html`<div class=${"process" + (rows.length > 1 ? " two-rows" : "")}>
+    ${start > 1 && html`<div class="process-cont">continues from step ${start - 1}</div>`}
+    ${rows.map((r, i) => html`${i > 0 && html`<${Turn} cols=${cols} />`}${row(r)}`)}
     ${b.cyclic && html`<div class="cycle-note">↻ The cycle repeats</div>`}
   </div>`;
 }
@@ -142,6 +166,36 @@ function Formula({ b }) {
         <span class="meaning">${rich(v.meaning)}</span>${v.unit && html`<span class="unit">${v.unit}</span>`}</span>`)}
     </div>`}
   </div>`;
+}
+
+// Formulas said together (round 5, user 2026-10-06: the three equations of motion were three slides): one compact
+// equation card each, stacked, and ONE legend of the symbols below them (the first meaning of a symbol wins).
+function FormulaSet({ b }) {
+  const seen = new Map();
+  b.items.forEach((f) => f.variables.forEach((v) => { if (!seen.has(v.symbol)) seen.set(v.symbol, v); }));
+  const vars = [...seen.values()];
+  return html`<div class="formula formula-set">
+    ${b.items.map((f) => html`<div key=${f.id} class="formula-eq enter" data-edit=${f.id} data-delete-only="1">
+      <${Tex} latex=${f.latex} text=${f.spoken || f.latex} /></div>`)}
+    ${vars.length > 0 && html`<div class="formula-vars">
+      ${vars.map((v) => html`<span key=${v.symbol} class="var enter"><${Tex} cls="sym" latex=${v.latex} text=${v.symbol} />
+        <span class="meaning">${rich(v.meaning)}</span>${v.unit && html`<span class="unit">${v.unit}</span>`}</span>`)}
+    </div>`}
+  </div>`;
+}
+
+// Consecutive slide-wide formulas become one set (mirrors composer._stack_height); a lone formula stays as it was.
+function groupFormulas(blocks) {
+  const out = [];
+  for (const b of blocks) {
+    const last = out[out.length - 1];
+    if (b.type === "formula" && !b.about && last && last.type === "formula" && !last.about) {
+      out[out.length - 1] = { type: "formula_set", id: `set-${last.id}`, items: [last, b] };
+    } else if (b.type === "formula" && !b.about && last && last.type === "formula_set") {
+      last.items = [...last.items, b];
+    } else out.push(b);
+  }
+  return out;
 }
 
 // Fact tiles: short attribute facts about named things ("Smallest planet" / "Mercury").
@@ -224,6 +278,7 @@ function Block({ b, wide, termInTitle, narrow }) {
     case "hierarchy": return narrow ? html`<${NarrowTree} root=${b.root} />`
       : html`<div class="tree"><${TreeNode} n=${b.root} root /></div>`;
     case "formula": return html`<${Formula} b=${b} />`;
+    case "formula_set": return html`<${FormulaSet} b=${b} />`;
     case "image": return html`<${Figure} b=${b} />`;
     case "groups": return html`<${Groups} b=${b} />`;
     case "example": return html`<div class="example enter" data-edit=${b.id}><span class="label">Example</span>
@@ -331,13 +386,13 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
             termInTitle=${!!def} />`)}</div>
           ${figure}
         </div>
-        <div class="main below">${below.map((b) => html`<${Block} key=${b.id} b=${b} wide=${true} />`)}</div>`
+        <div class="main below">${groupFormulas(below).map((b) => html`<${Block} key=${b.id} b=${b} wide=${true} />`)}</div>`
       : html`<div class="main">
         ${pairDefs && html`<div class=${`def-pair cols-${gridCols}`}>${defs.map((d) => html`<div key=${d.id} class="def-col">
           <${Definition} b=${d} termInTitle=${false} card />
           ${spec.blocks.filter((b) => b.about === d.id).map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} />`)}
         </div>`)}</div>`}
-        ${mainRest.map((b) => html`<${Block} key=${b.id} b=${b} wide=${!aside.length && !image} narrow=${!!image}
+        ${groupFormulas(mainRest).map((b) => html`<${Block} key=${b.id} b=${b} wide=${!aside.length && !image} narrow=${!!image}
           termInTitle=${!!def} />`)}
       </div>
       ${aside.length > 0 && html`<div class="aside">${aside.map((b) => html`<${Block} key=${b.id} b=${b} />`)}</div>`}

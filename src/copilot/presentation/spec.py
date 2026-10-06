@@ -108,6 +108,7 @@ class ProcessBlock(_Model):
     id: str = Field(default_factory=new_id)
     steps: list[Step] = Field(default_factory=list)
     cyclic: bool = False
+    start: int = Field(default=1, ge=1)  # number of the first step: a process continued on the next part keeps counting
 
 
 class ComparisonBlock(_Model):

@@ -5,9 +5,9 @@ arrive as CommandReceived events. Every change is published as SlidePatch / Deck
 
 Display flags:
 - following: the live slide jumps to each new slide (off when the teacher navigates back)
-- pinned:    stay on the current slide; in-place updates still show; new slides queue behind it
 - blank:     the projector shows an empty screen
-(Freeze was replaced by Pause, user 2026-10-06: a lifecycle state, not a display flag; see app/main.py.)
+(Freeze was replaced by Pause, user 2026-10-06: a lifecycle state, not a display flag; see app/main.py.
+ Pin was removed, user 2026-10-06: Pause, Blank and navigating back cover it.)
 - zoom:      a slide's image fills the projector (the teacher clicked it in /control); ends on Back / Esc, on
              navigation, or when that image leaves the slide. New content keeps arriving behind it.
 """
@@ -23,7 +23,7 @@ from copilot.presentation.spec import SlideSpec
 
 log = logging.getLogger(__name__)
 
-NAV_COMMANDS = {"next", "prev", "goto", "pin", "unpin", "blank", "unblank", "zoom_image", "unzoom_image"}
+NAV_COMMANDS = {"next", "prev", "goto", "blank", "unblank", "zoom_image", "unzoom_image"}
 
 
 def _has_image(spec: SlideSpec) -> bool:
@@ -37,7 +37,6 @@ class Deck:
         self._order: list[str] = []
         self.live_id: Optional[str] = None
         self.following = True
-        self.pinned = False
         self.blank = False
         self.zoom: Optional[str] = None
 
@@ -59,7 +58,7 @@ class Deck:
     def state_event(self) -> DeckState:
         return DeckState(
             live_id=self.live_id, slide_ids=list(self._order), following=self.following,
-            pinned=self.pinned, blank=self.blank, zoom=self.zoom,
+            blank=self.blank, zoom=self.zoom,
         )
 
     # ---- slide ops (planner) --------------------------------------------------------------
@@ -75,7 +74,7 @@ class Deck:
         else:
             self._order.append(spec.id)
         await self._bus.publish(SlidePatch(slide_id=spec.id, version=1, op="add", spec=spec.model_dump()))
-        if self.live_id is None or (activate and self.following and not self.pinned):
+        if self.live_id is None or (activate and self.following):
             self.live_id = spec.id
         await self._publish_state()
         return spec
@@ -144,15 +143,10 @@ class Deck:
                 return False
             self.zoom = None
             return True
-        flag, value = {
-            "pin": ("pinned", True), "unpin": ("pinned", False),
-            "blank": ("blank", True), "unblank": ("blank", False),
-        }[kind]
-        if getattr(self, flag) == value:
+        value = kind == "blank"  # blank / unblank
+        if self.blank == value:
             return False
-        setattr(self, flag, value)
-        if kind == "unpin" and self.following and self._order:
-            self.live_id = self._order[-1]  # catch up with slides queued while pinned
+        self.blank = value
         return True
 
     async def _publish_state(self) -> None:

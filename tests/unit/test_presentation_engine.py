@@ -288,7 +288,7 @@ async def test_announcements_never_reach_the_slide():
     await eng.stop()
 
 
-async def test_force_new_slide_pinned_and_overflow():
+async def test_force_new_slide_navigated_back_and_overflow():
     bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
     await send(bus, ready("Photosynthesis", "Requirements", [act("explanation", points=["Sunlight"])],
                           relation="new_topic"))
@@ -298,11 +298,10 @@ async def test_force_new_slide_pinned_and_overflow():
     assert deck.slides[1].part == 2 and deck.get(first).part == 1           # same frame: part badge
     await send(bus, ready("Photosynthesis", "Requirements", [act("explanation", points=["Water"])]))
     assert texts(deck.slides[1]) == ["Water"]                                 # fills the forced slide
-    await send(bus, CommandReceived(command=Command(kind="goto", args={"slide_id": first})),
-               CommandReceived(command=Command(kind="pin")))
+    await send(bus, CommandReceived(command=Command(kind="goto", args={"slide_id": first})))
     await send(bus, ready("Photosynthesis", "Process", [act("process", steps=["Light is absorbed"])],
                           relation="sibling_concept"))
-    assert len(deck.slides) == 3 and deck.live_id == first                   # pinned: queued behind
+    assert len(deck.slides) == 3 and deck.live_id == first                   # navigated back: queued behind
     proc = deck.slides[2]
     await send(bus, SlideOverflow(slide_id=proc.id, version=proc.version))
     await send(bus, ready("Photosynthesis", "Process", [act("process", steps=["Water is split"])]))

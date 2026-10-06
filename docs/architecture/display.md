@@ -71,15 +71,19 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
   preview with "← Back to slide (Esc)" at the top right (round 4 step C; it was top left, hard to reach). Esc, a
   click on the image or Back → `unzoom_image`; navigation or the image leaving the slide also ends it; blank still
   wins.
-- Before the first slide /display shows no text: soft coloured light drifts behind a framed frosted pane
-  (`.glass`, CSS animation only), so the projector visibly works (user 2026-10-06: "something happening behind the
-  glass"). Between slides the previous slide stays; blank is an empty screen.
+- Before the first slide /display shows no text, only anticipation (round 5, user 2026-10-06: "like image generation
+  in a chatbot"): coloured light drifts behind a slide-shaped frosted glass card; a light runs around its edge
+  (conic gradient, `@property --glass-angle`) and glows through it; inside, a slide's outline (crumb, title, four
+  lines, picture) is drawn piece by piece with a shimmer and starts over; a scan band passes; sparks rise. When the
+  first slide arrives the glass clears over it (`.glass.leaving`, backdrop blur 28 → 0 px in 1.2 s) and goes. CSS
+  only (`.glass`). Between slides the previous slide stays; blank is an empty screen (no glass).
 
 ## Teacher controls
-Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `Space` pause / resume, `P` pin,
+Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `Space` pause / resume,
 `B` blank, `N` force new slide (End lecture: button only; `Esc` closes a zoomed image). The terminal also accepts
-`Enter` (start) and `q` (end).
-The buttons are a dock under the preview in the image bar's style: pill groups ‹ n / m › · Pin Pause Blank (on =
+`Enter` (start) and `q` (end). **Pin was removed** (round 5, user 2026-10-06: Pause, Blank and navigating back to a
+slide — which stops following new slides — cover it).
+The buttons are a dock under the preview in the image bar's style: pill groups ‹ n / m › · Pause Blank (on =
 filled; Blank in the warning colour, Pause in blue) · New slide, End lecture on the right. The earlier plain button
 row is removed (the teacher chose the dock).
 - **Pause** (replaces Freeze, user 2026-10-06): `pause` / `resume` commands → the app switches the lifecycle
@@ -89,16 +93,18 @@ row is removed (the teacher chose the dock).
   projector keeps showing the live slide.
 Controls send `Command` messages over the WebSocket → `CommandReceived` events; the UI never mutates state.
 - **Layout (round 4 step D):** header (status, Share with students, Open classroom display) · left: preview + dock
-  (‹ n / m › · Pin Pause Blank · New slide, Add point · End lecture with a "leave" icon) · right: mistake cards +
+  (‹ n / m › · Pause Blank · New slide, Add point · End lecture with a "leave" icon) · right: mistake cards +
   **lecture structure** (topic → facet → slides with part badges, live slide highlighted, click = `goto`; it replaced
   the plain slide list) · bottom: **transcript strip** (last line; click expands to the whole transcript). One column
   below 980 px.
 - **Live slide editing:** hovering an element marked `data-edit` in the preview shows an outline and pencil / bin
-  (title: pencil only; formula: bin only); the pencil opens an edit box over it (Enter saves, Esc cancels, leaving it
-  saves); Add point opens one at the bottom. Commands `edit_text` / `delete_item` / `add_point`; the engine keeps the
+  (title: pencil only; formula: bin only) **inside the element's top-right corner** (round 5: above it they vanished on
+  the way); they stay 1 s after the pointer leaves; a **double-click** on an element opens its editor directly. The
+  pencil opens an edit box over it (Enter saves, Esc cancels, leaving it saves); Add point opens one at the bottom. Commands `edit_text` / `delete_item` / `add_point`; the engine keeps the
   teacher's text final (F-005 "Teacher edits").
 - **Share with students:** `share_start` → `ShareChanged` (starting → on with the `/view` link | failed with why);
   the header shows the link, Copy, "n watching" (viewer connections), Stop (`share_stop`).
 - Mistake cards: only factual / conceptual / formula concerns ("You said X · The slide shows Y", one switch:
-  Show what I said ⇄ Show correction, × closes the card; nothing to approve). Transcription concerns are never sent
+  Show what I said ⇄ Show correction, plus **Keep correction** / **Keep what I said** = keep the slide as it is and
+  close the card (`dismiss`; round 5, the × alone was too small); × still closes; nothing to approve). Transcription concerns are never sent
   to /control (the hub drops them); the terminal logs them as `[HEARD] wrong -> right`.

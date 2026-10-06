@@ -31,9 +31,9 @@ from copilot.presentation.spec import (
 log = logging.getLogger(__name__)
 
 # Hard caps per block (readability), on top of the space budget.
-CAPACITY = {"points": 8, "notes": 2, "steps": 6, "columns": 3, "rows": 6, "events": 6, "links": 4,
+CAPACITY = {"points": 8, "notes": 2, "steps": 10, "columns": 3, "rows": 6, "events": 6, "links": 4,
             "variables": 4, "secondary": 2, "facts": 8, "groups": 4, "group_items": 8, "tree": 6, "definitions": 6,
-            "member_points": 3}
+            "member_points": 3, "formulas": 4}
 BODY_BUDGET_PX = 740       # slide body height at the default type size (auto-fit can still shrink to 0.8); measured
                            # 754-763 px in Edge on 29 slides of the live test 2026-10-06 (700 left lonely last parts)
 BODY_WIDTH_PX = 1696
@@ -165,6 +165,23 @@ def title_slide(topic: str, subtitle: str = "") -> SlideSpec:
     return SlideSpec(title=topic, subtitle=subtitle, layout="title", blocks=[])
 
 
+def process_rows(n: int) -> list[range]:
+    """Step indices per row (mirrors slide.js processRows): up to 6 steps in one row; 7-10 in two rows, the longer
+    first (round 5, user 2026-10-06: a whole digestive process on one slide, not split 6 + 4 across parts)."""
+    if n <= 6:
+        return [range(n)] if n else []
+    k = math.ceil(n / 2)
+    return [range(k), range(k, n)]
+
+
+def continue_numbering(prev: SlideSpec, nxt: SlideSpec) -> SlideSpec:
+    """The next part of a process keeps counting its steps (Step 11, 12 …; live test 2026-10-06 restarted at 1)."""
+    a, b = _find(prev, "process"), _find(nxt, "process")
+    if a is None or b is None or b.start > 1:
+        return nxt
+    return _replace_block(nxt, b, b.model_copy(update={"start": a.start + len(a.steps)}))
+
+
 # ---- height model ---------------------------------------------------------------------------------------
 def _lines(text: str, chars_per_line: float) -> int:
     return max(1, math.ceil(len(text) / max(8.0, chars_per_line)))
@@ -237,8 +254,15 @@ def block_height(b: Block, width: float = BODY_WIDTH_PX, narrow: bool = False) -
         return 110 + 120 * (tree_depth(b.root) - 1)
     if b.type == "process":
         longest = max((len(s.label) for s in b.steps), default=10)
-        per = (width - 56 * max(0, len(b.steps) - 1)) / max(1, len(b.steps))
-        return 120 + 41 * _lines("x" * longest, _cpl(per - 56, 34))
+        rows = process_rows(len(b.steps))
+        per_row = max(len(r) for r in rows) if rows else 1
+        gap = 40 if per_row >= 5 else 56
+        per = (width - gap * max(0, per_row - 1)) / per_row
+        if per_row >= 5:  # narrow cards: smaller label (slide.css .process-row.many)
+            card = 104 + 34 * _lines("x" * longest, _cpl(per - 44, 26))
+        else:
+            card = 120 + 41 * _lines("x" * longest, _cpl(per - 56, 34))
+        return len(rows) * card + 70 * (len(rows) - 1) + (44 if b.start > 1 else 0)
     if b.type == "comparison":
         return 80 + sum(44 + 45 * max(_lines(c, _cpl(width / (len(r.cells) + 1), 34)) for c in r.cells or [""])
                         for r in b.rows)
@@ -296,6 +320,43 @@ def image_top(blocks: list) -> bool:
     return at is not None and at > 0
 
 
+FORMULA_SET_EQ_PX = 106    # one compact equation card of a formula set (slide.css .formula-set .formula-eq)
+FORMULA_SET_GAP_PX = 22
+
+
+def _formula_set_height(fs: list[FormulaBlock], width: float) -> float:
+    """Several formulas said together (mirrors slide.js FormulaSet): stacked compact cards, one shared legend."""
+    h = 0.0
+    for f in fs:
+        shown = visible_length(f.latex) if f.latex else len(f.spoken)
+        h += FORMULA_SET_EQ_PX + 69 * (_lines("x" * shown, _cpl(width - 112, 49)) - 1) \
+            + (44 if has_fraction(f.latex) else 0)
+    h += FORMULA_SET_GAP_PX * (len(fs) - 1)
+    seen: dict[str, str] = {}
+    for f in fs:
+        for v in f.variables:
+            seen.setdefault(v.symbol, v.meaning)
+    if seen:
+        h += 34 + 46 * math.ceil(sum(len(s) + len(m) + 8 for s, m in seen.items()) / _cpl(width, 26))
+    return h
+
+
+def _stack_height(blocks: list[Block], width: float, narrow: bool = False) -> float:
+    """Blocks stacked in one column; consecutive slide-wide formulas count as one formula set."""
+    parts: list[float] = []
+    run: list[FormulaBlock] = []
+    for b in blocks + [None]:
+        if b is not None and b.type == "formula" and not b.about:
+            run.append(b)
+            continue
+        if run:
+            parts.append(block_height(run[0], width, narrow) if len(run) == 1 else _formula_set_height(run, width))
+            run = []
+        if b is not None:
+            parts.append(block_height(b, width, narrow))
+    return sum(parts) + BLOCK_GAP_PX * max(0, len(parts) - 1)
+
+
 def body_height(spec: SlideSpec) -> float:
     blocks = list(spec.blocks)
     img = image_of(spec)
@@ -306,7 +367,7 @@ def body_height(spec: SlideSpec) -> float:
         width = content_width(spec)
         h_top = sum(block_height(b, width, True) for b in top) + BLOCK_GAP_PX * (len(top) - 1)
         h_img = min(IMAGE_TOP_MAX_PX, image_column_px(img.aspect) / max(0.2, img.aspect))
-        h_below = sum(block_height(b) for b in below) + BLOCK_GAP_PX * (len(below) - 1)
+        h_below = _stack_height(below, BODY_WIDTH_PX)
         return max(h_top, h_img) + BLOCK_GAP_PX + h_below
     members = spec.layout == "members"
     main, aside = _split(blocks, members)
@@ -328,7 +389,7 @@ def body_height(spec: SlideSpec) -> float:
         grid = sum(max(card(d) for d in row) for row in rows) + MEMBER_GAP_PX * (len(rows) - 1)
         h_main = grid + sum(block_height(b, width, narrow) for b in rest) + BLOCK_GAP_PX * len(rest)
     else:
-        h_main = sum(block_height(b, width, narrow) for b in main) + BLOCK_GAP_PX * max(0, len(main) - 1)
+        h_main = _stack_height(main, width, narrow)
     if img is not None:
         return max(h_main, block_height(img))
     h_aside = sum(block_height(b, BODY_WIDTH_PX - MAIN_WIDTH_ASIDE_PX - 36) for b in aside) \
@@ -1086,12 +1147,17 @@ def _variable(symbol: str, meaning: str) -> Variable:
 
 
 def _merge_formula(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:
-    fb = _find(spec, "formula")
     f = piece.formula
     assert f is not None
-    if fb is not None and is_duplicate(fb.spoken or fb.latex, f.expression):
+    formulas = [b for b in spec.blocks if b.type == "formula" and not b.about]
+    if any(is_duplicate(fb.spoken or fb.latex, f.expression) for fb in formulas):
         return spec, None
-    if fb is not None or any(b.type in LARGE for b in spec.blocks):
+    if any(b.type in LARGE and b.type != "formula" for b in spec.blocks):
+        return spec, piece
+    if formulas and (len(formulas) >= CAPACITY["formulas"] or spec.blocks[-1].type != "formula"
+                     or spec.blocks[-1].about):
+        # formulas said together form one set (round 5: the equations of motion were three slides); only when the
+        # new one directly follows a slide-wide formula, so the set stays one stack
         return spec, piece
     variables = [_variable(s, m) for s, m in f.variables[:CAPACITY["variables"]]]
     cand = _add_block(spec, FormulaBlock(latex=to_latex(f.expression), spoken=f.expression, variables=variables))

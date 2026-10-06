@@ -81,6 +81,43 @@ async def test_the_teacher_edits_deletes_and_adds_on_the_live_slide():
         await eng.stop()
 
 
+async def test_edit_tools_are_easy_to_reach_and_double_click_edits():
+    """Round 5 (user 2026-10-06): the pencil / bin vanished on the way to them. They sit inside the item, stay a
+    moment after the pointer leaves, and a double-click opens the editor directly."""
+    async with display_harness() as h:
+        eng = await with_engine(h)
+        await h.bus.publish(ready("Galaxies", "Black Holes", [act("explanation", points=[
+            "Black hole at the centre", "Black hole has huge gravity"])], relation="new_topic"))
+        await h.settle()
+        a, b = h.deck.live.blocks[0].items
+        async with browser_page(f"{h.url}/control", 1600, 1000) as control:
+            await wait_for_slide(control, h.deck.live_id)
+            item = control.locator(f'.preview [data-edit="{b.id}"]')
+            await item.hover()
+            await control.wait_for_selector(".edit-tools button[aria-label=Edit]")
+            ib, tb = await item.bounding_box(), await control.locator(".edit-tools").bounding_box()
+            assert ib["x"] <= tb["x"] and tb["x"] + tb["width"] <= ib["x"] + ib["width"] + 1      # inside the item
+            assert ib["y"] <= tb["y"] and tb["y"] + tb["height"] <= ib["y"] + ib["height"] + 1
+            # the pointer slips off the item (into the slide margin beside it): the tools stay for a moment
+            await control.mouse.move(ib["x"] + ib["width"] + 12, ib["y"] + ib["height"] / 2)
+            await control.wait_for_timeout(400)
+            assert await control.query_selector(".edit-tools") is not None
+            await control.click(".edit-tools button[aria-label=Delete]")
+            await h.settle()
+            assert [i.text for i in h.deck.live.blocks[0].items] == ["Black hole at the centre"]
+            # a double-click on a point opens its editor
+            await control.dblclick(f'.preview [data-edit="{a.id}"]')
+            assert await control.locator(".edit-box textarea").input_value() == "Black hole at the centre"
+            await control.press(".edit-box textarea", "Escape")
+            # the pointer away from the slide: the tools go after the grace time
+            await control.hover(f'.preview [data-edit="{a.id}"]')
+            await control.wait_for_selector(".edit-tools")
+            await control.mouse.move(5, 5)
+            await control.wait_for_selector(".edit-tools", state="detached", timeout=2500)
+            assert not control.errors
+        await eng.stop()
+
+
 async def test_the_lecture_structure_navigates_and_the_transcript_strip_expands():
     async with display_harness() as h:
         eng = await with_engine(h)

@@ -6,7 +6,7 @@ import { connect, initialState, reduce } from "../shared/ws.js";
 
 const KEYS = {
   ArrowRight: ["next"], ArrowLeft: ["prev"],
-  p: ["pin", "unpin", "pinned"], b: ["blank", "unblank", "blank"],
+  b: ["blank", "unblank", "blank"],  // (Pin removed, user 2026-10-06)
   n: ["force_new_slide"],
 };
 
@@ -50,7 +50,6 @@ const ICON = {
   remove: "M6 6l12 12M18 6L6 18",
   add: "M12 5v14M5 12h14",
   find: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4",
-  pin: "M9 3h6M10 3v6l-4 4h12l-4-4V3M12 13v8",
   pause: "M8.5 5v14M15.5 5v14",
   blank: "M3 5h18v12H3zM8 21h8M12 17v4M5 3l14 16",
   newSlide: "M4 5h16v14H4zM12 9v6M9 12h6",
@@ -66,30 +65,53 @@ const ICON = {
 
 // ---- live slide editing (F-008): hover an item of the preview → pencil / bin; the title → pencil; Add point ----
 // Every change is a command; the server keeps the teacher's text final (the lecture never rewrites it).
+// Round 5 (user 2026-10-06: the tools vanished on the way to them): they sit INSIDE the item's top-right corner, so
+// the pointer never leaves the item to reach them; they stay HOVER_GRACE_MS after the pointer leaves; a double-click
+// on an item (or the title) opens the editor directly.
+const HOVER_GRACE_MS = 1000;
+const TOOL_W = 32;  // one round tool button + padding (control.css .edit-tools)
+
 function EditLayer({ host, spec, send, adding, onAdded }) {
   const [hover, setHover] = useState(null);  // {id, box, deleteOnly}
   const [edit, setEdit] = useState(null);    // {id, box, text}
   const area = useRef(null);
+  const grace = useRef(null);
   const boxOf = (el) => {
     const p = host.current.getBoundingClientRect(), r = el.getBoundingClientRect();
     return { left: r.left - p.left, top: r.top - p.top, width: r.width, height: r.height };
   };
   const find = (id) => host.current && host.current.querySelector(`.stage [data-edit="${CSS.escape(id)}"]`);
+  const hold = () => { clearTimeout(grace.current); grace.current = null; };
+  const hideSoon = () => { if (!grace.current) grace.current = setTimeout(() => { grace.current = null; setHover(null); }, HOVER_GRACE_MS); };
+  useEffect(() => () => clearTimeout(grace.current), []);
   useEffect(() => {
     const el = host.current;
     if (!el) return undefined;
     const move = (e) => {
-      if (edit || e.target.closest(".edit-tools")) return;  // keep the tools while the pointer is on them
+      if (edit) return;
+      if (e.target.closest(".edit-tools")) { hold(); return; }  // keep the tools while the pointer is on them
       const t = e.target.closest(".stage [data-edit]");
-      if (!t) { setHover(null); return; }
+      if (!t) { hideSoon(); return; }
+      hold();
       const id = t.dataset.edit;
       setHover((h) => (h && h.id === id ? h : { id, box: boxOf(t), deleteOnly: !!t.dataset.deleteOnly }));
     };
-    const leave = () => setHover(null);
+    const dbl = (e) => {
+      if (edit) return;
+      const t = e.target.closest(".stage [data-edit]");
+      if (!t || t.dataset.deleteOnly) return;
+      e.preventDefault();
+      hold();
+      start({ id: t.dataset.edit, box: boxOf(t) });
+    };
     el.addEventListener("mousemove", move);
-    el.addEventListener("mouseleave", leave);
-    return () => { el.removeEventListener("mousemove", move); el.removeEventListener("mouseleave", leave); };
-  }, [edit]);
+    el.addEventListener("mouseleave", hideSoon);
+    el.addEventListener("dblclick", dbl);
+    return () => {
+      el.removeEventListener("mousemove", move); el.removeEventListener("mouseleave", hideSoon);
+      el.removeEventListener("dblclick", dbl);
+    };
+  }, [edit, spec]);
   useEffect(() => { setHover(null); setEdit(null); }, [spec.id]);  // another slide: nothing stale
   useEffect(() => {  // the slide changed in place: follow the element, or forget it when it is gone
     if (hover) { const t = find(hover.id); setHover(t ? { ...hover, box: boxOf(t) } : null); }
@@ -131,10 +153,12 @@ function EditLayer({ host, spec, send, adding, onAdded }) {
   }
   if (!hover) return null;
   const b = hover.box;
-  const top = b.top > 40 ? b.top - 36 : b.top + 4;
+  const tools = (hover.deleteOnly || hover.id === "title" ? 1 : 2) * TOOL_W;
+  // inside the item, top right (vertically centred on a low item), never outside it
+  const top = b.top + Math.max(2, Math.min(6, (b.height - TOOL_W) / 2));
   return html`
     <div class="edit-outline" style=${{ left: `${b.left - 4}px`, top: `${b.top - 4}px`, width: `${b.width + 8}px`, height: `${b.height + 8}px` }}></div>
-    <div class="edit-tools" style=${{ left: `${Math.max(4, b.left + b.width - (hover.deleteOnly || hover.id === "title" ? 32 : 64))}px`, top: `${top}px` }}>
+    <div class="edit-tools" onMouseEnter=${hold} style=${{ left: `${Math.max(b.left + 2, b.left + b.width - tools - 6)}px`, top: `${top}px` }}>
       ${!hover.deleteOnly && html`<button class="icon" title="Edit (your text stays as you write it)" aria-label="Edit"
         onClick=${() => start(hover)}>${svg(ICON.edit)}</button>`}
       ${hover.id !== "title" && html`<button class="icon danger" title="Delete from the slide" aria-label="Delete"
@@ -234,10 +258,9 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
       choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`}
     ${line && !drag && html`<div class=${"image-status" + (line.error ? " error" : "")}>
       ${line.busy && html`<span class="dot"></span>`}${line.text}</div>`}
-    ${(lifecycle === "paused" || (deck && (deck.blank || deck.pinned))) && !zoomed && html`<div class="flags">
+    ${(lifecycle === "paused" || (deck && deck.blank)) && !zoomed && html`<div class="flags">
       ${lifecycle === "paused" && html`<span class="flag paused">PAUSED</span>`}
       ${deck && deck.blank && html`<span class="flag warn">BLANK</span>`}
-      ${deck && deck.pinned && html`<span class="flag">PINNED</span>`}
     </div>`}
   </div>`;
 }
@@ -261,7 +284,6 @@ function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd }) {
       <button class="icon" onClick=${() => send("next")} disabled=${at < 0 || at >= ids.length - 1} title="Next slide (→)">${svg(ICON.next)}</button>
     </div>
     <div class="group">
-      ${flag("pinned", "pin", "unpin", "P", ICON.pin, "Pin")}
       <button class=${"pause" + (paused ? " on" : "")} aria-pressed=${paused} disabled=${!canPause(lifecycle)}
         onClick=${() => send(pauseCommand(lifecycle))}
         title=${paused ? "Resume the lecture (Space)" : "Pause: what you say is not put on slides (Space)"}>
@@ -303,9 +325,11 @@ function Concerns({ concerns, send }) {
       ${c.issue && html`<p class="issue">${c.issue}</p>`}
       <div class="concern-actions">
         ${c.applied
-          ? html`<button onClick=${() => act(c.id, "keep")} title="Put back what you said on the slide">Show what I said</button>`
+          ? html`<button onClick=${() => act(c.id, "keep")} title="Put back what you said on the slide">Show what I said</button>
+                 <button class="keep" onClick=${() => act(c.id, "dismiss")} title="The slide stays corrected; close this card">Keep correction</button>`
           : html`<button class="accept" disabled=${!c.suggested_correction} onClick=${() => act(c.id, "accept")}
-                   title="Show the corrected version on the slide">Show correction</button>`}
+                   title="Show the corrected version on the slide">Show correction</button>
+                 <button class="keep" onClick=${() => act(c.id, "dismiss")} title="The slide stays as you said it; close this card">Keep what I said</button>`}
       </div>
     </article>`)}
   </section>`;
@@ -464,7 +488,7 @@ function App() {
           status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} />
         <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle}
           canAdd=${!!liveSpec && !(deck && deck.zoom)} onAdd=${() => setAdding(true)} />
-        <p class="hint">Keys: ← → navigate · Space pause / resume · P pin · B blank · N new slide · hover a slide item to edit it</p>
+        <p class="hint">Keys: ← → navigate · Space pause / resume · B blank · N new slide · hover or double-click a slide item to edit it</p>
       </section>
       <section class="right">
         <${Concerns} concerns=${state.concerns} send=${send} />

@@ -174,6 +174,21 @@
 .process-row.many .step-label { font-size: calc(var(--fs-small) * var(--fit)); }
 .step-detail { font-size: calc(var(--fs-small) * var(--fit)); color: var(--ink-2); line-height: 1.32; }
 .arrow { width: 56px; height: 40px; color: var(--accent); justify-self: center; }
+/* 7-10 steps: two rows on one column grid; a connector turns from the end of row 1 to the start of row 2 */
+.process.two-rows { gap: 0; }
+.process-row.grid { grid-auto-flow: row; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); }
+.process-row.grid .step:last-child { grid-template-columns: minmax(0, 1fr) 40px; }  /* same card width in both rows */
+.process-turn { position: relative; height: 70px; color: var(--accent); }
+/* a card's centre is 20px left of its cell's centre (the 40px arrow column): the drawing shifts by that much */
+.process-turn svg { position: absolute; top: 6px; left: -20px; width: 100%; height: calc(100% - 20px); overflow: visible; opacity: 0.85; }
+.process-turn .turn-head {
+  position: absolute; bottom: 2px; width: 0; height: 0; transform: translateX(-50%);
+  border-left: 11px solid transparent; border-right: 11px solid transparent; border-top: 14px solid currentColor;
+}
+/* a process continued from the previous part: it keeps counting */
+.process-cont { font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+  margin-bottom: 14px; }
+.process-cont::before { content: "… "; color: var(--accent); }
 .cycle-note { font-size: var(--fs-small); color: var(--muted); display: flex; gap: 12px; align-items: center; }
 
 /* ---------- comparison ---------- */
@@ -241,6 +256,10 @@
   max-width: 100%; box-sizing: border-box; color: var(--ink);
 }
 .formula-eq .katex { font-size: 1.12em; line-height: 1.4; white-space: normal; }
+/* several formulas said together: compact equation cards, stacked, one legend (composer: FORMULA_SET_*) */
+.formula-set { gap: 22px; }
+.formula-set .formula-eq { font-size: calc(var(--fs-lead) * 1.05 * var(--fit)); padding: 18px 56px; min-width: 46%; }
+.formula-set .formula-vars { margin-top: 12px; }
 .formula-eq .katex .base { margin: 0.12em 0; }
 .tex .katex .text, .tex .katex .text * { font-family: var(--font-display); font-weight: 600; font-style: normal; }
 .tex .katex .mrel, .tex .katex .mbin { color: var(--accent); }
@@ -403,21 +422,89 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .glass .b4 { left: 700px; top: 160px; width: 600px; height: 600px;
   background: radial-gradient(circle, var(--accent) 0%, transparent 64%); opacity: 0.55;
   animation-name: drift-small; animation-duration: 13s; animation-delay: -4s; }
-/* the glass: a framed frosted pane with a light edge */
+/* round 5 (user 2026-10-06: "like image generation in a chatbot; students should feel something is coming"):
+   a slide-shaped glass card; light runs around its edge; inside, a slide's outline is drawn piece by piece */
+@property --glass-angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+.glass .card {
+  position: absolute; left: 50%; top: 50%; width: 1440px; height: 810px; transform: translate(-50%, -50%);
+  border-radius: 40px; transition: opacity 900ms ease-in-out, transform 1200ms ease-in-out;
+}
+.glass .ring {
+  position: absolute; inset: -4px; border-radius: 44px; padding: 4px;
+  background: conic-gradient(from var(--glass-angle), transparent 0deg, var(--accent) 50deg, var(--pause) 110deg,
+    transparent 170deg, transparent 200deg, var(--accent-2) 260deg, var(--accent) 310deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: glass-spin 4.5s linear infinite;
+}
+/* the same light, blurred, glows through the glass from behind */
+.glass .ring.glow { inset: -18px; padding: 0; border-radius: 58px; -webkit-mask: none; mask: none; filter: blur(46px); opacity: 0.55; }
 .glass .pane {
-  position: absolute; inset: 64px; overflow: hidden; border-radius: 44px;
-  background: color-mix(in srgb, var(--surface) 22%, transparent);
-  backdrop-filter: blur(40px) saturate(1.5); -webkit-backdrop-filter: blur(40px) saturate(1.5);
-  border: 2px solid color-mix(in srgb, var(--surface) 65%, transparent);
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.12), inset 0 2px 0 rgba(255, 255, 255, 0.35);
+  position: absolute; inset: 0; overflow: hidden; border-radius: 40px;
+  background: color-mix(in srgb, var(--surface) 62%, transparent);
+  backdrop-filter: blur(34px) saturate(1.4); -webkit-backdrop-filter: blur(34px) saturate(1.4);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.16), inset 0 2px 0 rgba(255, 255, 255, 0.3);
 }
-/* a soft band of light passes over the glass now and then */
-.glass .sheen {
-  position: absolute; top: -40%; bottom: -40%; width: 420px; left: -600px; transform: rotate(14deg);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.32), transparent);
-  animation: sheen 6s var(--ease) 0.8s infinite;
+/* the slide being drawn: crumb, title, lines, picture appear one after another with a shimmer, then again */
+.glass .skeleton { position: absolute; inset: 92px 112px; display: grid; grid-template-rows: auto auto 1fr; gap: 26px; }
+.glass .sk {
+  display: block; border-radius: 16px; opacity: 0; transform-origin: left center;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--accent) 14%, transparent) 20%,
+    color-mix(in srgb, var(--accent) 38%, transparent) 50%, color-mix(in srgb, var(--accent) 14%, transparent) 80%);
+  background-size: 260% 100%;
+  animation: glass-shimmer 2.4s linear infinite, glass-build 7.5s var(--ease) infinite;
 }
+.glass .sk-crumb { width: 300px; height: 24px; border-radius: 999px; }
+.glass .title { width: 820px; height: 84px; border-radius: 22px; animation-delay: 0s, 0.4s; }
+.glass .sk-body { display: grid; grid-template-columns: minmax(0, 1fr) 470px; gap: 72px; align-items: center; margin-top: 40px; }
+.glass .sk-lines { display: grid; gap: 34px; }
+.glass .line { height: 50px; }
+.glass .l1 { width: 100%; animation-delay: 0s, 1s; }
+.glass .l2 { width: 86%; animation-delay: 0s, 1.35s; }
+.glass .l3 { width: 94%; animation-delay: 0s, 1.7s; }
+.glass .l4 { width: 64%; animation-delay: 0s, 2.05s; }
+.glass .picture { height: 420px; border-radius: 30px; transform-origin: center; animation-delay: 0s, 1.2s; }
+/* a band of light scans down the glass, as if the slide were being rendered */
+.glass .scan {
+  position: absolute; left: 0; right: 0; height: 220px; top: -240px;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--accent) 16%, transparent) 55%,
+    color-mix(in srgb, var(--surface) 55%, transparent) 62%, transparent);
+  animation: glass-scan 3.8s var(--ease) infinite;
+}
+/* small sparks rise through the glass */
+.glass .spark {
+  position: absolute; bottom: -20px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 16px 4px color-mix(in srgb, var(--accent) 55%, transparent); opacity: 0;
+  animation: glass-rise 6.5s ease-in infinite;
+}
+.glass .s1 { left: 14%; animation-delay: 0.3s; }
+.glass .s2 { left: 31%; animation-delay: 2.4s; animation-duration: 7.5s; background: var(--pause); }
+.glass .s3 { left: 47%; animation-delay: 4.1s; }
+.glass .s4 { left: 63%; animation-delay: 1.2s; animation-duration: 8s; background: var(--accent-2); }
+.glass .s5 { left: 78%; animation-delay: 3.3s; }
+.glass .s6 { left: 90%; animation-delay: 5.2s; animation-duration: 7s; background: var(--pause); }
+/* the first slide arrived: the glass clears over it and the slide comes into focus */
+.glass.leaving { background: transparent; animation: glass-clear 1200ms ease-in-out forwards; }
+.glass.leaving .blob { opacity: 0; transition: opacity 400ms ease; }
+.glass.leaving .card { opacity: 0; transform: translate(-50%, -50%) scale(1.08); }
 @keyframes glass-in { from { opacity: 0; } }
+@keyframes glass-spin { to { --glass-angle: 360deg; } }
+@keyframes glass-shimmer { from { background-position: 130% 0; } to { background-position: -130% 0; } }
+@keyframes glass-build {
+  0% { opacity: 0; transform: scaleX(0.55); }
+  12%, 78% { opacity: 1; transform: none; }
+  92%, 100% { opacity: 0; transform: none; }
+}
+@keyframes glass-scan { 0% { top: -240px; } 70%, 100% { top: 100%; } }
+@keyframes glass-rise {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  15% { opacity: 0.9; }
+  100% { transform: translateY(-760px) scale(1); opacity: 0; }
+}
+@keyframes glass-clear {
+  from { backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); }
+  to { backdrop-filter: blur(0); -webkit-backdrop-filter: blur(0); }
+}
 @keyframes drift {
   0% { transform: translate(0, 0) scale(1); }
   50% { transform: translate(260px, 120px) scale(1.12); }
@@ -427,5 +514,8 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
   0% { transform: translate(0, 0) scale(0.9); }
   100% { transform: translate(-280px, 160px) scale(1.15); }
 }
-@keyframes sheen { 0% { left: -600px; } 45%, 100% { left: 2300px; } }
-@media (prefers-reduced-motion: reduce) { .glass .blob { animation-duration: 60s; } .glass .sheen { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .glass .blob { animation-duration: 60s; }
+  .glass .scan, .glass .spark { display: none; }
+  .glass .ring { animation-duration: 14s; }
+}

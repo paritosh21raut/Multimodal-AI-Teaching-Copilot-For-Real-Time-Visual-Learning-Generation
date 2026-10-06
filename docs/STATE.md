@@ -1,6 +1,7 @@
 # Current State
 
-_Last updated: 2026-10-06 (night): **V1b verify round 4, step D (features) done** + the user's design notes on the
+_Last updated: 2026-10-06 (late evening): **V1b verify round 5 done** (5 user issues + formula sets; next: the user's
+long lecture test, then V2). Before: **V1b verify round 4, step D (features) done** + the user's design notes on the
 step-C test (definition card, End lecture icon, classification as one tree, note card); steps A (correctness), B
 (hierarchy + layouts) and C (UI) before it, after the user's
 12–15 min multi-topic live test (session 20261006-112149-411e, fixture `tests/fixtures/lectures/multitopic_live.txt`).
@@ -11,6 +12,33 @@ viewer role, control token; live slide editing; lecture structure tree in /contr
 Then V1c._
 
 ## Now
+- **NEXT SESSION: the user's long lecture test** → fix what it shows (same flow: `verify_results/` → reproduce with
+  0 tokens → ask doubts as text → root-cause fixes with failing-first tests → runtime-verify → docs) → then V2.
+- **V1b verify round 5 (2026-10-06 evening), user's live test session 20261006-172934-8aa4** (atoms, digestive
+  system, kinematics, long pause). LLM tokens: 8,510 (one accidental real-LLM run of `tools/screenshot_app.py`,
+  gpt-oss-120b on `GROQ_API_KEY_5`; every check was meant to be 0 tokens). User answers before coding: 1 ok,
+  2 remove Pin, 3–6 ok.
+  1. Edit tools vanished on the way to them (they sat ABOVE the item, the pointer crossed the gap / the item above):
+     now inside the item's top-right corner, kept 1 s after the pointer leaves, double-click an item / title = edit.
+  2. **Pin removed** (deck flag, `pin`/`unpin` commands, `DeckState.pinned`, dock button, P key): it only queued new
+     slides, which navigating back already does; the user expected a private browse and found it irrelevant.
+  3. First-slide glass: slide-shaped glass card, light running round its edge (conic gradient + glow), a slide's
+     outline drawn piece by piece with a shimmer, scan band, rising sparks; clears over the first slide (backdrop
+     blur 28 → 0 in 1.2 s). Light + dark inspected.
+  4. Digestive process split 6 + 4 with part II restarting at STEP 1: process capacity 6 → 10 (≤ 6 one row, 7–10 two
+     rows with a turn connector, `composer.process_rows` ≡ `slide.js processRows`); a longer one continues on the
+     next part counting on (`ProcessBlock.start`, "… continues from step N"), also on a teacher-opened part.
+  5. Mistake card: **Keep correction** / **Keep what I said** buttons (= `dismiss`) beside the switch.
+  - Found in the test: the three kinematic equations were three slides (one formula per slide) → consecutive
+    slide-wide formulas form a set (≤ 4): stacked compact cards + one legend; concept columns unchanged.
+  - Verified: 437 fast + 20 Edge tests (new: `test_round5_layouts.py` 5 tests fail on the old src; edit tools,
+    Keep buttons, glass pieces fail on the old web files); replay of the live session: digestive process one slide
+    (5 + 5), equations one slide; old/new replay diff of 5 sessions: 3 identical, the others only formula sets
+    (Series 4 → 2 slides, RC 5 → 2, Kinetic 3 → 2) and Heart 3 → 2 parts (steps 7–11 continue); real app
+    (`tools/screenshot_app.py`) control without Pin; screenshots inspected.
+  - Not fixed (model): "bowel glider" (gall bladder) "corrected" to "small intestine" and not applied on the slide;
+    Heart (0ddb) part II re-tells the cycle in other words (a repetition, now numbered 7–11); STT got slow (4–10 s)
+    on long background chatter while paused (those lines are dropped anyway).
 - **Verify round 4, step D (2026-10-06 night), 0 LLM tokens** (spec `docs/specs/F-008-control-features.md`,
   ADR-0009). The user's step-C test (session 20261006-160025-13fe, `verify_results/`) was good; their notes:
   - Definition card: no green side bar; a card with a "Definition" tab on its top edge and a soft tint from the corner;
@@ -184,7 +212,7 @@ Then V1c._
 | Simulator / test harness | 55 | text simulator, WAV-as-mic, display harness, screenshot tools; no soak runner yet |
 | Audio / STT | 95 | verified on WAV and real human voice (laptop mic array); classroom lapel mic still to try |
 | Lecture understanding + LLM | 88 | M3 + live-mic fixes (VAD pause, fragment hold, grounding guard, process prompt, facet-question cue, empty-act fill); verified on the fixture with real Groq; gate fixes replay-tested on the real-mic session, not yet re-run live |
-| Presentation engine | 85 | content/composer/planner/engine: continuity, space-based layout, parts, dwell, new-topic confirmation + tentative move, revisions, truthful corrections, provisional fast path, force-new, pin/nav-back, overflow; verified on 3 lectures with real LLM + screenshots |
+| Presentation engine | 85 | content/composer/planner/engine: continuity, space-based layout, parts, dwell, new-topic confirmation + tentative move, revisions, truthful corrections, provisional fast path, force-new, nav-back (pin removed in round 5), overflow; verified on 3 lectures with real LLM + screenshots |
 | Live display + control view | 82 | + fact tiles, group cards, side-by-side definitions, part badges, concern card (said / correct / shown, switchable), overflow reporting; KaTeX formulas + chemical subscripts (V1a); images pending (V1b) |
 | Visual system (images/diagrams) | 60 | V1b: retrieval (Wikipedia/Commons + CLIP on CPU), policy, image layout, teacher controls (drop, add, change, previous/next, remove, zoom); one real-LLM lecture + replay verified; generated diagrams not started |
 | Reference materials | 0 | not started |
@@ -197,6 +225,7 @@ Then V1c._
 | Item | Unit | Integration | Runtime |
 |---|---|---|---|
 | EventBus, config, state store, event log, simulator | ✅ | ✅ | ✅ |
+| Verify round 5: edit tools inside the item + grace + double-click, Pin removed, glass anticipation, 10-step process in two rows + continued numbering, formula sets, Keep buttons on mistake cards | ✅ 437 total (`test_round5_layouts`) | ✅ Edge (20) | ✅ replay of 20261006-172934-8aa4 + 5-session old/new diff; real app control; glass light/dark + exit frames |
 | Verify round 4 step D: share (quick tunnel, viewer role, teacher key), live editing (final), structure tree, transcript strip; definition card, End icon, sub-classification tree, plain note card | ✅ 432 total (`test_teacher_edits`, `test_sub_classification`) | ✅ `test_share_access` (real server, tunnel headers) + Edge `test_control_features_browser` | ✅ real app + real Cloudflare tunnel (student profile, refused / keyed control); replays light + dark with real images |
 | Verify round 4 step B: member cards (≤ 6) + member in depth, classifications as one groups block, image above a formula, tree beside an image, sibling image hint, sub_concept not absorbed, whole trees | ✅ 410 total | ✅ Edge (12) | ✅ A/B 27,942 tok + live run ≈ 39.5k tok (hierarchy prompt rule rejected); replays with real images inspected; 5-session old/new diff |
 | Verify round 4 step A: keys (any name, .env order, one active key, minute wait/borrow), /display without animation frames, fallback, coverage stems, headings, C++, empty groups, image relevance, image tail back, overflow hold, 740 px budget | ✅ 400 total | ✅ Edge (12) + slow embedder calibration | ✅ 0 tokens: `[QUOTA]` with real .env; replay of 20261006-112149-411e with real images + current fallback |
@@ -212,7 +241,7 @@ Then V1c._
 | Segmenter, VAD, Whisper engine and guard, speech pipeline | ✅ | ✅ (GPU) | ✅ WAV real time: p50 ≈ 650 ms, VRAM ~1.1 GB |
 | M1 review fixes (forced-split loss, stop hangs, mic leak, device "0", watchdog) | ✅ regression tests | – | – |
 | Real mic (human voice, Intel SST array) | – | – | ✅ mic_check rms −37.5 dBFS, accurate transcript, conf 0.92; live run 7 segments, 0 dropped, STT p50 781 / p95 971 ms |
-| SlideSpec validation, Deck ops/navigation/pin/blank | ✅ | – | ✅ |
+| SlideSpec validation, Deck ops/navigation/blank | ✅ | – | ✅ |
 | Round 4 step C: Pause (lifecycle LIVE ⇄ PAUSED, speech in the break not interpreted), first-slide glass, zoom Back top right, mistake cards (no transcription cards) | ✅ `test_pause.py`, hub tests | ✅ `-m browser` control + display (fail on the old web files) | ✅ real app (`--simulate --no-understanding`): Pause/Resume clicked in Edge, terminal "(paused, not used)", transcript "(paused)"; screenshots inspected (glass light + dark, paused dock, cards, Back) |
 | DisplayHub + server: hello, patch fan-out, reconnect snapshot, commands, role check, coalescing | ✅ | ✅ (real WebSockets) | ✅ |
 | Display in Edge: 100 rapid in-place patches → 0 nodes re-created, no console errors | – | ✅ `-m browser` | ✅ |

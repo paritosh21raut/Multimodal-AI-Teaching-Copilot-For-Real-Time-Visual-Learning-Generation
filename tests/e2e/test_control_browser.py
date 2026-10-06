@@ -125,9 +125,14 @@ async def test_mistake_card_shows_what_was_said_and_what_the_slide_shows():
             second = await cards.nth(1).text_content()
             assert "The slide shows what you said" in second and "384,000" in second
             assert await cards.nth(1).locator("button", has_text="Show correction").count() == 1
+            # round 5 (user 2026-10-06): keeping the slide as it is is a real button, not only the tiny ×
+            assert await cards.nth(0).locator("button", has_text="Keep correction").count() == 1
+            assert await cards.nth(1).locator("button", has_text="Keep what I said").count() == 1
             await control.screenshot(path=str(ART / "control_mistake_cards.png"))
             await cards.nth(0).locator("button", has_text="Show what I said").click()
             await h.settle()
+            await cards.nth(1).locator("button", has_text="Keep what I said").click()
+            await h.settle()
             got = [c.args for c in commands if c.kind == "resolve_concern"]
-            assert got == [{"id": "c1", "action": "keep"}]
+            assert got == [{"id": "c1", "action": "keep"}, {"id": "c2", "action": "dismiss"}]
             assert not control.errors, control.errors

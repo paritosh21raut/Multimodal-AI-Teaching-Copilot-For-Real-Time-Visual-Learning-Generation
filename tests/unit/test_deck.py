@@ -59,15 +59,16 @@ async def test_navigation_stops_following_until_back_at_latest():
     await bus.close()
 
 
-async def test_pin_queues_new_slides_and_unpin_catches_up():
+async def test_pin_is_removed():
+    """Pin was removed (user 2026-10-06): Pause, Blank and navigating back cover it; a stray pin does nothing."""
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        Command(kind="pin")
     bus, deck, _ = await make()
     await deck.add(slide("a"))
-    await cmd(bus, "pin")
+    assert "pinned" not in deck.state_event().model_dump()
     await deck.add(slide("b"))
-    await deck.add(slide("c"))
-    assert deck.live_id == "a"
-    await cmd(bus, "unpin")
-    assert deck.live_id == "c"
+    assert deck.live_id == "b"
     await bus.close()
 
 
@@ -76,13 +77,13 @@ async def test_flags_and_redundant_commands_publish_only_changes():
     await deck.add(slide("a"))
     await bus.drain()  # make sure the add's own DeckState is already recorded
     n = len(events)
-    await cmd(bus, "pin")
-    await cmd(bus, "pin")  # no change → no event
     await cmd(bus, "blank")
+    await cmd(bus, "blank")  # no change → no event
+    await cmd(bus, "unblank")
     await cmd(bus, "goto", slide_id="missing")  # ignored
     await bus.close()
     states = [e for e in events[n:] if isinstance(e, DeckState)]
-    assert [(s.pinned, s.blank) for s in states] == [(True, False), (True, True)]
+    assert [s.blank for s in states] == [True, False]
 
 
 async def test_update_unknown_and_duplicate_add_raise():

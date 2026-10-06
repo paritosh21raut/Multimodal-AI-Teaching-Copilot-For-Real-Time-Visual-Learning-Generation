@@ -58,7 +58,7 @@ class TranscriptSegment(BaseModel):
 
 CommandKind = Literal[
     "start", "end", "pause", "resume", "next", "prev", "goto",  # pause: a break, speech is not interpreted
-    "pin", "unpin", "blank", "unblank",
+    "blank", "unblank",  # (pin / unpin removed, user 2026-10-06: Pause, Blank and navigating back cover it)
     "force_new_slide", "resolve_concern",
     "remove_image", "change_image", "set_image",  # F-007b, args {slide_id[, image_id]}
     "image_prev", "image_next",                   # step through the images this slide has shown, args {slide_id}
@@ -126,7 +126,6 @@ class DeckState(Event):
     live_id: Optional[str]
     slide_ids: list[str]
     following: bool  # live slide auto-advances to new slides
-    pinned: bool
     blank: bool
     zoom: Optional[str] = None  # slide whose image fills the display (teacher clicked it in /control)
 

@@ -19,6 +19,8 @@ User decisions 2026-10-06. Architecture: `display.md`. Contracts: `events.md`.
 
 ## 2. Live slide editing (/control preview)
 - Hover an item in the preview → pencil (edit) + bin (delete). Title: pencil only. Formula: bin only.
+  Round 5 (user 2026-10-06, "it disappears before I can select it"): the tools sit inside the item's top-right corner,
+  stay 1 s after the pointer leaves, and a double-click on an item / the title opens the editor directly.
   Editable: title, definition text (+ member card term), notes, points, steps, facts (`label: value`), group labels and
   items, tree nodes, example / note text. **+ Add point** in the dock adds a point to the live slide.
 - Commands: `edit_text {slide_id, item_id, text}` (`item_id` = `title`, an element id or `<definition id>:term`),

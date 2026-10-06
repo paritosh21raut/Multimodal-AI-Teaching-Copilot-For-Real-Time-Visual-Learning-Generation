@@ -17,12 +17,14 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
   points       { heading?, items[{id, text, emphasis?, provisional?, added?}] }
   facts        { heading?, facts[{id, label, value}] }                # fact tiles ("Smallest planet" / "Mercury")
   groups       { heading?, groups[{id, label, items[Item]}] }        # named groups side by side
-  process      { steps[{id, label, detail?}], cyclic: bool }
+  process      { steps[{id, label, detail?}], cyclic: bool, start = 1 }   # ≤ 10 steps: one row ≤ 6, else two rows;
+                                                                         # start: first step number on a next part
   comparison   { columns[{id, heading}], rows[{id, aspect, cells[]}] }
   timeline     { events[{id, when, label, detail?}] }
   hierarchy    { root{label, children[...]} }
   cause_effect { links[{id, cause, effect}] }
-  formula      { latex, spoken, variables[{symbol, meaning, unit?, latex?}] }   # latex from mathtext (F-007a)
+  formula      { latex, spoken, variables[{symbol, meaning, unit?, latex?}] }   # latex from mathtext (F-007a);
+               # consecutive slide-wide formulas (≤ 4, said together) render as ONE set: stacked cards, one legend
   example      { title?, text }
   image        { url, alt, credit, licence, aspect, origin: auto|teacher, image_id }   # F-007b
   callout      { kind: note|tip|key, text }

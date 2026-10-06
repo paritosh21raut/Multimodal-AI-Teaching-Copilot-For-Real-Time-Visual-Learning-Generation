@@ -37,7 +37,8 @@ from copilot.core.events import (
 )
 from copilot.core.state import Concern, LectureStateStore
 from copilot.presentation.composer import (
-    BODY_BUDGET_PX, TERM_SUFFIX, add_point, body_height, clear_provisional, describe, edit_text, element_texts, fits,
+    BODY_BUDGET_PX, TERM_SUFFIX, add_point, body_height, clear_provisional, continue_numbering, describe, edit_text,
+    element_texts, fits,
     fits_unshrunk, frame_slide, image_of, is_about, is_duplicate, is_small, member_of, merge, rejoin, remove_elements,
     revise_item, set_provisional, split_to_fit, substitute, teacher_items, title_slide, with_image, without_image,
 )
@@ -280,7 +281,7 @@ class PresentationEngine:
 
     def _dwell_ok(self) -> bool:
         live = self.deck.live
-        if live is None or not self.deck.following or self.deck.pinned:
+        if live is None or not self.deck.following:
             return True  # nothing would be replaced on screen
         meta = self._meta.get(live.id)
         if meta is None or meta.is_title or teacher_items(live) == 0:
@@ -732,6 +733,9 @@ class PresentationEngine:
             full = (not cur_new) and m.full and teacher_items(cur) >= m.full_items
             before = cur
             cur, left = merge(cur, piece, full=full)
+            if cur is not before and (cur.part or 1) > 1:  # e.g. steps on a part the teacher opened (New slide)
+                prev = self._part_before(frame, cur)
+                cur = continue_numbering(prev, cur) if prev is not None else cur
             if left is not None and image_of(before) is not None and teacher_items(before) > 0:
                 # beside an image the type may shrink to take a piece; when even that is not enough the slide
                 # stays as it was and the whole piece opens the next part (user 2026-10-06)
@@ -746,6 +750,7 @@ class PresentationEngine:
                 nxt = frame_slide(frame.topic, frame.facet, continuation_of=cur.id)
                 nxt = nxt.model_copy(update={"title": member.term if member is not None else cur.title})
                 nxt, rest = merge(nxt, left)
+                nxt = continue_numbering(cur, nxt)
                 if not nxt.blocks or rest == left:
                     log.error("piece does not fit an empty slide; dropped: %s", left.all_text()[:3])
                     break
@@ -783,6 +788,13 @@ class PresentationEngine:
         first = self._first_part(frame)
         if first is not None and first.part is None:
             await self._commit(first.model_copy(update={"part": 1}))
+
+    def _part_before(self, frame: Frame, cur: SlideSpec) -> Optional[SlideSpec]:
+        """The frame's part right before `cur` (part II → part I), or None."""
+        want = (cur.part or 1) - 1
+        return next((s for s in self._all_specs() if s.id != cur.id and s.id in self._meta
+                     and self._meta[s.id].frame.same(frame) and not self._meta[s.id].member
+                     and not self._meta[s.id].is_title and (s.part or 1) == want), None) if want >= 1 else None
 
     def _last_part(self, frame: Frame, cur: SlideSpec) -> int:
         """Highest part number of this frame so far (a navigated-back part I must not create a second II)."""

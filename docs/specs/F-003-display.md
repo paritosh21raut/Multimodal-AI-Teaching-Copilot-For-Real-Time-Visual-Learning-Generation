@@ -4,7 +4,7 @@
 - `presentation/spec.py`: Pydantic `SlideSpec` + block types (contract: docs/contracts/slide-spec.md). M2 implements
   the blocks `definition`, `points`, `callout`, `example`, `process` (simple), plus layouts `title`, `definition`,
   `concept`, `key_points`, `process_flow`. The others are defined in the model but render as a labelled placeholder until V1.
-- `presentation/deck.py`: `Deck` holds slides, live index, pinned/blank flags (freeze was replaced by Pause, round 4 step C); produces `SlidePatch` events; navigation.
+- `presentation/deck.py`: `Deck` holds slides, live index, blank flag (freeze was replaced by Pause, round 4 step C; pin removed, round 5); produces `SlidePatch` events; navigation.
 - `display/server.py`: FastAPI app in the same asyncio loop (uvicorn `Server.serve()` task), static files from `web/`.
   - `GET /display`, `GET /control`, `GET /view` (students, F-008), `GET /api/state` (full snapshot)
   - `WS /ws?role=display|control|viewer` (viewer: slides only, may send nothing; teacher key from outside, F-008):
@@ -27,7 +27,7 @@
 - Demo source until M4: `--demo-slides` publishes a scripted sequence of SlideSpecs (incl. in-place updates).
 
 ## Acceptance
-- Unit: Deck ops (add/update/navigate/pin/blank), patch versioning, spec validation (stable ids required).
+- Unit: Deck ops (add/update/navigate/blank), patch versioning, spec validation (stable ids required).
 - Integration: FastAPI TestClient WebSocket: hello on connect, patch fan-out to 2 clients, command → bus event,
   reconnect gets the full deck.
 - Browser (Playwright, `-m browser`): screenshots of every M2 layout in light and dark; 100 rapid in-place patches with

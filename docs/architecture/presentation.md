@@ -4,10 +4,11 @@ Implementation and exact rules: `docs/specs/F-005-presentation.md` (`presentatio
 `planner` / `engine`). Defaults: min dwell 15 s (config `[presentation]`); near-duplicates by text similarity ≥ 0.85.
 
 ## Concepts
-- **Deck**: an ordered list of `SlideSpec`s for the session; one is `live`. The teacher can navigate or pin.
+- **Deck**: an ordered list of `SlideSpec`s for the session; one is `live`. The teacher can navigate (Pin removed, round 5).
 - **Slide**: one *concept frame* (topic + subtopic + facet), a representation layout, and blocks.
 - **Capacity model**: each layout declares limits (e.g. definition: 1 term + ≤ 2 supporting points + 1 visual;
-  process: ≤ 6 steps; comparison: ≤ 2–3 columns × ≤ 5 rows; key points: ≤ 5). Composer measures fill (0–1).
+  process: ≤ 10 steps — one row up to 6, else two rows; a longer process continues on the next part and keeps
+  counting (`ProcessBlock.start`); formulas said together: ≤ 4 on one slide as a set with one legend; comparison: ≤ 2–3 columns × ≤ 5 rows; key points: ≤ 5). Composer measures fill (0–1).
 
 ## Planner decision (deterministic)
 Input: the `Interpretation` + current slide + `ConceptSignal` + teacher commands.
@@ -20,7 +21,7 @@ Input: the `Interpretation` + current slide + `ConceptSignal` + teacher commands
 | sub_concept / sibling_concept | `continue` (new facet), unless the current slide is nearly empty → `retitle/update` |
 | new_topic, confirmed | `new` slide (title-level change) |
 | digression / meta only | `noop` |
-| teacher pin | new slides queue behind the pinned slide; apply on unpin |
+| teacher navigated back | new slides queue behind the slide shown (not following); `next` to the last slide follows again |
 | lecture paused | nothing new arrives (the understanding service drops what is said during the pause) |
 
 **Hysteresis / stability rules**

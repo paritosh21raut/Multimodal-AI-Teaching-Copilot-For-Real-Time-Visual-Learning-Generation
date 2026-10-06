@@ -59,9 +59,10 @@ def test_points_merge_in_place_with_stable_ids_dedupe_and_capacity():
 
 
 def test_steps_capacity_and_formula_needs_its_own_slide():
-    s, left = merge(frame_slide("P", "Process"), Piece("steps", texts=tuple(f"step {i}" for i in range(8))))
-    assert s.layout == "process_flow" and len(s.blocks[0].steps) == CAPACITY["steps"]
-    assert left.texts == ("step 6", "step 7")
+    # round 5 (user 2026-10-06): up to 10 steps on one slide (two rows), the rest continues on the next part
+    s, left = merge(frame_slide("P", "Process"), Piece("steps", texts=tuple(f"step {i}" for i in range(12))))
+    assert s.layout == "process_flow" and len(s.blocks[0].steps) == CAPACITY["steps"] == 10
+    assert left.texts == ("step 10", "step 11")
     f = Piece("formula", formula=FormulaData("CO2 + H2O -> C6H12O6 + O2"))
     s2, left2 = merge(s, f)
     assert s2 == s and left2 == f

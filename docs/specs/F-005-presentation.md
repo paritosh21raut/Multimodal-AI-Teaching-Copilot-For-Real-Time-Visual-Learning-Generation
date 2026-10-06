@@ -37,7 +37,7 @@ Frame of a slide = (topic, facet). Facet = subtopic (or the topic). Titles compa
   everything fits (e.g. "Chemistry" definition + "Branches of chemistry" tree). A new definition never is absorbed,
   nor a `sub_concept` whose facet names a thing ("Female Reproductive System": its own slide like its sibling;
   round 4, issue 8 — in every recorded session the branches came as `sibling_concept`).
-- **Teacher flags**: pinned → new slides queue; paused lecture → nothing new arrives; navigated back to a slide of
+- **Teacher flags**: (pin removed, round 5) paused lecture → nothing new arrives; navigated back to a slide of
   the same frame → updated in place (never adopted as working slide); `force_new_slide` → next part now.
 
 ## Composition (space, not slot counts)
@@ -109,7 +109,7 @@ the engine rewrites the item in place (same id → the display updates only that
 - Unit: content mapping (facts, groups, trees, announcements, yes/no facts); composer (space budget, parts,
   definitions, dedupe, squeeze, revise/substitute/remove); planner incl. confirmation and announced topics; engine:
   dwell, parts, revisions, corrections (applied / not applied / enforced / toggled), tentative move, force-new,
-  pinned, navigated back, provisional.
+  navigated back, provisional.
 - Integration: simulator → understanding (mock HTTP) → engine → deck on photosynthesis.txt.
 - Layout render check: `tools/screenshot_lessons.py` (real engine, scripted interpretations) → `artifacts/lessons/`.
 - Runtime: `tools/screenshot_app.py --lecture --simulate tests/fixtures/lectures/{solar_system,chemistry_basics}.txt`
