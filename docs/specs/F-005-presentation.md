@@ -41,8 +41,13 @@ Frame of a slide = (topic, facet). Facet = subtopic (or the topic). Titles compa
 ## Composition (space, not slot counts)
 - Each block has an estimated height (definition by lines at 42 px, points one or two columns, fact tiles 4 per
   row, groups, tree, process, comparison rows, …). A piece goes on the slide while the body stays within
-  `BODY_BUDGET_PX` = 700 (display auto-fit can still shrink type to 0.8). One small leftover (one short point,
-  example or fact) is squeezed in at 1.2 × budget instead of opening a lonely next part.
+  `BODY_BUDGET_PX` = 740 (display auto-fit can still shrink type to 0.8; measured body 754–763 px in Edge on 29
+  slides of the live test 2026-10-06 — 700 left lonely last parts). One small leftover (one short point,
+  example or fact) is squeezed in at 1.25 × budget instead of opening a lonely next part.
+- A heading belongs to its own items: unlabelled points never join a labelled list and a labelled list never takes
+  over earlier points (live test 2026-10-06). "C++"/"C#" are not duplicates of "C". A classification whose named
+  groups have no members shows the group names as its kinds.
+- The display's overflow report holds while the slide has at least as many items as when it was reported.
 - At most one large diagram (process, comparison, timeline, cause-effect, formula, tree) per slide; facts, points,
   groups and definitions may sit next to it when space allows. A second classification becomes groups.
 - Definitions: same term → extra text as a point; a word part ("photo" of "photosynthesis", "X means …") → note chip;

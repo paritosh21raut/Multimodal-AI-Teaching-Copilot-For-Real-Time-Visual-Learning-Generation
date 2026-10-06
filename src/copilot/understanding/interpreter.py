@@ -332,27 +332,32 @@ def _cover_dropped_sentences(it: Interpretation, lines: Sequence[BufferedLine], 
     dropped by the model and never reached the projector. Digressions, meta lines and questions are left out."""
     if it.relation == "digression":
         return it
-    have = _content_words(" ".join(_item_texts(it)) + " " + slide_context)
+    have = _stems(" ".join(_item_texts(it)) + " " + slide_context)  # "lowers costs" covers "lower cost"
     # spoken maths ("v equals u plus a t") never shares words with "v = u + at": an equation on the same line counts
     eq_lines = {n for a in it.acts for n in a.lines if a.items.formula or any(
         _EQUATION.search(t) for t in (*a.items.points, *a.items.examples, *a.items.steps, a.items.definition))}
     meta = set(it.meta_lines)
     # lines the model only used for transitions/questions: it judged them not slide content
     acts_of = {n: {a.act for a in it.acts if n in a.lines} for n in range(1, len(lines) + 1)}
+    pieces = [(n, s) for n, l in enumerate(lines, start=1) for s in re.split(r"(?<=[.!?])\s+", " ".join(l.text.split()))]
     missed: list[tuple[int, str]] = []
-    for n, l in enumerate(lines, start=1):
+    for i, (n, sentence) in enumerate(pieces):
+        l = lines[n - 1]
         if n in meta or l.maybe_meta or l.question or (acts_of[n] and acts_of[n] <= _NO_CONTENT_ACTS):
             continue
-        for sentence in re.split(r"(?<=[.!?])\s+", " ".join(l.text.split())):
-            words = _content_words(sentence)
-            if (len(sentence.split()) < 6 or not ends_sentence(sentence) or sentence.rstrip().endswith("?")
-                    or len(words) < COVER_MIN_WORDS or _NOT_CONTENT.search(sentence)):
-                continue
-            if n in eq_lines and len(_SPOKEN_MATH.findall(sentence)) >= 2:
-                continue
-            if len(words & have) / len(words) <= COVER_MAX_SHARE:
-                missed.append((n, tidy_spoken(" ".join(sentence.split()[:30]))))
-                have |= words
+        # Whisper may end a sentence early: "It combines the functions of the CPU." + "memory and input-output
+        # interfaces." is one statement, covered by the model's "Combines CPU, memory, and I/O" (live test
+        # 2026-10-06 showed it twice): the lower-case continuation counts with it
+        nxt = pieces[i + 1][1] if i + 1 < len(pieces) else ""
+        words = _stems(sentence + (" " + nxt if nxt[:1].islower() else ""))
+        if (len(sentence.split()) < 6 or not ends_sentence(sentence) or sentence.rstrip().endswith("?")
+                or len(words) < COVER_MIN_WORDS or _NOT_CONTENT.search(sentence)):
+            continue
+        if n in eq_lines and len(_SPOKEN_MATH.findall(sentence)) >= 2:
+            continue
+        if len(words & have) / len(words) <= COVER_MAX_SHARE:
+            missed.append((n, tidy_spoken(" ".join(sentence.split()[:30]))))
+            have |= words
     missed = missed[:COVER_MAX_SENTENCES]
     if not missed:
         return it
@@ -385,15 +390,65 @@ def _examples_need_a_cue(it: Interpretation, lines: Sequence[BufferedLine]) -> I
 
 
 # "Atoms are the smallest particles of an element ..." -> term "Atoms" + definition (fallback only)
-_DEFINES = re.compile(r"^(?P<term>[A-Z][A-Za-z-]*(?:\s+[A-Za-z-]+){0,2}?)\s+(?:is|are|means)\s+"
-                      r"(?P<def>(?:the|a|an|any|anything)\b.{8,})$")
-_NOT_TERMS = {"it", "this", "that", "there", "they", "these", "those", "he", "she", "we", "you", "which", "what"}
+_DEFINES = re.compile(r"^(?:(?:the|an?)\s+)?(?P<term>[A-Za-z][A-Za-z-]*(?:\s+[A-Za-z-]+){0,2}?)\s+(?:is|are|means)\s+"
+                      r"(?P<def>(?:the|a|an|any|anything)\b.{8,})$", re.IGNORECASE)
+# "Anything which occupies space and has mass is called matter" -> term "Matter"
+_CALLED = re.compile(r"^(?P<def>.{12,}?)\s+(?:is|are)\s+called\s+(?P<term>[A-Za-z][A-Za-z-]*(?:\s+[A-Za-z-]+){0,2})$",
+                     re.IGNORECASE)
+_NOT_TERMS = {"it", "this", "that", "there", "they", "these", "those", "he", "she", "we", "you", "which", "what", "i"}
+FALLBACK_SHORT_WORDS = 6  # a shorter sentence off the current subject is a remark when it says little or "it's ..."
+_VAGUE_SUBJECT = re.compile(r"^(?:it|that|this|these|those|they)\b", re.IGNORECASE)
+
+
+def _stems(text: str) -> set[str]:
+    return {w[:-1] if w.endswith("s") and len(w) > 4 else w for w in _content_words(text)}
+
+
+def _spoken_sentences(lines: Sequence[BufferedLine]) -> list[tuple[int, str]]:
+    """(line number, sentence) for every complete sentence of the unit. A sentence split over transcript lines ("The
+    male system stores" + "and delivers sperm.") is joined; a fragment before a sentence on the same line ("the basic
+    concepts of chemistry. Chemistry is the branch of ...") no longer costs the sentence (live test 2026-10-06)."""
+    out: list[tuple[int, str]] = []
+    carry: Optional[tuple[int, str]] = None  # an unfinished sentence that started with a capital letter
+    for n, l in enumerate(lines, start=1):
+        text = " ".join(l.text.split())
+        if l.maybe_meta or not text:
+            carry = None
+            continue
+        parts = re.split(r"(?<=[.!?])\s+", text)
+        for i, part in enumerate(parts):
+            start = n
+            if i == 0 and carry is not None and part[:1].islower():
+                start, part = carry[0], f"{carry[1]} {part}"
+            elif i == 0 and carry is not None:
+                pass  # the unfinished sentence was abandoned
+            carry = None
+            first = _LEAD_FILLERS.sub("", part)
+            capital = first[:1].isupper() or (i == 0 and part[:1].isupper())
+            if not capital:
+                continue
+            if ends_sentence(part):
+                out.append((start, part))
+            elif i == len(parts) - 1:
+                carry = (start, part)
+    return out
+
+
+def _confirmed(subject: str, lines: Sequence[BufferedLine]) -> bool:
+    """An announced subject counts only when the unit's other words mention it: "Let's learn about MATLAB" (Whisper
+    for "matter") followed by sentences about matter is not a slide titled MATLAB (live test 2026-10-06)."""
+    from copilot.understanding.prompt import announced_subject
+
+    rest = " ".join(s for l in lines for s in re.split(r"(?<=[.!?])\s+", l.text) if not announced_subject(s))
+    return bool(_stems(subject) & _stems(rest))
 
 
 def fallback_interpretation(state: LectureState, lines: Sequence[BufferedLine]) -> Interpretation:
     """Deterministic interpretation when no LLM answer is usable: only complete spoken sentences become slide text,
-    tidied (fillers dropped); "X is/are the ..." sentences become definitions; "let's learn about X" moves to the
-    subtopic X. Fragments ("diatomic triatomic or ...") are not slide text; they stay in the transcript and log."""
+    tidied (fillers dropped); "X is/are the ..." and "... is called X" sentences become definitions; "let's learn
+    about X" moves to the subtopic X when the unit goes on to talk about X. Fragments ("diatomic triatomic or ...")
+    are not slide text; neither are asides, thanks and short remarks unrelated to the lecture ("Thank you very much",
+    "It's a waste of time"); they stay in the transcript and log."""
     from copilot.understanding.prompt import announced_subject
 
     topic = state.topic(state.current_topic_id)
@@ -401,28 +456,38 @@ def fallback_interpretation(state: LectureState, lines: Sequence[BufferedLine]) 
     title = topic.title if topic else (state.setup.expected_topic or "Lecture")
     acts: list[DiscourseAct] = []
     points: list[str] = []
-    announced = ""
-    for n, l in enumerate(lines, start=1):
-        text = " ".join(l.text.split())
-        if l.maybe_meta or not text:
+    announced = next((a for l in lines if not l.maybe_meta for a in [announced_subject(" ".join(l.text.split()))]
+                      if a), "")
+    sentences = _spoken_sentences(lines)
+    subject = _stems(" ".join([title, sub.title if sub else "", announced, state.slide_context]))
+    for n, sentence in sentences:
+        tidy = tidy_spoken(" ".join(sentence.split()[:30]))
+        if len(tidy.split()) < 4 or tidy.endswith("?") or announced_subject(tidy) or _NOT_CONTENT.search(tidy):
             continue
-        announced = announced or announced_subject(text)
-        if not text[0].isupper() or not ends_sentence(text) or len(text.split()) < 4:
-            continue
-        for sentence in re.split(r"(?<=[.!?])\s+(?=[A-Z])", text):
-            tidy = tidy_spoken(" ".join(sentence.split()[:30]))
-            if len(tidy.split()) < 4 or tidy.endswith("?") or announced_subject(tidy):
+        if len(tidy.split()) < FALLBACK_SHORT_WORDS:
+            others = " ".join(s for m, s in sentences if s is not sentence)
+            if not _stems(tidy) & (subject | _stems(others)) and (
+                    len(_content_words(tidy)) < 2 or _VAGUE_SUBJECT.match(tidy)):
+                log.info("fallback: short remark not shown: %r", tidy)
                 continue
-            m = _DEFINES.match(tidy)
-            if m and m.group("term").split()[0].lower() not in _NOT_TERMS:
-                acts.append(DiscourseAct(act="definition", lines=[n], items=ContentItems(
-                    term=m.group("term"), definition=m.group("def"))))
-            else:
-                points.append(tidy)
+        m, called = _DEFINES.match(tidy), _CALLED.match(tidy)
+        if m and m.group("term").split()[0].lower() not in _NOT_TERMS:
+            term = m.group("term")
+            acts.append(DiscourseAct(act="definition", lines=[n], items=ContentItems(
+                term=term[:1].upper() + term[1:], definition=m.group("def"))))
+        elif called and called.group("term").split()[0].lower() not in _NOT_TERMS:
+            term = called.group("term")
+            acts.append(DiscourseAct(act="definition", lines=[n], items=ContentItems(
+                term=term[:1].upper() + term[1:], definition=called.group("def"))))
+        else:
+            points.append(tidy)
     if points:
         acts.append(DiscourseAct(act="explanation", lines=list(range(1, len(lines) + 1)),
                                  items=ContentItems(points=points)))
     subtopic, relation = (sub.title if sub else ""), ("same_concept" if topic else "new_topic")
+    if announced and topic is not None and not _confirmed(announced, lines):
+        log.info("fallback: announced %r not confirmed by the unit's lines; topic unchanged", announced)
+        announced = ""
     if announced:
         small = {"and", "or", "of", "the", "in", "on", "a", "an", "to"}
         words = announced.split()

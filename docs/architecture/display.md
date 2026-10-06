@@ -23,7 +23,10 @@ backoff capped at 2 s), so no duplicate tabs. `--no-open` disables it. Test: `te
 - One layout component per representation; layouts are designed, not generic bullets.
 - Auto-fit: measure overflow → step down the type scale within limits → otherwise ask the server to split (`overflow` event).
 - Transitions: new slide = cross-fade/slide; in-slide update = FLIP animation + fade-in of new items only;
-  no full re-render, so there is no flicker. Images fade in only after they are loaded.
+  no full re-render, so there is no flicker. Images fade in only after they are loaded. The new slide fades in by a
+  CSS animation, never by a script step waiting on animation frames: Edge pauses those for a window it does not
+  paint (/display popped out behind /control, a background tab), and the new slide stayed invisible until a reload
+  (live test 2026-10-06; browser test simulates a window without frames).
 - Provisional items render subtly (lighter weight); refined content replaces them in place.
 - The display reconnects automatically and requests the full current spec on reconnect (state is server-authoritative).
 - Client files under `/web` are served with `Cache-Control: no-cache`, and `/display` + `/control` are served with

@@ -220,6 +220,70 @@ def test_fallback_names_the_topic_when_the_lecture_opens_with_an_announcement():
     assert it.topic == "States of Matter" and it.relation == "new_topic" and it.subtopic == ""
 
 
+# ---- live multi-topic test 2026-10-06 (session 20261006-112149-411e): fallback units ---------------------------
+def _atoms_state():
+    from copilot.core.state import TopicNode
+    t = TopicNode(title="Atoms", subtopics=[TopicNode(title="Definition")])
+    return LectureState(session_id="s", outline=[t], current_topic_id=t.id, current_subtopic_id=t.subtopics[0].id,
+                        slide_context="Atom: basic building block of matter; nucleus holds protons and neutrons")
+
+
+def _lines(*texts):
+    return [BufferedLine(str(i), t, i, i + 1) for i, t in enumerate(texts)]
+
+
+def test_fallback_ignores_a_misheard_announcement_the_unit_does_not_talk_about():
+    """"Let's learn about matter" heard as "MATLAB": the fallback made a slide titled MATLAB."""
+    from copilot.understanding.interpreter import fallback_interpretation
+    it = fallback_interpretation(_atoms_state(), _lines("Let's learn about MATLAB."))
+    assert it.subtopic == "Definition" and it.relation == "same_concept" and not it.acts
+    it = fallback_interpretation(_atoms_state(), _lines(
+        "Let's learn about MATLAB.", "Anything which occupies some space and has some mass is called matter."))
+    assert it.subtopic == "Definition"
+    # ... while an announcement the unit goes on to explain still names the subtopic
+    it = fallback_interpretation(_atoms_state(), _lines(
+        "Let's learn about isotopes. Isotopes are the atoms of one element with different numbers of neutrons."))
+    assert it.subtopic == "Isotopes" and it.acts[0].items.term == "Isotopes"
+
+
+def test_fallback_reads_is_called_as_a_definition():
+    from copilot.understanding.interpreter import fallback_interpretation
+    it = fallback_interpretation(_atoms_state(), _lines(
+        "Anything which occupies some space and has some mass is called matter. It is made up of small particles "
+        "which have space between them."))
+    d = it.acts[0]
+    assert d.act == "definition" and d.items.term == "Matter"
+    assert d.items.definition == "Anything which occupies some space and has some mass"
+    assert it.acts[1].items.points == ["It is made up of small particles which have space between them"]
+
+
+def test_fallback_leaves_out_thanks_asides_and_first_person_remarks():
+    """The MATLAB slide showed "Thank you very much" and "It's a waste of time"; another unit made a definition of
+    "I think Blackboard"."""
+    from copilot.understanding.interpreter import fallback_interpretation
+    for texts in (["Thank you very much."], ["No, it's not. It's a waste of time."],
+                  ["I think Blackboard is a good idea. I think it's a good idea to make 3 months a year."]):
+        assert fallback_interpretation(_atoms_state(), _lines(*texts)).acts == [], texts
+    # a short sentence about the lecture's subject stays
+    it = fallback_interpretation(_atoms_state(), _lines("Neutrons have no charge."))
+    assert it.acts[0].items.points == ["Neutrons have no charge"]
+
+
+def test_fallback_keeps_a_sentence_after_a_fragment_and_joins_split_sentences():
+    """"the basic concepts of chemistry. Chemistry is the branch of science ..." was dropped whole because the line
+    started with a lower-case fragment."""
+    from copilot.understanding.interpreter import fallback_interpretation
+    it = fallback_interpretation(_atoms_state(), _lines(
+        "the basic concepts of chemistry. Chemistry is the branch of science which deals with the composition "
+        "structure and properties of matter.", "branch of chemistry"))
+    assert it.acts[0].items.term == "Chemistry"
+    assert it.acts[0].items.definition.startswith("the branch of science which deals with")
+    it = fallback_interpretation(_atoms_state(), _lines(
+        "Electrons are tiny negatively charged particles that", "move around the nucleus in an electron cloud."))
+    assert it.acts[0].items.points == ["Electrons are tiny negatively charged particles that move around the nucleus "
+                                       "in an electron cloud"]
+
+
 # ---- live chemistry test 2026-10-05 (sessions 20261005-230039-f084 / -231113-abfe) ----------------------------
 MATTER_LINE = ("Anything which occupies some space and has some mass is called matter. It is only up to the small "
                "particles which have space between them. The matter particles attract each other and are in the "
@@ -265,6 +329,33 @@ def test_covered_or_digression_or_meta_sentences_are_not_added():
     assert _cover_dropped_sentences(empty.model_copy(update={"meta_lines": [1]}), line, "").acts == []
     meta = [BufferedLine("a", line[0].text, 0, 5, maybe_meta=True)]
     assert _cover_dropped_sentences(empty, meta, "").acts == []
+
+
+def test_paraphrased_or_split_sentences_are_not_shown_twice():
+    """Live test 2026-10-06: the Benefits and Microcontroller slides showed the same statement twice: once from the
+    model, once 'as said' by the guard (word forms differed; Whisper ended the sentence early)."""
+    from copilot.understanding.interpreter import _cover_dropped_sentences
+
+    benefits = parse_interpretation(json.dumps({
+        "topic": "Computer Networks", "subtopic": "Benefits", "relation": "sibling_concept", "acts": [
+            {"act": "explanation", "lines": [1, 2, 3], "items": {"points": [
+                "Resource sharing lowers hardware costs", "Enables fast data and communication",
+                "Provides scalable cloud access"]}}]}))
+    lines = _lines("Resource sharing allows multiple users to share hardware like printers or storage devices to "
+                   "lower cost.", "Data and communication enables fast files exchange web browsing emails and video "
+                   "calls", "Cloud access provides scalable access to remote services applications and remote services.")
+    assert _cover_dropped_sentences(benefits, lines, "") == benefits
+
+    mcu = parse_interpretation(json.dumps({
+        "topic": "Microcontroller", "subtopic": "Introduction", "relation": "new_topic", "acts": [
+            {"act": "definition", "lines": [1, 2, 3], "items": {"term": "Microcontroller (MCU)", "definition":
+                "Small computer on a single integrated circuit controlling specific electronic tasks"}},
+            {"act": "explanation", "lines": [1, 2, 3], "items": {"points": [
+                "Combines CPU, memory, and input-output interfaces", "All components located on a single chip"]}}]}))
+    lines = _lines("A microcontroller or MCU is a small computer on a single integrated circuit that is designed to "
+                   "control specific tasks with electronic systems. It combines the functions of Central Processing "
+                   "Unit CPU.", "memory and input-output interfaces.", "All on a single chip")
+    assert _cover_dropped_sentences(mcu, lines, "") == mcu
 
 
 @pytest.mark.parametrize("said", [

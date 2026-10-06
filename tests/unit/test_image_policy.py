@@ -98,8 +98,8 @@ def test_image_layout_is_narrower_and_may_shrink_first():
     beside = with_image(many, IMG)
     assert body_height(beside) > body_height(many)          # the content column is narrower
     # beside an image: between the budget and 1.25 x the budget the type shrinks (fits), above it nothing fits
-    heights = {n: with_image(slide(points(*[f"Saturn fact {i} about rings and moons" for i in range(n)])), IMG)
-               for n in range(1, 9)}
+    heights = {n: with_image(slide(points(*[f"Saturn fact {i} about its rings, moons and storms" for i in range(n)])),
+                             IMG) for n in range(1, 9)}
     shrink = [s for s in heights.values() if BODY_BUDGET_PX < body_height(s) <= BODY_BUDGET_PX * 1.25]
     over = [s for s in heights.values() if body_height(s) > BODY_BUDGET_PX * 1.25]
     assert shrink and over

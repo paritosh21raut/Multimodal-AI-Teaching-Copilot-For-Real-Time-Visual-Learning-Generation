@@ -58,15 +58,27 @@ def print_quota(router) -> None:
             amount = f"{left / 1000:4.0f}k of {q['tpd'] / 1000:.0f}k tokens"
         else:
             amount = "not tracked"
-        again = f", free again in ~{q['free_in_s'] / 60:.0f} min" if q["spent"] and q["free_in_s"] >= 60 else ""
-        print(f"        {q['name']:18} {q['model']:28} {amount:20} {'SPENT' if q['spent'] else 'ok'}{again}",
-              flush=True)
+        if q["spent"]:
+            again = q["free_in_s"]
+            status = "SPENT" + (f", free again in ~{again / 3600:.1f} h" if again >= 3600
+                                else f", free again in ~{again / 60:.0f} min" if again >= 60 else "")
+        else:
+            status = "IN USE" if q["in_use"] else ("unused" if q["used"] == 0 else "ok")
+        print(f"        {q['env'] or q['name']:22} {q['model']:28} {amount:20} {status}", flush=True)
     minutes = tokens_left / TOKENS_PER_LECTURE_MINUTE
     if minutes < 1:
         print("        !! No Groq quota left: slides will come from the backup model (if it answers) or the simple\n"
-              "           built-in fallback. Add another key as GROQ_API_KEY_2 (_3, ...) in .env, or wait.", flush=True)
+              "           built-in fallback. Add another key as GROQ_API_KEY_<name> in .env, or wait.", flush=True)
     else:
         print(f"        enough for about {minutes:.0f} lecture minutes", flush=True)
+
+
+def text_similarity(embedder):
+    """(a, b) -> cosine of their sentence embeddings: is an image query about a slide's text (F-007b)."""
+    def similarity(a: str, b: str) -> float:
+        v = embedder.embed([a, b])
+        return float(v[0] @ v[1])
+    return similarity
 
 
 def pages_to_open(connects: dict[str, int]) -> list[str]:
@@ -215,6 +227,7 @@ class App:
             self.presentation = PresentationEngine(
                 self.bus, self.store, self.deck, PresentationSettings.from_config(self.config),
                 speed=self.speed if self.simulate or self.audio_file else 1.0,
+                relevance=text_similarity(embedder) if embedder is not None else None,
             )
             self.presentation.attach()
             self._init_images()

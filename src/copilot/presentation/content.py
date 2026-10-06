@@ -141,6 +141,10 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
     if facts:
         out.append(Piece("facts", pairs=facts, **base))
     groups = tuple((cap(clean(g.label)), _texts(g.items)) for g in it.groups if g.label.strip())
+    if groups and not any(items for _, items in groups):
+        # groups named but none with members ("By memory type": "Embedded memory", "External memory") are the kinds
+        # of the classification; live test 2026-10-06 lost this classification ("nothing to display")
+        points = points + _texts([g for g, _ in groups])
     groups = tuple(g for g in groups if g[1])
     if groups:
         out.append(Piece("groups", groups=groups, term=cap(clean(it.label)), **base))

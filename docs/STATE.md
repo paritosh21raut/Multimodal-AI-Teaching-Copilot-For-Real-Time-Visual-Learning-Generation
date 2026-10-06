@@ -1,10 +1,38 @@
 # Current State
 
-_Last updated: 2026-10-06 (afternoon): **V1b images (F-007b) accepted by the user (commit 950e8d1); round 3: Find
-image on slides without one, teacher controls restyled as a dock (old row behind `DOCK_CONTROLS`).** Next: user
-checks the dock (keep or revert); then V1c (F-007c) or V2 — user's choice._
+_Last updated: 2026-10-06 (evening): **V1b verify round 4, step A (correctness, 0 LLM tokens) done** after the user's
+12–15 min multi-topic live test (session 20261006-112149-411e, fixture `tests/fixtures/lectures/multitopic_live.txt`).
+Agreed plan: A correctness → B hierarchy + layouts (issues 1, 2, 4, 5, 8; prompt A/B + small live run) → C UI (pause
+replaces freeze, first-slide glass state, zoom Back top-right, old control row removed, transcription concerns
+silent / factual ones keep the card) → D features (share /display over the internet via a Cloudflare quick tunnel,
+viewer role, control token; live slide editing; lecture structure tree in /control; transcript at the bottom).
+Then V1c._
 
 ## Now
+- **Verify round 4, step A (2026-10-06 evening), 0 LLM tokens:** the live run used only qwen on one key and 25 of ~75
+  units fell back. Root causes and fixes (each with a test that fails before / passes after):
+  - Keys: `GROQ_API_KEY_main` was never read (only `GROQ_API_KEY`, `_2`…`_9`). Now any `GROQ_API_KEY_<name>`, in
+    `.env` order; one ACTIVE key per model until 95 % of its daily quota, then the next, wrapping to the top
+    (remembered in `data/llm_usage.json`); a full per-minute bucket waits ≤ 4 s before borrowing the next key for one
+    call. `[QUOTA]` shows each key by its `.env` name (IN USE / ok / unused / SPENT, free again in …). `.env` has 5
+    Groq keys (`_main`, `_2`…`_5`), not 6.
+  - /display needed a reload after slide changes (popped-out window or background tab): the new slide waited on an
+    animation frame Edge pauses there, and in-place updates cancelled it → CSS animation; browser test without frames.
+  - Fallback ("MATLAB", "Thank you very much", lost "Chemistry is the branch …"): sentence-level, joined split
+    sentences, "is called" definitions, announcement used only when the unit talks about it, asides dropped.
+  - Coverage guard duplicates (Benefits, Microcontroller I): stems + Whisper's early sentence end.
+  - Headings swallowing later points (Microcontroller III, 5G, Reproductive I); "C++" dropped as "C"; a
+    classification with empty named groups (memory type) lost.
+  - Digestive diagram on the quadratic slide: automatic images need MiniLM similarity(query, slide text) ≥ 0.25.
+  - Solar thin part IV: Find image moved two points to a new part and Remove image did not bring them back → it does.
+  - Lonely last parts: overflow report held after the slide shrank; body budget 700 → 740 px (measured 754–763 px).
+  - Verified: 400 fast + 12 browser + slow embedder tests; `[QUOTA]` with the real `.env`; replay of the session with
+    real image search and the current fallback (`tools/replay_interpretations.py <session> light --images`, which now
+    re-runs fallback units): screenshots `artifacts/replay/20261006-112149-411e_light_*.png` inspected.
+  - Open for step B: Types/Components members split (1, 2), classification grouping (4: the model merged instruction
+    set + memory architecture), intro image beside a formula (5), sibling image consistency (8; with the 740 px budget
+    the female organs fit as a tree on part I, and trees take no image), fallback cannot open a new topic ("Chemistry"
+    lands under Atoms and keeps the atom image), quadratic definition stays under the Digestive breadcrumb.
 - **V1b round 3 (2026-10-06):** empty image bar = Find image · Add image · "or drop one"; Find = `change_image` on a
   slide without an image (unused candidates, else hint / topic search, deeper after "no relevant image").
   Hub `image_status` now carries `request` (auto | change) — the "No other image found" chip never showed before
@@ -95,6 +123,7 @@ checks the dock (keep or revert); then V1c (F-007c) or V2 — user's choice._
 | Item | Unit | Integration | Runtime |
 |---|---|---|---|
 | EventBus, config, state store, event log, simulator | ✅ | ✅ | ✅ |
+| Verify round 4 step A: keys (any name, .env order, one active key, minute wait/borrow), /display without animation frames, fallback, coverage stems, headings, C++, empty groups, image relevance, image tail back, overflow hold, 740 px budget | ✅ 400 total | ✅ Edge (12) + slow embedder calibration | ✅ 0 tokens: `[QUOTA]` with real .env; replay of 20261006-112149-411e with real images + current fallback |
 | V1b images: finder (previews → CLIP → full size), policy, engine, layout, /control (drop, add, change, ‹ ›, remove, zoom) | ✅ 384 total | ✅ Edge (2 image tests) | ✅ real Groq human_body (queries) + zero-token replay with real image search (4/4 found); A/B 11/11 valid |
 | V1a: formulas → KaTeX (`mathtext`, `rich.js`), chemical subscripts, layout polish, dropped-point fix | ✅ 52 + 9 | ✅ Edge (3 tests) | ✅ 0 tokens: display set, physics lesson, real app; real LLM (qwen) force_motion |
 | V1a round 2: parser (fractions, brackets, ions, spoken), equations in text, concept columns, list styles, peer pairing, flattened-formula parsing, math-aware guard, stale-tab reload | ✅ 323 total | ✅ Edge (9 tests) | ✅ replays of 5 live sessions; real Groq energy ×2 + kinematics |

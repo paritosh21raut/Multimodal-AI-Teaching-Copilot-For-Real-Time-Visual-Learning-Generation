@@ -3,9 +3,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
+import re
 import time
 from dataclasses import dataclass, field
-from typing import Awaitable, Callable, Optional
+from typing import Awaitable, Callable, Optional, Sequence
 
 import httpx
 
@@ -40,6 +42,8 @@ class RouterSettings:
     cooldown_unavailable_s: float = 60.0
     cooldown_rejected_s: float = 300.0
     daily_block_fallback_s: float = 3600.0  # a daily 429 that does not say when the quota frees up
+    switch_at: float = 0.95   # a key at this share of its daily quota counts as spent: the next key takes over
+    minute_wait_s: float = 4.0  # per-minute limit hit: wait this long for the active key before borrowing the next
 
 
 @dataclass
@@ -49,6 +53,7 @@ class Entry:
     calls: int = 0
     failures: int = 0
     usage_key: str = ""  # "<host>:<key id>:<model>": one free-tier daily quota (Groq counts per model and key)
+    env: str = ""        # the .env variable holding the key ("GROQ_API_KEY_3"); never the key itself
 
     @property
     def tpd(self) -> int:
@@ -58,6 +63,11 @@ class Entry:
     @property
     def name(self) -> str:
         return self.provider.name
+
+    @property
+    def family(self) -> str:
+        """The configured model entry ("groq_main") this key-specific entry ("groq_main#3") belongs to."""
+        return self.name.split("#", 1)[0]
 
 
 @dataclass
@@ -83,19 +93,48 @@ class LLMRouter:
             return None
         if self.usage.blocked_for(entry.usage_key) > 0:
             return "daily quota spent"
-        if entry.tpd and self.usage.used(entry.usage_key) + budget > entry.tpd:
+        used = self.usage.used(entry.usage_key)
+        if entry.tpd and (used + budget > entry.tpd or used >= entry.tpd * self.settings.switch_at):
             return "daily quota spent"
         return None
 
+    def _ordered(self) -> list[Entry]:
+        """Entries to try: model families in config order; within a family the ACTIVE key first, then the keys after
+        it in .env order, wrapping around to the top (user 2026-10-06: use one key until it is spent, then the next)."""
+        out: list[Entry] = []
+        for fam in dict.fromkeys(e.family for e in self.entries):
+            group = [e for e in self.entries if e.family == fam]
+            active = self.usage.active(fam) if self.usage is not None else ""
+            start = next((i for i, e in enumerate(group) if active and e.env == active), 0)
+            out += group[start:] + group[:start]
+        return out
+
+    def _activate(self, entry: Entry) -> None:
+        """The first key of its family with daily quota left becomes (or stays) the family's active key."""
+        if self.usage is None or not entry.env or self.usage.active(entry.family) == entry.env:
+            return
+        before = self.usage.active(entry.family)
+        self.usage.set_active(entry.family, entry.env)
+        self.usage.save()
+        log.warning("LLM %s now uses %s%s", entry.family, entry.env, f" ({before} is spent)" if before else "")
+
     def quota(self) -> list[dict]:
-        """Per entry: daily tokens used/limit and whether it is spent (startup terminal view)."""
+        """Per entry: daily tokens used/limit, spent or not, and which key each model uses now (terminal view)."""
         out = []
-        for e in self.entries:
+        for e in self._ordered():
             cfg = getattr(e.provider, "cfg", None)
-            used = self.usage.used(e.usage_key) if self.usage is not None and e.usage_key else 0
-            blocked = self.usage.blocked_for(e.usage_key) if self.usage is not None and e.usage_key else 0.0
-            out.append({"name": e.name, "model": getattr(cfg, "model", ""), "tpd": e.tpd, "used": used,
-                        "spent": blocked > 0 or (e.tpd > 0 and used >= e.tpd), "free_in_s": blocked})
+            has = self.usage is not None and bool(e.usage_key)
+            used = self.usage.used(e.usage_key) if has else 0
+            blocked = self.usage.blocked_for(e.usage_key) if has else 0.0
+            spent = blocked > 0 or (e.tpd > 0 and used >= e.tpd * self.settings.switch_at)
+            free_in = self.usage.free_in(e.usage_key, int(e.tpd * self.settings.switch_at)) if has and spent \
+                and e.tpd else blocked
+            out.append({"name": e.name, "env": e.env, "family": e.family, "model": getattr(cfg, "model", ""),
+                        "tpd": e.tpd, "used": used, "spent": spent, "free_in_s": free_in, "in_use": False})
+        for fam in dict.fromkeys(q["family"] for q in out):  # the key the next call of this model goes to
+            first = next((q for q in out if q["family"] == fam and not q["spent"]), None)
+            if first is not None:
+                first["in_use"] = True
         return out
 
     async def _fail(self, entry: str, error: str, will_retry: bool) -> None:
@@ -111,9 +150,24 @@ class LLMRouter:
         """Try entries in order until one returns text. `deadline` is a time.monotonic() value."""
         st = self.settings
         attempts: list[str] = []
-        for entry in self.entries:
-            budget = est_tokens + max_tokens // 2  # expected completion ≈ half the cap
-            refusal = self._daily_refusal(entry, budget) or entry.limiter.admit(budget)
+        budget = est_tokens + max_tokens // 2  # expected completion ≈ half the cap
+        fresh: set[str] = set()  # families whose active key was settled in this call
+        for entry in self._ordered():
+            daily = self._daily_refusal(entry, budget)
+            if daily is not None:
+                attempts.append(f"{entry.name}: skipped ({daily})")
+                continue
+            owner = entry.family not in fresh  # the first key of its family with quota left: the one in use
+            if owner:
+                fresh.add(entry.family)
+                self._activate(entry)
+                # its per-minute limit is full: a short wait keeps the work on this key; only a long one borrows
+                # the next key for this call (the active key stays; several keys are not drained at once)
+                wait = entry.limiter.ready_in(budget)
+                room = deadline - time.monotonic() - st.timeout_s
+                if 0 < wait <= min(st.minute_wait_s, room):
+                    await asyncio.sleep(wait + 0.05)
+            refusal = entry.limiter.admit(budget)
             if refusal is not None:
                 attempts.append(f"{entry.name}: skipped ({refusal})")
                 continue
@@ -170,14 +224,21 @@ class LLMRouter:
         raise AllProvidersFailed("; ".join(attempts) or "no entries")
 
 
-MAX_KEYS = 9  # GROQ_API_KEY, GROQ_API_KEY_2 ... GROQ_API_KEY_9
+def _natural(name: str) -> tuple:
+    suffix = name.rpartition("_")[2]
+    return (int(suffix), "") if suffix.isdigit() else (10 ** 9, name)
 
 
-def api_keys(env_name: str) -> list[tuple[str, str]]:
-    """(env var, key) for ENV, ENV_2 ... ENV_9 that are set; the same key listed twice is used once."""
+def api_keys(env_name: str, order: Sequence[str] = ()) -> list[tuple[str, str]]:
+    """(env var, key) for ENV and every ENV_<anything> that is set (GROQ_API_KEY_main, _2, _6 ...): first in `order`
+    (the .env file's order), then the rest (ENV, then numbered, then named). The same key listed twice is used once.
+    Live test 2026-10-06: the first key was named GROQ_API_KEY_main and was never used."""
+    pattern = re.compile(rf"{re.escape(env_name)}(?:_\w+)?")
+    names = [n for n in dict.fromkeys(order) if pattern.fullmatch(n)]
+    rest = sorted((n for n in os.environ if pattern.fullmatch(n) and n not in names),
+                  key=lambda n: (n != env_name, _natural(n)))
     out: list[tuple[str, str]] = []
-    for i in range(1, MAX_KEYS + 1):
-        name = env_name if i == 1 else f"{env_name}_{i}"
+    for name in names + rest:
         key = Config.secret(name)
         if key and key not in [k for _, k in out]:
             out.append((name, key))
@@ -203,7 +264,7 @@ def build_router(config: Config, client: httpx.AsyncClient, on_failure: Optional
         if not base.api_key_env:
             keys: list[tuple[str, Optional[str]]] = [(base.api_key_env, None)]
         else:
-            keys = list(api_keys(base.api_key_env))
+            keys = list(api_keys(base.api_key_env, getattr(config, "env_order", [])))
             if not keys:
                 log.warning("llm entry %s disabled: %s not set", name, base.api_key_env)
                 continue
@@ -212,6 +273,6 @@ def build_router(config: Config, client: httpx.AsyncClient, on_failure: Optional
             cfg = ProviderConfig(name=f"{name}#{suffix}" if suffix else name, **raw)
             usage_key = f"{httpx.URL(cfg.base_url).host}:{key_id(key)}:{cfg.model}"
             entries.append(Entry(OpenAICompatProvider(cfg, key, client), RateLimiter(cfg.rpm, cfg.tpm),
-                                 usage_key=usage_key))
+                                 usage_key=usage_key, env=env or ""))
     settings = RouterSettings(**{k: llm[k] for k in RouterSettings.__dataclass_fields__ if k in llm})
     return LLMRouter(entries, settings, on_failure, usage)

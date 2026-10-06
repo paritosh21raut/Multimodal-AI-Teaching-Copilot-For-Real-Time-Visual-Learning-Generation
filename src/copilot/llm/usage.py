@@ -40,6 +40,7 @@ class UsageLedger:
         self.path = path
         self._clock = clock
         self._data: dict[str, _Usage] = {}
+        self._active: dict[str, str] = {}  # model family ("groq_main") -> env var of the key in use (not the key)
         self._save_failed = False
         if path is not None:
             self._data = self._load(path)
@@ -52,6 +53,9 @@ class UsageLedger:
         except (OSError, ValueError) as e:  # a corrupt ledger only costs the history, never the lecture
             log.warning("LLM usage file %s unreadable (%s); starting empty", path, e)
             return {}
+        active = raw.get("active") if isinstance(raw, dict) else None
+        if isinstance(active, dict):
+            self._active = {str(k): str(v) for k, v in active.items()}
         out: dict[str, _Usage] = {}
         entries = raw.get("usage") if isinstance(raw, dict) else None
         for key, v in (entries if isinstance(entries, dict) else {}).items():
@@ -69,7 +73,7 @@ class UsageLedger:
         oldest = int((self._clock() - WINDOW_S) // BUCKET_S)
         data = {"usage": {key: {"buckets": {str(m): t for m, t in u.buckets.items() if m > oldest},
                                 "floor": u.floor, "floor_until": u.floor_until, "blocked_until": u.blocked_until}
-                          for key, u in self._data.items()}}
+                          for key, u in self._data.items()}, "active": dict(self._active)}
         tmp = self.path.with_suffix(f".{os.getpid()}.tmp")
         try:
             self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -106,3 +110,26 @@ class UsageLedger:
     def blocked_for(self, key: str) -> float:
         u = self._data.get(key)
         return max(0.0, u.blocked_until - self._clock()) if u else 0.0
+
+    def free_in(self, key: str, below: int) -> float:
+        """Seconds until this key's 24 h count drops below `below` tokens (old minutes leave the window)."""
+        u = self._data.get(key)
+        if u is None:
+            return 0.0
+        now = self._clock()
+        wait = max(0.0, u.blocked_until - now, (u.floor_until - now) if u.floor >= below else 0.0)
+        oldest = (now - WINDOW_S) // BUCKET_S
+        live = sorted((m, t) for m, t in u.buckets.items() if m > oldest)
+        total = sum(t for _, t in live)
+        for m, t in live:
+            if total < below:
+                break
+            total -= t
+            wait = max(wait, (m + 1) * BUCKET_S + WINDOW_S - now)
+        return wait
+
+    def active(self, family: str) -> str:
+        return self._active.get(family, "")
+
+    def set_active(self, family: str, env: str) -> None:
+        self._active[family] = env

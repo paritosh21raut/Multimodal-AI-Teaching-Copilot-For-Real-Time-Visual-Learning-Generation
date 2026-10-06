@@ -1,0 +1,210 @@
+# Live test transcript, session 20261006-112149-411e, exported as heard (mis-hearings kept).
+# 12-15 min multi-topic lecture (V1b round 3 verify): networks, microcontroller, photosynthesis, 5G, digestion, quadratic, solar, reproduction, signals, cell, atom, matter; mostly qwen + 25 fallbacks
+Let us learn about computer networks.
+A computer network is a system of connected devices that communicate
+um
+[pause 1.1]
+with two shared data, hardware resource and services over wired or wireless links.
+type of computer networks are
+[pause 4.0]
+PAN, Personal Area Network, connects personal devices like phones, laptops within a short range of about 10 meters.
+LAN, local area network links computers within a single room.
+office building or school.
+Man, Metropolitan Area Network covers a larger area like a town or a city.
+when wide area network connects computers across large physical distances, countries or the whole globe such as the internet.
+The key components are
+first nodes
+These are the devices attached to a network including end devices.
+computers and smartphone printers and intermediary devices like routers and switches.
+Second, transmission media, physical cables like fiber optics, twisted pair or wireless signals like Wi-Fi or radio waves that carry data.
+protocols set of rules that dictate how data is formatted transmitted and received
+The code use is.
+Resource sharing allows multiple users to share hardware like printers or storage devices to lower cost.
+Data and communication enables fast files exchange web browsing emails and video calls
+Cloud access provides scalable access to remote services applications and remote services.
+[pause 6.0]
+Let us learn about microcontroller.
+[pause 6.0]
+A microcontroller or MCU is a small computer on a single integrated circuit that is designed to control specific tasks with electronic systems. It combines the functions of Central Processing Unit CPU.
+memory and input-output interfaces.
+All on a single chip
+[pause 2.5]
+A typical microcontroller consists of a processor core, volatile and non-volatile memory, input output peripherals and various communication interfaces. The processor core is responsible for executing instructions and controlling the other components of the processor.
+microcontroller. The memory is used to store data and program code while the input output peripherals are used to interact with the external environment.
+[pause 3.7]
+Let's understand why are microcontrollers useful.
+they are programmable so you can make them do different tasks
+Common programming languages used are C, C++ and assembly language.
+They are often low power which is great for devices that runs on batteries. They are small, cheap and perfect for controlling devices over a long time.
+[pause 1.1]
+Most microcontrollers are embedded meaning they are difficult or built inside other devices.
+[pause 4.6]
+Let's start with the types of microcontroller
+[pause 1.1]
+there are variety of microcontroller classified in different types
+First classification of micro-computers by the number of bits
+they can be 8 bit, 16 bit or 32 bit microcontrollers
+then classification of microcontroller on memory type it can be embedded memory microcontroller or external memory microcontroller
+classification of microcontrollers by instruction set
+First, Sis.
+that is complex introduction set computer.
+then risk that is reduce instruction set computer.
+then classification of microcontroller by architecture
+of memory
+First Harvard Memory Architecture
+Second, One new memory architecture
+[pause 1.6]
+The properties of microcontroller are, microcontroller devices are capable of having words longer than 16 bit.
+Microcontroller consists of RAM, ROM, timer, input-output ports
+etc. Microcontroller ROM is used for program storage and RAM is used for data storage.
+It is designed by using CISC architecture. The power consumption of modern microcontroller is significantly lower and have operating voltage range from 1.8 to 5.5 volts.
+the latest features of microcontroller are is flash memory like
+Eeprom or Eeprom
+[pause 5.5]
+The issues in microcontrollers are the timing issues, power issues, heat issues, noise issues, code issues, security issues and compatibility issues.
+[pause 6.0]
+Let us study photosynthesis. Photosynthesis is the biological process where plants, algae and some bacteria convert sunlight, water and carbon dioxide into glucose and oxygen.
+the chemical reaction is 6CO2 plus 12 6H2O plus light energy gives C6H12O6 plus 6O2 molecules
+reactors
+6 molecules of carbon dioxide and 6 molecules of hydrogen
+the product is glucose C6H12O6 used for energy growth and 6 molecules of oxygen
+Oxygen is released as a by-product
+how this process works light absorption chlorophyll a green color pigment
+found inside cell structure called chloroplasts in plant leaves captures energy from sunlight
+Water and gas intakes. Plants absorb water through their air, through the roots from the soil and take in carbon dioxide from the air through tiny leaves, pores, coiled stomata.
+[pause 6.0]
+That's cool.
+[pause 1.7]
+for Azure Communication
+5G communication is the 5th generation global wireless standard.
+delivering faster speed, low latency and massive network capacity compared to 4G LTE.
+Key capabilities are speed, latency and capacity.
+the core application scenario enhance mobile broadband ultra reliable low latency communication massive machine type communication
+[pause 6.0]
+Let's learn about Digestive System.
+It is a continuous tube and network of organs that break down food in tiny nutrients your body uses for energy, growth and repair. Main parts of the tract are mouth,
+isophagus, stomach, small intestine, large intestine and rectum.
+[pause 1.3]
+the helper organs are liver
+Galbladder pancreas
+[pause 6.0]
+The quadratic equation is the second degree of polynomial equation in a single variable.
+its standard form is ax square plus bx plus c
+where x represents the unknown variable and a, b, c are numerical coefficients.
+the formula is x=-b +/- under root b square-4ac upon 2a
+[pause 4.3]
+the expression inside the square root b square minus 4ac is known as discriminant
+If discriminant is greater than zero, two distinct real roots are formed. If discriminant equals zero, one repeated
+Real root is form.
+[pause 1.2]
+Discrement is less than zero. Two complex imaginary roots are formed.
+[pause 6.0]
+Let's study the solar system, the gravitational system of the Sun and the objects that orbited, including 8 planets, dwarf planets and countless moons, asteroids and comets.
+The sun, the yellow dwarf star at the center that holds 99.8% of the system's mass age, formed about 4.6 billion years ago from the collapsing cold.
+cloud of interstellar gas industry.
+location situated in the Orion arm of the Milky Way galaxy taking about
+230 million years to complete one galactic orbit.
+The total planets are 8 planets.
+[pause 1.5]
+1st Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus and Neptune
+[pause 2.3]
+Other objects in space are dwarf planets, asteroid belts,
+Kupor belt and earth cloud
+[pause 6.0]
+I love you.
+I brought up your system, and it brought in me a lot of...
+I thought sexual will be equal to sexual will be equal to sexual will
+The human reproductive system is a collection of internal and external organs and glands that work together to produce offspring and sex hormones.
+The female reproductive system The female system produces eggs, support fertilization
+and provides a safe place for baby to grow during pregnancy.
+the ovaries, fallopian tubes, uterus, cervix, vagina, vulva are the organs in the reproductive system.
+[pause 1.1]
+mean reproductive systems are
+[pause 1.5]
+The male reproductance system stores and delivers sperm to fertilize a female egg.
+[pause 1.8]
+testis or testicles
+[pause 1.0]
+F D I miss. Vast difference.
+like cesare glands.
+and penis are the organs in it
+[pause 2.0]
+Let's go
+[pause 5.4]
+A signal system in engineering refers to the combination of information carrying physical quantities and the physical or mathematical processes that manipulates them.
+what is a signal? A signal is any part physical quantity or function that varies with time, space or another independent variable to convey information.
+There are two types of signal, analog and digital. The analog signal is the continuous time signal that varies smoothly and uninterruptedly over time. Digital signal, discrete time signals represent a
+by distinct values at specific intervals.
+commonly used in computers.
+What is a system? A system is an interconnected arrangement of physical devices, circuits or algorithms that accepts an input signal, processes it and produces an output signal.
+[pause 6.0]
+sexual illness
+Ah, sexual illness.
+[pause 3.3]
+focusing is looking to plan a little better.
+[pause 1.3]
+cell. Let's learn about this cell in biology. A cell is the smallest basic structural and functional unit of all living organisms. You can read a complete overview on Wikipedia. Main types of cells are
+prokaryotic cells and eukaryotic cells
+key parts of a cell are cell membrane
+cytoplasm, nucleus and organelle.
+[pause 6.0]
+That's one of the...
+[pause 6.0]
+Let's learn about atoms. An atom is the basic building block of matter and the smallest unit of a chemical element that keeps its unique properties.
+structure of item includes nucleus
+which holds protons and neutrons
+Proton are the positively charged particles inside the nucleus while neutrons
+Has no
+let's charge on them electrons are tiny negative charge particles that
+moves around the nucleus.
+in an electron cloud. Key properties atomic number, ion and isotopes.
+[pause 2.4]
+That's not bad.
+sexual illness
+the basic concepts of chemistry. Chemistry is the branch of science which deals with the composition structure and properties of matter.
+branch of chemistry
+in organic chemistry, organic chemistry, physical chemistry and analytical chemistry.
+[pause 1.2]
+Let's learn about MATLAB.
+Anything which occupies some space and has some mass is called matter. It is made up of small particles which have space between them. The matter particles attract each other and are in the state of continuous motion.
+[pause 1.4]
+Pure substances, they are the characteristics difference from the mixture.
+they have fixed composition whereas mixtures may contain the component in any ratio and their composition.
+[pause 2.5]
+elements
+[pause 1.5]
+It is the simplest form of pure substance which can neither be decomposed nor be built by simpler substances by ordinary physical and chemical methods. Compounds. It is
+also the form of matter which can be formed by combining two or more elements in a definite ratio by mass. It can be decomposed into its constituent elements by suitable chemical methods.
+[pause 1.0]
+types of compounds are inorganic and organic compounds.
+mixtures they are used of two or more pure substances they can possess variable composition and can be separated into their components by some physical method
+Mixture separation methods are filtration, distillation, sublimation.
+[pause 4.6]
+crystallization magnetic separation at mollisus
+[pause 3.4]
+like
+Thank you very much.
+No, it's not. It's a waste of time.
+[pause 6.0]
+I think it's a good idea to make 3 months a year. I think Blackboard is a good idea. I think it's a good idea. I think it's a good idea.
+I think it's a day club
+[pause 4.8]
+Thank you very much.
+[pause 6.0]
+You can do
+[pause 6.0]
+Thank you very much.
+Project.
+Alhamdulillahi wabaraktuh.
+[pause 1.2]
+Is there another way to take the hose? All the while, there's another way to take the hose. Where's the other way? There's another way to take the hose. There's another way to take the hose. Keep your eye on the kids. Take your tongue to the issue. Take your tongue and leave it.
+I'm not sure if he's dead or not. He's a survivor. He's not dead. He's not dead.
+[pause 4.9]
+That's when we get a look.
+Yay!
+[pause 2.9]
+I'm gonna die, I'm gonna die, I'm gonna die
+[pause 6.0]
+All right.
+[pause 1.3]
+It's done.

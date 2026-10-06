@@ -1,5 +1,6 @@
 """Rate limiter + router fall-through over real httpx with a mocked transport (the network is the boundary)."""
 import json
+import os
 import time
 
 import httpx
@@ -180,7 +181,8 @@ async def test_tpm_skips_entry_and_server_header_clamps():
     def handler(req):
         return httpx.Response(200, json=ok_body(usage=(500, 100)), headers={"x-ratelimit-remaining-tokens": "50"})
 
-    router, client = make_router(handler)
+    # no waiting allowed (or a long wait): the call goes on to the next entry
+    router, client = make_router(handler, settings=RouterSettings(timeout_s=1.0, minute_wait_s=0.0))
     r1 = await router.complete([], est_tokens=500, max_tokens=200, deadline=deadline())
     assert r1.entry == "a"
     # the server said only 50 tokens remain on a → the next 500-token call is routed to b
@@ -189,11 +191,26 @@ async def test_tpm_skips_entry_and_server_header_clamps():
     assert r2.entry == "b" and "a: skipped (tpm)" in r2.attempts
 
 
+async def test_short_per_minute_wait_stays_on_the_entry():
+    """Live test 2026-10-06: ~20 units fell back because the only key left was skipped for 'tpm' although its
+    per-minute bucket refilled within a second or two. A short wait now keeps the work on that key."""
+    def handler(req):
+        return httpx.Response(200, json=ok_body(usage=(500, 100)), headers={"x-ratelimit-remaining-tokens": "50"})
+
+    router, client = make_router(handler)  # 100k tpm: 550 missing tokens refill in ~0.3 s
+    await router.complete([], est_tokens=500, max_tokens=200, deadline=deadline())
+    t0 = time.monotonic()
+    r2 = await router.complete([], est_tokens=500, max_tokens=200, deadline=deadline())
+    await client.aclose()
+    assert r2.entry == "a" and r2.attempts == ["a: ok"] and 0.2 < time.monotonic() - t0 < 2.0
+
+
 def test_build_router_from_config_skips_missing_keys(monkeypatch):
     cfg = load_config(environ={})
+    cfg.env_order = []
+    for name in [n for n in os.environ if n.upper().startswith("GROQ_API_KEY")]:  # the real .env's keys
+        monkeypatch.delenv(name, raising=False)
     monkeypatch.setenv("GROQ_API_KEY", "x")
-    for i in range(2, 10):  # extra keys in .env would add entries (tests/unit/test_llm_keys_usage.py)
-        monkeypatch.delenv(f"GROQ_API_KEY_{i}", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     router = build_router(cfg, httpx.AsyncClient())
     names = [e.name for e in router.entries]

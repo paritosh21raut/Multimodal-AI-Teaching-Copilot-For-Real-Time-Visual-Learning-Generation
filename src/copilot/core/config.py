@@ -10,7 +10,7 @@ try:
 except ModuleNotFoundError:  # Python 3.10
     import tomli as tomllib
 
-from dotenv import load_dotenv
+from dotenv import dotenv_values, load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 ENV_PREFIX = "COPILOT__"
@@ -51,8 +51,9 @@ def _env_overrides(cfg: dict, environ: Mapping[str, str]) -> dict:
 
 
 class Config:
-    def __init__(self, data: dict) -> None:
+    def __init__(self, data: dict, env_order: Optional[list[str]] = None) -> None:
         self._data = data
+        self.env_order = env_order or []  # variable names in .env file order (the order Groq keys are used in)
 
     def section(self, name: str) -> dict:
         return dict(self._data.get(name, {}))
@@ -75,6 +76,7 @@ def load_config(
     environ: Optional[Mapping[str, str]] = None,
 ) -> Config:
     load_dotenv(root / ".env", override=False)
+    env_order = list(dotenv_values(root / ".env")) if (root / ".env").exists() else []
     data: dict = {}
     for name in ("default.toml", "local.toml"):
         path = root / "config" / name
@@ -84,4 +86,4 @@ def load_config(
     data = _env_overrides(data, os.environ if environ is None else environ)
     if overrides:
         data = _deep_merge(data, overrides)
-    return Config(data)
+    return Config(data, env_order)

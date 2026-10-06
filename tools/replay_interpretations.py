@@ -4,7 +4,9 @@ display, and screenshot every slide → artifacts/replay/<session>_<theme>_NN.pn
     .venv/Scripts/python tools/replay_interpretations.py <session_id> [light|dark] [--images]
 
 --images: the real image service runs too (Wikipedia/Commons + CLIP, a fresh cache in artifacts/replay/images:
-network, zero LLM tokens). After each interpretation the replay waits for running image searches (≤ 8 s, about the
+network, zero LLM tokens). The image relevance check uses the real MiniLM embedder, as in the app.
+Units that fell back to the deterministic interpretation (no LLM answer) are interpreted again by the CURRENT
+fallback from their recorded transcript lines. After each interpretation the replay waits for running image searches (≤ 8 s, about the
 gap between two interpretations in a live lecture).
 
 Checks composition, layout and rendering changes against real lectures. What the interpreter does before an
@@ -23,7 +25,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from display_harness import browser_page, display_harness, wait_for_slide  # noqa: E402
 
 from copilot.core.config import load_config  # noqa: E402
+from copilot.app.main import text_similarity  # noqa: E402
+from copilot.core.config import PROJECT_ROOT  # noqa: E402
 from copilot.core.events import Command, CommandReceived, ConceptSignal, InterpretationReady  # noqa: E402
+from copilot.understanding.embedder import MiniLmEmbedder  # noqa: E402
+from copilot.understanding.gate import BufferedLine  # noqa: E402
+from copilot.understanding.interpreter import fallback_interpretation  # noqa: E402
 from copilot.core.state import LectureSetup, LectureStateStore  # noqa: E402
 from copilot.presentation.engine import PresentationEngine, PresentationSettings  # noqa: E402
 from copilot.visuals.service import ImageService  # noqa: E402
@@ -31,6 +38,15 @@ from copilot.visuals.service import ImageService  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "artifacts" / "replay"
 TYPES = {"InterpretationReady": InterpretationReady, "ConceptSignal": ConceptSignal}
+
+
+def transcript(session_id: str) -> dict[str, BufferedLine]:
+    db = ROOT / "data" / "sessions" / session_id / "session.sqlite"
+    out = {}
+    for (payload,) in sqlite3.connect(db).execute("select payload from events where type='TranscriptFinal'"):
+        seg = json.loads(payload)["segment"]
+        out[seg["id"]] = BufferedLine(seg["id"], seg["text"], seg["start"], seg["end"])
+    return out
 
 
 def recorded(session_id: str) -> list:
@@ -48,6 +64,9 @@ def recorded(session_id: str) -> list:
 
 async def replay(session_id: str, theme: str, with_images: bool = False) -> list[Path]:
     events = recorded(session_id)
+    lines = transcript(session_id)
+    embedder = MiniLmEmbedder(PROJECT_ROOT / "models" / "minilm")
+    embedder.load()
     paths: list[Path] = []
     media = OUT / "images"
     if with_images:
@@ -55,7 +74,8 @@ async def replay(session_id: str, theme: str, with_images: bool = False) -> list
     async with display_harness(theme, media_dir=media) as h:
         store = LectureStateStore(h.bus, "replay", LectureSetup())
         store.attach()
-        eng = PresentationEngine(h.bus, store, h.deck, PresentationSettings(min_dwell_s=0.0, provisional=False))
+        eng = PresentationEngine(h.bus, store, h.deck, PresentationSettings(min_dwell_s=0.0, provisional=False),
+                                 relevance=text_similarity(embedder))
         eng.attach()
         images = None
         if with_images:
@@ -63,6 +83,9 @@ async def replay(session_id: str, theme: str, with_images: bool = False) -> list
             images.attach()
         async with browser_page(f"{h.url}/display") as page:
             for e in events:
+                if isinstance(e, InterpretationReady) and e.fallback:
+                    unit = [lines[x] for x in e.segment_ids if x in lines]
+                    e = e.model_copy(update={"interpretation": fallback_interpretation(store.snapshot(), unit)})
                 await h.bus.publish(e)
                 await h.settle()
                 if images is not None:

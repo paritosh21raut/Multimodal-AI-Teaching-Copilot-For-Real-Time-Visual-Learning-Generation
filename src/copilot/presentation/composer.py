@@ -33,7 +33,8 @@ log = logging.getLogger(__name__)
 # Hard caps per block (readability), on top of the space budget.
 CAPACITY = {"points": 8, "notes": 2, "steps": 6, "columns": 3, "rows": 6, "events": 6, "links": 4,
             "variables": 4, "secondary": 2, "facts": 8, "groups": 4, "group_items": 8, "tree": 6, "definitions": 2}
-BODY_BUDGET_PX = 700       # slide body height at the default type size (auto-fit can still shrink to 0.8)
+BODY_BUDGET_PX = 740       # slide body height at the default type size (auto-fit can still shrink to 0.8); measured
+                           # 754-763 px in Edge on 29 slides of the live test 2026-10-06 (700 left lonely last parts)
 BODY_WIDTH_PX = 1696
 MAIN_WIDTH_ASIDE_PX = 1040  # main column when an aside (example/callout) is shown
 BLOCK_GAP_PX = 32
@@ -74,7 +75,8 @@ def what_is(term: str) -> str:
 
 # ---- text helpers ---------------------------------------------------------------------------------------
 def _norm(text: str) -> str:
-    return " ".join(re.findall(r"[a-z0-9]+", text.lower()))
+    # "+" and "#" are part of names: "C++" and "C#" are not "C" (live test 2026-10-06 dropped C++ as a duplicate)
+    return " ".join(re.findall(r"[a-z0-9]+[+#]*", text.lower()))
 
 
 def is_duplicate(a: str, b: str) -> bool:
@@ -353,6 +355,22 @@ def split_to_fit(spec: SlideSpec) -> tuple[SlideSpec, list[Block]]:
     return _with_layout(cur), moved
 
 
+def rejoin(spec: SlideSpec, moved: list[Block]) -> SlideSpec:
+    """Undo split_to_fit: the moved blocks go back (list items to the end of the list they came from)."""
+    cur = spec
+    for b in moved:
+        field_name = _SPLIT_LISTS.get(b.type)
+        same = next((x for x in cur.blocks if x.type == b.type and field_name
+                     and getattr(x, "heading", "") == getattr(b, "heading", "")), None)
+        if same is not None:
+            cur = _replace_block(cur, same, same.model_copy(
+                update={field_name: [*getattr(same, field_name), *getattr(b, field_name)]}))
+        else:
+            images = [x for x in cur.blocks if x.type == "image"]
+            cur = cur.model_copy(update={"blocks": [x for x in cur.blocks if x.type != "image"] + [b] + images})
+    return _with_layout(cur)
+
+
 def is_small(piece: Piece) -> bool:
     """One short item: better squeezed onto the slide than shown alone on the next part."""
     items = len(piece.pairs) if piece.kind == "facts" else len(piece.texts)
@@ -620,8 +638,11 @@ def _items(texts: list[str], added: bool) -> list[Item]:
 
 def _merge_points(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:
     label = piece.term
+    # a heading belongs to the items it came with: unlabelled points never join a labelled list, and a labelled
+    # list never takes over earlier unlabelled points (live test 2026-10-06: "Low power consumption" under
+    # "Common programming languages"; speed / latency under "5G core application scenarios")
     pb = next((b for b in spec.blocks if b.type == "points" and not b.about
-               and (not label or not b.heading or titles_match(b.heading, label))), None)
+               and (titles_match(b.heading, label) if label and b.heading else not label and not b.heading)), None)
     fresh = _new(_texts_on(spec), piece.texts)
     if piece.added:
         fresh = fresh[:1]
@@ -631,7 +652,7 @@ def _merge_points(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Pi
         kept = [i for i in pb.items if not i.provisional]
         prov = [i for i in pb.items if i.provisional]
         room = max(0, CAPACITY["points"] - len(kept))
-        heading = pb.heading or label
+        heading = pb.heading
         out, rest = _greedy(spec, fresh[:room], lambda ts: _replace_block(spec, pb, pb.model_copy(
             update={"heading": heading, "items": kept + _items(ts, piece.added) + prov})))
         rest += fresh[room:]

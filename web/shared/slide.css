@@ -21,8 +21,10 @@
   gap: 44px;
   transition: opacity var(--t-slide) var(--ease), transform var(--t-slide) var(--ease);
 }
-.slide.is-entering { opacity: 0; transform: translateY(14px); }
-.slide.is-leaving { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+/* a new slide fades in by a CSS animation: no script step that a hidden window could leave unfinished */
+.slide.is-new { animation: slide-in var(--t-slide) var(--ease) both; }
+@keyframes slide-in { from { opacity: 0; transform: translateY(14px); } }
+.slide.is-leaving { opacity: 0; transform: translateY(-10px); pointer-events: none; animation: none; }
 
 /* ---------- header ---------- */
 .slide-head { display: grid; gap: 14px; }

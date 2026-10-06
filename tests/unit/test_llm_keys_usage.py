@@ -1,5 +1,6 @@
 """Several Groq keys, daily quota handling (429 TPD body, usage ledger) and the startup quota view."""
 import json
+import os
 import time
 
 import httpx
@@ -29,8 +30,8 @@ def ok_body(usage=(1000, 300)):
 
 
 def clear_keys(monkeypatch):
-    for i in range(1, 10):
-        monkeypatch.delenv("GROQ_API_KEY" if i == 1 else f"GROQ_API_KEY_{i}", raising=False)
+    for name in [n for n in os.environ if n.upper().startswith("GROQ_API_KEY")]:  # any name, as the router reads
+        monkeypatch.delenv(name, raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
 
@@ -51,6 +52,7 @@ def test_every_groq_key_gets_entries_same_model_first_then_next_model(monkeypatc
     clear_keys(monkeypatch)
     cfg = load_config(environ={})
     clear_keys(monkeypatch)  # load_config reads .env into the environment
+    cfg.env_order = []
     monkeypatch.setenv("GROQ_API_KEY", "k1")
     monkeypatch.setenv("GROQ_API_KEY_2", "k2")
     monkeypatch.setenv("GROQ_API_KEY_4", "k4")   # gaps are fine
@@ -63,6 +65,80 @@ def test_every_groq_key_gets_entries_same_model_first_then_next_model(monkeypatc
     assert len({e.usage_key for e in router.entries}) == 6 and "k1" not in router.entries[0].usage_key
     assert router.entries[0].usage_key == f"api.groq.com:{key_id('k1')}:openai/gpt-oss-120b"
     assert router.entries[0].tpd == 200000
+
+
+def test_keys_with_any_name_in_env_file_order(monkeypatch):
+    """Live test 2026-10-06: the first key was GROQ_API_KEY_main and was never used (only GROQ_API_KEY, _2.._9
+    were read). Any GROQ_API_KEY_<name> counts, in the .env file's order; keys not in the file come after."""
+    clear_keys(monkeypatch)
+    cfg = load_config(environ={})
+    clear_keys(monkeypatch)
+    cfg.env_order = ["PATH_X", "GROQ_API_KEY_main", "OPENROUTER_API_KEY", "GROQ_API_KEY_5", "GROQ_API_KEY_2"]
+    for name, key in (("GROQ_API_KEY_main", "km"), ("GROQ_API_KEY_2", "k2"), ("GROQ_API_KEY_5", "k5"),
+                      ("GROQ_API_KEY_6", "k6")):
+        monkeypatch.setenv(name, key)
+    router = build_router(cfg, httpx.AsyncClient())
+    main = [e for e in router.entries if e.family == "groq_main"]
+    assert [e.provider._key for e in main] == ["km", "k5", "k2", "k6"]
+    assert [e.env.upper() for e in main] == ["GROQ_API_KEY_MAIN", "GROQ_API_KEY_5", "GROQ_API_KEY_2", "GROQ_API_KEY_6"]
+    assert main[0].name == "groq_main#main"
+
+
+def make_keys_router(handler, usage, tpm=100000, keys=("K1", "K2", "K3")):
+    """One model, several keys (as build_router makes them): family "g", entries g#1, g#2 ..."""
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    entries = [Entry(OpenAICompatProvider(ProviderConfig(name=f"g#{i}", base_url=f"https://k{i}.test/v1", model="m",
+                                                         tpd=200000), "k", client),
+                     RateLimiter(rpm=100, tpm=tpm), usage_key=f"k{i}.test:k:m", env=env)
+               for i, env in enumerate(keys, start=1)]
+    return LLMRouter(entries, RouterSettings(timeout_s=1.0), usage=usage), client
+
+
+async def test_one_key_at_a_time_switch_near_the_limit_and_wrap_around():
+    """User 2026-10-06: use one key until it is (nearly) spent, then the next in .env order; after the last, the top
+    again. Several keys are not drained at once."""
+    clock = WallClock()
+    usage = UsageLedger(None, clock=clock)
+    hosts = []
+
+    def handler(req):
+        hosts.append(req.url.host)
+        return httpx.Response(200, json=ok_body())
+
+    router, client = make_keys_router(handler, usage)
+    for _ in range(3):
+        await router.complete([], est_tokens=500, max_tokens=200, deadline=deadline())
+    assert hosts == ["k1.test"] * 3 and usage.active("g") == "K1"
+    usage.add("k1.test:k:m", 190000)          # K1 at 95 %: the next key takes over
+    await router.complete([], est_tokens=500, max_tokens=200, deadline=deadline())
+    assert hosts[-1] == "k2.test" and usage.active("g") == "K2"
+    clock.t += 24 * 3600 + 120                 # K1 is free again, but K2 stays in use until it is spent
+    await router.complete([], est_tokens=500, max_tokens=200, deadline=deadline())
+    assert hosts[-1] == "k2.test"
+    usage.add("k2.test:k:m", 195000)
+    usage.spent("k3.test:k:m", used=200000, until=clock.t + 3600)  # K3 spent too: wrap around to the top
+    res = await router.complete([], est_tokens=500, max_tokens=200, deadline=deadline())
+    await client.aclose()
+    assert hosts[-1] == "k1.test" and usage.active("g") == "K1"
+    assert "g#2: skipped (daily quota spent)" in res.attempts and "g#3: skipped (daily quota spent)" in res.attempts
+    q = {x["env"]: x for x in router.quota()}
+    assert q["K1"]["in_use"] and not q["K2"]["in_use"] and q["K2"]["spent"] and q["K2"]["free_in_s"] > 3600
+
+
+async def test_long_per_minute_wait_borrows_the_next_key_without_switching():
+    usage = UsageLedger(None)
+    hosts = []
+
+    def handler(req):
+        hosts.append(req.url.host)
+        return httpx.Response(200, json=ok_body(), headers={"x-ratelimit-remaining-tokens": "0"})
+
+    router, client = make_keys_router(handler, usage, tpm=8000)  # 8k/min: 750 tokens refill in ~5.6 s
+    await router.complete([], est_tokens=500, max_tokens=200, deadline=deadline())
+    res = await router.complete([], est_tokens=500, max_tokens=200, deadline=deadline())
+    await client.aclose()
+    assert hosts == ["k1.test", "k2.test"] and res.attempts == ["g#1: skipped (tpm)", "g#2: ok"]
+    assert usage.active("g") == "K1"  # borrowed for one call; K1 stays the key in use
 
 
 # ---- daily quota -----------------------------------------------------------------------------

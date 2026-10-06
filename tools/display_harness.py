@@ -57,12 +57,15 @@ async def display_harness(theme: str = "light", media_dir: Optional[Path] = None
 
 
 @asynccontextmanager
-async def browser_page(url: str, width: int = 1920, height: int = 1080):
+async def browser_page(url: str, width: int = 1920, height: int = 1080, init_script: Optional[str] = None):
+    """init_script runs before the page's own scripts (e.g. to simulate a hidden window)."""
     from playwright.async_api import async_playwright
 
     async with async_playwright() as pw:
         browser = await pw.chromium.launch(channel="msedge", headless=True)
         page = await browser.new_page(viewport={"width": width, "height": height})
+        if init_script:
+            await page.add_init_script(init_script)
         errors: list[str] = []
         page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
         page.on("pageerror", lambda e: errors.append(str(e)))
@@ -77,6 +80,6 @@ async def browser_page(url: str, width: int = 1920, height: int = 1080):
 async def wait_for_slide(page, slide_id: str, timeout_ms: int = 5000) -> None:
     await page.wait_for_function(
         "id => !!document.querySelector(`.slide[data-slide='${id}']:not(.is-leaving):not(.is-entering)`)",
-        arg=slide_id, timeout=timeout_ms,
+        arg=slide_id, timeout=timeout_ms, polling=100,  # timer polling: also where animation frames do not run
     )
     await asyncio.sleep(0.6)  # let enter animations finish before measuring/screenshotting

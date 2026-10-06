@@ -6,7 +6,10 @@ import { connect, initialState, reduce } from "../shared/ws.js";
 const SLIDE_MS = 380;
 
 function useSlideTransition(spec) {
-  // Keeps the outgoing slide mounted while it fades out; the incoming one fades in.
+  // Keeps the outgoing slide mounted while it fades out; the incoming one fades in by a CSS animation (is-new).
+  // Nothing waits on animation frames: Edge pauses them for a window it does not paint (a /display window behind
+  // /control, a background tab) and the new slide stayed invisible until a reload (live test 2026-10-06). The
+  // clean-up timer is not tied to the effect either, so in-place updates of the new slide cannot cancel it.
   const [layers, setLayers] = useState(spec ? [{ spec, phase: "" }] : []);
   const currentId = useRef(spec && spec.id);
   useEffect(() => {
@@ -18,13 +21,10 @@ function useSlideTransition(spec) {
     }
     currentId.current = id;
     setLayers((ls) => [
-      ...ls.filter((l) => l.phase !== "is-leaving").map((l) => ({ ...l, phase: "is-leaving" })),
-      ...(spec ? [{ spec, phase: "is-entering" }] : []),
+      ...ls.filter((l) => l.phase !== "is-leaving" && l.spec.id !== id).map((l) => ({ ...l, phase: "is-leaving" })),
+      ...(spec ? [{ spec, phase: "is-new" }] : []),
     ]);
-    const raf = requestAnimationFrame(() => requestAnimationFrame(() =>
-      setLayers((ls) => ls.map((l) => (l.phase === "is-entering" ? { ...l, phase: "" } : l)))));
-    const t = setTimeout(() => setLayers((ls) => ls.filter((l) => l.phase !== "is-leaving")), SLIDE_MS + 50);
-    return () => { cancelAnimationFrame(raf); clearTimeout(t); };
+    setTimeout(() => setLayers((ls) => ls.filter((l) => l.phase !== "is-leaving")), SLIDE_MS + 50);
   }, [spec]);
   return layers;
 }

@@ -62,6 +62,31 @@ async def test_rapid_in_place_updates_do_not_recreate_existing_nodes():
         assert page.errors == []
 
 
+async def test_slide_change_completes_in_a_window_the_browser_does_not_paint():
+    """Live test 2026-10-06: /display popped out as its own window (behind /control) or as a background tab kept the
+    old slide until reloaded. Edge pauses animation frames for such windows; the slide change waited on one, and the
+    next in-place update cancelled the pending step, so the new slide stayed invisible. Simulated here: animation
+    frames never run."""
+    no_frames = "window.requestAnimationFrame = () => 0; window.cancelAnimationFrame = () => {};"
+    async with display_harness() as h, browser_page(f"{h.url}/display", init_script=no_frames) as page:
+        await h.deck.add(points("a", ["alpha"]))
+        await h.settle()
+        await wait_for_slide(page, "a")
+        await h.deck.add(points("b", ["beta"]))           # the teacher moves on (or presses → in /control)
+        await h.settle()
+        await asyncio.sleep(0.1)
+        await h.deck.update(points("b", ["beta", "more"]))  # an in-place update right after
+        await h.settle()
+        await wait_for_slide(page, "b")
+        await page.wait_for_function("() => document.querySelectorAll('.slide').length === 1", timeout=3000,
+                                     polling=100)
+        await command(h, "prev")
+        await wait_for_slide(page, "a")
+        await page.wait_for_function("() => getComputedStyle(document.querySelector('.slide')).opacity === '1'",
+                                     timeout=3000, polling=100)
+        assert page.errors == []
+
+
 async def test_freeze_blank_and_navigation_on_projector():
     async with display_harness() as h, browser_page(f"{h.url}/display") as page:
         await h.deck.add(points("a", ["alpha"]))

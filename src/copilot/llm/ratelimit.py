@@ -29,6 +29,11 @@ class TokenBucket:
     def can_take(self, n: float) -> bool:
         return self.available() >= min(n, self.capacity)
 
+    def wait_for(self, n: float) -> float:
+        """Seconds until `n` units (capped at the capacity) are available."""
+        missing = min(n, self.capacity) - self.available()
+        return max(0.0, missing / self._rate) if self._rate > 0 else (0.0 if missing <= 0 else float("inf"))
+
     def take(self, n: float) -> None:
         self._refill()
         self._tokens -= n  # may go negative after an underestimate; refill pays it back
@@ -58,6 +63,12 @@ class RateLimiter:
         self.requests.take(1)
         self.tokens.take(est_tokens)
         return None
+
+    def ready_in(self, est_tokens: int) -> float:
+        """Seconds until admit() would accept this call (inf while cooling down after a 429/outage)."""
+        if self._clock() < self._cooldown_until:
+            return float("inf")
+        return max(self.requests.wait_for(1), self.tokens.wait_for(est_tokens))
 
     def cooldown(self, seconds: float) -> None:
         self._cooldown_until = max(self._cooldown_until, self._clock() + seconds)

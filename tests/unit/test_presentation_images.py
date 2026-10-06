@@ -275,3 +275,82 @@ async def test_interpretation_contract_carries_the_hint():
     it = Interpretation.model_validate({"topic": "Heart", "relation": "new_topic",
                                         "visual": {"query": "human heart", "kind": "diagram"}})
     assert it.visual.kind == "diagram"
+
+
+DIGESTIVE = [act("definition", term="Digestive System", definition="Continuous tube and network of organs that break "
+                 "down food into nutrients for energy, growth, and repair"),
+             act("classification", label="Main parts of the digestive tract",
+                 points=["Mouth", "Esophagus", "Stomach", "Small intestine", "Large intestine", "Rectum"])]
+QUADRATIC = [act("definition", term="The quadratic equation",
+                 definition="the second degree of polynomial equation in a single variable")]
+
+
+def words_overlap(query, text):  # stand-in for the MiniLM similarity (the real one: test_image_relevance_real)
+    return 1.0 if any(w in text.lower() for w in query.lower().split() if len(w) > 4 and w != "diagram") else 0.0
+
+
+async def test_an_image_is_only_placed_on_a_slide_it_is_about():
+    """Live test 2026-10-06: an LLM-less unit kept the topic 'Digestive System', the quadratic equation became its
+    part II, and the digestive hint (unused on part I: tree) put a digestive-system diagram on it."""
+    bus, store, deck, eng, clock = await make(min_dwell_s=0)
+    eng.relevance = words_overlap
+    reqs = Requests(bus)
+    await send(bus, with_visual(ready("Digestive System", "Definition", DIGESTIVE, relation="new_topic"),
+                                "human digestive system diagram", "diagram"))
+    assert reqs.items == []  # part I has a full-width tree
+    await send(bus, ready("Digestive System", "Definition", QUADRATIC))
+    quad = deck.slides[-1]
+    assert quad.title.lower().startswith("what is the quadratic") or "quadratic" in quad.title.lower()
+    assert [r for r in reqs.items if r.slide_id == quad.id] == []
+    # the same search answered for the frame (e.g. requested earlier) is not put on the quadratic slide either
+    eng.relevance = None
+    await send(bus, with_visual(ready("Digestive System", "Definition", [act("explanation", points=[
+        "The stomach mixes food with acid"])]), "human digestive system diagram", "diagram"))
+    eng.relevance = words_overlap
+    for r in reqs.items:
+        await answer(bus, r, [img(7, title="File:Digestive system diagram.svg")])
+    assert all(image(s) is None for s in deck.slides if "quadratic" in s.title.lower())
+
+
+async def test_removing_the_teachers_image_brings_the_moved_content_back():
+    """Live test 2026-10-06: Find image on Solar System part I moved two points to a new part IV; Remove image left
+    them there (a thin extra part, the points gone from part I)."""
+    bus, deck, eng, reqs = await setup()
+    pts = [f"Saturn fact {i}: its rings are made of ice and rock pieces" for i in range(8)]
+    await send(bus, ready("Solar System", "Saturn", [act("explanation", points=pts)], relation="new_topic"))
+    sid = deck.live.id
+    await send(bus, CommandReceived(command=Command(kind="set_image", args={
+        "slide_id": sid, "image_id": "00000000000000aa", "aspect": 0.75})))
+    assert len(deck.slides) == 2
+    await send(bus, CommandReceived(command=Command(kind="remove_image", args={"slide_id": sid})))
+    assert [s.id for s in deck.slides] == [sid]
+    head = deck.get(sid)
+    assert [i.text for i in head.blocks[0].items] == pts and image(head) is None and head.part is None
+    # content that arrived on the next part meanwhile keeps it there
+    await send(bus, CommandReceived(command=Command(kind="set_image", args={
+        "slide_id": sid, "image_id": "00000000000000aa", "aspect": 0.75})))
+    await send(bus, ready("Solar System", "Saturn", [act("explanation", points=["Saturn would float in water"])]))
+    await send(bus, CommandReceived(command=Command(kind="remove_image", args={"slide_id": sid})))
+    assert len(deck.slides) == 2
+
+
+async def test_overflow_holds_only_while_the_slide_is_as_full_as_reported():
+    """Microcontroller IV: the projector reported overflow at 7 items, a revision made it 6, and the next point still
+    opened a part of its own."""
+    from copilot.core.events import SlideOverflow
+    bus, store, deck, eng, clock = await make(min_dwell_s=0, part_dwell_s=0)
+    pts = ["Processor core", "Volatile and non-volatile memory", "Input-output peripherals"]
+    await send(bus, ready("Microcontroller", "Introduction", [act("explanation", points=pts)], relation="new_topic"))
+    s = deck.live
+    await send(bus, SlideOverflow(slide_id=s.id, version=s.version))
+    await send(bus, ready("Microcontroller", "Introduction", [act("explanation", points=["Low power",
+                                                                                         "Long battery life"])]))
+    assert len(deck.slides) == 2  # reported full: the next point goes on
+    await send(bus, SlideOverflow(slide_id=deck.slides[1].id, version=deck.slides[1].version))
+    first = deck.slides[1]
+    ref = next(i.id for b in first.blocks if b.type == "points" for i in b.items)
+    from copilot.presentation.composer import remove_elements
+    await eng._commit(remove_elements(first, {ref}))  # the slide got smaller after the report
+    await send(bus, ready("Microcontroller", "Introduction", [act("explanation", points=["Small and cheap"])]))
+    assert len(deck.slides) == 2 and "Small and cheap" in [i.text for b in deck.slides[1].blocks
+                                                           if b.type == "points" for i in b.items]

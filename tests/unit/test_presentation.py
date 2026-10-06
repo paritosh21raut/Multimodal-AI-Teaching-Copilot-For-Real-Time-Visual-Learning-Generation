@@ -201,3 +201,46 @@ def test_announced_topic_is_remembered_by_a_noop():
     assert d.op == "noop" and d.candidate == "Galaxies"
     d2 = decide(w, interp(topic="Galaxies", sub=""), [], d.candidate, has_pieces=True)
     assert d2.op == "new"
+
+
+# ---- live multi-topic test 2026-10-06 (session 20261006-112149-411e) -------------------------------------------
+def test_a_heading_stays_with_its_own_items():
+    """Microcontroller III showed "Low power consumption ..." under "Common programming languages"; 5G showed speed,
+    latency and capacity under "5G core application scenarios"."""
+    s = frame_slide("5G Communication", "Definition")
+    for it in (interp("5G Communication", "Definition", acts=[act("explanation", points=[
+                   "Faster speed than 4G LTE", "Low latency", "Massive network capacity"])]),
+               interp("5G Communication", "Definition", acts=[act("classification", label="5G core application scenarios",
+                   points=["Enhanced Mobile Broadband", "Ultra-Reliable Low-Latency Communication",
+                           "Massive Machine-Type Communication"])])):
+        for p in pieces_from(it):
+            s, left = merge(s, p)
+            assert left is None
+    lists = [(b.heading, [i.text for i in b.items]) for b in s.blocks if b.type == "points"]
+    assert lists == [("", ["Faster speed than 4G LTE", "Low latency", "Massive network capacity"])]
+    (tree,) = [b for b in s.blocks if b.type == "hierarchy"]
+    assert tree.root.label == "5G core application scenarios" and len(tree.root.children) == 3
+    s2 = frame_slide("Microcontroller", "Introduction")
+    s2, _ = merge(s2, Piece("points", lines=(1,), texts=("C", "C++", "Assembly language with a long name here ok",),
+                            term="Common programming languages"))
+    s2, _ = merge(s2, pts("Low power consumption for battery devices", "Small size and low cost"))
+    lists = [(b.heading, [i.text for i in b.items]) for b in s2.blocks if b.type == "points"]
+    assert lists[0] == ("Common programming languages", ["C", "C++", "Assembly language with a long name here ok"])
+    assert lists[1] == ("", ["Low power consumption for battery devices", "Small size and low cost"])
+
+
+def test_cpp_is_not_a_duplicate_of_c():
+    from copilot.presentation.composer import is_duplicate
+    assert not is_duplicate("C", "C++") and not is_duplicate("C#", "C") and is_duplicate("C++", "c++")
+    ps = pieces_from(interp(acts=[act("classification", label="Common programming languages",
+                                      points=["C", "C++", "Assembly language"])]))
+    s, _ = merge(frame_slide("Microcontroller", "Introduction"), ps[0])
+    assert [c.label for c in s.blocks[0].root.children] == ["C", "C++", "Assembly language"]
+
+
+def test_named_groups_without_members_are_the_kinds_of_the_classification():
+    """'Microcontrollers by memory type' came as two empty groups and the whole classification was lost."""
+    ps = pieces_from(interp("Microcontroller", "Types", acts=[act("classification", label="Microcontrollers by memory type",
+        groups=[{"label": "Embedded memory", "items": []}, {"label": "External memory", "items": []}])]))
+    assert [(p.kind, p.term, p.texts) for p in ps] == [
+        ("tree", "Microcontrollers by memory type", ("Embedded memory", "External memory"))]

@@ -19,7 +19,12 @@ InterpretationReady(visual hint) → engine: hint remembered per frame → visua
                                    → download the chosen ≤ 3 at 960 px (best first) → cache
    ImageReady ←───────────────────┘   (≤ 3 accepted, best first; or none + reason)
    engine: image on the slide only if it still fits at the default type size; else kept for a later part
+   engine: an automatic image goes only on a slide it is about: MiniLM cosine(query, slide text) ≥ 0.25
 ```
+Relevance gate (live test 2026-10-06: "human digestive system diagram" on the quadratic-equation slide, 0.07): the
+weakest right pairing recorded is 0.33 (stomata diagram / photosynthesis process slide). It only stops clearly
+unrelated images; `IMAGE_MIN_RELEVANCE` in `presentation/engine.py`, calibration test in
+`tests/integration/test_embedder_real.py`. Without the embedder the gate is off (logged at startup).
 | Module | Role |
 |---|---|
 | `visuals/policy.py` | pure: no image on title slides, slides without teacher content, full-width diagrams (process, comparison, timeline, cause-effect, formula, tree), groups, > 4 fact tiles, two definitions side by side, abstract queries, frames where the teacher removed it; later parts keep the frame's image while there is no new hint |
@@ -34,7 +39,8 @@ Teacher: Remove (the frame gets no automatic image again), Change (next accepted
 excluding all shown), Find image on a slide without one (same command: unused candidates, else a search for the
 model's hint or the slide's topic — also where the policy said no; past the first results if they were not
 relevant), own image by drag & drop / file picker (`/api/upload` → `set_image`; on a full slide the last
-content moves to the next part). Layout: `display.md` § Images.
+content moves to the next part, and comes back when the teacher removes that image while the next part still holds
+only it). Layout: `display.md` § Images.
 
 ## Generated diagrams
 Structured data from the Interpretation (steps, nodes, edges, events) → `DiagramBlock` → rendered client-side

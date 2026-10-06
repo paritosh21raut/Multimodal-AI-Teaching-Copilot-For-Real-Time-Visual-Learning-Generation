@@ -38,7 +38,7 @@ from copilot.core.events import (
 from copilot.core.state import Concern, LectureStateStore
 from copilot.presentation.composer import (
     BODY_BUDGET_PX, body_height, clear_provisional, describe, element_texts, fits, fits_unshrunk, frame_slide,
-    image_of, is_small, merge, remove_elements, revise_item, set_provisional, split_to_fit, substitute,
+    image_of, is_small, merge, rejoin, remove_elements, revise_item, set_provisional, split_to_fit, substitute,
     teacher_items, title_slide, with_image, without_image,
 )
 from copilot.presentation.content import Piece, clean, pieces_and_chain
@@ -55,6 +55,10 @@ APPLY_WAIT_S = 5.0
 MAX_SIGNALS = 300
 MAX_CORRECTIONS = 100
 IMAGE_RETRY_S = 60.0  # lecture seconds before a failed image search (network, timeout) is tried again
+# An automatic image must be about the slide it goes on: query vs slide text (MiniLM cosine). Live test 2026-10-06
+# put "human digestive system diagram" on the quadratic-equation slide (0.07); the weakest right pairing recorded
+# so far is 0.33 (stomata diagram / photosynthesis process slide). Only clearly unrelated images are stopped.
+IMAGE_MIN_RELEVANCE = 0.25
 
 
 @dataclass
@@ -80,7 +84,8 @@ class PresentationSettings:
 class SlideMeta:
     frame: Frame
     is_title: bool = False
-    full: bool = False  # the display reported overflow: nothing more is added
+    full: bool = False  # the display reported overflow: nothing more is added ...
+    full_items: int = 0  # ... while the slide holds at least as many items as then (it may have shrunk since)
 
 
 @dataclass
@@ -137,13 +142,15 @@ def contains_words(text: str, words: str) -> bool:
 class PresentationEngine:
     def __init__(self, bus: EventBus, store: LectureStateStore, deck: Deck,
                  settings: Optional[PresentationSettings] = None, *, speed: float = 1.0,
-                 clock: Callable[[], float] = time.monotonic) -> None:
+                 clock: Callable[[], float] = time.monotonic,
+                 relevance: Optional[Callable[[str, str], float]] = None) -> None:
         self.bus = bus
         self.store = store
         self.deck = deck
         self.s = settings or PresentationSettings()
         self.speed = speed
         self.clock = clock
+        self.relevance = relevance  # (image query, slide text) -> similarity; None: no check (embedder missing)
         self._t0 = clock()
         self.stats = EngineStats()
         self._lock = asyncio.Lock()
@@ -165,6 +172,7 @@ class PresentationEngine:
         self._visuals: list[tuple[Frame, FrameVisual]] = []      # per frame: its image, candidates, teacher choices
         self._image_requests: dict[str, tuple[str, str]] = {}   # request id -> (slide id, reason)
         self._image_history: dict[str, tuple[list[ImageBlock], int]] = {}  # slide id -> (images it showed, current)
+        self._tails: dict[str, tuple[str, list]] = {}  # slide id -> (next part, blocks moved there for an image)
 
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
@@ -210,7 +218,7 @@ class PresentationEngine:
                 spec = self._spec(event.slide_id)
                 stale = spec is not None and event.version and event.version != spec.version
                 if meta is not None and not meta.full and not stale:
-                    meta.full = True
+                    meta.full, meta.full_items = True, teacher_items(spec) if spec is not None else 0
                     log.info("slide %s overflows on the display; further content continues on a new slide",
                              event.slide_id)
             elif isinstance(event, DeckState):
@@ -623,7 +631,10 @@ class PresentationEngine:
         for piece in pieces:
             ids_before = {(cur.id, e) for e in element_texts(cur)}
             finished: list[SlideSpec] = []
-            full = (not cur_new) and self._meta.get(cur.id, SlideMeta(frame)).full
+            m = self._meta.get(cur.id, SlideMeta(frame))
+            # overflow applies to the slide as reported: after a revision made it smaller (live test 2026-10-06:
+            # 7 items reported, then 6) new content may join it again instead of opening a lonely next part
+            full = (not cur_new) and m.full and teacher_items(cur) >= m.full_items
             before = cur
             cur, left = merge(cur, piece, full=full)
             if left is not None and image_of(before) is not None and teacher_items(before) > 0:
@@ -695,16 +706,33 @@ class PresentationEngine:
         hint = fv.hint
         d = image_decision(spec, hint, fv)
         if d.action == "keep" and fv.image is not None:
-            if await self._show_image(spec, fv.image, teacher=False):
+            if await self._about(fv.query, spec) and await self._show_image(spec, fv.image, teacher=False):
                 log.info("image %r kept on %r (%s)", fv.query, spec.title, d.reason)
         elif d.action == "search":
             if self.now() < fv.retry_at:
                 return  # the last search failed (network, timeout): not again on every unit
+            if not await self._about(d.query, spec):
+                return
             fv.pending = d.query
             await self._request_image(spec.id, d.query, d.kind, fv, "auto")
             log.info("image search %r (%s) for %r", d.query, d.kind, spec.title)
         elif hint is not None:
             log.info("no image for %r: %s", spec.title, d.reason)
+
+    async def _about(self, query: str, spec: SlideSpec) -> bool:
+        """Is an automatic image for `query` about this slide's content? (meaning, not shared words)"""
+        if self.relevance is None:
+            return True
+        text = ". ".join([spec.title, *element_texts(spec).values()])
+        try:
+            sim = await asyncio.to_thread(self.relevance, query, text)
+        except Exception:  # the check must never stop the lecture; without it the image is not shown
+            log.exception("image relevance check failed for %r", query)
+            return False
+        if sim < IMAGE_MIN_RELEVANCE:
+            log.info("no image %r on %r: not about the slide (similarity %.2f)", query, spec.title, sim)
+            return False
+        return True
 
     async def _request_image(self, slide_id: str, query: str, kind: str, fv: FrameVisual, reason: str,
                              deeper: bool = False) -> None:
@@ -765,10 +793,30 @@ class PresentationEngine:
         tail = tail.model_copy(update={"title": head.title, "part": part, "blocks": blocks, "layout": head.layout})
         self._meta[tail.id] = SlideMeta(meta.frame)
         await self.deck.add(tail, activate=False, after=head.id)
+        self._tails[head.id] = (tail.id, list(blocks))
         self.stats.slides += 1
         if self._working_id == head.id:
             self._working_id = tail.id  # new content continues after the moved content
         log.info("teacher image on %r: %d block(s) moved to part %d", head.title, len(blocks), part)
+
+    async def _take_back_tail(self, head: SlideSpec) -> SlideSpec:
+        """The image that pushed content to the next part is gone: the content comes back, when that part still holds
+        only it and it fits again (live test 2026-10-06: Find image, then Remove, left a thin part IV)."""
+        tail_id, moved = self._tails.pop(head.id, ("", []))
+        tail = self._spec(tail_id)
+        if tail is None or list(tail.blocks) != moved:  # gone, or new content joined it: it stays as it is
+            return head
+        back = rejoin(head, moved)
+        if not fits(back):
+            return head
+        await self.deck.remove(tail_id)
+        self._meta.pop(tail_id, None)
+        if self._working_id == tail_id:
+            self._working_id = head.id
+        if head.part == 1 and self._last_part(self._meta[head.id].frame, head) == 1:
+            back = back.model_copy(update={"part": None})
+        log.info("content of %r part %s back on part %s (image removed)", head.title, tail.part, head.part)
+        return back
 
     @staticmethod
     def _block(img: dict, query: str) -> ImageBlock:
@@ -809,7 +857,7 @@ class PresentationEngine:
                    and x.id in self._meta and self._meta[x.id].frame.same(meta.frame)]
         for target in dict.fromkeys(targets):
             t = self._spec(target)
-            if t is None or image_of(t) is not None or blocked(t):
+            if t is None or image_of(t) is not None or blocked(t) or not await self._about(ev.query, t):
                 continue
             if await self._show_image(t, blocks[0], teacher=False):
                 fv.image = blocks[0]
@@ -837,7 +885,7 @@ class PresentationEngine:
             return
         if kind == "remove_image":
             if cur is not None:
-                await self._commit(without_image(spec))
+                await self._commit(await self._take_back_tail(without_image(spec)))
                 if cur.origin == "auto":
                     fv.removed, fv.image = True, None  # the teacher does not want this topic's picture
                 log.info("teacher removed the image of %r", spec.title)
