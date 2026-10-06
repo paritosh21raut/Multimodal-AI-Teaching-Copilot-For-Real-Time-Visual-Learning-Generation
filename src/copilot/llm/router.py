@@ -1,4 +1,4 @@
-"""Ordered LLM fall-through: Groq (every configured key) → OpenRouter (ADR-0001). Model ids live in config."""
+"""Ordered LLM fall-through over the Groq models, every configured key (ADR-0001). Model ids live in config."""
 from __future__ import annotations
 
 import asyncio
@@ -152,6 +152,7 @@ class LLMRouter:
         attempts: list[str] = []
         budget = est_tokens + max_tokens // 2  # expected completion ≈ half the cap
         fresh: set[str] = set()  # families whose active key was settled in this call
+        busy: list[Entry] = []   # skipped only for their per-minute limits: free again within seconds
         for entry in self._ordered():
             daily = self._daily_refusal(entry, budget)
             if daily is not None:
@@ -170,58 +171,85 @@ class LLMRouter:
             refusal = entry.limiter.admit(budget)
             if refusal is not None:
                 attempts.append(f"{entry.name}: skipped ({refusal})")
+                if refusal in ("rpm", "tpm"):
+                    busy.append(entry)
                 continue
-            for attempt in range(st.retries + 1):
-                remaining = deadline - time.monotonic()
-                if remaining < 0.5:
-                    attempts.append(f"{entry.name}: deadline")
-                    raise AllProvidersFailed("deadline exceeded; " + "; ".join(attempts))
-                if attempt > 0:
-                    entry.limiter.requests.take(1)  # every HTTP attempt counts against the entry's RPM
-                entry.calls += 1
-                limit = min(st.timeout_s, remaining)
-                err: Optional[LLMError] = None
-                try:
-                    # httpx timeouts are per phase (a trickling body resets them): enforce a hard total limit
-                    resp = await asyncio.wait_for(
-                        entry.provider.complete(messages, max_tokens=max_tokens, timeout=limit), timeout=limit + 0.5
-                    )
-                except asyncio.TimeoutError:
-                    err = Transient(f"no complete response within {limit + 0.5:.1f}s")
-                except LLMError as e:
-                    err = e
-                if err is not None:
-                    entry.failures += 1
-                    retry = err.retryable and attempt < st.retries
-                    await self._fail(entry.name, str(err), retry)
-                    attempts.append(f"{entry.name}: {type(err).__name__}")
-                    if isinstance(err, RateLimited) and err.daily:
-                        # keep a short "try again in 32s" as is: only a missing/stale time gets the fallback block
-                        now = time.time()
-                        until = err.reset_at if err.reset_at and err.reset_at > now else now + st.daily_block_fallback_s
-                        entry.limiter.cooldown(until - now)
-                        if self.usage is not None and entry.usage_key:
-                            self.usage.spent(entry.usage_key, used=err.used, until=until)
-                            self.usage.save()
-                    elif isinstance(err, RateLimited):
-                        entry.limiter.cooldown(err.retry_after or st.cooldown_429_s)
-                    elif isinstance(err, Unavailable):
-                        entry.limiter.cooldown(st.cooldown_unavailable_s)
-                    elif isinstance(err, Rejected):
-                        entry.limiter.cooldown(st.cooldown_rejected_s)
-                    if retry:
-                        continue
-                    break  # next entry (InvalidOutput: the next model may do better, no cooldown)
-                if resp.prompt_tokens or resp.completion_tokens:
-                    entry.limiter.correct_tokens(budget, resp.prompt_tokens + resp.completion_tokens)
-                if self.usage is not None and entry.usage_key:
-                    self.usage.add(entry.usage_key, resp.prompt_tokens + resp.completion_tokens)
-                    self.usage.save()
-                if resp.remaining_tokens is not None:
-                    entry.limiter.tokens.clamp(resp.remaining_tokens)
-                attempts.append(f"{entry.name}: ok")
-                return RouterResult(resp, entry.name, attempts)
+            result = await self._call(entry, messages, max_tokens, budget, deadline, attempts)
+            if result is not None:
+                return result
+        # nothing could take the call now: rather than lose the content to the fallback, wait for the entry that
+        # frees up first while the deadline leaves room for the call (long test 2026-10-06: 7 units lost)
+        waits = sorted(((e.limiter.ready_in(budget), i, e) for i, e in enumerate(busy)), key=lambda x: x[:2])
+        if waits:
+            wait, _, entry = waits[0]
+            room = deadline - time.monotonic() - st.timeout_s
+            if wait <= room:
+                log.info("llm: every model is at its per-minute limit; waiting %.1f s for %s", wait, entry.name)
+                await asyncio.sleep(wait + 0.05)
+                refusal = entry.limiter.admit(budget)
+                if refusal is None:
+                    result = await self._call(entry, messages, max_tokens, budget, deadline, attempts)
+                    if result is not None:
+                        return result
+                else:
+                    attempts.append(f"{entry.name}: skipped ({refusal})")
         raise AllProvidersFailed("; ".join(attempts) or "no entries")
+
+    async def _call(self, entry: Entry, messages: list[dict[str, str]], max_tokens: int, budget: int,
+                    deadline: float, attempts: list[str]) -> Optional[RouterResult]:
+        """One admitted entry: the call with its retries. None = failed (go on to the next entry)."""
+        st = self.settings
+        for attempt in range(st.retries + 1):
+            remaining = deadline - time.monotonic()
+            if remaining < 0.5:
+                attempts.append(f"{entry.name}: deadline")
+                raise AllProvidersFailed("deadline exceeded; " + "; ".join(attempts))
+            if attempt > 0:
+                entry.limiter.requests.take(1)  # every HTTP attempt counts against the entry's RPM
+            entry.calls += 1
+            limit = min(st.timeout_s, remaining)
+            err: Optional[LLMError] = None
+            try:
+                # httpx timeouts are per phase (a trickling body resets them): enforce a hard total limit
+                resp = await asyncio.wait_for(
+                    entry.provider.complete(messages, max_tokens=max_tokens, timeout=limit), timeout=limit + 0.5
+                )
+            except asyncio.TimeoutError:
+                err = Transient(f"no complete response within {limit + 0.5:.1f}s")
+            except LLMError as e:
+                err = e
+            if err is not None:
+                entry.failures += 1
+                retry = err.retryable and attempt < st.retries
+                await self._fail(entry.name, str(err), retry)
+                attempts.append(f"{entry.name}: {type(err).__name__}")
+                if isinstance(err, RateLimited) and err.daily:
+                    # keep a short "try again in 32s" as is: only a missing/stale time gets the fallback block
+                    now = time.time()
+                    until = err.reset_at if err.reset_at and err.reset_at > now else now + st.daily_block_fallback_s
+                    entry.limiter.cooldown(until - now)
+                    if self.usage is not None and entry.usage_key:
+                        self.usage.spent(entry.usage_key, used=err.used, until=until)
+                        self.usage.save()
+                elif isinstance(err, RateLimited):
+                    entry.limiter.cooldown(err.retry_after or st.cooldown_429_s)
+                elif isinstance(err, Unavailable):
+                    entry.limiter.cooldown(st.cooldown_unavailable_s)
+                elif isinstance(err, Rejected):
+                    entry.limiter.cooldown(st.cooldown_rejected_s)
+                if retry:
+                    continue
+                break  # next entry (InvalidOutput: the next model may do better, no cooldown)
+            if resp.prompt_tokens or resp.completion_tokens:
+                entry.limiter.correct_tokens(budget, resp.prompt_tokens + resp.completion_tokens)
+            if self.usage is not None and entry.usage_key:
+                self.usage.add(entry.usage_key, resp.prompt_tokens + resp.completion_tokens)
+                self.usage.save()
+            if resp.remaining_tokens is not None:
+                entry.limiter.tokens.clamp(resp.remaining_tokens)
+            attempts.append(f"{entry.name}: ok")
+            return RouterResult(resp, entry.name, attempts)
+        return None
 
 
 def _natural(name: str) -> tuple:

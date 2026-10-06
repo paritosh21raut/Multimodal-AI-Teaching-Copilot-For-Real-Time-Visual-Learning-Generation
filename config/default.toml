@@ -96,10 +96,11 @@ cooldown_unavailable_s = 60.0
 cooldown_rejected_s = 300.0
 usage_file = "data/llm_usage.json"   # daily tokens per key + model (git-ignored); shown at startup
 # Groq first: every key in .env is used (GROQ_API_KEY, GROQ_API_KEY_2, ... _9), the same model through the next key
-# when one key's daily quota is spent. OpenRouter is the backup. Ollama is NOT in the default order: with Whisper on
-# the 4 GB GPU it produced no valid output and once copied the prompt's example values (verify round 6); when every
-# model fails, the deterministic fallback shows the spoken content. Opt in via config/local.toml only.
-order = ["groq_main", "groq_alt", "openrouter_main"]
+# when one key's daily quota is spent. OpenRouter was removed (user 2026-10-06: its free model answered 404). Ollama
+# is NOT in the default order: with Whisper on the 4 GB GPU it produced no valid output and once copied the prompt's
+# example values (verify round 6); when every model fails, the deterministic fallback shows the spoken content. Opt
+# in via config/local.toml only.
+order = ["groq_main", "groq_alt"]
 
 [llm.providers.groq_main]
 base_url = "https://api.groq.com/openai/v1"
@@ -118,13 +119,6 @@ rpm = 30
 tpm = 8000
 tpd = 200000
 max_output_tokens = 900    # Groq limits this model to 1000 output tokens/min; typical outputs are 300-600
-
-[llm.providers.openrouter_main]
-base_url = "https://openrouter.ai/api/v1"
-model = "qwen/qwen3.8-27b:free"
-api_key_env = "OPENROUTER_API_KEY"
-rpm = 10
-tpm = 20000
 
 [llm.providers.ollama]
 base_url = "http://localhost:11434/v1"

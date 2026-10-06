@@ -1,4 +1,4 @@
-"""Photosynthesis fixture through the real understanding stack and the real Groq/OpenRouter APIs (opt-in).
+"""Photosynthesis fixture through the real understanding stack and the real Groq API (opt-in).
 
 Run: .venv/Scripts/python -m pytest -m live_llm tests/e2e/test_understanding_live.py -s
 Takes ~2 minutes (lecture played at ×2; the production rate floor is scaled to lecture time).

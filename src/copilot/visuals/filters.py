@@ -16,6 +16,7 @@ MIMES = {"image/jpeg", "image/png", "image/svg+xml", "image/webp", "image/tiff"}
 MIN_SIDE_PX = 400       # longest side of a raster original
 MIN_SHORT_PX = 250
 ASPECT = (0.5, 2.2)     # width / height
+DIAGRAM_MAX_ASPECT = 2.5  # a diagram may be wider ("Covalent bond hydrogen.svg", 2.33; long test 2026-10-06)
 _BLOCK = re.compile(
     r"\b(?:logo|logos|flag|flags|coat of arms|emblem|seal of|stamp|stamps|postage|banner|icon|icons|signature|"
     r"wordmark|screenshot|album cover|book cover|poster|map|maps|locator|coin|coins|banknote|tattoo|cake|"
@@ -51,7 +52,8 @@ def _haystack(c: Candidate) -> str:
 
 
 _GENERIC = {"human", "diagram", "photo", "picture", "image", "structure", "labelled", "labeled", "the", "of", "and",
-            "with", "for", "its", "parts", "simple", "basic", "types"}
+            "with", "for", "its", "parts", "simple", "basic", "types", "structures", "diagrams", "graph", "chart",
+            "illustration", "schematic", "drawing", "formation"}
 
 
 def key_words(query: str) -> list[str]:
@@ -59,16 +61,35 @@ def key_words(query: str) -> list[str]:
     return [w for w in re.findall(r"[a-z0-9]+", query.lower()) if len(w) >= 3 and w not in _GENERIC]
 
 
+def core_query(query: str) -> str:
+    """The thing a long query is about: its first two distinctive words in their spoken form ("sigma bond orbital
+    overlap" → "sigma bond", "Charles Law graph" → "Charles Law"); "" when the query is that short already. Commons
+    search is literal: the long phrase found 1-4 files in the long test 2026-10-06."""
+    words = re.findall(r"[A-Za-z0-9]+(?:['’][A-Za-z]+)?", query)
+    content = [w for w in words if len(w) >= 2 and w.lower() not in _GENERIC]
+    pictorial = any(w.lower() in _PICTURE_WORDS for w in words)
+    if len(content) > 2 or (pictorial and content):
+        return " ".join(content[:2])
+    return ""
+
+
+_PICTURE_WORDS = {"diagram", "diagrams", "photo", "picture", "image", "graph", "chart", "illustration", "schematic",
+                  "drawing", "structure", "structures", "formation", "labelled", "labeled"}
+
+
 def _stem(w: str) -> str:
     return w[:5] if len(w) > 5 else w  # stomata ~ stomate, molecules ~ molecule
 
 
 def mentions_query(c: Candidate, query: str) -> bool:
-    """Every distinctive query word appears in the file name, categories or description (or the article title):
-    "Rock cycle" is not about "water cycle", "Lisc lipy.jpg" is not about "leaf stomata"."""
+    """The distinctive query words appear in the file name, categories or description (or the article title): all of
+    one or two ("Rock cycle" is not about "water cycle", "Lisc lipy.jpg" is not about "leaf stomata"), most of three
+    or more ("Bond lengths in water.png" for "covalent bond length"; CLIP judges the picture)."""
     hay = re.sub(r"[^a-z0-9]+", " ", f"{_haystack(c)} {c.article}".lower())
     squashed = hay.replace(" ", "")  # "WaterCycle"
-    return all(_stem(w) in hay or _stem(w) in squashed for w in key_words(query))
+    words = key_words(query)
+    found = sum(1 for w in words if _stem(w) in hay or _stem(w) in squashed)
+    return found == len(words) if len(words) <= 2 else found * 2 >= len(words) + (len(words) % 2)
 
 
 def _names_query(c: Candidate, query: str) -> bool:
@@ -110,7 +131,8 @@ def reject_reason(c: Candidate, query: str = "", kind: str = "photo") -> Optiona
     if c.mime != "image/svg+xml" and c.width and c.height:
         if max(c.width, c.height) < MIN_SIDE_PX or min(c.width, c.height) < MIN_SHORT_PX:
             return f"small {c.width}x{c.height}"
-    if c.width and c.height and not ASPECT[0] <= c.width / c.height <= ASPECT[1]:
+    if c.width and c.height and not ASPECT[0] <= c.width / c.height <= (
+            DIAGRAM_MAX_ASPECT if kind == "diagram" else ASPECT[1]):
         return f"aspect {c.width / c.height:.2f}"
     if c.source != "openverse" and not _FREE.search(c.licence):
         return f"licence {c.licence or '?'}"

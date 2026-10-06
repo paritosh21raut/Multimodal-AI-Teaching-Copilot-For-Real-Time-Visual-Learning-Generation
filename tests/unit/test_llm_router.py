@@ -205,6 +205,47 @@ async def test_short_per_minute_wait_stays_on_the_entry():
     assert r2.entry == "a" and r2.attempts == ["a: ok"] and 0.2 < time.monotonic() - t0 < 2.0
 
 
+async def test_every_entry_over_its_minute_limit_waits_for_the_first_free_one():
+    """Long test 2026-10-06 (session c513): 7 units fell back ("groq_alt#5: skipped (tpm)"): the only key with daily
+    quota left was over its per-minute limit for longer than the short wait, and nothing else could take the call,
+    so the spoken content was lost although that key was free again within seconds. Now the router waits for the
+    entry that frees up first, while the deadline leaves room for the call."""
+    def handler(req):
+        return httpx.Response(200, json=ok_body(usage=(100, 50)))
+
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    entries = [Entry(OpenAICompatProvider(ProviderConfig(name=n, base_url=f"https://{n}.test/v1", model=f"m-{n}"),
+                                          "k", client), RateLimiter(rpm=100, tpm=tpm)) for n, tpm in (("a", 600),
+                                                                                                    ("b", 1200))]
+    for e in entries:
+        e.limiter.tokens.take(e.limiter.tokens.capacity)  # both buckets empty: a refills 10/s, b 20/s
+    router = LLMRouter(entries, RouterSettings(timeout_s=1.0, minute_wait_s=0.05))
+    t0 = time.monotonic()
+    r = await router.complete([], est_tokens=10, max_tokens=0, deadline=deadline(5.0))
+    await client.aclose()
+    assert r.entry == "b"  # 10 tokens: b is ready in 0.5 s, a in 1.0 s
+    assert "a: skipped (tpm)" in r.attempts and "b: skipped (tpm)" in r.attempts and r.attempts[-1] == "b: ok"
+    assert 0.4 < time.monotonic() - t0 < 1.5
+
+
+async def test_no_wait_past_the_deadline():
+    def handler(req):
+        return httpx.Response(200, json=ok_body())
+
+    router, client = make_router(handler, names=("a",), settings=RouterSettings(timeout_s=1.0, minute_wait_s=0.05))
+    router.entries[0].limiter.tokens.take(100000)  # 90k tokens are back in ~54 s
+    with pytest.raises(AllProvidersFailed):
+        await router.complete([], est_tokens=90000, max_tokens=0, deadline=deadline(3.0))
+    await client.aclose()
+
+
+def test_openrouter_is_not_used():
+    """User 2026-10-06: remove OpenRouter completely (its free model answered 404 for days)."""
+    cfg = load_config(environ={})
+    assert cfg.get("llm", "order") == ["groq_main", "groq_alt"]
+    assert not any("openrouter" in name for name in (cfg.get("llm", "providers") or {}))
+
+
 def test_build_router_from_config_skips_missing_keys(monkeypatch):
     cfg = load_config(environ={})
     cfg.env_order = []

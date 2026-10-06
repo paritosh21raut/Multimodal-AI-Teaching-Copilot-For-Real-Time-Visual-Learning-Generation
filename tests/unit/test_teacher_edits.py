@@ -78,18 +78,21 @@ async def test_deleted_or_replaced_text_does_not_come_back_on_that_slide():
     await eng.stop()
 
 
-async def test_a_definition_slide_title_is_its_term_and_the_card_parts_are_editable():
+async def test_a_definition_slide_title_and_the_card_parts_are_editable():
+    """User 2026-10-06 (long test): every slide shows its own title ("What is chemistry?" on all its parts), so the
+    title edit changes the title; before, a definition slide showed the term as its title and the edit changed it."""
     bus, store, deck, eng, clock = await make(min_dwell_s=0.0)
     await send(bus, ready("Chemistry", "Definition", [act("definition", term="Chemistry",
                                                          definition="the branch of science which deals")],
                           relation="new_topic"))
     s = deck.live
     d = s.blocks[0]
+    assert s.title == "What is chemistry?"
     await edit(bus, "edit_text", slide_id=s.id, item_id="title", text="Chemistry (the science of matter)")
     await edit(bus, "edit_text", slide_id=s.id, item_id=d.id,
                text="The branch of science that studies the composition, structure and properties of matter")
     d2 = deck.live.blocks[0]
-    assert d2.id == d.id and d2.term == "Chemistry (the science of matter)"
+    assert deck.live.title == "Chemistry (the science of matter)" and d2.id == d.id and d2.term == "Chemistry"
     assert d2.definition.startswith("The branch of science that studies")
     await eng.stop()
 

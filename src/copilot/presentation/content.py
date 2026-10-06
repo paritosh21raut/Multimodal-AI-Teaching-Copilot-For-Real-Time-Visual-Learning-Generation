@@ -85,13 +85,43 @@ def clean(text: str, max_chars: int = MAX_TEXT_CHARS) -> str:
     return text
 
 
+def _key(text: str) -> str:
+    return " ".join(re.findall(r"[a-z0-9]+", text.lower()))
+
+
+# Long test 2026-10-06: a misheard name corrected by the model left lines that only repeat themselves: "Bond angle is
+# also known as Bond Angle", "Electron pairs: Known as electron pairs", "... (also called Bond Angle)".
+_ALIAS_OF = re.compile(r"^(?P<a>.+?)\s+(?:is|are)\s+(?:also\s+)?(?:known as|called|termed|referred to as)\s+(?P<b>.+?)"
+                       r"\.?$", re.IGNORECASE)
+_ALIAS_ONLY = re.compile(r"^(?:(?:is|are)\s+)?(?:also\s+)?(?:known as|called|termed)\s+(?P<b>.+?)\.?$", re.IGNORECASE)
+_ALIAS_PAREN = re.compile(r"\s*\((?:also\s+)?(?:called|known as|termed)\s+(?P<b>[^)]+)\)", re.IGNORECASE)
+
+
+def is_tautology(text: str, term: str = "") -> bool:
+    """A line that only says a name is itself."""
+    m = _ALIAS_OF.match(text.strip())
+    if m and _key(m.group("a")) == _key(m.group("b")):
+        return True
+    m = _ALIAS_ONLY.match(text.strip())
+    return bool(m and term and _key(m.group("b")) == _key(term))
+
+
+def drop_self_alias(text: str, term: str) -> str:
+    """"Angle between bonds (also called Bond Angle)" for the term "Bond angle" → "Angle between bonds"."""
+    return _ALIAS_PAREN.sub(lambda m: "" if _key(m.group("b")) == _key(term) else m.group(0), text).strip()
+
+
 def _texts(values: Sequence[str]) -> tuple[str, ...]:
     out: list[str] = []
     for v in values:
         c = clean(v)
-        if c and c not in out and not is_announcement(c):
+        if c and c not in out and not is_announcement(c) and not is_tautology(c):
             out.append(c)
     return tuple(out)
+
+
+# "1 Debye (SI)": "3.33564 × 10⁻³⁰ Coulomb-meter" — a value, not a meaning (long test 2026-10-06)
+_VALUE = re.compile(r"^[≈~<>]?\s*[-+]?\d[\d.,]*(?:\s*[×x*]\s*10\S*)?(?:\s+\S+){0,3}$")
 
 
 def cap(text: str) -> str:
@@ -126,7 +156,13 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
     if act.act == "process" and not steps and points:
         steps, points = points, ()  # a process given as points is still a process
     term, definition = clean(it.term), clean(it.definition, MAX_DEFINITION_CHARS)
-    if term and definition:
+    definition = drop_self_alias(definition, term) if term else definition
+    if term and is_tautology(definition, term):
+        definition = ""
+        term = ""
+    if term and definition and _VALUE.match(definition):
+        out.append(Piece("facts", pairs=((cap(term), definition),), **base))
+    elif term and definition:
         out.append(Piece("definition", term=term, definition=definition, **base))
     elif definition:
         points = (definition, *points)
@@ -166,8 +202,13 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
     if groups:
         out.append(Piece("groups", groups=groups, term=cap(clean(it.label)), **base))
     label = cap(clean(it.label))
-    if label and points and 2 <= len(points) <= 6 and all(len(x) <= 40 for x in points) and not groups:
-        # a labelled classification of short kinds reads best as a tree ("Branches of chemistry" -> 4 kinds)
+    if act.act == "classification" and label and len(points) == 1 and len(points[0].split()) <= 4 and not groups \
+            and not out:
+        return out  # "Types of molecular velocities: Most probable velocity" announces the kinds (long test)
+    if act.act == "classification" and label and points and 2 <= len(points) <= 6 \
+            and all(len(x) <= 40 for x in points) and not groups:
+        # a labelled classification of short kinds reads best as a tree ("Branches of chemistry" -> 4 kinds); a
+        # labelled explanation is a list of properties ("Characteristics of ionic compounds", long test 2026-10-06)
         out.append(Piece("tree", term=label, texts=tuple(cap(x) for x in points), **base))
         points = ()
     if points:
@@ -218,6 +259,7 @@ def _attribute(pieces: list[Piece], carry: str = "") -> tuple[list[Piece], str]:
     ball ..." after the KE formula). Resolution against the slide is the composer's job."""
     out: list[Piece] = []
     current = carry  # newest last, one per line: names, and point texts that may mention a concept
+    carried = bool(carry)  # nothing of this unit named a concept yet
     for p in pieces:
         own = ""
         if p.kind == "definition":
@@ -225,9 +267,12 @@ def _attribute(pieces: list[Piece], carry: str = "") -> tuple[list[Piece], str]:
         elif p.kind == "formula" and p.formula and "=" in p.formula.expression:
             own = p.formula.expression.split("=", 1)[0].strip()
         if own:
-            current = own
+            current, carried = own, False
         if p.kind in _ABOUT_KINDS or p.kind == "definition":
-            p = replace(p, about=own or current)
+            # carried: the concept comes only from the previous unit; the composer uses it when it is unambiguous
+            # (long test 2026-10-06: the properties of covalent compounds went into the "Non-polar covalent bond"
+            # card although two member cards were on the slide)
+            p = replace(p, about=own or current, meta={**p.meta, "carried": carried and not own})
             if not own and p.texts:  # "Mass and height determine potential energy", then "e.g. a dam": PE
                 current = "\n".join([*current.split("\n"), " ".join(p.texts)][-3:]).strip("\n")
         else:

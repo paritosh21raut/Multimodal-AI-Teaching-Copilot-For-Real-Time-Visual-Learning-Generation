@@ -127,7 +127,7 @@ class UnderstandingService:
         self.clock = clock
         self.filter = UtteranceFilter()
         self.tracker = ConceptTracker(self.s.shift_threshold, self.s.concept_alpha, self.s.topic_alpha)
-        self.buffer = DiscourseBuffer()
+        self.buffer = DiscourseBuffer(min_unit_words=self.s.gate.min_unit_words, whole_sentences=True)
         self.gate = Gate(self.s.gate)
         self.stats = UnderstandingStats()
         self._wake = asyncio.Event()

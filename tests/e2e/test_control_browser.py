@@ -1,5 +1,5 @@
 """/control in a real browser (Edge via Playwright), verify round 4 step C (user 2026-10-06): Pause replaces Freeze
-(pause icon, blue when on, the teacher still navigates), the old button row is gone, Back from a zoomed image sits
+(pause icon, the accent green when on — blue until the long test 2026-10-06 — the teacher still navigates), the old button row is gone, Back from a zoomed image sits
 top right, and only factual / conceptual / formula mistakes reach the teacher as a card ("You said X; the slide
 shows Y" with one switch); misheard words are corrected without a card.
 
@@ -64,9 +64,12 @@ async def test_pause_replaces_freeze_and_navigation_still_works():
             await control.wait_for_selector(".preview .flag.paused")
             await control.mouse.move(5, 5)
             await control.wait_for_timeout(300)  # colour transition
-            r, g, b = await control.evaluate("""() => getComputedStyle(document.querySelector('.dock button.pause.on'))
-                .backgroundColor.match(/\\d+/g).slice(0, 3).map(Number)""")
-            assert b > r + 60 and b > g, (r, g, b)   # blue, not the warning orange
+            # the same green as every other button (user 2026-10-06, long test: it was blue)
+            paused, accent = await control.evaluate("""() => {
+                const t = document.createElement('div'); t.style.background = 'var(--accent)'; document.body.append(t);
+                return [getComputedStyle(document.querySelector('.dock button.pause.on')).backgroundColor,
+                        getComputedStyle(t).backgroundColor]; }""")
+            assert paused == accent, (paused, accent)
             await control.screenshot(path=str(ART / "control_paused.png"))
             await control.click(".dock button[title='Previous slide (←)']")   # still navigates while paused
             await wait_for_slide(control, "first")

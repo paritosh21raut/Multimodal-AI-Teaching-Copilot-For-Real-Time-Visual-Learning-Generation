@@ -1,4 +1,4 @@
-"""OpenAI-compatible chat-completions client (Groq, OpenRouter and Ollama all expose /v1/chat/completions)."""
+"""OpenAI-compatible chat-completions client (Groq and Ollama expose /v1/chat/completions)."""
 from __future__ import annotations
 
 import re
@@ -158,7 +158,7 @@ class OpenAICompatProvider:
             raise InvalidOutput(f"response body is not JSON: {e}") from e
         if not isinstance(data, dict):
             raise InvalidOutput("response body is not an object")
-        if data.get("error") and not data.get("choices"):  # OpenRouter reports upstream failures as 200 + error
+        if data.get("error") and not data.get("choices"):  # some gateways report upstream failures as 200 + error
             raise Transient(f"error in body: {str(data['error'])[:200]}")
         try:
             content = data["choices"][0]["message"]["content"]

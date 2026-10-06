@@ -146,8 +146,17 @@ def _normalise(expr: str) -> tuple[str, str, list[str]]:
     if colon and ("=" in rest or "→" in rest) and "=" not in label and len(label.split()) <= 4:
         s = rest.strip()  # "Ohm's law: V = IR" → the formula; the slide title names it
     chem: list[str] = []
+    s = s.translate(_SUB_DIGITS)
+    s = re.sub(r"(?<![A-Za-z])([A-Za-z])_(\d+)", r"\1\2", s)  # "P_1" → "P1"
+    # numbered quantities: a count of 1 is never chemistry, so "P1V1 = P2V2" is P₁V₁ = P₂V₂ (long test 2026-10-06:
+    # "P1V1" was one upright word and "P2V2" a chemical formula)
+    numbered = any(chem_parts(g) is None for g in re.findall(r"(?<!\w)(?:[A-Za-z]\d+)+(?!\w)", s))
+    if numbered:
+        s = re.sub(r"(?<!\w)(?:[A-Za-z]\d+){2,}(?!\w)",
+                   lambda m: " ".join(re.findall(r"[A-Za-z]\d+", m.group(0))), s)
     # R1, V2 in the formula: "I2" is a current there, not iodine
-    elemental = not any(re.fullmatch(r"[A-Za-z]\d+", w) and chem_parts(w) is None for w in re.findall(r"\w+", s))
+    elemental = not numbered and not any(re.fullmatch(r"[A-Za-z]\d+", w) and chem_parts(w) is None
+                                         for w in re.findall(r"\w+", s))
 
     def keep_chem(m: re.Match) -> str:
         latex = _chem_latex(m.group(0), elemental)

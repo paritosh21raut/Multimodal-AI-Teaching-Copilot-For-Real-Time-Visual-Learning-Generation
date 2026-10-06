@@ -44,14 +44,26 @@ class DiscourseBuffer:
 
     lines: list[BufferedLine] = field(default_factory=list)
     _cuts: list[int] = field(default_factory=list)  # ascending indices of the first line of each later unit
+    # Long test 2026-10-06: each concept boundary became its own request, 8 s apart, and scraps ("burning", "I am
+    # FIPS.") or the end of a sentence ("which is known as Born-Angle") queued up behind each other. With these set
+    # (the service does), a boundary cuts only after a finished sentence, and a unit of fewer words joins the next.
+    min_unit_words: int = 0
+    whole_sentences: bool = False
 
     def _cut_here(self) -> None:
         if self.lines and (not self._cuts or self._cuts[-1] != len(self.lines)):
             self._cuts.append(len(self.lines))
 
+    def _tail(self) -> list[BufferedLine]:
+        return self.lines[self._cuts[-1]:] if self._cuts else self.lines
+
     def add(self, line: BufferedLine, boundary: bool = False) -> None:
         if boundary:
-            self._cut_here()
+            tail = self._tail()
+            scrap = bool(tail) and sum(l.words for l in tail) < self.min_unit_words
+            unfinished = bool(tail) and self.whole_sentences and not ends_sentence(tail[-1].text)
+            if not (scrap or unfinished):
+                self._cut_here()
         self.lines.append(line)
 
     def seal(self) -> None:

@@ -22,7 +22,7 @@ Topic and continuity:
 - A line tagged (announces: X) names what the teacher moves to next: use X as the new topic (new_topic) when it is
   not part of the CURRENT topic (e.g. galaxies after the solar system), else as the new subtopic.
 - A different facet or concept of the same topic = sibling_concept (its subtopic must differ from CURRENT); if the
-  NEW lines span two, use the later one. A comparison with an earlier topic stays under the CURRENT topic.
+  NEW lines span two, use the later one. A comparison with an earlier topic stays under the CURRENT topic.{named_rule}
 - relation: same_concept (continues), elaboration (adds detail), sub_concept (narrower concept inside it),
   sibling_concept, new_topic (different main topic; also when there is no current topic), digression (aside).
 
@@ -103,15 +103,24 @@ HIERARCHY_RULE = """ The members of a set the
   teacher defines is still a definition act (term + definition)."""
 
 
-def system_prompt(visual: bool = True, hierarchy: bool = True) -> str:
+# V1 long test (2026-10-06, session c513): Fajan's rules stayed under "Ionic Bond", Gay-Lussac's law under "Charles's
+# Law", valence bond theory under "Covalent Bond"; a property list continued in the next unit lost its heading.
+NAMED_RULE = """
+- A named law, rule, principle, theory, cycle or effect the teacher starts on ("Fajan's rules", "Gay-Lussac's law",
+  "valence bond theory") is a subtopic of its own named after it (sibling_concept), even when it belongs to the
+  CURRENT subtopic. A list the CURRENT SLIDE shows under a heading ("list: Characteristics of X") that the NEW lines
+  continue keeps that heading as its label."""
+
+
+def system_prompt(visual: bool = True, hierarchy: bool = True, named: bool = True) -> str:
     return _SYSTEM_TEMPLATE.replace("{visual_rule}", VISUAL_RULE if visual else "").replace(
         "{visual_shape}}}", (VISUAL_SHAPE if visual else "") + "}").replace(
-        "{hierarchy_rule}", HIERARCHY_RULE if hierarchy else "")
+        "{hierarchy_rule}", HIERARCHY_RULE if hierarchy else "").replace("{named_rule}", NAMED_RULE if named else "")
 
 
 # The visual rule is live since the old-vs-new A/B on gpt-oss-120b passed (F-007b step 4, 2026-10-06: 11/11 valid,
 # no difference the rule caused; +86 prompt tokens per call). The hierarchy rule is off (see above).
-SYSTEM_PROMPT = system_prompt(visual=True, hierarchy=False)
+SYSTEM_PROMPT = system_prompt(visual=True, hierarchy=False, named=False)  # named: switched on after its A/B
 
 OUTLINE_MAX_TOKENS = 150
 SUMMARY_MAX_TOKENS = 120

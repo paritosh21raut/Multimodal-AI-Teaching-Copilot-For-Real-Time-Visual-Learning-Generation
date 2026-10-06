@@ -84,9 +84,10 @@ async def rebuild(session: str) -> list[Unit]:
 
 
 def build(u: Unit, new: bool, settings: InterpreterSettings) -> P.BuiltPrompt:
-    """OLD = the live prompt (visual rule on, hierarchy rules off); NEW = with the hierarchy rules (round 4 step B)."""
+    """OLD = the live prompt of the recorded sessions (visual rule on, hierarchy and named rules off); NEW = with the
+    named-subtopic rule (V1 long test, 2026-10-06). Round 4 step B compared the hierarchy rule the same way."""
     saved = P.SYSTEM_PROMPT
-    P.SYSTEM_PROMPT = P.system_prompt(visual=True, hierarchy=new)  # build_prompt reads the module constant
+    P.SYSTEM_PROMPT = P.system_prompt(visual=True, hierarchy=False, named=new)  # build_prompt reads the constant
     try:
         return P.build_prompt(u.state, u.lines, dynamic_budget=settings.dynamic_budget_tokens,
                               total_budget=settings.prompt_budget_tokens)
@@ -206,7 +207,7 @@ async def main(args: list[str]) -> None:
           f"{sum(r['repaired'] for r in results)}, same topic {agree('topic')}, same subtopic {agree('subtopic')}, "
           f"same relation {agree('relation')}, same act kinds {agree('kinds')}, with visual "
           f"{sum(bool(r['new']['visual']) for r in results)}; real tokens {spent} "
-          f"(≈ {approx_tokens(P.HIERARCHY_RULE)} prompt tokens added per call) → {path}")
+          f"(≈ {approx_tokens(P.NAMED_RULE)} prompt tokens added per call) → {path}")
 
 
 if __name__ == "__main__":

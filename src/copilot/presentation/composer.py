@@ -20,7 +20,7 @@ from typing import Callable, Optional
 
 from copilot.core.events import new_id
 from copilot.core.memory import title_key, titles_match
-from copilot.presentation.content import Piece
+from copilot.presentation.content import Piece, drop_self_alias
 from copilot.presentation.mathtext import has_fraction, to_latex, visible_length
 from copilot.presentation.spec import (
     Block, CalloutBlock, CauseEffectBlock, CauseLink, Column, ComparisonBlock, DefinitionBlock, ExampleBlock, Fact,
@@ -67,14 +67,15 @@ _SINGULAR_ENDINGS = ("ss", "is", "us", "as", "ics", "ous", "sis")
 
 
 def is_plural(phrase: str) -> bool:
-    """"Human body systems", "lenses" → True; "photosynthesis", "physics", "gas" → False (cheap English rule)."""
-    words = phrase.split()
+    """"Human body systems", "lenses" → True; "photosynthesis", "physics", "gas", "Theory of gases" → False (cheap
+    English rule on the head noun: the word before "of")."""
+    words = re.split(r"\s+of\s+", phrase.strip(), maxsplit=1, flags=re.IGNORECASE)[0].split()
     last = words[-1].lower() if words else ""
     return len(last) > 3 and last.endswith("s") and not last.endswith(_SINGULAR_ENDINGS)
 
 
 def what_is(term: str) -> str:
-    return f"What {'are' if is_plural(term) else 'is'} {term}?"
+    return f"What {'are' if is_plural(term) else 'is'} {_lower_term(term)}?"
 
 
 # ---- text helpers ---------------------------------------------------------------------------------------
@@ -111,10 +112,17 @@ def _content_words(norm: str) -> frozenset[str]:
     return frozenset(w[:-1] if len(w) > 3 and w.endswith("s") else w for w in norm.split() if w not in _STOP)
 
 
+def _subsumed(new: str, old: str) -> bool:
+    """A new item that only repeats words of an existing one ("Formed by end-to-end overlap of orbitals" after
+    "Formed by end-to-end overlap of half-filled orbitals with opposite spin", long test 2026-10-06)."""
+    cn, co = _content_words(_norm(new)), _content_words(_norm(old))
+    return len(cn) >= 3 and cn < co
+
+
 def _new(existing: list[str], candidates: tuple[str, ...]) -> list[str]:
     out: list[str] = []
     for c in candidates:
-        if not any(is_duplicate(c, e) for e in existing + out):
+        if not any(is_duplicate(c, e) or _subsumed(c, e) for e in existing + out):
             out.append(c)
     return out
 
@@ -134,7 +142,38 @@ def term_note(term: str, definition: str) -> str:
 
 
 def _lower_term(term: str) -> str:
-    return term if term[:2].isupper() else term[:1].lower() + term[1:]  # keep acronyms ("DNA")
+    """A term inside a sentence: a term said in sentence case loses its first capital ("Dipole moment" → "dipole
+    moment"); a Title Case term stays as said, since names cannot be told from words ("French Revolution", "Boyle's
+    Law"; long test 2026-10-06: "What is boyle's Law?", "What is french Revolution?"); acronyms stay ("DNA")."""
+    words = term.split()
+    if not words or words[0][1:2].isupper() or any(w[:1].isupper() for w in words[1:]) or "'" in words[0] \
+            or "’" in words[0]:
+        return term
+    return words[0][:1].lower() + words[0][1:] + term[len(words[0]):]
+
+
+def term_key(text: str) -> frozenset[str]:
+    """Words of a concept's name; hyphenated words stay whole ("non-polar" is not "polar"), plurals folded."""
+    words = re.findall(r"[a-z0-9]+(?:[-'’][a-z0-9]+)*", text.lower())
+    return frozenset(w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w
+                     for w in words if w not in _TERM_FILLER)
+
+
+_TERM_FILLER = {"the", "a", "an", "of", "and", "in", "to", "for", "its", "their", "how", "what"}  # = memory._FILLER
+
+
+def same_term(a: str, b: str) -> bool:
+    """The same concept named again ("Ionic Bond" / "ionic bonds", "KE" / "Kinetic energy"). A qualified term is
+    another concept: "Resonance hybrid" is not "Resonance", "Bond dissociation enthalpy" not "Bond enthalpy" (long
+    test 2026-10-06: these became points under the shorter term and lost their names)."""
+    ka, kb = term_key(a), term_key(b)
+    if ka and ka == kb:
+        return True
+    for x, y in ((a, b), (b, a)):
+        compact = re.sub(r"[^A-Za-z]", "", x)
+        if 2 <= len(compact) <= 4 and compact.isupper() and compact == _initials(y):
+            return True
+    return False
 
 
 def _is_part_term(term: str, of: str) -> bool:
@@ -148,7 +187,7 @@ def slide_title(topic: str, facet: str) -> str:
         return topic
     tpl = TITLE_TEMPLATES.get(facet.strip().lower())
     if tpl:
-        t = topic if topic[:1].isupper() and topic[1:2].isupper() else topic.lower()  # keep acronyms
+        t = _lower_term(topic)  # keep acronyms and names ("DNA", "Boyle's law")
         plural = is_plural(t)
         return cap(tpl.format(t=t, **{"is": "are" if plural else "is", "s": "" if plural else "s"}))
     return facet  # the crumb already shows the topic ("CHEMISTRY — MATTER"); "Matter of Chemistry" reads badly
@@ -303,7 +342,8 @@ def grid_columns(n: int) -> int:
 def _member_height(d: DefinitionBlock, width: float, cols: int) -> float:
     """A member card (slide.css .def-pair): the term as its heading, then the meaning card at body size."""
     term_px = 42 if cols >= 3 else 48.3
-    h = 20 + term_px * 1.1 * _lines(d.term, _cpl(width, term_px * 1.1))
+    # 12: measured in Edge (long test 2026-10-06 cards: 180 / 227 / 309 px for rows of 1 / 2 / 3; 20 was 7-9 px over)
+    h = 12 + term_px * 1.1 * _lines(d.term, _cpl(width, term_px * 1.1))
     h += 68 + 46 * _lines(d.definition, _cpl(width - 92, 34))
     if d.notes:
         h += 20 + 50 * math.ceil(sum(len(n.text) + 6 for n in d.notes) / _cpl(width, 26))
@@ -374,7 +414,17 @@ def body_height(spec: SlideSpec) -> float:
     narrow = img is not None
     width = content_width(spec) if narrow else MAIN_WIDTH_ASIDE_PX if aside else BODY_WIDTH_PX
     defs = [b for b in main if b.type == "definition"]
-    if len(defs) > 1 or (members and defs):
+    later = trailing_definitions(main)
+    if later and not members:
+        # terms defined after other content: one row of cards where the first of them stands (slide.js cardRow)
+        ids = {d.id for d in later}
+        at = main.index(later[0])
+        before = main[:at]
+        after = [b for b in main[at:] if b.type != "definition" and getattr(b, "about", "") not in ids]
+        h_main = _stack_height(before, width, narrow) + BLOCK_GAP_PX + _cards_height(later, main, width)
+        if after:
+            h_main += BLOCK_GAP_PX + _stack_height(after, width, narrow)
+    elif len(defs) > 1 or (members and defs):
         # side by side (slide.js def-pair): a column / card per concept, each with its own formula / points / examples
         cols = grid_columns(len(defs))
         w = (width - MEMBER_GAP_PX * (cols - 1)) / cols
@@ -395,6 +445,34 @@ def body_height(spec: SlideSpec) -> float:
     h_aside = sum(block_height(b, BODY_WIDTH_PX - MAIN_WIDTH_ASIDE_PX - 36) for b in aside) \
         + BLOCK_GAP_PX * max(0, len(aside) - 1)
     return max(h_main, h_aside)
+
+
+def trailing_definitions(blocks: list) -> list[DefinitionBlock]:
+    """Definitions that come after other content (mirrors slide.js trailingDefs): with at most one definition before
+    that content they are drawn as one row of cards where the first of them stands. [] = the usual layouts."""
+    lead: list[DefinitionBlock] = []
+    later: list[DefinitionBlock] = []
+    content = False
+    for b in blocks:
+        if b.type == "image":
+            continue
+        if b.type == "definition":
+            (later if content else lead).append(b)
+        elif not getattr(b, "about", ""):
+            content = True
+    return later if len(lead) <= 1 else []
+
+
+def _cards_height(cards: list[DefinitionBlock], blocks: list, width: float) -> float:
+    cols = grid_columns(len(cards))
+    w = (width - MEMBER_GAP_PX * (cols - 1)) / cols
+
+    def card(d: DefinitionBlock) -> float:
+        return _member_height(d, w, cols) + sum(_column_block_height(b, w) + 24 for b in blocks
+                                                 if getattr(b, "about", "") == d.id)
+
+    rows = [cards[i:i + cols] for i in range(0, len(cards), cols)]
+    return sum(max(card(d) for d in row) for row in rows) + MEMBER_GAP_PX * (len(rows) - 1)
 
 
 COLUMN_SCALE = 0.8  # blocks in a concept column are drawn smaller (slide.css .def-col: type, padding ~0.8)
@@ -679,7 +757,7 @@ def _initials(text: str) -> str:
 
 def _names(name: str, term: str) -> bool:
     """"KE" / "Kinetic energy" / "kinetic" name the term "Kinetic energy"."""
-    kn, kt = title_key(name), title_key(term)
+    kn, kt = term_key(name), term_key(term)  # "Polar covalent bond" does not name "Non-polar covalent bond"
     if not kn or not kt:
         return False
     if kn == kt or kn <= kt:
@@ -689,8 +767,8 @@ def _names(name: str, term: str) -> bool:
 
 
 def _mentions(texts: tuple[str, ...], term: str) -> bool:
-    kt = title_key(term)
-    return bool(kt) and any(kt <= title_key(t) for t in texts)
+    kt = term_key(term)
+    return bool(kt) and any(kt <= term_key(t) for t in texts)
 
 
 def _column_for(spec: SlideSpec, piece: Piece):
@@ -699,6 +777,16 @@ def _column_for(spec: SlideSpec, piece: Piece):
     if piece.kind not in _COLUMN_KINDS:
         return None
     defs = [b for b in spec.blocks if b.type == "definition"]
+    later = trailing_definitions(spec.blocks)
+    if later and len(defs) - len(later) <= 1:
+        # cards after other content (long test 2026-10-06): only they are columns, and only for content that
+        # names them ("Bond length increases with larger atom size" under the "Bond length" card)
+        texts = piece.texts if piece.kind != "formula" else ()
+        named = [d for d in later if _mentions(texts, d.term)]
+        if not named and len(later) == 1 and piece.about:  # one card: what follows it in the lecture (the
+            d = later[0]                                     # discriminant's cases, multitopic test 411e)
+            named = [d] if any(_names(s, d.term) or _mentions((s,), d.term) for s in piece.about.split("\n")) else []
+        return named[0] if len(named) == 1 else None
     if len(defs) < 2 and not (defs and spec.layout == "members"):
         return None  # one member card takes its details too (the nodes' end / intermediary devices)
     if len(defs) > 2 and piece.kind == "formula":
@@ -709,6 +797,13 @@ def _column_for(spec: SlideSpec, piece: Piece):
         return mentioned[0]
     if len(mentioned) > 1:
         return None  # about several: full width below
+    if piece.meta.get("carried") and len(defs) > 1 and not all(len(t.split()) <= 4 for t in piece.texts) \
+            and not any(b.type == "formula" for b in spec.blocks):  # a formula's statements continue in the next
+        # unit ("Discriminant < 0: two complex roots" after D = b² - 4ac, multitopic test 411e)
+        # full statements of the next unit that name no concept, with several concepts on the slide: general (the
+        # properties of covalent compounds after the non-polar and polar cards, long test 2026-10-06); short items
+        # ("rolling ball" after the KE formula) and the details of a single member card still follow it
+        return None
     for segment in reversed(piece.about.split("\n") if piece.about else []):  # the newest named concept first
         named = [d for d in defs if _names(segment, d.term) or _mentions((segment,), d.term)]
         if len(named) == 1:
@@ -729,7 +824,7 @@ def member_of(spec: SlideSpec, piece: Piece) -> Optional[DefinitionBlock]:
 def is_about(piece: Piece, term: str) -> bool:
     """Is the piece about this concept (its definition again, a mention, or the concept the lecture named)?"""
     if piece.kind == "definition":
-        return titles_match(piece.term, term)
+        return same_term(piece.term, term)
     if _mentions(piece.texts, term):
         return True
     return any(_names(s, term) or _mentions((s,), term) for s in piece.about.split("\n") if s)
@@ -845,7 +940,7 @@ def _add_note(spec: SlideSpec, db: DefinitionBlock, piece: Piece, text: str) -> 
 def _merge_definition(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:
     defs = [b for b in spec.blocks if b.type == "definition"]
     for db in defs:
-        if titles_match(db.term, piece.term):
+        if same_term(db.term, piece.term):
             if is_duplicate(db.definition, piece.definition):
                 return spec, None
             return _merge_points(spec, Piece("points", lines=piece.lines, added=piece.added,
@@ -886,6 +981,15 @@ def _merge_definition(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optiona
             cand = cand.model_copy(update={"title": f"{cap(defs[0].term)} and {_lower_term(piece.term)}"})
         elif len(defs) == 2 and spec.title == f"{cap(defs[0].term)} and {_lower_term(defs[1].term)}":
             cand = cand.model_copy(update={"title": slide_title(spec.subtitle, spec.facet or "")})
+        if fits(cand):
+            return _with_layout(cand), None
+    asks_one = (spec.facet or "").strip().lower() in DEFINITION_FACETS  # "What is X?": another term, another slide
+    if not asks_one and len(defs) < CAPACITY["definitions"] \
+            and any(b.type not in SECONDARY and not getattr(b, "about", "") for b in others):
+        # a term defined after other content (points, a list): a card below it on the same slide, several in a
+        # row (long test 2026-10-06: "Dipole-induced dipole forces", "Hydrogen bond", "Thermal energy" opened a part
+        # II while part I was two thirds empty). Only when the slide is full does it open the next part.
+        cand = _add_block(spec, block)
         if fits(cand):
             return _with_layout(cand), None
     return spec, piece
@@ -1196,9 +1300,11 @@ _MERGERS = {
 # ---- in-place edits (revisions, correction toggles) -----------------------------------------------------
 def _definition_text(term: str, text: str) -> str:
     """A revised definition may repeat the term ("Chemistry: the branch ...", "Chemistry is the branch ...")."""
-    t = text.strip()
+    t = drop_self_alias(text.strip(), term)
     if term and t.lower().startswith(term.lower()):
         rest = t[len(term):].lstrip()
+        if rest.startswith("(") and ")" in rest:  # "Ionic Bond (Electrovalent Bond): ..." (long test 2026-10-06)
+            rest = rest[rest.index(")") + 1:].lstrip()
         for lead in (":", "-", "–", "is ", "means "):
             if rest.lower().startswith(lead):
                 return rest[len(lead):].strip() or t

@@ -18,7 +18,7 @@
  │                     ConceptTracker (embeddings) ─► DiscourseBuffer ─► Gate                 │
  │                                                                         │ InterpretRequest │
  │                                                                         ▼                  │
- │                                          Interpreter ──► LLM Router (Groq/OpenRouter/Ollama)│
+ │                                          Interpreter ──► LLM Router (Groq keys; Ollama opt-in)│
  │                                                │ Interpretation                            │
  │                                                ▼                                           │
  │   Commands ─────────────────────────► LectureStateStore ──StateChanged──► Planner          │

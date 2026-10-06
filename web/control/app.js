@@ -1,7 +1,9 @@
 // /control — the teacher's laptop view: live preview, deck, controls, transcript, status.
 // It never changes state itself; every action is a command sent to the server.
 import { html, render, useEffect, useReducer, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
-import { Slide, ZoomedImage, editableText, imageOf, partLabel, shownTitle, useStageScale } from "../shared/slide.js";
+import {
+  Glass, Slide, ZoomedImage, editableText, imageOf, partLabel, shownTitle, useGlassExit, useStageScale,
+} from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
 
 const KEYS = {
@@ -241,6 +243,8 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
     finally { setDrag(null); }
   };
   const shown = drag && canDrop ? withGhost(spec, drag === "uploading" ? "Placing the image…" : "Drop to place the image here") : spec;
+  // before the first slide the preview shows what the projector shows: the slide developing behind glass
+  const glass = useGlassExit(!spec && !(deck && deck.blank), !!(deck && deck.blank));
   return html`<div class=${"preview" + (drag ? " dragging" : "")} ref=${ref}
       onDragEnter=${(e) => { if (!hasFiles(e)) return; e.preventDefault(); depth.current += 1; if (drag !== "uploading") setDrag("over"); }}
       onDragOver=${(e) => { if (hasFiles(e)) { e.preventDefault(); e.dataTransfer.dropEffect = canDrop ? "copy" : "none"; } }}
@@ -248,8 +252,9 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
       onDrop=${drop}>
     <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
       ${shown ? html`<${Slide} key=${spec.id} spec=${shown}
-        onImageClick=${drag ? undefined : () => send("zoom_image", { slide_id: spec.id })} />` : html`<div class="waiting">No slide yet</div>`}
+        onImageClick=${drag ? undefined : () => send("zoom_image", { slide_id: spec.id })} />` : null}
       ${zoomed && html`<${ZoomedImage} key=${zoomed.image_id || zoomed.url} image=${zoomed} onClose=${() => send("unzoom_image")} />`}
+      ${glass && html`<${Glass} leaving=${glass === "leaving"} />`}
     </div>
     ${spec && !zoomed && !drag && html`<${EditLayer} host=${ref} spec=${spec} send=${send} adding=${adding} onAdded=${onAdded} />`}
     ${zoomed && html`<button class="back" onClick=${() => send("unzoom_image")} title="Back to the slide (Esc)">

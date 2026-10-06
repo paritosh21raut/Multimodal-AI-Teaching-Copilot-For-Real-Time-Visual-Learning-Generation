@@ -28,6 +28,10 @@ and how*, while calling the LLM rarely.
    It is rate-limited by a wall-clock floor (8 s → ≤ 7.5 calls/min); while a call is in flight or waiting on the
    floor, a unit that already triggered is sealed and new text queues for the next call (no parallel
    interpretations → ordered state). Details: `docs/specs/F-004-understanding.md`.
+   **Units (long test 2026-10-06):** a concept boundary cuts the buffer only after a finished sentence, and a unit of
+   fewer than 6 words (a scrap: "burning", "I am FIPS.") joins the next one (`DiscourseBuffer(min_unit_words,
+   whole_sentences)`). Before, every boundary was its own request 8 s apart and lines queued: 11 s median from speech
+   to request live (simulated 9.5 s, worst 44 s, 107 requests) → simulated 5.3 s median, worst 18 s, 83 requests.
 5. **Interpreter** (LLM, JSON-schema output). Input (bounded, ≈ 1.2k tokens max):
    - header: subject, grade level (given or inferred), lecture title, outline (topic → subtopics, ≤ 150 tokens)
    - current slide summary (title, representation, items, remaining capacity): `LectureState.slide_context`,
@@ -88,7 +92,11 @@ card for the teacher (user 2026-10-06) and logged in the terminal (`[HEARD]`).
   filter (counted as `paused_segments`); lines buffered before the pause are still interpreted.
 
 ## LLM layer (`copilot.llm`)
-- Router: Groq gpt-oss-120b → Groq qwen3.8-27b (separate 8k-TPM bucket) → OpenRouter free model (50 req/day, backup).
+- Router: Groq gpt-oss-120b → Groq qwen3.8-27b (separate 8k-TPM bucket; Groq also limits it to 1000 output
+  tokens/min). OpenRouter is removed (user 2026-10-06: its free model answered 404 for days).
+  **Nothing free right now (long test 2026-10-06):** when every entry was skipped only for its per-minute limit, the
+  router waits for the entry that frees up first, while the deadline leaves room for the call (`timeout_s`), instead
+  of falling back (7 units of that lecture lost their content to the fallback that way).
   Every Groq key in `.env` is used: `GROQ_API_KEY` and any `GROQ_API_KEY_<name>` (`_main`, `_2`, `_6` …), in the
   `.env` file's order, each with its own entries (`groq_main#main`, `groq_main#2`, …, then `groq_alt#…`).
   **One key at a time (user 2026-10-06):** per model the ACTIVE key (remembered in the usage file) is used until it
@@ -110,6 +118,12 @@ card for the teacher (user 2026-10-06) and logged in the terminal (`[HEARD]`).
 - System prompt unchanged from 0e8bff5 (≈ 1.55k tokens): a 13 % shorter version was A/B-tested on gpt-oss-120b
   (11 recorded units, 2026-10-05) and was less truthful in 3 of 11 (silent mis-hearing fix, corrected fact missing
   from acts, an unsaid explanation added), so it was not adopted. Added since: the visual rule (F-007b, +86 tokens).
+  Tried and NOT adopted (V1 long test, 2026-10-06): a named-subtopic rule (`prompt.NAMED_RULE`, +98 tokens: a named
+  law / rule / theory gets its own subtopic; a continued list keeps its heading). In the live lecture Fajan's rules,
+  Gay-Lussac's law and valence bond theory stayed under the previous subtopic, but those answers came from the qwen
+  backup (all gpt-oss keys were spent before the lecture). A/B with both arms on gpt-oss-120b (`--both`, 6 units,
+  29,352 tokens, `GROQ_API_KEY_6`): the OLD prompt already named all three; the new arm was not better (Born-Haber,
+  controls same or slightly worse). Off; `tools/prompt_ab.py` now compares it (named off / on).
   Tried and NOT adopted (round 4 step B): a hierarchy rule ("the members of a set the teacher goes through one by one
   keep that set's subtopic; a member the teacher defines is still a definition act", +51 tokens). Its A/B resent
   BOTH prompts to gpt-oss-120b on 6 units of the live test (`tools/prompt_ab.py --both`, 27,942 tokens): 6/6 valid,

@@ -1,7 +1,7 @@
 // Slide renderer shared by /display and /control. Renders a SlideSpec (docs/contracts/slide-spec.md).
 // Items are keyed by their stable ids, so Preact keeps existing DOM nodes and only new nodes get the
 // mount animation (.enter) - in-place updates never re-animate the whole slide.
-import { html, useLayoutEffect, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
+import { html, useEffect, useLayoutEffect, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
 import { mixed, rich, Tex } from "./rich.js";
 
 const ARROW = html`<svg class="arrow" viewBox="0 0 56 40" aria-hidden="true">
@@ -266,9 +266,9 @@ export const imageColumn = (aspect) => {
   return Math.round(Math.min(a >= 1.25 ? 720 : 600, Math.max(380, BODY_BUDGET_PX * a)));
 };
 
-function Block({ b, wide, termInTitle, narrow }) {
+function Block({ b, wide, termInTitle, narrow, card }) {
   switch (b.type) {
-    case "definition": return html`<${Definition} b=${b} termInTitle=${termInTitle} />`;
+    case "definition": return html`<${Definition} b=${b} termInTitle=${termInTitle} card=${card && !termInTitle} />`;
     case "points": return html`<${Points} b=${b} wide=${wide} />`;
     case "facts": return html`<${Facts} b=${b} narrow=${narrow} />`;
     case "process": return html`<${Process} b=${b} />`;
@@ -295,6 +295,25 @@ function Block({ b, wide, termInTitle, narrow }) {
 const ASIDE_TYPES = new Set(["callout", "example"]);
 const FULL_WIDTH_PRIMARY = new Set(["process", "comparison", "timeline", "hierarchy", "cause_effect", "formula", "facts", "groups"]);
 const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+// definition cards per row (composer.grid_columns): 1 | 2 | 3 | 2x2 | 3+2 | 3x2
+const cardColumns = (n) => (n <= 1 ? 1 : n === 3 || n >= 5 ? 3 : 2);
+const words = (s) => (s || "").toLowerCase().match(/[a-z0-9]+/g) || [];
+// does the title name this term ("What is dipole moment?" / "Dipole moment")? (composer._title_names)
+export const titleNames = (title, term) => {
+  const t = words(term).join(" ");
+  return !!t && ` ${words(title).join(" ")} `.includes(` ${t} `);
+};
+// definitions after other content, with at most one definition before it (composer.trailing_definitions)
+export function trailingDefs(blocks) {
+  const lead = [], later = [];
+  let content = false;
+  for (const b of blocks) {
+    if (b.type === "image") continue;
+    if (b.type === "definition") (content ? later : lead).push(b);
+    else if (!b.about) content = true;
+  }
+  return lead.length <= 1 ? later : [];
+}
 export const partLabel = (n) => (n ? ROMAN[n] || String(n) : "");
 
 function splitBlocks(blocks, members) {
@@ -359,14 +378,29 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
   const members = spec.layout === "members";
   const { main, below, aside, image } = splitBlocks(spec.blocks, members);
   const defs = spec.blocks.filter((b) => b.type === "definition");
-  const def = spec.layout === "definition" && defs.length === 1 && defs[0];
-  const title = def ? def.term : spec.title;
+  const title = spec.title;
+  // Terms defined after other content (long test 2026-10-06): one row of cards where the first of them stands,
+  // instead of a part II / a giant heading (composer.trailing_definitions)
+  const later = members ? [] : trailingDefs(spec.blocks);
+  const laterIds = new Set(later.map((d) => d.id));
+  const lead = defs.filter((d) => !laterIds.has(d.id));
+  // a lone leading definition: its term is the title's subject ("What is dipole moment?") or a card of its own
+  const def = lead.length === 1 && titleNames(title, lead[0].term) && lead[0];
   // Concepts defined together (elements and compounds) or the members of a set (the types of networks): definition
   // cards side by side, 1 | 2 | 3 | 2x2 | 3x2 (composer.grid_columns) ...
-  const pairDefs = defs.length > 1 || (members && defs.length) ? new Set(defs.map((d) => d.id)) : null;
-  const gridCols = defs.length <= 1 ? 1 : defs.length === 3 || defs.length >= 5 ? 3 : 2;
+  const pairDefs = !later.length && (defs.length > 1 || (members && defs.length)) ? new Set(defs.map((d) => d.id)) : null;
+  const gridCols = cardColumns(defs.length);
   // ... each concept is a column: its definition, then its own formula / points / examples (block.about = def id)
-  const mainRest = pairDefs ? main.filter((b) => !pairDefs.has(b.id) && !pairDefs.has(b.about)) : main;
+  const grouped = pairDefs || laterIds;
+  const mainRest = main.filter((b) => !grouped.has(b.id) && !grouped.has(b.about));
+  const rowAt = later.length ? mainRest.filter((b) => main.indexOf(b) < main.indexOf(later[0])).length : -1;
+  const cardRow = later.length > 0 && html`<div key="card-row" class=${`def-pair card-row cols-${cardColumns(later.length)}`}>
+    ${later.map((d) => html`<div key=${d.id} class="def-col">
+      <${Definition} b=${d} termInTitle=${false} card />
+      ${spec.blocks.filter((b) => b.about === d.id).map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} />`)}
+    </div>`)}</div>`;
+  const stack = (blocks) => groupFormulas(blocks).map((b) => html`<${Block} key=${b.id} b=${b}
+    wide=${!aside.length && !image} narrow=${!!image} termInTitle=${b === def} card=${b.type === "definition" && b !== def} />`);
   const bodyClass = "slide-body" + (aside.length ? " with-aside" : "") + (image ? (below ? " image-top" : " with-image") : "");
   const figure = image && html`<div class="image-col"><${Figure} key=${image.id} b=${image}
     onClick=${onImageClick && !image.ghost ? () => onImageClick(image) : undefined} /></div>`;
@@ -383,7 +417,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
       style=${image ? { "--img-col": `${imageColumn(image.aspect)}px` } : null}>
       ${below ? html`<div class="image-top-row">
           <div class="main">${main.map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} narrow=${true}
-            termInTitle=${!!def} />`)}</div>
+            termInTitle=${b === def} card=${b.type === "definition" && b !== def} />`)}</div>
           ${figure}
         </div>
         <div class="main below">${groupFormulas(below).map((b) => html`<${Block} key=${b.id} b=${b} wide=${true} />`)}</div>`
@@ -392,8 +426,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
           <${Definition} b=${d} termInTitle=${false} card />
           ${spec.blocks.filter((b) => b.about === d.id).map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} />`)}
         </div>`)}</div>`}
-        ${groupFormulas(mainRest).map((b) => html`<${Block} key=${b.id} b=${b} wide=${!aside.length && !image} narrow=${!!image}
-          termInTitle=${!!def} />`)}
+        ${rowAt < 0 ? stack(mainRest) : [...stack(mainRest.slice(0, rowAt)), cardRow, ...stack(mainRest.slice(rowAt))]}
       </div>
       ${aside.length > 0 && html`<div class="aside">${aside.map((b) => html`<${Block} key=${b.id} b=${b} />`)}</div>`}
       ${figure}`}
@@ -401,11 +434,54 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
   </section>`;
 }
 
-// The title the slide shows: a single definition's term on a definition slide, otherwise the slide title.
+// Before the first slide (/display and the /control preview): a slide develops behind glass, no text (round 5;
+// redesigned after the long test 2026-10-06: "topic content and an image loading behind a glass, more premium").
+// The glass stays a moment after the first slide arrives and clears over it; Blank removes it at once.
+export const GLASS_EXIT_MS = 1250;
+export function useGlassExit(waiting, blank) {
+  const [phase, setPhase] = useState(waiting ? "on" : null);
+  useEffect(() => {
+    if (waiting) { setPhase("on"); return undefined; }
+    if (blank) { setPhase(null); return undefined; }
+    setPhase((p) => (p ? "leaving" : null));
+    const t = setTimeout(() => setPhase(null), GLASS_EXIT_MS);
+    return () => clearTimeout(t);
+  }, [waiting, blank]);
+  return phase;
+}
+
+export function Glass({ leaving }) {
+  return html`<div class=${"glass" + (leaving ? " leaving" : "")} aria-hidden="true">
+    <div class="aurora"><span class="au a1"></span><span class="au a2"></span><span class="au a3"></span></div>
+    <span class="grain"></span>
+    <div class="card">
+      <span class="halo"></span>
+      <div class="pane">
+        <div class="draft">
+          <span class="pc crumb"></span>
+          <span class="pc title"></span>
+          <div class="row">
+            <div class="text"><span class="pc def"></span><span class="pc line l1"></span>
+              <span class="pc line l2"></span><span class="pc line l3"></span></div>
+            <span class="pc picture"><svg viewBox="0 0 460 392" preserveAspectRatio="xMidYMid slice">
+              <circle cx="340" cy="110" r="44" fill="white" opacity="0.7" />
+              <path d="M0 330 L130 200 L230 290 L310 220 L460 340 L460 392 L0 392 Z" fill="white" opacity="0.55" />
+            </svg></span>
+          </div>
+        </div>
+        <span class="frost"></span>
+        <span class="sheen"></span>
+      </div>
+      <span class="edge"></span>
+    </div>
+    <div class="dots"><i></i><i></i><i></i></div>
+  </div>`;
+}
+
+// The title the slide shows: always the slide title, so every part of a slide reads the same ("What is dipole
+// moment?" on part I and II; user 2026-10-06: keep "What is X?", it answers a question).
 export function shownTitle(spec) {
-  if (!spec) return "";
-  const defs = (spec.blocks || []).filter((b) => b.type === "definition");
-  return spec.layout === "definition" && defs.length === 1 ? defs[0].term : spec.title;
+  return spec ? spec.title : "";
 }
 
 // The text the teacher edits for an element marked data-edit (live editing in /control, round 4 step D): the same

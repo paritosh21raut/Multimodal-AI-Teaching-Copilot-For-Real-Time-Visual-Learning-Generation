@@ -131,6 +131,55 @@ def test_topic_lead_and_film_article():
     assert reject_reason(film, "human heart")
 
 
+def test_long_queries_need_most_words_not_all():
+    """Long test 2026-10-06: 12 of 25 searches found nothing; good images were rejected because a file name lacked
+    one of three or four query words ("Covalent bond hydrogen.svg" for "Non-polar covalent bond", too wide at 2.33
+    too). Two-word queries still need both words ("Rock cycle" is not "water cycle")."""
+    from copilot.visuals.filters import core_query
+    wide = cand("File:Covalent bond hydrogen.svg", mime="image/svg+xml", width=700, height=300)
+    assert reject_reason(wide, "Non-polar covalent bond", "diagram") is None
+    assert mentions_query(cand("File:Bond lengths in water.png"), "covalent bond length")       # 2 of 3
+    assert not mentions_query(cand("File:Ionic radius.png"), "covalent bond length")             # 0 of 3
+    assert "query words" in reject_reason(cand("File:Rock cycle nps 2.png"), "water cycle", "diagram")
+    assert core_query("sigma bond orbital overlap") == "sigma bond"
+    assert core_query("Charles Law graph") == "Charles Law"
+    assert core_query("human heart") == "" and core_query("states of matter") == ""
+
+
+def _commons_page(title: str) -> dict:
+    return {"title": title, "index": 1, "imageinfo": [{
+        "thumburl": f"https://upload.wikimedia.org/x/330px-{title[5:]}.png", "url": f"https://upload.wikimedia.org/x/{title[5:]}",
+        "descriptionurl": "https://commons.wikimedia.org/wiki/" + title, "width": 900, "height": 700,
+        "mime": "image/png", "extmetadata": {"LicenseShortName": {"value": "CC BY-SA 4.0"}}}]}
+
+
+class CoreOnly(httpx.AsyncBaseTransport):
+    """Commons knows "Sigma bond" images; the long phrase finds nothing (as on the real Commons search)."""
+
+    def __init__(self) -> None:
+        self.searches: list[str] = []
+
+    async def handle_async_request(self, request):
+        q = request.url.params.get("gsrsearch", "")
+        if q:
+            self.searches.append(q)
+            pages = [_commons_page("File:Sigma bond orbitals.png")] if q.lower().startswith("sigma bond diagram") else []
+            return httpx.Response(200, json={"query": {"pages": pages}}, request=request)
+        if "upload.wikimedia.org" in str(request.url):
+            return httpx.Response(200, content=_png("RGB", (900, 700)), headers={"content-type": "image/png"},
+                                  request=request)
+        return httpx.Response(200, json={}, request=request)
+
+
+async def test_finder_also_searches_the_core_phrase(tmp_path):
+    t = CoreOnly()
+    r = await ImageFinder(ImageCache(tmp_path), FakeScorer(match=True), transport=t).find(
+        "sigma bond orbital overlap", "diagram")
+    assert [i.title for i in r.images] == ["File:Sigma bond orbitals.png"]
+    assert any(q.startswith("sigma bond orbital overlap") for q in t.searches)
+    assert any(q.startswith("sigma bond diagram") for q in t.searches)
+
+
 # ---- cache ------------------------------------------------------------------------------------------------------
 def _png(mode="RGBA", size=(1600, 900)) -> bytes:
     buf = io.BytesIO()

@@ -366,12 +366,7 @@ class PresentationEngine:
         elif item_id == "title":
             if not text:
                 return
-            defs = [b for b in spec.blocks if b.type == "definition"]
-            if spec.layout == "definition" and len(defs) == 1:  # the slide shows the term as its title
-                new = edit_text(spec, defs[0].id + TERM_SUFFIX, text)
-                self._teacher.add(defs[0].id + TERM_SUFFIX)
-            else:
-                new = spec.model_copy(update={"title": text})
+            new = spec.model_copy(update={"title": text})  # the slide always shows its title (slide.js shownTitle)
             self._teacher_titles.add(spec.id)
         else:
             new = edit_text(spec, item_id, text) if text else None
@@ -774,33 +769,50 @@ class PresentationEngine:
 
     async def _set_part(self, frame: Frame, cur: SlideSpec) -> SlideSpec:
         """An empty next part of a frame's set (after a member's own slide): the set's title, the next part number."""
-        first = self._first_part(frame)
-        await self._number_first_part(frame)
+        first = self._first_part(frame, cur)
+        await self._number_first_part(frame, cur)
         nxt = frame_slide(frame.topic, frame.facet, continuation_of=cur.id)
         return nxt.model_copy(update={"title": first.title if first is not None else nxt.title,
                                       "part": self._last_part(frame, cur) + 1})
 
-    def _first_part(self, frame: Frame) -> Optional[SlideSpec]:
-        return next((s for s in self._all_specs() if s.id in self._meta and self._meta[s.id].frame.same(frame)
-                     and not self._meta[s.id].member and not self._meta[s.id].is_title), None)
+    def _run(self, frame: Frame, cur: SlideSpec) -> list[SlideSpec]:
+        """The frame's slides in one unbroken stretch of the deck around `cur` (a new slide: around the slide it
+        continues). Parts count within it: the teacher back at Covalent Bond after Dipole Moment starts again at I
+        (long test 2026-10-06 showed I, then V)."""
+        specs = self._all_specs()
+        at = {s.id: i for i, s in enumerate(specs)}
+        anchor = cur.id if cur.id in at else cur.continuation_of
+        if anchor not in at:
+            return []
+        same = lambda s: s.id in self._meta and self._meta[s.id].frame.same(frame)  # noqa: E731
+        lo = hi = at[anchor]
+        if not same(specs[lo]):
+            return []
+        while lo > 0 and same(specs[lo - 1]):
+            lo -= 1
+        while hi + 1 < len(specs) and same(specs[hi + 1]):
+            hi += 1
+        return specs[lo:hi + 1]
 
-    async def _number_first_part(self, frame: Frame) -> None:
-        first = self._first_part(frame)
+    def _first_part(self, frame: Frame, cur: SlideSpec) -> Optional[SlideSpec]:
+        return next((s for s in self._run(frame, cur) if not self._meta[s.id].member
+                     and not self._meta[s.id].is_title), None)
+
+    async def _number_first_part(self, frame: Frame, cur: SlideSpec) -> None:
+        first = self._first_part(frame, cur)
         if first is not None and first.part is None:
             await self._commit(first.model_copy(update={"part": 1}))
 
     def _part_before(self, frame: Frame, cur: SlideSpec) -> Optional[SlideSpec]:
         """The frame's part right before `cur` (part II → part I), or None."""
         want = (cur.part or 1) - 1
-        return next((s for s in self._all_specs() if s.id != cur.id and s.id in self._meta
-                     and self._meta[s.id].frame.same(frame) and not self._meta[s.id].member
+        return next((s for s in self._run(frame, cur) if s.id != cur.id and not self._meta[s.id].member
                      and not self._meta[s.id].is_title and (s.part or 1) == want), None) if want >= 1 else None
 
     def _last_part(self, frame: Frame, cur: SlideSpec) -> int:
-        """Highest part number of this frame so far (a navigated-back part I must not create a second II)."""
-        parts = [s.part or 1 for s in self._all_specs() if s.id in self._meta and self._meta[s.id].frame.same(frame)
-                 and not self._meta[s.id].member]  # a member's own slide is no part of the set
-        return max(parts + [cur.part or 1])
+        """Highest part number in the frame's current run (a navigated-back part I must not create a second II)."""
+        parts = [s.part or 1 for s in self._run(frame, cur) if not self._meta[s.id].member]  # a member's own slide
+        return max(parts + [cur.part or 1])                                                  # is no part of the set
 
     async def _finish(self, spec: SlideSpec, is_new: bool, frame: Frame, exempt: bool, adopt: bool = True,
                       member: str = "") -> None:

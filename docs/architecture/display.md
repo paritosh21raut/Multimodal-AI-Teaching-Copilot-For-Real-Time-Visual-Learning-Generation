@@ -71,12 +71,19 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
   preview with "← Back to slide (Esc)" at the top right (round 4 step C; it was top left, hard to reach). Esc, a
   click on the image or Back → `unzoom_image`; navigation or the image leaving the slide also ends it; blank still
   wins.
-- Before the first slide /display shows no text, only anticipation (round 5, user 2026-10-06: "like image generation
-  in a chatbot"): coloured light drifts behind a slide-shaped frosted glass card; a light runs around its edge
-  (conic gradient, `@property --glass-angle`) and glows through it; inside, a slide's outline (crumb, title, four
-  lines, picture) is drawn piece by piece with a shimmer and starts over; a scan band passes; sparks rise. When the
-  first slide arrives the glass clears over it (`.glass.leaving`, backdrop blur 28 → 0 px in 1.2 s) and goes. CSS
-  only (`.glass`). Between slides the previous slide stays; blank is an empty screen (no glass).
+- Before the first slide /display — and the /control preview — show no text, only a slide developing behind glass
+  (round 5; redesigned after the long test 2026-10-06: "topic content and an image loading behind a glass, more
+  premium, better colours; on /control too"): a soft aurora with fine grain (light: pearl room, teal / periwinkle /
+  apricot; dark: deep ink, teal / indigo / violet; tokens `--g-*`); a slide-shaped glass card with a hairline edge
+  and a travelling highlight (`@property --glass-angle`) and a halo behind it; behind its frost a slide (crumb,
+  title, definition card, lines, image tile) develops from blur to sharp piece by piece (`glass-develop`), a sheen
+  sweeps across, three dots breathe below. When the first slide arrives the glass clears over it (`.glass.leaving`,
+  backdrop blur 28 → 0 px in 1.2 s) and goes. CSS only; `slide.js Glass` + `useGlassExit` (shared). Between slides
+  the previous slide stays; blank is an empty screen (no glass).
+- Titles: a slide always shows its own title (`shownTitle` = `spec.title`), so every part reads the same ("What is
+  dipole moment?" on parts I and II; user 2026-10-06: keep "What is X?", it answers a question). A lone leading
+  definition hides its term when the title names it; otherwise it is a card with its term inside. Definitions after
+  other content are one row of cards where the first of them stands (`trailingDefs` = `composer.trailing_definitions`).
 
 ## Teacher controls
 Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `Space` pause / resume,
@@ -84,7 +91,8 @@ Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, 
 `Enter` (start) and `q` (end). **Pin was removed** (round 5, user 2026-10-06: Pause, Blank and navigating back to a
 slide — which stops following new slides — cover it).
 The buttons are a dock under the preview in the image bar's style: pill groups ‹ n / m › · Pause Blank (on =
-filled; Blank in the warning colour, Pause in blue) · New slide, End lecture on the right. The earlier plain button
+filled; Blank in the warning colour, Pause in the accent green like every other button — blue until the long test
+2026-10-06) · New slide, End lecture on the right. The earlier plain button
 row is removed (the teacher chose the dock).
 - **Pause** (replaces Freeze, user 2026-10-06): `pause` / `resume` commands → the app switches the lifecycle
   LIVE ⇄ PAUSED. While paused the understanding service does not buffer new transcript lines (lines already heard are

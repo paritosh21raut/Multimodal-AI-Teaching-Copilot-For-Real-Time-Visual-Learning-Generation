@@ -82,6 +82,32 @@ Frame of a slide = (topic, facet). Facet = subtopic (or the topic). Titles compa
 - **Provisional fast path**: one keyword teaser on the live list slide, replaced by the refined items; one slide at a
   time; none while a concept boundary is uninterpreted; expires after 20 s; ignored by dedupe and definition pairing.
 
+## V1 long test fixes (user 2026-10-06, session 20261006-193517-c513, 18 min chemical bonding → gas laws)
+- **Term identity** (`composer.same_term`): equal word sets (plurals folded, hyphenated words whole) or an acronym.
+  A qualified term is another concept ("Resonance hybrid" ≠ "Resonance", "Bond dissociation enthalpy" ≠ "Bond
+  enthalpy", "Polar" ≠ "Non-polar covalent bond"); before, `titles_match` (meant for headings) turned them into points
+  of the shorter term. Names in the concept chain compare the same way.
+- **Carried concept**: a piece whose concept comes only from the previous unit (`meta.carried`) goes into a card only
+  when that is unambiguous: one card, short example-like items (≤ 4 words), a formula on the slide, or text naming it
+  (the properties of covalent compounds went into the "Non-polar covalent bond" card, then onto a lonely member slide).
+- **Cards after other content**: a term defined after points / a list is a card below them on the same slide (a row
+  of up to 6), not a part II; not on a "What is X?" slide (another term, another slide). Points naming such a card
+  go into it; one such card also takes what the chain names. Card height calibrated in Edge (180 / 227 / 309 px).
+- **Content**: trees only for classification acts (a labelled explanation is a list with a heading: "Characteristics
+  of ionic compounds"); a one-item "types of" classification is not shown; lines that only say a name is itself are
+  dropped ("Bond angle is also known as Bond Angle", "(also called Bond Angle)", "Known as electron pairs"); a value
+  given as a definition is a fact tile ("1 Debye (SI)"); a revision's "Term (Alias):" prefix is dropped; a new item
+  with only words of an existing one is not added.
+- **Titles**: "What is X?" kept (user); every part shows the slide title; a sentence-case term loses its first
+  capital ("What is dipole moment?"), Title Case stays as said ("What is Boyle's Law?", "What is French Revolution?");
+  the head noun decides is / are ("What is Kinetic Theory of Gases?"). The teacher's title edit changes the title.
+- **Parts** count within the frame's unbroken run of slides (`engine._run`): back at Covalent Bond after Dipole
+  Moment the new run is I, II (was I, then V).
+- **Formulas**: numbered quantities (a count of 1 is never chemistry): "P1V1 = P2V2", "P₁V₁", "P_1V_1" → P₁V₁ = P₂V₂.
+- Old/new replay of 8 recorded lectures (0 tokens): fewer parts in 6 (e.g. 0ddb 46 → 42, c513 33 → 29), no content
+  lost except the intended drops (repeated-name lines, one-item type lists); multitopic 411e found a regression (the
+  discriminant's cases split off) → fixed and tested.
+
 ## Revisions (fragments become complete items)
 `describe()` lists revisable items of the working slide as `[S1] …` (points, notes, steps, facts) and publishes the
 ref map with `SlideContextChanged`; the store keeps it in `slide_refs`; the prompt shows the CURRENT SLIDE; the

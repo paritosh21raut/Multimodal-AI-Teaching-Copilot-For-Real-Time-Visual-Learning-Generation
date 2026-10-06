@@ -18,7 +18,7 @@ import numpy as np
 
 from copilot.visuals import sources
 from copilot.visuals.cache import BadImage, CachedImage, ImageCache, decode
-from copilot.visuals.filters import prior, reject_reason
+from copilot.visuals.filters import core_query, prior, reject_reason
 from copilot.visuals.sources import Candidate
 
 log = logging.getLogger(__name__)
@@ -97,7 +97,7 @@ class ImageFinder:
             kept: list[Candidate] = []
             seen: set[str] = set()
             for cand in cands:
-                why = reject_reason(cand, query, kind)
+                why = reject_reason(cand, cand.meta.get("query") or query, kind)
                 if why is None and cand.title in seen:
                     why = "duplicate"
                 if why:
@@ -154,20 +154,31 @@ class ImageFinder:
         return FindResult(images, "" if images else "no relevant image", rejected=rejected, timings=timings)
 
     async def _candidates(self, c: httpx.AsyncClient, query: str, kind: str, deeper: bool) -> list[Candidate]:
-        commons_q = f"{query} diagram" if kind == "diagram" and "diagram" not in query.lower() else query
+        def for_commons(q: str) -> str:
+            return f"{q} diagram" if kind == "diagram" and "diagram" not in q.lower() else q
         n = self.s.max_candidates
+        core = core_query(query)
         if deeper:  # past the first page; the Wikipedia lead images were offered already
-            jobs = [sources.commons_search(c, commons_q, limit=n, offset=n)]
+            jobs = [sources.commons_search(c, for_commons(query), limit=n, offset=n)]
         else:
-            jobs = [sources.wikipedia_lead_images(c, query), sources.commons_search(c, commons_q, limit=n)]
+            jobs = [sources.wikipedia_lead_images(c, query), sources.commons_search(c, for_commons(query), limit=n)]
+        searched = [query] * len(jobs)
+        if core and not deeper:
+            # the thing the query is about, too ("sigma bond" for "sigma bond orbital overlap"): Commons search is
+            # literal and the long phrase found 1-4 files (long test 2026-10-06: 12 of 25 searches found nothing)
+            jobs += [sources.wikipedia_lead_images(c, core), sources.commons_search(c, for_commons(core), limit=n)]
+            searched += [core, core]
         if self.s.openverse:
             jobs.append(sources.openverse_search(c, query, page=2 if deeper else 1))
+            searched.append(query)
         results = await asyncio.gather(*jobs, return_exceptions=True)
         lists: list[list[Candidate]] = []
-        for r in results:
+        for r, q in zip(results, searched):
             if isinstance(r, BaseException):
                 log.info("image source failed: %r", r)
                 continue
+            for cand in r:
+                cand.meta["query"] = q  # judged against what it was found for; CLIP against the slide's query
             lists.append(r)
         if not lists and results:
             raise httpx.NetworkError("every image source failed")

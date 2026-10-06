@@ -43,4 +43,4 @@
 - Keep every doc short. Prefer tables and lists over prose.
 
 ## Cost
-- No paid APIs or tools. No Gemini. Free tiers (Groq, OpenRouter free models) and local models only.
+- No paid APIs or tools. No Gemini. Free tiers (Groq) and local models only. (OpenRouter removed 2026-10-06, user: its free model answered 404.)

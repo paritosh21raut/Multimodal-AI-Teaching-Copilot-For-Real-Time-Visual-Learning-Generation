@@ -1,6 +1,6 @@
 // /display — the projector view. Shows only the live slide; no controls, no chrome.
 import { html, render, useEffect, useReducer, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
-import { Slide, ZoomedImage, imageOf, useStageScale } from "../shared/slide.js";
+import { Glass, Slide, ZoomedImage, imageOf, useGlassExit, useStageScale } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
 
 const SLIDE_MS = 380;
@@ -73,45 +73,6 @@ function App() {
   </div>`;
 }
 
-// The glass stays a moment after the first slide arrives and clears over it (the slide comes into focus);
-// Blank removes it at once (blank is empty).
-const GLASS_EXIT_MS = 1250;
-function useGlassExit(waiting, blank) {
-  const [phase, setPhase] = useState(waiting ? "on" : null);
-  useEffect(() => {
-    if (waiting) { setPhase("on"); return undefined; }
-    if (blank) { setPhase(null); return undefined; }
-    setPhase((p) => (p ? "leaving" : null));
-    const t = setTimeout(() => setPhase(null), GLASS_EXIT_MS);
-    return () => clearTimeout(t);
-  }, [waiting, blank]);
-  return phase;
-}
-
-// Before the first slide (user 2026-10-06, round 5: "create anticipation that something is coming", like an image
-// being generated): no text; a slide-shaped glass card with a light running around its edge; inside it the outline
-// of a slide (crumb, title, lines, picture) is drawn piece by piece with a shimmer, a scan line passes, sparks rise;
-// light drifts behind. Only here: between slides the previous slide stays on screen.
-function Glass({ leaving }) {
-  return html`<div class=${"glass" + (leaving ? " leaving" : "")} aria-hidden="true">
-    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span>
-    <div class="card">
-      <span class="ring"></span><span class="ring glow"></span>
-      <div class="pane">
-        <div class="skeleton">
-          <span class="sk sk-crumb"></span>
-          <span class="sk title"></span>
-          <div class="sk-body">
-            <div class="sk-lines"><span class="sk line l1"></span><span class="sk line l2"></span>
-              <span class="sk line l3"></span><span class="sk line l4"></span></div>
-            <span class="sk picture"></span>
-          </div>
-        </div>
-        <span class="scan"></span>
-        ${[1, 2, 3, 4, 5, 6].map((i) => html`<span key=${i} class=${`spark s${i}`}></span>`)}
-      </div>
-    </div>
-  </div>`;
-}
-
+// Before the first slide: slide.js Glass (only here and in the /control preview; between slides the previous slide
+// stays on screen).
 render(html`<${App} />`, document.getElementById("root"));

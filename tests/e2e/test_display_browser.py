@@ -92,20 +92,23 @@ async def test_first_slide_is_awaited_behind_glass_without_text():
     """User 2026-10-06: before the first slide the projector must not look frozen, and no "preparing" text:
     something moves behind a glass pane. Between slides nothing is shown (the previous slide stays)."""
     async with display_harness() as h, browser_page(f"{h.url}/display") as page:
-        await page.wait_for_selector(".glass .blob", timeout=5000)
-        moving = await page.evaluate("""() => [...document.querySelectorAll('.glass .blob')]
+        await page.wait_for_selector(".glass .au", timeout=5000)
+        moving = await page.evaluate("""() => [...document.querySelectorAll('.glass .au')]
             .map(b => getComputedStyle(b).animationName).filter(n => n && n !== 'none').length""")
         assert moving >= 2
         assert (await page.inner_text(".viewport")).strip() == ""   # no words on the projector
-        # round 5 (user 2026-10-06): anticipation, like an image being generated: light runs around a slide-shaped
-        # glass card, and a slide's outline (crumb, title, lines, picture) is drawn inside it piece by piece
+        # round 5 + long test 2026-10-06 ("topic content and an image loading behind a glass, more premium"): a
+        # slide (crumb, title, definition card, lines, image tile) develops from blur to sharp behind a frosted glass
+        # card whose edge carries a travelling highlight
         drawn = await page.evaluate("""() => ({
-            ring: getComputedStyle(document.querySelector('.glass .ring')).animationName,
-            pieces: [...document.querySelectorAll('.glass .sk')].filter(e => getComputedStyle(e).animationName
-                .includes('glass-build')).length,
+            edge: getComputedStyle(document.querySelector('.glass .edge')).animationName,
+            pieces: [...document.querySelectorAll('.glass .pc')].filter(e => getComputedStyle(e).animationName
+                .includes('glass-develop')).length,
+            frost: getComputedStyle(document.querySelector('.glass .frost')).backdropFilter,
             card: document.querySelector('.glass .card').getBoundingClientRect().width })""")
-        assert drawn["ring"] == "glass-spin" and drawn["pieces"] >= 6 and drawn["card"] > 0
-        await page.wait_for_timeout(1800)  # a few pieces drawn
+        assert drawn["edge"] == "glass-spin" and drawn["pieces"] >= 6 and "blur" in drawn["frost"]
+        assert drawn["card"] > 0
+        await page.wait_for_timeout(2600)  # a few pieces developed
         await page.screenshot(path=str(ART / "display_first_slide_glass.png"))
         await h.deck.add(points("a", ["alpha"]))
         await h.settle()
@@ -119,6 +122,26 @@ async def test_first_slide_is_awaited_behind_glass_without_text():
         await page.wait_for_function("() => document.querySelectorAll('.slide').length === 0", timeout=3000)
         assert await page.query_selector(".glass") is None
         assert page.errors == []
+
+
+async def test_glass_in_the_dark_theme_and_in_the_control_preview():
+    """Long test 2026-10-06: the same glass in /control at the start; both themes look right (screenshots looked at)."""
+    async with display_harness("dark") as h:
+        async with browser_page(f"{h.url}/display") as page:
+            await page.wait_for_selector(".glass .pc", timeout=5000)
+            await page.wait_for_timeout(2600)
+            await page.screenshot(path=str(ART / "display_first_slide_glass_dark.png"))
+            assert page.errors == []
+        async with browser_page(f"{h.url}/control", 1600, 1000) as control:
+            await control.wait_for_selector(".preview .glass .pc", timeout=5000)
+            assert "No slide yet" not in await control.inner_text(".preview")
+            await control.wait_for_timeout(2000)
+            await control.screenshot(path=str(ART / "control_first_slide_glass_dark.png"))
+            await h.deck.add(points("a", ["alpha"]))
+            await h.settle()
+            await wait_for_slide(control, "a")
+            await control.wait_for_selector(".preview .glass", state="detached", timeout=3000)
+            assert control.errors == []
 
 
 async def test_blank_and_navigation_on_projector():

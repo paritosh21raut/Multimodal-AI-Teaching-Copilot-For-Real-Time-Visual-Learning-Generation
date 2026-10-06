@@ -66,11 +66,54 @@ def test_seal_and_boundaries_make_separate_units_in_order():
     assert b.empty and not b.cut_pending
 
 
+LONG_TEST = [  # session 20261006-193517-c513, (text, start, end, ConceptSignal.boundary)
+    ("Electron pairs are known as", 187.74, 190.24, False),
+    ("I am FIPS.", 190.53, 191.68, True),
+    ("Luntis, sorry.", 192.51, 194.4, True),
+    ("types of covalent bond, non-polar covalent bond. If the covalent bond is formed between two homonuclear "
+     "atoms, that is between atoms of exactly equal electronegativity, e.g. H2Cl2 etc.", 196.45, 211.17, True),
+    ("bond length increases with increase in the size of bonded atoms and decrease with increase in the number of "
+     "bonds between bonded atoms", 284.0, 292.64, False),
+    ("burning", 294.05, 294.98, True),
+    ("in a covalently bonded molecule.", 295.68, 297.79, False),
+    ("having more than two atoms the bonds form an angle with each other", 298.05, 302.78, False),
+    ("which is known as Born-Angle", 303.07, 305.09, True),
+    ("In general, an increase in the size of central bond or central atom decreases the bond angle.", 305.34,
+     311.39, False),
+]
+
+
+def units(b: DiscourseBuffer) -> list[list[str]]:
+    out = []
+    while not b.empty:
+        out.append([l.text.split()[0] for l in b.take(600)])
+    return out
+
+
+def test_no_unit_ends_inside_a_sentence_or_as_a_lone_scrap():
+    """Long test 2026-10-06: every concept boundary was a separate request, 8 s apart: "burning", "I am FIPS.",
+    "which is known as Born-Angle" (the end of the previous sentence) each waited for a call of their own and the
+    lines queued up (median 11 s, worst 37 s from speech to request). A boundary now cuts only after a finished
+    sentence, and a unit of a few words joins the next one."""
+    b = DiscourseBuffer(min_unit_words=6, whole_sentences=True)
+    for i, (text, start, end, boundary) in enumerate(LONG_TEST):
+        b.add(line(i, text, start, end), boundary=boundary)
+    assert units(b) == [["Electron", "I"],                       # "known as" / "I am FIPS." stay together
+                        ["Luntis,", "types", "bond", "burning", "in", "having", "which", "In"]]
+
+
+def test_fragment_rules_are_off_by_default():
+    b = DiscourseBuffer()
+    for i, (text, start, end, boundary) in enumerate(LONG_TEST[:4]):
+        b.add(line(i, text, start, end), boundary=boundary)
+    assert units(b) == [["Electron"], ["I"], ["Luntis,"], ["types"]]
+
+
 def test_random_add_seal_take_preserves_order():
     import random
     rnd = random.Random(7)
-    for _ in range(300):
-        b, taken, n = DiscourseBuffer(), [], 0
+    for k in range(300):
+        b, taken, n = (DiscourseBuffer() if k % 2 else DiscourseBuffer(min_unit_words=6, whole_sentences=True)), [], 0
         for _ in range(40):
             r = rnd.random()
             if r < 0.5:

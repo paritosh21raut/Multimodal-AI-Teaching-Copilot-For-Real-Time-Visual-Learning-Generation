@@ -1,7 +1,8 @@
 # Current State
 
-_Last updated: 2026-10-06 (late evening): **V1b verify round 5 done** (5 user issues + formula sets; next: the user's
-long lecture test, then V2). Before: **V1b verify round 4, step D (features) done** + the user's design notes on the
+_Last updated: 2026-10-06 (night): **V1 long-test fixes done** (session 20261006-193517-c513; speed, lost content,
+content relations, titles/parts, images, glass loader, pause colour, OpenRouter removed). Next: the user's check /
+declare V1 complete; V2 not started. Before: **V1b verify round 5 done** (5 user issues + formula sets). Before: **V1b verify round 4, step D (features) done** + the user's design notes on the
 step-C test (definition card, End lecture icon, classification as one tree, note card); steps A (correctness), B
 (hierarchy + layouts) and C (UI) before it, after the user's
 12–15 min multi-topic live test (session 20261006-112149-411e, fixture `tests/fixtures/lectures/multitopic_live.txt`).
@@ -12,8 +13,34 @@ viewer role, control token; live slide editing; lecture structure tree in /contr
 Then V1c._
 
 ## Now
-- **NEXT SESSION: the user's long lecture test** → fix what it shows (same flow: `verify_results/` → reproduce with
-  0 tokens → ask doubts as text → root-cause fixes with failing-first tests → runtime-verify → docs) → then V2.
+- **NEXT SESSION:** the user checks the long-test fixes (a real lecture with a gpt-oss key that has quota) and
+  decides whether V1 is complete. Do NOT start V2 before that (user 2026-10-06).
+- **V1 long-test fixes (2026-10-06 night), user's 18 min test session 20261006-193517-c513** (chemical bonding →
+  gas laws; all gpt-oss keys were spent before it, so it ran on the qwen backup). LLM tokens: 29,352 (prompt A/B,
+  gpt-oss-120b, `GROQ_API_KEY_6`). User answers: keep "What is X?" titles, cards on the same slide ok, prompt test
+  ok, remove OpenRouter completely, loader in both themes, no automatic comparison slide in V1.
+  - Speed: lines waited a median 11 s (worst 37 s) before a request; the model answers in 1.3 s. Cause: every concept
+    boundary was its own request 8 s apart (scraps, half sentences). Now cuts only after a finished sentence and
+    scraps (< 6 words) join the next unit: simulated 9.5 → 5.3 s median, worst 44 → 18 s, 107 → 83 requests.
+  - Lost content: 7 units fell back ("skipped (tpm)"); the router now waits for the first entry that frees up within
+    the deadline. OpenRouter removed (config, order, docs).
+  - Content relations, titles, parts, formulas: F-005 § "V1 long test fixes" (term identity, carried concept, cards
+    after content, property lists, repeated-name lines, value facts, subsumed points, title casing, part runs,
+    numbered variables). Replay of the lecture: 33 → 29 slides; Resonance, Intermolecular forces, Molecular
+    velocities one slide each; polar / non-polar as two cards; Covalent Bond revisit I, II.
+  - Images: core-phrase search + most-words match for long queries + diagrams up to aspect 2.5: the 16 failed
+    queries → 9 found (7 clearly relevant).
+  - Prompt: named-subtopic rule A/B'd (29,352 tokens): on gpt-oss the old prompt already named Fajan's rules,
+    Gay-Lussac's law, valence bond theory → rule off; the mis-filing was the qwen backup.
+  - UI: Pause in the accent green; new loader (aurora, glass card, slide developing behind frost) in light + dark,
+    also in the /control preview.
+  - Verified: 460 fast + 21 Edge tests (new: `test_long_test_fixes.py` 17 tests, gate 2, router 3, finder 2 — all fail
+    on the old src except 2 controls); requirement changes in 3 old tests (title edit edits the title; pause green;
+    glass design). Old/new replay of 8 lectures: fewer parts in 6, no content lost except intended drops; one
+    regression found (discriminant cases, 411e) and fixed. Screenshots inspected (replay, glass light/dark, control).
+  - Not verified live: a real lecture with the new gate/router (unit-tested + simulated on the recorded session).
+  - Process slips: two shell edits (router dedent script, one `sed` line in `tools/prompt_ab.py`) instead of the Edit
+    tool.
 - **V1b verify round 5 (2026-10-06 evening), user's live test session 20261006-172934-8aa4** (atoms, digestive
   system, kinematics, long pause). LLM tokens: 8,510 (one accidental real-LLM run of `tools/screenshot_app.py`,
   gpt-oss-120b on `GROQ_API_KEY_5`; every check was meant to be 0 tokens). User answers before coding: 1 ok,
