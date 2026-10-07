@@ -15,7 +15,7 @@ from typing import Any, Optional, Protocol, Sequence
 import numpy as np
 
 from copilot.core.bus import EventBus
-from copilot.core.events import CommandReceived, DeckState, Event, NotesState, SlidePatch
+from copilot.core.events import CommandReceived, DeckState, Event, NotesProjected, NotesState, SlidePatch
 from copilot.notes.library import NotesLibrary
 
 log = logging.getLogger(__name__)
@@ -114,6 +114,8 @@ class NotesService:
         self._held_for: Optional[str] = None  # a page turned by hand on this live slide: no automatic move
         self._last_text = ""
         self._lock = asyncio.Lock()
+        self.projecting = False  # the open page is on the projector (F-010b, the teacher's toggle)
+        self._shown: tuple = (False, "", 0)
 
     def attach(self) -> None:
         self._bus.subscribe("notes", self._on_event, [CommandReceived, DeckState, SlidePatch])
@@ -123,17 +125,26 @@ class NotesService:
 
     async def announce(self) -> None:
         await self._bus.publish(self.state())
+        doc = self.library.get(self.open_id) if self.open_id else None
+        if doc is None:
+            self.projecting = False
+        shown = (self.projecting, doc.id if doc and self.projecting else "", self.page if self.projecting else 0)
+        if shown != self._shown:  # the projector follows the page turns while it shows the notes
+            self._shown = shown
+            await self._bus.publish(NotesProjected(on=shown[0], doc_id=shown[1], page=shown[2],
+                                                   name=doc.name if doc and self.projecting else ""))
 
     def state(self) -> NotesState:
         doc = self.library.get(self.open_id) if self.open_id else None
         reason = self.reason
         if doc is not None and not doc.has_text:
-            reason = "This PDF has no text (a scan?): turn the pages yourself"
+            reason = ("A picture has no text to follow the lecture with" if doc.kind == "image"
+                      else "This file has no text (a scan?): turn the pages yourself")
         elif self.embedder is None:
             reason = "Following the lecture needs the matching model (still loading or off)"
         return NotesState(docs=[asdict(d) for d in self.library.docs()], open=doc.id if doc else "",
                           page=self.page if doc else 0, pages=doc.pages if doc else 0, follow=self.follow,
-                          reason=reason, matched=self.matched)
+                          reason=reason, matched=self.matched, projecting=self.projecting and doc is not None)
 
     # ---- events ------------------------------------------------------------------------------
     async def _on_event(self, event: Event) -> None:
@@ -175,6 +186,8 @@ class NotesService:
             self._last_text = ""
             if self.follow:
                 await self._follow(announce=False)
+        elif kind == "notes_project":  # the open page on the projector, until turned off (F-010b)
+            self.projecting = bool(args.get("on")) and bool(self.open_id)
         elif kind == "notes_remove":
             removed = await asyncio.to_thread(self.library.remove, str(args.get("id", "")))
             if removed and args.get("id") == self.open_id:
@@ -186,7 +199,9 @@ class NotesService:
 
     # ---- following the lecture ---------------------------------------------------------------
     async def _follow(self, announce: bool = True) -> None:
-        if not (self.follow and self.open_id and self.embedder is not None) or self._held_for == self._live:
+        # while the page is on the projector only the teacher turns it (the class reads it)
+        if not (self.follow and self.open_id and self.embedder is not None) or self._held_for == self._live \
+                or self.projecting:
             return
         spec = self._slides.get(self._live)
         text = slide_text(spec) if spec else ""

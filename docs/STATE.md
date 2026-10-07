@@ -1,7 +1,8 @@
 # Current State
 
-_Last updated: 2026-10-07 (evening): **V2 group B done** (lecture materials + past lectures, F-010); next group C
-(quiz + test). Before: 2026-10-07: **V2 group A done** (themes, teacher notes, labelled images). Before:
+_Last updated: 2026-10-07 (night): **group B review fixes done** (15 issues, F-010b, 0 LLM tokens); next group C
+(quiz + test, F-011: ask its doubts first), then group D (F-012). Before: 2026-10-07 (evening): **V2 group B done**
+(lecture materials + past lectures, F-010). Before: 2026-10-07: **V2 group A done** (themes, teacher notes, labelled images). Before:
 2026-10-06 (night): **V1 long-test fixes done** (session 20261006-193517-c513; speed, lost content,
 content relations, titles/parts, images, glass loader, pause colour, OpenRouter removed). Next: the user's check /
 declare V1 complete; V2 not started. Before: **V1b verify round 5 done** (5 user issues + formula sets). Before: **V1b verify round 4, step D (features) done** + the user's design notes on the
@@ -17,7 +18,53 @@ Then V1c._
 ## Now
 - **V2 started (2026-10-07).** Plan agreed with the user: ROADMAP § V2 (groups A → B → C → D; every output only when
   the teacher asks; V1c after V2). **Next: group C** (quiz + test through the share link) — ask its doubts first, then
-  spec `F-011`.
+  spec `F-011`; then group D (reference materials). Group B committed by the user after the full re-run
+  (501 fast, 26 Edge, 7 slow, all passed).
+- **Group B review fixes done (2026-10-07 night), 0 LLM tokens** (spec `docs/specs/F-010b-review-fixes.md`).
+  - **Built:** Start card in /control at READY (chapter picker / new chapter + Start; Enter still works; a
+    `--simulate` run stays Unsorted); `materials/chapters.py` ChapterBook (`data/chapters.json`, number = position)
+    + commands `chapter_create/rename/move/delete`, `lecture_move`; Lectures tab: search (`/api/lectures/search`,
+    titles + slide content, never the transcript; a hit opens the viewer at its slide), sort Date / Name ↑↓,
+    chapter groups (drag lectures in, drag chapters to renumber, rename, delete with a warning → Unsorted), the
+    running lecture listed with "now"; Materials: tiles toggle themselves (corner check), From = This lecture /
+    Pick lectures / Pick chapters (resolved by the service); My notes: any file (`notes/convert.py`: Word / PowerPoint
+    via Office COM `office_to_pdf.ps1`, text / Markdown via Edge, images via Pillow) + web links (Edge PDF snapshot,
+    Open original) + **Project** (`notes_project` → `NotesProjected` → display / students; only the shown page is
+    served to non-teachers; the lecture never turns a projected page; Esc / Back to slide); styled tooltip (titles →
+    `aria-label` + `data-tip`), thin scroll bars, no notes fade + preloaded neighbours, "Lecture structure" tab, books
+    icon, no token counts in /control, assignment without Name / Roll no. / Date, no "or drop one" on the image bar,
+    notes panel back to default width when the note is removed.
+  - **Found + fixed on the way:** the Lectures list never showed the running lecture when opened early (log not yet
+    written: reloads while it is missing); the start card covered the preview in the harness (only at READY now);
+    "Lecture structure" made the tab row overflow (icons-only below 600 px); notes image collapsed without mistake
+    cards; projected page cropped on /display; checklist tick invisible (same colour as its box).
+  - Verified: 513 fast (+ `test_chapters` 5, `test_notes_files` 6 + 1 slow with real Word + PowerPoint, 1 new in
+    `test_materials`), 28 Edge (+ `test_review_fixes_browser` 2), 8 slow. Browser-test selectors moved from `[title=…]`
+    to `[aria-label=…]` (#11), "Add PDF" → "Add a file" / "Add notes", the past-lecture click skips the "now" row,
+    "or drop one" now asserted absent (#10). Real app (`--simulate --demo-slides --no-understanding`, 0 tokens):
+    Start from /control in 0.2 s without Enter; .md 1.3 s, .rtf via Word 4.4 s, Wikipedia link 14.3 s (33 pages);
+    projected page 2 on /display; search "chlorophyll" over the real archive (87 lectures) → 22; no page errors;
+    screenshots `artifacts/review_b/` looked at. The notes added in that run were removed again.
+  - Not verified: a real `.docx` / `.pptx` file from the teacher (Word / PowerPoint conversion ran on .rtf / a
+    python-pptx file); drag & drop of a link from another browser window (the field and the drop handler are
+    the same path; Playwright drags only within a page).
+- **User review of group B (2026-10-07)** — all 15 fixed (above):
+  1. Materials + Lectures tabs: list items' font too bold.
+  2. First tab label "Structure" → "Lecture structure".
+  3. Lectures tab: a search bar (find a lecture / its slides).
+  4. Lectures grouped in **chapters** (Chapter 1 "name" → its lectures/slides); teacher renames chapters, creates a new
+     chapter or picks an existing one and starts the lecture in it; sort ascending / descending by name or date.
+  5. Materials: no tick boxes — select the tile itself (or something better).
+  6. Deleting the notes PDF while the side panel is widened: the panel goes back to its default width.
+  7. Materials from past lectures + "whole chapter" (all lectures of the selected chapter, including the current one).
+  8. Assignment PDF: remove the Name / Roll no. / Date lines.
+  9. Do not show token usage ("1.4k tokens") in /control.
+  10. Remove "or drop one" beside Add image (preview image bar) and wherever else it appears.
+  11. Hover tooltips (native `title`) look ugly: a styled tooltip.
+  12. Turning pages in My notes blinks: no fade, natural page change.
+  13. Scroll bars ugly: styled thin scroll bars (both themes).
+  14. My notes: the teacher can add any file (not only PDF) and drag & drop websites (links) to read.
+  15. Lectures tab icon: a better one.
 - **V2 group B done (2026-10-07 evening)** (spec `docs/specs/F-010-lecture-tools-archive.md`). User answers: summary =
   a slide, teacher picks this topic (short) or whole lecture (complete), when they want; notes "all at once from what
   I teach" (= written explanations from the slides + transcript, with the slides' own content and key concepts);

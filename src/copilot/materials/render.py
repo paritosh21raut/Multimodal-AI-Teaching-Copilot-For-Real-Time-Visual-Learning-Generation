@@ -192,7 +192,7 @@ def assignment_html(title: str, lectures: Sequence[Lecture], questions: Sequence
                      f'<ol>{"".join(items)}</ol></section>')
     head = (f'<header class="doc-head"><div class="kicker">Assignment</div><h1>{rich(title)}</h1>'
             f'<div class="meta">{len(questions)} questions · {total} marks{f" · {html.escape(dates)}" if dates else ""}'
-            f'</div></header><div class="student"><span>Name</span><span>Roll no.</span><span>Date</span></div>'
+            f'</div></header>'  # no Name / Roll no. / Date lines (user 2026-10-07)
             f'<p class="instructions">Answer all questions. Write in your own words.</p>')
     return _page(title, head + "".join(parts))
 
@@ -249,8 +249,6 @@ figcaption span { display: block; font-size: 7pt; }
 dt { font-weight: 700; color: #0e6e66; }
 dd { margin: 0; }
 .small { font-size: 9pt; color: #6b7380; }
-.student { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 6mm; margin: 0 0 5mm; }
-.student span { border-bottom: 1px solid #9aa1ab; padding: 5mm 0 1mm; color: #6b7380; font-size: 9pt; }
 .instructions { color: #3d444d; font-style: italic; }
 .qs h2 span { font-size: 9.5pt; color: #6b7380; font-weight: 500; margin-left: 2mm; }
 .qs ol { padding-left: 8mm; }

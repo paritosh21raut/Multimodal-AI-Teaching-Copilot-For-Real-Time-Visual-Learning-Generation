@@ -22,6 +22,7 @@ from copilot.display.hub import Connection, DisplayHub
 
 if TYPE_CHECKING:
     from copilot.materials.archive import LectureArchive
+    from copilot.materials.chapters import ChapterBook
     from copilot.materials.store import MaterialStore
     from copilot.notes.library import NotesLibrary
     from copilot.visuals.cache import ImageCache
@@ -123,7 +124,7 @@ def is_local(client_host: Optional[str], headers) -> bool:
 def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
                upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None,
                notes: Optional["NotesLibrary"] = None, archive: Optional["LectureArchive"] = None,
-               materials: Optional["MaterialStore"] = None) -> FastAPI:
+               materials: Optional["MaterialStore"] = None, chapters: Optional["ChapterBook"] = None) -> FastAPI:
     """control_key: the teacher key for /control, /display, uploads and commands from outside this machine
     (None = no check, the in-process test harness). archive / materials: past lectures and the materials made
     from them (F-010)."""
@@ -177,15 +178,19 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
 
     @app.post("/api/notes")
     async def notes_upload(request: Request):
-        """The teacher's notes (PDF, F-009): stored on this laptop under data/notes; opening it is the
-        `notes_open` command. Teacher only; never served to students."""
+        """The teacher's notes (F-009; any file F-010b: PDF, Word, PowerPoint, text, image → PDF): stored on this
+        laptop under data/notes; opening it is the `notes_open` command. Teacher only; never served to students."""
         if not trusted(request):
             return JSONResponse({"error": "teacher only"}, status_code=403)
         if notes is None:
             return JSONResponse({"error": "notes are not available"}, status_code=503)
-        if request.headers.get("content-type", "").split(";")[0].strip().lower() != "application/pdf":
-            return JSONResponse({"error": "use a PDF file"}, status_code=415)
-        too_big = JSONResponse({"error": f"PDF larger than {NOTES_MAX_BYTES // (1024 * 1024)} MB"}, status_code=413)
+        from copilot.notes.convert import kind_of, to_pdf
+        from copilot.notes.library import BadNotes
+
+        name = urllib.parse.unquote(request.headers.get("x-file-name", ""))[:120]
+        if kind_of(name) is None:
+            return JSONResponse({"error": "use a PDF, Word, PowerPoint, text or image file"}, status_code=415)
+        too_big = JSONResponse({"error": f"file larger than {NOTES_MAX_BYTES // (1024 * 1024)} MB"}, status_code=413)
         if int(request.headers.get("content-length") or 0) > NOTES_MAX_BYTES:
             return too_big
         data = bytearray()
@@ -193,14 +198,45 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
             data += chunk
             if len(data) > NOTES_MAX_BYTES:
                 return too_big
-        from copilot.notes.library import BadNotes
-
-        name = urllib.parse.unquote(request.headers.get("x-file-name", ""))[:120]
         try:
-            doc = await asyncio.to_thread(notes.add, bytes(data), name)
+            pdf, kind = await to_pdf(bytes(data), name)
+            doc = await asyncio.to_thread(notes.add, pdf, name, kind)
         except BadNotes as e:
             return JSONResponse({"error": str(e)}, status_code=422)
         return JSONResponse({"id": doc.id, "name": doc.name, "pages": doc.pages, "has_text": doc.has_text})
+
+    @app.post("/api/notes/link")
+    async def notes_link(request: Request):
+        """A web page the teacher dropped (F-010b): saved as a PDF snapshot by headless Edge, kept with its link."""
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
+        if notes is None:
+            return JSONResponse({"error": "notes are not available"}, status_code=503)
+        from copilot.notes.convert import clean_url, web_pdf
+        from copilot.notes.library import BadNotes
+
+        try:
+            url = clean_url(str((await request.json()).get("url", "")))
+            pdf, title = await web_pdf(url)
+            name = title or urllib.parse.urlsplit(url).netloc
+            doc = await asyncio.to_thread(notes.add, pdf, name, "web", url)
+        except BadNotes as e:
+            return JSONResponse({"error": str(e)}, status_code=422)
+        except ValueError:
+            return JSONResponse({"error": "send {\"url\": ...}"}, status_code=400)
+        return JSONResponse({"id": doc.id, "name": doc.name, "pages": doc.pages, "has_text": doc.has_text})
+
+    @app.get("/api/notes/shown/{doc_id}/{page}")
+    async def notes_shown(doc_id: str, page: int, w: int = 1920):
+        """The notes page the teacher puts on the projector (F-010b): served to the display and the students only
+        while it is the one shown; any other page of the teacher's notes stays private."""
+        shown = hub.notes_shown
+        if notes is None or not (shown.get("on") and shown.get("doc_id") == doc_id and shown.get("page") == page):
+            return Response(status_code=403)
+        path = await asyncio.to_thread(notes.render, doc_id, page, w)
+        if path is None:
+            return Response(status_code=404)
+        return FileResponse(path, media_type="image/png", headers={"Cache-Control": "no-store"})
 
     @app.get("/api/notes/{doc_id}/page/{page}")
     async def notes_page(request: Request, doc_id: str, page: int, w: int = 720):
@@ -217,15 +253,34 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
     def _made_from(lecture_id: str) -> list[dict]:
         return [m.public() for m in materials.items() if lecture_id in m.lectures] if materials else []
 
+    def _all_lectures() -> list:
+        """The running lecture (when it has slides) + the past ones, newest first."""
+        now = archive.current() if archive is not None else None
+        return ([now] if now is not None else []) + (archive.lectures() if archive is not None else [])
+
     @app.get("/api/lectures")
     async def lectures(request: Request):
         if not trusted(request):
             return JSONResponse({"error": "teacher only"}, status_code=403)
         if archive is None:
             return JSONResponse({"lectures": []})
-        records = await asyncio.to_thread(archive.lectures)
-        return JSONResponse({"lectures": [{**r.summary(), "materials": len(_made_from(r.id))} for r in records]},
+        records = await asyncio.to_thread(_all_lectures)
+        return JSONResponse({"lectures": [{**r.summary(), "materials": len(_made_from(r.id)),
+                                           "chapter": chapters.chapter_of(r.id) if chapters is not None else "",
+                                           "current": r.id == archive.current_id} for r in records]},
                             headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/lectures/search")
+    async def lectures_search(request: Request, q: str = ""):
+        """F-010b: words in lecture titles, slide titles and slide content (never the transcript)."""
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
+        if archive is None or not q.strip():
+            return JSONResponse({"results": []})
+        from copilot.materials.archive import search
+
+        records = await asyncio.to_thread(_all_lectures)
+        return JSONResponse({"results": search(records, q[:200])}, headers={"Cache-Control": "no-store"})
 
     @app.get("/api/lectures/{lecture_id}")
     async def lecture(request: Request, lecture_id: str):
@@ -348,11 +403,12 @@ class DisplayServer:
                  web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
                  upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None,
                  notes: Optional["NotesLibrary"] = None, archive: Optional["LectureArchive"] = None,
-                 materials: Optional["MaterialStore"] = None) -> None:
+                 materials: Optional["MaterialStore"] = None, chapters: Optional["ChapterBook"] = None) -> None:
         self.host, self.port = host, port
         self.control_key = control_key
         self._server = _EmbeddedServer(
-            uvicorn.Config(create_app(hub, web_root, media, upload_max_bytes, control_key, notes, archive, materials),
+            uvicorn.Config(create_app(hub, web_root, media, upload_max_bytes, control_key, notes, archive, materials,
+                                      chapters),
                            host=host, port=port, log_level="warning", lifespan="off")
         )
         self._task: Optional[asyncio.Task] = None

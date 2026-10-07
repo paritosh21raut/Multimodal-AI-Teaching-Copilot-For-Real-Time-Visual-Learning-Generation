@@ -87,9 +87,9 @@ async def test_teacher_image_controls_and_layout(tmp_path):
         async with browser_page(f"{h.url}/control", 1600, 1000) as control, browser_page(f"{h.url}/display") as display:
             await wait_for_slide(control, sid)
             await wait_for_slide(display, sid)
-            # no image yet: "Find image" + "Add image" (and a small "or drop one") float on the preview
+            # no image yet: "Find image" + "Add image" float on the preview ("or drop one" removed: user 2026-10-07)
             bar = await control.inner_text(".preview .image-bar")
-            assert "Find image" in bar and "Add image" in bar and "drop" in bar and "Change" not in bar
+            assert "Find image" in bar and "Add image" in bar and "drop" not in bar and "Change" not in bar
             await control.screenshot(path=str(ART / "images_control_empty.png"))
 
             # 0. Find image: a search for the slide's topic; nothing relevant → a short note, the slide stays as it was
@@ -108,14 +108,15 @@ async def test_teacher_image_controls_and_layout(tmp_path):
 
             # the teacher controls (dock): slide position, Blank toggles on and off (Pin removed, user 2026-10-06)
             assert (await control.inner_text(".dock .count")).strip() == "1 / 1"
-            assert await control.query_selector(".dock button[title^='Pin']") is None
-            await control.click(".dock button[title='Blank (B)']")
-            await control.wait_for_selector(".dock button.on[title='Blank (B)']")
+            # (F-010b: the hover text is the button's aria-label + styled tooltip, not a native title)
+            assert await control.query_selector(".dock button[aria-label^='Pin']") is None
+            await control.click(".dock button[aria-label='Blank (B)']")
+            await control.wait_for_selector(".dock button.on[aria-label='Blank (B)']")
             assert h.deck.blank
             await control.mouse.move(5, 5)
             await control.wait_for_timeout(300)  # colour transition
             await control.screenshot(path=str(ART / "control_dock_blank.png"))
-            await control.click(".dock button[title='Blank (B)']")
+            await control.click(".dock button[aria-label='Blank (B)']")
             await control.wait_for_selector(".dock button.on", state="detached")
             assert not h.deck.blank
 
@@ -151,7 +152,7 @@ async def test_teacher_image_controls_and_layout(tmp_path):
             assert next(b for b in h.deck.get(sid).blocks if b.type == "image").origin == "teacher"
 
             # 4. Remove image → the slide goes back to the normal layout
-            await control.click(".image-bar button[title='Take the image off this slide']")
+            await control.click(".image-bar button[aria-label='Take the image off this slide']")
             await display.wait_for_function("() => !document.querySelector('.slide .figure')")
             assert not any(b.type == "image" for b in h.deck.get(sid).blocks)
 
@@ -182,12 +183,12 @@ async def test_teacher_image_controls_and_layout(tmp_path):
 
             # 7. previous / next: every image this slide showed (dropped, auto, changed, picked) = 4
             await control.wait_for_function("() => document.querySelector('.image-bar .count')?.textContent.trim() === '4 / 4'")
-            await control.click(".image-bar button[title='Previous image']")
+            await control.click(".image-bar button[aria-label='Previous image']")
             await display.wait_for_function(f"() => document.querySelector('.slide .figure img')?.getAttribute('src') === '{auto[1].url}'")
             await control.wait_for_function("() => document.querySelector('.image-bar .count')?.textContent.trim() === '3 / 4'")
-            await control.click(".image-bar button[title='Next image']")
+            await control.click(".image-bar button[aria-label='Next image']")
             await display.wait_for_function(f"() => document.querySelector('.slide .figure img')?.getAttribute('src') === '{picked_src}'")
-            assert await control.is_disabled(".image-bar button[title='Next image']")
+            assert await control.is_disabled(".image-bar button[aria-label='Next image']")
 
             # 8. click the image in /control: full screen on the display; /control shows it inside the preview only
             for close in ("Escape", ".zoomed", ".back"):

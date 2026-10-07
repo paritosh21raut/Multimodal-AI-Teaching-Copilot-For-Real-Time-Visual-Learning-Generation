@@ -72,9 +72,11 @@ class Material:
     slide_ids: list[str] = field(default_factory=list)           # where they are in this run's deck
 
     def public(self) -> dict[str, Any]:
-        """For /control (without the slide specs)."""
+        """For /control (without the slide specs; no token counts in /control: user 2026-10-07, the terminal and the
+        log keep them)."""
         d = asdict(self)
-        d.pop("slides")
+        for key in ("slides", "tokens", "calls"):
+            d.pop(key)
         d["has_file"] = bool(self.file)
         return d
 

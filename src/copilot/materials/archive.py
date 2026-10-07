@@ -58,6 +58,52 @@ def taught(spec: dict[str, Any]) -> bool:
     return spec.get("layout") != "title" and bool(spec.get("blocks")) and spec.get("origin", "lecture") == "lecture"
 
 
+_NOT_TEXT = {"id", "type", "url", "image_id", "layout", "kind", "style", "version", "aspect", "source", "provisional",
+             "added", "emph", "part", "op", "page_url", "licence", "author", "ghost", "latex", "origin", "alt"}
+SEARCH_HITS = 3
+
+
+def slide_words(spec: dict[str, Any]) -> str:
+    """Every visible word of a slide (title, topic, facet, the blocks' text), lower case."""
+    out: list[str] = []
+
+    def walk(x: Any, key: str = "") -> None:
+        if key in _NOT_TEXT:
+            return
+        if isinstance(x, str):
+            out.append(x)
+        elif isinstance(x, dict):
+            for k, v in x.items():
+                walk(v, k)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v, key)
+    for k in ("title", "subtitle", "facet", "blocks"):
+        walk(spec.get(k) or "", k)
+    return " ".join(" ".join(out).lower().split())
+
+
+def search(records: list["LectureRecord"], query: str) -> list[dict[str, Any]]:
+    """Lectures whose title or slides hold every word of `query` (titles and slide content, never the transcript:
+    user 2026-10-07), best first, with up to SEARCH_HITS matching slides each: [{id, hits: [{index, title}]}]."""
+    words = [w for w in query.lower().split() if len(w) >= 2] or [w for w in query.lower().split()]
+    if not words:
+        return []
+    found = []
+    for rec in records:
+        title = rec.title.lower()
+        texts = [slide_words(s) for s in rec.slides]
+        everything = title + " " + " ".join(texts)
+        if not all(w in everything for w in words):
+            continue
+        hits = [{"index": i, "title": s.get("title", "")} for i, (s, t) in enumerate(zip(rec.slides, texts))
+                if all(w in t for w in words)]
+        in_title = all(w in title for w in words)
+        found.append((not in_title, -len(hits), -rec.started, {"id": rec.id, "hits": hits[:SEARCH_HITS],
+                                                                 "count": len(hits), "in_title": in_title}))
+    return [f[-1] for f in sorted(found, key=lambda f: f[:3])]
+
+
 def lecture_title(slides: list[dict[str, Any]]) -> str:
     """The title slide's title; otherwise the topic with the most slides (first seen wins a tie)."""
     for s in slides:
@@ -208,3 +254,7 @@ class LectureArchive:
             if rec is not None:
                 out.append(rec)
         return sorted(out, key=lambda r: r.started, reverse=True)
+
+    def current(self) -> Optional[LectureRecord]:
+        """The lecture running now (always read from its log), None before it has a content slide."""
+        return self.load(self.current_id, cache=False) if self.current_id else None

@@ -373,19 +373,23 @@ class App:
         from copilot.materials.writer import Writer
 
         data = PROJECT_ROOT / self.config.get("app", "data_dir", "data")
+        from copilot.materials.chapters import ChapterBook
+
         archive = LectureArchive(data / "sessions", data / "archive.json", current_id=self.session_id)
         store = MaterialStore(data / "materials")
+        chapters = ChapterBook(data / "chapters.json")  # F-010b: lectures grouped in chapters
         self.server = DisplayServer(
             hub, self.config.get("display", "host", "127.0.0.1"), int(self.config.get("display", "port", 8765)),
             media=cache_from_config(self.config),
             upload_max_bytes=int(float(self.config.get("images", "upload_max_mb", 10)) * 1024 * 1024),
-            control_key=self.control_key, notes=library, archive=archive, materials=store,
+            control_key=self.control_key, notes=library, archive=archive, materials=store, chapters=chapters,
         )
         await self.server.start()
         self._server_started = asyncio.get_running_loop().time()
         self.materials = MaterialsService(self.bus, store, archive, self.deck, Writer(None),
                                           Renderer(f"http://127.0.0.1:{self.server.port}"), self.session_id,
-                                          flush=self.event_log.flush)
+                                          flush=self.event_log.flush, chapters=chapters,
+                                          test_run=self.simulate is not None)
         self.materials.on_done = self._print_material
         self.materials.attach()
         await self.materials.announce()

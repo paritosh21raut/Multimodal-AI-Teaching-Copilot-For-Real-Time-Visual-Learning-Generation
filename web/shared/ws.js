@@ -42,14 +42,16 @@ export function connect(role, onMessage, onStatus) {
 
 // Reducer shared by both pages: applies server messages to a plain state object.
 export const initialState = { theme: "light", lifecycle: "starting", slides: {}, deck: null, transcript: [], audio: null, connected: false, concerns: [], images: {}, choices: {},
-  share: { state: "off", url: "", detail: "" }, viewers: 0, notes: null, materials: null, shared: [] };
+  share: { state: "off", url: "", detail: "" }, viewers: 0, notes: null, materials: null, shared: [],
+  notesShown: { on: false, doc_id: "", page: 0, name: "" } };
 
 export function reduce(state, msg) {
   switch (msg.type) {
     case "hello":
       return { ...state, theme: msg.theme, lifecycle: msg.lifecycle, slides: msg.slides || {}, deck: msg.deck, transcript: msg.transcript || [], concerns: msg.concerns || [], choices: msg.image_choices || {},
         share: msg.share || initialState.share, viewers: msg.viewers || 0, notes: msg.notes || null,
-        materials: msg.materials || null, shared: msg.shared || [] };
+        materials: msg.materials || null, shared: msg.shared || [], notesShown: msg.notes_shown || initialState.notesShown };
+    case "notes_shown": { const { type, ...shown } = msg; return { ...state, notesShown: shown }; }  // F-010b, every page
     case "materials": { const { type, ...materials } = msg; return { ...state, materials }; }  // control only (F-010)
     case "shared": return { ...state, shared: msg.items || [] };  // students: the PDFs they may download (F-010)
     case "share": return { ...state, share: { state: msg.state, url: msg.url, detail: msg.detail } };  // control only (F-008)

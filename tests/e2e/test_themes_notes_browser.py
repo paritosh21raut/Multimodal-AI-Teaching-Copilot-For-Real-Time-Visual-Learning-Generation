@@ -73,12 +73,12 @@ async def test_teacher_notes_follow_the_slides_in_control_only(tmp_path):
         await play(h, "p1")
         async with browser_page(f"{h.url}/control", 1600, 1000) as control, browser_page(f"{h.url}/display") as display:
             await wait_for_slide(control, "p1")
-            await control.click(".tabs button >> text=My notes")
-            await control.wait_for_selector(".notes-empty >> text=Add PDF notes")
+            await control.click(".tabs button[aria-label='My notes']")  # icon-only when not open (F-010b)
+            await control.wait_for_selector(".notes-empty >> text=Add notes")  # any file (F-010b)
             await control.screenshot(path=str(ART / "notes_empty.png"))
             await control.set_input_files(".notes input[type=file]", str(PDF))
-            img = ".notes-page img.loaded"
-            await control.wait_for_selector(img, timeout=8000)
+            img = ".notes-page img"
+            await page_loaded(control)
             # the live slide "What is photosynthesis?" -> the notes page about its meaning (page 2)
             await control.wait_for_selector(".notes-foot .count >> text=2 / 7", timeout=5000)
             assert "page/2" in await control.get_attribute(img, "src")
@@ -86,22 +86,30 @@ async def test_teacher_notes_follow_the_slides_in_control_only(tmp_path):
             await play_rest(h)
             await goto(h, "p3")  # "How it happens" (process) -> page 4, the steps
             await control.wait_for_selector(".notes-foot .count >> text=4 / 7", timeout=5000)
-            await control.wait_for_selector(".notes-page img.loaded", timeout=8000)
-            await control.wait_for_timeout(900)  # slide + page fades
+            await page_loaded(control, "page/4")
+            await control.wait_for_timeout(900)  # the slide's fade
             await control.screenshot(path=str(ART / "notes_following.png"))
             # turning a page by hand holds it on this slide
-            await control.click(".notes-foot button[title='Next page']")
+            await control.click(".notes-foot button[aria-label='Next page']")
             await control.wait_for_selector(".notes-foot .count >> text=5 / 7")
             # the projector never shows them
             assert await display.locator("img[src*='/api/notes']").count() == 0
             assert "notes" not in (await display.evaluate("document.body.innerText")).lower()
             # wider notes
-            await control.click(".notes-head button[title='Wider notes']")
+            await control.click(".notes-head button[aria-label='Wider notes']")
             await control.wait_for_selector(".grid.notes-wide")
             await control.evaluate("document.documentElement.dataset.theme = 'dark'")
             await control.wait_for_timeout(300)
             await control.screenshot(path=str(ART / "notes_wide_control_dark.png"))
             assert not control.errors and not display.errors, (control.errors, display.errors)
+
+
+async def page_loaded(control, src_part: str = "page/", timeout: int = 8000) -> None:
+    """The notes page image is shown (F-010b: no fade class any more, the <img> just has its page)."""
+    await control.wait_for_function(
+        """(part) => { const i = document.querySelector('.notes-page img');
+                       return !!i && i.src.includes(part) && i.complete && i.naturalWidth > 0; }""",
+        arg=src_part, timeout=timeout)
 
 
 async def play_rest(h) -> None:

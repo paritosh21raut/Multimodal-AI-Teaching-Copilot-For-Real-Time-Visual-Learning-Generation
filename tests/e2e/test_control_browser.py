@@ -71,7 +71,7 @@ async def test_pause_replaces_freeze_and_navigation_still_works():
                         getComputedStyle(t).backgroundColor]; }""")
             assert paused == accent, (paused, accent)
             await control.screenshot(path=str(ART / "control_paused.png"))
-            await control.click(".dock button[title='Previous slide (←)']")   # still navigates while paused
+            await control.click(".dock button[aria-label='Previous slide (←)']")   # still navigates while paused
             await wait_for_slide(control, "first")
             assert h.deck.live_id == "first"
             await control.keyboard.press("Space")   # resume from the keyboard

@@ -77,15 +77,32 @@ function App() {
   const waiting = !shown && !(deck && deck.blank);
   const glass = useGlassExit(waiting, !!(deck && deck.blank));
   // the teacher clicked the slide's image in /control: it fills the screen until Back / Esc (blank still wins)
-  const zoomed = deck && deck.zoom && !deck.blank ? imageOf(state.slides[deck.zoom]) : null;
+  const notes = state.notesShown && state.notesShown.on && !(deck && deck.blank) ? state.notesShown : null;
+  const zoomed = deck && deck.zoom && !deck.blank && !notes ? imageOf(state.slides[deck.zoom]) : null;
   return html`<div class="viewport" ref=${containerRef}>
     <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
       ${layers.map((l) => html`<${Slide} key=${l.spec.id} spec=${l.spec} phase=${l.phase} onOverflow=${onOverflow} />`)}
       ${zoomed && html`<${ZoomedImage} key=${zoomed.image_id || zoomed.url} image=${zoomed} />`}
       ${glass && html`<${Glass} leaving=${glass === "leaving"} />`}
     </div>
+    ${notes && html`<${NotesPage} shown=${notes} />`}
     ${VIEWER && html`<${SharedFiles} items=${state.shared} />`}
   </div>`;
+}
+
+// A page of the teacher's notes over the slide (F-010b): the teacher's Project toggle; blank still wins. The page shown
+// stays until the next one is decoded, so a page turn never flashes the slide behind it.
+function NotesPage({ shown }) {
+  const url = `/api/notes/shown/${shown.doc_id}/${shown.page}?w=1920`;
+  const [ready, setReady] = useState("");
+  useEffect(() => {
+    let gone = false;
+    const img = new Image();
+    img.onload = () => { if (!gone) setReady(url); };
+    img.src = url;
+    return () => { gone = true; };
+  }, [url]);
+  return html`<div class="notes-shown">${ready && html`<img src=${ready} alt=${`${shown.name}, page ${shown.page}`} />`}</div>`;
 }
 
 // Before the first slide: slide.js Glass (only here and in the /control preview; between slides the previous slide

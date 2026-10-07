@@ -70,6 +70,9 @@ CommandKind = Literal[
     # lecture materials + past lectures (F-010): create {items, lectures, current}; rename {id, name};
     # share {id, on}; remove {id}; show {id} (a summary / key-concepts slide again); lecture_hide {id}
     "materials_create", "materials_rename", "materials_share", "materials_remove", "materials_show", "lecture_hide",
+    # chapters (F-010b): create {name, start?}; rename {id, name}; move {id, index}; delete {id};
+    # lecture_move {id, chapter, start?}; notes_project {on}: the notes page on the projector
+    "chapter_create", "chapter_rename", "chapter_move", "chapter_delete", "lecture_move", "notes_project",
 ]
 
 
@@ -253,6 +256,17 @@ class NotesState(Event):
     follow: bool = True
     reason: str = ""   # why following the lecture does nothing ("" = it works)
     matched: str = ""  # the slide title the page was matched to
+    projecting: bool = False  # the open page is on the projector (F-010b)
+
+
+class NotesProjected(Event):
+    """The teacher put a page of their notes on the projector (F-010b), or took it off. Goes to the display, the
+    students and /control; only this page is served to them (GET /api/notes/shown/...)."""
+    ephemeral: ClassVar[bool] = True
+    on: bool = False
+    doc_id: str = ""
+    page: int = 0
+    name: str = ""
 
 
 class MaterialsState(Event):
@@ -260,9 +274,11 @@ class MaterialsState(Event):
     ephemeral: ClassVar[bool] = True  # a view state; the materials themselves live in data/materials
     items: list[dict[str, Any]] = Field(default_factory=list)   # store.Material.public()
     shared: list[dict[str, Any]] = Field(default_factory=list)  # [{id, name}] PDFs students may download
-    current: dict[str, Any] = Field(default_factory=dict)       # this lecture: {id, title}
+    current: dict[str, Any] = Field(default_factory=dict)       # this lecture: {id, title, chapter, test_run}
     llm: bool = False         # an LLM is configured (summary, concepts, notes, assignment need it)
-    lectures_changed: int = 0  # bumps when the past-lecture list changed (a lecture hidden)
+    lectures_changed: int = 0  # bumps when the past-lecture list changed (a lecture hidden / moved)
+    chapters: list[dict[str, Any]] = Field(default_factory=list)  # [{id, name, number, label}] in order (F-010b)
+    last_chapter: str = ""    # preselected on the start card
 
 
 class ErrorRaised(Event):

@@ -12,6 +12,14 @@
     body { cursor: none; }
     #root, .viewport { position: fixed; inset: 0; }
     .stage { position: absolute; left: 50%; top: 50%; transform-origin: center center; }
+    /* a page of the teacher's notes on the projector (F-010b) */
+    .notes-shown { position: fixed; inset: 0; z-index: 5; background: var(--bg); animation: notes-in 220ms ease both; }
+    /* the whole page fits the screen, centred (a grid cell would let a tall page overflow) */
+    .notes-shown img { position: absolute; inset: 0; margin: auto; max-width: 96%; max-height: 96%; background: #fff;
+      border-radius: 6px; box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28); }
+    @keyframes notes-in { from { opacity: 0; } }
+    /* students: thin scroll bars (F-010b #13) */
+    * { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--muted) 45%, transparent) transparent; }
     /* students' page only (F-010): the PDFs the teacher shares */
     .shared-files { position: fixed; right: 16px; bottom: 16px; z-index: 10; display: grid; justify-items: end; gap: 8px;
       font: 600 14px var(--font-text); max-width: calc(100vw - 32px); }

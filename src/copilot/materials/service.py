@@ -3,6 +3,9 @@ PDFs, the PPTX of the slides — from this lecture and / or past ones, one job a
 
 Commands: materials_create {items: [{kind, name?, scope?, count?, theme?}], lectures: [past ids], current: bool},
 materials_rename {id, name}, materials_share {id, on}, materials_remove {id}, materials_show {id}, lecture_hide {id}.
+Chapters (F-010b): materials_create also takes chapters: [chapter ids] (their lectures, this one included when it is
+in one); chapter_create {name, start?}, chapter_rename {id, name}, chapter_move {id, index}, chapter_delete {id},
+lecture_move {id, chapter, start?} ("" = Unsorted; start: the start card's choice, not stored for a test run).
 Every change → `MaterialsState` (control; the shared PDF list also goes to the students' pages).
 """
 from __future__ import annotations
@@ -14,6 +17,7 @@ from typing import Any, Awaitable, Callable, Optional
 from copilot.core.bus import EventBus
 from copilot.core.events import CommandReceived, DeckState, Event, MaterialsState
 from copilot.materials.archive import LectureArchive, LectureRecord, lecture_title
+from copilot.materials.chapters import ChapterBook
 from copilot.materials.content import Lecture, lecture_content, topic_of
 from copilot.materials.render import Renderer, assignment_html, notes_html
 from copilot.materials.slides import key_concepts_slides, lecture_summary_slides, topic_summary_slide
@@ -27,7 +31,7 @@ log = logging.getLogger(__name__)
 KINDS = ("summary", "concepts", "notes", "assignment", "pptx")
 NEEDS_LLM = {"summary", "concepts", "notes", "assignment"}
 COMMANDS = {"materials_create", "materials_rename", "materials_share", "materials_remove", "materials_show",
-            "lecture_hide"}
+            "lecture_hide", "chapter_create", "chapter_rename", "chapter_move", "chapter_delete", "lecture_move"}
 
 
 class _Request:
@@ -43,10 +47,13 @@ class _Request:
 class MaterialsService:
     def __init__(self, bus: EventBus, store: MaterialStore, archive: LectureArchive, deck: Deck,
                  writer: Writer, renderer: Optional[Renderer], session_id: str,
-                 flush: Optional[Callable[[], Awaitable[None]]] = None) -> None:
+                 flush: Optional[Callable[[], Awaitable[None]]] = None, chapters: Optional[ChapterBook] = None,
+                 test_run: bool = False) -> None:
         self._bus = bus
         self.store = store
         self.archive = archive
+        self.chapters = chapters if chapters is not None else ChapterBook(store.root.parent / "chapters.json")
+        self.test_run = test_run  # --simulate: the start card's chapter is not stored (user: test runs stay Unsorted)
         self.deck = deck
         self.writer = writer
         self.renderer = renderer
@@ -92,8 +99,10 @@ class MaterialsService:
     def state(self) -> MaterialsState:
         return MaterialsState(items=[m.public() for m in self.store.items()],
                               shared=[{"id": m.id, "name": m.name} for m in self.store.shared()],
-                              current={"id": self.session_id, "title": self._title},
-                              llm=self.writer.available, lectures_changed=self._lectures_changed)
+                              current={"id": self.session_id, "title": self._title,
+                                       "chapter": self.chapters.chapter_of(self.session_id), "test_run": self.test_run},
+                              llm=self.writer.available, lectures_changed=self._lectures_changed,
+                              chapters=self.chapters.chapters(), last_chapter=self.chapters.last)
 
     async def announce(self) -> None:
         await self._bus.publish(self.state())
@@ -127,15 +136,73 @@ class MaterialsService:
                 await asyncio.to_thread(self.archive.hide, lid)
                 self._lectures_changed += 1
                 changed = True
+        elif kind.startswith("chapter_") or kind == "lecture_move":
+            result = self._chapter_command(kind, args)
+            if result is None:
+                return
+            changed = result
+            if changed:
+                self._lectures_changed += 1
         if changed:
             await self.announce()
         elif kind != "materials_show":
             log.warning("%s ignored: %s", kind, args)
 
+    def _chapter_command(self, kind: str, args: dict[str, Any]) -> Optional[bool]:
+        """True: changed; False: ignored (bad id, nothing to change); None: deliberately not stored (test run)."""
+        book = self.chapters
+        cid = str(args.get("id", ""))
+        # the start card's choice: a test run (--simulate) stays Unsorted
+        keep = not (args.get("start") and self.test_run)
+        if kind == "chapter_create":
+            new = book.create(str(args.get("name", "")))
+            if args.get("start"):
+                if keep:
+                    book.assign(self.session_id, new, remember=True)
+                log.info("lecture %s starts in a new chapter %s%s", self.session_id, new,
+                         "" if keep else " (test run: not stored)")
+            return True
+        if kind == "chapter_rename":
+            return book.rename(cid, str(args.get("name", "")))
+        if kind == "chapter_move":
+            try:
+                return book.move(cid, int(args.get("index", 0)))
+            except (TypeError, ValueError):
+                return False
+        if kind == "chapter_delete":
+            return book.delete(cid)
+        if kind == "lecture_move":
+            lid = cid or self.session_id
+            if not keep:
+                log.info("test run: this lecture stays Unsorted (start card chapter %r not stored)", args.get("chapter"))
+                return None
+            return book.assign(lid, str(args.get("chapter", "") or ""), remember=bool(args.get("start")))
+        return False
+
+    def _chapter_lectures(self, chapter_ids: list[str]) -> list[str]:
+        """Every lecture of the chapters (this one included when it is in one), oldest first; a lecture whose log is
+        gone is skipped."""
+        dated: list[tuple[float, str]] = []
+        hidden = self.archive._hidden()
+        for cid in chapter_ids:
+            for lid in self.chapters.lectures_in(cid):
+                if lid == self.session_id:
+                    dated.append((float("inf"), lid))
+                    continue
+                rec = self.archive.load(lid) if lid not in hidden else None
+                if rec is not None:
+                    dated.append((rec.started, lid))
+        return [lid for _, lid in sorted(set(dated))]
+
     def _create(self, args: dict[str, Any]) -> bool:
         items = [i for i in args.get("items") or [] if isinstance(i, dict) and i.get("kind") in KINDS]
         past = [str(x) for x in args.get("lectures") or [] if isinstance(x, str) and x != self.session_id]
         current = bool(args.get("current", True))
+        chapter_ids = [str(c) for c in args.get("chapters") or [] if self.chapters.get(str(c))]
+        if chapter_ids:  # Pick chapters (F-010b): their lectures, this one included when it is in a picked chapter
+            in_chapters = self._chapter_lectures(chapter_ids)  # (this lecture first below: a topic summary reads it)
+            current = self.session_id in in_chapters
+            past = [lid for lid in in_chapters if lid != self.session_id]
         if not items or (not past and not current):
             return False
         ids = ([self.session_id] if current else []) + list(dict.fromkeys(past))
@@ -145,6 +212,8 @@ class MaterialsService:
             rec = self.archive.load(lid)
             titles.append(rec.title if rec else lid)
         title = joined_title(titles)
+        if chapter_ids:  # named after the chapters: "Chapter 3 · Cell biology"
+            title = joined_title([self.chapters.get(c)["label"] for c in chapter_ids])
         for item in items:
             kind = item["kind"]
             options: dict[str, Any] = {}

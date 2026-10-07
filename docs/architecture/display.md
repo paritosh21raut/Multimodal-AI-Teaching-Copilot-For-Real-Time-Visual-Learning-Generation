@@ -100,7 +100,7 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
 
 ## Teacher notes (F-009, V2)
 - Right column = mistake cards + one card with tabs: **Structure · My notes · Materials · Lectures** (F-010; in a
-  column narrower than 520 px the tabs not in use show their icon only).
+  column narrower than 520 px the tabs not in use show their icon only; F-010b below).
 - My notes: Add PDF / drop → `POST /api/notes` (teacher only, ≤ 50 MB) → `data/notes/<sha16>.pdf` (+ page texts) →
   `notes_open`; pages as PNG `GET /api/notes/<id>/page/<n>?w=` (pypdfium2, cached); ‹ n / m ›, arrows inside the
   panel, wider view, remove. **Follow lecture** (on by default): `NotesService` matches the live slide's words
@@ -110,6 +110,12 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
 - Review 2026-10-07 (user): the empty card is minimal (icon, Add PDF notes, "or drop one here · only you see it", the
   PDFs added before); the notes picker is a menu in the app's style (the open PDF ✓, the others, + Add PDF), not a
   native select.
+- F-010b: tabs **Lecture structure · My notes · Materials · Lectures** (icons only below 600 px). Notes take any file
+  (Word / PowerPoint via Office, text via Edge, images via Pillow → PDF; `notes/convert.py`) and web links (Edge PDF
+  snapshot, `POST /api/notes/link`). **Project**: `notes_project {on}` → `NotesProjected` → every page; /display and
+  /view show the page over the slide (blank wins), served by `GET /api/notes/shown/<id>/<page>` only while it is the
+  one shown; the lecture never turns a projected page; Esc / Back to slide in /control. Start card at READY (chapter
+  + Start). Styled tooltip: `title` → `aria-label` + `data-tip` on render.
 
 ## Lecture materials + past lectures (F-010, V2)
 - **Materials** tab: *From* chips (This lecture, + Past lecture menu), then tick cards — Summary slide (This topic /

@@ -69,7 +69,20 @@ const ICON = {
   chevron: "M6 9l6 6 6-6",
   sun: "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4",
   materials: "M12 3l2.1 4.6L19 9.7l-4.9 2.1L12 16.4l-2.1-4.6L5 9.7l4.9-2.1zM19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z",
-  lectures: "M4 5h16v4H4zM5 9v10h14V9M10 13h4",
+  // a stack of books (F-010b #15: the archive box read as a drawer)
+  lectures: "M4 4h4v16H4zM8 4h4v16H8zM14.2 5.3l3.9-1 3.9 15.4-3.9 1zM4 8h8M4 16h8",
+  word: "M7 3h7l5 5v13H7zM14 3v5h5M9.5 12l1.2 5 1.3-3.5 1.3 3.5 1.2-5",
+  text: "M7 3h7l5 5v13H7zM14 3v5h5M10 12h6M10 15h6M10 18h4",
+  image: "M4 5h16v14H4zM4 16l5-5 4 4 2-2 5 5M15.5 9.5a1 1 0 1 0 0-.01",
+  web: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z",
+  link: "M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1",
+  project: "M3 4h18v12H3zM8 20h8M12 16v4M10 8l4 2-4 2z",
+  search: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4",
+  sortDown: "M7 4v16M3 16l4 4 4-4M14 6h7M14 11h5M14 16h3",
+  sortUp: "M7 20V4M3 8l4-4 4 4M14 6h3M14 11h5M14 16h7",
+  grip: "M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01",
+  folder: "M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z",
+  play: "M7 4.5v15l12-7.5z",
   download: "M12 4v11M7 10l5 5 5-5M5 20h14",
   open: "M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5",
   slides: "M3 4h18v12H3zM8 20h8M12 16v4",
@@ -81,6 +94,66 @@ const ICON = {
   tree: "M4 5h6M4 5v14M4 12h6M4 19h6M14 5h6M14 12h6M14 19h6",
   notes: "M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h4",
 };
+
+// ---- styled tooltip (F-010b #11): every `title` in /control shows in the app's style instead of the native box ----
+// As soon as an element gets a title (render or update) the title becomes its aria-label (its accessible name, unless
+// it has one) and data-tip, so the browser never shows a box of its own.
+const TIP_DELAY_MS = 450;
+function untitle(root) {
+  const els = root.querySelectorAll ? [...(root.hasAttribute && root.hasAttribute("title") ? [root] : []), ...root.querySelectorAll("[title]")] : [];
+  for (const el of els) {
+    const t = el.getAttribute("title");
+    el.removeAttribute("title");
+    if (!t) continue;
+    el.dataset.tip = t;
+    if (!el.hasAttribute("aria-label") || el.dataset.tipLabel) { el.setAttribute("aria-label", t); el.dataset.tipLabel = "1"; }
+  }
+}
+function Tooltip() {
+  const [tip, setTip] = useState(null);  // {text, x, y, below}
+  useEffect(() => {
+    untitle(document.body);
+    const watch = new MutationObserver((records) => {
+      for (const r of records) untitle(r.target);  // a new title, or new elements under r.target
+    });
+    watch.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["title"] });
+    return () => watch.disconnect();
+  }, []);
+  useEffect(() => {
+    let timer = null, target = null;
+    const hide = () => { clearTimeout(timer); timer = null; target = null; setTip(null); };
+    const over = (e) => {
+      const el = e.target.closest && e.target.closest("[data-tip]");
+      if (el === target) return;
+      hide();
+      if (!el || !el.dataset.tip) return;
+      target = el;
+      timer = setTimeout(() => {
+        if (!target || !target.isConnected) return;
+        const r = target.getBoundingClientRect();
+        const below = r.top < 64;
+        setTip({ text: target.dataset.tip, x: r.left + r.width / 2, y: below ? r.bottom + 8 : r.top - 8, below });
+      }, TIP_DELAY_MS);
+    };
+    document.addEventListener("pointerover", over);
+    for (const ev of ["pointerdown", "keydown", "scroll", "blur"]) window.addEventListener(ev, hide, true);
+    return () => {
+      document.removeEventListener("pointerover", over);
+      for (const ev of ["pointerdown", "keydown", "scroll", "blur"]) window.removeEventListener(ev, hide, true);
+      clearTimeout(timer);
+    };
+  }, []);
+  const ref = useRef(null);
+  const [shift, setShift] = useState(0);
+  useEffect(() => {  // keep it inside the window
+    if (!tip || !ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    setShift(r.left < 8 ? 8 - r.left : r.right > innerWidth - 8 ? innerWidth - 8 - r.right : 0);
+  }, [tip && tip.text, tip && tip.x]);
+  if (!tip) return null;
+  return html`<div ref=${ref} class=${"tooltip" + (tip.below ? " below" : "")} role="tooltip"
+    style=${{ left: `${tip.x + shift}px`, top: `${tip.y}px` }}>${tip.text}</div>`;
+}
 
 // The control page's own light / dark (F-009): a per-browser preference, separate from the slide theme
 const CONTROL_THEME_KEY = "copilot.controlTheme";
@@ -235,8 +308,7 @@ function ImageBar({ spec, image, choices, status, send, onNotice }) {
       <button class="add" onClick=${cmd("change_image")} disabled=${busy} title="Search for an image for this slide">
         ${svg(ICON.find, busy ? "pulse" : "")}Find image</button>
       <span class="sep"></span>
-      <button onClick=${() => input.current.click()} title="Choose an image file for this slide">${svg(ICON.add)}Add image</button>
-      <span class="or">or drop one</span>
+      <button onClick=${() => input.current.click()} title="Choose an image file for this slide (or drop one on the slide)">${svg(ICON.add)}Add image</button>
     </div>`;
   }
   const many = choices && choices.count > 1;
@@ -253,13 +325,78 @@ function ImageBar({ spec, image, choices, status, send, onNotice }) {
   </div>`;
 }
 
-function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice, adding, onAdded, theme }) {
+// ---- before the lecture (F-010b §1): pick the chapter, then Start (no Enter in the terminal needed) ----
+function StartCard({ lifecycle, materials, send }) {
+  const chapters = (materials && materials.chapters) || [];
+  const testRun = !!(materials && materials.current && materials.current.test_run);
+  const [chosen, setChosen] = useState(null);       // null: not picked yet → the last one used
+  const [naming, setNaming] = useState(false);
+  const [name, setName] = useState("");
+  const [shown, setShown, ref] = usePopover();
+  const last = materials && chapters.some((c) => c.id === materials.last_chapter) ? materials.last_chapter : "";
+  const pick = chosen === null ? last : chosen;
+  const current = chapters.find((c) => c.id === pick);
+  const ready = lifecycle === "ready";
+  const [sent, setSent] = useState(false);  // Start pressed: no second press while the app goes live
+  const start = () => {
+    if (sent) return;
+    setSent(true);
+    if (naming && name.trim()) send("chapter_create", { name: name.trim(), start: true });
+    else send("lecture_move", { id: "", chapter: pick, start: true });
+    send("start");
+  };
+  return html`<div class="start-card" role="dialog" aria-label="Start the lecture">
+    <h3>Ready to start</h3>
+    <label class="start-label">Chapter</label>
+    ${naming
+      ? html`<div class="new-chapter">
+          <span class="new-number">Chapter ${chapters.length + 1} ·</span>
+          <input value=${name} placeholder="Name, e.g. Cell biology" maxlength="80"
+            ref=${(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus())}
+            onInput=${(e) => setName(e.target.value)}
+            onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Enter" && ready) start(); if (e.key === "Escape") setNaming(false); }} />
+          <button class="icon" onClick=${() => setNaming(false)} title="Back to the chapters">${svg(ICON.remove)}</button>
+        </div>`
+      : html`<div class="menu-wrap" ref=${ref}>
+          <button class=${"menu-button" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}>
+            ${svg(ICON.folder)}<span class="label">${current ? current.label : "No chapter (Unsorted)"}</span>${svg(ICON.chevron, "chev")}</button>
+          ${shown && html`<div class="menu" role="menu">
+            ${[...chapters].reverse().map((c) => html`<button key=${c.id} role="menuitem" class=${"menu-row" + (c.id === pick ? " on" : "")}
+                onClick=${() => { setChosen(c.id); setShown(false); }}>
+              ${svg(c.id === pick ? ICON.check : ICON.folder)}<span>${c.label}</span></button>`)}
+            <button role="menuitem" class=${"menu-row" + (!pick ? " on" : "")} onClick=${() => { setChosen(""); setShown(false); }}>
+              ${svg(!pick ? ICON.check : ICON.folder)}<span>No chapter (Unsorted)</span></button>
+            <div class="menu-sep"></div>
+            <button role="menuitem" class="menu-row add" onClick=${() => { setShown(false); setNaming(true); }}>
+              ${svg(ICON.add)}<span>New chapter</span></button>
+          </div>`}
+        </div>`}
+    ${testRun && html`<p class="start-note">Test run: it stays in Unsorted</p>`}
+    <button class="primary start" onClick=${start} disabled=${!ready || sent || (naming && !name.trim())}>
+      ${svg(ICON.play)}${sent ? "Starting…" : "Start lecture"}</button>
+  </div>`;
+}
+
+// A page of the teacher's notes on the projector (F-010b §5): the preview shows it as the projector does.
+function NotesOnScreen({ shown, send }) {
+  if (!shown || !shown.on) return null;
+  return html`<div class="notes-shown">
+    <img src=${`/api/notes/shown/${shown.doc_id}/${shown.page}?w=1280`} alt=${`${shown.name}, page ${shown.page}`} />
+  </div>
+  <button class="back" onClick=${() => send("notes_project", { on: false })} title="Back to the slide (Esc)">
+    ${svg(ICON.back)}<span>Back to slide</span><kbd>Esc</kbd></button>`;
+}
+
+function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice, adding, onAdded, theme,
+                   materials, notesShown }) {
   const ref = useRef(null);
   const scale = useStageScale(ref);
   const [drag, setDrag] = useState(null); // null | "over" | "uploading"
   const depth = useRef(0);
-  const zoomed = deck && deck.zoom ? imageOf(slides[deck.zoom]) : null;
-  const canDrop = spec && spec.layout !== "title" && !zoomed;
+  const onScreen = !!(notesShown && notesShown.on);  // a notes page covers the slide on the projector
+  const zoomed = deck && deck.zoom && !onScreen ? imageOf(slides[deck.zoom]) : null;
+  const before = lifecycle === "ready";  // waiting for Start (while models load the glass loader shows)
+  const canDrop = spec && spec.layout !== "title" && !zoomed && !onScreen;
   const image = imageOf(spec);
   const line = useStatus(status, notice, onNotice, !!image);
   const drop = async (e) => {
@@ -287,11 +424,13 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
       ${zoomed && html`<${ZoomedImage} key=${zoomed.image_id || zoomed.url} image=${zoomed} onClose=${() => send("unzoom_image")} />`}
       ${glass && html`<${Glass} leaving=${glass === "leaving"} />`}
     </div>
-    ${spec && !zoomed && !drag && html`<${EditLayer} host=${ref} spec=${spec} send=${send} adding=${adding} onAdded=${onAdded} />`}
+    ${spec && !zoomed && !drag && !onScreen && html`<${EditLayer} host=${ref} spec=${spec} send=${send} adding=${adding} onAdded=${onAdded} />`}
     ${zoomed && html`<button class="back" onClick=${() => send("unzoom_image")} title="Back to the slide (Esc)">
       ${svg(ICON.back)}<span>Back to slide</span><kbd>Esc</kbd></button>`}
-    ${spec && spec.layout !== "title" && !zoomed && !drag && html`<${ImageBar} spec=${spec} image=${image}
+    ${spec && spec.layout !== "title" && !zoomed && !drag && !onScreen && html`<${ImageBar} spec=${spec} image=${image}
       choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`}
+    <${NotesOnScreen} shown=${notesShown} send=${send} />
+    ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} send=${send} />`}
     ${line && !drag && html`<div class=${"image-status" + (line.error ? " error" : "")}>
       ${line.busy && html`<span class="dot"></span>`}${line.text}</div>`}
     ${(lifecycle === "paused" || (deck && deck.blank)) && !zoomed && html`<div class="flags">
@@ -421,18 +560,49 @@ function Structure({ deck, slides, send }) {
 }
 
 // ---- the teacher's notes (F-009): their own PDF, page by page, beside the lecture; never on the projector ----
+// Any file (F-010b): PDF, Word, PowerPoint, text, images — the server makes a PDF of it; links: a PDF snapshot.
 const NOTES_MAX_MB = 50;
-const hasPdf = (e) => hasFiles(e);
+const NOTES_ACCEPT = ".pdf,.docx,.doc,.rtf,.odt,.pptx,.ppt,.odp,.txt,.md,.png,.jpg,.jpeg,.webp,.gif";
+const NOTES_EXT = new Set(NOTES_ACCEPT.split(","));
+const DOC_ICON = { pdf: ICON.pdf, word: ICON.word, slides: ICON.pptx, text: ICON.text, image: ICON.image, web: ICON.web };
+const docIcon = (d) => DOC_ICON[d.kind] || ICON.pdf;
+const pagesOf = (d) => (d.kind === "image" ? "image" : `${d.pages} p.`);
+const hasDrop = (e) => e.dataTransfer && [...e.dataTransfer.types].some((t) => t === "Files" || t === "text/uri-list");
+const droppedLink = (e) => {
+  const raw = (e.dataTransfer.getData("text/uri-list") || e.dataTransfer.getData("text/plain") || "").trim();
+  return raw.split(/\r?\n/).find((l) => /^https?:\/\//i.test(l)) || "";
+};
 
 async function uploadNotes(file, send) {
-  if (file.type !== "application/pdf" && !/\.pdf$/i.test(file.name)) throw new Error("Use a PDF file");
-  if (file.size > NOTES_MAX_MB * 1024 * 1024) throw new Error(`The PDF is larger than ${NOTES_MAX_MB} MB`);
+  const ext = (file.name.match(/\.[^.]+$/) || [""])[0].toLowerCase();
+  if (!NOTES_EXT.has(ext)) throw new Error("Use a PDF, Word, PowerPoint, text or image file");
+  if (file.size > NOTES_MAX_MB * 1024 * 1024) throw new Error(`The file is larger than ${NOTES_MAX_MB} MB`);
   const r = await fetch("/api/notes", {
-    method: "POST", body: file, headers: { "Content-Type": "application/pdf", "X-File-Name": encodeURIComponent(file.name).slice(0, 120) },
+    method: "POST", body: file, headers: { "Content-Type": file.type || "application/octet-stream", "X-File-Name": encodeURIComponent(file.name).slice(0, 120) },
   });
   const res = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(res.error || `Upload failed (${r.status})`);
   send("notes_open", { id: res.id });
+}
+
+async function addLink(url, send) {
+  const r = await fetch("/api/notes/link", { method: "POST", body: JSON.stringify({ url }), headers: { "Content-Type": "application/json" } });
+  const res = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(res.error || `Could not save the page (${r.status})`);
+  send("notes_open", { id: res.id });
+}
+
+// "Add link": paste a web address (a dropped link needs no field)
+function LinkField({ onAdd, onCancel }) {
+  const [url, setUrl] = useState("");
+  return html`<div class="link-field">
+    ${svg(ICON.link)}
+    <input value=${url} placeholder="Paste a web link (https://…)" ref=${(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus())}
+      onInput=${(e) => setUrl(e.target.value)}
+      onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Enter" && url.trim()) onAdd(url.trim()); if (e.key === "Escape") onCancel(); }} />
+    <button class="primary small" disabled=${!/^https?:\/\/\S+/i.test(url.trim())} onClick=${() => onAdd(url.trim())}>Add</button>
+    <button class="icon" onClick=${onCancel} title="Cancel">${svg(ICON.remove)}</button>
+  </div>`;
 }
 
 // A small menu in the app's style (no native select): a button, and a floating list under it.
@@ -451,21 +621,28 @@ function usePopover() {
 }
 
 // The notes in use; the menu lists every PDF and adds another one (user 2026-10-07: the select was out of style).
-function DocMenu({ docs, open, onOpen, onAdd, busy }) {
+function DocMenu({ docs, open, onOpen, onAdd, onLink, busy }) {
   const [shown, setShown, ref] = usePopover();
   return html`<div class="menu-wrap doc-menu" ref=${ref}>
-    <button class=${"menu-button" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}
-        title="Choose notes">
-      ${svg(ICON.pdf)}<span class="label">${open.name}</span><em>${open.pages} p.</em>${svg(ICON.chevron, "chev")}</button>
+    <button class=${"menu-button" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}>
+      ${svg(docIcon(open))}<span class="label">${open.name}</span><em>${pagesOf(open)}</em>${svg(ICON.chevron, "chev")}</button>
     ${shown && html`<div class="menu" role="menu">
       ${docs.map((d) => html`<button key=${d.id} role="menuitem" class=${"menu-row" + (d.id === open.id ? " on" : "")}
           onClick=${() => { setShown(false); if (d.id !== open.id) onOpen(d.id); }}>
-        ${svg(d.id === open.id ? ICON.check : ICON.pdf)}<span>${d.name}</span><em>${d.pages} p.</em></button>`)}
+        ${svg(d.id === open.id ? ICON.check : docIcon(d))}<span>${d.name}</span><em>${pagesOf(d)}</em></button>`)}
       <div class="menu-sep"></div>
       <button role="menuitem" class="menu-row add" disabled=${busy} onClick=${() => { setShown(false); onAdd(); }}>
-        ${svg(ICON.add)}<span>Add PDF</span></button>
+        ${svg(ICON.add)}<span>Add a file</span></button>
+      <button role="menuitem" class="menu-row add" disabled=${busy} onClick=${() => { setShown(false); onLink(); }}>
+        ${svg(ICON.link)}<span>Add a web link</span></button>
     </div>`}
   </div>`;
+}
+
+// Page turns without a blink (F-010b #12): one <img> whose src changes (the old page stays until the new one is
+// decoded), and the pages around it fetched ahead so a turn is instant.
+function usePreload(urls) {
+  useEffect(() => { urls.filter(Boolean).forEach((u) => { const i = new Image(); i.src = u; }); }, [urls.join("|")]);
 }
 
 function Notes({ notes, send, wide, onWide }) {
@@ -473,51 +650,68 @@ function Notes({ notes, send, wide, onWide }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [over, setOver] = useState(false);
-  const [loaded, setLoaded] = useState("");
-  const n = notes || { docs: [], open: "", page: 0, pages: 0, follow: true, reason: "", matched: "" };
+  const [linking, setLinking] = useState(false);
+  const n = notes || { docs: [], open: "", page: 0, pages: 0, follow: true, reason: "", matched: "", projecting: false };
   const doc = n.docs.find((d) => d.id === n.open);
-  const add = async (file) => {
-    if (!file) return;
-    setBusy(true); setError("");
-    try { await uploadNotes(file, send); } catch (err) { setError(err.message); } finally { setBusy(false); }
+  const run = async (job, label) => {
+    setBusy(label); setError(""); setLinking(false);
+    try { await job(); } catch (err) { setError(err.message); } finally { setBusy(false); }
   };
+  const add = (file) => file && run(() => uploadNotes(file, send), /\.pdf$/i.test(file.name) ? "Adding…" : "Converting…");
+  const link = (url) => run(() => addLink(url, send), "Saving the page…");
   const pick = (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ""; add(f); };
-  const drop = (e) => { e.preventDefault(); setOver(false); add(e.dataTransfer.files && e.dataTransfer.files[0]); };
-  const src = doc ? `/api/notes/${doc.id}/page/${n.page}?w=${wide ? 1280 : 960}` : "";
-  const img = useRef(null);
-  // a page seen before comes from the browser cache, complete before its load listener exists: check after mount
-  useEffect(() => { const el = img.current; if (el && el.complete && el.naturalWidth) setLoaded(src); }, [src]);
+  const drop = (e) => {
+    e.preventDefault(); setOver(false);
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) add(f);
+    else { const url = droppedLink(e); if (url) link(url); }
+  };
+  const w = wide ? 1280 : 960;
+  const pageUrl = (p) => (doc && p >= 1 && p <= n.pages ? `/api/notes/${doc.id}/page/${p}?w=${w}` : "");
+  const src = pageUrl(n.page);
+  usePreload([pageUrl(n.page + 1), pageUrl(n.page - 1)]);
   const turn = (page) => send("notes_page", { page });
   const keys = (e) => {  // inside the notes, arrows turn its pages (not the slides)
     if (!doc) return;
     if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); e.stopPropagation(); if (n.page < n.pages) turn(n.page + 1); }
     if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); e.stopPropagation(); if (n.page > 1) turn(n.page - 1); }
   };
-  const file = html`<input ref=${input} type="file" accept="application/pdf,.pdf" hidden onChange=${pick} />`;
-  const addPdf = () => input.current.click();
+  const file = html`<input ref=${input} type="file" accept=${NOTES_ACCEPT} hidden onChange=${pick} />`;
+  const addFile = () => input.current.click();
+  const note = n.projecting ? "On the projector: only you turn its pages"
+    : n.reason || (n.follow ? (n.matched ? html`Matched to <b>${n.matched}</b>` : "Waiting for a slide that matches a page")
+      : "Following is off: turn the pages yourself");
   return html`<div class=${"notes" + (over ? " over" : "")} tabindex="0" onKeyDown=${keys}
-      onDragOver=${(e) => { if (hasPdf(e)) { e.preventDefault(); setOver(true); } }}
+      onDragOver=${(e) => { if (hasDrop(e)) { e.preventDefault(); setOver(true); } }}
       onDragLeave=${() => setOver(false)} onDrop=${drop}>
     ${file}
     ${!doc ? html`<div class="notes-empty">
         <div class="notes-art">${svg(ICON.notes)}</div>
-        <button class="primary" onClick=${addPdf} disabled=${busy}>
-          ${svg(ICON.add, busy ? "pulse" : "")}${busy ? "Adding…" : "Add PDF notes"}</button>
-        <span class="or">or drop one here · only you see it</span>
+        ${linking ? html`<${LinkField} onAdd=${link} onCancel=${() => setLinking(false)} />`
+          : html`<div class="notes-add">
+            <button class="primary" onClick=${addFile} disabled=${!!busy}>
+              ${svg(ICON.add, busy ? "pulse" : "")}${busy || "Add notes"}</button>
+            <button class="ghost-pill" onClick=${() => setLinking(true)} disabled=${!!busy}>${svg(ICON.link)}Web link</button>
+          </div>`}
+        <span class="or">PDF, Word, PowerPoint, text, images or a web link · drop one here · only you see it</span>
         ${n.docs.length > 0 && html`<div class="notes-recent">${n.docs.map((d) => html`
           <button key=${d.id} class="doc-row" onClick=${() => send("notes_open", { id: d.id })}>
-            ${svg(ICON.pdf)}<span>${d.name}</span><em>${d.pages} p.</em></button>`)}</div>`}
+            ${svg(docIcon(d))}<span>${d.name}</span><em>${pagesOf(d)}</em></button>`)}</div>`}
       </div>`
     : html`<div class="notes-head">
-        <${DocMenu} docs=${n.docs} open=${doc} onOpen=${(id) => send("notes_open", { id })} onAdd=${addPdf} busy=${busy} />
+        <${DocMenu} docs=${n.docs} open=${doc} onOpen=${(id) => send("notes_open", { id })} onAdd=${addFile}
+          onLink=${() => setLinking(true)} busy=${!!busy} />
+        ${doc.kind === "web" && doc.source && html`<a class="icon" href=${doc.source} target="_blank" rel="noopener"
+          title="Open the original page">${svg(ICON.open)}</a>`}
         <button class="icon" onClick=${onWide} title=${wide ? "Narrower notes" : "Wider notes"} aria-pressed=${wide}>
           ${svg(wide ? "M9 4v16M4 9l5 3-5 3M20 9l-5 3 5 3" : "M4 4v16M20 4v16M9 12h6M9 12l2-2M9 12l2 2M15 12l-2-2M15 12l-2 2")}</button>
         <button class="icon" onClick=${() => confirm(`Remove “${doc.name}” from your notes?`) && send("notes_remove", { id: doc.id })}
           title="Remove these notes from the list">${svg(ICON.bin)}</button>
       </div>
+      ${linking && html`<${LinkField} onAdd=${link} onCancel=${() => setLinking(false)} />`}
+      ${busy && html`<p class="notes-busy"><span class="spinner"></span>${busy}</p>`}
       <div class="notes-page">
-        <img key=${src} ref=${img} src=${src} alt=${`${doc.name}, page ${n.page}`} class=${loaded === src ? "loaded" : ""}
-          onLoad=${(e) => { if (e.currentTarget === img.current) setLoaded(src); }} />
+        <img src=${src} alt=${`${doc.name}, page ${n.page}`} />
       </div>
       <div class="notes-foot">
         <div class="steps">
@@ -525,13 +719,15 @@ function Notes({ notes, send, wide, onWide }) {
           <span class="count">${n.page} / ${n.pages}</span>
           <button class="icon" disabled=${n.page >= n.pages} onClick=${() => turn(n.page + 1)} title="Next page">${svg(ICON.next)}</button>
         </div>
+        <button class=${"project" + (n.projecting ? " on" : "")} aria-pressed=${n.projecting}
+          onClick=${() => send("notes_project", { on: !n.projecting })}
+          title=${n.projecting ? "Back to the slide on the projector (Esc)" : "Show this page on the projector and to the students"}>
+          ${svg(ICON.project)}<span>${n.projecting ? "On projector" : "Project"}</span></button>
         <label class=${"switch" + (n.follow ? " on" : "")} title="Open the page that matches the slide on screen">
           <input type="checkbox" checked=${n.follow} onChange=${(e) => send("notes_follow", { on: e.target.checked })} />
-          <span class="track"><span class="knob"></span></span>Follow lecture</label>
+          <span class="track"><span class="knob"></span></span>Follow</label>
       </div>
-      <p class=${"notes-note" + (n.reason ? " off" : "")}>${n.reason || (n.follow
-        ? (n.matched ? html`Matched to <b>${n.matched}</b>` : "Waiting for a slide that matches a page")
-        : "Following is off: turn the pages yourself")}</p>`}
+      <p class=${"notes-note" + (n.reason && !n.projecting ? " off" : "")}>${note}</p>`}
     ${error && html`<p class="notes-error">${error}</p>`}
   </div>`;
 }
@@ -568,15 +764,25 @@ const ago = (t) => {
 const fileUrl = (m, inline) => `/api/materials/${m.id}/file${inline ? "?inline=1" : ""}`;
 
 // The past lectures (GET /api/lectures), loaded when a tab needs them, again when the list changed.
-function useLectures(active, version) {
+// `live` (the running lecture's slide count) refreshes the list too, a moment later (its log is written meanwhile).
+function useLectures(active, version, live) {
   const [list, setList] = useState(null);
+  const seen = useRef(null);  // the version loaded last: a change of it (a chapter edit) loads at once
   useEffect(() => {
-    if (!active) return undefined;
-    let gone = false;
-    fetch("/api/lectures", { cache: "no-store" }).then((r) => r.json())
-      .then((res) => { if (!gone) setList(res.lectures || []); }).catch(() => { if (!gone) setList([]); });
-    return () => { gone = true; };
-  }, [active, version]);
+    if (!active) { seen.current = null; return undefined; }
+    let gone = false, t = null, tries = 0;
+    const load = () => fetch("/api/lectures", { cache: "no-store" }).then((r) => r.json())
+      .then((res) => {
+        if (gone) return;
+        const rows = res.lectures || [];
+        setList(rows);
+        // slides on screen but the running lecture not listed yet (its log is still being written): look again
+        if (live > 0 && !rows.some((l) => l.current) && tries++ < 4) t = setTimeout(load, 1500);
+      }).catch(() => { if (!gone) setList((l) => l || []); });
+    t = setTimeout(load, seen.current === version ? 1200 : 0);
+    seen.current = version;
+    return () => { gone = true; clearTimeout(t); };
+  }, [active, version, live]);
   return list;
 }
 
@@ -585,20 +791,23 @@ function Segmented({ value, options, onChange }) {
     role="radio" aria-checked=${value === v} class=${value === v ? "on" : ""} onClick=${() => onChange(v)}>${label}</button>`)}</div>`;
 }
 
-function PastPicker({ lectures, picked, onToggle }) {
+// A checklist in a menu (F-010b #7): lectures (this one first) or chapters; the button sums up what is picked.
+function Checklist({ label, empty, rows, picked, onToggle }) {
   const [shown, setShown, ref] = usePopover();
-  return html`<div class="menu-wrap" ref=${ref}>
-    <button class=${"chip add" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}>
-      ${svg(ICON.add)}Past lecture</button>
-    ${shown && html`<div class="menu wide" role="menu">
-      ${lectures === null ? html`<p class="menu-empty">Loading…</p>`
-        : !lectures.length ? html`<p class="menu-empty">No past lectures yet</p>`
-        : lectures.map((l) => html`<button key=${l.id} role="menuitemcheckbox" aria-checked=${picked.includes(l.id)}
-            class=${"menu-row" + (picked.includes(l.id) ? " on" : "")} onClick=${() => onToggle(l.id)}>
-          ${svg(picked.includes(l.id) ? ICON.check : ICON.lectures)}<span>${l.title}</span><em>${l.date.split(",")[0]}</em></button>`)}
+  return html`<div class="menu-wrap pick-wrap" ref=${ref}>
+    <button class=${"menu-button" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}>
+      <span class="label">${label}</span>${svg(ICON.chevron, "chev")}</button>
+    ${shown && html`<div class="menu" role="menu">
+      ${rows === null ? html`<p class="menu-empty">Loading…</p>`
+        : !rows.length ? html`<p class="menu-empty">${empty}</p>`
+        : rows.map((r) => html`<button key=${r.id} role="menuitemcheckbox" aria-checked=${picked.includes(r.id)}
+            class=${"menu-row" + (picked.includes(r.id) ? " on" : "")} onClick=${() => onToggle(r.id)}>
+          <span class=${"check-box" + (picked.includes(r.id) ? " on" : "")}>${picked.includes(r.id) && svg(ICON.check)}</span>
+          <span>${r.title}</span><em>${r.note}</em></button>`)}
     </div>`}
   </div>`;
 }
+const toggled = (list, id) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
 
 function MadeRow({ m, send }) {
   const [editing, setEditing] = useState(false);
@@ -606,9 +815,10 @@ function MadeRow({ m, send }) {
   const k = KIND[m.kind] || {};
   const save = () => { setEditing(false); if (name.trim() && name.trim() !== m.name) send("materials_rename", { id: m.id, name: name.trim() }); };
   const pdf = k.file === ".pdf";
+  // no token counts here (user 2026-10-07: the terminal shows them)
   const meta = m.status === "working" ? (m.detail || "working") : m.status === "failed" ? m.detail
     : [ago(m.created), m.kind === "assignment" ? `${m.count} questions` : m.kind === "pptx" ? `${m.count} slides` : "",
-      m.tokens ? `${(m.tokens / 1000).toFixed(1)}k tokens` : "", m.detail].filter(Boolean).join(" · ");
+      m.detail].filter(Boolean).join(" · ");
   return html`<li class=${"made " + m.status}>
     <span class="made-icon">${m.status === "working" ? html`<span class="spinner"></span>` : svg(k.icon || ICON.pdf)}</span>
     <div class="made-main">
@@ -635,22 +845,35 @@ function MadeRow({ m, send }) {
 }
 
 function Materials({ materials, lectures, send, preselect, onPreselected }) {
-  const st = materials || { items: [], current: { id: "", title: "" }, llm: false };
+  const st = materials || { items: [], current: { id: "", title: "" }, llm: false, chapters: [] };
+  const chapters = st.chapters || [];
   const [ticks, setTicks] = useState({});
   const [opts, setOpts] = useState({ scope: "topic", count: DEFAULT_QUESTIONS, theme: "light" });
   const [names, setNames] = useState({});
-  const [current, setCurrent] = useState(true);
-  const [past, setPast] = useState([]);
+  // From (F-010b #7): this lecture · picked lectures (this one among them) · whole chapters
+  const [mode, setMode] = useState("this");
+  const [picked, setPicked] = useState([]);       // lecture ids ("now" = this lecture)
+  const [pickedCh, setPickedCh] = useState([]);   // chapter ids
   useEffect(() => {  // "Make materials" in a past lecture: that lecture alone
     if (!preselect) return;
-    setPast([preselect]); setCurrent(false); onPreselected();
+    setMode("lectures"); setPicked([preselect]); onPreselected();
   }, [preselect]);
-  const titles = [...(current ? [st.current.title || "This lecture"] : []),
-    ...past.map((id) => ((lectures || []).find((l) => l.id === id) || {}).title || "Past lecture")];
-  const title = joinedTitle(titles);
+  useEffect(() => {  // the chapter of this lecture is the first guess for Pick chapters
+    if (!pickedCh.length && st.current && st.current.chapter) setPickedCh([st.current.chapter]);
+  }, [st.current && st.current.chapter]);
+  const past = (lectures || []).filter((l) => !l.current);
+  const nameOf = (id) => (id === "now" ? st.current.title || "This lecture" : (past.find((l) => l.id === id) || {}).title || "Past lecture");
+  const chapterIds = pickedCh.filter((id) => chapters.some((c) => c.id === id));
+  const current = mode === "this" || (mode === "lectures" && picked.includes("now"))
+    || (mode === "chapters" && chapterIds.includes(st.current.chapter || "-"));
+  const pastIds = mode === "lectures" ? picked.filter((id) => id !== "now") : [];
+  const title = mode === "chapters"
+    ? joinedTitle(chapterIds.map((id) => (chapters.find((c) => c.id === id) || {}).label))
+    : joinedTitle(mode === "this" ? [nameOf("now")] : picked.map(nameOf));
   const chosen = KINDS.filter((k) => ticks[k.kind]);
   const blocked = (k) => (k.llm && !st.llm) || (k.kind === "summary" && opts.scope === "topic" && !current);
-  const ready = chosen.length > 0 && (current || past.length > 0) && !chosen.some(blocked);
+  const sources = mode === "this" ? 1 : mode === "lectures" ? picked.length : chapterIds.length;
+  const ready = chosen.length > 0 && sources > 0 && !chosen.some(blocked);
   const create = () => {
     const items = chosen.map((k) => ({
       kind: k.kind, name: k.file ? (names[k.kind] || "").trim() || autoName(k.kind, title) : "",
@@ -658,9 +881,18 @@ function Materials({ materials, lectures, send, preselect, onPreselected }) {
       ...(k.kind === "assignment" ? { count: opts.count } : {}),
       ...(k.kind === "pptx" ? { theme: opts.theme } : {}),
     }));
-    send("materials_create", { items, lectures: past, current });
+    send("materials_create", mode === "chapters" ? { items, lectures: [], current: false, chapters: chapterIds }
+      : { items, lectures: pastIds, current });
     setTicks({}); setNames({});
   };
+  const lectureRows = lectures === null ? null : [{ id: "now", title: st.current.title || "This lecture", note: "now" },
+    ...past.map((l) => ({ id: l.id, title: l.title, note: l.date.split(",")[0] }))];
+  const chapterRows = chapters.map((c) => {
+    const n = (lectures || []).filter((l) => l.chapter === c.id).length;
+    return { id: c.id, title: c.label, note: c.id === st.current.chapter ? "this lecture's" : `${n} lecture${n === 1 ? "" : "s"}` };
+  });
+  const summary = (ids, rows, none, word) => (!ids.length ? none : ids.length === 1
+    ? ((rows || []).find((r) => r.id === ids[0]) || {}).title || `1 ${word}` : `${ids.length} ${word}s`);
   const setCount = (n) => setOpts({ ...opts, count: Math.max(1, Math.min(30, n || DEFAULT_QUESTIONS)) });
   const option = (k) => {
     if (!ticks[k.kind]) return null;
@@ -687,18 +919,19 @@ function Materials({ materials, lectures, send, preselect, onPreselected }) {
     <section class="make">
       <div class="from">
         <span class="from-label">From</span>
-        <button class=${"chip" + (current ? " on" : "")} aria-pressed=${current} onClick=${() => setCurrent(!current)}
-          title="This lecture, up to now">${current && svg(ICON.check)}This lecture</button>
-        ${past.map((id) => html`<span key=${id} class="chip on">${((lectures || []).find((l) => l.id === id) || {}).title || "Past lecture"}
-          <button class="x" title="Remove" onClick=${() => setPast(past.filter((x) => x !== id))}>${svg(ICON.remove)}</button></span>`)}
-        <${PastPicker} lectures=${lectures} picked=${past}
-          onToggle=${(id) => setPast(past.includes(id) ? past.filter((x) => x !== id) : [...past, id])} />
+        <${Segmented} value=${mode} options=${[["this", "This lecture"], ["lectures", "Pick lectures"], ["chapters", "Pick chapters"]]}
+          onChange=${setMode} />
+        ${mode === "lectures" && html`<${Checklist} rows=${lectureRows} picked=${picked} empty="No lectures yet"
+          label=${summary(picked, lectureRows, "Choose lectures…", "lecture")} onToggle=${(id) => setPicked(toggled(picked, id))} />`}
+        ${mode === "chapters" && html`<${Checklist} rows=${chapterRows} picked=${chapterIds}
+          empty="No chapters yet: make one in the Lectures tab"
+          label=${summary(chapterIds, chapterRows, "Choose chapters…", "chapter")} onToggle=${(id) => setPickedCh(toggled(chapterIds, id))} />`}
       </div>
       <ul class="kinds">${KINDS.map((k) => html`<li key=${k.kind} class=${"kind" + (ticks[k.kind] ? " on" : "") + (blocked(k) ? " off" : "")}>
         <button class="kind-head" role="checkbox" aria-checked=${!!ticks[k.kind]} disabled=${k.llm && !st.llm}
             title=${k.llm && !st.llm ? "Needs the LLM (this run has none)" : ""}
             onClick=${() => setTicks({ ...ticks, [k.kind]: !ticks[k.kind] })}>
-          <span class="tick">${ticks[k.kind] && svg(ICON.check)}</span>
+          <span class="tile-check">${svg(ICON.check)}</span>
           <span class="kind-icon">${svg(k.icon)}</span>
           <span class="kind-text"><b>${k.label}</b><small>${k.note}</small></span>
         </button>
@@ -706,6 +939,7 @@ function Materials({ materials, lectures, send, preselect, onPreselected }) {
       </li>`)}</ul>
       <div class="make-foot">
         <span class="make-note">${!st.llm ? "No LLM in this run: only the PowerPoint can be made"
+          : !sources ? (mode === "chapters" ? "Choose the chapters" : "Choose the lectures")
           : chosen.some(blocked) ? "A topic summary needs this lecture" : `From ${title}`}</span>
         <button class="primary" disabled=${!ready} onClick=${create}>
           ${svg(ICON.materials)}Create${chosen.length > 1 ? ` ${chosen.length}` : ""}</button>
@@ -720,24 +954,143 @@ function Materials({ materials, lectures, send, preselect, onPreselected }) {
 }
 
 // ---- past lectures (F-010): the list; open one to page through its slides and its materials ----
-function Lectures({ lectures, onOpen, send }) {
-  if (lectures === null) return html`<div class="lectures"><p class="made-empty">Loading…</p></div>`;
-  if (!lectures.length) return html`<div class="lectures"><p class="made-empty">Past lectures appear here.</p></div>`;
-  return html`<div class="lectures"><ul>${lectures.map((l) => html`<li key=${l.id} class="lecture-row">
-    <button class="lecture-open" onClick=${() => onOpen(l.id)} title="Open the slides of this lecture">
-      <b>${l.title}</b>
+// Chapters (F-010b §2): "Chapter N · name" in the teacher's order (drag a chapter to renumber it); lectures drag
+// between chapters; Unsorted last. Search (titles + slide content) and sort (date / name, both directions).
+const DRAG_LECTURE = "application/x-copilot-lecture";
+const DRAG_CHAPTER = "application/x-copilot-chapter";
+const dragKind = (e) => (e.dataTransfer.types.includes(DRAG_CHAPTER) ? "chapter" : e.dataTransfer.types.includes(DRAG_LECTURE) ? "lecture" : "");
+
+function useSearch(query, version) {
+  const [res, setRes] = useState(null);  // null: no search; else {id: {hits, count}}
+  useEffect(() => {
+    const q = query.trim();
+    if (!q) { setRes(null); return undefined; }
+    let gone = false;
+    const t = setTimeout(() => {
+      fetch(`/api/lectures/search?q=${encodeURIComponent(q)}`, { cache: "no-store" }).then((r) => r.json())
+        .then((d) => { if (!gone) setRes(Object.fromEntries((d.results || []).map((x) => [x.id, x]))); })
+        .catch(() => { if (!gone) setRes({}); });
+    }, 220);
+    return () => { gone = true; clearTimeout(t); };
+  }, [query, version]);
+  return res;
+}
+
+function LectureRow({ l, hits, onOpen, send }) {
+  return html`<li class=${"lecture-row" + (l.current ? " now" : "")} draggable="true"
+      onDragStart=${(e) => { e.dataTransfer.setData(DRAG_LECTURE, l.id); e.dataTransfer.effectAllowed = "move"; }}>
+    <span class="grip" aria-hidden="true">${svg(ICON.grip)}</span>
+    <button class="lecture-open" onClick=${() => onOpen(l.id, 0)} title="Open the slides of this lecture">
+      <span class="lecture-title">${l.title}${l.current ? html`<em class="now-tag">now</em>` : ""}</span>
       <small>${l.date} · ${l.slides} slide${l.slides === 1 ? "" : "s"} · ${Math.max(1, Math.round(l.minutes))} min
         ${l.simulated ? html` · <i>test run</i>` : ""}</small>
     </button>
     ${l.materials > 0 && html`<em class="badge" title="Materials made from it">${l.materials}</em>`}
-    <button class="icon hide" title="Take it off this list (nothing is deleted)"
-      onClick=${() => confirm(`Hide “${l.title}” (${l.date}) from the list?`) && send("lecture_hide", { id: l.id })}>${svg(ICON.hide)}</button>
-  </li>`)}</ul></div>`;
+    ${!l.current && html`<button class="icon hide" title="Take it off this list (nothing is deleted)"
+      onClick=${() => confirm(`Hide “${l.title}” (${l.date}) from the list?`) && send("lecture_hide", { id: l.id })}>${svg(ICON.hide)}</button>`}
+    ${hits && hits.hits.length > 0 && html`<ol class="hits">${hits.hits.map((h) => html`<li key=${h.index}>
+      <button onClick=${() => onOpen(l.id, h.index)} title="Open the lecture at this slide">
+        <span class="n">${h.index + 1}</span><span>${h.title}</span></button></li>`)}
+      ${hits.count > hits.hits.length && html`<li class="more">+ ${hits.count - hits.hits.length} more slides</li>`}</ol>`}
+  </li>`;
 }
 
-function LectureViewer({ id, made, onClose, onMake, send }) {
+function ChapterGroup({ chapter, items, hits, open, onToggle, onOpen, send, total, searching }) {
+  const [over, setOver] = useState(false);
+  const [naming, setNaming] = useState(false);
+  const [name, setName] = useState(chapter ? chapter.name : "");
+  const id = chapter ? chapter.id : "";
+  const save = () => { setNaming(false); if (chapter && name.trim() !== chapter.name) send("chapter_rename", { id, name: name.trim() }); };
+  const drop = (e) => {
+    e.preventDefault(); setOver(false);
+    const lecture = e.dataTransfer.getData(DRAG_LECTURE), moved = e.dataTransfer.getData(DRAG_CHAPTER);
+    if (lecture) send("lecture_move", { id: lecture, chapter: id });
+    else if (moved && chapter && moved !== id) send("chapter_move", { id: moved, index: chapter.number - 1 });
+  };
+  const accepts = (e) => { const k = dragKind(e); return k === "lecture" || (k === "chapter" && !!chapter); };
+  const remove = () => confirm(`Delete “${chapter.label}”?\n\nIts ${items.length} lecture${items.length === 1 ? "" : "s"} move to Unsorted. `
+    + "No lecture, slide or material is deleted.\nThe chapters after it are renumbered.") && send("chapter_delete", { id });
+  return html`<section class=${"chapter" + (over ? " over" : "") + (open ? " open" : "") + (chapter ? "" : " unsorted")}
+      onDragOver=${(e) => { if (accepts(e)) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setOver(true); } }}
+      onDragLeave=${(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setOver(false); }} onDrop=${drop}>
+    <header class="chapter-head" draggable=${!!chapter && !naming}
+        onDragStart=${(e) => { if (!chapter) return; e.dataTransfer.setData(DRAG_CHAPTER, id); e.dataTransfer.effectAllowed = "move"; }}>
+      ${chapter && html`<span class="grip" aria-hidden="true">${svg(ICON.grip)}</span>`}
+      <button class="chapter-toggle" onClick=${onToggle} aria-expanded=${open}>
+        ${svg(ICON.chevron, "chev")}
+        ${naming ? null : html`<span class="chapter-name">${chapter
+          ? html`<span class="chapter-no">Chapter ${chapter.number}</span>${chapter.name ? html`<span class="dot-sep">·</span>${chapter.name}` : ""}`
+          : "Unsorted"}</span>`}
+      </button>
+      ${naming && html`<input class="chapter-input" value=${name} maxlength="80" onInput=${(e) => setName(e.target.value)} onBlur=${save}
+        ref=${(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus(), el.select())}
+        onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Enter") save(); if (e.key === "Escape") { setName(chapter.name); setNaming(false); } }} />`}
+      <em class="chapter-count">${searching ? `${items.length} / ${total}` : items.length}</em>
+      ${chapter && !naming && html`<span class="chapter-tools">
+        <button class="icon" title="Rename the chapter" onClick=${() => { setName(chapter.name); setNaming(true); }}>${svg(ICON.edit)}</button>
+        <button class="icon danger" title="Delete the chapter (its lectures move to Unsorted)" onClick=${remove}>${svg(ICON.bin)}</button>
+      </span>`}
+    </header>
+    ${open && html`<ul class="chapter-lectures">
+      ${items.map((l) => html`<${LectureRow} key=${l.id} l=${l} hits=${hits && hits[l.id]} onOpen=${onOpen} send=${send} />`)}
+      ${!items.length && html`<li class="chapter-empty">${chapter ? "Drag lectures here" : "Every lecture is in a chapter"}</li>`}
+    </ul>`}
+  </section>`;
+}
+
+function Lectures({ lectures, chapters, onOpen, send, version }) {
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState({ by: "date", dir: "desc" });
+  const [closed, setClosed] = useState({});  // chapter id ("" = Unsorted) → collapsed
+  const [naming, setNaming] = useState(false);
+  const [name, setName] = useState("");
+  const hits = useSearch(query, version);
+  if (lectures === null) return html`<div class="lectures"><p class="made-empty">Loading…</p></div>`;
+  const cmp = sort.by === "name" ? (a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
+    : (a, b) => a.started - b.started;
+  const dir = sort.dir === "asc" ? 1 : -1;
+  const shown = hits ? lectures.filter((l) => hits[l.id]) : lectures;
+  const inChapter = (id) => shown.filter((l) => (l.chapter || "") === id).sort((a, b) => dir * cmp(a, b));
+  const known = new Set(chapters.map((c) => c.id));
+  const order = [...chapters].sort(sort.by === "name"
+    ? (a, b) => dir * (a.name || a.label).localeCompare(b.name || b.label, undefined, { sensitivity: "base" })
+    : (a, b) => dir * (a.number - b.number));
+  const unsorted = shown.filter((l) => !known.has(l.chapter || "")).sort((a, b) => dir * cmp(a, b));
+  const create = () => { if (name.trim()) send("chapter_create", { name: name.trim() }); setName(""); setNaming(false); };
+  const groups = [...order.map((c) => ({ chapter: c, items: inChapter(c.id), total: lectures.filter((l) => l.chapter === c.id).length })),
+    { chapter: null, items: unsorted, total: lectures.filter((l) => !known.has(l.chapter || "")).length }]
+    .filter((g) => !hits || g.items.length);
+  return html`<div class="lectures">
+    <div class="lectures-tools">
+      <label class="search">${svg(ICON.search)}
+        <input type="search" value=${query} placeholder="Search lectures and slides" onInput=${(e) => setQuery(e.target.value)}
+          onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Escape") setQuery(""); }} /></label>
+      <${Segmented} value=${sort.by} options=${[["date", "Date"], ["name", "Name"]]} onChange=${(by) => setSort({ ...sort, by })} />
+      <button class="icon sort-dir" onClick=${() => setSort({ ...sort, dir: sort.dir === "asc" ? "desc" : "asc" })}
+        title=${sort.dir === "asc" ? (sort.by === "name" ? "A → Z (click for Z → A)" : "Oldest first (click for newest first)")
+          : (sort.by === "name" ? "Z → A (click for A → Z)" : "Newest first (click for oldest first)")}>
+        ${svg(sort.dir === "asc" ? ICON.sortUp : ICON.sortDown)}</button>
+    </div>
+    ${naming ? html`<div class="new-chapter">
+        <span class="new-number">Chapter ${chapters.length + 1} ·</span>
+        <input value=${name} placeholder="Name, e.g. Cell biology" maxlength="80" ref=${(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus())}
+          onInput=${(e) => setName(e.target.value)} onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Enter") create(); if (e.key === "Escape") setNaming(false); }} />
+        <button class="primary small" onClick=${create} disabled=${!name.trim()}>Create</button>
+        <button class="icon" onClick=${() => setNaming(false)} title="Cancel">${svg(ICON.remove)}</button>
+      </div>`
+      : html`<button class="ghost-pill new-chapter-btn" onClick=${() => setNaming(true)}>${svg(ICON.add)}New chapter</button>`}
+    ${hits && !groups.length && html`<p class="made-empty">Nothing found for “${query.trim()}”.</p>`}
+    ${!lectures.length && html`<p class="made-empty">Lectures appear here.</p>`}
+    ${groups.map((g) => html`<${ChapterGroup} key=${g.chapter ? g.chapter.id : "unsorted"} chapter=${g.chapter} items=${g.items}
+      total=${g.total} searching=${!!hits} hits=${hits} open=${!!hits || !closed[g.chapter ? g.chapter.id : ""]}
+      onToggle=${() => setClosed({ ...closed, [g.chapter ? g.chapter.id : ""]: !closed[g.chapter ? g.chapter.id : ""] })}
+      onOpen=${onOpen} send=${send} />`)}
+  </div>`;
+}
+
+function LectureViewer({ id, start = 0, made, onClose, onMake, send }) {
   const [data, setData] = useState(null);
-  const [at, setAt] = useState(0);
+  const [at, setAt] = useState(start);  // a search hit opens the lecture at its slide
   const box = useRef(null);
   const root = useRef(null);
   const scale = useStageScale(box);
@@ -872,17 +1225,25 @@ function App() {
   const [controlTheme, toggleControlTheme] = useControlTheme();
   const [tab, setTab] = useState("structure");
   const [wide, setWide] = useState(false);
-  const [viewing, setViewing] = useState(null);      // a past lecture open in the viewer (F-010)
+  const [viewing, setViewing] = useState(null);      // {id, at}: a lecture open in the viewer (F-010)
   const [preselect, setPreselect] = useState(null);  // "Make materials" from that lecture
   const materials = state.materials;
-  const lectures = useLectures(tab === "materials" || tab === "lectures",
-    `${materials ? materials.lectures_changed : 0}:${materials ? materials.items.length : 0}`);
+  const listVersion = `${materials ? materials.lectures_changed : 0}:${materials ? materials.items.length : 0}`;
+  const lectures = useLectures(tab === "materials" || tab === "lectures", listVersion,
+    state.deck ? state.deck.slide_ids.length : 0);
+  const notesOpen = state.notes && state.notes.open;
+  useEffect(() => { if (!notesOpen) setWide(false); }, [notesOpen]);  // F-010b #6: no notes, default width
 
   const deck = state.deck;
+  const shownNotes = state.notesShown && state.notesShown.on;
   useEffect(() => {
     const onKey = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
-      if (e.key === "Escape") { if (deck && deck.zoom) { e.preventDefault(); send("unzoom_image"); } return; }
+      if (e.key === "Escape") {
+        if (shownNotes) { e.preventDefault(); send("notes_project", { on: false }); }
+        else if (deck && deck.zoom) { e.preventDefault(); send("unzoom_image"); }
+        return;
+      }
       if (e.key === " ") {
         e.preventDefault();  // also keeps Space from pressing the focused button a second time
         if (canPause(state.lifecycle)) send(pauseCommand(state.lifecycle));
@@ -897,7 +1258,7 @@ function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [deck, state.lifecycle, state.theme]);
+  }, [deck, state.lifecycle, state.theme, shownNotes]);
 
   const liveSpec = deck && deck.live_id ? state.slides[deck.live_id] : null;
   const toggle = (on, off, flag) => () => send(deck && deck[flag] ? off : on);
@@ -919,6 +1280,7 @@ function App() {
     <main class=${"grid" + (wide && tab === "notes" ? " notes-wide" : "")}>
       <section class="left">
         <${Preview} spec=${liveSpec} deck=${deck} lifecycle=${state.lifecycle} slides=${state.slides} send=${send} theme=${state.theme}
+          materials=${materials} notesShown=${state.notesShown}
           notice=${notice} onNotice=${setNotice} adding=${adding} onAdded=${() => setAdding(false)}
           status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} />
         <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle} theme=${state.theme}
@@ -928,7 +1290,7 @@ function App() {
       <section class="right">
         <${Concerns} concerns=${state.concerns} send=${send} />
         <${SidePanel} tab=${tab} onTab=${setTab}>
-          <${Tab} id="structure" label="Structure" icon=${ICON.tree} badge=${deck && deck.slide_ids.length ? deck.slide_ids.length : ""}>
+          <${Tab} id="structure" label="Lecture structure" icon=${ICON.tree} badge=${deck && deck.slide_ids.length ? deck.slide_ids.length : ""}>
             <${Structure} deck=${deck} slides=${state.slides} send=${send} />
           </${Tab}>
           <${Tab} id="notes" label="My notes" icon=${ICON.notes} badge=${state.notes && state.notes.open ? `p. ${state.notes.page}` : ""}>
@@ -940,15 +1302,18 @@ function App() {
               preselect=${preselect} onPreselected=${() => setPreselect(null)} />
           </${Tab}>
           <${Tab} id="lectures" label="Lectures" icon=${ICON.lectures}>
-            <${Lectures} lectures=${lectures} onOpen=${setViewing} send=${send} />
+            <${Lectures} lectures=${lectures} chapters=${(materials && materials.chapters) || []} version=${listVersion}
+              onOpen=${(id, at) => setViewing({ id, at })} send=${send} />
           </${Tab}>
         </${SidePanel}>
       </section>
     </main>
     <${TranscriptStrip} lines=${state.transcript} />
-    ${viewing && html`<${LectureViewer} id=${viewing} send=${send} onClose=${() => setViewing(null)}
-      made=${(materials ? materials.items : []).filter((m) => m.lectures.includes(viewing))}
-      onMake=${(id) => { setViewing(null); setPreselect(id); setTab("materials"); }} />`}
+    ${viewing && html`<${LectureViewer} key=${viewing.id + ":" + viewing.at} id=${viewing.id} start=${viewing.at || 0}
+      send=${send} onClose=${() => setViewing(null)}
+      made=${(materials ? materials.items : []).filter((m) => m.lectures.includes(viewing.id))}
+      onMake=${(id) => { setViewing(null); setPreselect(id === (materials && materials.current.id) ? "now" : id); setTab("materials"); }} />`}
+    <${Tooltip} />
   </div>`;
 }
 

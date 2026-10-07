@@ -40,7 +40,7 @@ async def test_the_teacher_makes_materials_and_opens_a_past_lecture(tmp_path):
             command=__import__("copilot.core.events", fromlist=["Command"]).Command(kind="goto", args={"slide_id": "s2"})))
         await h.settle()
         async with browser_page(f"{h.url}/control", 1600, 1000) as control:
-            await control.click(".tabs button[title=Materials]")
+            await control.click(".tabs button[aria-label=Materials]")
             await control.wait_for_selector(".materials .kind")
             await control.screenshot(path=str(OUT / "materials_empty.png"))
             card = lambda label: f".kind:has(.kind-text b:text-is('{label}'))"  # noqa: E731  (the label, exactly)
@@ -70,9 +70,10 @@ async def test_the_teacher_makes_materials_and_opens_a_past_lecture(tmp_path):
             assert h.deck.live.origin == "materials" and h.deck.live.title == "Summary"  # on the projector
 
             # a past lecture: the list, the viewer, its slides
-            await control.click(".tabs button[title=Lectures]")
-            assert await control.get_attribute(".tabs button.on", "title") == "Lectures"
-            await control.click(".lecture-open:has-text('Photosynthesis')")
+            await control.click(".tabs button[aria-label=Lectures]")
+            assert await control.get_attribute(".tabs button.on", "aria-label") == "Lectures"
+            # the list now holds the running lecture too ("now", F-010b): open the past one
+            await control.click(".lecture-row:not(.now) .lecture-open:has-text('Photosynthesis')")
             await control.wait_for_selector(".viewer .stage .slide")
             title_px = await control.eval_on_selector(".viewer .stage .slide-title", "e => parseFloat(getComputedStyle(e).fontSize)")
             assert title_px >= 50                                   # the slide as on the projector, not restyled
@@ -81,7 +82,9 @@ async def test_the_teacher_makes_materials_and_opens_a_past_lecture(tmp_path):
             await asyncio.sleep(0.5)
             await control.screenshot(path=str(OUT / "lecture_viewer.png"))
             await control.click(".viewer-head button.primary")   # Make materials from it
-            await control.wait_for_selector(".materials .chip.on:has-text('Photosynthesis')")
+            # F-010b: From = Pick lectures, with that lecture picked
+            await control.wait_for_selector(".materials .segmented button.on:has-text('Pick lectures')")
+            await control.wait_for_selector(".materials .pick-wrap .menu-button:has-text('Photosynthesis')")
             assert await control.query_selector(".viewer") is None
             assert not control.errors, control.errors
 
@@ -121,7 +124,7 @@ async def test_notes_menu_and_the_solid_moon(tmp_path):
         async with browser_page(f"{h.url}/control", 1600, 1000) as control:
             fill = await control.get_attribute(".dock button.theme svg.moon path", "fill")
             assert fill == "currentColor"                              # a solid crescent, not an outline
-            await control.click(".tabs button[title='My notes']")
+            await control.click(".tabs button[aria-label='My notes']")
             await control.wait_for_selector(".notes-empty button.primary")
             assert await control.query_selector(".notes-empty p") is None    # minimal: no paragraph
             await control.screenshot(path=str(OUT / "notes_empty_minimal.png"))
@@ -131,8 +134,9 @@ async def test_notes_menu_and_the_solid_moon(tmp_path):
             await control.wait_for_selector(".doc-menu .menu-button")
             assert await control.query_selector("select") is None          # no native select
             await control.click(".doc-menu .menu-button")
-            await control.wait_for_selector(".menu .menu-row.add:has-text('Add PDF')")
-            await control.wait_for_selector(".notes-page img.loaded")
+            await control.wait_for_selector(".menu .menu-row.add:has-text('Add a file')")
+            await control.wait_for_function("() => { const i = document.querySelector('.notes-page img');"
+                                            " return !!i && i.complete && i.naturalWidth > 0; }")
             await asyncio.sleep(0.4)  # the menu's entrance
             await control.screenshot(path=str(OUT / "notes_menu.png"))
             await control.keyboard.press("Escape")

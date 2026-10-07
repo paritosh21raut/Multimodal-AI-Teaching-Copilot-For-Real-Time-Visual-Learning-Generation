@@ -67,19 +67,21 @@ async def display_harness(theme: str = "light", media_dir: Optional[Path] = None
         notes = NotesService(bus, library, notes_embedder)
         notes.attach()
         await notes.announce()
-    archive = mstore = event_log = None
+    archive = mstore = event_log = chapters = None
     if materials_dir is not None:
         from copilot.materials.archive import LectureArchive
+        from copilot.materials.chapters import ChapterBook
         from copilot.materials.store import MaterialStore
         from copilot.persistence.event_log import EventLog
 
         sessions = sessions_dir or materials_dir / "sessions"
         archive = LectureArchive(sessions, materials_dir / "archive.json", current_id=session_id)
         mstore = MaterialStore(materials_dir / "materials")
+        chapters = ChapterBook(materials_dir / "chapters.json")  # F-010b
         event_log = EventLog(sessions / session_id / "session.sqlite")  # "this lecture", as the app logs it
         await event_log.open(bus)
     server = DisplayServer(hub, port=free_port(), media=ImageCache(media_dir or PROJECT_ROOT / "data/cache/images"),
-                           notes=library, archive=archive, materials=mstore)
+                           notes=library, archive=archive, materials=mstore, chapters=chapters)
     await server.start()
     harness = Harness(bus, deck, hub, server)
     if mstore is not None:
@@ -89,7 +91,7 @@ async def display_harness(theme: str = "light", media_dir: Optional[Path] = None
 
         harness.materials = MaterialsService(bus, mstore, archive, deck, Writer(materials_router),
                                              Renderer(f"http://127.0.0.1:{server.port}"), session_id,
-                                             flush=event_log.flush if event_log else None)
+                                             flush=event_log.flush if event_log else None, chapters=chapters)
         harness.materials.attach()
         await harness.materials.announce()
     try:

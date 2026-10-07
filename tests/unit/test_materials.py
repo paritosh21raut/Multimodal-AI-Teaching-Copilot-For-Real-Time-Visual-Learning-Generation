@@ -384,6 +384,18 @@ async def test_an_assignment_has_the_chosen_number_of_questions(tmp_path):
     await svc.close(); await bus.close(); await log.close()
 
 
+async def test_assignment_has_no_student_lines_and_control_gets_no_token_counts(tmp_path):
+    # F-010b #8, #9 (user review 2026-10-07)
+    bus, deck, svc, renderer, states, log = await service_stack(tmp_path, FakeRouter())
+    await create(bus, svc, [{"kind": "assignment", "count": 3}])
+    page = renderer.pdfs[0]
+    assert "Roll no." not in page and 'class="student"' not in page and "<span>Name</span>" not in page
+    m = svc.store.items()[0]
+    assert m.tokens > 0                                   # still known (terminal + log)
+    assert "tokens" not in states[-1].items[0] and "calls" not in states[-1].items[0]
+    await svc.close(); await bus.close(); await log.close()
+
+
 async def test_material_slides_are_not_taught_content(tmp_path):
     router = FakeRouter()
     bus, deck, svc, _, _, log = await service_stack(tmp_path, router)
