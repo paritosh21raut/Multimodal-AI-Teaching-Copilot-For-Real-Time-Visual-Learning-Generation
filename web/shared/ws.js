@@ -42,15 +42,17 @@ export function connect(role, onMessage, onStatus) {
 
 // Reducer shared by both pages: applies server messages to a plain state object.
 export const initialState = { theme: "light", lifecycle: "starting", slides: {}, deck: null, transcript: [], audio: null, connected: false, concerns: [], images: {}, choices: {},
-  share: { state: "off", url: "", detail: "" }, viewers: 0 };
+  share: { state: "off", url: "", detail: "" }, viewers: 0, notes: null };
 
 export function reduce(state, msg) {
   switch (msg.type) {
     case "hello":
       return { ...state, theme: msg.theme, lifecycle: msg.lifecycle, slides: msg.slides || {}, deck: msg.deck, transcript: msg.transcript || [], concerns: msg.concerns || [], choices: msg.image_choices || {},
-        share: msg.share || initialState.share, viewers: msg.viewers || 0 };
+        share: msg.share || initialState.share, viewers: msg.viewers || 0, notes: msg.notes || null };
     case "share": return { ...state, share: { state: msg.state, url: msg.url, detail: msg.detail } };  // control only (F-008)
     case "viewers": return { ...state, viewers: msg.count };
+    case "theme": return { ...state, theme: msg.theme };  // the teacher switched light / dark (F-009)
+    case "notes": { const { type, ...notes } = msg; return { ...state, notes }; }  // control only (F-009)
     case "patch": {
       const cur = state.slides[msg.slide_id];
       if (cur && cur.version >= msg.version) return state; // stale

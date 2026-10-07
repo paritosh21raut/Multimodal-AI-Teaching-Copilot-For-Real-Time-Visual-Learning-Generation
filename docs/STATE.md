@@ -1,6 +1,7 @@
 # Current State
 
-_Last updated: 2026-10-06 (night): **V1 long-test fixes done** (session 20261006-193517-c513; speed, lost content,
+_Last updated: 2026-10-07: **V2 group A done** (themes, teacher notes, labelled images); next group B. Before:
+2026-10-06 (night): **V1 long-test fixes done** (session 20261006-193517-c513; speed, lost content,
 content relations, titles/parts, images, glass loader, pause colour, OpenRouter removed). Next: the user's check /
 declare V1 complete; V2 not started. Before: **V1b verify round 5 done** (5 user issues + formula sets). Before: **V1b verify round 4, step D (features) done** + the user's design notes on the
 step-C test (definition card, End lecture icon, classification as one tree, note card); steps A (correctness), B
@@ -13,8 +14,28 @@ viewer role, control token; live slide editing; lecture structure tree in /contr
 Then V1c._
 
 ## Now
-- **NEXT SESSION:** the user checks the long-test fixes (a real lecture with a gpt-oss key that has quota) and
-  decides whether V1 is complete. Do NOT start V2 before that (user 2026-10-06).
+- **V2 started (2026-10-07).** Plan agreed with the user: ROADMAP § V2 (groups A → B → C → D; every output only when
+  the teacher asks; V1c after V2). **Next: group B** (tools card in /control: summary slide, notes PDF, key concepts,
+  assignment PDF, PPTX, transcript, archive) — ask its doubts first, then spec `F-010`.
+- **V2 group A done (2026-10-07), 0 LLM tokens** (spec `docs/specs/F-009-themes-notes-labelled.md`). User answers:
+  dark design my call, theme button in the dock, students follow, /control dark → screenshots for the user to decide,
+  notes = PDF, never projected, auto page follow kept only if accurate, manual pages too.
+  - **Themes:** `set_theme` → store → `ThemeChanged` → hub → display / view / preview repaint (no reload); dock button
+    + `T`. Dark redesigned: `#050608` stage with corner light, graphite cards with inset hairline + sheen, luminous
+    teal / amber, images on a light mat. Tokens on any `[data-theme]` element (preview = slide theme). /control dark:
+    header moon, per browser — screenshots `artifacts/app/notes_wide_control_dark.png` for the user.
+  - **My notes:** right column card with tabs Structure · My notes; PDF upload → `data/notes`, page images
+    (pypdfium2), ‹ › pages, wider, remove; Follow lecture (MiniLM page matching, 0 tokens). Real app run
+    (photosynthesis, demo slides): definition → p2, needs → p3, steps → p4, equation → p5 (after the TeX-noise fix),
+    comparison → p7, importance → p6, unrelated physics slides moved nothing.
+  - **Labelled images:** extra "labelled diagram" search + labelled first (previews and ranking) for structures /
+    organs / systems / cycles; foreign "in X language" diagrams refused. 4 real runs × 10 queries: labelled English
+    diagrams for heart, plant cell, skeleton, digestive system, water cycle; photos unchanged.
+  - Verified: 477 fast (+ `test_themes` 3, `test_notes` 8, `test_labelled_images` 6 — fail on the old src), 23 Edge
+    (+ `test_themes_notes_browser` 2), 7 slow (+ notes calibration on the real model); real app (`--demo-slides
+    --no-understanding`) driven in Edge, screenshots inspected (`artifacts/app/v2a_*`, `notes_*`, `theme_*`).
+  - Not verified: a live lecture with real LLM + notes (nothing LLM-related changed); image downloads on the slow
+    Wikimedia link fail ~25 % of searches in both modes (existing, not caused by this).
 - **V1 long-test fixes (2026-10-06 night), user's 18 min test session 20261006-193517-c513** (chemical bonding →
   gas laws; all gpt-oss keys were spent before it, so it ran on the qwen backup). LLM tokens: 29,352 (prompt A/B,
   gpt-oss-120b, `GROQ_API_KEY_6`). User answers: keep "What is X?" titles, cards on the same slide ok, prompt test
@@ -242,6 +263,7 @@ Then V1c._
 | Presentation engine | 85 | content/composer/planner/engine: continuity, space-based layout, parts, dwell, new-topic confirmation + tentative move, revisions, truthful corrections, provisional fast path, force-new, nav-back (pin removed in round 5), overflow; verified on 3 lectures with real LLM + screenshots |
 | Live display + control view | 82 | + fact tiles, group cards, side-by-side definitions, part badges, concern card (said / correct / shown, switchable), overflow reporting; KaTeX formulas + chemical subscripts (V1a); images pending (V1b) |
 | Visual system (images/diagrams) | 60 | V1b: retrieval (Wikipedia/Commons + CLIP on CPU), policy, image layout, teacher controls (drop, add, change, previous/next, remove, zoom); one real-LLM lecture + replay verified; generated diagrams not started |
+| V2 group A (themes, teacher notes, labelled images) | 100 | verified (0 tokens): unit + Edge + real app |
 | Reference materials | 0 | not started |
 | Post-lecture outputs | 0 | not started |
 | Concept Simulation mode | 0 | not started |
@@ -252,6 +274,7 @@ Then V1c._
 | Item | Unit | Integration | Runtime |
 |---|---|---|---|
 | EventBus, config, state store, event log, simulator | ✅ | ✅ | ✅ |
+| V2 A: slide theme mid-lecture (premium dark), /control dark, teacher PDF notes + follow, labelled images first | ✅ 477 total | ✅ Edge (2) + slow calibration | ✅ real app in Edge (notes follow 7 slides, dark switch); real image searches 4 × 10 |
 | Verify round 5: edit tools inside the item + grace + double-click, Pin removed, glass anticipation, 10-step process in two rows + continued numbering, formula sets, Keep buttons on mistake cards | ✅ 437 total (`test_round5_layouts`) | ✅ Edge (20) | ✅ replay of 20261006-172934-8aa4 + 5-session old/new diff; real app control; glass light/dark + exit frames |
 | Verify round 4 step D: share (quick tunnel, viewer role, teacher key), live editing (final), structure tree, transcript strip; definition card, End icon, sub-classification tree, plain note card | ✅ 432 total (`test_teacher_edits`, `test_sub_classification`) | ✅ `test_share_access` (real server, tunnel headers) + Edge `test_control_features_browser` | ✅ real app + real Cloudflare tunnel (student profile, refused / keyed control); replays light + dark with real images |
 | Verify round 4 step B: member cards (≤ 6) + member in depth, classifications as one groups block, image above a formula, tree beside an image, sibling image hint, sub_concept not absorbed, whole trees | ✅ 410 total | ✅ Edge (12) | ✅ A/B 27,942 tok + live run ≈ 39.5k tok (hierarchy prompt rule rejected); replays with real images inspected; 5-session old/new diff |
@@ -293,6 +316,8 @@ Then V1c._
 ## Code map
 - `src/copilot/core/`: events, bus, config, state, logging_setup
 - `src/copilot/persistence/event_log.py`
+- `src/copilot/notes/`: library (the teacher's PDFs in data/notes, page texts, rendering), service (open / page /
+  follow the lecture, F-009)
 - `src/copilot/sim/simulator.py`
 - `src/copilot/audio/`: sources, vad, segmenter, mic_check
 - `src/copilot/stt/`: engine, pipeline, factory, cuda_dlls

@@ -6,6 +6,7 @@
   - `snapshots(seq, state_json)`: a `LectureState` + deck snapshot every N events / 60 s
 - `data/sessions/<session_id>/transcript.jsonl`: final transcript (human-readable mirror)
 - `data/cache/images/`: image cache (shared across sessions)
+- `data/notes/`: the teacher's PDF notes (F-009): `<sha16>.pdf`, page texts `<sha16>.json`, rendered pages, `index.json`
 - Writes are batched in a dedicated writer task (no blocking on the loop).
 
 ## Recovery

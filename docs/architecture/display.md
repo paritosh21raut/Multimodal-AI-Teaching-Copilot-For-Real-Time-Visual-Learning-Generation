@@ -85,6 +85,27 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
   definition hides its term when the title names it; otherwise it is a card with its term inside. Definitions after
   other content are one row of cards where the first of them stands (`trailingDefs` = `composer.trailing_definitions`).
 
+## Themes (F-009, V2)
+- Slide theme light / dark, switchable mid-lecture: dock button (sun / moon) or `T` → `set_theme` → the state store
+  (`setup.theme`) → `ThemeChanged` → hub `{"type": "theme"}` → `/display`, `/view` (students follow) and the /control
+  preview repaint without a reload. Tokens apply on any element with `data-theme`: the preview carries the slide
+  theme, the control page its own.
+- Dark (redesigned 2026-10-07): true near-black stage `#050608` with faint teal / indigo corner light
+  (`--stage-bg`), graphite cards with a hairline inset ring + deep shadow (`--shadow`, no borders: the composer's
+  height model stays exact), a faint top sheen (`--card-sheen`), luminous teal `#3ddcc6` / amber `#ffab66`. Images
+  sit on a light mat (`--figure-bg`), since labelled diagrams are drawn on white.
+- /control page dark mode: header moon button, per browser (localStorage `copilot.controlTheme`), default light —
+  the user decides whether to keep it.
+
+## Teacher notes (F-009, V2)
+- Right column = mistake cards + one card with tabs: **Structure · My notes** (V2 tools add tabs there).
+- My notes: Add PDF / drop → `POST /api/notes` (teacher only, ≤ 50 MB) → `data/notes/<sha16>.pdf` (+ page texts) →
+  `notes_open`; pages as PNG `GET /api/notes/<id>/page/<n>?w=` (pypdfium2, cached); ‹ n / m ›, arrows inside the
+  panel, wider view, remove. **Follow lecture** (on by default): `NotesService` matches the live slide's words
+  (MiniLM, 0 tokens; formula TeX skipped) to page chunks → page when ≥ 0.45 and ≥ 0.04 better than the page shown;
+  a page turned by hand holds until the next slide. A scan without text: follow off, the panel says why. Never sent to
+  `/display`, `/view` or the LLM. The last opened notes reopen next lecture.
+
 ## Teacher controls
 Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `Space` pause / resume,
 `B` blank, `N` force new slide (End lecture: button only; `Esc` closes a zoomed image). The terminal also accepts

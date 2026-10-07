@@ -28,9 +28,13 @@
   --t-slide: 380ms;
 }
 
+/* Themes apply on any element with data-theme (F-009): the page root, and the /control preview, which carries the
+   slide theme while the control page has its own. Custom properties inherit, so the nearest data-theme wins. */
 /* Light: warm paper, ink, one strong accent. Readable on washed-out classroom projectors. */
 :root,
-:root[data-theme="light"] {
+[data-theme="light"] {
+  --stage-bg: var(--bg);
+  --figure-bg: var(--surface-2);
   --bg: #f6f3ec;
   --surface: #ffffff;
   --surface-2: #efebe2;
@@ -69,26 +73,37 @@
   --g-dot: #0e6e66;
 }
 
-:root[data-theme="dark"] {
-  --bg: #111418;
-  --surface: #1a1f25;
-  --surface-2: #222830;
-  --ink: #eef1f4;
-  --ink-2: #c9d0d8;
-  --muted: #8f99a6;
-  --line: #2e3640;
-  --accent: #34c3b0;
-  --accent-ink: #062521;
-  --accent-soft: #163a36;
-  --accent-2: #f0965c;
-  --accent-2-soft: #3b271b;
+/* Dark (redesigned 2026-10-07, user: "proper dark black, not faint black; premium"): a true near-black room with a
+   faint teal / indigo light from two corners; cards are raised graphite panels with a hairline edge drawn by an
+   inset ring in --shadow (no border: the composer's height model stays exact); luminous teal and amber accents.
+   Images sit on a light mat: labelled diagrams are drawn on white. */
+[data-theme="dark"] {
+  --stage-bg:
+    radial-gradient(1500px 900px at -8% -12%, rgba(52, 214, 192, 0.085), transparent 62%),
+    radial-gradient(1300px 820px at 108% 112%, rgba(108, 118, 255, 0.075), transparent 62%),
+    #050608;
+  --figure-bg: #f4f3ef;
+  --card-sheen: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0) 55%);
+  --bg: #050608;
+  --surface: #0f1216;
+  --surface-2: #181c22;
+  --ink: #f5f7f9;
+  --ink-2: #c4cbd4;
+  --muted: #8b95a3;
+  --line: #262c34;
+  --accent: #3ddcc6;
+  --accent-ink: #03211d;
+  --accent-soft: #0c2b28;
+  --accent-2: #ffab66;
+  --accent-2-soft: #2c1d12;
   --pause: var(--accent);
   --pause-ink: var(--accent-ink);
   --pause-soft: var(--accent-soft);
-  --shadow: 0 2px 0 rgba(0, 0, 0, 0.25), 0 12px 32px rgba(0, 0, 0, 0.35);
+  --shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.075),
+    0 26px 52px -14px rgba(0, 0, 0, 0.85);
   /* the glass before the first slide: deep ink room, teal / indigo / violet light */
-  --g-base-1: #0d1526;
-  --g-base-2: #05080f;
+  --g-base-1: #0a1020;
+  --g-base-2: #030407;
   --g-au-1: #1fbfae;
   --g-au-2: #5a5ff2;
   --g-au-3: #a650e0;

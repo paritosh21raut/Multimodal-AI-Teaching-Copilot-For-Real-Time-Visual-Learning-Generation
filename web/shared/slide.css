@@ -4,7 +4,7 @@
   position: relative;
   width: 1920px;
   height: 1080px;
-  background: var(--bg);
+  background: var(--stage-bg, var(--bg));
   color: var(--ink);
   font-family: var(--font-text);
   overflow: hidden;
@@ -48,6 +48,11 @@
 .slide-body { min-height: 0; display: grid; gap: 36px; align-content: center; padding-bottom: 40px; }
 .slide-body.with-aside { grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); align-items: center; }
 .slide-body .main, .slide-body .aside { display: grid; gap: 32px; align-content: start; min-width: 0; }
+
+/* dark theme: the raised cards catch a faint light on their top edge (--card-sheen is none in light) */
+.stage :is(.point, .step-card, .callout, .fact, .group, .tree-node, .formula-eq, .link .cause, .example) {
+  background-image: var(--card-sheen, none);
+}
 
 /* entering items */
 .enter { animation: enter var(--t-enter) var(--ease) both; }
@@ -364,7 +369,7 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
   width: min(100%, calc(100cqh * var(--aspect)));
   aspect-ratio: var(--aspect);
   border-radius: var(--radius);
-  background: var(--surface-2);
+  background: var(--figure-bg, var(--surface-2));  /* dark theme: a light mat (diagrams are drawn on white) */
   box-shadow: var(--shadow);
   overflow: hidden;
   animation: enter var(--t-enter) var(--ease) both;
@@ -390,7 +395,7 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .zoomed {
   position: absolute; inset: 0; z-index: 5;
   display: grid; place-items: center; padding: 44px;
-  background: var(--bg);
+  background: var(--stage-bg, var(--bg));
   animation: zoom-bg 260ms var(--ease) both;
 }
 /* as large as the stage allows (1920x1080 minus the padding), also when the file is smaller than that */
@@ -402,6 +407,7 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
   opacity: 0; transform: scale(0.96); transition: opacity 320ms var(--ease), transform 320ms var(--ease);
 }
 .zoomed img.loaded { opacity: 1; transform: none; }
+.zoomed img { background: var(--figure-bg, transparent); }
 .zoomed.closable { cursor: zoom-out; }
 @keyframes zoom-bg { from { opacity: 0; } to { opacity: 1; } }
 

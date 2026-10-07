@@ -21,11 +21,13 @@ from copilot.core.config import PROJECT_ROOT
 from copilot.display.hub import Connection, DisplayHub
 
 if TYPE_CHECKING:
+    from copilot.notes.library import NotesLibrary
     from copilot.visuals.cache import ImageCache
 
 log = logging.getLogger(__name__)
 
 WEB_ROOT = PROJECT_ROOT / "web"
+NOTES_MAX_BYTES = 50 * 1024 * 1024
 
 
 class NoCacheStaticFiles(StaticFiles):
@@ -117,7 +119,8 @@ def is_local(client_host: Optional[str], headers) -> bool:
 
 
 def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
-               upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None) -> FastAPI:
+               upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None,
+               notes: Optional["NotesLibrary"] = None) -> FastAPI:
     """control_key: the teacher key for /control, /display, uploads and commands from outside this machine
     (None = no check, the in-process test harness)."""
     app = FastAPI(title="Teaching Copilot", docs_url=None, redoc_url=None)
@@ -167,6 +170,44 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
         log.info("teacher upload %r -> %s (%dx%d)", name, img.id, img.width, img.height)
         return JSONResponse({"image_id": img.id, "url": img.url, "width": img.width, "height": img.height,
                              "aspect": round(img.aspect, 3), "alt": img.alt})
+
+    @app.post("/api/notes")
+    async def notes_upload(request: Request):
+        """The teacher's notes (PDF, F-009): stored on this laptop under data/notes; opening it is the
+        `notes_open` command. Teacher only; never served to students."""
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
+        if notes is None:
+            return JSONResponse({"error": "notes are not available"}, status_code=503)
+        if request.headers.get("content-type", "").split(";")[0].strip().lower() != "application/pdf":
+            return JSONResponse({"error": "use a PDF file"}, status_code=415)
+        too_big = JSONResponse({"error": f"PDF larger than {NOTES_MAX_BYTES // (1024 * 1024)} MB"}, status_code=413)
+        if int(request.headers.get("content-length") or 0) > NOTES_MAX_BYTES:
+            return too_big
+        data = bytearray()
+        async for chunk in request.stream():
+            data += chunk
+            if len(data) > NOTES_MAX_BYTES:
+                return too_big
+        from copilot.notes.library import BadNotes
+
+        name = urllib.parse.unquote(request.headers.get("x-file-name", ""))[:120]
+        try:
+            doc = await asyncio.to_thread(notes.add, bytes(data), name)
+        except BadNotes as e:
+            return JSONResponse({"error": str(e)}, status_code=422)
+        return JSONResponse({"id": doc.id, "name": doc.name, "pages": doc.pages, "has_text": doc.has_text})
+
+    @app.get("/api/notes/{doc_id}/page/{page}")
+    async def notes_page(request: Request, doc_id: str, page: int, w: int = 720):
+        if not trusted(request):
+            return Response(status_code=403)
+        if notes is None:
+            return Response(status_code=404)
+        path = await asyncio.to_thread(notes.render, doc_id, page, w)
+        if path is None:
+            return Response(status_code=404)
+        return FileResponse(path, media_type="image/png", headers={"Cache-Control": "private, max-age=86400"})
 
     @app.get("/")
     async def root(request: Request):
@@ -260,11 +301,12 @@ class _EmbeddedServer(uvicorn.Server):
 class DisplayServer:
     def __init__(self, hub: DisplayHub, host: str = "127.0.0.1", port: int = 8765,
                  web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
-                 upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None) -> None:
+                 upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None,
+                 notes: Optional["NotesLibrary"] = None) -> None:
         self.host, self.port = host, port
         self.control_key = control_key
         self._server = _EmbeddedServer(
-            uvicorn.Config(create_app(hub, web_root, media, upload_max_bytes, control_key), host=host, port=port,
+            uvicorn.Config(create_app(hub, web_root, media, upload_max_bytes, control_key, notes), host=host, port=port,
                            log_level="warning", lifespan="off")
         )
         self._task: Optional[asyncio.Task] = None

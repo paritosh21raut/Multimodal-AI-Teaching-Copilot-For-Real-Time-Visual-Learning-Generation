@@ -42,6 +42,16 @@ relevant), own image by drag & drop / file picker (`/api/upload` → `set_image`
 content moves to the next part, and comes back when the teacher removes that image while the next part still holds
 only it). Layout: `display.md` § Images.
 
+## Labelled diagrams first (F-009, V2, user 2026-10-07)
+Where labels teach (kind `diagram`, or the query names a structure / organ / system / cycle / apparatus —
+`filters.wants_labels`; not planets, animals, places): an extra Commons search "<core> labelled diagram" runs with
+the others; labelled candidates (`filters.is_labelled`: labelled / annotated / with labels, or English labels by
+file-name code / category) take up to 5 of the 8 preview slots; an accepted labelled image ranks above every
+accepted unlabelled one; none accepted → the best unlabelled image as before. Same filters + CLIP gate. A diagram
+named "in <language> language" (not English) is refused. Query cache key `<kind>+labels`. Real searches
+2026-10-07 (4 runs × 10 queries): heart, plant cell, skeleton, digestive system, water cycle → English-labelled
+diagrams; Saturn / tiger unchanged; "downloads failed" (slow Wikimedia link) about equally often with and without.
+
 ## Generated diagrams
 Structured data from the Interpretation (steps, nodes, edges, events) → `DiagramBlock` → rendered client-side
 as SVG by layout components (flow, cycle, tree, timeline, causal graph, two-column contrast).

@@ -65,6 +65,8 @@ CommandKind = Literal[
     "zoom_image", "unzoom_image",                 # the slide's image full screen on the display, args {slide_id}
     "edit_text", "delete_item", "add_point",      # live slide editing, F-008: {slide_id, item_id[, text]} / {slide_id, text}
     "share_start", "share_stop",                  # share /view with students over a Cloudflare quick tunnel (F-008)
+    "set_theme",                                  # slide theme mid-lecture, args {theme: light | dark} (F-009)
+    "notes_open", "notes_page", "notes_follow", "notes_remove",  # the teacher's PDF notes in /control (F-009)
 ]
 
 
@@ -232,6 +234,24 @@ class ShareChanged(Event):
     detail: str = ""  # progress ("downloading cloudflared") or why it failed
 
 
+class ThemeChanged(Event):
+    """The slide theme changed (F-009): the display, the students' pages and the /control preview repaint."""
+    theme: Literal["light", "dark"]
+
+
+class NotesState(Event):
+    """The teacher's PDF notes in /control (F-009): the list, the open one, its page, following the lecture.
+    Control only — never the projector or the students."""
+    ephemeral: ClassVar[bool] = True  # a view state, not lecture history
+    docs: list[dict[str, Any]] = Field(default_factory=list)  # [{id, name, pages, has_text, added}]
+    open: str = ""
+    page: int = 0
+    pages: int = 0
+    follow: bool = True
+    reason: str = ""   # why following the lecture does nothing ("" = it works)
+    matched: str = ""  # the slide title the page was matched to
+
+
 class ErrorRaised(Event):
     component: str
     error: str
@@ -245,7 +265,7 @@ EVENT_TYPES: dict[str, type[Event]] = {
         CommandReceived, StateChanged, SlidePatch, DeckState, ErrorRaised,
         UtteranceClassified, ConceptSignal, InterpretRequested, InterpretationReady, LLMCallFailed,
         ConcernRaised, ConcernResolved, SlideContextChanged, SlideOverflow, ImageRequested, ImageReady,
-        ImageChoices,
+        ImageChoices, ThemeChanged,
     )
 }
 

@@ -36,6 +36,7 @@ _LANG3 = {"ast", "fil", "yue", "hsb", "dsb", "ckb", "nds", "bar", "vec", "scn", 
           "fas", "deu", "ger", "fra", "fre", "spa", "rus", "zho", "chi", "jpn", "kor", "ara", "hin", "ben", "por",
           "ita", "nld", "pol", "tur", "ukr", "heb", "srp", "hrv", "ces", "cze", "swe", "fin", "ell", "gre"}
 _FOREIGN_LANG_CAT =re.compile(r"\b(\w+)-language\b", re.IGNORECASE)
+_IN_LANGUAGE = re.compile(r"\bin[ _]([A-Za-z]+)[ _]language\b", re.IGNORECASE)
 _NOT_LANG = {"en", "en-us", "en-gb", "eng", "hd", "bw", "lr", "hr", "v2", "v3", "of", "in", "on", "at", "to",
              "is", "it", "an", "as", "by", "up", "my", "me", "we", "us", "go", "no", "or", "so", "do", "ii", "iv",
              "big", "old", "new", "map", "rgb", "alt", "fig", "cut", "top", "red", "low", "pic", "img", "ani",
@@ -49,6 +50,29 @@ _DIAGRAMMY = re.compile(r"\b(?:diagram|diagrams|labell?ed|schematic|illustration
 def _haystack(c: Candidate) -> str:
     name = re.sub(r"^File:", "", c.title)
     return f"{name} | {c.categories} | {c.description}"
+
+
+# Labelled diagrams first (F-009 §3, user 2026-10-07): "prefer labelled diagrams and images from Wikipedia; if none,
+# show one without labels" — only where labels help (a structure, organ, system, cycle, apparatus), not for photos
+# of planets or animals.
+_LABELLED = re.compile(r"(?:\b|_)(?:labell?ed|annotated|with[ _](?:english[ _])?labels|labels[ _]in[ _]english|"
+                       r"label[ _]diagram)(?:\b|_)", re.IGNORECASE)
+_STRUCTURE = re.compile(
+    r"\b(?:systems?|organs?|cells?|structures?|parts?|anatomy|cycles?|apparatus|layers?|cross[- ]sections?|"
+    r"heart|eye|ear|brain|kidneys?|lungs?|liver|stomach|intestines?|skeleton|skull|teeth|tooth|bones?|"
+    r"muscles?|skin|neurons?|tissues?|flower|leaf|leaves|roots?|stem|seed|stomata|chloroplasts?|mitochondri\w*|"
+    r"nucleus|bacteri\w*|virus|microscope|circuit|engine|motor|generator|transformer|volcano|atom)\b",
+    re.IGNORECASE)
+
+
+def is_labelled(c: Candidate) -> bool:
+    """Says it has labels, or carries English labels ("Heart diagram-en.svg", "English-language diagrams")."""
+    return bool(_LABELLED.search(_haystack(c))) or language(c) == "en"
+
+
+def wants_labels(query: str, kind: str) -> bool:
+    """A subject where a labelled diagram teaches more than a plain picture."""
+    return kind == "diagram" or bool(_STRUCTURE.search(query))
 
 
 _GENERIC = {"human", "diagram", "photo", "picture", "image", "structure", "labelled", "labeled", "the", "of", "and",
@@ -118,6 +142,10 @@ def language(c: Candidate) -> str:
         return "en"
     if code and code not in _NOT_LANG:
         return code
+    # "Parts of a flower in kashmiri language.jpg" (labelled-diagram search, 2026-10-07)
+    named = _IN_LANGUAGE.search(f"{c.title} {c.description[:120]}")
+    if named and named.group(1).lower() != "english":
+        return named.group(1).lower()
     cats = [x.lower() for x in _FOREIGN_LANG_CAT.findall(c.categories)]
     if cats and "english" not in cats:
         return cats[0]

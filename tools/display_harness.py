@@ -37,8 +37,11 @@ class Harness:
 
 
 @asynccontextmanager
-async def display_harness(theme: str = "light", media_dir: Optional[Path] = None) -> AsyncIterator[Harness]:
-    """media_dir: image cache served under /media (default: the app's cache, so cached lecture images show)."""
+async def display_harness(theme: str = "light", media_dir: Optional[Path] = None, notes_dir: Optional[Path] = None,
+                          notes_embedder=None, store: bool = False) -> AsyncIterator[Harness]:
+    """media_dir: image cache served under /media (default: the app's cache, so cached lecture images show).
+    notes_dir: a teacher-notes library (F-009) served to /control, with NotesService (follows the slides when
+    notes_embedder is given). store: a LectureStateStore too (owns the slide theme: the dock's light / dark)."""
     from copilot.visuals.cache import ImageCache
 
     bus = EventBus()
@@ -46,7 +49,21 @@ async def display_harness(theme: str = "light", media_dir: Optional[Path] = None
     deck.attach()
     hub = DisplayHub(bus, theme=theme)
     hub.attach()
-    server = DisplayServer(hub, port=free_port(), media=ImageCache(media_dir or PROJECT_ROOT / "data/cache/images"))
+    if store:
+        from copilot.core.state import LectureSetup, LectureStateStore
+
+        LectureStateStore(bus, "harness", LectureSetup(theme=theme)).attach()
+    library = None
+    if notes_dir is not None:
+        from copilot.notes.library import NotesLibrary
+        from copilot.notes.service import NotesService
+
+        library = NotesLibrary(notes_dir)
+        notes = NotesService(bus, library, notes_embedder)
+        notes.attach()
+        await notes.announce()
+    server = DisplayServer(hub, port=free_port(), media=ImageCache(media_dir or PROJECT_ROOT / "data/cache/images"),
+                           notes=library)
     await server.start()
     harness = Harness(bus, deck, hub, server)
     try:

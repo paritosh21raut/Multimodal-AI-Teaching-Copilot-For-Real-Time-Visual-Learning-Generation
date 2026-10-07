@@ -170,6 +170,8 @@ class App:
         self.deck = Deck(self.bus)
         self._now = Lifecycle.STARTING
         self.share = None  # display.share.ShareService (F-008)
+        self.notes = None  # notes.service.NotesService (F-009)
+        self._notes_loader: Optional[asyncio.Task] = None
         self.control_key = secrets.token_urlsafe(18)  # the teacher key for /control from outside this machine
 
     async def _lifecycle(self, state: Lifecycle, reason: str = "") -> None:
@@ -197,6 +199,21 @@ class App:
         took = await asyncio.to_thread(self.engine.load)
         print(f"[INIT]  speech model ready ({took:.1f} s)", flush=True)
 
+    async def _load_notes_embedder(self) -> None:
+        from copilot.understanding.embedder import MiniLmEmbedder
+
+        u = self.config.section("understanding")
+        embedder = MiniLmEmbedder(PROJECT_ROOT / u.get("embed_dir", "models/minilm"),
+                                  u.get("embed_repo", "sentence-transformers/all-MiniLM-L6-v2"))
+        try:
+            await asyncio.to_thread(embedder.load)
+        except Exception:  # following stays off; the panel says why
+            log.exception("notes: embedder load failed")
+            return
+        if self.notes is not None:
+            self.notes.embedder = embedder
+            await self.notes.announce()
+
     async def _init_understanding(self) -> None:
         import httpx
 
@@ -219,6 +236,9 @@ class App:
             log.exception("embedder load failed")
             print(f"[INIT]  concept embedder unavailable ({type(e).__name__}); using cue words only", flush=True)
             embedder = None
+        if self.notes is not None and embedder is not None:
+            self.notes.embedder = embedder  # the notes follow the lecture with the same model (0 tokens)
+            await self.notes.announce()
 
         async def on_failure(entry: str, error: str, will_retry: bool) -> None:
             await self.bus.publish(LLMCallFailed(provider=entry, error=error[:300], will_retry=will_retry))
@@ -331,13 +351,20 @@ class App:
         hub = DisplayHub(self.bus, theme=self.store.snapshot().setup.theme if self.store else "light")
         hub.attach()
         self.hub = hub
+        from copilot.notes.library import NotesLibrary
+        from copilot.notes.service import NotesService
         from copilot.visuals.service import cache_from_config
 
+        # the teacher's PDF notes (F-009): on this laptop, shown only in /control
+        library = NotesLibrary(PROJECT_ROOT / self.config.get("app", "data_dir", "data") / "notes")
+        self.notes = NotesService(self.bus, library)
+        self.notes.attach()
+        await self.notes.announce()
         self.server = DisplayServer(
             hub, self.config.get("display", "host", "127.0.0.1"), int(self.config.get("display", "port", 8765)),
             media=cache_from_config(self.config),
             upload_max_bytes=int(float(self.config.get("images", "upload_max_mb", 10)) * 1024 * 1024),
-            control_key=self.control_key,
+            control_key=self.control_key, notes=library,
         )
         await self.server.start()
         self._server_started = asyncio.get_running_loop().time()
@@ -385,6 +412,8 @@ class App:
                 await self._init_speech()
             if self.understanding_enabled:
                 await self._init_understanding()
+            elif self.notes is not None:  # no understanding: the notes still follow the slides (model in background)
+                self._notes_loader = asyncio.create_task(self._load_notes_embedder())
             # Started only after every heavy import: on Windows a DLL import (numpy) can deadlock while another
             # thread is blocked reading a piped stdin (seen with tools/screenshot_app.py).
             TerminalInput(asyncio.get_running_loop(), self._terminal).start()
@@ -517,6 +546,8 @@ class App:
     async def _shutdown(self) -> None:
         if self._opener is not None:
             self._opener.cancel()
+        if self._notes_loader is not None:
+            self._notes_loader.cancel()
         if self.presentation is not None:
             await self.presentation.stop()
         if self.images is not None:

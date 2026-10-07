@@ -51,6 +51,16 @@ plugs into them.
 ## V2 — Reference materials + post-lecture
 - Teacher uploads (PDF, docs, labelled images) → local index (separate from the transcript); used for enrichment only.
 - Post-lecture: notes, short and detailed summaries, key concepts, quiz/question bank, PPTX export, archive viewer.
+- **Plan (user, 2026-10-07)**, groups built one after another, everything only when the teacher asks for it:
+  - **A** slide themes light / premium dark mid-lecture, /control dark (user decides), teacher's PDF notes in
+    /control, labelled diagrams first → `F-009-themes-notes-labelled.md` (done)
+  - **B** one tools card in /control (multi-select): summary **as a slide** (teacher makes it), notes PDF, key
+    concepts, assignment PDF (theory questions, count chosen), PPTX of the deck (projector look), transcript, archive
+  - **C** quiz (MCQ, time per question, count, topic incl. picked past lectures, leaderboard on the projector) and
+    test (MCQ, count + duration, submit, scores to the teacher); students join through the share link with name +
+    roll number, one submission per roll number; questions previewed / edited by the teacher before start
+  - **D** reference materials (upload + local index; most accurate / efficient use, LLM optional)
+- V1c (crash recovery + soak) after V2, with a full crash-recovery diagnosis (user).
 
 ## V3 — Concept Simulation mode
 - Parametric simulation templates (forces on a block, incline, circuits, waves, orbits, cycles, geometry).

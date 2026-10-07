@@ -26,9 +26,11 @@ from copilot.core.events import (
     ImageReady,
     ImageRequested,
     LifecycleChanged,
+    NotesState,
     ShareChanged,
     SlideOverflow,
     SlidePatch,
+    ThemeChanged,
     TranscriptFinal,
     UtteranceDropped,
 )
@@ -80,12 +82,13 @@ class DisplayHub:
         self._image_requests: dict[str, str] = {}  # running image searches: request_id -> auto | change
         self.connects: dict[str, int] = {"display": 0, "control": 0, "viewer": 0}  # connections ever made, per role
         self.share: dict = {"state": "off", "url": "", "detail": ""}  # control only (F-008)
+        self.notes: Optional[dict] = None  # the teacher's PDF notes (F-009), control only
 
     def attach(self) -> None:
         self._bus.subscribe(
             "display_hub", self._on_event,
             [SlidePatch, DeckState, LifecycleChanged, TranscriptFinal, UtteranceDropped, ConcernRaised,
-             ConcernResolved, ImageRequested, ImageReady, ImageChoices, ShareChanged],
+             ConcernResolved, ImageRequested, ImageReady, ImageChoices, ShareChanged, ThemeChanged, NotesState],
         )
         # Audio levels are high-rate and only matter "now": drop old ones if the hub lags.
         self._bus.subscribe("display_hub_audio", self._on_event, [AudioLevel], queue_size=4, overflow="drop_oldest")
@@ -127,6 +130,7 @@ class DisplayHub:
             msg["image_choices"] = dict(self.image_choices)
             msg["share"] = dict(self.share)
             msg["viewers"] = self.viewers
+            msg["notes"] = self.notes
         return msg
 
     async def handle_client_message(self, conn: Connection, msg: dict) -> Optional[str]:
@@ -213,6 +217,12 @@ class DisplayHub:
         elif isinstance(event, ShareChanged):  # control only: the student link and its state
             self.share = {"state": event.state, "url": event.url, "detail": event.detail}
             self._broadcast({"type": "share", **self.share}, key=("share",), roles=("control",))
+        elif isinstance(event, NotesState):  # control only: the teacher's own notes never reach a slide page
+            self.notes = event.model_dump(include={"docs", "open", "page", "pages", "follow", "reason", "matched"})
+            self._broadcast({"type": "notes", **self.notes}, key=("notes",), roles=("control",))
+        elif isinstance(event, ThemeChanged):  # every slide page repaints; students follow the teacher's theme
+            self.theme = event.theme
+            self._broadcast({"type": "theme", "theme": self.theme}, key=("theme",))
         elif isinstance(event, AudioLevel):
             self._broadcast({"type": "audio", "rms": event.rms, "speaking": event.speaking},
                             key=("audio",), roles=("control",))

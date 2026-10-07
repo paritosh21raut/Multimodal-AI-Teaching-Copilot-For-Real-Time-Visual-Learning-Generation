@@ -19,6 +19,7 @@ from copilot.core.events import (
     LifecycleChanged,
     SlideContextChanged,
     StateChanged,
+    ThemeChanged,
     TranscriptFinal,
     new_id,
 )
@@ -193,6 +194,14 @@ class LectureStateStore:
             # Lifecycle commands are executed by the app; slide commands by the planner (M4).
             if event.command.kind == "resolve_concern":
                 return self._resolve_concern(event.command.args)
+            if event.command.kind == "set_theme":  # the teacher's light / dark switch, mid-lecture too (F-009)
+                theme = event.command.args.get("theme")
+                if theme in ("light", "dark") and theme != s.setup.theme:
+                    s.setup.theme = theme
+                    self._outbox.append(ThemeChanged(theme=theme))
+                    return ["setup"]
+                if theme not in ("light", "dark"):
+                    log.warning("set_theme ignored: %r", theme)
             return []
         elif isinstance(event, InterpretationReady):
             return self._apply_interpretation(event)

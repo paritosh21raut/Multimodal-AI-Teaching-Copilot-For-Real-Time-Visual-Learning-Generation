@@ -47,3 +47,28 @@ def test_image_relevance_real(embedder):
                "absorb water through roots from soil. Plants take in carbon dioxide through stomata") > IMAGE_MIN_RELEVANCE
     assert sim("female reproductive system", "What is human Reproductive System?. Ovaries. Fallopian tubes. Uterus. "
                "Cervix. Vagina. Vulva") > IMAGE_MIN_RELEVANCE
+
+
+def test_teacher_notes_follow_the_slides_calibration(embedder, tmp_path):
+    """F-009: the photosynthesis lecture's slides find their page of the teacher's own notes (written in other
+    words); a slide about something else moves nothing (FOLLOW_MIN)."""
+    from copilot.notes.library import NotesLibrary
+    from copilot.notes.service import PageIndex, choose_page
+
+    library = NotesLibrary(tmp_path)
+    doc = library.add((Path(__file__).parents[1] / "fixtures" / "notes" / "photosynthesis_notes.pdf").read_bytes(), "n.pdf")
+    index = PageIndex(embedder, library.page_texts(doc.id))
+    slides = {
+        2: "What is photosynthesis? The process by which green plants make their own food using sunlight. "
+           "photo = light, synthesis = putting together",
+        3: "What photosynthesis needs. Sunlight. Water. Carbon dioxide. Chlorophyll. Water is absorbed by the roots",
+        4: "How photosynthesis works. Chlorophyll absorbs sunlight. Light energy splits water. Hydrogen combines with "
+           "carbon dioxide to make glucose. Oxygen is released",
+        5: "Photosynthesis equation. carbon dioxide + water → glucose + oxygen",
+        6: "Why photosynthesis matters. Food for almost every living thing. Oxygen we breathe",
+        7: "Respiration. Releases energy from glucose",
+    }
+    for page, text in slides.items():
+        assert choose_page(index.scores(embedder.embed([text])[0]), current=1 if page != 1 else 2) == page, text
+    assert choose_page(index.scores(embedder.embed(["Newton's laws of motion. Force = mass x acceleration"])[0]),
+                       current=2) is None

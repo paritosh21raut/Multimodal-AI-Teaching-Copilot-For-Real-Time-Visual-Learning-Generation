@@ -18,7 +18,7 @@ import numpy as np
 
 from copilot.visuals import sources
 from copilot.visuals.cache import BadImage, CachedImage, ImageCache, decode
-from copilot.visuals.filters import core_query, prior, reject_reason
+from copilot.visuals.filters import core_query, is_labelled, prior, reject_reason, wants_labels
 from copilot.visuals.sources import Candidate
 
 log = logging.getLogger(__name__)
@@ -44,6 +44,7 @@ class FinderSettings:
     clip_reserve_s: float = 1.0    # of the budget, kept for CLIP after the preview downloads (≈ 0.7 s for 8)
     full_reserve_s: float = 2.5    # ... and for downloading the chosen image(s) at full size
     openverse: bool = False
+    labelled_slots: int = 5        # of the previews, at most this many go to labelled candidates first (F-009)
 
 
 @dataclass
@@ -74,13 +75,16 @@ class ImageFinder:
         query = " ".join(query.split())
         if not query:
             return FindResult([], "empty query")
+        # answers found before labelled diagrams were preferred must not skip the preference (F-009)
+        cache_kind = f"{kind}+labels" if wants_labels(query, kind) else kind
         if not deeper:
-            hit = self.cache.load_query(query, kind)
+            hit = self.cache.load_query(query, cache_kind)
             if hit is not None:
                 return FindResult([i for i in hit if i.id not in exclude], "" if hit else "no match (cached)", True)
         t0 = time.perf_counter()
         try:
-            return await asyncio.wait_for(self._search(query, kind, set(exclude), deeper, t0), self.s.budget_s)
+            return await asyncio.wait_for(self._search(query, kind, set(exclude), deeper, t0, cache_kind),
+                                          self.s.budget_s)
         except asyncio.TimeoutError:
             log.info("image search %r timed out after %.1f s: no image", query, self.s.budget_s)
             return FindResult([], "timeout")
@@ -88,8 +92,10 @@ class ImageFinder:
             log.info("image search %r: network error (%s): no image", query, e)
             return FindResult([], f"network: {type(e).__name__}")
 
-    async def _search(self, query: str, kind: str, exclude: set[str], deeper: bool, t0: float) -> FindResult:
+    async def _search(self, query: str, kind: str, exclude: set[str], deeper: bool, t0: float,
+                      cache_kind: str = "") -> FindResult:
         timings: dict[str, float] = {}
+        labels = wants_labels(query, kind)
         async with sources.client(self.s.http_timeout_s, self.transport) as c:
             cands = await self._candidates(c, query, kind, deeper)
             timings["search_s"] = time.perf_counter() - t0
@@ -105,7 +111,7 @@ class ImageFinder:
                     continue
                 seen.add(cand.title)
                 kept.append(cand)
-            kept = kept[: self.s.max_candidates]
+            kept = self._previews(kept, labels)
             if not kept:
                 return FindResult([], "no usable candidates", rejected=rejected, timings=timings)
             t1 = time.perf_counter()
@@ -127,8 +133,7 @@ class ImageFinder:
                     rejected.append((cand.title, f"clip {sim:.3f} margin {margin:+.3f}"))
                     continue
                 accepted.append((sim + prior(cand, query, kind), cand, img))
-            accepted.sort(key=lambda x: -x[0])
-            accepted = [a for a in accepted if a[0] >= accepted[0][0] - self.s.alt_within] if accepted else []
+            accepted = self._rank(accepted, labels)
             t3 = time.perf_counter()
             chosen = await self._full_size(c, accepted[: self.s.keep], t0, query)
             timings["full_s"] = time.perf_counter() - t3
@@ -146,12 +151,36 @@ class ImageFinder:
                                score=round(score, 4))
             images.append(await asyncio.to_thread(self.cache.store, img, cand.image_url, meta))
         if not deeper and len(chosen) == len(accepted[: self.s.keep]):  # a partial answer is not remembered
-            self.cache.save_query(query, kind, images)
+            self.cache.save_query(query, cache_kind or kind, images)
         images = [i for i in images if i.id not in exclude]
         timings["total_s"] = time.perf_counter() - t0
-        log.info("image search %r (%s): %d candidate(s), %d accepted, %.2f s %s", query, kind, len(pairs),
-                 len(images), timings["total_s"], {k: round(v, 2) for k, v in timings.items()})
+        log.info("image search %r (%s%s): %d candidate(s), %d accepted (%d labelled), %.2f s %s", query, kind,
+                 ", labels preferred" if labels else "", len(pairs), len(images),
+                 sum(is_labelled(c) for _, c, _ in chosen), timings["total_s"],
+                 {k: round(v, 2) for k, v in timings.items()})
         return FindResult(images, "" if images else "no relevant image", rejected=rejected, timings=timings)
+
+    def _previews(self, kept: list[Candidate], labels: bool) -> list[Candidate]:
+        """The candidates whose previews are downloaded: labelled ones first where labels help (up to
+        `labelled_slots`), the rest in source order, so an unlabelled image can still win when no labelled one
+        fits the slide."""
+        n = self.s.max_candidates
+        if not labels:
+            return kept[:n]
+        lab = [k for k in kept if is_labelled(k)][: self.s.labelled_slots]
+        return lab + [k for k in kept if k not in lab][: n - len(lab)]
+
+    def _rank(self, accepted: list, labels: bool) -> list:
+        """Best first; where labels help, every accepted labelled image before every unlabelled one (each group
+        keeps its alternatives within `alt_within` of its own best)."""
+        accepted = sorted(accepted, key=lambda x: -x[0])
+        if not labels:
+            return [a for a in accepted if a[0] >= accepted[0][0] - self.s.alt_within] if accepted else []
+        out = []
+        for group in ([a for a in accepted if is_labelled(a[1])], [a for a in accepted if not is_labelled(a[1])]):
+            if group:
+                out += [a for a in group if a[0] >= group[0][0] - self.s.alt_within]
+        return out
 
     async def _candidates(self, c: httpx.AsyncClient, query: str, kind: str, deeper: bool) -> list[Candidate]:
         def for_commons(q: str) -> str:
@@ -171,6 +200,10 @@ class ImageFinder:
         if self.s.openverse:
             jobs.append(sources.openverse_search(c, query, page=2 if deeper else 1))
             searched.append(query)
+        if wants_labels(query, kind):  # labelled diagrams of the thing (F-009), judged against the thing itself
+            base = core or query
+            jobs.append(sources.commons_search(c, f"{base} labelled diagram", limit=n, offset=n if deeper else 0))
+            searched.append(base)
         results = await asyncio.gather(*jobs, return_exceptions=True)
         lists: list[list[Candidate]] = []
         for r, q in zip(results, searched):

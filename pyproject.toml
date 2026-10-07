@@ -23,7 +23,8 @@ audio = [
     "nvidia-cublas-cu12; sys_platform == 'win32'",
     "nvidia-cudnn-cu12>=9,<10; sys_platform == 'win32'",
 ]
-display = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
+# pypdfium2: the teacher's PDF notes in /control (F-009), rendered and read locally
+display = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "pypdfium2>=4"]
 understanding = ["httpx>=0.27", "numpy>=1.24", "onnxruntime>=1.17", "tokenizers>=0.15", "huggingface_hub>=0.20"]
 # V1b images: CLIP ViT-B/32 (ONNX int8, CPU) re-ranking + Pillow decoding; the model downloads to models/clip
 images = ["pillow>=10", "httpx>=0.27", "numpy>=1.24", "onnxruntime>=1.17", "tokenizers>=0.15", "huggingface_hub>=0.20"]

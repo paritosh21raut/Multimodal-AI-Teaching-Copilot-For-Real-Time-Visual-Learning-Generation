@@ -63,7 +63,24 @@ const ICON = {
   copy: "M9 9h11v11H9zM5 15H4V4h11v1",
   stop: "M6 6l12 12M18 6L6 18",
   chevron: "M6 9l6 6 6-6",
+  sun: "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4",
+  moon: "M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z",
+  tree: "M4 5h6M4 5v14M4 12h6M4 19h6M14 5h6M14 12h6M14 19h6",
+  notes: "M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h4",
 };
+
+// The control page's own light / dark (F-009): a per-browser preference, separate from the slide theme
+const CONTROL_THEME_KEY = "copilot.controlTheme";
+function useControlTheme() {
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem(CONTROL_THEME_KEY) === "dark" ? "dark" : "light"; } catch (e) { return "light"; }
+  });
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem(CONTROL_THEME_KEY, theme); } catch (e) { /* private window: not remembered */ }
+  }, [theme]);
+  return [theme, () => setTheme(theme === "dark" ? "light" : "dark")];
+}
 
 // ---- live slide editing (F-008): hover an item of the preview → pencil / bin; the title → pencil; Add point ----
 // Every change is a command; the server keeps the teacher's text final (the lecture never rewrites it).
@@ -223,7 +240,7 @@ function ImageBar({ spec, image, choices, status, send, onNotice }) {
   </div>`;
 }
 
-function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice, adding, onAdded }) {
+function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice, adding, onAdded, theme }) {
   const ref = useRef(null);
   const scale = useStageScale(ref);
   const [drag, setDrag] = useState(null); // null | "over" | "uploading"
@@ -245,7 +262,8 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
   const shown = drag && canDrop ? withGhost(spec, drag === "uploading" ? "Placing the image…" : "Drop to place the image here") : spec;
   // before the first slide the preview shows what the projector shows: the slide developing behind glass
   const glass = useGlassExit(!spec && !(deck && deck.blank), !!(deck && deck.blank));
-  return html`<div class=${"preview" + (drag ? " dragging" : "")} ref=${ref}
+  // the preview shows the slides in the projector's theme, whatever the control page's own theme is
+  return html`<div class=${"preview" + (drag ? " dragging" : "")} ref=${ref} data-theme=${theme}
       onDragEnter=${(e) => { if (!hasFiles(e)) return; e.preventDefault(); depth.current += 1; if (drag !== "uploading") setDrag("over"); }}
       onDragOver=${(e) => { if (hasFiles(e)) { e.preventDefault(); e.dataTransfer.dropEffect = canDrop ? "copy" : "none"; } }}
       onDragLeave=${() => { depth.current = Math.max(0, depth.current - 1); if (!depth.current && drag === "over") setDrag(null); }}
@@ -273,7 +291,8 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
 // Teacher controls under the preview.
 const endLecture = (send) => () => confirm("End the lecture?") && send("end");
 
-function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd }) {
+function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd, theme }) {
+  const dark = theme === "dark";
   const ids = deck ? deck.slide_ids : [];
   const at = deck ? ids.indexOf(deck.live_id) : -1;
   const paused = lifecycle === "paused";
@@ -294,6 +313,9 @@ function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd }) {
         title=${paused ? "Resume the lecture (Space)" : "Pause: what you say is not put on slides (Space)"}>
         ${svg(ICON.pause)}<span>${paused ? "Paused" : "Pause"}</span></button>
       ${flag("blank", "blank", "unblank", "B", ICON.blank, "Blank", true)}
+      <button class="theme" onClick=${() => send("set_theme", { theme: dark ? "light" : "dark" })}
+        title=${dark ? "Light slides on the projector (T)" : "Dark slides on the projector (T)"}>
+        ${svg(dark ? ICON.sun : ICON.moon)}<span>${dark ? "Light" : "Dark"}</span></button>
     </div>
     <div class="group">
       <button onClick=${() => send("force_new_slide")} title="Start a new slide (N)">${svg(ICON.newSlide)}<span>New slide</span></button>
@@ -385,6 +407,108 @@ function Structure({ deck, slides, send }) {
   </section>`;
 }
 
+// ---- the teacher's notes (F-009): their own PDF, page by page, beside the lecture; never on the projector ----
+const NOTES_MAX_MB = 50;
+const hasPdf = (e) => hasFiles(e);
+
+async function uploadNotes(file, send) {
+  if (file.type !== "application/pdf" && !/\.pdf$/i.test(file.name)) throw new Error("Use a PDF file");
+  if (file.size > NOTES_MAX_MB * 1024 * 1024) throw new Error(`The PDF is larger than ${NOTES_MAX_MB} MB`);
+  const r = await fetch("/api/notes", {
+    method: "POST", body: file, headers: { "Content-Type": "application/pdf", "X-File-Name": encodeURIComponent(file.name).slice(0, 120) },
+  });
+  const res = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(res.error || `Upload failed (${r.status})`);
+  send("notes_open", { id: res.id });
+}
+
+function Notes({ notes, send, wide, onWide }) {
+  const input = useRef(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [over, setOver] = useState(false);
+  const [loaded, setLoaded] = useState("");
+  const n = notes || { docs: [], open: "", page: 0, pages: 0, follow: true, reason: "", matched: "" };
+  const doc = n.docs.find((d) => d.id === n.open);
+  const add = async (file) => {
+    if (!file) return;
+    setBusy(true); setError("");
+    try { await uploadNotes(file, send); } catch (err) { setError(err.message); } finally { setBusy(false); }
+  };
+  const pick = (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ""; add(f); };
+  const drop = (e) => { e.preventDefault(); setOver(false); add(e.dataTransfer.files && e.dataTransfer.files[0]); };
+  const src = doc ? `/api/notes/${doc.id}/page/${n.page}?w=${wide ? 1280 : 960}` : "";
+  const img = useRef(null);
+  // a page seen before comes from the browser cache, complete before its load listener exists: check after mount
+  useEffect(() => { const el = img.current; if (el && el.complete && el.naturalWidth) setLoaded(src); }, [src]);
+  const turn = (page) => send("notes_page", { page });
+  const keys = (e) => {  // inside the notes, arrows turn its pages (not the slides)
+    if (!doc) return;
+    if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); e.stopPropagation(); if (n.page < n.pages) turn(n.page + 1); }
+    if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); e.stopPropagation(); if (n.page > 1) turn(n.page - 1); }
+  };
+  const file = html`<input ref=${input} type="file" accept="application/pdf,.pdf" hidden onChange=${pick} />`;
+  return html`<div class=${"notes" + (over ? " over" : "")} tabindex="0" onKeyDown=${keys}
+      onDragOver=${(e) => { if (hasPdf(e)) { e.preventDefault(); setOver(true); } }}
+      onDragLeave=${() => setOver(false)} onDrop=${drop}>
+    ${file}
+    ${!doc ? html`<div class="notes-empty">
+        <div class="notes-art">${svg("M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6")}</div>
+        <p class="lead">Your own notes, beside the lecture</p>
+        <p>Add a PDF of your notes. It stays on this laptop and is never shown on the projector or to students.
+          The page that matches the slide on screen opens by itself.</p>
+        <button class="primary" onClick=${() => input.current.click()} disabled=${busy}>
+          ${svg(ICON.add, busy ? "pulse" : "")}${busy ? "Adding…" : "Add PDF notes"}</button>
+        <span class="or">or drop a PDF here</span>
+        ${n.docs.length > 0 && html`<div class="notes-recent"><h3>Your notes</h3>${n.docs.map((d) => html`
+          <button key=${d.id} class="doc-row" onClick=${() => send("notes_open", { id: d.id })}>
+            ${svg("M7 3h7l5 5v13H7zM14 3v5h5")}<span>${d.name}</span><em>${d.pages} p.</em></button>`)}</div>`}
+      </div>`
+    : html`<div class="notes-head">
+        <select class="doc-pick" value=${doc.id} title="Choose notes"
+          onChange=${(e) => { if (e.target.value === "__add") { input.current.click(); e.target.value = doc.id; } else send("notes_open", { id: e.target.value }); }}>
+          ${n.docs.map((d) => html`<option key=${d.id} value=${d.id}>${d.name}</option>`)}
+          <option value="__add">+ Add another PDF…</option>
+        </select>
+        <button class="icon" onClick=${onWide} title=${wide ? "Narrower notes" : "Wider notes"} aria-pressed=${wide}>
+          ${svg(wide ? "M9 4v16M4 9l5 3-5 3M20 9l-5 3 5 3" : "M4 4v16M20 4v16M9 12h6M9 12l2-2M9 12l2 2M15 12l-2-2M15 12l-2 2")}</button>
+        <button class="icon" onClick=${() => confirm(`Remove “${doc.name}” from your notes?`) && send("notes_remove", { id: doc.id })}
+          title="Remove these notes from the list">${svg(ICON.bin)}</button>
+      </div>
+      <div class="notes-page">
+        <img key=${src} ref=${img} src=${src} alt=${`${doc.name}, page ${n.page}`} class=${loaded === src ? "loaded" : ""}
+          onLoad=${(e) => { if (e.currentTarget === img.current) setLoaded(src); }} />
+      </div>
+      <div class="notes-foot">
+        <div class="steps">
+          <button class="icon" disabled=${n.page <= 1} onClick=${() => turn(n.page - 1)} title="Previous page">${svg(ICON.prev)}</button>
+          <span class="count">${n.page} / ${n.pages}</span>
+          <button class="icon" disabled=${n.page >= n.pages} onClick=${() => turn(n.page + 1)} title="Next page">${svg(ICON.next)}</button>
+        </div>
+        <label class=${"switch" + (n.follow ? " on" : "")} title="Open the page that matches the slide on screen">
+          <input type="checkbox" checked=${n.follow} onChange=${(e) => send("notes_follow", { on: e.target.checked })} />
+          <span class="track"><span class="knob"></span></span>Follow lecture</label>
+      </div>
+      <p class=${"notes-note" + (n.reason ? " off" : "")}>${n.reason || (n.follow
+        ? (n.matched ? html`Matched to <b>${n.matched}</b>` : "Waiting for a slide that matches a page")
+        : "Following is off: turn the pages yourself")}</p>`}
+    ${error && html`<p class="notes-error">${error}</p>`}
+  </div>`;
+}
+
+// the right column: mistake cards on top, then one card with tabs (more tabs come with the V2 tools)
+function SidePanel({ tab, onTab, children }) {
+  const tabs = children.filter(Boolean);
+  return html`<section class="side-panel">
+    <nav class="tabs" role="tablist">${tabs.map((t) => html`<button key=${t.props.id} role="tab"
+        class=${t.props.id === tab ? "on" : ""} aria-selected=${t.props.id === tab} onClick=${() => onTab(t.props.id)}>
+      ${t.props.icon && svg(t.props.icon)}<span>${t.props.label}</span>${t.props.badge
+        ? html`<em class="badge">${t.props.badge}</em>` : null}</button>`)}</nav>
+    <div class="tab-body">${tabs.find((t) => t.props.id === tab) || tabs[0]}</div>
+  </section>`;
+}
+const Tab = ({ children }) => children;
+
 // ---- transcript (F-008): a strip at the bottom with the last line; click to read it all ----
 function TranscriptStrip({ lines }) {
   const [open, setOpen] = useState(false);
@@ -450,7 +574,9 @@ function App() {
     conn.current = connect("control", dispatch, (s) => dispatch({ type: "connection", connected: s === "connected" }));
     return () => conn.current.close();
   }, []);
-  useEffect(() => { document.documentElement.dataset.theme = state.theme; }, [state.theme]);
+  const [controlTheme, toggleControlTheme] = useControlTheme();
+  const [tab, setTab] = useState("structure");
+  const [wide, setWide] = useState(false);
 
   const deck = state.deck;
   useEffect(() => {
@@ -462,6 +588,7 @@ function App() {
         if (canPause(state.lifecycle)) send(pauseCommand(state.lifecycle));
         return;
       }
+      if (e.key.toLowerCase() === "t") { e.preventDefault(); send("set_theme", { theme: state.theme === "dark" ? "light" : "dark" }); return; }
       const k = KEYS[e.key] || KEYS[e.key.toLowerCase()];
       if (!k) return;
       e.preventDefault();
@@ -470,7 +597,7 @@ function App() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [deck, state.lifecycle]);
+  }, [deck, state.lifecycle, state.theme]);
 
   const liveSpec = deck && deck.live_id ? state.slides[deck.live_id] : null;
   const toggle = (on, off, flag) => () => send(deck && deck[flag] ? off : on);
@@ -485,19 +612,29 @@ function App() {
       <span class="spacer"></span>
       <${Share} share=${state.share} viewers=${state.viewers} send=${send} />
       <a class="open-display" href="/display" target="classroom-display">Open classroom display ↗</a>
+      <button class="icon page-theme" onClick=${toggleControlTheme} aria-label="Control view theme"
+        title=${controlTheme === "dark" ? "Light control view (this page only)" : "Dark control view (this page only)"}>
+        ${svg(controlTheme === "dark" ? ICON.sun : ICON.moon)}</button>
     </header>
-    <main class="grid">
+    <main class=${"grid" + (wide && tab === "notes" ? " notes-wide" : "")}>
       <section class="left">
-        <${Preview} spec=${liveSpec} deck=${deck} lifecycle=${state.lifecycle} slides=${state.slides} send=${send}
+        <${Preview} spec=${liveSpec} deck=${deck} lifecycle=${state.lifecycle} slides=${state.slides} send=${send} theme=${state.theme}
           notice=${notice} onNotice=${setNotice} adding=${adding} onAdded=${() => setAdding(false)}
           status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} />
-        <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle}
+        <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle} theme=${state.theme}
           canAdd=${!!liveSpec && !(deck && deck.zoom)} onAdd=${() => setAdding(true)} />
-        <p class="hint">Keys: ← → navigate · Space pause / resume · B blank · N new slide · hover or double-click a slide item to edit it</p>
+        <p class="hint">Keys: ← → navigate · Space pause / resume · B blank · N new slide · T light / dark slides · hover or double-click a slide item to edit it</p>
       </section>
       <section class="right">
         <${Concerns} concerns=${state.concerns} send=${send} />
-        <${Structure} deck=${deck} slides=${state.slides} send=${send} />
+        <${SidePanel} tab=${tab} onTab=${setTab}>
+          <${Tab} id="structure" label="Structure" icon=${ICON.tree} badge=${deck && deck.slide_ids.length ? deck.slide_ids.length : ""}>
+            <${Structure} deck=${deck} slides=${state.slides} send=${send} />
+          </${Tab}>
+          <${Tab} id="notes" label="My notes" icon=${ICON.notes} badge=${state.notes && state.notes.open ? `p. ${state.notes.page}` : ""}>
+            <${Notes} notes=${state.notes} send=${send} wide=${wide} onWide=${() => setWide(!wide)} />
+          </${Tab}>
+        </${SidePanel}>
       </section>
     </main>
     <${TranscriptStrip} lines=${state.transcript} />
