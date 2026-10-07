@@ -31,6 +31,20 @@ function useSlideTransition(spec) {
   return layers;
 }
 
+// Students (F-010): the PDFs the teacher shares (notes, assignment), behind one small button; nothing else.
+function SharedFiles({ items }) {
+  const [open, setOpen] = useState(false);
+  if (!items.length) return null;
+  return html`<div class=${"shared-files" + (open ? " open" : "")}>
+    ${open && html`<div class="shared-list">${items.map((m) => html`<a key=${m.id} href=${`/api/materials/${m.id}/file`}
+      download=${m.name}><span>${m.name}</span><b>Download</b></a>`)}</div>`}
+    <button onClick=${() => setOpen(!open)} aria-expanded=${open}>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor"
+        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Materials <em>${items.length}</em></button>
+  </div>`;
+}
+
 function App() {
   const [state, dispatch] = useReducer(reduce, initialState);
   const containerRef = useRef(null);
@@ -70,6 +84,7 @@ function App() {
       ${zoomed && html`<${ZoomedImage} key=${zoomed.image_id || zoomed.url} image=${zoomed} />`}
       ${glass && html`<${Glass} leaving=${glass === "leaving"} />`}
     </div>
+    ${VIEWER && html`<${SharedFiles} items=${state.shared} />`}
   </div>`;
 }
 

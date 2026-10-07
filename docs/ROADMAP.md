@@ -54,8 +54,11 @@ plugs into them.
 - **Plan (user, 2026-10-07)**, groups built one after another, everything only when the teacher asks for it:
   - **A** slide themes light / premium dark mid-lecture, /control dark (user decides), teacher's PDF notes in
     /control, labelled diagrams first → `F-009-themes-notes-labelled.md` (done)
-  - **B** one tools card in /control (multi-select): summary **as a slide** (teacher makes it), notes PDF, key
-    concepts, assignment PDF (theory questions, count chosen), PPTX of the deck (projector look), transcript, archive
+  - **B** one Materials card in /control (multi-select): summary **as a slide** (this topic / whole lecture), key
+    concepts slide (+ in the notes), notes PDF, assignment PDF (theory questions, count chosen, default 10, short +
+    long, no key), PPTX of the deck (projector look, light / dark chosen), editable names, from this and / or past
+    lectures; past lectures viewer; shared PDFs for students; no transcript export → `F-010-lecture-tools-archive.md`
+    (done)
   - **C** quiz (MCQ, time per question, count, topic incl. picked past lectures, leaderboard on the projector) and
     test (MCQ, count + duration, submit, scores to the teacher); students join through the share link with name +
     roll number, one submission per roll number; questions previewed / edited by the teacher before start

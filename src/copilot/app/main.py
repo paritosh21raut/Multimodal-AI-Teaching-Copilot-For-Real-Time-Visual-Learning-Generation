@@ -42,6 +42,7 @@ log = logging.getLogger("copilot")
 OPEN_AFTER_READY_S = 3.0     # pages left open from an earlier run reconnect by themselves within this time ...
 OPEN_AFTER_SERVER_S = 4.0    # ... and the client's reconnect backoff is capped at 2 s (web/shared/ws.js)
 PAGES = (("control", "teacher control"), ("display", "classroom display"))
+MATERIALS_FINISH_S = 180.0  # at the end of the lecture, materials being made get this long to finish (F-010)
 
 # Rough planning number for the startup view: ~4.5 interpretations/min x ~1.8k tokens (real Groq runs, 2026-10-05).
 TOKENS_PER_LECTURE_MINUTE = 8000
@@ -171,6 +172,7 @@ class App:
         self._now = Lifecycle.STARTING
         self.share = None  # display.share.ShareService (F-008)
         self.notes = None  # notes.service.NotesService (F-009)
+        self.materials = None  # materials.service.MaterialsService (F-010)
         self._notes_loader: Optional[asyncio.Task] = None
         self.control_key = secrets.token_urlsafe(18)  # the teacher key for /control from outside this machine
 
@@ -249,6 +251,9 @@ class App:
         usage = UsageLedger(PROJECT_ROOT / self.config.get("llm", "usage_file", "data/llm_usage.json"))
         router = build_router(self.config, self._http, on_failure, usage)
         self._router = router
+        if self.materials is not None:  # summary, key concepts, notes, assignment (F-010) use the same keys
+            self.materials.writer.router = router
+            await self.materials.announce()
         names = [e.name for e in router.entries]
         print(f"[INIT]  LLM providers: {' -> '.join(names)}", flush=True)
         settings = UnderstandingSettings.from_config(self.config)
@@ -360,14 +365,30 @@ class App:
         self.notes = NotesService(self.bus, library)
         self.notes.attach()
         await self.notes.announce()
+        # lecture materials + past lectures (F-010): made when the teacher asks, from this and / or past lectures
+        from copilot.materials.archive import LectureArchive
+        from copilot.materials.render import Renderer
+        from copilot.materials.service import MaterialsService
+        from copilot.materials.store import MaterialStore
+        from copilot.materials.writer import Writer
+
+        data = PROJECT_ROOT / self.config.get("app", "data_dir", "data")
+        archive = LectureArchive(data / "sessions", data / "archive.json", current_id=self.session_id)
+        store = MaterialStore(data / "materials")
         self.server = DisplayServer(
             hub, self.config.get("display", "host", "127.0.0.1"), int(self.config.get("display", "port", 8765)),
             media=cache_from_config(self.config),
             upload_max_bytes=int(float(self.config.get("images", "upload_max_mb", 10)) * 1024 * 1024),
-            control_key=self.control_key, notes=library,
+            control_key=self.control_key, notes=library, archive=archive, materials=store,
         )
         await self.server.start()
         self._server_started = asyncio.get_running_loop().time()
+        self.materials = MaterialsService(self.bus, store, archive, self.deck, Writer(None),
+                                          Renderer(f"http://127.0.0.1:{self.server.port}"), self.session_id,
+                                          flush=self.event_log.flush)
+        self.materials.on_done = self._print_material
+        self.materials.attach()
+        await self.materials.announce()
         from copilot.display.share import ShareService
 
         self.share = ShareService(
@@ -378,6 +399,13 @@ class App:
             start_timeout_s=float(self.config.get("display", "share_start_timeout_s", 45.0)))
         self.share.attach()
         self.bus.subscribe("terminal_share", self._print_share, [ShareChanged])
+
+    def _print_material(self, m) -> None:
+        if m.status == "ready":
+            cost = f", {m.calls} LLM call{'s' if m.calls != 1 else ''}, {m.tokens:,} tokens" if m.calls else ""
+            print(f"[MATERIAL] {m.name} ready{cost}", flush=True)
+        else:
+            print(f"[MATERIAL] {m.name} failed: {m.detail}", flush=True)
 
     async def _print_share(self, event: Event) -> None:
         if not isinstance(event, ShareChanged):
@@ -548,6 +576,12 @@ class App:
             self._opener.cancel()
         if self._notes_loader is not None:
             self._notes_loader.cancel()
+        if self.materials is not None:  # a PDF being written when the lecture ends is finished first
+            if self.materials.busy:
+                print("[END]   finishing the lecture materials being made ...", flush=True)
+                if not await self.materials.wait_idle(MATERIALS_FINISH_S):
+                    print("[END]   materials not finished; they show as interrupted", flush=True)
+            await self.materials.close()
         if self.presentation is not None:
             await self.presentation.stop()
         if self.images is not None:
@@ -632,6 +666,18 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     return p.parse_args(argv)
 
 
+def quiet_peer_resets(loop: asyncio.AbstractEventLoop, context: dict) -> None:
+    """Loop exception handler. On Windows (Python 3.10 proactor) a browser that drops a kept-alive connection — the
+    PDF / PPTX renderer's Edge closing (F-010), a student closing the tab — makes the transport raise
+    ConnectionResetError while it closes a socket the peer already closed (seen 2026-10-07: 5 s after a PPTX, uvicorn's
+    keep-alive timeout). Nothing is lost; only this case is quiet, every other loop error is reported as before."""
+    exc = context.get("exception")
+    if isinstance(exc, ConnectionResetError) and "_call_connection_lost" in repr(context.get("handle")):
+        log.debug("a client reset its connection: %s", exc)
+        return
+    loop.default_exception_handler(context)
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     args = parse_args(argv)
     for stream in (sys.stdout, sys.stderr):  # LLM text can contain characters the console codepage lacks
@@ -642,6 +688,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     speed = args.speed if args.speed is not None else config.get("sim", "speed", 1.0)
 
     async def _run() -> int:
+        asyncio.get_running_loop().set_exception_handler(quiet_peer_resets)
         app = App(
             config,
             simulate=args.simulate,

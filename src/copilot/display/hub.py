@@ -26,6 +26,7 @@ from copilot.core.events import (
     ImageReady,
     ImageRequested,
     LifecycleChanged,
+    MaterialsState,
     NotesState,
     ShareChanged,
     SlideOverflow,
@@ -83,12 +84,15 @@ class DisplayHub:
         self.connects: dict[str, int] = {"display": 0, "control": 0, "viewer": 0}  # connections ever made, per role
         self.share: dict = {"state": "off", "url": "", "detail": ""}  # control only (F-008)
         self.notes: Optional[dict] = None  # the teacher's PDF notes (F-009), control only
+        self.materials: Optional[dict] = None  # lecture materials (F-010), control only
+        self.shared: list[dict] = []  # PDFs the students may download (F-010), to every viewer
 
     def attach(self) -> None:
         self._bus.subscribe(
             "display_hub", self._on_event,
             [SlidePatch, DeckState, LifecycleChanged, TranscriptFinal, UtteranceDropped, ConcernRaised,
-             ConcernResolved, ImageRequested, ImageReady, ImageChoices, ShareChanged, ThemeChanged, NotesState],
+             ConcernResolved, ImageRequested, ImageReady, ImageChoices, ShareChanged, ThemeChanged, NotesState,
+             MaterialsState],
         )
         # Audio levels are high-rate and only matter "now": drop old ones if the hub lags.
         self._bus.subscribe("display_hub_audio", self._on_event, [AudioLevel], queue_size=4, overflow="drop_oldest")
@@ -131,6 +135,9 @@ class DisplayHub:
             msg["share"] = dict(self.share)
             msg["viewers"] = self.viewers
             msg["notes"] = self.notes
+            msg["materials"] = self.materials
+        if role == "viewer":  # the PDFs the teacher shares (F-010)
+            msg["shared"] = list(self.shared)
         return msg
 
     async def handle_client_message(self, conn: Connection, msg: dict) -> Optional[str]:
@@ -220,6 +227,12 @@ class DisplayHub:
         elif isinstance(event, NotesState):  # control only: the teacher's own notes never reach a slide page
             self.notes = event.model_dump(include={"docs", "open", "page", "pages", "follow", "reason", "matched"})
             self._broadcast({"type": "notes", **self.notes}, key=("notes",), roles=("control",))
+        elif isinstance(event, MaterialsState):  # control: everything made; students: the shared PDFs only
+            self.materials = event.model_dump(include={"items", "current", "llm", "lectures_changed"})
+            self._broadcast({"type": "materials", **self.materials}, key=("materials",), roles=("control",))
+            if event.shared != self.shared:
+                self.shared = list(event.shared)
+                self._broadcast({"type": "shared", "items": self.shared}, key=("shared",), roles=("viewer",))
         elif isinstance(event, ThemeChanged):  # every slide page repaints; students follow the teacher's theme
             self.theme = event.theme
             self._broadcast({"type": "theme", "theme": self.theme}, key=("theme",))

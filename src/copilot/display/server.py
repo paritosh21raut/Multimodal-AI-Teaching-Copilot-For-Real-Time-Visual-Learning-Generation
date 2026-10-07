@@ -21,6 +21,8 @@ from copilot.core.config import PROJECT_ROOT
 from copilot.display.hub import Connection, DisplayHub
 
 if TYPE_CHECKING:
+    from copilot.materials.archive import LectureArchive
+    from copilot.materials.store import MaterialStore
     from copilot.notes.library import NotesLibrary
     from copilot.visuals.cache import ImageCache
 
@@ -120,9 +122,11 @@ def is_local(client_host: Optional[str], headers) -> bool:
 
 def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
                upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None,
-               notes: Optional["NotesLibrary"] = None) -> FastAPI:
+               notes: Optional["NotesLibrary"] = None, archive: Optional["LectureArchive"] = None,
+               materials: Optional["MaterialStore"] = None) -> FastAPI:
     """control_key: the teacher key for /control, /display, uploads and commands from outside this machine
-    (None = no check, the in-process test harness)."""
+    (None = no check, the in-process test harness). archive / materials: past lectures and the materials made
+    from them (F-010)."""
     app = FastAPI(title="Teaching Copilot", docs_url=None, redoc_url=None)
 
     def trusted(conn) -> bool:  # an HTTP request or a WebSocket
@@ -208,6 +212,47 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
         if path is None:
             return Response(status_code=404)
         return FileResponse(path, media_type="image/png", headers={"Cache-Control": "private, max-age=86400"})
+
+    # ---- past lectures + materials (F-010) ----------------------------------------------------------------
+    def _made_from(lecture_id: str) -> list[dict]:
+        return [m.public() for m in materials.items() if lecture_id in m.lectures] if materials else []
+
+    @app.get("/api/lectures")
+    async def lectures(request: Request):
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
+        if archive is None:
+            return JSONResponse({"lectures": []})
+        records = await asyncio.to_thread(archive.lectures)
+        return JSONResponse({"lectures": [{**r.summary(), "materials": len(_made_from(r.id))} for r in records]},
+                            headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/lectures/{lecture_id}")
+    async def lecture(request: Request, lecture_id: str):
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
+        if archive is None or not re.fullmatch(r"[\w-]{1,64}", lecture_id):
+            return JSONResponse({"error": "not found"}, status_code=404)
+        rec = await asyncio.to_thread(archive.load, lecture_id, lecture_id != archive.current_id)
+        if rec is None:
+            return JSONResponse({"error": "not found"}, status_code=404)
+        return JSONResponse({"lecture": rec.summary(), "slides": rec.slides, "materials": _made_from(lecture_id)},
+                            headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/materials/{material_id}/file")
+    async def material_file(request: Request, material_id: str, inline: int = 0):
+        """Teacher: any ready file. Anyone (the student link): only a PDF the teacher shares."""
+        m = materials.get(material_id) if materials is not None else None
+        path = materials.path(m) if m is not None and m.status == "ready" else None
+        if m is None or path is None or not path.is_file():
+            return Response(status_code=404)
+        if not trusted(request) and not (m.shared and path.suffix == ".pdf"):
+            return Response(status_code=403)
+        media = "application/pdf" if path.suffix == ".pdf" else \
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+        return FileResponse(path, media_type=media, filename=m.name,
+                            content_disposition_type="inline" if inline and path.suffix == ".pdf" else "attachment",
+                            headers={"Cache-Control": "no-store"})
 
     @app.get("/")
     async def root(request: Request):
@@ -302,12 +347,13 @@ class DisplayServer:
     def __init__(self, hub: DisplayHub, host: str = "127.0.0.1", port: int = 8765,
                  web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
                  upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None,
-                 notes: Optional["NotesLibrary"] = None) -> None:
+                 notes: Optional["NotesLibrary"] = None, archive: Optional["LectureArchive"] = None,
+                 materials: Optional["MaterialStore"] = None) -> None:
         self.host, self.port = host, port
         self.control_key = control_key
         self._server = _EmbeddedServer(
-            uvicorn.Config(create_app(hub, web_root, media, upload_max_bytes, control_key, notes), host=host, port=port,
-                           log_level="warning", lifespan="off")
+            uvicorn.Config(create_app(hub, web_root, media, upload_max_bytes, control_key, notes, archive, materials),
+                           host=host, port=port, log_level="warning", lifespan="off")
         )
         self._task: Optional[asyncio.Task] = None
 

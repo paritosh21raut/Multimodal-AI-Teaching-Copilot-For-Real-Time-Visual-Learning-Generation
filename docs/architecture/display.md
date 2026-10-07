@@ -86,7 +86,8 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
   other content are one row of cards where the first of them stands (`trailingDefs` = `composer.trailing_definitions`).
 
 ## Themes (F-009, V2)
-- Slide theme light / dark, switchable mid-lecture: dock button (sun / moon) or `T` → `set_theme` → the state store
+- Slide theme light / dark, switchable mid-lecture: dock button (sun / solid crescent with a small star — the outline
+  moon looked hollow, user 2026-10-07) or `T` → `set_theme` → the state store
   (`setup.theme`) → `ThemeChanged` → hub `{"type": "theme"}` → `/display`, `/view` (students follow) and the /control
   preview repaint without a reload. Tokens apply on any element with `data-theme`: the preview carries the slide
   theme, the control page its own.
@@ -98,13 +99,34 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
   the user decides whether to keep it.
 
 ## Teacher notes (F-009, V2)
-- Right column = mistake cards + one card with tabs: **Structure · My notes** (V2 tools add tabs there).
+- Right column = mistake cards + one card with tabs: **Structure · My notes · Materials · Lectures** (F-010; in a
+  column narrower than 520 px the tabs not in use show their icon only).
 - My notes: Add PDF / drop → `POST /api/notes` (teacher only, ≤ 50 MB) → `data/notes/<sha16>.pdf` (+ page texts) →
   `notes_open`; pages as PNG `GET /api/notes/<id>/page/<n>?w=` (pypdfium2, cached); ‹ n / m ›, arrows inside the
   panel, wider view, remove. **Follow lecture** (on by default): `NotesService` matches the live slide's words
   (MiniLM, 0 tokens; formula TeX skipped) to page chunks → page when ≥ 0.45 and ≥ 0.04 better than the page shown;
   a page turned by hand holds until the next slide. A scan without text: follow off, the panel says why. Never sent to
   `/display`, `/view` or the LLM. The last opened notes reopen next lecture.
+- Review 2026-10-07 (user): the empty card is minimal (icon, Add PDF notes, "or drop one here · only you see it", the
+  PDFs added before); the notes picker is a menu in the app's style (the open PDF ✓, the others, + Add PDF), not a
+  native select.
+
+## Lecture materials + past lectures (F-010, V2)
+- **Materials** tab: *From* chips (This lecture, + Past lecture menu), then tick cards — Summary slide (This topic /
+  Whole lecture), Key concepts slide, Notes (PDF), Assignment (PDF, − 10 + questions), Slides (PowerPoint, Light /
+  Dark) — files with a name field whose placeholder is the automatic name (`<title> - Notes - 7 Oct 2026.pdf`);
+  one **Create** → `materials_create`. Without an LLM the four LLM cards are disabled and the footer says so.
+  **Made** list (newest first): spinner + progress while working, the reason in orange when it failed, otherwise
+  time · questions / slides · tokens; actions on hover: show on the projector (slides), open (PDF, new tab),
+  download, students (shared PDF on/off), rename (inline), delete.
+- Summary / key-concepts slides: added at the end of the deck and shown (`Deck.present`); the lecture's next new slide
+  follows as usual. Topic summary = the live slide's topic.
+- **Lectures** tab: past lectures newest first (title, date, slides, minutes, "test run" for simulator sessions,
+  materials count; hide). Opening one: a viewer over /control — the slide full size in that lecture's theme, ‹ › /
+  arrow keys, the slide list, the materials made from it; **Make materials** preselects it in the Materials tab.
+- Students (`/view`): a Materials button (only when something is shared) → the shared PDFs → download
+  (`GET /api/materials/<id>/file`: anyone for a shared PDF, the teacher for everything; `/api/lectures*` teacher only).
+- `/web/export/index.html` + `export.js`: the page headless Edge uses to draw slides for the PPTX (not for people).
 
 ## Teacher controls
 Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `Space` pause / resume,

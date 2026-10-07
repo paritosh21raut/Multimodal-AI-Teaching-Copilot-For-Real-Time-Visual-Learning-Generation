@@ -57,6 +57,7 @@ Original requirements: `docs/brief/master-prompt.md` (read only when requirement
 .venv/Scripts/python tools/screenshot_lessons.py light human_body solar   # scripted lessons + real image search (0 LLM tokens)
 .venv/Scripts/python tools/prompt_ab.py --dry <session>[:i,j]   # rebuild recorded prompts (0 tokens); without --dry: real A/B
 .venv/Scripts/python tools/replay_interpretations.py <session> light --images   # recorded LLM answers + real image search (0 tokens)
+.venv/Scripts/python tools/materials_check.py <session>   # lecture-material prompts from a recorded lecture (0 tokens); --live: real Groq + files
 .venv/Scripts/python -m pytest                      # fast tests
 .venv/Scripts/python -m pytest -m slow              # + GPU/model tests
 .venv/Scripts/python -m pytest -m browser           # real Edge via Playwright (display)

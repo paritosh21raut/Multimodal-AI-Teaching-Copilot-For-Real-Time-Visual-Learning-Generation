@@ -31,6 +31,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `ShareChanged` | share service (F-008) | `state` (off/starting/on/failed), `url` (`<tunnel>/view` while on), `detail` (progress or why it failed) |
 | `ThemeChanged` | state store (F-009) | `theme` (light/dark): after `set_theme`; the hub repaints display, viewers and the control preview |
 | `NotesState` | notes service (F-009) | `docs`, `open`, `page`, `pages`, `follow`, `reason` (why following does nothing), `matched` (slide title) — control only, ephemeral |
+| `MaterialsState` | materials service (F-010) | `items` (made / being made: name, status, detail, tokens, …), `shared` ([{id, name}] PDFs students may download), `current` {id, title}, `llm`, `lectures_changed` — items to control, `shared` to viewers; ephemeral |
 | `ErrorRaised` | any | `component`, `error`, `fatal` |
 
 `TranscriptSegment`: `id, text, start, end, confidence, language="en", source="mic"|"sim"`.
@@ -40,7 +41,10 @@ force_new_slide, resolve_concern(id, action), remove_image(slide_id), change_ima
 set_image(slide_id, image_id, aspect, alt), image_prev(slide_id), image_next(slide_id), zoom_image(slide_id),
 unzoom_image, edit_text(slide_id, item_id = title | element id | <definition id>:term, text), delete_item(slide_id,
 item_id), add_point(slide_id, text), share_start, share_stop, set_theme(theme), notes_open(id), notes_page(page),
-notes_follow(on), notes_remove(id)` (themes + notes: F-009; editing and sharing: F-008; image commands: F-007b; `change_image` on a slide without an image = the teacher's Find image; `set_image` follows `POST /api/upload`; zoom is a deck display flag).
+notes_follow(on), notes_remove(id), materials_create(items[{kind: summary|concepts|notes|assignment|pptx, name?,
+scope?: topic|lecture, count?, theme?}], lectures[past ids], current), materials_rename(id, name),
+materials_share(id, on), materials_remove(id), materials_show(id), lecture_hide(id)` (materials + past lectures:
+F-010; themes + notes: F-009; editing and sharing: F-008; image commands: F-007b; `change_image` on a slide without an image = the teacher's Find image; `set_image` follows `POST /api/upload`; zoom is a deck display flag).
 
 `Interpretation` (`core/interpretation.py`): `topic, subtopic, relation, acts[{act, lines, items, added}],
 representation_hint, meta_lines, concerns[{claim, issue, suggested_correction, confidence, lines, kind, wrong, right}], revisions[{ref, text}], level_estimate,

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <title>Slide export</title>
+  <!-- F-010: headless Edge draws each slide here for the PPTX (copilot.materials.render); never opened by people -->
+  <link rel="stylesheet" href="/web/vendor/katex/katex.min.css" />
+  <link rel="stylesheet" href="/web/shared/tokens.css" />
+  <link rel="stylesheet" href="/web/shared/slide.css" />
+  <style>
+    html, body { margin: 0; background: var(--bg); overflow: hidden; }
+    .stage { position: absolute; left: 0; top: 0; }
+    /* the finished slide, not its entrance */
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/web/export/export.js"></script>
+</body>
+</html>

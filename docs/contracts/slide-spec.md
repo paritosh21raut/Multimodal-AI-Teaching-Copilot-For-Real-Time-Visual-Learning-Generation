@@ -11,12 +11,17 @@ SlideSpec
           hierarchy | cause_effect | formula | example | application | narrative | facts | groups | members | title
   blocks: list[Block]                                # one primary + optional secondary
   language = "en", theme_hint?
+  origin: lecture | materials                        # materials: a summary / key-concepts slide the teacher asked
+                                                     # for (F-010); never counted as taught content
 
 Block (discriminated by `type`), each with a stable `id` and items with stable ids:
   definition   { term, definition, notes[] }
   points       { heading?, items[{id, text, emphasis?, provisional?, added?}] }
-  facts        { heading?, facts[{id, label, value}] }                # fact tiles ("Smallest planet" / "Mercury")
-  groups       { heading?, groups[{id, label, items[Item]}] }        # named groups side by side
+  facts        { heading?, facts[{id, label, value}], style: facts|terms }   # fact tiles ("Smallest planet" /
+                                                                     # "Mercury"); terms: the label is the headline
+                                                                     # (key-concepts slide, F-010)
+  groups       { heading?, groups[{id, label, items[Item]}], style: chips|list }  # named groups side by side;
+                                                                     # list: sentences under each label (summary)
   process      { steps[{id, label, detail?}], cyclic: bool, start = 1 }   # ≤ 10 steps: one row ≤ 6, else two rows;
                                                                          # start: first step number on a next part
   comparison   { columns[{id, heading}], rows[{id, aspect, cells[]}] }

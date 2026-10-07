@@ -27,6 +27,7 @@ def free_port() -> int:
 class Harness:
     def __init__(self, bus: EventBus, deck: Deck, hub: DisplayHub, server: DisplayServer) -> None:
         self.bus, self.deck, self.hub, self.server = bus, deck, hub, server
+        self.materials = None  # materials.service.MaterialsService when materials_dir was given (F-010)
 
     @property
     def url(self) -> str:
@@ -38,10 +39,14 @@ class Harness:
 
 @asynccontextmanager
 async def display_harness(theme: str = "light", media_dir: Optional[Path] = None, notes_dir: Optional[Path] = None,
-                          notes_embedder=None, store: bool = False) -> AsyncIterator[Harness]:
+                          notes_embedder=None, store: bool = False, materials_dir: Optional[Path] = None,
+                          sessions_dir: Optional[Path] = None, session_id: str = "harness",
+                          materials_router=None) -> AsyncIterator[Harness]:
     """media_dir: image cache served under /media (default: the app's cache, so cached lecture images show).
     notes_dir: a teacher-notes library (F-009) served to /control, with NotesService (follows the slides when
-    notes_embedder is given). store: a LectureStateStore too (owns the slide theme: the dock's light / dark)."""
+    notes_embedder is given). store: a LectureStateStore too (owns the slide theme: the dock's light / dark).
+    materials_dir + sessions_dir: lecture materials and past lectures (F-010); `session_id` is "this lecture" (its
+    event log under sessions_dir is the test's to write); materials_router: the LLM router (a fake in tests)."""
     from copilot.visuals.cache import ImageCache
 
     bus = EventBus()
@@ -62,15 +67,40 @@ async def display_harness(theme: str = "light", media_dir: Optional[Path] = None
         notes = NotesService(bus, library, notes_embedder)
         notes.attach()
         await notes.announce()
+    archive = mstore = event_log = None
+    if materials_dir is not None:
+        from copilot.materials.archive import LectureArchive
+        from copilot.materials.store import MaterialStore
+        from copilot.persistence.event_log import EventLog
+
+        sessions = sessions_dir or materials_dir / "sessions"
+        archive = LectureArchive(sessions, materials_dir / "archive.json", current_id=session_id)
+        mstore = MaterialStore(materials_dir / "materials")
+        event_log = EventLog(sessions / session_id / "session.sqlite")  # "this lecture", as the app logs it
+        await event_log.open(bus)
     server = DisplayServer(hub, port=free_port(), media=ImageCache(media_dir or PROJECT_ROOT / "data/cache/images"),
-                           notes=library)
+                           notes=library, archive=archive, materials=mstore)
     await server.start()
     harness = Harness(bus, deck, hub, server)
+    if mstore is not None:
+        from copilot.materials.render import Renderer
+        from copilot.materials.service import MaterialsService
+        from copilot.materials.writer import Writer
+
+        harness.materials = MaterialsService(bus, mstore, archive, deck, Writer(materials_router),
+                                             Renderer(f"http://127.0.0.1:{server.port}"), session_id,
+                                             flush=event_log.flush if event_log else None)
+        harness.materials.attach()
+        await harness.materials.announce()
     try:
         yield harness
     finally:
+        if harness.materials is not None:
+            await harness.materials.close()
         await harness.server.stop()  # tests may replace the server (restart scenarios)
         await bus.close()
+        if event_log is not None:
+            await event_log.close()
 
 
 @asynccontextmanager

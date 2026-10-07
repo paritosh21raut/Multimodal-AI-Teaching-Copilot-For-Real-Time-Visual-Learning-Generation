@@ -201,14 +201,17 @@ function groupFormulas(blocks) {
 // Fact tiles: short attribute facts about named things ("Smallest planet" / "Mercury").
 function Facts({ b, narrow }) {
   // beside an image: at most 4 tiles in 2 columns (policy), full type size (composer: block_height narrow=True)
+  // terms (key-concepts slide, F-010): the term is the headline, its meaning the text; 2 columns up to 4 terms
+  const terms = b.style === "terms";
   const cols = narrow ? Math.min(2, b.facts.length)
+    : terms ? (b.facts.length <= 4 ? Math.min(2, b.facts.length) : 3)
     : b.facts.length === 3 || b.facts.some((f) => f.value.length > 24) ? 3 : Math.min(4, Math.max(1, b.facts.length));
-  return html`<div class="facts">
+  return html`<div class=${"facts" + (terms ? " terms" : "")}>
     ${b.heading && html`<div class="points-heading">${rich(b.heading)}</div>`}
     <div class="facts-grid" style=${{ "--cols": cols }}>
       ${b.facts.map((f) => html`<div key=${f.id} class="fact enter" data-edit=${f.id}>
-        <span class="fact-label">${rich(f.label)}</span>
-        ${f.value && html`<span class="fact-value">${rich(f.value)}</span>`}
+        <span class=${terms ? "term-name" : "fact-label"}>${rich(f.label)}</span>
+        ${f.value && html`<span class=${terms ? "term-meaning" : "fact-value"}>${rich(f.value)}</span>`}
       </div>`)}
     </div>
   </div>`;
@@ -221,8 +224,11 @@ function Groups({ b }) {
     <div class="groups-row">
       ${b.groups.map((g) => html`<div key=${g.id} class="group enter">
         <div class="group-label" data-edit=${g.id}>${rich(g.label)}</div>
-        <div class="group-items">${g.items.map((i) => html`<span key=${i.id} class=${itemClass(i, "group-item")}
-          data-edit=${i.id}>${rich(i.text)}</span>`)}</div>
+        ${b.style === "list"  // sentences under the label (summary slide, F-010)
+          ? html`<ul class="group-list">${g.items.map((i) => html`<li key=${i.id} class=${itemClass(i, "")}
+              data-edit=${i.id}>${rich(i.text)}</li>`)}</ul>`
+          : html`<div class="group-items">${g.items.map((i) => html`<span key=${i.id} class=${itemClass(i, "group-item")}
+              data-edit=${i.id}>${rich(i.text)}</span>`)}</div>`}
       </div>`)}
     </div>
   </div>`;

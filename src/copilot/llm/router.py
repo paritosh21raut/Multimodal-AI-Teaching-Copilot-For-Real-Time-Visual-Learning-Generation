@@ -146,9 +146,14 @@ class LLMRouter:
                 log.exception("llm failure hook raised")
 
     async def complete(self, messages: list[dict[str, str]], *, est_tokens: int, max_tokens: int,
-                       deadline: float) -> RouterResult:
-        """Try entries in order until one returns text. `deadline` is a time.monotonic() value."""
+                       deadline: float, timeout_s: Optional[float] = None) -> RouterResult:
+        """Try entries in order until one returns text. `deadline` is a time.monotonic() value.
+        timeout_s: per HTTP attempt instead of the live default (F-010: writing study material takes longer)."""
         st = self.settings
+        if timeout_s is not None:
+            from dataclasses import replace
+
+            st = replace(st, timeout_s=timeout_s)
         attempts: list[str] = []
         budget = est_tokens + max_tokens // 2  # expected completion ≈ half the cap
         fresh: set[str] = set()  # families whose active key was settled in this call
@@ -174,7 +179,7 @@ class LLMRouter:
                 if refusal in ("rpm", "tpm"):
                     busy.append(entry)
                 continue
-            result = await self._call(entry, messages, max_tokens, budget, deadline, attempts)
+            result = await self._call(entry, messages, max_tokens, budget, deadline, attempts, st)
             if result is not None:
                 return result
         # nothing could take the call now: rather than lose the content to the fallback, wait for the entry that
@@ -188,7 +193,7 @@ class LLMRouter:
                 await asyncio.sleep(wait + 0.05)
                 refusal = entry.limiter.admit(budget)
                 if refusal is None:
-                    result = await self._call(entry, messages, max_tokens, budget, deadline, attempts)
+                    result = await self._call(entry, messages, max_tokens, budget, deadline, attempts, st)
                     if result is not None:
                         return result
                 else:
@@ -196,9 +201,10 @@ class LLMRouter:
         raise AllProvidersFailed("; ".join(attempts) or "no entries")
 
     async def _call(self, entry: Entry, messages: list[dict[str, str]], max_tokens: int, budget: int,
-                    deadline: float, attempts: list[str]) -> Optional[RouterResult]:
+                    deadline: float, attempts: list[str],
+                    st: Optional[RouterSettings] = None) -> Optional[RouterResult]:
         """One admitted entry: the call with its retries. None = failed (go on to the next entry)."""
-        st = self.settings
+        st = st or self.settings
         for attempt in range(st.retries + 1):
             remaining = deadline - time.monotonic()
             if remaining < 0.5:

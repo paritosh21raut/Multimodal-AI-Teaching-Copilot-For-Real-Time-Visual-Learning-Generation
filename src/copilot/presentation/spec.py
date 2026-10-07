@@ -176,6 +176,7 @@ class FactsBlock(_Model):
     heading: str = ""
     facts: list[Fact] = Field(default_factory=list)
     about: str = ""  # id of the definition block whose column this belongs to
+    style: Literal["facts", "terms"] = "facts"  # terms: the label is the headline, the value its meaning (F-010)
 
 
 class GroupsBlock(_Model):
@@ -184,6 +185,7 @@ class GroupsBlock(_Model):
     id: str = Field(default_factory=new_id)
     heading: str = ""
     groups: list[Group] = Field(default_factory=list)
+    style: Literal["chips", "list"] = "chips"  # list: sentences under each label (summary slides, F-010)
 
 
 class ImageBlock(_Model):
@@ -221,6 +223,7 @@ class SlideSpec(_Model):
     layout: Layout = "concept"
     blocks: list[Block] = Field(default_factory=list)
     language: str = "en"
+    origin: Literal["lecture", "materials"] = "lecture"  # materials: a summary / key-concepts slide (F-010), not taught
 
     @model_validator(mode="after")
     def _unique_block_ids(self) -> "SlideSpec":

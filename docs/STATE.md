@@ -1,6 +1,7 @@
 # Current State
 
-_Last updated: 2026-10-07: **V2 group A done** (themes, teacher notes, labelled images); next group B. Before:
+_Last updated: 2026-10-07 (evening): **V2 group B done** (lecture materials + past lectures, F-010); next group C
+(quiz + test). Before: 2026-10-07: **V2 group A done** (themes, teacher notes, labelled images). Before:
 2026-10-06 (night): **V1 long-test fixes done** (session 20261006-193517-c513; speed, lost content,
 content relations, titles/parts, images, glass loader, pause colour, OpenRouter removed). Next: the user's check /
 declare V1 complete; V2 not started. Before: **V1b verify round 5 done** (5 user issues + formula sets). Before: **V1b verify round 4, step D (features) done** + the user's design notes on the
@@ -15,8 +16,32 @@ Then V1c._
 
 ## Now
 - **V2 started (2026-10-07).** Plan agreed with the user: ROADMAP § V2 (groups A → B → C → D; every output only when
-  the teacher asks; V1c after V2). **Next: group B** (tools card in /control: summary slide, notes PDF, key concepts,
-  assignment PDF, PPTX, transcript, archive) — ask its doubts first, then spec `F-010`.
+  the teacher asks; V1c after V2). **Next: group C** (quiz + test through the share link) — ask its doubts first, then
+  spec `F-011`.
+- **V2 group B done (2026-10-07 evening)** (spec `docs/specs/F-010-lecture-tools-archive.md`). User answers: summary =
+  a slide, teacher picks this topic (short) or whole lecture (complete), when they want; notes "all at once from what
+  I teach" (= written explanations from the slides + transcript, with the slides' own content and key concepts);
+  key concepts = own slide + part of the notes; assignment = theory questions, default 10, short + long, no key;
+  PPTX light or dark chosen; no transcript export; past lectures openable in /control, materials from this and / or
+  past lectures; students download from the share link; automatic, editable names.
+  - **Built:** `materials/` (archive, content, writer, slides, render, store, service), Materials + Lectures tabs,
+    lecture viewer, student Materials button, `Deck.present`, `SlideSpec.origin`, facts `terms` / groups `list`
+    styles, router per-call `timeout_s`, `/web/export/` page, `tools/materials_check.py`, `tools/pptx_to_png.ps1`.
+  - **Group A review fixes:** solid crescent moon, notes picker menu in the app's style, minimal empty notes card.
+  - **Found + fixed on the way:** a transcript line went to the slide still being refined (now: the slide changed
+    within 40 s that shares the most words); PPTX badge text off-centre and 650-weight titles too light; the viewer's
+    CSS restyled the slide's own header; a Windows proactor `ConnectionResetError` logged as ERROR whenever the
+    renderer's Edge closed (only that case is quiet now).
+  - Verified: 501 fast (+ `test_materials` 22, `test_materials_access` 2 — fail on the old src), 26 Edge
+    (+ `test_materials_browser` 3: real PDFs + PPTX, summary on the projector, viewer, students' download, notes menu,
+    solid moon); real app (`--demo-slides --no-understanding`, 0 tokens): LLM cards disabled with the reason, PPTX in
+    2.9 s, 84 past lectures listed, a 35-slide real lecture paged in the viewer, log clean; PPTX compared with the
+    browser through PowerPoint (light + dark, formulas, images, badges); recorded lectures at 0 tokens: ≤ 2.2k tokens per
+    prompt, ≈ 12k input tokens for all LLM items of a 20–30 min lecture. **Live Groq: 7,021 tokens** (Solar System
+    session: topic + lecture summary, key concepts, notes, 10 questions) — outputs grounded, PDFs / slides inspected.
+  - Not verified: materials from a real-LLM *live* lecture in the app (the writer ran live on a recorded one; the app
+    path ran with the fake router in Edge and without LLM for real); several lectures at once only with the fake LLM.
+    The teacher's own factual slips stay in the materials as taught (Solar System "1.4 billion years").
 - **V2 group A done (2026-10-07), 0 LLM tokens** (spec `docs/specs/F-009-themes-notes-labelled.md`). User answers:
   dark design my call, theme button in the dock, students follow, /control dark → screenshots for the user to decide,
   notes = PDF, never projected, auto page follow kept only if accurate, manual pages too.
@@ -264,8 +289,9 @@ Then V1c._
 | Live display + control view | 82 | + fact tiles, group cards, side-by-side definitions, part badges, concern card (said / correct / shown, switchable), overflow reporting; KaTeX formulas + chemical subscripts (V1a); images pending (V1b) |
 | Visual system (images/diagrams) | 60 | V1b: retrieval (Wikipedia/Commons + CLIP on CPU), policy, image layout, teacher controls (drop, add, change, previous/next, remove, zoom); one real-LLM lecture + replay verified; generated diagrams not started |
 | V2 group A (themes, teacher notes, labelled images) | 100 | verified (0 tokens): unit + Edge + real app |
-| Reference materials | 0 | not started |
-| Post-lecture outputs | 0 | not started |
+| V2 group B (materials: summary / key-concepts slides, notes + assignment PDFs, PPTX; past lectures) | 100 | verified: unit + Edge (fake LLM) + real app (no LLM) + live Groq writer on a recorded lecture (7,021 tokens) |
+| Reference materials (group D) | 0 | not started |
+| Quiz + test (group C) | 0 | not started |
 | Concept Simulation mode | 0 | not started |
 | Story Scenes mode | 0 | not started |
 | Multilingual | 0 | not started (interfaces carry `language`) |
@@ -274,6 +300,7 @@ Then V1c._
 | Item | Unit | Integration | Runtime |
 |---|---|---|---|
 | EventBus, config, state store, event log, simulator | ✅ | ✅ | ✅ |
+| V2 B: Materials tab (summary / key-concepts slides, notes + assignment PDFs, PPTX light/dark, names, share), past lectures + viewer, students' downloads; A-review fixes (moon, notes menu, minimal card) | ✅ 501 total (`test_materials` 22, `test_materials_access` 2) | ✅ Edge (3): real PDFs / PPTX, projector, viewer, student download | ✅ real app no LLM; PPTX vs browser through PowerPoint; `materials_check.py` 0 tokens on 4 lectures; live Groq 7,021 tokens |
 | V2 A: slide theme mid-lecture (premium dark), /control dark, teacher PDF notes + follow, labelled images first | ✅ 477 total | ✅ Edge (2) + slow calibration | ✅ real app in Edge (notes follow 7 slides, dark switch); real image searches 4 × 10 |
 | Verify round 5: edit tools inside the item + grace + double-click, Pin removed, glass anticipation, 10-step process in two rows + continued numbering, formula sets, Keep buttons on mistake cards | ✅ 437 total (`test_round5_layouts`) | ✅ Edge (20) | ✅ replay of 20261006-172934-8aa4 + 5-session old/new diff; real app control; glass light/dark + exit frames |
 | Verify round 4 step D: share (quick tunnel, viewer role, teacher key), live editing (final), structure tree, transcript strip; definition card, End icon, sub-classification tree, plain note card | ✅ 432 total (`test_teacher_edits`, `test_sub_classification`) | ✅ `test_share_access` (real server, tunnel headers) + Edge `test_control_features_browser` | ✅ real app + real Cloudflare tunnel (student profile, refused / keyed control); replays light + dark with real images |
@@ -318,6 +345,11 @@ Then V1c._
 - `src/copilot/persistence/event_log.py`
 - `src/copilot/notes/`: library (the teacher's PDFs in data/notes, page texts, rendering), service (open / page /
   follow the lecture, F-009)
+- `src/copilot/materials/` (F-010): archive (past lectures from event logs), content (taught content per topic,
+  budgeted), writer (LLM prompts, JSON, repair), slides (summary / key concepts), render (print HTML → PDF, slides →
+  PPTX via headless Edge), store (data/materials), service (commands, one job at a time)
+- `web/export/`: the page headless Edge draws PPTX slides on; `tools/materials_check.py` (prompts at 0 tokens,
+  `--live`), `tools/pptx_to_png.ps1` (PowerPoint export to check a PPTX)
 - `src/copilot/sim/simulator.py`
 - `src/copilot/audio/`: sources, vad, segmenter, mic_check
 - `src/copilot/stt/`: engine, pipeline, factory, cuda_dlls

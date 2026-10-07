@@ -43,6 +43,10 @@ const withGhost = (spec, label) => ({
 
 const svg = (d, cls = "") => html`<svg class=${"ico " + cls} viewBox="0 0 24 24" aria-hidden="true"><path d=${d}
   fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+// Dark slides: a solid crescent with a small star (user 2026-10-07: the outline moon looked hollow)
+const MOON = html`<svg class="ico moon" viewBox="0 0 24 24" aria-hidden="true">
+  <path d="M20.4 14.6A8.6 8.6 0 0 1 9.4 3.6a8.9 8.9 0 1 0 11 11z" fill="currentColor"/>
+  <path d="M17 3.2l.75 1.85 1.85.75-1.85.75L17 8.4l-.75-1.85-1.85-.75 1.85-.75z" fill="currentColor"/></svg>`;
 const ICON = {
   back: "M19 12H5M11 18l-6-6 6-6",
   prev: "M15 18l-6-6 6-6",
@@ -64,7 +68,16 @@ const ICON = {
   stop: "M6 6l12 12M18 6L6 18",
   chevron: "M6 9l6 6 6-6",
   sun: "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4",
-  moon: "M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z",
+  materials: "M12 3l2.1 4.6L19 9.7l-4.9 2.1L12 16.4l-2.1-4.6L5 9.7l4.9-2.1zM19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z",
+  lectures: "M4 5h16v4H4zM5 9v10h14V9M10 13h4",
+  download: "M12 4v11M7 10l5 5 5-5M5 20h14",
+  open: "M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5",
+  slides: "M3 4h18v12H3zM8 20h8M12 16v4",
+  pdf: "M7 3h7l5 5v13H7zM14 3v5h5",
+  pptx: "M4 5h16v12H4zM8 21h8M9 9h3a2 2 0 0 1 0 4H9V9z",
+  students: "M16 19v-1a4 4 0 0 0-8 0v1M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM20 19v-1a3 3 0 0 0-2-2.8M17 5.2a3 3 0 0 1 0 5.6",
+  check: "M5 12l5 5 9-10",
+  hide: "M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.1A9.8 9.8 0 0 1 12 5c5 0 9 5 9 7a10 10 0 0 1-2.4 3.4M6.6 6.6C4.4 8 3 10.3 3 12c0 2 4 7 9 7a9.6 9.6 0 0 0 4.4-1.1",
   tree: "M4 5h6M4 5v14M4 12h6M4 19h6M14 5h6M14 12h6M14 19h6",
   notes: "M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h4",
 };
@@ -315,7 +328,7 @@ function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd, theme }) {
       ${flag("blank", "blank", "unblank", "B", ICON.blank, "Blank", true)}
       <button class="theme" onClick=${() => send("set_theme", { theme: dark ? "light" : "dark" })}
         title=${dark ? "Light slides on the projector (T)" : "Dark slides on the projector (T)"}>
-        ${svg(dark ? ICON.sun : ICON.moon)}<span>${dark ? "Light" : "Dark"}</span></button>
+        ${dark ? svg(ICON.sun) : MOON}<span>${dark ? "Light" : "Dark"}</span></button>
     </div>
     <div class="group">
       <button onClick=${() => send("force_new_slide")} title="Start a new slide (N)">${svg(ICON.newSlide)}<span>New slide</span></button>
@@ -422,6 +435,39 @@ async function uploadNotes(file, send) {
   send("notes_open", { id: res.id });
 }
 
+// A small menu in the app's style (no native select): a button, and a floating list under it.
+function usePopover() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    const away = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const esc = (e) => { if (e.key === "Escape") { e.stopPropagation(); setOpen(false); } };
+    document.addEventListener("pointerdown", away);
+    document.addEventListener("keydown", esc, true);
+    return () => { document.removeEventListener("pointerdown", away); document.removeEventListener("keydown", esc, true); };
+  }, [open]);
+  return [open, setOpen, ref];
+}
+
+// The notes in use; the menu lists every PDF and adds another one (user 2026-10-07: the select was out of style).
+function DocMenu({ docs, open, onOpen, onAdd, busy }) {
+  const [shown, setShown, ref] = usePopover();
+  return html`<div class="menu-wrap doc-menu" ref=${ref}>
+    <button class=${"menu-button" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}
+        title="Choose notes">
+      ${svg(ICON.pdf)}<span class="label">${open.name}</span><em>${open.pages} p.</em>${svg(ICON.chevron, "chev")}</button>
+    ${shown && html`<div class="menu" role="menu">
+      ${docs.map((d) => html`<button key=${d.id} role="menuitem" class=${"menu-row" + (d.id === open.id ? " on" : "")}
+          onClick=${() => { setShown(false); if (d.id !== open.id) onOpen(d.id); }}>
+        ${svg(d.id === open.id ? ICON.check : ICON.pdf)}<span>${d.name}</span><em>${d.pages} p.</em></button>`)}
+      <div class="menu-sep"></div>
+      <button role="menuitem" class="menu-row add" disabled=${busy} onClick=${() => { setShown(false); onAdd(); }}>
+        ${svg(ICON.add)}<span>Add PDF</span></button>
+    </div>`}
+  </div>`;
+}
+
 function Notes({ notes, send, wide, onWide }) {
   const input = useRef(null);
   const [busy, setBusy] = useState(false);
@@ -448,28 +494,22 @@ function Notes({ notes, send, wide, onWide }) {
     if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); e.stopPropagation(); if (n.page > 1) turn(n.page - 1); }
   };
   const file = html`<input ref=${input} type="file" accept="application/pdf,.pdf" hidden onChange=${pick} />`;
+  const addPdf = () => input.current.click();
   return html`<div class=${"notes" + (over ? " over" : "")} tabindex="0" onKeyDown=${keys}
       onDragOver=${(e) => { if (hasPdf(e)) { e.preventDefault(); setOver(true); } }}
       onDragLeave=${() => setOver(false)} onDrop=${drop}>
     ${file}
     ${!doc ? html`<div class="notes-empty">
-        <div class="notes-art">${svg("M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6")}</div>
-        <p class="lead">Your own notes, beside the lecture</p>
-        <p>Add a PDF of your notes. It stays on this laptop and is never shown on the projector or to students.
-          The page that matches the slide on screen opens by itself.</p>
-        <button class="primary" onClick=${() => input.current.click()} disabled=${busy}>
+        <div class="notes-art">${svg(ICON.notes)}</div>
+        <button class="primary" onClick=${addPdf} disabled=${busy}>
           ${svg(ICON.add, busy ? "pulse" : "")}${busy ? "Adding…" : "Add PDF notes"}</button>
-        <span class="or">or drop a PDF here</span>
-        ${n.docs.length > 0 && html`<div class="notes-recent"><h3>Your notes</h3>${n.docs.map((d) => html`
+        <span class="or">or drop one here · only you see it</span>
+        ${n.docs.length > 0 && html`<div class="notes-recent">${n.docs.map((d) => html`
           <button key=${d.id} class="doc-row" onClick=${() => send("notes_open", { id: d.id })}>
-            ${svg("M7 3h7l5 5v13H7zM14 3v5h5")}<span>${d.name}</span><em>${d.pages} p.</em></button>`)}</div>`}
+            ${svg(ICON.pdf)}<span>${d.name}</span><em>${d.pages} p.</em></button>`)}</div>`}
       </div>`
     : html`<div class="notes-head">
-        <select class="doc-pick" value=${doc.id} title="Choose notes"
-          onChange=${(e) => { if (e.target.value === "__add") { input.current.click(); e.target.value = doc.id; } else send("notes_open", { id: e.target.value }); }}>
-          ${n.docs.map((d) => html`<option key=${d.id} value=${d.id}>${d.name}</option>`)}
-          <option value="__add">+ Add another PDF…</option>
-        </select>
+        <${DocMenu} docs=${n.docs} open=${doc} onOpen=${(id) => send("notes_open", { id })} onAdd=${addPdf} busy=${busy} />
         <button class="icon" onClick=${onWide} title=${wide ? "Narrower notes" : "Wider notes"} aria-pressed=${wide}>
           ${svg(wide ? "M9 4v16M4 9l5 3-5 3M20 9l-5 3 5 3" : "M4 4v16M20 4v16M9 12h6M9 12l2-2M9 12l2 2M15 12l-2-2M15 12l-2 2")}</button>
         <button class="icon" onClick=${() => confirm(`Remove “${doc.name}” from your notes?`) && send("notes_remove", { id: doc.id })}
@@ -496,11 +536,266 @@ function Notes({ notes, send, wide, onWide }) {
   </div>`;
 }
 
+// ---- lecture materials (F-010): tick what to make, from this lecture and / or past ones; one Create ----
+const KINDS = [
+  { kind: "summary", icon: ICON.slides, label: "Summary slide", note: "Shown on the projector", llm: true },
+  { kind: "concepts", icon: ICON.materials, label: "Key concepts slide", note: "Shown on the projector", llm: true },
+  { kind: "notes", icon: ICON.pdf, label: "Notes", note: "PDF · explanations, slides, key concepts", llm: true, file: ".pdf" },
+  { kind: "assignment", icon: ICON.edit, label: "Assignment", note: "PDF · theory questions", llm: true, file: ".pdf" },
+  { kind: "pptx", icon: ICON.pptx, label: "Slides", note: "PowerPoint · as on the projector", file: ".pptx" },
+];
+const KIND = Object.fromEntries(KINDS.map((k) => [k.kind, k]));
+const LABEL = { notes: "Notes", assignment: "Assignment", pptx: "Slides" };
+const DEFAULT_QUESTIONS = 10;
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const joinedTitle = (titles) => {
+  const t = [...new Set(titles.filter(Boolean))];
+  return !t.length ? "Lecture" : t.length <= 2 ? t.join(" + ") : `${t[0]} + ${t.length - 1} more`;
+};
+// the same rule as copilot.materials.store.auto_name: "Photosynthesis - Notes - 7 Oct 2026.pdf"
+const autoName = (kind, title) => {
+  const d = new Date();
+  return `${title.replace(/[\\/:*?"<>|]+/g, " ")} - ${LABEL[kind]} - ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}${KIND[kind].file}`;
+};
+const ago = (t) => {
+  const s = Math.max(0, Date.now() / 1000 - t);
+  if (s < 60) return "just now";
+  if (s < 3600) return `${Math.floor(s / 60)} min ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)} h ago`;
+  const d = new Date(t * 1000);
+  return `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+};
+const fileUrl = (m, inline) => `/api/materials/${m.id}/file${inline ? "?inline=1" : ""}`;
+
+// The past lectures (GET /api/lectures), loaded when a tab needs them, again when the list changed.
+function useLectures(active, version) {
+  const [list, setList] = useState(null);
+  useEffect(() => {
+    if (!active) return undefined;
+    let gone = false;
+    fetch("/api/lectures", { cache: "no-store" }).then((r) => r.json())
+      .then((res) => { if (!gone) setList(res.lectures || []); }).catch(() => { if (!gone) setList([]); });
+    return () => { gone = true; };
+  }, [active, version]);
+  return list;
+}
+
+function Segmented({ value, options, onChange }) {
+  return html`<div class="segmented" role="radiogroup">${options.map(([v, label]) => html`<button key=${v}
+    role="radio" aria-checked=${value === v} class=${value === v ? "on" : ""} onClick=${() => onChange(v)}>${label}</button>`)}</div>`;
+}
+
+function PastPicker({ lectures, picked, onToggle }) {
+  const [shown, setShown, ref] = usePopover();
+  return html`<div class="menu-wrap" ref=${ref}>
+    <button class=${"chip add" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}>
+      ${svg(ICON.add)}Past lecture</button>
+    ${shown && html`<div class="menu wide" role="menu">
+      ${lectures === null ? html`<p class="menu-empty">Loading…</p>`
+        : !lectures.length ? html`<p class="menu-empty">No past lectures yet</p>`
+        : lectures.map((l) => html`<button key=${l.id} role="menuitemcheckbox" aria-checked=${picked.includes(l.id)}
+            class=${"menu-row" + (picked.includes(l.id) ? " on" : "")} onClick=${() => onToggle(l.id)}>
+          ${svg(picked.includes(l.id) ? ICON.check : ICON.lectures)}<span>${l.title}</span><em>${l.date.split(",")[0]}</em></button>`)}
+    </div>`}
+  </div>`;
+}
+
+function MadeRow({ m, send }) {
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(m.name);
+  const k = KIND[m.kind] || {};
+  const save = () => { setEditing(false); if (name.trim() && name.trim() !== m.name) send("materials_rename", { id: m.id, name: name.trim() }); };
+  const pdf = k.file === ".pdf";
+  const meta = m.status === "working" ? (m.detail || "working") : m.status === "failed" ? m.detail
+    : [ago(m.created), m.kind === "assignment" ? `${m.count} questions` : m.kind === "pptx" ? `${m.count} slides` : "",
+      m.tokens ? `${(m.tokens / 1000).toFixed(1)}k tokens` : "", m.detail].filter(Boolean).join(" · ");
+  return html`<li class=${"made " + m.status}>
+    <span class="made-icon">${m.status === "working" ? html`<span class="spinner"></span>` : svg(k.icon || ICON.pdf)}</span>
+    <div class="made-main">
+      ${editing
+        ? html`<input class="rename" value=${name} onInput=${(e) => setName(e.target.value)} onBlur=${save}
+            ref=${(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus(), el.select())}
+            onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Enter") save(); if (e.key === "Escape") { setName(m.name); setEditing(false); } }} />`
+        : html`<span class="made-name" title=${m.name}>${m.name}</span>`}
+      <span class="made-meta" title=${meta}>${meta}</span>
+    </div>
+    <div class="made-actions">
+      ${m.status === "ready" && m.slide_ids && m.slide_ids.length > 0 && html`<button class="icon" title="Show on the projector"
+        onClick=${() => send("materials_show", { id: m.id })}>${svg(ICON.slides)}</button>`}
+      ${m.status === "ready" && pdf && html`<a class="icon" href=${fileUrl(m, true)} target="_blank" rel="noopener" title="Open">${svg(ICON.open)}</a>`}
+      ${m.status === "ready" && m.has_file && html`<a class="icon" href=${fileUrl(m)} download=${m.name} title="Download">${svg(ICON.download)}</a>`}
+      ${m.status === "ready" && pdf && html`<button class=${"icon" + (m.shared ? " on" : "")} aria-pressed=${m.shared}
+        title=${m.shared ? "Students can download it from the shared link (click to stop)" : "Let students download it from the shared link"}
+        onClick=${() => send("materials_share", { id: m.id, on: !m.shared })}>${svg(ICON.students)}</button>`}
+      ${m.status !== "working" && m.has_file && html`<button class="icon" title="Rename" onClick=${() => { setName(m.name); setEditing(true); }}>${svg(ICON.edit)}</button>`}
+      ${m.status !== "working" && html`<button class="icon danger" title="Delete"
+        onClick=${() => confirm(`Delete “${m.name}”?`) && send("materials_remove", { id: m.id })}>${svg(ICON.bin)}</button>`}
+    </div>
+  </li>`;
+}
+
+function Materials({ materials, lectures, send, preselect, onPreselected }) {
+  const st = materials || { items: [], current: { id: "", title: "" }, llm: false };
+  const [ticks, setTicks] = useState({});
+  const [opts, setOpts] = useState({ scope: "topic", count: DEFAULT_QUESTIONS, theme: "light" });
+  const [names, setNames] = useState({});
+  const [current, setCurrent] = useState(true);
+  const [past, setPast] = useState([]);
+  useEffect(() => {  // "Make materials" in a past lecture: that lecture alone
+    if (!preselect) return;
+    setPast([preselect]); setCurrent(false); onPreselected();
+  }, [preselect]);
+  const titles = [...(current ? [st.current.title || "This lecture"] : []),
+    ...past.map((id) => ((lectures || []).find((l) => l.id === id) || {}).title || "Past lecture")];
+  const title = joinedTitle(titles);
+  const chosen = KINDS.filter((k) => ticks[k.kind]);
+  const blocked = (k) => (k.llm && !st.llm) || (k.kind === "summary" && opts.scope === "topic" && !current);
+  const ready = chosen.length > 0 && (current || past.length > 0) && !chosen.some(blocked);
+  const create = () => {
+    const items = chosen.map((k) => ({
+      kind: k.kind, name: k.file ? (names[k.kind] || "").trim() || autoName(k.kind, title) : "",
+      ...(k.kind === "summary" ? { scope: opts.scope } : {}),
+      ...(k.kind === "assignment" ? { count: opts.count } : {}),
+      ...(k.kind === "pptx" ? { theme: opts.theme } : {}),
+    }));
+    send("materials_create", { items, lectures: past, current });
+    setTicks({}); setNames({});
+  };
+  const setCount = (n) => setOpts({ ...opts, count: Math.max(1, Math.min(30, n || DEFAULT_QUESTIONS)) });
+  const option = (k) => {
+    if (!ticks[k.kind]) return null;
+    const name = k.file && html`<input class="name" value=${names[k.kind] || ""} placeholder=${autoName(k.kind, title)}
+      title="File name (leave it to use the one shown)" onKeyDown=${(e) => e.stopPropagation()}
+      onInput=${(e) => setNames({ ...names, [k.kind]: e.target.value })} />`;
+    return html`<div class="kind-options">
+      ${k.kind === "summary" && html`<${Segmented} value=${current ? opts.scope : "lecture"}
+        options=${current ? [["topic", "This topic"], ["lecture", "Whole lecture"]] : [["lecture", "Whole lecture"]]}
+        onChange=${(v) => setOpts({ ...opts, scope: v })} />`}
+      ${k.kind === "assignment" && html`<div class="stepper" title="Number of questions">
+        <button class="icon" onClick=${() => setCount(opts.count - 1)} disabled=${opts.count <= 1}>−</button>
+        <input type="number" min="1" max="30" value=${opts.count} onKeyDown=${(e) => e.stopPropagation()}
+          onChange=${(e) => setCount(parseInt(e.target.value, 10))} />
+        <button class="icon" onClick=${() => setCount(opts.count + 1)} disabled=${opts.count >= 30}>+</button>
+        <span>questions</span></div>`}
+      ${k.kind === "pptx" && html`<${Segmented} value=${opts.theme} options=${[["light", "Light"], ["dark", "Dark"]]}
+        onChange=${(v) => setOpts({ ...opts, theme: v })} />`}
+      ${name}
+    </div>`;
+  };
+  const items = st.items || [];
+  return html`<div class="materials">
+    <section class="make">
+      <div class="from">
+        <span class="from-label">From</span>
+        <button class=${"chip" + (current ? " on" : "")} aria-pressed=${current} onClick=${() => setCurrent(!current)}
+          title="This lecture, up to now">${current && svg(ICON.check)}This lecture</button>
+        ${past.map((id) => html`<span key=${id} class="chip on">${((lectures || []).find((l) => l.id === id) || {}).title || "Past lecture"}
+          <button class="x" title="Remove" onClick=${() => setPast(past.filter((x) => x !== id))}>${svg(ICON.remove)}</button></span>`)}
+        <${PastPicker} lectures=${lectures} picked=${past}
+          onToggle=${(id) => setPast(past.includes(id) ? past.filter((x) => x !== id) : [...past, id])} />
+      </div>
+      <ul class="kinds">${KINDS.map((k) => html`<li key=${k.kind} class=${"kind" + (ticks[k.kind] ? " on" : "") + (blocked(k) ? " off" : "")}>
+        <button class="kind-head" role="checkbox" aria-checked=${!!ticks[k.kind]} disabled=${k.llm && !st.llm}
+            title=${k.llm && !st.llm ? "Needs the LLM (this run has none)" : ""}
+            onClick=${() => setTicks({ ...ticks, [k.kind]: !ticks[k.kind] })}>
+          <span class="tick">${ticks[k.kind] && svg(ICON.check)}</span>
+          <span class="kind-icon">${svg(k.icon)}</span>
+          <span class="kind-text"><b>${k.label}</b><small>${k.note}</small></span>
+        </button>
+        ${option(k)}
+      </li>`)}</ul>
+      <div class="make-foot">
+        <span class="make-note">${!st.llm ? "No LLM in this run: only the PowerPoint can be made"
+          : chosen.some(blocked) ? "A topic summary needs this lecture" : `From ${title}`}</span>
+        <button class="primary" disabled=${!ready} onClick=${create}>
+          ${svg(ICON.materials)}Create${chosen.length > 1 ? ` ${chosen.length}` : ""}</button>
+      </div>
+    </section>
+    <section class="made-list">
+      <h3>Made${items.length ? html` <span>${items.length}</span>` : ""}</h3>
+      ${!items.length ? html`<p class="made-empty">What you create appears here.</p>`
+        : html`<ul>${items.map((m) => html`<${MadeRow} key=${m.id} m=${m} send=${send} />`)}</ul>`}
+    </section>
+  </div>`;
+}
+
+// ---- past lectures (F-010): the list; open one to page through its slides and its materials ----
+function Lectures({ lectures, onOpen, send }) {
+  if (lectures === null) return html`<div class="lectures"><p class="made-empty">Loading…</p></div>`;
+  if (!lectures.length) return html`<div class="lectures"><p class="made-empty">Past lectures appear here.</p></div>`;
+  return html`<div class="lectures"><ul>${lectures.map((l) => html`<li key=${l.id} class="lecture-row">
+    <button class="lecture-open" onClick=${() => onOpen(l.id)} title="Open the slides of this lecture">
+      <b>${l.title}</b>
+      <small>${l.date} · ${l.slides} slide${l.slides === 1 ? "" : "s"} · ${Math.max(1, Math.round(l.minutes))} min
+        ${l.simulated ? html` · <i>test run</i>` : ""}</small>
+    </button>
+    ${l.materials > 0 && html`<em class="badge" title="Materials made from it">${l.materials}</em>`}
+    <button class="icon hide" title="Take it off this list (nothing is deleted)"
+      onClick=${() => confirm(`Hide “${l.title}” (${l.date}) from the list?`) && send("lecture_hide", { id: l.id })}>${svg(ICON.hide)}</button>
+  </li>`)}</ul></div>`;
+}
+
+function LectureViewer({ id, made, onClose, onMake, send }) {
+  const [data, setData] = useState(null);
+  const [at, setAt] = useState(0);
+  const box = useRef(null);
+  const root = useRef(null);
+  const scale = useStageScale(box);
+  useEffect(() => {
+    let gone = false;
+    fetch(`/api/lectures/${id}`, { cache: "no-store" }).then((r) => r.json())
+      .then((res) => { if (!gone) setData(res); }).catch(() => { if (!gone) setData({ error: "Could not load it" }); });
+    return () => { gone = true; };
+  }, [id]);
+  useEffect(() => { root.current && root.current.focus(); }, []);
+  const slides = (data && data.slides) || [];
+  const keys = (e) => {
+    if (e.target.tagName === "INPUT") return;
+    e.stopPropagation();  // arrows page through this lecture, not the live one
+    if (e.key === "Escape") onClose();
+    if (e.key === "ArrowRight") setAt((a) => Math.min(slides.length - 1, a + 1));
+    if (e.key === "ArrowLeft") setAt((a) => Math.max(0, a - 1));
+  };
+  const spec = slides[at];
+  const lec = data && data.lecture;
+  return html`<div class="viewer-backdrop" onClick=${(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div class="viewer" ref=${root} tabindex="0" onKeyDown=${keys} role="dialog" aria-label="Past lecture">
+      <header class="viewer-head">
+        <div><h2>${lec ? lec.title : "Lecture"}</h2>${lec && html`<span>${lec.date} · ${slides.length} slides</span>`}</div>
+        <span class="spacer"></span>
+        ${lec && html`<button class="primary" onClick=${() => onMake(id)}>${svg(ICON.materials)}Make materials</button>`}
+        <button class="icon close" onClick=${onClose} title="Close (Esc)">${svg(ICON.remove)}</button>
+      </header>
+      <div class="viewer-body">
+        <div class="viewer-main">
+          <div class="preview viewer-stage" ref=${box} data-theme=${lec && lec.theme ? lec.theme : "light"}>
+            ${spec && html`<div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
+              <${Slide} key=${spec.id} spec=${spec} /></div>`}
+            ${data && data.error && html`<p class="made-empty">${data.error}</p>`}
+          </div>
+          <div class="viewer-nav">
+            <button class="icon" disabled=${at <= 0} onClick=${() => setAt(at - 1)} title="Previous slide (←)">${svg(ICON.prev)}</button>
+            <span class="count">${slides.length ? `${at + 1} / ${slides.length}` : "–"}</span>
+            <button class="icon" disabled=${at >= slides.length - 1} onClick=${() => setAt(at + 1)} title="Next slide (→)">${svg(ICON.next)}</button>
+          </div>
+        </div>
+        <aside>
+          <ol class="viewer-slides">${slides.map((s, i) => html`<li key=${s.id} class=${"slide-row" + (i === at ? " live" : "")}
+            onClick=${() => setAt(i)}><span class="n">${i + 1}</span><span class="t">${shownTitle(s)}</span>
+            ${s.part && html`<span class="part">${partLabel(s.part)}</span>`}</li>`)}</ol>
+          ${made.length > 0 && html`<div class="viewer-made"><h3>Made from it</h3>
+            <ul>${made.map((m) => html`<${MadeRow} key=${m.id} m=${m} send=${send} />`)}</ul></div>`}
+        </aside>
+      </div>
+    </div>
+  </div>`;
+}
+
 // the right column: mistake cards on top, then one card with tabs (more tabs come with the V2 tools)
 function SidePanel({ tab, onTab, children }) {
   const tabs = children.filter(Boolean);
   return html`<section class="side-panel">
-    <nav class="tabs" role="tablist">${tabs.map((t) => html`<button key=${t.props.id} role="tab"
+    <nav class="tabs" role="tablist">${tabs.map((t) => html`<button key=${t.props.id} role="tab" title=${t.props.label}
         class=${t.props.id === tab ? "on" : ""} aria-selected=${t.props.id === tab} onClick=${() => onTab(t.props.id)}>
       ${t.props.icon && svg(t.props.icon)}<span>${t.props.label}</span>${t.props.badge
         ? html`<em class="badge">${t.props.badge}</em>` : null}</button>`)}</nav>
@@ -577,6 +872,11 @@ function App() {
   const [controlTheme, toggleControlTheme] = useControlTheme();
   const [tab, setTab] = useState("structure");
   const [wide, setWide] = useState(false);
+  const [viewing, setViewing] = useState(null);      // a past lecture open in the viewer (F-010)
+  const [preselect, setPreselect] = useState(null);  // "Make materials" from that lecture
+  const materials = state.materials;
+  const lectures = useLectures(tab === "materials" || tab === "lectures",
+    `${materials ? materials.lectures_changed : 0}:${materials ? materials.items.length : 0}`);
 
   const deck = state.deck;
   useEffect(() => {
@@ -614,7 +914,7 @@ function App() {
       <a class="open-display" href="/display" target="classroom-display">Open classroom display ↗</a>
       <button class="icon page-theme" onClick=${toggleControlTheme} aria-label="Control view theme"
         title=${controlTheme === "dark" ? "Light control view (this page only)" : "Dark control view (this page only)"}>
-        ${svg(controlTheme === "dark" ? ICON.sun : ICON.moon)}</button>
+        ${controlTheme === "dark" ? svg(ICON.sun) : MOON}</button>
     </header>
     <main class=${"grid" + (wide && tab === "notes" ? " notes-wide" : "")}>
       <section class="left">
@@ -634,10 +934,21 @@ function App() {
           <${Tab} id="notes" label="My notes" icon=${ICON.notes} badge=${state.notes && state.notes.open ? `p. ${state.notes.page}` : ""}>
             <${Notes} notes=${state.notes} send=${send} wide=${wide} onWide=${() => setWide(!wide)} />
           </${Tab}>
+          <${Tab} id="materials" label="Materials" icon=${ICON.materials}
+              badge=${materials && materials.items.some((m) => m.status === "working") ? "…" : ""}>
+            <${Materials} materials=${materials} lectures=${lectures} send=${send}
+              preselect=${preselect} onPreselected=${() => setPreselect(null)} />
+          </${Tab}>
+          <${Tab} id="lectures" label="Lectures" icon=${ICON.lectures}>
+            <${Lectures} lectures=${lectures} onOpen=${setViewing} send=${send} />
+          </${Tab}>
         </${SidePanel}>
       </section>
     </main>
     <${TranscriptStrip} lines=${state.transcript} />
+    ${viewing && html`<${LectureViewer} id=${viewing} send=${send} onClose=${() => setViewing(null)}
+      made=${(materials ? materials.items : []).filter((m) => m.lectures.includes(viewing))}
+      onMake=${(id) => { setViewing(null); setPreselect(id); setTab("materials"); }} />`}
   </div>`;
 }
 

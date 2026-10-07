@@ -42,13 +42,16 @@ export function connect(role, onMessage, onStatus) {
 
 // Reducer shared by both pages: applies server messages to a plain state object.
 export const initialState = { theme: "light", lifecycle: "starting", slides: {}, deck: null, transcript: [], audio: null, connected: false, concerns: [], images: {}, choices: {},
-  share: { state: "off", url: "", detail: "" }, viewers: 0, notes: null };
+  share: { state: "off", url: "", detail: "" }, viewers: 0, notes: null, materials: null, shared: [] };
 
 export function reduce(state, msg) {
   switch (msg.type) {
     case "hello":
       return { ...state, theme: msg.theme, lifecycle: msg.lifecycle, slides: msg.slides || {}, deck: msg.deck, transcript: msg.transcript || [], concerns: msg.concerns || [], choices: msg.image_choices || {},
-        share: msg.share || initialState.share, viewers: msg.viewers || 0, notes: msg.notes || null };
+        share: msg.share || initialState.share, viewers: msg.viewers || 0, notes: msg.notes || null,
+        materials: msg.materials || null, shared: msg.shared || [] };
+    case "materials": { const { type, ...materials } = msg; return { ...state, materials }; }  // control only (F-010)
+    case "shared": return { ...state, shared: msg.items || [] };  // students: the PDFs they may download (F-010)
     case "share": return { ...state, share: { state: msg.state, url: msg.url, detail: msg.detail } };  // control only (F-008)
     case "viewers": return { ...state, viewers: msg.count };
     case "theme": return { ...state, theme: msg.theme };  // the teacher switched light / dark (F-009)

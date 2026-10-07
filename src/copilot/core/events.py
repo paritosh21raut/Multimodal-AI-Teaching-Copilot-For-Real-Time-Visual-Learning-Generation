@@ -67,6 +67,9 @@ CommandKind = Literal[
     "share_start", "share_stop",                  # share /view with students over a Cloudflare quick tunnel (F-008)
     "set_theme",                                  # slide theme mid-lecture, args {theme: light | dark} (F-009)
     "notes_open", "notes_page", "notes_follow", "notes_remove",  # the teacher's PDF notes in /control (F-009)
+    # lecture materials + past lectures (F-010): create {items, lectures, current}; rename {id, name};
+    # share {id, on}; remove {id}; show {id} (a summary / key-concepts slide again); lecture_hide {id}
+    "materials_create", "materials_rename", "materials_share", "materials_remove", "materials_show", "lecture_hide",
 ]
 
 
@@ -250,6 +253,16 @@ class NotesState(Event):
     follow: bool = True
     reason: str = ""   # why following the lecture does nothing ("" = it works)
     matched: str = ""  # the slide title the page was matched to
+
+
+class MaterialsState(Event):
+    """The lecture materials (F-010): what was made / is being made, for /control; the shared PDFs for students."""
+    ephemeral: ClassVar[bool] = True  # a view state; the materials themselves live in data/materials
+    items: list[dict[str, Any]] = Field(default_factory=list)   # store.Material.public()
+    shared: list[dict[str, Any]] = Field(default_factory=list)  # [{id, name}] PDFs students may download
+    current: dict[str, Any] = Field(default_factory=dict)       # this lecture: {id, title}
+    llm: bool = False         # an LLM is configured (summary, concepts, notes, assignment need it)
+    lectures_changed: int = 0  # bumps when the past-lecture list changed (a lecture hidden)
 
 
 class ErrorRaised(Event):

@@ -79,6 +79,14 @@ class Deck:
         await self._publish_state()
         return spec
 
+    async def present(self, specs: list[SlideSpec]) -> list[SlideSpec]:
+        """Slides the teacher asked for (summary, key concepts; F-010): appended to the deck, the first one shown at
+        once. Like navigating: the screen follows new slides again when the last of them is on screen."""
+        added = [await self.add(s, activate=False) for s in specs]
+        if added and self._apply_command("goto", {"slide_id": added[0].id}):
+            await self._publish_state()
+        return added
+
     async def update(self, spec: SlideSpec) -> SlideSpec:
         old = self._slides.get(spec.id)
         if old is None:
