@@ -1,7 +1,8 @@
 # Current State
 
-_Last updated: 2026-10-12 (evening): **F-011 group C (quiz + test) done** (7 slices, 2,519 Groq tokens); next: the
-user's review of group C, then group D doubts (F-012, ask as text first). Before: 2026-10-12: **F-010c UI polish
+_Last updated: 2026-10-12 (night): **group C review fixes done** (9 items + round 2: 4 items, 0 LLM tokens; F-011 committed by the user
+before them); next: group D doubts (F-012, ask as text first). Before: 2026-10-12 (evening): **F-011 group C (quiz +
+test) done** (7 slices, 2,519 Groq tokens). Before: 2026-10-12: **F-010c UI polish
 done** (8 items after the group B review, 0 LLM tokens). Before: 2026-10-07 (night): **group B review fixes done** (15 issues, F-010b, 0 LLM tokens); next group C
 (quiz + test, F-011: ask its doubts first), then group D (F-012). Before: 2026-10-07 (evening): **V2 group B done**
 (lecture materials + past lectures, F-010). Before: 2026-10-07: **V2 group A done** (themes, teacher notes, labelled images). Before:
@@ -18,6 +19,34 @@ viewer role, control token; live slide editing; lecture structure tree in /contr
 Then V1c._
 
 ## Now
+- **Group C review fixes, round 2 (2026-10-12 night), verified, 0 LLM tokens:**
+  1. **From checklist menu cut by the side panel** (Quiz & Test and Materials: "Choose lectures / chapters" showed a
+  few rows, the rest behind the panel's scroll bar). Root cause: the menu was inside `.side-panel` (overflow hidden,
+  and its `container-type` makes it the containing block even for `position: fixed`) and the `.materials` scroll box.
+  Fix: `Floating` in control/app.js renders the menu into its own root on `<body>`, placed from the button's box
+  (opens upwards when the room below is short, follows scroll / resize); `usePopover` treats clicks inside
+  `.floating-host` as inside. Test `test_from_checklist_menu_is_not_cut_by_the_side_panel` (fails on the in-panel
+  menu at row 3, passes now). 2. Tabs "Lecture Structure", "My Notes" (4 Edge selectors follow the label).
+  3. Materials tab: back to the **sparkle**, My Notes keeps its page icon (user's choices after trying others).
+  4. Quiz & Test icon (user's choice): **exam sheet + pencil** (Q6 in `artifacts/polish/icon_candidates.png`).
+  Runs: 536 fast, 38 Edge passed. Screen: `artifacts/polish/from_menu_assess.png`.
+- **Group C review fixes (2026-10-12 night), verified, 0 LLM tokens** (user's 9 items after committing F-011):
+  1. Tab icon: a clipboard with ticked lines (the ? in a circle read as help). 2. Tab "Quiz & Test".
+  3. "Write questions" → **Prepare quiz / Prepare test** (sparkle icon with the LLM, pencil without).
+  4. The footnote under the setup removed. 5. **Back to setup** on the prepared set (draft and lobby; drops the set
+  after a confirm, the setup keeps its count / time / From; replaces the bottom Discard).
+  6. "Roll no." everywhere (results, CSV, join form, student lobby, projector line, errors).
+  7. Quiz results: Points · **Score x/n** (right of the questions asked) · **Avg. time** (mean answer time of the
+  answered questions). 8. Test results: Score · **Time taken** (m:ss on the test clock from joining to submit, pauses
+  excluded, "· auto" when auto-submitted); the Right column (= score) removed. Model: `Participant.clock_in / taken`,
+  `score()` gives `asked / avg` (quiz) and `taken` (test); CSV columns follow the table.
+  9. **Start card chapter menu clipped** (image.png: only 2 chapters visible). Root cause: `.start-card {overflow:
+  hidden}` (kept the top accent line inside the corners) cut the menu that opens below the button. Fix: no clip, the
+  line inset; the menu's height also fits the room left in the preview (which clips too) and scrolls.
+  Tests (fail before / pass after): 2 unit (avg / asked + CSV; time taken with pause + late join + auto-submit), Edge
+  `test_start_card_chapter_menu_shows_every_chapter` (every row is the element under its centre, menu-only scrolling,
+  2 window sizes); quiz/test Edge tests extended (Back to setup, headers, x/n, time taken; the tab selector follows
+  the new label). Screens: `artifacts/assess/control_*.png`, `artifacts/polish/start_card_menu_*.png`.
 - **F-011 quiz + test (2026-10-12), verified** (spec `docs/specs/F-011-quiz-test.md`; user decisions in the brief):
   - Core `copilot/assess/`: `model.py` state machine (every method takes `now`; quiz question → reveal 6 s → next /
     held; test global clock + auto-submit; pause freezes time), `scoring.py` (1000 → 700 by answer time, wrong 0),

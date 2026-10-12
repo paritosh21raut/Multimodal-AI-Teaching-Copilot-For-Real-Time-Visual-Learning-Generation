@@ -73,7 +73,7 @@ async def test_teacher_notes_follow_the_slides_in_control_only(tmp_path):
         await play(h, "p1")
         async with browser_page(f"{h.url}/control", 1600, 1000) as control, browser_page(f"{h.url}/display") as display:
             await wait_for_slide(control, "p1")
-            await control.click(".tabs button[aria-label='My notes']")  # icon-only when not open (F-010b)
+            await control.click(".tabs button[aria-label='My Notes']")  # icon-only when not open (F-010b)
             await control.wait_for_selector(".notes-empty >> text=Add notes")  # any file (F-010b)
             await control.screenshot(path=str(ART / "notes_empty.png"))
             await control.set_input_files(".notes input[type=file]", str(PDF))

@@ -115,7 +115,7 @@ export function ProjectorAssess({ pub, at, joinUrl }) {
   if (pub.status === "lobby") {
     body = html`<div class="lobby">
       <div class="lobby-side"><p class="eyebrow">${cap(kindName(pub.kind))}${pub.title ? ` · ${pub.title}` : ""}</p>
-        <h1>Join the ${kindName(pub.kind)}</h1><p class="sub">Scan, then enter your name and roll number.</p><${JoinCode} url=${url} /></div>
+        <h1>Join the ${kindName(pub.kind)}</h1><p class="sub">Scan, then enter your name and roll no.</p><${JoinCode} url=${url} /></div>
       <div class="lobby-people"><div class="lobby-count"><b>${pub.joined}</b><span>${pub.joined === 1 ? "student" : "students"} joined</span></div>
         ${pub.joined ? html`<ul class="names">${(pub.names || []).slice(-40).map((n) => html`<li key=${n}>${n}</li>`)}</ul>`
           : html`<p class="waiting"><span></span><span></span><span></span> Waiting for students</p>`}</div>
@@ -207,7 +207,7 @@ export function StudentAssess({ pub, at, onHide }) {  // onHide: "Back to the le
         }} />`;
   } else if (pub.status === "lobby") {
     body = html`<div class="as-card center lobby-me"><div class="as-pulse"><span></span><span></span><b>${pub.joined}</b></div>
-      <h1>You're in, ${me.name}</h1><p class="as-muted">Roll ${me.roll} · waiting for the teacher to start</p></div>`;
+      <h1>You're in, ${me.name}</h1><p class="as-muted">Roll no. ${me.roll} · waiting for the teacher to start</p></div>`;
   } else if (pub.kind === "quiz") {
     // the student's own state is for this question / step (a new one shows before the refetch lands)
     const fresh = view.index === pub.index && (view.step === pub.step || pub.status === "finished");
@@ -237,7 +237,7 @@ function JoinForm({ pub, saved, busy, error, onJoin }) {
     <h1>Join the ${kindName(pub.kind)}</h1>
     <p class="as-muted">${pub.kind === "quiz" ? `${pub.total} questions · ${pub.seconds} s each` : `${pub.total} questions · ${pub.minutes} min`}</p>
     <label>Name<input name="name" autocomplete="name" maxlength="40" required value=${name} onInput=${(e) => setName(e.target.value)} /></label>
-    <label>Roll number<input name="roll" autocomplete="off" maxlength="24" required value=${roll} onInput=${(e) => setRoll(e.target.value)} /></label>
+    <label>Roll no.<input name="roll" autocomplete="off" maxlength="24" required value=${roll} onInput=${(e) => setRoll(e.target.value)} /></label>
     ${error && html`<p class="as-error" role="alert">${error}</p>`}
     <button class="as-primary big" disabled=${busy || !name.trim() || !roll.trim()}>${busy ? "Joining…" : "Join"}</button>
   </form>`;

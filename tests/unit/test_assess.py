@@ -158,6 +158,49 @@ def test_students_with_no_right_answer_share_a_rank_whatever_their_answer_time()
         [("X", 1), ("Y", 2), ("Z", 2)]
 
 
+def test_quiz_results_give_right_of_asked_and_the_average_response_time():
+    a = quiz(n=3, seconds=10)
+    a.open(T0)
+    x = a.join("X", "1", "", T0)
+    y = a.join("Y", "2", "", T0)
+    a.start(T0)
+    a.answer(x.token, "q1", 1, T0 + 2)        # right, 2 s
+    a.next(T0 + 3)
+    a.next(T0 + 3)                             # question 2 from T0+3
+    a.answer(x.token, "q2", 0, T0 + 7)         # wrong, 4 s (a wrong answer still counts as a response)
+    a.end(T0 + 8)                              # question 2 was the last asked
+    rows = {r["name"]: r for r in a.control_view(T0 + 9)["students"]}
+    assert (rows["X"]["correct"], rows["X"]["asked"], rows["X"]["avg"]) == (1, 2, 3.0)
+    assert (rows["Y"]["correct"], rows["Y"]["asked"], rows["Y"]["avg"]) == (0, 2, None)  # never answered
+    text = results_csv(a)
+    head, first = text.splitlines()[:2]
+    assert head.startswith("Rank,Name,Roll no.,Points,Score,Answered,Avg. response time (s),Q1")
+    assert first.startswith("1,X,1,940,1/2,2,3.0,")
+
+
+def test_test_time_taken_runs_on_the_test_clock_pauses_and_late_join_excluded():
+    a = make_test(n=2, minutes=10)
+    a.open(T0)
+    s1 = a.join("Asha", "1", "", T0)
+    a.start(T0)
+    a.pause(T0 + 60)
+    a.resume(T0 + 360)                         # 5 min paused: not counted
+    late = a.join("Ben", "2", "", T0 + 420)    # joins 2 min into the test clock
+    a.submit(s1.token, T0 + 480)               # 3 min of test clock
+    a.submit(late.token, T0 + 540)             # 2 min after joining
+    rows = {r["name"]: r for r in a.control_view(T0 + 541)["students"]}
+    assert rows["Asha"]["taken"] == 180.0 and rows["Ben"]["taken"] == 120.0
+    c = make_test(n=1, minutes=1)
+    c.open(T0)
+    s = c.join("C", "3", "", T0)
+    c.start(T0)
+    c.tick(T0 + 60)                            # auto-submitted at time out: the whole minute
+    assert s.auto and s.taken == 60.0
+    head, first = results_csv(a).splitlines()[:2]
+    assert head.startswith("Rank,Name,Roll no.,Score,Answered,Time taken,Submitted,Auto-submitted,Q1")
+    assert ",3:00," in first and ",0/2," in first
+
+
 def test_quiz_public_and_student_views_never_carry_the_key_while_a_question_is_open():
     a = quiz(n=2, seconds=10)
     a.open(T0)

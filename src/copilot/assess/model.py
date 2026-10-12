@@ -82,6 +82,8 @@ class Participant(BaseModel):
     answers: dict[str, Answer] = Field(default_factory=dict)  # question id -> answer
     submitted: Optional[float] = None  # test: when (or quiz: never)
     auto: bool = False    # test: submitted at time out / End
+    clock_in: float = 0.0          # test: test-clock seconds already gone when this student joined (a late joiner)
+    taken: Optional[float] = None  # test: test-clock seconds from joining to submit (pauses excluded)
 
 
 class Assessment(BaseModel):
@@ -248,7 +250,7 @@ class Assessment(BaseModel):
         """The teacher lets a roll number join again from another device (answers kept)."""
         p = self.participants.get(roll_key(roll))
         if p is None:
-            raise AssessError("no such roll number")
+            raise AssessError("no such roll no.")
         p.token = ""
         self._changed()
 
@@ -293,7 +295,7 @@ class Assessment(BaseModel):
         if self.kind == "test":
             for p in self.participants.values():
                 if p.submitted is None:
-                    p.submitted, p.auto = now, True
+                    p.submitted, p.auto, p.taken = now, True, self._taken(p, now)
         elif self.step == "question":
             self.step = "reveal"  # the open question is closed (its answers count)
         self.status, self.ended, self.deadline = "finished", now, None
@@ -305,6 +307,16 @@ class Assessment(BaseModel):
         qid = self.questions[self.index].id
         return all(qid in p.answers for p in self.participants.values())
 
+    def _elapsed(self, now: float) -> float:
+        """Test: seconds of the test clock gone (pauses excluded); 0 before Start."""
+        if self.kind != "test" or self.started is None:
+            return 0.0
+        left = self.left(now)
+        return max(0.0, self.minutes * 60 - (left if left is not None else 0.0))
+
+    def _taken(self, p: Participant, now: float) -> float:
+        return round(max(0.0, self._elapsed(now) - p.clock_in), 1)
+
     def _changed(self) -> None:
         self.seq += 1
 
@@ -315,20 +327,21 @@ class Assessment(BaseModel):
         if p is not None and token and p.token and secrets.compare_digest(token, p.token):
             return p  # the same student again (a refresh): answers and the timer are kept
         if p is not None and p.token:
-            raise AssessError("This roll number has already joined. Use the device you joined on, "
+            raise AssessError("This roll no. has already joined. Use the device you joined on, "
                               "or ask the teacher.")
         if self.status not in ("lobby", "running"):
             raise AssessError("The quiz is over." if self.kind == "quiz" else "The test is over.")
         name = _clip(name, NAME_MAX)
         roll = _clip(roll, ROLL_MAX)
         if not name or not key:
-            raise AssessError("Enter your name and roll number.")
+            raise AssessError("Enter your name and roll no.")
         if len(key) > ROLL_MAX:
-            raise AssessError("That roll number is too long.")
+            raise AssessError("That roll no. is too long.")
         if p is not None:  # released by the teacher: a new device takes it over, answers kept
             p.token, p.name = secrets.token_urlsafe(16), name
         else:
-            p = Participant(key=key, roll=roll, name=name, token=secrets.token_urlsafe(16), joined=now)
+            p = Participant(key=key, roll=roll, name=name, token=secrets.token_urlsafe(16), joined=now,
+                            clock_in=self._elapsed(now))
             self.participants[key] = p
         self._changed()
         return p
@@ -375,7 +388,7 @@ class Assessment(BaseModel):
             raise AssessError("Already submitted.")
         if self.status != "running":
             raise AssessError("Time is up.")
-        p.submitted = now
+        p.submitted, p.taken = now, self._taken(p, now)
         self._changed()
 
     # ---- results ----------------------------------------------------------------------------------------
@@ -396,9 +409,11 @@ class Assessment(BaseModel):
             points = sum(p.answers[q.id].points for q in qs if q.id in p.answers)
             # tie-break: answer time of the right answers only (two students with no right answer share a rank)
             time_s = sum(p.answers[q.id].at for q in qs if q.id in p.answers and p.answers[q.id].choice == q.answer)
-            return {"score": points, "correct": correct, "answered": sum(1 for q in qs if q.id in p.answers),
-                    "time": round(time_s, 1)}
-        return {"score": correct, "correct": correct, "answered": len(p.answers), "total": len(self.questions)}
+            times = [p.answers[q.id].at for q in qs if q.id in p.answers]
+            return {"score": points, "correct": correct, "answered": len(times), "asked": len(qs),
+                    "time": round(time_s, 1), "avg": round(sum(times) / len(times), 1) if times else None}
+        return {"score": correct, "correct": correct, "answered": len(p.answers), "total": len(self.questions),
+                "taken": p.taken}
 
     def leaderboard(self, upto: Optional[list[Question]] = None) -> list[dict[str, Any]]:
         """Ranked: score, then more correct, then less answer time (quiz) / earlier submit (test)."""

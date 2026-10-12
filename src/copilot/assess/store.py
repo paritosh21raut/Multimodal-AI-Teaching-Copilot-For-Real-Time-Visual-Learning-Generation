@@ -70,25 +70,26 @@ def summary(a: Assessment) -> dict[str, Any]:
 
 
 def results_csv(a: Assessment) -> str:
-    """Rank, name, roll number, score, correct, then one column per question (the option letter chosen)."""
+    """The results table as in /control (quiz: points, score x/n, average response time; test: score, time taken),
+    then one column per question (the option letter chosen)."""
     out = io.StringIO()
     w = csv.writer(out)
     qs = a.questions
-    head = ["Rank", "Name", "Roll number", "Score", "Correct", "Answered"]
     if a.kind == "quiz":
-        head.append("Answer time (s)")
+        head = ["Rank", "Name", "Roll no.", "Points", "Score", "Answered", "Avg. response time (s)"]
     else:
-        head += ["Submitted", "Auto-submitted"]
+        head = ["Rank", "Name", "Roll no.", "Score", "Answered", "Time taken", "Submitted", "Auto-submitted"]
     w.writerow(head + [f"Q{n}" for n in range(1, len(qs) + 1)])
     by_roll = {p.roll: p for p in a.participants.values()}
     board = a.leaderboard(a.closed_questions() if a.kind == "quiz" else None)
     for r in board:
         p = by_roll[r["roll"]]
-        row: list[Any] = [r["rank"], r["name"], r["roll"], r["score"], r["correct"], r["answered"]]
+        row: list[Any] = [r["rank"], r["name"], r["roll"]]
         if a.kind == "quiz":
-            row.append(r["time"])
+            row += [r["score"], f"{r['correct']}/{r['asked']}", r["answered"], "" if r["avg"] is None else r["avg"]]
         else:
-            row += [datetime.fromtimestamp(p.submitted).strftime("%H:%M:%S") if p.submitted else "",
+            row += [f"{r['score']}/{r['total']}", r["answered"], duration(r["taken"]),
+                    datetime.fromtimestamp(p.submitted).strftime("%H:%M:%S") if p.submitted else "",
                     "yes" if p.auto else ""]
         for q in qs:
             ans = p.answers.get(q.id)
@@ -97,6 +98,14 @@ def results_csv(a: Assessment) -> str:
     w.writerow([])
     w.writerow(["Key"] + [""] * (len(head) - 1) + ["ABCD"[q.answer] for q in qs])
     return out.getvalue()
+
+
+def duration(seconds: Optional[float]) -> str:
+    """'12:05' (minutes:seconds); '' when not submitted."""
+    if seconds is None:
+        return ""
+    s = int(round(seconds))
+    return f"{s // 60}:{s % 60:02d}"
 
 
 def csv_name(a: Assessment) -> str:

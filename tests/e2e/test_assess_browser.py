@@ -225,8 +225,19 @@ async def test_teacher_prepares_edits_runs_and_reviews_a_quiz_in_control(tmp_pat
         await lecture_now(h)
         async with browser_page(f"{h.url}/control", 1600, 1000) as control:
             control.on("dialog", lambda d: asyncio.ensure_future(d.accept()))
-            await control.click(".tabs button[aria-label='Quiz & test']")
+            await control.click(".tabs button[aria-label='Quiz & Test']")
             await control.wait_for_selector(".assess-setup")
+            assert await control.locator(".assess .made-empty").count() == 0   # no footnote under the setup
+            await control.fill(".assess-setup .stepper input >> nth=0", "3")
+            await control.press(".assess-setup .stepper input >> nth=0", "Tab")
+            assert (await control.inner_text(".assess-setup button.prepare")).strip() == "Prepare quiz"
+            await control.click(".assess-setup .make-foot button.primary")
+            await control.wait_for_function("document.querySelectorAll('.q-card').length === 3")
+            # Back to setup (user 2026-10-12): the set is dropped, the setup keeps its choices; then prepare 4
+            await control.click(".assess-back")
+            await control.wait_for_selector(".assess-setup")
+            assert h.assess.current is None
+            assert await control.input_value(".assess-setup .stepper input >> nth=0") == "3"
             await control.fill(".assess-setup .stepper input >> nth=0", "4")
             await control.press(".assess-setup .stepper input >> nth=0", "Tab")
             await control.screenshot(path=str(OUT / "control_setup.png"))
@@ -280,6 +291,10 @@ async def test_teacher_prepares_edits_runs_and_reviews_a_quiz_in_control(tmp_pat
             await control.wait_for_selector(".eyebrow-c:text('Question 2 of 4')")
             await control.click(".live-controls .danger-text")      # End (confirm accepted)
             await control.wait_for_selector(".assess-live .results td:has-text('Asha')")
+            heads = [t.strip() for t in await control.locator(".assess-live .results th").all_text_contents()]
+            assert heads == ["#", "Name", "Roll no.", "Points", "Score", "Avg. time"], heads
+            cells = [t.strip() for t in await control.locator(".assess-live .results tbody tr >> nth=0 >> td").all_inner_texts()]
+            assert cells[4] == "1/2" and cells[5].endswith(" s"), cells   # 1 right of the 2 asked, its answer time
             href = await control.get_attribute(".live-head.done a.button-link", "href")
             csv = await (await control.request.get(h.url + href)).text()
             assert "Asha" in csv and "CS-01" in csv
@@ -314,7 +329,7 @@ async def test_teacher_monitors_a_test_in_control_dark(tmp_path):
         async with browser_page(f"{h.url}/control", 1600, 1000) as control:
             control.on("dialog", lambda d: asyncio.ensure_future(d.accept()))
             await control.click(".page-theme")                    # the control page's own dark mode
-            await control.click(".tabs button[aria-label='Quiz & test']")
+            await control.click(".tabs button[aria-label='Quiz & Test']")
             await control.wait_for_selector(".student-list .chip.submitted")
             assert "2/3" in await control.inner_text(".student-list .chip.submitted")
             assert "1 of 3" in await control.inner_text(".student-list .chip.in-progress")
@@ -326,6 +341,11 @@ async def test_teacher_monitors_a_test_in_control_dark(tmp_path):
             await control.click(".live-controls .danger-text")
             await control.wait_for_selector(".assess-live .results")   # End: everyone submitted
             assert "auto" in await control.inner_text(".assess-live .results")
+            heads = [t.strip() for t in await control.locator(".assess-live .results th").all_text_contents()]
+            assert heads == ["#", "Name", "Roll no.", "Score", "Time taken"], heads   # no "Right" (= the score)
+            asha = [t.strip() for t in await control.locator(".assess-live .results tr:has-text('Asha') td").all_inner_texts()]
+            assert asha[3] == "2/3" and asha[4] == "0:00", asha             # submitted at once, before the pause
+            await control.screenshot(path=str(OUT / "control_test_results_dark.png"))
             assert not control.errors, control.errors
 
 

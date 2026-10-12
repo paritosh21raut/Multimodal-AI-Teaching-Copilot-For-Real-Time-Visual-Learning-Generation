@@ -141,7 +141,7 @@ async def test_notes_from_an_image_on_the_projector(tmp_path):
         await lecture_now(h)
         async with browser_page(f"{h.url}/control", 1600, 1000) as control, \
                 browser_page(f"{h.url}/display", 1280, 720) as display:
-            await control.click(".tabs button[aria-label='My notes']")
+            await control.click(".tabs button[aria-label='My Notes']")
             img = tmp_path / "Leaf diagram.png"
             img.write_bytes(png())
             await control.set_input_files(".notes input[type=file]", str(img))

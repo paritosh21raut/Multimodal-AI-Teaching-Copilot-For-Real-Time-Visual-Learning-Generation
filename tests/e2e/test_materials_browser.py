@@ -124,7 +124,7 @@ async def test_notes_menu_and_the_solid_moon(tmp_path):
         async with browser_page(f"{h.url}/control", 1600, 1000) as control:
             fill = await control.get_attribute(".dock button.theme svg.moon path", "fill")
             assert fill == "currentColor"                              # a solid crescent, not an outline
-            await control.click(".tabs button[aria-label='My notes']")
+            await control.click(".tabs button[aria-label='My Notes']")
             await control.wait_for_selector(".notes-empty button.primary")
             assert await control.query_selector(".notes-empty p") is None    # minimal: no paragraph
             await control.screenshot(path=str(OUT / "notes_empty_minimal.png"))

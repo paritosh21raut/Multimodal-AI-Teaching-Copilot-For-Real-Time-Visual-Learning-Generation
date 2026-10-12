@@ -203,6 +203,91 @@ async def test_lecture_and_chapter_drag_show_where_they_land(tmp_path):
             assert not control.errors, control.errors
 
 
+async def test_start_card_chapter_menu_shows_every_chapter(tmp_path):
+    """User 2026-10-12 (image.png): the chapter menu opened past the card's edge and the card clipped it, so only the
+    first two chapters could be seen or clicked. Every row must be the element under its own centre."""
+    from copilot.core.events import Command, CommandReceived
+
+    OUT.mkdir(parents=True, exist_ok=True)
+    async with display_harness(materials_dir=tmp_path, sessions_dir=tmp_path / "sessions", session_id="now",
+                               materials_router=FakeRouter(), store=True) as h:
+        for name in ("Cells", "Plants", "Energy", "Light", "Water"):
+            await h.bus.publish(CommandReceived(command=Command(kind="chapter_create", args={"name": name})))
+        await h.bus.publish(LifecycleChanged(state=Lifecycle.READY))
+        await h.settle()
+        async with browser_page(f"{h.url}/control", 1600, 1000) as control:
+            await control.wait_for_selector(".start-card")
+
+            async def every_row_reachable(size):
+                await control.set_viewport_size(size)
+                await control.click(".start-card .menu-button")
+                await control.wait_for_selector(".start-card .menu")
+                await asyncio.sleep(0.3)                               # the menu's opening animation
+                rows = control.locator(".start-card .menu .menu-row")
+                n = await rows.count()
+                assert n == 7, n                                       # 5 chapters + Unsorted + New chapter
+                for i in range(n):
+                    row = rows.nth(i)
+                    # scroll only the menu itself, as a mouse wheel would (scrollIntoView would also scroll the
+                    # clipping card, which no user can do, and hide the bug)
+                    hit = await row.evaluate("""r => { const m = r.closest('.menu');
+                        m.scrollTop = Math.max(0, r.offsetTop - m.clientHeight + r.offsetHeight);
+                        const b = r.getBoundingClientRect();
+                        const e = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+                        return !!e && r.contains(e); }""")
+                    assert hit, f"{size}: menu row {i} ({await row.inner_text()}) is hidden"
+                assert await control.eval_on_selector(".start-card", "c => c.scrollTop") == 0
+                await control.screenshot(path=str(OUT / f"start_card_menu_{size['width']}.png"))
+                await control.click(".start-card .menu-button")       # close
+
+            await every_row_reachable({"width": 1100, "height": 700})  # a short preview: the menu scrolls
+            await every_row_reachable({"width": 1600, "height": 1000})
+            await control.click(".start-card .menu-button")
+            await control.click(".start-card .menu .menu-row:has-text('Cells')")   # the oldest: the bottom chapter row
+            assert "Cells" in await control.inner_text(".start-card .menu-button")
+            assert not control.errors, control.errors
+
+
+async def test_from_checklist_menu_is_not_cut_by_the_side_panel(tmp_path):
+    """User 2026-10-12: in Quiz & Test (and Materials) the 'Choose lectures / chapters' menu was cut at the side
+    panel's edge; the rest of the list sat behind the panel's scroll bar. Every row must be the element under its
+    centre with only the menu itself scrolled, and the panel must not have scrolled."""
+    OUT.mkdir(parents=True, exist_ok=True)
+    sessions = tmp_path / "sessions"
+    for i in range(9):
+        await write_lecture(sessions, f"past{i}", slides=PHOTO[1:4])
+    async with display_harness(materials_dir=tmp_path, sessions_dir=sessions, session_id="now",
+                               materials_router=FakeRouter(), store=True) as h:
+        await lecture_now(h)
+        async with browser_page(f"{h.url}/control", 1600, 1000) as control:
+            await control.click(".tabs button[aria-label='Quiz & Test']")
+            await control.click(".assess-setup .segmented button:text-is('Lectures')")
+            await control.click(".assess-setup .pick-wrap .menu-button")
+            await control.wait_for_function("document.querySelectorAll('.pick-menu .menu-row').length === 10")  # list loads
+            await asyncio.sleep(0.3)                                   # the menu's opening animation
+            rows = control.locator(".pick-menu .menu-row")
+            n = await rows.count()
+            assert n == 10, n                                          # this lecture + 9 past ones
+            for i in range(n):
+                hit = await rows.nth(i).evaluate("""r => { const m = r.closest('.menu');
+                    m.scrollTop = Math.max(0, r.offsetTop - m.clientHeight + r.offsetHeight);
+                    const b = r.getBoundingClientRect();
+                    const e = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
+                    return !!e && r.contains(e); }""")
+                assert hit, f"menu row {i} is hidden"
+            assert await control.eval_on_selector(".assess", "p => p.scrollTop") == 0
+            await control.evaluate("document.querySelector('.pick-menu').scrollTop = 0")
+            await control.screenshot(path=str(OUT / "from_menu_assess.png"))
+            label = await control.inner_text(".assess-setup .pick-wrap .menu-button")
+            await rows.nth(n - 1).click()                              # the last row toggles; the menu stays open
+            await control.wait_for_selector(".pick-menu .menu-row.on >> nth=-1")
+            assert await rows.nth(n - 1).get_attribute("aria-checked") == "true"
+            assert await control.inner_text(".assess-setup .pick-wrap .menu-button") != label
+            await control.keyboard.press("Escape")
+            await control.wait_for_selector(".pick-menu", state="detached")
+            assert not control.errors, control.errors
+
+
 async def test_labels_tooltip_start_card_notes_and_motion(tmp_path):
     OUT.mkdir(parents=True, exist_ok=True)
     async with display_harness(materials_dir=tmp_path, sessions_dir=tmp_path / "sessions", session_id="now",
@@ -247,7 +332,7 @@ async def test_labels_tooltip_start_card_notes_and_motion(tmp_path):
             assert await control.eval_on_selector(thumb, "t => getComputedStyle(t).transitionDuration") != "0s"
 
             # notes: two images; "On screen" while projected; remove one from the menu (asked first)
-            await control.click(".tabs button[aria-label='My notes']")
+            await control.click(".tabs button[aria-label='My Notes']")
             for i, name in enumerate(("Leaf.png", "Root.png")):  # notes are stored by content hash: two different files
                 f = tmp_path / name
                 f.write_bytes(png() if i == 0 else picture())

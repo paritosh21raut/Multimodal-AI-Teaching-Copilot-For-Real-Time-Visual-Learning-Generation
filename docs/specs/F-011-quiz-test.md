@@ -17,6 +17,7 @@ deterministic code; the LLM only writes questions.
 | /control | lobby + Start; question, timer, answers in, distribution, leaderboard; Next / Hold next / Pause / Resume / End | monitor: joined / in progress / submitted per student, time left, Pause / Resume / End |
 | Score | correct: `round(1000 × (1 − 0.3 × t / T))` (1000 instant → 700 at the buzzer), wrong / none: 0 | 1 point per correct answer |
 | Result | final leaderboard (rank by total; ties: more correct, then less total answer time) | score / total; the correct answers too unless turned off |
+| Results table (/control, CSV) | Roll no. · Points · Score (right / asked) · Avg. time (mean answer time of the answered questions) | Roll no. · Score · Time taken (test clock from joining to submit, pauses excluded; "auto" when auto-submitted) |
 
 ## Flow (one assessment at a time)
 ```
@@ -47,12 +48,14 @@ discard (draft / lobby) ──▶ (none)
   the public state (no keys) on the WebSocket and their own state over HTTP with their token.
 
 ## Teacher (`/control`)
-- **Quiz / Test** card: kind, count, time, From picker (same as Materials), *show answers* (test) → **Generate**.
+- **Quiz & Test** tab: kind, count, time, From picker (same as Materials), *show answers* (test) → **Prepare quiz /
+  Prepare test**.
 - Preview: every question editable (text, 4 options, correct option), delete, add (blank, teacher writes it),
-  regenerate one (LLM, avoids the others). Then **Open** (lobby).
+  regenerate one (LLM, avoids the others). Then **Open** (lobby). **Back to setup** (draft or lobby) drops the set
+  after a confirm (`assess_discard`); the setup keeps the choices it was made with.
 - Lobby: participant count + names, the join link + QR, **Start**.
 - Live views as in the table; **End** any time.
-- Results: table (rank, name, roll, score, correct, time / submitted at) + **CSV**. Saved with the lecture
+- Results: table (see Kinds; review 2026-10-12) + **CSV**. Saved with the lecture
   (`data/assessments/<id>.json`); the Lectures tab lists a lecture's quizzes / tests with their results + CSV.
 
 ## LLM (slice 2)

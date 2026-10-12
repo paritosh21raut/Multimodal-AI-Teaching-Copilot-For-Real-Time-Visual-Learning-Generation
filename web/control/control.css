@@ -235,6 +235,11 @@ button.primary:disabled { opacity: 0.4; cursor: default; }
 .pick-wrap { flex: 1 1 180px; }
 .pick-wrap .menu-button { height: 30px; font-weight: 500; }
 .pick-wrap .menu { min-width: 280px; }
+/* the lectures / chapters checklist on the page itself, placed by JS under (or above) its button: never cut by the
+   side panel (user 2026-10-12); tall lists scroll inside the menu only past the window's room */
+.floating-host { position: fixed; z-index: 60; font-family: var(--font-text); color: var(--ink); }
+.floating-host .menu { position: static; min-width: 0; max-height: min(440px, var(--room, 320px)); }
+.floating-host.up .menu { transform-origin: bottom center; }
 .menu-row em { font-style: normal; font-size: 12px; font-weight: 500; color: var(--muted); flex: none; }
 .menu-row:hover:not(:disabled) { background: var(--surface-2); }
 .menu-row.on, .menu-row.on .ico { color: var(--accent); }
@@ -560,7 +565,9 @@ button.primary:disabled { opacity: 0.4; cursor: default; }
 /* ---- before the lecture (F-010b §1): chapter + Start, centred on the preview ---- */
 .start-card {
   position: absolute; z-index: 6; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(400px, calc(100% - 32px));
-  display: grid; gap: 10px; padding: 24px 24px 18px; border-radius: 20px; overflow: hidden;
+  /* no overflow clip: the chapter menu opens below the button, past the card's edge (user 2026-10-12: only the
+     first two chapters were visible); the accent line is inset instead so the rounded corners stay clean */
+  display: grid; gap: 10px; padding: 24px 24px 18px; border-radius: 20px;
   /* F-010c #5: a soft accent glow from the top-left corner, a thin accent line on the top edge */
   background:
     radial-gradient(120% 70% at 0% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%),
@@ -571,7 +578,7 @@ button.primary:disabled { opacity: 0.4; cursor: default; }
   animation: card-in 360ms var(--ease-out) both; font-family: var(--font-text); color: var(--ink);
 }
 :root[data-theme="dark"] .start-card { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 28px 70px rgba(0, 0, 0, 0.5); }
-.start-card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px;
+.start-card::before { content: ""; position: absolute; left: 20px; right: 20px; top: 0; height: 2px;
   background: linear-gradient(90deg, transparent, var(--accent) 30%, color-mix(in srgb, var(--accent) 40%, transparent) 75%, transparent); opacity: 0.85; }
 /* an editorial serif heading (user 2026-10-12: the sans one looked basic); "lecture" in accent italic */
 .start-card h3 { margin: 2px 0 0; font: 500 34px/1.08 "Sitka Display", "Sitka Heading", "Sitka", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
@@ -581,7 +588,7 @@ button.primary:disabled { opacity: 0.4; cursor: default; }
 .start-rule { height: 1px; margin: 6px 0 2px; background: linear-gradient(90deg, var(--line), transparent); }
 .start-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
 .start-card .menu-button { height: 40px; font-weight: 500; background: var(--surface); }
-.start-card .menu { max-height: 220px; }
+.start-card .menu { max-height: min(220px, 34vh); }
 .start-card .new-chapter { padding-left: 14px; }
 .start-note { margin: 0; font-size: 12px; color: var(--muted); }
 .start-card button.start { justify-content: center; height: 44px; margin-top: 6px; font-size: 14px; letter-spacing: 0.01em;
@@ -666,6 +673,12 @@ section.drop-gap { margin: 0; }
 .assess-opts { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px; }
 .assess-opts > label:not(.switch) { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--ink-2, var(--ink)); }
 .assess-setup .make-foot { margin-top: 0; }
+/* the prepared set → back to count / time / From (user 2026-10-12) */
+.assess-back { justify-self: start; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px 0 8px;
+  border-radius: 999px; border: 1px solid transparent; background: transparent; color: var(--muted); font-size: 13px; font-weight: 600; }
+.assess-back:hover { color: var(--accent); background: var(--accent-soft); }
+.assess-back .ico { width: 15px; height: 15px; transition: transform 160ms var(--ease-out); }
+.assess-back:hover .ico { transform: translateX(-2px); }
 .assess-notice { margin: 0; padding: 9px 12px; border-radius: 10px; background: var(--accent-2-soft); color: var(--accent-2); font-size: 13px; font-weight: 600;
   animation: rise-in 200ms var(--ease-out) backwards; }
 .assess-notice.soft { background: var(--surface-2); color: var(--ink-2, var(--ink)); font-weight: 500; }

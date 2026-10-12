@@ -137,14 +137,16 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
 - `/web/export/index.html` + `export.js`: the page headless Edge uses to draw slides for the PPTX (not for people).
 
 ## Quiz + test (F-011, V2 group C)
-- **Quiz & test** tab in /control: Live quiz / Test, questions (− 15 +), seconds per question or minutes, *Show
-  answers after submit* (test), the same **From** picker as Materials (`useFrom`) → **Write questions**
+- **Quiz & Test** tab in /control: Live quiz / Test, questions (− 15 +), seconds per question or minutes, *Show
+  answers after submit* (test), the same **From** picker as Materials (`useFrom`) → **Prepare quiz / Prepare test**
   (`assess_create`). Preview: every question with its key (✓), edit inline (text, 4 options, click a letter to mark
-  the key), regenerate one (LLM), delete, **Add a question**. Without an LLM the draft starts empty (the teacher
-  writes). **Open** → lobby (join link warning if sharing is off, joined list, release a roll number) → **Start**.
+  the key), regenerate one (LLM), delete, **Add a question**; **Back to setup** (draft / lobby: `assess_discard`
+  after a confirm). Without an LLM the draft starts empty (the teacher writes). **Open** → lobby (join link warning
+  if sharing is off, joined list, release a roll no.) → **Start**.
   Live quiz: question + key + answers in / distribution, timer, Pause / Resume, Hold next, Show answer / Next, End,
   leaderboard. Live test: timer, joined / writing / submitted chips per student, Pause / Resume, End. Finished:
-  results table + **CSV** → **Back to the lecture** (`assess_close`). The preview carries "QUIZ ON SCREEN".
+  results table (quiz: Points, Score right/asked, Avg. time; test: Score, Time taken) + **CSV** → **Back to the
+  lecture** (`assess_close`). The preview carries "QUIZ ON SCREEN".
 - **Projector** (`/display`, `shared/assess.js` `ProjectorAssess`): over the slides from lobby to close. Lobby: QR
   (`GET /api/share/qr.svg`, segno) + link (two unbroken lines) + count + names. Quiz: question + ring timer + 4
   colour + shape tiles + "N of M answered"; reveal: right tile ringed, others dimmed, each tile filled by its share,

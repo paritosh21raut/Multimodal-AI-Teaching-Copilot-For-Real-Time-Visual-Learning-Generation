@@ -92,7 +92,7 @@ card for the teacher (user 2026-10-06) and logged in the terminal (`[HEARD]`).
   filter (counted as `paused_segments`); lines buffered before the pause are still interpreted.
 
 ## Quiz / test questions (F-011)
-`assess/generator.py`: only when the teacher presses Write questions / regenerate. From → the materials service's
+`assess/generator.py`: only when the teacher presses Prepare quiz / Prepare test / regenerate. From → the materials service's
 `resolve` + `taught` (slides of the chosen lectures, `content.budgeted`, 2200 tokens, minus ≤ 500 for the stems to
 avoid on a regenerate; ≤ 3000 per prompt, never the transcript). One call for the set (+ one repair), one per
 regenerated question. Strict JSON `{questions: [{q, options[4], answer}]}`; invalid / repeated questions are dropped,

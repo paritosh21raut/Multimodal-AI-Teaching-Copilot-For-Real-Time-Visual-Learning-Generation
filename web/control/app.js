@@ -97,7 +97,8 @@ const ICON = {
   hide: "M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.1A9.8 9.8 0 0 1 12 5c5 0 9 5 9 7a10 10 0 0 1-2.4 3.4M6.6 6.6C4.4 8 3 10.3 3 12c0 2 4 7 9 7a9.6 9.6 0 0 0 4.4-1.1",
   tree: "M4 5h6M4 5v14M4 12h6M4 19h6M14 5h6M14 12h6M14 19h6",
   notes: "M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h4",
-  quiz: "M9.2 9a2.9 2.9 0 1 1 4 2.7c-.7.3-1.2 1-1.2 1.8v.5M12 17.5h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z",
+  // an exam sheet with a pencil (user's pick 2026-10-12, from artifacts/polish/icon_candidates.png)
+  quiz: "M5 3h9l3 3v6M5 3v18h7M8 8h6M8 12h4M14 21l1-3 5-5 2 2-5 5z",
   hold: "M6 5h4v14H6zM14 5h4v14h-4z",
   skip: "M5 5l9 7-9 7zM18 5v14",
 };
@@ -340,6 +341,14 @@ function ImageBar({ spec, image, choices, status, send, onNotice }) {
   </div>`;
 }
 
+// The chapter menu ends inside the preview (which clips): on a short window its rows scroll instead of being cut off
+const fitBelow = (el) => {
+  if (!el) return;
+  const box = el.closest(".preview");
+  const bottom = box ? box.getBoundingClientRect().bottom : window.innerHeight;
+  el.style.maxHeight = `${Math.max(96, Math.min(220, bottom - el.getBoundingClientRect().top - 10))}px`;
+};
+
 // ---- before the lecture (F-010b §1): pick the chapter, then Start (no Enter in the terminal needed) ----
 function StartCard({ lifecycle, materials, send }) {
   const chapters = (materials && materials.chapters) || [];
@@ -379,7 +388,7 @@ function StartCard({ lifecycle, materials, send }) {
       : html`<div class="menu-wrap" ref=${ref}>
           <button class=${"menu-button" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}>
             ${svg(ICON.folder)}<span class="label">${current ? current.label : "No chapter (Unsorted)"}</span>${svg(ICON.chevron, "chev")}</button>
-          ${shown && html`<div class="menu" role="menu">
+          ${shown && html`<div class="menu" role="menu" ref=${fitBelow}>
             ${[...chapters].reverse().map((c) => html`<button key=${c.id} role="menuitem" class=${"menu-row" + (c.id === pick ? " on" : "")}
                 onClick=${() => { setChosen(c.id); setShown(false); }}>
               ${svg(c.id === pick ? ICON.check : ICON.folder)}<span>${c.label}</span></button>`)}
@@ -562,7 +571,7 @@ function Structure({ deck, slides, send }) {
     <span class="n">${s.n}</span><span class="t">${label || s.title}</span>${s.part && html`<span class="part">${partLabel(s.part)}</span>`}
   </li>`;
   return html`<section class="structure">
-    <h2>Lecture structure ${ids.length > 0 && html`<span class="muted">${ids.length} slide${ids.length > 1 ? "s" : ""}</span>`}</h2>
+    <h2>Lecture Structure ${ids.length > 0 && html`<span class="muted">${ids.length} slide${ids.length > 1 ? "s" : ""}</span>`}</h2>
     ${!ids.length ? html`<p class="empty">The slides appear here as the lecture goes on.</p>` : html`<ol class="topics">
       ${outline(ids, slides).map((t, ti) => html`<li key=${ti} class="topic">
         <div class="topic-name">${t.name}</div>
@@ -631,7 +640,9 @@ function usePopover() {
   const ref = useRef(null);
   useEffect(() => {
     if (!open) return undefined;
-    const away = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const away = (e) => {
+      if (ref.current && !ref.current.contains(e.target) && !e.target.closest?.(".floating-host")) setOpen(false);
+    };
     const esc = (e) => { if (e.key === "Escape") { e.stopPropagation(); setOpen(false); } };
     document.addEventListener("pointerdown", away);
     document.addEventListener("keydown", esc, true);
@@ -844,20 +855,61 @@ function Segmented({ value, options, onChange }) {
     onClick=${() => onChange(v)}>${label}</button>`)}</div>`;
 }
 
+// A menu drawn on the page itself, under (or above) its button: the side panel is a clipping scroll box, and a menu
+// inside it was cut at the panel's edge (user 2026-10-12: only the first chapters showed, the rest behind a scroll
+// bar). Preact has no portal here, so the menu renders into its own root on <body>, placed from the button's box.
+function Floating({ anchor, children }) {
+  const host = useRef(null);
+  if (!host.current) {
+    host.current = document.createElement("div");
+    host.current.className = "floating-host";
+  }
+  const place = () => {
+    const el = host.current;
+    const a = anchor.current;
+    if (!a) return;
+    const r = a.getBoundingClientRect();
+    const below = window.innerHeight - r.bottom - 12;
+    const above = r.top - 12;
+    const up = below < 220 && above > below;  // not enough room below: open upwards
+    el.style.left = `${Math.max(8, Math.min(r.left, window.innerWidth - Math.max(r.width, 280) - 8))}px`;
+    el.style.width = `${Math.max(r.width, 280)}px`;
+    el.style.top = up ? "" : `${r.bottom + 6}px`;
+    el.style.bottom = up ? `${window.innerHeight - r.top + 6}px` : "";
+    el.style.setProperty("--room", `${Math.max(120, (up ? above : below) - 6)}px`);
+    el.classList.toggle("up", up);
+  };
+  useLayoutEffect(() => {
+    document.body.appendChild(host.current);
+    const again = () => place();
+    window.addEventListener("resize", again);
+    window.addEventListener("scroll", again, true);  // any scroll box (the panel) moves the button
+    return () => {
+      window.removeEventListener("resize", again);
+      window.removeEventListener("scroll", again, true);
+      render(null, host.current);
+      host.current.remove();
+    };
+  }, []);
+  useLayoutEffect(() => { render(children, host.current); place(); });
+  return null;
+}
+
 // A checklist in a menu (F-010b #7): lectures (this one first) or chapters; the button sums up what is picked.
 function Checklist({ label, empty, rows, picked, onToggle }) {
   const [shown, setShown, ref] = usePopover();
+  const button = useRef(null);
   return html`<div class="menu-wrap pick-wrap" ref=${ref}>
-    <button class=${"menu-button" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}>
+    <button ref=${button} class=${"menu-button" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}>
       <span class="label">${label}</span>${svg(ICON.chevron, "chev")}</button>
-    ${shown && html`<div class="menu" role="menu">
+    ${shown && html`<${Floating} anchor=${button}><div class="menu pick-menu" role="menu">
       ${rows === null ? html`<p class="menu-empty">Loading…</p>`
         : !rows.length ? html`<p class="menu-empty">${empty}</p>`
         : rows.map((r) => html`<button key=${r.id} role="menuitemcheckbox" aria-checked=${picked.includes(r.id)}
             class=${"menu-row" + (picked.includes(r.id) ? " on" : "")} onClick=${() => onToggle(r.id)}>
           <span class=${"check-box" + (picked.includes(r.id) ? " on" : "")}>${picked.includes(r.id) && svg(ICON.check)}</span>
           <span>${r.title}</span><em>${r.note}</em></button>`)}
-    </div>`}
+    </div><//>`}
   </div>`;
 }
 const toggled = (list, id) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
@@ -1579,10 +1631,10 @@ function AssessSetup({ st, lectures, send, llm }) {
     <div class="make-foot">
       <span class="make-note">${!llm ? "No LLM in this run: you write the questions" : !from.sources
         ? (from.mode === "chapters" ? "Choose the chapters" : "Choose the lectures") : `Questions from ${from.title}`}</span>
-      <button class="primary" disabled=${llm && !from.sources}
+      <button class="primary prepare" disabled=${llm && !from.sources}
         onClick=${() => send("assess_create", { kind: o.kind, count: o.count, seconds: o.seconds, minutes: o.minutes,
           show_answers: o.show_answers, ...from.args })}>
-        ${svg(ICON.quiz)}${llm ? "Write questions" : "Start writing"}</button>
+        ${svg(llm ? ICON.materials : ICON.edit)}${quiz ? "Prepare quiz" : "Prepare test"}</button>
     </div>
   </section>`;
 }
@@ -1629,13 +1681,17 @@ function ResultsTable({ c }) {
   const quiz = c.kind === "quiz";
   const rows = c.students || [];
   if (!rows.length) return html`<p class="made-empty">Nobody joined.</p>`;
-  const time = (t) => { if (!t) return ""; const d = new Date(t * 1000); return d.toTimeString().slice(0, 5); };
+  // quiz: points, right answers of the questions asked, average response time; test: score, time taken (test clock)
+  const taken = (s) => `${Math.floor(Math.round(s) / 60)}:${String(Math.round(s) % 60).padStart(2, "0")}`;
   return html`<div class="results-wrap"><table class="results">
-    <thead><tr><th>#</th><th>Name</th><th>Roll</th><th class="num">${quiz ? "Points" : "Score"}</th><th class="num">Right</th>
-      <th>${quiz ? "Time" : "Submitted"}</th></tr></thead>
+    <thead><tr><th>#</th><th>Name</th><th>Roll no.</th>${quiz ? html`<th class="num">Points</th><th class="num">Score</th>
+      <th class="num" title="Average time to answer a question">Avg. time</th>`
+      : html`<th class="num">Score</th><th class="num" title="From joining to submitting (pauses not counted)">Time taken</th>`}</tr></thead>
     <tbody>${rows.map((r) => html`<tr key=${r.roll}><td>${r.rank}</td><td>${r.name}</td><td class="roll">${r.roll}</td>
-      <td class="num"><b>${quiz ? r.score.toLocaleString() : `${r.score} / ${c.total}`}</b></td><td class="num">${r.correct}</td>
-      <td class="muted">${quiz ? (r.time ? `${r.time} s` : "") : r.submitted_at ? `${time(r.submitted_at)}${r.auto ? " · auto" : ""}` : r.status}</td></tr>`)}</tbody>
+      ${quiz ? html`<td class="num"><b>${r.score.toLocaleString()}</b></td><td class="num">${r.correct}/${r.asked}</td>
+          <td class="num muted">${r.avg == null ? "–" : `${r.avg} s`}</td>`
+        : html`<td class="num"><b>${r.score}/${c.total}</b></td>
+          <td class="num muted">${r.taken == null ? r.status : `${taken(r.taken)}${r.auto ? " · auto" : ""}`}</td>`}</tr>`)}</tbody>
   </table></div>`;
 }
 
@@ -1683,7 +1739,7 @@ function StudentList({ c, send }) {
     <span class="who"><b>${s.name}</b><small>${s.roll}</small></span>
     ${c.kind === "test" && html`<span class=${"chip " + s.status.replace(" ", "-")}>${s.status === "submitted" ? `submitted · ${s.score}/${c.total}`
       : s.status === "in progress" ? `${s.answers_in} of ${c.total}` : "joined"}</span>`}
-    ${c.status !== "finished" && html`<button class="icon" title="Let this roll number join again from another device (answers kept)"
+    ${c.status !== "finished" && html`<button class="icon" title="Let this roll no. join again from another device (answers kept)"
       onClick=${() => confirm(`Let ${s.name} (${s.roll}) join again from another device?`) && send("assess_release", { roll: s.roll })}>${svg(ICON.change)}</button>`}
   </li>`)}</ul>`;
 }
@@ -1695,8 +1751,7 @@ function Assess({ assess, materials, lectures, share, send }) {
   const [editing, setEditing] = useState(null);  // a question id, or "new"
   const notice = a.notice && html`<p class="assess-notice" role="alert">${a.notice}</p>`;
   if (!c.id) {
-    return html`<div class="materials assess">${notice}<${AssessSetup} st=${st} lectures=${lectures} send=${send} llm=${!!a.llm} />
-      <p class="made-empty">Students answer on the shared link: the join form opens on their page by itself. The lecture pauses while it runs.</p></div>`;
+    return html`<div class="materials assess">${notice}<${AssessSetup} st=${st} lectures=${lectures} send=${send} llm=${!!a.llm} /></div>`;
   }
   const quiz = c.kind === "quiz";
   const what = quiz ? "quiz" : "test";
@@ -1708,7 +1763,16 @@ function Assess({ assess, materials, lectures, share, send }) {
   if (c.status === "draft" || c.status === "lobby") {
     const lobby = c.status === "lobby";
     const regen = c.regenerating || [];
+    // Back to the setup (count, time, From): this set is dropped; the setup keeps the choices it was made with
+    const back = () => {
+      const n = (c.questions || []).length;
+      const ask = lobby ? `Close the lobby and go back to the setup? Students leave the join screen and these ${n} questions are dropped.`
+        : n ? `Go back to the setup? These ${n} question${n === 1 ? " is" : "s are"} dropped.` : "";
+      if (!ask || confirm(ask)) send("assess_discard");
+    };
     return html`<div class="materials assess">
+      <button class="assess-back" onClick=${back} title="Change the number of questions, the time or the lectures">
+        ${svg(ICON.back)}Back to setup</button>
       ${notice}
       ${lobby && html`<section class="lobby-card">
         <div class="lobby-top"><div><p class="eyebrow-c">Lobby · ${what} is on the projector</p>
@@ -1730,7 +1794,6 @@ function Assess({ assess, materials, lectures, share, send }) {
         ${editing !== "new" && html`<button class="add-q" onClick=${() => setEditing("new")}>${svg(ICON.add)}Add a question</button>`}
       </section>
       <div class="make-foot sticky">
-        <button onClick=${() => confirm(`Discard this ${what}?`) && send("assess_discard")}>Discard</button>
         <span class="make-note">${lobby ? "Students are joining" : `Nothing is shown until you open the ${what}`}</span>
         ${!lobby && html`<button class="primary" disabled=${!c.total} onClick=${() => send("assess_open")}
           title="Shows the join screen on the projector and the students' pages; pauses the lecture">${svg(ICON.students)}Open the ${what}</button>`}
@@ -1927,10 +1990,10 @@ function App() {
       <section class="right">
         <${Concerns} concerns=${state.concerns} send=${send} />
         <${SidePanel} tab=${tab} onTab=${setTab}>
-          <${Tab} id="structure" label="Lecture structure" icon=${ICON.tree} badge=${deck && deck.slide_ids.length ? deck.slide_ids.length : ""}>
+          <${Tab} id="structure" label="Lecture Structure" icon=${ICON.tree} badge=${deck && deck.slide_ids.length ? deck.slide_ids.length : ""}>
             <${Structure} deck=${deck} slides=${state.slides} send=${send} />
           </${Tab}>
-          <${Tab} id="notes" label="My notes" icon=${ICON.notes} badge=${state.notes && state.notes.open ? `p. ${state.notes.page}` : ""}>
+          <${Tab} id="notes" label="My Notes" icon=${ICON.notes} badge=${state.notes && state.notes.open ? `p. ${state.notes.page}` : ""}>
             <${Notes} notes=${state.notes} send=${send} wide=${wide} onWide=${() => setWide(!wide)} />
           </${Tab}>
           <${Tab} id="materials" label="Materials" icon=${ICON.materials}
@@ -1938,7 +2001,7 @@ function App() {
             <${Materials} materials=${materials} lectures=${lectures} send=${send}
               preselect=${preselect} onPreselected=${() => setPreselect(null)} />
           </${Tab}>
-          <${Tab} id="assess" label="Quiz & test" icon=${ICON.quiz} badge=${assessBadge(state.assess)}>
+          <${Tab} id="assess" label="Quiz & Test" icon=${ICON.quiz} badge=${assessBadge(state.assess)}>
             <${Assess} assess=${state.assess} materials=${materials} lectures=${lectures} share=${state.share} send=${send} />
           </${Tab}>
           <${Tab} id="lectures" label="Lectures" icon=${ICON.lectures}>
