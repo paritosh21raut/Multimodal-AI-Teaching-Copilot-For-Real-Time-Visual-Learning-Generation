@@ -1,6 +1,7 @@
 # Current State
 
-_Last updated: 2026-10-07 (night): **group B review fixes done** (15 issues, F-010b, 0 LLM tokens); next group C
+_Last updated: 2026-10-12: **F-010c UI polish done** (8 items after the group B review, 0 LLM tokens); next
+**F-011 group C (quiz + test)**, user answers already given; then group D doubts (F-012). Before: 2026-10-07 (night): **group B review fixes done** (15 issues, F-010b, 0 LLM tokens); next group C
 (quiz + test, F-011: ask its doubts first), then group D (F-012). Before: 2026-10-07 (evening): **V2 group B done**
 (lecture materials + past lectures, F-010). Before: 2026-10-07: **V2 group A done** (themes, teacher notes, labelled images). Before:
 2026-10-06 (night): **V1 long-test fixes done** (session 20261006-193517-c513; speed, lost content,
@@ -16,6 +17,56 @@ viewer role, control token; live slide editing; lecture structure tree in /contr
 Then V1c._
 
 ## Now
+- **F-010c UI polish (2026-10-12), 0 LLM tokens** (spec `docs/specs/F-010c-ui-polish.md`, user's 8 review items):
+  - Lectures-tab drag is a pointer drag with FLIP animation (HTML5 drag removed). The row lifts and follows the pointer.
+    A dashed gap opens in the chapter under the pointer, at the lecture's place in the current sort, and the rows below
+    slide. A collapsed target chapter lights up. Esc cancels; the list scrolls at its edges; a 4 px threshold keeps
+    clicks. While a chapter is dragged, every chapter folds to its header and the gap follows the pointer. Chapters
+    move only in the Date sort. After a drop the row stays put until the server agrees (4 s fallback).
+  - From: This lecture · Lectures · Chapters. Tooltip 850 ms (warm 400 ms). Filled play icon. New start card (eyebrow +
+    date, "Start your lecture", topic or "Slides build as you speak.", accent line + glow, Enter hint). "On screen"
+    with a live dot. A bin on each row of the notes menu (asks first). Motion: button press, sliding thumb on
+    segmented controls and tabs, menus scale in, tooltip lifts, tab content rises. `prefers-reduced-motion` turns it
+    all off (CSS + FLIP skipped).
+  - Verified: 513 fast, 30 Edge (+ `test_polish_browser` 2, both fail on the F-010b web files; 2 label selectors
+    changed because the user renamed the From labels). Real app (`--simulate --demo-slides --no-understanding`):
+    Start from /control 0.08 s, drag over the real archive (97 lectures) showed the gap and the lifted row, Esc left
+    `data/chapters.json` unchanged, no page errors. Screenshots `artifacts/polish/` (+ `app/`) looked at, light + dark.
+  - Not verified: a real drop on the real archive (not done, to keep the user's chapters as they are; drops were
+    verified in Edge on a test archive); touch (drag is mouse / pen only, by design).
+  - Process slip: one CSS block was appended with a shell heredoc instead of the Edit tool.
+  - **Round 2 (user review, same day):** the notes-menu bin sits inside the row and removes with one click. The
+    chapter drag snaps the lifted header onto its slot and the header's centre picks the slot. Root cause of the
+    sluggish first swap: the slot was measured mid scale-in, 8 px off; it now only fades in. The slot shows a faint
+    copy of the tile. Start card: serif heading "Start your *lecture*", eyebrow and Enter hint gone. Materials
+    "Made": kind chips, Group Chapters / Lectures / All (Unsorted, Across chapters, Several lectures), sort Date /
+    Name ↑↓, choices remembered per browser. Verified: 513 fast, 30 Edge (`test_polish_browser` extended: bin inside
+    the row and no dialog, snapped slot + preview, serif heading, made-list groups / filter / sort). Frame-by-frame
+    4-chapter drag 4th → 2nd: tiles slide one per ~50 px, drop lands in the previewed slot. Real app: real archive
+    drag + Esc, chapters unchanged; 11 real materials grouped by chapter; no page errors.
+  - **Round 3 (user review, same day):**
+    - Made list: one "Show" menu button instead of the chips.
+    - The lifted chapter stays under the pointer: the folded list is scrolled, plus a spacer, so its slot sits there.
+    - No dashed box: the slot is a soft well. Chapter numbers update live on the lifted and the other headers.
+    - FLIP 320 ms; no lift scale; "Drag lectures here" removed.
+    - Lag root cause (Edge trace): ~50 ms forced layout of the 94 Unsorted rows on every slot change. Fixed with
+      `content-visibility: auto` on rows, batched FLIP, only near-view rows animated, rows memoised: 8 long tasks
+      → 0 on the real archive.
+    - Verified: 513 fast, 30 Edge (the test now checks the tile under the pointer, the slot under it, no border, live
+      numbers, the Show menu). Frames: drag 4th → 2nd, numbers 4 → 2 live, the others renumbered.
+- **IEEE conference paper revision (2026-10-11)** — draft `paper/IEEE_Paper_v2_draft.docx/.pdf`, exactly 6 pages,
+  built from `paper/build/src/` (body.py, content.py; old version in `paper/build/backup_v1/`). Fixes for the
+  professor's 11 points + ChatGPT review; new title "Real-Time Lecture-to-Slide Generation from Teacher Speech with
+  Bounded LLM Interpretation and Deterministic Slide Planning". New zero-token measurements
+  (`tools/paper_eval.py latency`): end-to-end speech→slide median 12.5 s / p95 36.8 s, gate+queue wait 9.1 s. New
+  baseline (`tools/baseline_llm_slides.py`, 89,129 Groq tokens): LLM-controlled slides rewrote 56 % (chem) / 30 %
+  (bio) of shown statements vs 3 % / 0 % for the planner. `paper_eval.py ablation` (planner rules off on recorded
+  answers) showed ~no difference — recorded answers are conditioned on the full planner; not used in the paper.
+  **Still ‹placeholders›:** held-out set D2 (user records into `verify_results/test1…`, + public lectures), two-
+  annotator boundaries/key facts, T1–T3 ratings, unsupported rate. **The paper describes quiz + test (group C) as
+  implemented: group C MUST be built before the paper is submitted.**
+  **Validation campaign: `docs/paper/VALIDATION.md`** (phases, recorder `tools/eval_test.py run`, status table). Phase 1
+  = user records test1…test25; then Claude runs web lectures; then annotation/rating; then final results.
 - **V2 started (2026-10-07).** Plan agreed with the user: ROADMAP § V2 (groups A → B → C → D; every output only when
   the teacher asks; V1c after V2). **Next: group C** (quiz + test through the share link) — ask its doubts first, then
   spec `F-011`; then group D (reference materials). Group B committed by the user after the full re-run

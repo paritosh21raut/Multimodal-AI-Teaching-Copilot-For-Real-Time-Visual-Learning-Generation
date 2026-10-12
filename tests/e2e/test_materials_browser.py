@@ -82,8 +82,8 @@ async def test_the_teacher_makes_materials_and_opens_a_past_lecture(tmp_path):
             await asyncio.sleep(0.5)
             await control.screenshot(path=str(OUT / "lecture_viewer.png"))
             await control.click(".viewer-head button.primary")   # Make materials from it
-            # F-010b: From = Pick lectures, with that lecture picked
-            await control.wait_for_selector(".materials .segmented button.on:has-text('Pick lectures')")
+            # F-010b: From = Lectures (F-010c #2: was "Pick lectures"), with that lecture picked
+            await control.wait_for_selector(".materials .segmented button.on:text-is('Lectures')")
             await control.wait_for_selector(".materials .pick-wrap .menu-button:has-text('Photosynthesis')")
             assert await control.query_selector(".viewer") is None
             assert not control.errors, control.errors

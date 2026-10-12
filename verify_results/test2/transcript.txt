@@ -1,0 +1,29 @@
+[    1.4] Let us learn about fluid mechanics.
+[    3.7] Fluid mechanics is the branch of physics and engineering that studies the behavior of fluids, including liquids, gas, and plasma, at rest and in motion, as well as their interaction with solid contrast.
+[   18.6] the code definition and behavior
+[   21.0] What is a fluid? A fluid is a substance like water or air that cannot resist a shearing or tangential force when pushing sideways. It continuously deforms and flows.
+[   34.3] Unlike a solid object that holds its shape.
+[   38.1] viscosity for fluid's internal friction or resistance to flow.
+[   44.5] The main branches of fluid dynamics are
+[   47.8] Fluid statics, that is hydrostatic, it is the study of fluids at rest. It focuses on properties like hydrostatics, pressure, buoyancy, Pascal's principle, example of what are stored behind a dam.
+[   63.5] Fluid Kinematics, the study of fluid motion such as velocities, streamlines and flow patterns without explicitly looking at the forces causing the movements.
+[   78.7] Fluid Dynamics
+[   80.5] the study of fluids in motion
+[   82.9] and the forces like pressure, energy and movement.
+[   87.5] that drives that motion
+[   90.3] example, air passing over an airplane wings or water moving through a pipe
+[   98.0] Key principles and equations.
+[  100.6] continuity equation. Based on the conversation of conservation of mass, it states that the mass flow rate remains constant throughout a continuous stream.
+[  111.5] Bernoulli's principle.
+[  113.2] based on the conservation of energy. It relates a fluid speed, elevation and internal pressure.
+[  121.7] Pascal's law.
+[  123.3] states that pressure applied to an enclosed fluid is transmitted equally in all directions.
+[  131.5] The common applications are
+[  133.5] engineering
+[  134.8] In engineering designing pumps, turbines, pipelines,
+[  139.6] HVAC systems and the aerodynamics of cars and aircrafts.
+[  144.8] Medicine and Biology
+[  146.6] in it analyzing blood circulation through veins and hair movements in the human respiratory system.
+[  154.5] geophysics and metrology
+[  157.3] modeling oceans, currents, weather patterns and wind movements in the atmosphere.
+[  162.5] computational fluid dynamics using computer software to simulate and visualize complex fluid flows before building physical prototypes.

@@ -1,6 +1,6 @@
 // /control — the teacher's laptop view: live preview, deck, controls, transcript, status.
 // It never changes state itself; every action is a command sent to the server.
-import { html, render, useEffect, useReducer, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
+import { Component, html, render, useEffect, useLayoutEffect, useReducer, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
 import {
   Glass, Slide, ZoomedImage, editableText, imageOf, partLabel, shownTitle, useGlassExit, useStageScale,
 } from "../shared/slide.js";
@@ -47,6 +47,9 @@ const svg = (d, cls = "") => html`<svg class=${"ico " + cls} viewBox="0 0 24 24"
 const MOON = html`<svg class="ico moon" viewBox="0 0 24 24" aria-hidden="true">
   <path d="M20.4 14.6A8.6 8.6 0 0 1 9.4 3.6a8.9 8.9 0 1 0 11 11z" fill="currentColor"/>
   <path d="M17 3.2l.75 1.85 1.85.75-1.85.75L17 8.4l-.75-1.85-1.85-.75 1.85-.75z" fill="currentColor"/></svg>`;
+// Start (F-010c #4): a filled, softly rounded play triangle — the stroked one looked hollow
+const PLAY = html`<svg class="ico play" viewBox="0 0 24 24" aria-hidden="true">
+  <path d="M8 5.7v12.6a1.2 1.2 0 0 0 1.8 1l10-6.3a1.2 1.2 0 0 0 0-2l-10-6.3A1.2 1.2 0 0 0 8 5.7z" fill="currentColor"/></svg>`;
 const ICON = {
   back: "M19 12H5M11 18l-6-6 6-6",
   prev: "M15 18l-6-6 6-6",
@@ -98,7 +101,9 @@ const ICON = {
 // ---- styled tooltip (F-010b #11): every `title` in /control shows in the app's style instead of the native box ----
 // As soon as an element gets a title (render or update) the title becomes its aria-label (its accessible name, unless
 // it has one) and data-tip, so the browser never shows a box of its own.
-const TIP_DELAY_MS = 450;
+// F-010c #3: 450 ms was too eager. Moving straight from one tipped control to the next shows its tip at once.
+const TIP_DELAY_MS = 850;
+const TIP_WARM_MS = 400;
 function untitle(root) {
   const els = root.querySelectorAll ? [...(root.hasAttribute && root.hasAttribute("title") ? [root] : []), ...root.querySelectorAll("[title]")] : [];
   for (const el of els) {
@@ -120,8 +125,13 @@ function Tooltip() {
     return () => watch.disconnect();
   }, []);
   useEffect(() => {
-    let timer = null, target = null;
-    const hide = () => { clearTimeout(timer); timer = null; target = null; setTip(null); };
+    let timer = null, target = null, showing = false, warmUntil = 0;
+    const hide = () => {
+      clearTimeout(timer); timer = null; target = null;
+      if (showing) warmUntil = performance.now() + TIP_WARM_MS;
+      showing = false; setTip(null);
+    };
+    const cool = () => { hide(); warmUntil = 0; };  // a press, a key or a scroll: the next tip waits again
     const over = (e) => {
       const el = e.target.closest && e.target.closest("[data-tip]");
       if (el === target) return;
@@ -132,14 +142,15 @@ function Tooltip() {
         if (!target || !target.isConnected) return;
         const r = target.getBoundingClientRect();
         const below = r.top < 64;
+        showing = true;
         setTip({ text: target.dataset.tip, x: r.left + r.width / 2, y: below ? r.bottom + 8 : r.top - 8, below });
-      }, TIP_DELAY_MS);
+      }, performance.now() < warmUntil ? 0 : TIP_DELAY_MS);
     };
     document.addEventListener("pointerover", over);
-    for (const ev of ["pointerdown", "keydown", "scroll", "blur"]) window.addEventListener(ev, hide, true);
+    for (const ev of ["pointerdown", "keydown", "scroll", "blur"]) window.addEventListener(ev, cool, true);
     return () => {
       document.removeEventListener("pointerover", over);
-      for (const ev of ["pointerdown", "keydown", "scroll", "blur"]) window.removeEventListener(ev, hide, true);
+      for (const ev of ["pointerdown", "keydown", "scroll", "blur"]) window.removeEventListener(ev, cool, true);
       clearTimeout(timer);
     };
   }, []);
@@ -345,8 +356,12 @@ function StartCard({ lifecycle, materials, send }) {
     else send("lecture_move", { id: "", chapter: pick, start: true });
     send("start");
   };
+  const topic = materials && materials.current && materials.current.title;
+  // F-010c #5: calm — a serif heading, one quiet line, then the chapter and Start (nothing else, user 2026-10-12)
   return html`<div class="start-card" role="dialog" aria-label="Start the lecture">
-    <h3>Ready to start</h3>
+    <h3>Start your <em>lecture</em></h3>
+    <p class="start-sub">${topic || "Slides build as you speak."}</p>
+    <div class="start-rule"></div>
     <label class="start-label">Chapter</label>
     ${naming
       ? html`<div class="new-chapter">
@@ -373,7 +388,7 @@ function StartCard({ lifecycle, materials, send }) {
         </div>`}
     ${testRun && html`<p class="start-note">Test run: it stays in Unsorted</p>`}
     <button class="primary start" onClick=${start} disabled=${!ready || sent || (naming && !name.trim())}>
-      ${svg(ICON.play)}${sent ? "Starting…" : "Start lecture"}</button>
+      ${PLAY}${sent ? "Starting…" : "Start lecture"}</button>
   </div>`;
 }
 
@@ -621,15 +636,18 @@ function usePopover() {
 }
 
 // The notes in use; the menu lists every PDF and adds another one (user 2026-10-07: the select was out of style).
-function DocMenu({ docs, open, onOpen, onAdd, onLink, busy }) {
+function DocMenu({ docs, open, onOpen, onAdd, onLink, onRemove, busy }) {
   const [shown, setShown, ref] = usePopover();
   return html`<div class="menu-wrap doc-menu" ref=${ref}>
     <button class=${"menu-button" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}>
       ${svg(docIcon(open))}<span class="label">${open.name}</span><em>${pagesOf(open)}</em>${svg(ICON.chevron, "chev")}</button>
     ${shown && html`<div class="menu" role="menu">
-      ${docs.map((d) => html`<button key=${d.id} role="menuitem" class=${"menu-row" + (d.id === open.id ? " on" : "")}
-          onClick=${() => { setShown(false); if (d.id !== open.id) onOpen(d.id); }}>
-        ${svg(d.id === open.id ? ICON.check : docIcon(d))}<span>${d.name}</span><em>${pagesOf(d)}</em></button>`)}
+      ${docs.map((d) => html`<div key=${d.id} class=${"menu-line" + (d.id === open.id ? " on" : "")}>
+        <button role="menuitem" class=${"menu-row" + (d.id === open.id ? " on" : "")}
+            onClick=${() => { setShown(false); if (d.id !== open.id) onOpen(d.id); }}>
+          ${svg(d.id === open.id ? ICON.check : docIcon(d))}<span>${d.name}</span><em>${pagesOf(d)}</em></button>
+        <button class="icon row-remove" title="Remove from my notes" onClick=${() => onRemove(d)}>${svg(ICON.bin)}</button>
+      </div>`)}
       <div class="menu-sep"></div>
       <button role="menuitem" class="menu-row add" disabled=${busy} onClick=${() => { setShown(false); onAdd(); }}>
         ${svg(ICON.add)}<span>Add a file</span></button>
@@ -678,6 +696,10 @@ function Notes({ notes, send, wide, onWide }) {
   };
   const file = html`<input ref=${input} type="file" accept=${NOTES_ACCEPT} hidden onChange=${pick} />`;
   const addFile = () => input.current.click();
+  // F-010c #7: the bin in the menu removes at once (user 2026-10-12: "when I click it, it gets removed", like a point
+  // on a slide); the bin in the open doc's header still asks first
+  const remove = (d) => send("notes_remove", { id: d.id });
+  const removeOpen = (d) => confirm(`Remove “${d.name}” from your notes?`) && remove(d);
   const note = n.projecting ? "On the projector: only you turn its pages"
     : n.reason || (n.follow ? (n.matched ? html`Matched to <b>${n.matched}</b>` : "Waiting for a slide that matches a page")
       : "Following is off: turn the pages yourself");
@@ -700,13 +722,12 @@ function Notes({ notes, send, wide, onWide }) {
       </div>`
     : html`<div class="notes-head">
         <${DocMenu} docs=${n.docs} open=${doc} onOpen=${(id) => send("notes_open", { id })} onAdd=${addFile}
-          onLink=${() => setLinking(true)} busy=${!!busy} />
+          onLink=${() => setLinking(true)} onRemove=${remove} busy=${!!busy} />
         ${doc.kind === "web" && doc.source && html`<a class="icon" href=${doc.source} target="_blank" rel="noopener"
           title="Open the original page">${svg(ICON.open)}</a>`}
         <button class="icon" onClick=${onWide} title=${wide ? "Narrower notes" : "Wider notes"} aria-pressed=${wide}>
           ${svg(wide ? "M9 4v16M4 9l5 3-5 3M20 9l-5 3 5 3" : "M4 4v16M20 4v16M9 12h6M9 12l2-2M9 12l2 2M15 12l-2-2M15 12l-2 2")}</button>
-        <button class="icon" onClick=${() => confirm(`Remove “${doc.name}” from your notes?`) && send("notes_remove", { id: doc.id })}
-          title="Remove these notes from the list">${svg(ICON.bin)}</button>
+        <button class="icon" onClick=${() => removeOpen(doc)} title="Remove these notes from the list">${svg(ICON.bin)}</button>
       </div>
       ${linking && html`<${LinkField} onAdd=${link} onCancel=${() => setLinking(false)} />`}
       ${busy && html`<p class="notes-busy"><span class="spinner"></span>${busy}</p>`}
@@ -721,8 +742,8 @@ function Notes({ notes, send, wide, onWide }) {
         </div>
         <button class=${"project" + (n.projecting ? " on" : "")} aria-pressed=${n.projecting}
           onClick=${() => send("notes_project", { on: !n.projecting })}
-          title=${n.projecting ? "Back to the slide on the projector (Esc)" : "Show this page on the projector and to the students"}>
-          ${svg(ICON.project)}<span>${n.projecting ? "On projector" : "Project"}</span></button>
+          title=${n.projecting ? "Showing on the projector and to students · click or Esc for the slide" : "Show this page on the projector and to the students"}>
+          ${n.projecting ? html`<span class="live-dot"></span>` : svg(ICON.project)}<span>${n.projecting ? "On screen" : "Project"}</span></button>
         <label class=${"switch" + (n.follow ? " on" : "")} title="Open the page that matches the slide on screen">
           <input type="checkbox" checked=${n.follow} onChange=${(e) => send("notes_follow", { on: e.target.checked })} />
           <span class="track"><span class="knob"></span></span>Follow</label>
@@ -786,9 +807,36 @@ function useLectures(active, version, live) {
   return list;
 }
 
+// "From: This lecture · Lectures · Chapters" (F-010c #2: reads naturally after "From"; also the quiz / test picker)
+const FROM_OPTIONS = [["this", "This lecture"], ["lectures", "Lectures", "Choose lectures, this one included"],
+  ["chapters", "Chapters", "Every lecture in the chapters you choose"]];
+
+const REDUCED_MOTION = typeof matchMedia === "function" ? matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
+
+// A thumb that slides under the chosen button (F-010c #8): segmented controls and the side panel's tabs.
+function useThumb(box, key) {
+  const [style, setStyle] = useState(null);
+  useLayoutEffect(() => {
+    const measure = () => {
+      const on = box.current && box.current.querySelector(":scope > button.on");
+      const next = on ? { width: `${on.offsetWidth}px`, height: `${on.offsetHeight}px`,
+        transform: `translate(${on.offsetLeft}px, ${on.offsetTop}px)` } : null;
+      setStyle((old) => (JSON.stringify(old) === JSON.stringify(next) ? old : next));
+    };
+    measure();
+    const watch = new ResizeObserver(measure);  // icons-only tabs, a wider panel, fonts arriving
+    if (box.current) box.current.querySelectorAll(":scope > button").forEach((b) => watch.observe(b));
+    return () => watch.disconnect();
+  }, [key]);
+  return style && html`<span class="thumb" aria-hidden="true" style=${style}></span>`;
+}
+
 function Segmented({ value, options, onChange }) {
-  return html`<div class="segmented" role="radiogroup">${options.map(([v, label]) => html`<button key=${v}
-    role="radio" aria-checked=${value === v} class=${value === v ? "on" : ""} onClick=${() => onChange(v)}>${label}</button>`)}</div>`;
+  const box = useRef(null);
+  const thumb = useThumb(box, `${value}|${options.map((o) => o[1]).join("|")}`);
+  return html`<div class="segmented" role="radiogroup" ref=${box}>${thumb}${options.map(([v, label, tip]) => html`<button key=${v}
+    role="radio" aria-checked=${value === v} class=${value === v ? "on" : ""} title=${tip || undefined}
+    onClick=${() => onChange(v)}>${label}</button>`)}</div>`;
 }
 
 // A checklist in a menu (F-010b #7): lectures (this one first) or chapters; the button sums up what is picked.
@@ -919,8 +967,7 @@ function Materials({ materials, lectures, send, preselect, onPreselected }) {
     <section class="make">
       <div class="from">
         <span class="from-label">From</span>
-        <${Segmented} value=${mode} options=${[["this", "This lecture"], ["lectures", "Pick lectures"], ["chapters", "Pick chapters"]]}
-          onChange=${setMode} />
+        <${Segmented} value=${mode} options=${FROM_OPTIONS} onChange=${setMode} />
         ${mode === "lectures" && html`<${Checklist} rows=${lectureRows} picked=${picked} empty="No lectures yet"
           label=${summary(picked, lectureRows, "Choose lectures…", "lecture")} onToggle=${(id) => setPicked(toggled(picked, id))} />`}
         ${mode === "chapters" && html`<${Checklist} rows=${chapterRows} picked=${chapterIds}
@@ -945,20 +992,147 @@ function Materials({ materials, lectures, send, preselect, onPreselected }) {
           ${svg(ICON.materials)}Create${chosen.length > 1 ? ` ${chosen.length}` : ""}</button>
       </div>
     </section>
-    <section class="made-list">
-      <h3>Made${items.length ? html` <span>${items.length}</span>` : ""}</h3>
-      ${!items.length ? html`<p class="made-empty">What you create appears here.</p>`
-        : html`<ul>${items.map((m) => html`<${MadeRow} key=${m.id} m=${m} send=${send} />`)}</ul>`}
-    </section>
+    <${MadeList} items=${items} lectures=${lectures} chapters=${chapters} send=${send} />
   </div>`;
+}
+
+// A per-browser view preference (filters, grouping): survives tab switches and reloads; private windows forget it.
+function useStored(key, init) {
+  const [v, setV] = useState(() => {
+    try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : init; } catch (e) { return init; }
+  });
+  const set = (x) => { setV(x); try { localStorage.setItem(key, JSON.stringify(x)); } catch (e) { /* not remembered */ } };
+  return [v, set];
+}
+
+// ---- what was made (F-010c, user 2026-10-12): only one kind, grouped by chapter or lecture, sorted ----
+const KIND_PLURAL = { summary: "Summaries", concepts: "Key concepts", notes: "Notes", assignment: "Assignments", pptx: "Slides" };
+const MADE_GROUPS = [["chapter", "Chapters"], ["lecture", "Lectures"], ["none", "All"]];
+const ACROSS = "*";
+// Which kind to show (round 3, user: one button that opens the kinds, instead of a row of chips)
+function KindMenu({ items, present, value, onChange }) {
+  const [shown, setShown, ref] = usePopover();
+  const count = (kind) => items.filter((m) => kind === "all" || m.kind === kind).length;
+  const rows = [["all", "All materials", ICON.materials], ...present.map((k) => [k.kind, KIND_PLURAL[k.kind], k.icon])];
+  const [, label, icon] = rows.find((r) => r[0] === value) || rows[0];
+  return html`<div class="menu-wrap kind-menu" ref=${ref}>
+    <button class=${"menu-button" + (shown ? " on" : "") + (value !== "all" ? " filtered" : "")} onClick=${() => setShown(!shown)}
+        aria-expanded=${shown} aria-label="Show">
+      ${svg(icon)}<span class="label">${label}</span><em>${count(value)}</em>${svg(ICON.chevron, "chev")}</button>
+    ${shown && html`<div class="menu" role="menu">
+      ${rows.map(([v, text, ico]) => html`<button key=${v} role="menuitemradio" aria-checked=${v === value}
+          class=${"menu-row" + (v === value ? " on" : "")} onClick=${() => { onChange(v); setShown(false); }}>
+        ${svg(v === value ? ICON.check : ico)}<span>${text}</span><em>${count(v)}</em></button>`)}
+    </div>`}
+  </div>`;
+}
+function MadeList({ items, lectures, chapters, send }) {
+  const [kind, setKind] = useStored("copilot.madeKind", "all");
+  const [group, setGroup] = useStored("copilot.madeGroup", "chapter");
+  const [sort, setSort] = useStored("copilot.madeSort", { by: "date", dir: "desc" });
+  const [closed, setClosed] = useState({});
+  const present = KINDS.filter((k) => items.some((m) => m.kind === k.kind));
+  const only = present.some((k) => k.kind === kind) ? kind : "all";
+  const dir = sort.dir === "asc" ? 1 : -1;
+  const cmp = sort.by === "name" ? (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base", numeric: true })
+    : (a, b) => a.created - b.created;
+  const shown = items.filter((m) => only === "all" || m.kind === only).sort((a, b) => dir * cmp(a, b));
+  const lecture = (id) => (lectures || []).find((l) => l.id === id);
+  const known = new Set(chapters.map((c) => c.id));
+  const chapterOf = (id) => { const l = lecture(id); return l && known.has(l.chapter || "") ? l.chapter : ""; };
+  const keyOf = (m) => {
+    const ids = m.lectures || [];
+    if (group === "lecture") return ids.length === 1 ? ids[0] : ACROSS;
+    const chs = [...new Set(ids.map(chapterOf))];
+    return chs.length === 1 ? chs[0] : ACROSS;
+  };
+  let groups = [];
+  if (group !== "none") {
+    const by = new Map();
+    for (const m of shown) { const k = keyOf(m); if (!by.has(k)) by.set(k, []); by.get(k).push(m); }
+    const order = group === "chapter"
+      ? [...[...chapters].sort((a, b) => a.number - b.number).map((c) => c.id), "", ACROSS]
+      : [...by.keys()].filter((k) => k !== ACROSS).sort((a, b) => ((lecture(b) || {}).started || 0) - ((lecture(a) || {}).started || 0)).concat([ACROSS]);
+    const label = (k) => {
+      if (k === ACROSS) return group === "chapter" ? html`<span class="group-muted">Across chapters</span>` : html`<span class="group-muted">Several lectures</span>`;
+      if (group === "chapter") {
+        const c = chapters.find((x) => x.id === k);
+        return c ? html`<span class="chapter-no">Chapter ${c.number}</span>${c.name ? html`<span class="dot-sep">·</span>${c.name}` : ""}`
+          : html`<span class="group-muted">Unsorted</span>`;
+      }
+      const l = lecture(k);
+      return l ? html`${l.title}${l.current ? html`<em class="now-tag">now</em>` : ""}<small>${l.date.split(",")[0]}</small>`
+        : html`<span class="group-muted">A lecture no longer listed</span>`;
+    };
+    groups = order.filter((k) => by.has(k)).map((k) => ({ key: k, label: label(k), items: by.get(k) }));
+  }
+  const rows = (list) => html`<ul>${list.map((m) => html`<${MadeRow} key=${m.id} m=${m} send=${send} />`)}</ul>`;
+  return html`<section class="made-list">
+    <div class="made-head">
+      <h3>Made${items.length ? html` <span>${items.length}</span>` : ""}</h3>
+      ${items.length > 0 && html`<div class="made-sort">
+        <${Segmented} value=${sort.by} options=${[["date", "Date"], ["name", "Name"]]} onChange=${(by) => setSort({ ...sort, by })} />
+        <button class="icon sort-dir" onClick=${() => setSort({ ...sort, dir: sort.dir === "asc" ? "desc" : "asc" })}
+          title=${sort.by === "name" ? (sort.dir === "asc" ? "A → Z (click for Z → A)" : "Z → A (click for A → Z)")
+            : (sort.dir === "asc" ? "Oldest first (click for newest first)" : "Newest first (click for oldest first)")}>
+          ${svg(sort.dir === "asc" ? ICON.sortUp : ICON.sortDown)}</button>
+      </div>`}
+    </div>
+    ${!items.length ? html`<p class="made-empty">What you create appears here.</p>` : html`
+      <div class="made-tools">
+        <${KindMenu} items=${items} present=${present} value=${only} onChange=${setKind} />
+        <div class="made-group"><span class="from-label">Group</span>
+          <${Segmented} value=${group} options=${MADE_GROUPS} onChange=${setGroup} /></div>
+      </div>
+      ${group === "none" ? rows(shown) : groups.map((g) => html`<div key=${g.key} class=${"made-group-box" + (closed[g.key] ? "" : " open")}>
+        <button class="made-group-head" aria-expanded=${!closed[g.key]} onClick=${() => setClosed({ ...closed, [g.key]: !closed[g.key] })}>
+          ${svg(ICON.chevron, "chev")}<span class="made-group-name">${g.label}</span><em class="chapter-count">${g.items.length}</em></button>
+        ${!closed[g.key] && rows(g.items)}
+      </div>`)}`}
+  </section>`;
 }
 
 // ---- past lectures (F-010): the list; open one to page through its slides and its materials ----
 // Chapters (F-010b §2): "Chapter N · name" in the teacher's order (drag a chapter to renumber it); lectures drag
 // between chapters; Unsorted last. Search (titles + slide content) and sort (date / name, both directions).
-const DRAG_LECTURE = "application/x-copilot-lecture";
-const DRAG_CHAPTER = "application/x-copilot-chapter";
-const dragKind = (e) => (e.dataTransfer.types.includes(DRAG_CHAPTER) ? "chapter" : e.dataTransfer.types.includes(DRAG_LECTURE) ? "lecture" : "");
+// Drag (F-010c #1): pointer events, not HTML5 drag (its ghost gave no idea where a row would land). The row lifts and
+// follows the pointer; a gap opens where it will land and the other rows slide (FLIP: positions captured before a
+// change, each moved row animated back from where it was). A lecture's place inside a chapter is the list's sort, so
+// its gap opens at that place in the chapter under the pointer; a collapsed chapter lights up instead.
+const DRAG_START_PX = 4;
+const EDGE_PX = 40;  // near the list's top / bottom edge the list scrolls
+const FLIP_MS = 320;  // round 3 (user: "slightly too fast"): slower, a soft ease-out
+const FLIP_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+// Only what is (nearly) on screen moves: a 97-row list otherwise made ~100 animations per pointer step.
+const nearView = (r, view) => r.bottom > view.top - 120 && r.top < view.bottom + 120;
+function useFlip(box) {
+  const before = useRef(null);
+  const capture = (extra = {}) => {
+    if (!box.current) return;
+    const view = box.current.getBoundingClientRect(), at = {};
+    box.current.querySelectorAll("[data-flip]").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (nearView(r, view)) at[el.dataset.flip] = r.top;
+    });
+    before.current = { ...at, ...extra };
+  };
+  useLayoutEffect(() => {
+    const at = before.current;
+    before.current = null;
+    if (!at || !box.current || REDUCED_MOTION.matches) return;
+    // reads and writes in separate passes: cancelling and measuring row by row forced a layout per row (the lag
+    // when a lecture was dragged over the long Unsorted list)
+    const els = [...box.current.querySelectorAll("[data-flip]")].filter((el) => el.dataset.flip in at);
+    els.forEach((el) => el.getAnimations().forEach((a) => a.cancel()));
+    const view = box.current.getBoundingClientRect();
+    const moves = els.map((el) => [el, el.getBoundingClientRect()]).filter(([, r]) => nearView(r, view))
+      .map(([el, r]) => [el, at[el.dataset.flip] - r.top]).filter(([, dy]) => Math.abs(dy) > 0.5);
+    moves.forEach(([el, dy]) => el.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }],
+      { duration: FLIP_MS, easing: FLIP_EASE }));
+  });
+  return capture;
+}
+const sameOrder = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
 
 function useSearch(query, version) {
   const [res, setRes] = useState(null);  // null: no search; else {id: {hits, count}}
@@ -976,9 +1150,18 @@ function useSearch(query, version) {
   return res;
 }
 
-function LectureRow({ l, hits, onOpen, send }) {
-  return html`<li class=${"lecture-row" + (l.current ? " now" : "")} draggable="true"
-      onDragStart=${(e) => { e.dataTransfer.setData(DRAG_LECTURE, l.id); e.dataTransfer.effectAllowed = "move"; }}>
+// A row re-renders only when its lecture or its search hits change (round 3: every drag step re-rendered the 94
+// rows of Unsorted, ~60 ms hitches). Its handlers read the newest props when they fire.
+class LectureRow extends Component {
+  shouldComponentUpdate(next) { return next.l !== this.props.l || next.hits !== this.props.hits; }
+  render() {
+    const p = this.props;
+    return lectureRow(p.l, p.hits, (...a) => this.props.onOpen(...a), (...a) => this.props.send(...a), (...a) => this.props.onGrab(...a));
+  }
+}
+function lectureRow(l, hits, onOpen, send, onGrab) {
+  return html`<li class=${"lecture-row" + (l.current ? " now" : "")} data-flip=${"l:" + l.id}
+      onPointerDown=${(e) => onGrab(e, "lecture", l.id)}>
     <span class="grip" aria-hidden="true">${svg(ICON.grip)}</span>
     <button class="lecture-open" onClick=${() => onOpen(l.id, 0)} title="Open the slides of this lecture">
       <span class="lecture-title">${l.title}${l.current ? html`<em class="now-tag">now</em>` : ""}</span>
@@ -995,31 +1178,25 @@ function LectureRow({ l, hits, onOpen, send }) {
   </li>`;
 }
 
-function ChapterGroup({ chapter, items, hits, open, onToggle, onOpen, send, total, searching }) {
-  const [over, setOver] = useState(false);
+function ChapterGroup({ chapter, items, hits, open, onToggle, onOpen, send, total, searching, onGrab, movable, target, gapAt, gapH, number }) {
   const [naming, setNaming] = useState(false);
   const [name, setName] = useState(chapter ? chapter.name : "");
   const id = chapter ? chapter.id : "";
   const save = () => { setNaming(false); if (chapter && name.trim() !== chapter.name) send("chapter_rename", { id, name: name.trim() }); };
-  const drop = (e) => {
-    e.preventDefault(); setOver(false);
-    const lecture = e.dataTransfer.getData(DRAG_LECTURE), moved = e.dataTransfer.getData(DRAG_CHAPTER);
-    if (lecture) send("lecture_move", { id: lecture, chapter: id });
-    else if (moved && chapter && moved !== id) send("chapter_move", { id: moved, index: chapter.number - 1 });
-  };
-  const accepts = (e) => { const k = dragKind(e); return k === "lecture" || (k === "chapter" && !!chapter); };
   const remove = () => confirm(`Delete “${chapter.label}”?\n\nIts ${items.length} lecture${items.length === 1 ? "" : "s"} move to Unsorted. `
     + "No lecture, slide or material is deleted.\nThe chapters after it are renumbered.") && send("chapter_delete", { id });
-  return html`<section class=${"chapter" + (over ? " over" : "") + (open ? " open" : "") + (chapter ? "" : " unsorted")}
-      onDragOver=${(e) => { if (accepts(e)) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; setOver(true); } }}
-      onDragLeave=${(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setOver(false); }} onDrop=${drop}>
-    <header class="chapter-head" draggable=${!!chapter && !naming}
-        onDragStart=${(e) => { if (!chapter) return; e.dataTransfer.setData(DRAG_CHAPTER, id); e.dataTransfer.effectAllowed = "move"; }}>
-      ${chapter && html`<span class="grip" aria-hidden="true">${svg(ICON.grip)}</span>`}
+  const gap = html`<li key="gap" class="drop-gap" style=${{ height: `${gapH}px` }} aria-hidden="true"></li>`;
+  const rows = items.map((l) => html`<${LectureRow} key=${l.id} l=${l} hits=${hits && hits[l.id]} onOpen=${onOpen} send=${send} onGrab=${onGrab} />`);
+  if (gapAt >= 0) rows.splice(gapAt, 0, gap);
+  return html`<section class=${"chapter" + (open ? " open" : "") + (chapter ? "" : " unsorted") + (target ? " target" : "")}
+      data-chapter=${id}>
+    <header class=${"chapter-head" + (movable && !naming ? " movable" : "")} data-flip=${"c:" + id}
+        onPointerDown=${(e) => { if (movable && !naming) onGrab(e, "chapter", id); }}>
+      ${chapter && movable && html`<span class="grip" aria-hidden="true">${svg(ICON.grip)}</span>`}
       <button class="chapter-toggle" onClick=${onToggle} aria-expanded=${open}>
         ${svg(ICON.chevron, "chev")}
         ${naming ? null : html`<span class="chapter-name">${chapter
-          ? html`<span class="chapter-no">Chapter ${chapter.number}</span>${chapter.name ? html`<span class="dot-sep">·</span>${chapter.name}` : ""}`
+          ? html`<span key=${"n" + (number || chapter.number)} class=${"chapter-no" + (number && number !== chapter.number ? " renumbered" : "")}>Chapter ${number || chapter.number}</span>${chapter.name ? html`<span class="dot-sep">·</span>${chapter.name}` : ""}`
           : "Unsorted"}</span>`}
       </button>
       ${naming && html`<input class="chapter-input" value=${name} maxlength="80" onInput=${(e) => setName(e.target.value)} onBlur=${save}
@@ -1031,10 +1208,7 @@ function ChapterGroup({ chapter, items, hits, open, onToggle, onOpen, send, tota
         <button class="icon danger" title="Delete the chapter (its lectures move to Unsorted)" onClick=${remove}>${svg(ICON.bin)}</button>
       </span>`}
     </header>
-    ${open && html`<ul class="chapter-lectures">
-      ${items.map((l) => html`<${LectureRow} key=${l.id} l=${l} hits=${hits && hits[l.id]} onOpen=${onOpen} send=${send} />`)}
-      ${!items.length && html`<li class="chapter-empty">${chapter ? "Drag lectures here" : "Every lecture is in a chapter"}</li>`}
-    </ul>`}
+    ${open && rows.length > 0 && html`<ul class="chapter-lectures">${rows}</ul>`}
   </section>`;
 }
 
@@ -1045,22 +1219,230 @@ function Lectures({ lectures, chapters, onOpen, send, version }) {
   const [naming, setNaming] = useState(false);
   const [name, setName] = useState("");
   const hits = useSearch(query, version);
+  const box = useRef(null);
+  const live = useRef(null);                 // the drag for the pointer handlers + pointer y, grab offset
+  const [drag, setDrag] = useState(null);    // {kind: lecture | chapter, id, target, h, spacer}
+  // A chapter drag folds every chapter to its header, which pulls its slot up, away from the pointer. Round 3 (user:
+  // "it holds away from the pointer"): the lifted header never moves away from the pointer; instead the folded list
+  // is brought to it — scrolled up when it can, the rest by a spacer above the chapters — so the slot lies right under
+  // the lifted header and the other headers gather around it. Runs before the FLIP below measures (nothing jumps).
+  useLayoutEffect(() => {
+    const d = live.current;
+    if (!drag || !d || d.kind !== "chapter" || d.anchored || !box.current) return;
+    d.anchored = true;
+    const slot = box.current.querySelector(".drop-gap"), pad = box.current.querySelector(".drag-spacer");
+    if (!slot || !pad) return;
+    let need = (d.y - d.off) - slot.getBoundingClientRect().top;
+    if (need > 0) {
+      const s = Math.min(need, box.current.scrollTop);
+      box.current.scrollTop -= s;
+      need -= s;
+      d.spacer = Math.max(0, need);
+      pad.style.height = `${d.spacer}px`;
+      setDrag({ ...d });
+    } else if (need < 0) {  // the list cannot come down (scrolled to its end): the header moves onto its slot
+      d.off = d.y - slot.getBoundingClientRect().top;
+      if (d.float) d.float.style.top = `${d.y - d.off}px`;
+    }
+  });
+  useEffect(() => {  // the lifted header shows the number it will take
+    const d = live.current;
+    if (!drag || !d || d.kind !== "chapter" || !d.float || !drag.number) return;
+    const no = d.float.querySelector(".chapter-no");
+    if (no && no.textContent !== `Chapter ${drag.number}`) {
+      no.textContent = `Chapter ${drag.number}`;
+      no.classList.remove("tick");
+      void no.offsetWidth;  // restart the small tick animation
+      no.classList.add("tick");
+    }
+  });
+  const flip = useFlip(box);
+  const [moved, setMoved] = useState({});    // dropped lectures → chapter, until the server's list agrees
+  const [order0, setOrder0] = useState(null);  // dropped chapter order (ids), until the server's agrees
+
+  // the server's list caught up: drop the local overrides (or after a few seconds, if a command was refused)
+  useEffect(() => {
+    if (!lectures) return;
+    const left = Object.fromEntries(Object.entries(moved).filter(([id, ch]) => {
+      const l = lectures.find((x) => x.id === id);
+      return l && (l.chapter || "") !== ch;
+    }));
+    if (Object.keys(left).length !== Object.keys(moved).length) setMoved(left);
+  }, [lectures]);
+  useEffect(() => { if (order0 && sameOrder(order0, chapters.map((c) => c.id))) setOrder0(null); }, [chapters]);
+  useEffect(() => {
+    if (!Object.keys(moved).length && !order0) return undefined;
+    const t = setTimeout(() => { setMoved({}); setOrder0(null); }, 4000);
+    return () => clearTimeout(t);
+  }, [moved, order0]);
+
   if (lectures === null) return html`<div class="lectures"><p class="made-empty">Loading…</p></div>`;
   const cmp = sort.by === "name" ? (a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
     : (a, b) => a.started - b.started;
   const dir = sort.dir === "asc" ? 1 : -1;
+  const chapterOf = (l) => (l.id in moved ? moved[l.id] : l.chapter || "");
+  const numbered = order0
+    ? order0.map((id) => chapters.find((c) => c.id === id)).filter(Boolean).map((c, i) => ({ ...c, number: i + 1, label: `Chapter ${i + 1}${c.name ? ` · ${c.name}` : ""}` }))
+    : chapters;
+  const known = new Set(numbered.map((c) => c.id));
+  const home = (l) => (known.has(chapterOf(l)) ? chapterOf(l) : "");
   const shown = hits ? lectures.filter((l) => hits[l.id]) : lectures;
-  const inChapter = (id) => shown.filter((l) => (l.chapter || "") === id).sort((a, b) => dir * cmp(a, b));
-  const known = new Set(chapters.map((c) => c.id));
-  const order = [...chapters].sort(sort.by === "name"
+  const dragging = drag && drag.kind === "lecture" ? drag.id : null;
+  const inChapter = (id) => shown.filter((l) => home(l) === id && l.id !== dragging).sort((a, b) => dir * cmp(a, b));
+  const order = [...numbered].sort(sort.by === "name"
     ? (a, b) => dir * (a.name || a.label).localeCompare(b.name || b.label, undefined, { sensitivity: "base" })
     : (a, b) => dir * (a.number - b.number));
-  const unsorted = shown.filter((l) => !known.has(l.chapter || "")).sort((a, b) => dir * cmp(a, b));
   const create = () => { if (name.trim()) send("chapter_create", { name: name.trim() }); setName(""); setNaming(false); };
-  const groups = [...order.map((c) => ({ chapter: c, items: inChapter(c.id), total: lectures.filter((l) => l.chapter === c.id).length })),
-    { chapter: null, items: unsorted, total: lectures.filter((l) => !known.has(l.chapter || "")).length }]
-    .filter((g) => !hits || g.items.length);
-  return html`<div class="lectures">
+  const chapterDrag = drag && drag.kind === "chapter";
+  let groups = [...order.map((c) => ({ chapter: c, items: inChapter(c.id), total: lectures.filter((l) => home(l) === c.id).length })),
+    { chapter: null, items: inChapter(""), total: lectures.filter((l) => home(l) === "").length }]
+    .filter((g) => !hits || g.items.length || (dragging && drag.target === (g.chapter ? g.chapter.id : "")));
+  // where the dragged lecture lands inside its target chapter: its place in that chapter's sort
+  const gapIn = (g) => {
+    if (!dragging || drag.target !== (g.chapter ? g.chapter.id : "")) return -1;
+    const l = lectures.find((x) => x.id === dragging);
+    const at = g.items.findIndex((x) => dir * cmp(l, x) < 0);
+    return at < 0 ? g.items.length : at;
+  };
+  if (chapterDrag) groups = groups.filter((g) => !g.chapter || g.chapter.id !== drag.id);
+  const canMoveChapters = sort.by === "date" && !hits;  // by name the list is not the chapter order
+
+  // ---- the drag itself ----
+  const visibleChapters = () => [...box.current.querySelectorAll(".chapter[data-chapter]")];
+  const targetAt = (y) => {
+    const d = live.current;
+    if (d.kind === "lecture") {  // the chapter under the pointer (or the nearest one)
+      let best = null, dist = Infinity;
+      for (const el of visibleChapters()) {
+        const r = el.getBoundingClientRect();
+        const k = y < r.top ? r.top - y : y > r.bottom ? y - r.bottom : 0;
+        if (k < dist) { dist = k; best = el.dataset.chapter; }
+      }
+      return best === null ? d.target : best;
+    }
+    // a chapter: how many of the other chapters (shown order) sit above the lifted header's centre
+    const c = y - d.off + d.h / 2;
+    return visibleChapters().filter((el) => el.dataset.chapter && el.dataset.chapter !== d.id).filter((el) => {
+      const r = el.getBoundingClientRect();
+      return r.top + r.height / 2 < c;
+    }).length;
+  };
+  // the chapter order if the dragged chapter landed in slot `target` of the shown list (newest-first counts from the end)
+  const landing = (id, target) => {
+    const asc = numbered.map((c) => c.id).filter((x) => x !== id);
+    const index = dir > 0 ? target : asc.length - target;
+    return { index, next: [...asc.slice(0, index), id, ...asc.slice(index)] };
+  };
+  const renumber = (d) => {  // every chapter's number in that order: shown live while dragging
+    if (d.kind !== "chapter") return;
+    d.numbers = Object.fromEntries(landing(d.id, d.target).next.map((x, i) => [x, i + 1]));
+    d.number = d.numbers[d.id];
+  };
+  const retarget = () => {
+    const d = live.current;
+    if (!d || !d.started) return;
+    const t = targetAt(d.y);
+    if (t === d.target) return;
+    d.target = t;
+    renumber(d);
+    flip();
+    setDrag({ ...d });
+  };
+  const place = () => {
+    const d = live.current;
+    if (d && d.float) d.float.style.top = `${d.y - d.off}px`;
+  };
+  const finish = (drop) => {
+    const d = live.current;
+    live.current = null;
+    if (!d || !d.started) return;
+    cancelAnimationFrame(d.raf);
+    const from = { [`${d.kind === "lecture" ? "l" : "c"}:${d.id}`]: d.float.getBoundingClientRect().top };
+    d.float.remove();
+    flip(from);  // the row settles from where it was let go (dropped or not)
+    if (drop && d.kind === "lecture") {
+      const l = lectures.find((x) => x.id === d.id);
+      if (l && chapterOf(l) !== d.target) {
+        setMoved((m) => ({ ...m, [d.id]: d.target }));
+        send("lecture_move", { id: d.id, chapter: d.target });
+      }
+    } else if (drop && d.kind === "chapter") {
+      const { index, next } = landing(d.id, d.target);
+      if (!sameOrder(next, numbered.map((c) => c.id))) {
+        setOrder0(next);
+        send("chapter_move", { id: d.id, index });
+      }
+    }
+    setDrag(null);
+    // the press that ended the drag must not also open the lecture / toggle the chapter
+    const eat = (e) => { e.stopPropagation(); e.preventDefault(); };
+    window.addEventListener("click", eat, true);
+    setTimeout(() => window.removeEventListener("click", eat, true), 0);
+  };
+  const grab = (e, kind, id) => {
+    if (e.button !== 0 || e.pointerType === "touch" || live.current) return;
+    if (e.target.closest("input, .icon, .hits, .chapter-tools")) return;
+    const el = e.currentTarget, r = el.getBoundingClientRect();
+    const d = { kind, id, started: false, x0: e.clientX, y0: e.clientY, y: e.clientY, off: e.clientY - r.top, raf: 0, float: null,
+      target: kind === "lecture" ? el.closest(".chapter").dataset.chapter : null };
+    live.current = d;
+    const scroll = () => {  // near an edge, the list scrolls while the pointer rests there
+      const s = box.current, b = s.getBoundingClientRect();
+      const v = d.y < b.top + EDGE_PX ? -Math.ceil((b.top + EDGE_PX - d.y) / 4) : d.y > b.bottom - EDGE_PX ? Math.ceil((d.y - b.bottom + EDGE_PX) / 4) : 0;
+      if (v) { s.scrollTop += v; retarget(); }
+      d.raf = requestAnimationFrame(scroll);
+    };
+    const move = (ev) => {
+      d.y = ev.clientY;
+      if (!d.started) {
+        if (Math.abs(ev.clientY - d.y0) < DRAG_START_PX && Math.abs(ev.clientX - d.x0) < DRAG_START_PX) return;
+        d.started = true;
+        d.h = r.height;
+        // the lifted copy lives on <body>: the side panel is a size container, which would pin a fixed element to it
+        const f = document.createElement("div");
+        f.className = "drag-float" + (kind === "chapter" ? " chapter-float" : "");
+        f.innerHTML = el.outerHTML;
+        Object.assign(f.style, { left: `${r.left}px`, width: `${r.width}px`, top: `${r.top}px` });
+        document.body.appendChild(f);
+        d.float = f;
+        if (kind === "chapter") {  // every chapter folds to its header; the slot starts where it was
+          d.target = visibleChapters().filter((c) => c.dataset.chapter).findIndex((c) => c.dataset.chapter === id);
+          renumber(d);
+        }
+        flip();
+        setDrag({ ...d });
+        d.raf = requestAnimationFrame(scroll);
+      }
+      place();
+      retarget();
+    };
+    const stop = (drop) => () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cancel);
+      window.removeEventListener("keydown", esc, true);
+      finish(drop);
+    };
+    const up = stop(true), cancel = stop(false);
+    const esc = (ev) => { if (ev.key === "Escape") { ev.stopPropagation(); ev.preventDefault(); cancel(); } };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", cancel);
+    window.addEventListener("keydown", esc, true);
+  };
+  const chapterGap = chapterDrag ? html`<section key="gap" class="drop-gap" style=${{ height: `${drag.h}px` }} aria-hidden="true"></section>` : null;
+  const sections = groups.map((g) => {
+    const id = g.chapter ? g.chapter.id : "";
+    const open = !chapterDrag && (!!hits || !closed[id]);
+    return html`<${ChapterGroup} key=${g.chapter ? g.chapter.id : "unsorted"} chapter=${g.chapter} items=${g.items}
+      total=${g.total} searching=${!!hits} hits=${hits} open=${open}
+      onToggle=${() => setClosed({ ...closed, [id]: !closed[id] })}
+      onOpen=${onOpen} send=${send} onGrab=${grab} movable=${!!g.chapter && canMoveChapters}
+      target=${!!dragging && drag.target === id} gapAt=${open ? gapIn(g) : -1} gapH=${drag ? drag.h : 0} number=${chapterDrag && g.chapter ? drag.numbers[g.chapter.id] : 0} />`;
+  });
+  if (chapterGap) sections.splice(Math.min(drag.target, groups.length - 1), 0, chapterGap);
+  if (chapterDrag) sections.unshift(html`<div key="spacer" class="drag-spacer" style=${{ height: `${drag.spacer || 0}px` }} aria-hidden="true"></div>`);
+  return html`<div class=${"lectures" + (drag ? " dragging" : "")} ref=${box}>
     <div class="lectures-tools">
       <label class="search">${svg(ICON.search)}
         <input type="search" value=${query} placeholder="Search lectures and slides" onInput=${(e) => setQuery(e.target.value)}
@@ -1079,12 +1461,9 @@ function Lectures({ lectures, chapters, onOpen, send, version }) {
         <button class="icon" onClick=${() => setNaming(false)} title="Cancel">${svg(ICON.remove)}</button>
       </div>`
       : html`<button class="ghost-pill new-chapter-btn" onClick=${() => setNaming(true)}>${svg(ICON.add)}New chapter</button>`}
-    ${hits && !groups.length && html`<p class="made-empty">Nothing found for “${query.trim()}”.</p>`}
+    ${hits && !groups.length && !drag && html`<p class="made-empty">Nothing found for “${query.trim()}”.</p>`}
     ${!lectures.length && html`<p class="made-empty">Lectures appear here.</p>`}
-    ${groups.map((g) => html`<${ChapterGroup} key=${g.chapter ? g.chapter.id : "unsorted"} chapter=${g.chapter} items=${g.items}
-      total=${g.total} searching=${!!hits} hits=${hits} open=${!!hits || !closed[g.chapter ? g.chapter.id : ""]}
-      onToggle=${() => setClosed({ ...closed, [g.chapter ? g.chapter.id : ""]: !closed[g.chapter ? g.chapter.id : ""] })}
-      onOpen=${onOpen} send=${send} />`)}
+    ${sections}
   </div>`;
 }
 
@@ -1147,12 +1526,14 @@ function LectureViewer({ id, start = 0, made, onClose, onMake, send }) {
 // the right column: mistake cards on top, then one card with tabs (more tabs come with the V2 tools)
 function SidePanel({ tab, onTab, children }) {
   const tabs = children.filter(Boolean);
+  const nav = useRef(null);
+  const thumb = useThumb(nav, `${tab}|${tabs.map((t) => `${t.props.id}:${t.props.badge || ""}`).join("|")}`);
   return html`<section class="side-panel">
-    <nav class="tabs" role="tablist">${tabs.map((t) => html`<button key=${t.props.id} role="tab" title=${t.props.label}
+    <nav class="tabs" role="tablist" ref=${nav}>${thumb}${tabs.map((t) => html`<button key=${t.props.id} role="tab" title=${t.props.label}
         class=${t.props.id === tab ? "on" : ""} aria-selected=${t.props.id === tab} onClick=${() => onTab(t.props.id)}>
       ${t.props.icon && svg(t.props.icon)}<span>${t.props.label}</span>${t.props.badge
         ? html`<em class="badge">${t.props.badge}</em>` : null}</button>`)}</nav>
-    <div class="tab-body">${tabs.find((t) => t.props.id === tab) || tabs[0]}</div>
+    <div class="tab-body" key=${tab}>${tabs.find((t) => t.props.id === tab) || tabs[0]}</div>
   </section>`;
 }
 const Tab = ({ children }) => children;

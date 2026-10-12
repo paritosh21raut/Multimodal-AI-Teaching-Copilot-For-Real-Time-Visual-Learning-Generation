@@ -1,0 +1,76 @@
+[    2.1] Let us study the atomic structure.
+[    5.2] But first, let us start with atom.
+[    8.3] John Dalton proposed in 1808 that atom is the smallest indivisible particle of matter.
+[   17.0] atomic radii are of the order of 10 to the power minus 8 centimeter.
+[   22.3] It contains three subatomic particles, namely electrons, protons and neutrons.
+[   29.2] Let us study them individually.
+[   32.2] electrons
+[   33.7] Electron was discovered as a result of study of cathode rays by J.J. Thompson.
+[   40.6] It was named by Stonie.
+[   43.3] it carries a unit negative charge that is minus 1.6 into 10 to the power minus 19 coulombs
+[   51.8] Mass of electron is 9.11 x 10-31 kg and mass of 1 mole of electron is 0.55 mg.
+[   65.5] Some of the characteristics of cathode rays are
+[   69.0] these travel in straight line away from cathode and produces fluorescence.
+[   74.2] when strike the glass wall of discharge tube
+[   78.5] this causes mechanical motion in the small pine.
+[   84.4] Will you listen to their part?
+[   88.8] This produces X-ray when strike with metal or hard deflected.
+[   93.6] by electric and magnetic field.
+[  101.4] Let us study about protons.
+[  103.9] Furthermore, discovered proton on the basis of anode ray experiment.
+[  109.7] It carries a unit positive charge of positive 1.6 into 10 to the power minus 19 coulombs.
+[  116.7] the mass of proton is 1.007276
+[  122.4] Mu.
+[  124.6] that lead to the power, in e by m, ratio of protons is 9.58 into 10 to the power minus 4 coulombs per gram.
+[  136.4] This E by Phi M ratio is maximum for Hydrogen gas.
+[  147.6] neutrons neutrons are neutral particles it was discovered by chadwick 1932
+[  155.4] the mass of neutron is 1.675 x 10-24 gm or 1.008665
+[  165.3] Mu.
+[  180.7] Let us understand the Thompson's atomic model. It states that the atom is a positive sphere with number of electrons distributed within the sphere.
+[  191.6] It is also known as the Plum coding model.
+[  194.6] It explains the neutrality of an atom.
+[  198.0] This model could not explain the results of render force thread to experiment.
+[  203.8] Let us study the Rutherford's nuclear model of atom.
+[  207.4] It is based on Alpha Particle Scattering Experiment.
+[  211.1] Therefore presented them.
+[  213.2] Most of that is empty.
+[  215.8] atom possesses for highly dense
+[  218.7] positively examined.
+[  222.5] and the radius of the order 10 to the power minus 13 centimeter.
+[  229.2] and tell mass of the atom is centric.
+[  234.7] He said dig it, yes.
+[  237.7] electrons revolve around the nucleus in circular orbits.
+[  242.1] Electrodes and the nucleus all hang together by electrostatic force of attraction.
+[  252.8] the drawbacks of that first model are
+[  256.2] according to electromagnetic theory when charged particles are in accelerated the electromagnetic radiations.
+[  265.4] which comes by electronic motion and thus orbits continuously.
+[  271.1] It will shrink.
+[  272.4] So the atom is unstable. That's because it explains
+[  277.0] The every instability of atom.
+[  284.1] it doesn't say anything about the electronic distribution around the eye nucleus.
+[  292.4] That is really atomic number.
+[  294.4] I turned it into a bar of an element
+[  299.2] correct corresponds to the total number of protons present in the nucleus or total number of electrons present in the neutral atom
+[  310.2] the mass number a the mass of the nucleus is due to proton and neutrons
+[  316.1] Thus, they are collectively called nucleons.
+[  320.1] the total number of nuclei is termed as the mass of the atom.
+[  333.9] different types of atomic species.
+[  336.7] caused isotopes. These are the species with same atomic number but different mass number.
+[  344.2] isobars species with same mass number but different
+[  349.7] atomic number
+[  352.8] isotopes species having same number of neutrons.
+[  361.6] isodifers species with same isotopic number
+[  369.7] isoelectric species with same number of electrons
+[  378.4] species having same number of atoms and same
+[  381.7] number of electrons
+[  391.1] Now let us study the electromagnetic theory.
+[  394.2] That makes sense.
+[  395.9] the energy is emitted from source continuously in the form of radiations and magnetic field.
+[  403.5] All the electromagnetic waves travel with
+[  406.8] the velocity of light that is 3 into 10 to the power 8 meter per second
+[  412.2] and do not require any video for
+[  416.0] of propagation.
+[  445.5] Let us understand code.
+[  447.6] It is the region or space where probability of finding an electron is maximum.
+[  453.8] It is also called the peak. We are sure.
+[  458.5] zero probability space is called mode.

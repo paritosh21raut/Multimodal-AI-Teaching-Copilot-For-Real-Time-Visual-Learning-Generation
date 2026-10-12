@@ -115,7 +115,9 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
   snapshot, `POST /api/notes/link`). **Project**: `notes_project {on}` → `NotesProjected` → every page; /display and
   /view show the page over the slide (blank wins), served by `GET /api/notes/shown/<id>/<page>` only while it is the
   one shown; the lecture never turns a projected page; Esc / Back to slide in /control. Start card at READY (chapter
-  + Start). Styled tooltip: `title` → `aria-label` + `data-tip` on render.
+  + Start). Styled tooltip: `title` → `aria-label` + `data-tip` on render (850 ms, F-010c). Lectures-tab drag is pointer-driven
+  with FLIP (`useFlip`, `[data-flip]` keys); it still sends only `lecture_move` / `chapter_move`. Motion respects
+  `prefers-reduced-motion`.
 
 ## Lecture materials + past lectures (F-010, V2)
 - **Materials** tab: *From* chips (This lecture, + Past lecture menu), then tick cards — Summary slide (This topic /

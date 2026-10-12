@@ -1,0 +1,37 @@
+[    4.6] Hello everyone, let us learn about the Newton's laws of motion.
+[    8.7] first let us take a background of this sir Isaac Newton
+[   15.0] from 1643 to 1727. He was an English scientist and mathematician famous for his discovery of the law of gravity. He also discovered the three laws of motion.
+[   28.0] Newton's laws of motion are
+[   31.1] Newton's law gives three laws of motion. The first law states that an object at rest tends to stay at rest and an object in motion tends to stay in motion unless acted upon.
+[   45.5] by unbalanced force.
+[   47.5] So what does this mean? Basically, the object will keep doing what it was doing unless acted on by an unbalanced force.
+[   57.7] If the object was sitting still, it will remain stationary. If it was moving at a constant velocity, it will keep moving.
+[   65.2] it takes force to change the motion of an object.
+[   71.0] What is meant by unbalanced force?
+[   75.2] So, Unbalanced Force is if a force on an object are equal and opposite.
+[   81.0] They are said to be barristers.
+[   83.3] and the force experience no change in motion.
+[   87.2] But if they are not equal and opposite then the forces are unbalanced and the motion of the object changes.
+[  102.4] Newton's first law of motion is also called the law of inertia.
+[  107.8] Inertia is the tendency of an object to resist changes in its state of motion.
+[  114.8] Thanks.
+[  116.1] Really careful.
+[  120.0] Newton's first law.
+[  126.9] Now let us start about Newton's second law, the F equals to M M.
+[  132.3] Force equals mass times acceleration. Acceleration is the measurement of how quickly an object is changing speed.
+[  139.6] then what does this F equal to M in its force is directly proportional to the mass and acceleration
+[  146.0] Imagine a ball of a certain mass moving at a certain acceleration. This ball has a certain force.
+[  153.5] Now imagine we take the bolt
+[  156.1] twice as big
+[  158.8] but keep the acceleration constant. F equals to m in says that this new ball has twice the force of the old ball.
+[  172.1] What does f equals to ma say?
+[  174.9] F equals to m basically means that the force of an object comes from its mass and its acceleration.
+[  181.7] If you double the mass, you double the force. You double the acceleration, you double the force.
+[  191.1] Now let us understand the third law of Newton.
+[  196.3] It states that for every action there is equal and opposite reaction.
+[  203.2] What does this mean?
+[  205.5] This means that for every force acting on an object, there is an equal and a force acting in the opposite direction. Right now gravity is pulling down.
+[  215.6] in your seat but Newton's third law says your seat is pushing up against you with equal force
+[  223.9] This is why you are not moving.
+[  228.6] There is a balanced force acting on you.
+[  231.8] Gravity pulling down, your state pushing up.

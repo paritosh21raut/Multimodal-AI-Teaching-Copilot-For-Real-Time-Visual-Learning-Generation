@@ -1,0 +1,141 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (19.4 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.6 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_4         openai/gpt-oss-120b           149k of 200k tokens IN USE
+        GROQ_API_KEY_5         openai/gpt-oss-120b           198k of 200k tokens ok
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         openai/gpt-oss-120b            99k of 200k tokens ok
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~10.9 h
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 256 lecture minutes
+
+[READY] session 20261012-124921-c2c8
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+12:49:46 INFO    copilot.visuals.service: CLIP ready in 0.9 s (CPU)
+12:56:09 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    1.4s] Hello everyone, let us discuss about the Dandi March. The Dandi March was an important event in India's freedom struggle. It was led by Mahatma Gandhi who opposed the British soil tax attacks. (1220 ms)
+  [   15.3s] through a peaceful act of civil disobedience, challenging British economic control over India. (834 ms)
+12:56:35 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ["The Dandi March was an important event in India's freedom struggle"]
+  [UNDERSTAND] Indian Independence > Dandi March (new_topic) acts=explanation,explanation hint=concept lines=2 via groq_main#4 1724 ms
+               Introduced the Dandi March as a peaceful civil‑disobedience protest led by Gandhi against British economic policies.
+12:56:35 INFO    copilot.presentation.engine: planner: new Indian Independence > Dandi March (first content slide)
+  [SLIDE] add    'Dandi March' [key_points] v1 (4 items)
+12:56:35 INFO    copilot.presentation.engine: image search 'Dandi March' (photo) for 'Dandi March'
+  [   22.2s] Mahatma Gandhi deliberately chose salt because it was daily necessity, making the injustice universally relatable. (825 ms)
+  [SLIDE] update 'Dandi March' [key_points] v2 (5 items)
+12:56:43 INFO    copilot.visuals.finder: image search 'Dandi March' (photo): 2 candidate(s), 1 accepted (0 labelled), 7.57 s {'search_s': 2.16, 'download_s': 1.69, 'clip_s': 0.11, 'full_s': 3.58, 'total_s': 7.57}
+  [IMAGE] 'Dandi March' -> File:Gandhi at Dandi 5 April 1930.jpg (7.6 s)
+12:56:43 INFO    copilot.presentation.engine: image 'Dandi March' on 'Dandi March': File:Gandhi at Dandi 5 April 1930.jpg
+  [SLIDE] update 'Dandi March' [key_points] v3 (6 items)
+  [UNDERSTAND] Indian Independence > Dandi March (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 2415 ms
+               Gandhi selected salt to show the universal impact of British injustice
+12:56:44 INFO    copilot.presentation.engine: planner: update Indian Independence > Dandi March (same frame)
+12:56:44 INFO    copilot.presentation.engine: no image for 'Dandi March': has an image
+  [SLIDE] update 'Dandi March' [key_points] v4 (5 items)
+  [SLIDE] update 'Dandi March' [key_points] v5 (6 items)
+  [   31.9s] The timeline and key events are, the Dandi march started on 12th March 1930 and concluded on 6th April 1930 covering 240 miles from the Sabarmati Ashram to Dandi village. (1145 ms)
+  [SLIDE] update 'Dandi March' [key_points] v6 (7 items)
+  [   46.8s] present day in Gujarat. Mahatma Gandhi was accompanied by 78 initial followers, a number that swelled into a mass government movement along the route. (1078 ms)
+  [SLIDE] update 'Dandi March' [key_points] v7 (7 items)
+12:57:10 WARNING copilot.llm.router: llm groq_main#4 failed: 400 json_validate_failed
+12:57:11 WARNING copilot.llm.router: llm groq_main#5 failed: 400 json_validate_failed
+12:57:13 WARNING copilot.llm.router: llm groq_main#6 failed: 400 json_validate_failed
+  [UNDERSTAND] Indian Independence > Dandi March (same_concept) acts=timeline,other hint=timeline lines=2 via groq_main#1 5391 ms
+               Added start/end dates, 240‑mile distance, and follower numbers for the Dandi March.
+12:57:14 INFO    copilot.presentation.engine: planner: update Indian Independence > Dandi March (same frame)
+12:57:14 INFO    copilot.presentation.engine: no image for 'Dandi March': timeline needs the full width
+  [SLIDE] update 'Dandi March' [key_points] v8 (6 items)
+  [SLIDE] update 'Dandi March' [key_points] v9 (6 items)
+  [SLIDE] add    'Dandi March' [timeline] v1 (3 items)
+  [   56.6s] The protest targeted the British Salt Monopoly and the salt attacks enforced by the law like the 1882 Salt Act. These attacks forced all Indians, especially the poor, (1087 ms)
+  [   71.2s] to buy expensive tax salt, often imported instead of using the readily available coastal salt. (872 ms)
+  [   78.7s] on 6th April (435 ms)
+12:57:32 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['To buy expensive tax salt, often imported instead of using the readily available coastal salt']
+  [UNDERSTAND] Indian Independence > Dandi March (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#4 1599 ms
+               Explained that the march protested the British Salt Monopoly and the 1882 Salt Act forcing costly tax salt on Indians.
+12:57:32 INFO    copilot.presentation.engine: planner: update Indian Independence > Dandi March (same frame)
+  [SLIDE] update 'Dandi March' [timeline] v2 (5 items)
+  [SLIDE] add    'Dandi March' [key_points] v1 (1 items)
+12:57:32 INFO    copilot.presentation.engine: image search 'Map of Dandi March route' (photo) for 'Dandi March'
+12:57:36 INFO    copilot.presentation.engine: image 'Map of Dandi March route': none (no usable candidates)
+  [IMAGE] 'Map of Dandi March route' -> none (no usable candidates) (4.3 s)
+  [   80.5s] 1930 Mahatma Gandhi broke the salt law by picking up a handful of natural salt from this sea-show at the lake, Dandi. (1022 ms)
+  [UNDERSTAND] Indian Independence > Dandi March (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#4 1689 ms
+               Added the start date and Gandhi’s act of picking up natural salt at Dandi to break the Salt Law.
+12:57:46 INFO    copilot.presentation.engine: planner: update Indian Independence > Dandi March (same frame)
+12:57:46 INFO    copilot.presentation.engine: no image for 'Dandi March': nothing relevant found for 'Map of Dandi March route' before
+  [SLIDE] update 'Dandi March' [key_points] v2 (3 items)
+  [   89.8s] This single act served as a signal for millions of Indians to begin their own acts of civil disobedience across the country. (889 ms)
+  [SLIDE] update 'Dandi March' [key_points] v3 (4 items)
+12:57:54 WARNING copilot.llm.router: llm groq_main#4 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Indian Independence > Dandi March (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 5033 ms
+               The act signaled nationwide civil disobedience
+12:57:57 INFO    copilot.presentation.engine: planner: update Indian Independence > Dandi March (same frame)
+12:57:57 INFO    copilot.presentation.engine: no image for 'Dandi March': nothing relevant found for 'Map of Dandi March route' before
+  [SLIDE] update 'Dandi March' [key_points] v4 (3 items)
+  [SLIDE] update 'Dandi March' [key_points] v5 (4 items)
+  [  102.0s] repression, the British responded with mass arrests, including Gandhi's arrest on 5th May 1930 and violent crackdowns on peaceful protesters, most notably at the (1063 ms)
+  [SLIDE] update 'Dandi March' [key_points] v6 (5 items)
+  [  115.1s] The Resinart Sidewalk. (733 ms)
+  [SLIDE] update 'Dandi March' [key_points] v7 (4 items)
+  [UNDERSTAND] Indian Independence > Dandi March (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 2131 ms
+               Added British repression: mass arrests, Gandhi's May 5 arrest, and violent crackdowns on protesters.
+  [HEARD] 'Resinart Sidewalk' -> '[unclear location, likely mis‑heard]' corrected on the slide (0.5)
+12:58:11 INFO    copilot.presentation.engine: planner: update Indian Independence > Dandi March (same frame)
+12:58:11 INFO    copilot.presentation.engine: concern 92042d97c99e (transcription, applied=True): 1 element(s); slide shows '[unclear location, likely mis‑heard]'
+12:58:11 INFO    copilot.presentation.engine: no image for 'Dandi March': nothing relevant found for 'Map of Dandi March route' before
+  [SLIDE] update 'Dandi March' [key_points] v8 (6 items)
+  [SLIDE] update 'Dandi March' [key_points] v9 (6 items)
+  [  118.6s] In Gujarat, after Mahatma Gandhi's arrest, Sarojini Naidu led a non-violent raid on the Dharasana salt works on 21st May, 1930, where American journalist Webb Miller (1267 ms)
+  [  132.3s] reported a brutal police lati charge on peaceful protesters. (680 ms)
+  [  136.5s] Long term significance. (553 ms)
+  [UNDERSTAND] Indian Independence > Dharasana Salt Works Raid (sibling_concept) acts=explanation hint=example lines=2 via groq_main#5 2903 ms
+               Introduced Sarojini Naidu’s Dharasana raid and Webb Miller’s report of police brutality
+12:58:33 INFO    copilot.presentation.engine: planner: continue Indian Independence > Dharasana Salt Works Raid (new facet)
+  [SLIDE] add    'Dharasana Salt Works Raid' [key_points] v1 (2 items)
+12:58:33 INFO    copilot.presentation.engine: image search 'Dharasana salt works' (photo) for 'Dharasana Salt Works Raid'
+  [  139.2s] guarding significant international attention, exposing the moral (617 ms)
+12:58:38 INFO    copilot.visuals.finder: image search 'Dharasana salt works' (photo): 1 candidate(s), 1 accepted (0 labelled), 5.18 s {'search_s': 2.16, 'download_s': 1.58, 'clip_s': 0.09, 'full_s': 1.33, 'total_s': 5.18}
+  [IMAGE] 'Dharasana salt works' -> File:Dharasana salt pan.jpg (5.2 s)
+12:58:39 INFO    copilot.presentation.engine: image 'Dharasana salt works' on 'Dharasana Salt Works Raid': File:Dharasana salt pan.jpg
+  [SLIDE] update 'Dharasana Salt Works Raid' [key_points] v2 (3 items)
+  [  143.8s] bankruptcy of British rule and him (649 ms)
+  [  148.0s] inspiring future global leaders of non-violent movements such as Martin Luther King Jr. (758 ms)
+  [UNDERSTAND] Indian Independence > Long Term Significance (sibling_concept) acts=explanation hint=key_points lines=4 via groq_main#5 1996 ms
+               The teacher described the long‑term significance of the Dharasana raid, highlighting its global impact and inspiration for later leaders.
+12:58:49 INFO    copilot.presentation.engine: planner: continue Indian Independence > Long Term Significance (new facet)
+12:58:49 INFO    copilot.presentation.engine: image hint 'Map of Long Term Significance route' for 'Long Term Significance' from its sibling subtopic
+  [SLIDE] add    'Long Term Significance' [key_points] v1 (3 items)
+12:58:49 INFO    copilot.presentation.engine: image search 'Map of Long Term Significance route' (photo) for 'Long Term Significance'
+12:58:52 INFO    copilot.presentation.engine: image 'Map of Long Term Significance route': none (no usable candidates)
+  [IMAGE] 'Map of Long Term Significance route' -> none (no usable candidates) (2.6 s)
+[PAUSE] paused: what is said now is not put on slides (Resume to continue)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261012-124921-c2c8: 18 segments, 296 words, state v42, 200 events logged
+        CommandReceived=16, ConceptSignal=18, ConcernRaised=1, DeckState=16, ImageChoices=2, ImageReady=4, ImageRequested=4, InterpretRequested=9, InterpretationReady=9, LLMCallFailed=4, LifecycleChanged=6, SlideContextChanged=10, SlidePatch=23, StateChanged=42, TranscriptFinal=18, UtteranceClassified=18
+        stt: 18 published, 0 dropped, latency p50=871 ms p95=1267 ms max=1267 ms
+        understanding: 9 interpretations (9 by LLM, 0 fallbacks, 0 repaired), max 4 calls/min, prompt tokens max=2001 avg=1895, latency p50=2131 ms max=5391 ms
+        presentation: 5 slides; planner ops {'new': 1, 'update': 6, 'continue': 2}; revisions 0, corrections shown 1, shown as said 0
+        images: {'requests': 4, 'found': 2, 'none': 2}; slides with an image 2/5
+          1. [key_points] Dandi March [part 1]  (v9, ['points', 'image'])
+          2. [timeline] Dandi March [part 2]  (v2, ['timeline', 'facts', 'points'])
+          3. [key_points] Dandi March [part 3]  (v9, ['points'])
+          4. [key_points] Dharasana Salt Works Raid  (v2, ['points', 'image'])
+          5. [key_points] Long Term Significance  (v1, ['points'])
+        providers: {'groq_main#4': 4, 'groq_main#1': 1, 'groq_main#5': 4}; triggers: {'words': 3, 'pause': 3, 'max_wait': 2, 'boundary': 1}; outline: ['Indian Independence > Dandi March, Dharasana Salt Works Raid, Long Term Significance']; concerns: 1
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261012-124921-c2c8\session.sqlite

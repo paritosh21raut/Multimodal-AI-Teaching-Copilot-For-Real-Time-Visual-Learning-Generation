@@ -58,6 +58,10 @@ Original requirements: `docs/brief/master-prompt.md` (read only when requirement
 .venv/Scripts/python tools/prompt_ab.py --dry <session>[:i,j]   # rebuild recorded prompts (0 tokens); without --dry: real A/B
 .venv/Scripts/python tools/replay_interpretations.py <session> light --images   # recorded LLM answers + real image search (0 tokens)
 .venv/Scripts/python tools/materials_check.py <session>   # lecture-material prompts from a recorded lecture (0 tokens); --live: real Groq + files
+.venv/Scripts/python tools/paper_eval.py latency <session...>   # paper: end-to-end latency from live logs (0 tokens)
+.venv/Scripts/python tools/baseline_llm_slides.py <session> [--metrics]   # paper: LLM-controlled baseline (~700 tok/unit); --metrics 0 tokens
+.venv/Scripts/python tools/eval_test.py run --note "..." [-- <copilot args>]   # paper validation test -> verify_results/testN; see docs/paper/VALIDATION.md
+PYTHONPATH=paper/build/lib .venv/Scripts/python paper/build/src/build_docx.py <out.docx>   # paper; render.ps1 <docx> <pdf> prints pages
 .venv/Scripts/python -m pytest                      # fast tests
 .venv/Scripts/python -m pytest -m slow              # + GPU/model tests
 .venv/Scripts/python -m pytest -m browser           # real Edge via Playwright (display)

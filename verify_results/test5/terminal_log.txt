@@ -1,0 +1,351 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (11.0 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_3         openai/gpt-oss-120b            52k of 200k tokens IN USE
+        GROQ_API_KEY_4         openai/gpt-oss-120b           177k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         openai/gpt-oss-120b            99k of 200k tokens ok
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 266 lecture minutes
+
+[READY] session 20261012-090107-dc45
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+09:01:20 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+09:01:39 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    0.7s] Let us study the s-block elements. In the s-block elements, the last electron enters in the s orbital. (778 ms)
+  [UNDERSTAND] Chemistry > S-Block Elements (new_topic) acts=definition hint=definition lines=1 via groq_main#3 2244 ms
+               Introduced s‑block elements as those whose last electron occupies an s orbital.
+09:01:52 INFO    copilot.presentation.engine: planner: new Chemistry > S-Block Elements (first content slide)
+  [SLIDE] add    'S-Block Elements' [definition] v1 (1 items)
+09:01:52 INFO    copilot.presentation.engine: image search 'periodic table s‑block' (diagram) for 'S-Block Elements'
+09:01:57 INFO    copilot.visuals.finder: image source failed: ConnectTimeout('')
+09:01:58 INFO    copilot.visuals.finder: image search 'periodic table s‑block': 3 slow download(s) dropped
+09:01:58 INFO    copilot.presentation.engine: image 'periodic table s‑block': none (downloads failed)
+  [IMAGE] 'periodic table s‑block' -> none (downloads failed) (5.8 s)
+  [    9.6s] As the s orbital can accommodate only two electrons, two groups, one and two, belongs to the s-blom. (653 ms)
+  [SLIDE] update 'S-Block Elements' [definition] v2 (1 items)
+  [   17.1s] The general electronic configuration of H block element is (567 ms)
+  [SLIDE] update 'S-Block Elements' [definition] v3 (1 items)
+  [   21.0s] and is one or two. (429 ms)
+  [SLIDE] update 'S-Block Elements' [definition] v4 (1 items)
+  [UNDERSTAND] Chemistry > S-Block Elements (elaboration) acts=explanation,definition hint=key_points lines=3 via groq_main#3 1636 ms
+               The s‑block includes groups 1 and 2 and its elements have ns¹ or ns² configurations.
+09:02:06 INFO    copilot.presentation.engine: planner: update Chemistry > S-Block Elements (same frame)
+09:02:06 INFO    copilot.presentation.engine: no image for 'S-Block Elements': two concepts side by side
+  [SLIDE] update 'S-Block Elements' [concept] v5 (3 items)
+  [   25.8s] alkali metals. (636 ms)
+  [   27.3s] the group (287 ms)
+  [   28.7s] Group 1 elements have one electron in their valence shell. (640 ms)
+  [   32.5s] They do not. (329 ms)
+09:02:17 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'S-Block Elements' -> same_concept
+  [UNDERSTAND] Chemistry > S-Block Elements (same_concept) acts=definition hint=definition lines=3 via groq_main#3 2180 ms
+               Defined alkali metals as group 1 elements with one valence electron
+09:02:17 INFO    copilot.presentation.engine: planner: update Chemistry > S-Block Elements (same frame)
+09:02:17 INFO    copilot.presentation.engine: no image for 'S-Block Elements': two concepts side by side
+  [SLIDE] update 'S-Block Elements' [concept] v6 (4 items)
+  [   33.8s] occur in the narrative or free state. (528 ms)
+  [   36.9s] These elements are collectively known as alkali metals because their oxides and hydroxides form strong alkalis like NaOH, KOH etc. (602 ms)
+09:02:29 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Occur in the narrative or free state']
+  [UNDERSTAND] Chemistry > S-Block Elements (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#3 2295 ms
+               Stated that s‑block elements do not occur naturally in the free state.
+09:02:29 INFO    copilot.presentation.engine: planner: update Chemistry > S-Block Elements (same frame)
+09:02:29 INFO    copilot.presentation.engine: no image for 'S-Block Elements': two concepts side by side
+  [SLIDE] update 'S-Block Elements' [concept] v7 (6 items)
+  [   47.1s] Lathem is known as the bridge element. (390 ms)
+  [   52.0s] general characteristics of alkali metals. (817 ms)
+  [UNDERSTAND] Chemistry > S-Block Elements (same_concept) acts=explanation,other hint=key_points lines=2 via groq_main#3 1897 ms
+               Explained why alkali metals are so named and noted lithium as the bridge element.
+  [HEARD] 'Lathem' -> 'Lithium' corrected on the slide (0.5)
+09:02:37 INFO    copilot.presentation.engine: planner: update Chemistry > S-Block Elements (same frame)
+09:02:37 INFO    copilot.presentation.engine: concern a4922d8a120d (transcription, applied=True): 1 element(s); slide shows 'Lithium'
+  [SLIDE] update 'S-Block Elements' [concept] v8 (7 items)
+  [SLIDE] add    'S-Block Elements' [facts] v1 (1 items)
+  [   55.2s] electronic configuration (284 ms)
+  [   58.5s] atomic radar. The alkyl metals have the biggest atomic radar in their respective periods. Atomic radii increases as we go down the group due to the addition of new shells in each subsequent step. (841 ms)
+09:02:55 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The alkyl metals have the biggest atomic radar in their respective periods']
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (elaboration) acts=explanation,explanation hint=key_points lines=3 via groq_main#3 1709 ms
+               Described alkali metals' electronic configuration and atomic radius trends
+09:02:55 INFO    copilot.presentation.engine: planner: continue Chemistry > Alkali Metals Characteristics (new facet)
+  [SLIDE] add    'Alkali Metals Characteristics' [key_points] v1 (4 items)
+09:02:55 INFO    copilot.presentation.engine: image search 'alkali metal radius' (diagram) for 'Alkali Metals Characteristics'
+  [   75.4s] All these have (530 ms)
+09:03:00 INFO    copilot.presentation.engine: image 'alkali metal radius': none (no usable candidates)
+  [IMAGE] 'alkali metal radius' -> none (no usable candidates) (5.1 s)
+  [   77.2s] bcc lattice with coordination number 8 (655 ms)
+  [   84.2s] Well, it's all. (1339 ms)
+  [   87.0s] ionic radar ionic radar is the (540 ms)
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (elaboration) acts=other hint=key_points lines=3 via groq_main#3 1380 ms
+               Added that alkali metals adopt a body‑centered cubic lattice with coordination number 8.
+09:03:12 INFO    copilot.presentation.engine: planner: update Chemistry > Alkali Metals Characteristics (same frame)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v2 (5 items)
+09:03:12 INFO    copilot.presentation.engine: image search 'bcc lattice' (diagram) for 'Alkali Metals Characteristics'
+09:03:17 INFO    copilot.visuals.finder: image search 'bcc lattice': 1 slow download(s) dropped
+09:03:17 INFO    copilot.presentation.engine: image 'bcc lattice': none (downloads failed)
+  [IMAGE] 'bcc lattice' -> none (downloads failed) (4.5 s)
+  [   90.0s] alkali metals as much smaller as the corresponding metals due to lesser number of shells and (691 ms)
+  [   98.5s] contractive effect on the increased nuclear charge (543 ms)
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (elaboration) acts=explanation hint=key_points lines=3 via groq_main#3 2278 ms
+               Teacher explained that ionic radius is smaller due to fewer shells and increased nuclear charge.
+09:03:32 INFO    copilot.presentation.engine: planner: update Chemistry > Alkali Metals Characteristics (same frame)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v3 (7 items)
+  [  108.4s] The Ionic radar of all these alkali metals ions go on increasing on the moving down the group. (712 ms)
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 3068 ms
+               Ionic radius of alkali metal ions increases down the group.
+09:03:40 INFO    copilot.presentation.engine: planner: update Chemistry > Alkali Metals Characteristics (same frame)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v4 (8 items)
+  [  118.4s] These are light metals with low densities. Lithium is the lightest metal. (649 ms)
+  [  125.8s] On moving down the group, density increases as allied to CS. (626 ms)
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (same_concept) acts=explanation,explanation hint=key_points lines=2 via groq_main#3 1986 ms
+               Added that alkali metals are light, low‑density metals and their density rises down the group.
+09:03:54 INFO    copilot.presentation.engine: planner: update Chemistry > Alkali Metals Characteristics (same frame)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v5 (9 items)
+  [SLIDE] add    'Alkali Metals Characteristics' [key_points] v1 (2 items)
+  [  131.7s] This is because down the group both the atomic size and atomic mass increases but the effect of increase in atomic mass is more as compared to the increase in atomic size. (828 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v2 (3 items)
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 4840 ms
+               Explained that density increase is due to greater rise in atomic mass than atomic size down the group
+09:04:08 INFO    copilot.presentation.engine: revised S2: Density rises down the group because atomic mass increases more than atomic size
+09:04:08 INFO    copilot.presentation.engine: planner: update Chemistry > Alkali Metals Characteristics (same frame)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v3 (2 items)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v4 (2 items)
+  [  151.5s] the density of potassium is lesser than that of sodium because of the abnormal increase in size on moving down from N8 to K. (800 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v5 (3 items)
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 3426 ms
+               Teacher noted potassium is less dense than sodium due to an abnormal size increase down the group
+09:04:25 INFO    copilot.presentation.engine: planner: update Chemistry > Alkali Metals Characteristics (same frame)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v6 (2 items)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v7 (3 items)
+09:04:25 INFO    copilot.presentation.engine: image search 'alkali metal ion' (diagram) for 'Alkali Metals Characteristics'
+09:04:29 INFO    copilot.presentation.engine: image 'alkali metal ion': none (no usable candidates)
+  [IMAGE] 'alkali metal ion' -> none (no usable candidates) (3.5 s)
+  [  163.7s] Melting and boiling points of alkali metals are quite low and decrease down the growth due to the weak (734 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v8 (4 items)
+  [  172.1s] skinning of metallic bond (341 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v9 (4 items)
+  [  182.4s] FR is a liquid at room temperature (606 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v10 (3 items)
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (elaboration) acts=explanation hint=key_points lines=3 via groq_main#3 1941 ms
+               Added low melting/boiling trends, weak bonding cause, and Francium being liquid at room temperature.
+09:04:53 INFO    copilot.presentation.engine: planner: update Chemistry > Alkali Metals Characteristics (same frame)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v11 (6 items)
+09:04:53 INFO    copilot.presentation.engine: image search 'Francium liquid' (photo) for 'Alkali Metals Characteristics'
+09:04:59 INFO    copilot.presentation.engine: image 'Francium liquid': none (no usable candidates)
+  [IMAGE] 'Francium liquid' -> none (no usable candidates) (5.9 s)
+  [  191.4s] softness these are soft, mirrorable and ductile solids which can be cut with knife (678 ms)
+  [  198.4s] they possess metallic luster (496 ms)
+  [  201.1s] when freshly cut due to isolation of electrons. (577 ms)
+  [  208.7s] atomic volume (418 ms)
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (same_concept) acts=explanation hint=key_points lines=3 via groq_main#3 6220 ms
+               Alkali metals are soft, mirrorable, ductile solids with metallic luster that shine when freshly cut.
+09:05:15 INFO    copilot.presentation.engine: planner: update Chemistry > Alkali Metals Characteristics (same frame)
+09:05:15 INFO    copilot.presentation.engine: no image for 'Alkali Metals Characteristics': nothing relevant found for 'Francium liquid' before
+  [SLIDE] add    'Alkali Metals Characteristics' [key_points] v1 (3 items)
+  [  210.4s] Atomic volume of alkali metals is the highest in each period and goes on increasing down the group from top to bottom. (644 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v2 (4 items)
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (elaboration) acts=explanation hint=key_points lines=2 via groq_main#3 1181 ms
+               Atomic volume is highest for alkali metals in each period and increases down the group.
+09:05:20 INFO    copilot.presentation.engine: planner: update Chemistry > Alkali Metals Characteristics (same frame)
+09:05:20 INFO    copilot.presentation.engine: no image for 'Alkali Metals Characteristics': nothing relevant found for 'Francium liquid' before
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v3 (3 items)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v4 (5 items)
+  [  223.1s] ionization enthalpy. The first ionization enthalpy of alkyl emitters is the lowest amongst the elements in their respective periods and decrease on moving down the group. (817 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v5 (6 items)
+  [  234.2s] The second ionization enthalpies of all the alkali metals are very high because (674 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v6 (6 items)
+  [  239.1s] by releasing an electron ions acquire stable noble gas configuration. So removal of (622 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v7 (6 items)
+  [  245.4s] Second electron is difficult. (370 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v8 (6 items)
+09:05:52 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Alkali Metals Characteristics' -> same_concept
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (same_concept) acts=explanation hint=key_points lines=4 via groq_main#3 3069 ms
+               Added trends and reasons for first and second ionization enthalpies of alkali metals.
+09:05:52 INFO    copilot.presentation.engine: planner: update Chemistry > Alkali Metals Characteristics (same frame)
+09:05:52 INFO    copilot.presentation.engine: no image for 'Alkali Metals Characteristics': nothing relevant found for 'Francium liquid' before
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v9 (5 items)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v10 (8 items)
+  [SLIDE] add    'Alkali Metals Characteristics' [key_points] v1 (1 items)
+  [  256.2s] due to low electro positive character. (662 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v2 (2 items)
+  [  259.2s] ionization until peace (309 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v3 (2 items)
+  [  262.6s] Helleclimatals are strongly electropositive or metallic in nature and electropositive nature increases from alive to serious due to the decrease in ionization enthalpy. (765 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v4 (2 items)
+  [UNDERSTAND] Chemistry > Alkali Metals Characteristics (elaboration) acts=explanation hint=key_points lines=3 via groq_main#3 2246 ms
+               Added that electropositive character rises down the group as ionization enthalpy falls, and revised why second ionization is difficult.
+  [HEARD] 'ionization until peace' -> '(intended continuation of ionization discussion)' corrected on the slide (0.5)
+  [HEARD] 'Helleclimatals ... alive to serious' -> 'Alkali metals are strongly electropositive; electropositive character increases down the group because ionization enthalpy decreases' corrected on the slide (0.5)
+09:06:17 INFO    copilot.presentation.engine: revised S1: Second ionization is difficult because removal breaks noble‑gas configuration and due to low electropositive character
+09:06:17 INFO    copilot.presentation.engine: planner: update Chemistry > Alkali Metals Characteristics (same frame)
+09:06:17 INFO    copilot.presentation.engine: concern eebb050c37ce (transcription, applied=True): 0 element(s); slide shows '(intended continuation of ionization discussion)'
+09:06:17 INFO    copilot.presentation.engine: concern ecdb5456b0f2 (transcription, applied=True): 0 element(s); slide shows 'Alkali metals are strongly electropositive; electropositive character increases down the group because ionization enthalpy decreases'
+09:06:17 INFO    copilot.presentation.engine: no image for 'Alkali Metals Characteristics': nothing relevant found for 'Francium liquid' before
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v5 (1 items)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v6 (1 items)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v7 (2 items)
+  [  283.3s] Let us study the use of alkali metals. (623 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v8 (3 items)
+  [  286.3s] First, lithium is used for making alloys, the thermonuclear reactions in batteries etc. (664 ms)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v9 (3 items)
+  [UNDERSTAND] Chemistry > Uses of Alkali Metals (sibling_concept) acts=transition,explanation hint=example lines=2 via groq_main#3 1382 ms
+               Introduced the practical uses of alkali metals, highlighting lithium in alloys and batteries.
+09:06:41 INFO    copilot.presentation.engine: planner: continue Chemistry > Uses of Alkali Metals (new facet)
+  [SLIDE] update 'Alkali Metals Characteristics' [key_points] v10 (2 items)
+  [SLIDE] add    'Uses of Alkali Metals' [key_points] v1 (1 items)
+09:06:41 INFO    copilot.presentation.engine: image search 'lithium battery' (photo) for 'Uses of Alkali Metals'
+  [  293.4s] Sodium can be used to make alloys as coolant in fast breeder nuclear reactors as redundant. (559 ms)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v2 (2 items)
+  [  300.6s] in sodium vapors, lamps etc. (502 ms)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v3 (2 items)
+09:06:45 INFO    copilot.visuals.finder: image search 'lithium battery': 7 slow download(s) dropped
+09:06:47 INFO    copilot.visuals.finder: image search 'lithium battery' (photo): 1 candidate(s), 1 accepted (0 labelled), 6.19 s {'search_s': 2.68, 'download_s': 1.81, 'clip_s': 0.05, 'full_s': 1.64, 'total_s': 6.19}
+  [IMAGE] 'lithium battery' -> File:Li ion laptop battery.jpg (6.2 s)
+09:06:47 INFO    copilot.presentation.engine: image 'lithium battery' on 'Uses of Alkali Metals': File:Li ion laptop battery.jpg
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v4 (3 items)
+09:06:47 WARNING copilot.llm.router: LLM groq_main now uses GROQ_API_KEY_4 (GROQ_API_KEY_3 is spent)
+  [UNDERSTAND] Chemistry > Uses of Alkali Metals (same_concept) acts=explanation hint=key_points lines=2 via groq_main#4 3094 ms
+               Added sodium uses in alloys, reactor coolant, and vapor lamps
+09:06:50 INFO    copilot.presentation.engine: planner: update Chemistry > Uses of Alkali Metals (same frame)
+09:06:50 INFO    copilot.presentation.engine: no image for 'Uses of Alkali Metals': has an image
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v5 (2 items)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v6 (4 items)
+  [  305.2s] potassium plays a vital role in biological system and can be used for synthesis. (605 ms)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v7 (5 items)
+  [  311.5s] of me uh synthesis of (484 ms)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v8 (4 items)
+  [UNDERSTAND] Chemistry > Uses of Alkali Metals (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1563 ms
+               Introduced potassium's biological importance and its use in synthesis
+09:06:58 INFO    copilot.presentation.engine: planner: update Chemistry > Uses of Alkali Metals (same frame)
+09:06:58 INFO    copilot.presentation.engine: no image for 'Uses of Alkali Metals': has an image
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v9 (5 items)
+  [  315.4s] May fertilizers (361 ms)
+  [  317.1s] it is also a good absorbent of CO2. (616 ms)
+  [UNDERSTAND] Chemistry > Uses of Alkali Metals (same_concept) acts=- hint=key_points lines=3 via groq_main#4 1719 ms
+               Added potassium uses in fertilizers and CO₂ absorption
+09:07:06 INFO    copilot.presentation.engine: revised S4: Potassium is essential in biological systems, used for chemical synthesis, fertilizers, and as a good CO₂ absorbent
+09:07:06 INFO    copilot.presentation.engine: planner: noop Chemistry > Uses of Alkali Metals (nothing to display)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v10 (5 items)
+  [  353.2s] Let us understand the uses of alkali metals and their compounds. (678 ms)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v11 (6 items)
+  [UNDERSTAND] Chemistry > Uses of Alkali Metals (same_concept) acts=transition hint=none lines=1 via groq_main#4 1699 ms
+               Teacher introduced the overview of alkali metal and compound uses
+09:07:41 INFO    copilot.presentation.engine: planner: noop Chemistry > Uses of Alkali Metals (nothing to display)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v12 (5 items)
+  [  360.0s] Beryllium (615 ms)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v13 (6 items)
+  [  361.5s] is used in corrugated resistance alloys (491 ms)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v14 (6 items)
+  [  364.6s] alloy of MG with aluminum is used as structural material because of its high strength. (715 ms)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v15 (6 items)
+  [  370.6s] Low density and ease in machining. (517 ms)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v16 (6 items)
+  [UNDERSTAND] Chemistry > Uses of Alkaline Earth Metals (sibling_concept) acts=other,other,other hint=key_points lines=4 via groq_main#4 2610 ms
+               Introduced Beryllium uses in resistance alloys, Mg‑Al structural alloy, and noted its low density and machinability.
+09:07:57 INFO    copilot.presentation.engine: planner: continue Chemistry > Uses of Alkaline Earth Metals (new facet)
+  [SLIDE] update 'Uses of Alkali Metals' [key_points] v17 (5 items)
+  [SLIDE] add    'Uses of Alkaline Earth Metals' [facts] v1 (1 items)
+  [  373.5s] Strontium carbonate is used for the manufacture of glass for (781 ms)
+  [  379.5s] color TV picture tubes. (564 ms)
+  [  382.6s] Hydrated calcium chloride CaCl2 6H2O is widely used to melting ice on roads. (820 ms)
+  [UNDERSTAND] Chemistry > Uses of Alkaline Earth Metals (same_concept) acts=other hint=key_points lines=2 via groq_main#4 4020 ms
+               Strontium carbonate is used to make glass for color TV picture tubes.
+09:08:17 INFO    copilot.presentation.engine: planner: update Chemistry > Uses of Alkaline Earth Metals (same frame)
+  [SLIDE] update 'Uses of Alkaline Earth Metals' [facts] v2 (1 items)
+09:08:17 INFO    copilot.presentation.engine: image search 'color TV picture tube' (photo) for 'Uses of Alkaline Earth Metals'
+  [  391.3s] particularly in very cold countries because a 30% unit trick (631 ms)
+  [UNDERSTAND] Chemistry > Uses of Alkaline Earth Metals (same_concept) acts=other hint=key_points lines=1 via groq_main#4 1012 ms
+               Calcium chloride hydrate is used for de‑icing roads.
+09:08:22 INFO    copilot.presentation.engine: planner: update Chemistry > Uses of Alkaline Earth Metals (same frame)
+  [SLIDE] update 'Uses of Alkaline Earth Metals' [facts] v3 (1 items)
+09:08:22 INFO    copilot.presentation.engine: image search 'Calcium chloride hydrate' (photo) for 'Uses of Alkaline Earth Metals'
+09:08:23 INFO    copilot.visuals.finder: image search 'color TV picture tube': 8 slow download(s) dropped
+09:08:23 INFO    copilot.presentation.engine: image 'color TV picture tube': none (downloads failed)
+  [IMAGE] 'color TV picture tube' -> none (downloads failed) (6.2 s)
+  [  397.1s] mixture of CaCl2 and H2 freezes at minus 55 degrees Celsius. (666 ms)
+09:08:29 INFO    copilot.visuals.finder: image source failed: ConnectTimeout('')
+09:08:29 INFO    copilot.visuals.finder: image source failed: ConnectTimeout('')
+09:08:29 INFO    copilot.visuals.finder: image search 'Calcium chloride hydrate': 8 slow download(s) dropped
+09:08:29 INFO    copilot.presentation.engine: image 'Calcium chloride hydrate': none (downloads failed)
+  [IMAGE] 'Calcium chloride hydrate' -> none (downloads failed) (6.7 s)
+  [  404.2s] as compared with NaClH2O at minus 18 degree Celsius (601 ms)
+  [UNDERSTAND] Chemistry > Uses of Alkaline Earth Metals (elaboration) acts=other hint=key_points lines=1 via groq_main#4 3995 ms
+               Added that calcium chloride is especially used in very cold countries because a 30% solution works.
+09:08:33 INFO    copilot.presentation.engine: revised S4: Calcium chloride (CaCl2·6H2O): Used to melt ice on roads, especially in very cold countries because a 30% solution is effective
+09:08:33 INFO    copilot.presentation.engine: planner: update Chemistry > Uses of Alkaline Earth Metals (same frame)
+  [SLIDE] update 'Uses of Alkaline Earth Metals' [facts] v4 (1 items)
+09:08:48 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Mixture of CaCl2 and H2 freezes at minus 55 degrees Celsius']
+  [UNDERSTAND] Chemistry > Uses of Alkaline Earth Metals (elaboration) acts=comparison,explanation hint=key_points lines=2 via groq_main#4 4768 ms
+               CaCl₂ de‑icing mixture freezes at –55 °C, much lower than NaCl mixture at –18 °C.
+09:08:48 INFO    copilot.presentation.engine: planner: update Chemistry > Uses of Alkaline Earth Metals (same frame)
+09:08:48 INFO    copilot.presentation.engine: no image for 'Uses of Alkaline Earth Metals': comparison needs the full width
+  [SLIDE] update 'Uses of Alkaline Earth Metals' [facts] v5 (1 items)
+  [SLIDE] add    'Uses of Alkaline Earth Metals' [comparison] v1 (3 items)
+  [  415.5s] Barium sulphate being insoluble in water and Opaque 2 X-ray is used under the name barium metal to scan the X-ray of the human digestive system. (848 ms)
+  [  427.7s] Magnesium is present in Chlorophyll (562 ms)
+  [UNDERSTAND] Chemistry > Uses of Alkaline Earth Metals (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1663 ms
+               Introduced barium sulfate's insolubility and its use as an X‑ray contrast agent for digestive system imaging.
+09:08:53 INFO    copilot.presentation.engine: planner: update Chemistry > Uses of Alkaline Earth Metals (same frame)
+09:08:53 INFO    copilot.presentation.engine: no image for 'Uses of Alkaline Earth Metals': comparison needs the full width
+  [SLIDE] update 'Uses of Alkaline Earth Metals' [comparison] v2 (5 items)
+  [  431.3s] a green pigmenting plant essential for photosynthesis. (700 ms)
+  [UNDERSTAND] Chemistry > S-Block Elements (sibling_concept) acts=definition,definition hint=definition lines=2 via groq_main#5 2311 ms
+               Magnesium is found in chlorophyll, and chlorophyll is the green pigment plants need for photosynthesis.
+09:09:02 INFO    copilot.presentation.engine: planner: continue Chemistry > S-Block Elements (new facet)
+09:09:02 INFO    copilot.presentation.engine: slide 'S-Block Elements' waits for the min dwell time
+09:09:02 INFO    copilot.presentation.engine: no image for 'S-Block Elements': two concepts side by side
+  [SLIDE] add    'S-Block Elements' [concept] v1 (2 items)
+  [  458.1s] Let us study one reaction of glitching powder, CaCl2. (493 ms)
+  [  462.2s] It is also called the calcium chloro hypochlorite or chloride of 9. (679 ms)
+09:09:37 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'S-Block Elements' -> same_concept
+  [UNDERSTAND] Chemistry > S-Block Elements (same_concept) acts=definition hint=definition lines=2 via groq_main#4 1455 ms
+               Provided alternative names for calcium chloride as calcium chloro hypochlorite or chloride of 9.
+09:09:37 INFO    copilot.presentation.engine: planner: update Chemistry > S-Block Elements (same frame)
+09:09:37 INFO    copilot.presentation.engine: no image for 'S-Block Elements': two concepts side by side
+  [SLIDE] update 'S-Block Elements' [concept] v2 (3 items)
+  [  470.2s] its preparation method is CaOH2 plus Cl2 gives CaOCl2 plus H2O2. (623 ms)
+  [UNDERSTAND] Chemistry > S-Block Elements (elaboration) acts=process hint=none lines=1 via groq_main#4 2163 ms
+               Provided the preparation reaction for calcium hypochlorite
+  [CONCERN] (factual) its preparation method is CaOH2 plus Cl2 gives CaOCl2 plus H2O2 -> Calcium hypochlorite is prepared by Ca(OH)₂ + Cl₂ → CaOCl₂ + H₂O₂ (0.95, slide shows the correction)
+09:09:46 INFO    copilot.presentation.engine: planner: update Chemistry > S-Block Elements (same frame)
+09:09:46 INFO    copilot.presentation.engine: concern 84f26fc7b0ee (factual, applied=True): 0 element(s); slide shows 'calcium hypochlorite'
+09:09:46 INFO    copilot.presentation.engine: no image for 'S-Block Elements': process needs the full width
+  [SLIDE] update 'S-Block Elements' [concept] v3 (3 items)
+  [SLIDE] add    'S-Block Elements' [process_flow] v1 (1 items)
+09:10:00 INFO    copilot.presentation.engine: concern 84f26fc7b0ee dismissed: slide shows 'calcium hypochlorite'
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261012-090107-dc45: 65 segments, 685 words, state v131, 604 events logged
+        CommandReceived=40, ConceptSignal=65, ConcernRaised=4, ConcernResolved=1, DeckState=46, ImageChoices=1, ImageReady=8, ImageRequested=8, InterpretRequested=31, InterpretationReady=31, LifecycleChanged=5, SlideContextChanged=30, SlidePatch=73, StateChanged=131, TranscriptFinal=65, UtteranceClassified=65
+        stt: 65 published, 0 dropped, latency p50=623 ms p95=828 ms max=1339 ms
+        understanding: 31 interpretations (31 by LLM, 0 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=2003 avg=1918, latency p50=2180 ms max=6220 ms
+        presentation: 11 slides; planner ops {'new': 1, 'update': 24, 'continue': 4, 'noop': 2}; revisions 4, corrections shown 1, shown as said 0
+        images: {'requests': 8, 'found': 1, 'none': 7}; slides with an image 1/11
+          1. [concept] S-Block Elements [part 1]  (v8, ['definition', 'points', 'definition', 'definition', 'points'])
+          2. [facts] S-Block Elements [part 2]  (v1, ['facts'])
+          3. [key_points] Alkali Metals Characteristics [part 1]  (v5, ['points', 'facts'])
+          4. [key_points] Alkali Metals Characteristics [part 2]  (v11, ['points'])
+          5. [key_points] Alkali Metals Characteristics [part 3]  (v10, ['points'])
+          6. [key_points] Alkali Metals Characteristics [part 4]  (v10, ['points'])
+          7. [key_points] Uses of Alkali Metals  (v17, ['points', 'image'])
+          8. [facts] Uses of Alkaline Earth Metals [part 1]  (v5, ['facts'])
+          9. [comparison] Uses of Alkaline Earth Metals [part 2]  (v2, ['comparison', 'callout', 'points'])
+          10. [concept] S-Block Elements [part 1]  (v3, ['definition', 'definition', 'definition'])
+          11. [process_flow] S-Block Elements [part 2]  (v1, ['process'])
+        providers: {'groq_main#3': 18, 'groq_main#4': 12, 'groq_main#5': 1}; triggers: {'pause': 15, 'boundary': 4, 'max_wait': 10, 'words': 2}; outline: ['Chemistry > S-Block Elements, Alkali Metals Characteristics, Uses of Alkali Metals, Uses of Alkaline Earth Metals']; concerns: 4
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261012-090107-dc45\session.sqlite

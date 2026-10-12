@@ -1,0 +1,334 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (7.4 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.4 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_4         openai/gpt-oss-120b           140k of 200k tokens IN USE
+        GROQ_API_KEY_5         openai/gpt-oss-120b           188k of 200k tokens ok
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           198k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b            99k of 200k tokens ok
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~10.7 h
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 253 lecture minutes
+
+[READY] session 20261012-130329-fff7
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+13:03:39 INFO    copilot.visuals.service: CLIP ready in 0.8 s (CPU)
+13:03:44 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    2.3s] Let us learn about the World War 1. (643 ms)
+  [UNDERSTAND] World War 1 > World War 1 (new_topic) acts=- hint=none lines=1 via groq_main#4 1488 ms
+13:04:04 INFO    copilot.presentation.engine: planner: noop World War 1 > World War 1 (nothing to display)
+  [    5.2s] World War I, an international conflict that in 1914-18 embroiled most of the nations of Europe along with Russia, the United States, the Middle East and other regions. (1159 ms)
+  [   18.0s] The war pitted the central powers, mainly Germany, Austria, Hungary and Turkey. Against the allies, mainly France, Great Britain, Prussia, Italy, Japan, (997 ms)
+  [UNDERSTAND] World War 1 > Overview (same_concept) acts=explanation,classification hint=key_points lines=2 via groq_main#4 4298 ms
+               Introduced WWI’s global scope and listed the Central and Allied Powers.
+13:04:27 INFO    copilot.presentation.engine: planner: new World War 1 > Overview (first content slide)
+  [SLIDE] add    'World War 1' [key_points] v1 (3 items)
+13:04:27 INFO    copilot.presentation.engine: image search 'World War I alliance map' (diagram) for 'World War 1'
+  [   29.2s] and from 1917 the United States. It ended with the defeat of Central Powers. The war was virtually unprecedented in the slaughter, carnage and destruction it caused. (964 ms)
+  [SLIDE] update 'World War 1' [key_points] v2 (4 items)
+  [   42.4s] Cold War was one of the great (546 ms)
+13:04:31 INFO    copilot.visuals.finder: image search 'World War I alliance map': 2 slow download(s) dropped
+13:04:31 INFO    copilot.presentation.engine: image 'World War I alliance map': none (downloads failed)
+  [IMAGE] 'World War I alliance map' -> none (downloads failed) (4.5 s)
+  [   45.1s] watersheds of 20th century geopolitical history. It led to the fall of four great imperial dynasties in Germany, Russia, Austria, Hungary and Turkey. (1114 ms)
+  [SLIDE] update 'World War 1' [key_points] v3 (4 items)
+  [   57.0s] resulted in the (417 ms)
+  [SLIDE] update 'World War 1' [key_points] v4 (3 items)
+13:04:46 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Watersheds of 20th century geopolitical history']
+  [UNDERSTAND] World War 1 > Overview (elaboration) acts=explanation,explanation hint=key_points lines=3 via groq_main#4 2597 ms
+               Added US to Allies, noted defeat of Central Powers and extreme devastation, brief digression to Cold War.
+13:04:46 INFO    copilot.presentation.engine: revised S3: Allied Powers: France, Great Britain, Prussia, Italy, Japan, United States
+13:04:46 INFO    copilot.presentation.engine: planner: update World War 1 > Overview (same frame)
+  [SLIDE] update 'World War 1' [key_points] v5 (3 items)
+  [SLIDE] update 'World War 1' [key_points] v6 (7 items)
+13:04:46 INFO    copilot.presentation.engine: slide e6a679f6cd56 overflows on the display; further content continues on a new slide
+  [   59.4s] while the quick revolution in Russia and in its destabilization of European society laid the groundwork for World War II. (946 ms)
+  [UNDERSTAND] World War 1 > Overview (elaboration) acts=explanation hint=key_points lines=2 via groq_main#4 2047 ms
+               Added that the Russian Revolution destabilized Europe and set the stage for World War II.
+13:04:58 INFO    copilot.presentation.engine: planner: update World War 1 > Overview (same frame)
+  [SLIDE] update 'World War 1' [key_points] v7 (7 items)
+  [SLIDE] add    'World War 1' [key_points] v1 (1 items)
+  [   70.8s] The outbreak of war. (584 ms)
+  [SLIDE] update 'World War 1' [key_points] v2 (2 items)
+  [   72.7s] With Serbia already much (423 ms)
+  [SLIDE] update 'World War 1' [key_points] v3 (2 items)
+  [   76.0s] I rank good eyes eyes by the who value (691 ms)
+  [SLIDE] update 'World War 1' [key_points] v4 (1 items)
+  [   79.9s] can watch you (1116 ms)
+  [UNDERSTAND] World War 1 > Outbreak (sibling_concept) acts=explanation hint=none lines=4 via groq_main#4 2231 ms
+               Teacher introduced the outbreak of WWI, noting Serbia’s role in the conflict’s start.
+13:05:19 INFO    copilot.presentation.engine: planner: continue World War 1 > Outbreak (new facet)
+  [SLIDE] add    'Outbreak' [key_points] v1 (1 items)
+13:05:19 INFO    copilot.presentation.engine: image search 'Balkans map' (diagram) for 'Outbreak'
+  [   81.5s] 1912-13 and 1913, Serbian nationalists turned their attention back to the idea of liberating the South slaves of Austria-Hungary. (805 ms)
+13:05:22 INFO    copilot.presentation.engine: image 'Balkans map': none (no usable candidates)
+  [IMAGE] 'Balkans map' -> none (no usable candidates) (2.6 s)
+  [   96.5s] colonel you (1169 ms)
+  [UNDERSTAND] World War 1 > Outbreak (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1704 ms
+               Serbian nationalists renewed their goal to liberate South Slavs in 1912‑13.
+13:05:27 INFO    copilot.presentation.engine: planner: update World War 1 > Outbreak (same frame)
+13:05:27 INFO    copilot.presentation.engine: no image for 'Outbreak': nothing relevant found for 'Balkans map' before
+  [SLIDE] update 'Outbreak' [key_points] v2 (2 items)
+  [   99.0s] dragsting (1209 ms)
+  [  100.6s] Timić Trvík, head of Serbia's military intelligence, was also under the alas papacy, head of the secret society union called the (1214 ms)
+  [  111.3s] pledge to the pursuit of this pan-serbian ambition. (674 ms)
+  [UNDERSTAND] World War 1 > Outbreak (elaboration) acts=example hint=key_points lines=4 via groq_main#4 2187 ms
+               Introduced Timić Trvík, Serbia’s intelligence chief and secret‑society leader promoting pan‑Serbian goals
+  [HEARD] 'colonel you' -> '' corrected on the slide (0.5)
+  [HEARD] 'dragsting' -> '' corrected on the slide (0.5)
+13:05:43 INFO    copilot.presentation.engine: planner: update World War 1 > Outbreak (same frame)
+  [SLIDE] update 'Outbreak' [key_points] v3 (3 items)
+13:05:43 INFO    copilot.presentation.engine: image search 'Serbian intelligence chief' (photo) for 'Outbreak'
+13:05:48 INFO    copilot.visuals.finder: image search 'Serbian intelligence chief': 1 slow download(s) dropped
+13:05:51 INFO    copilot.visuals.finder: image search 'Serbian intelligence chief': 2 slow download(s) dropped
+13:05:51 INFO    copilot.visuals.finder: image search 'Serbian intelligence chief' (photo): 5 candidate(s), 1 accepted (0 labelled), 7.72 s {'search_s': 2.19, 'download_s': 2.29, 'clip_s': 0.23, 'full_s': 2.98, 'total_s': 7.72}
+  [IMAGE] 'Serbian intelligence chief' -> File:President Clinton posing for a group photo with Serbian Orthodox Church officials in Sarajevo - Flickr - The Central Intelligence Agency.jpg (7.7 s)
+13:05:51 INFO    copilot.presentation.engine: image 'Serbian intelligence chief' on 'Outbreak': File:President Clinton posing for a group photo with Serbian Orthodox Church officials in Sarajevo - Flickr - The Central Intelligence Agency.jpg
+  [SLIDE] update 'Outbreak' [key_points] v4 (4 items)
+  [  120.3s] believing that the Serbs cause would be served by the death of the Austrian. (761 ms)
+  [SLIDE] update 'Outbreak' [key_points] v5 (5 items)
+  [  125.4s] RKDV France (498 ms)
+  [SLIDE] update 'Outbreak' [key_points] v6 (4 items)
+13:05:55 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Believing that the Serbs cause would be served by the death of the Austrian']
+  [UNDERSTAND] World War 1 > Outbreak (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_main#4 1305 ms
+               Serbian nationalists thought killing Austrians would further their goals
+13:05:55 INFO    copilot.presentation.engine: planner: update World War 1 > Outbreak (same frame)
+13:05:55 INFO    copilot.presentation.engine: no image for 'Outbreak': has an image
+  [SLIDE] update 'Outbreak' [key_points] v7 (6 items)
+  [  128.8s] for India. (461 ms)
+  [  131.7s] Hi (509 ms)
+  [  133.9s] presumptive to the Austrian Emperor Franz Josef and learning that the (813 ms)
+  [  139.8s] I should be was about to visit (620 ms)
+  [  142.9s] Bosnia (383 ms)
+  [  144.4s] on the tour of military inspection. (650 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (sibling_concept) acts=definition hint=definition lines=6 via groq_main#4 2461 ms
+               Introduced Archduke Franz Ferdinand as the heir whose Bosnia visit sparked the assassination leading to WWI.
+  [HEARD] 'presumptive ... I should be was about to visit' -> 'Heir to the Austrian Emperor Franz Josef; his planned visit to Bosnia' corrected on the slide (0.5)
+13:06:14 INFO    copilot.presentation.engine: planner: continue World War 1 > Assassination Trigger (new facet)
+13:06:14 INFO    copilot.presentation.engine: concern 5a195f974076 (transcription, applied=True): 1 element(s); slide shows 'Heir to the Austrian Emperor Franz Josef; his planned visit to Bosnia'
+  [SLIDE] add    'Assassination Trigger' [members] v1 (1 items)
+13:06:14 INFO    copilot.presentation.engine: image search 'Archduke Franz Ferdinand' (photo) for 'Assassination Trigger'
+  [  147.9s] Apis plotted his assassination. (561 ms)
+  [  151.6s] The Kola Passik, the Serbian Prime Minister and an enemy (620 ms)
+13:06:21 INFO    copilot.visuals.finder: image search 'Archduke Franz Ferdinand' (photo): 8 candidate(s), 3 accepted (0 labelled), 7.64 s {'search_s': 2.72, 'download_s': 1.52, 'clip_s': 0.3, 'full_s': 2.99, 'total_s': 7.64}
+  [IMAGE] 'Archduke Franz Ferdinand' -> File:Ferdinand Schmutzer - Franz Ferdinand von Österreich-Este, um 1914 (cropped).jpg (7.6 s)
+13:06:21 INFO    copilot.presentation.engine: image 'Archduke Franz Ferdinand' on 'Assassination Trigger': File:Ferdinand Schmutzer - Franz Ferdinand von Österreich-Este, um 1914 (cropped).jpg
+  [SLIDE] update 'Assassination Trigger' [members] v2 (2 items)
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=- hint=definition lines=1 via groq_main#4 3014 ms
+               Added that the Archduke's visit was a military inspection tour.
+13:06:22 INFO    copilot.presentation.engine: revised S1: Archduke Franz Ferdinand: Heir to the Austrian Emperor Franz Josef; his planned visit to Bosnia on a military inspection tour sparked the…
+13:06:22 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (nothing to display)
+  [SLIDE] update 'Assassination Trigger' [members] v3 (2 items)
+  [  156.0s] of (382 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 2103 ms
+               Teacher added that Gavrilo Princip plotted the assassination
+  [HEARD] 'Apis' -> 'Gavrilo Princip' corrected on the slide (0.5)
+13:06:29 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+13:06:29 INFO    copilot.presentation.engine: concern 839e57037935 (transcription, applied=True): 1 element(s); slide shows 'Gavrilo Princip'
+13:06:29 INFO    copilot.presentation.engine: no image for 'Assassination Trigger': has an image
+  [SLIDE] update 'Assassination Trigger' [members] v4 (3 items)
+  [  159.0s] App is heard of the plot and want the austin government of it. But this message was too cautiously (818 ms)
+  [  165.9s] worded (425 ms)
+  [  167.0s] 2D (403 ms)
+  [  168.2s] Understood. (414 ms)
+13:06:38 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Assassination Trigger' -> same_concept
+  [UNDERSTAND] World War 1 > Assassination Trigger (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 2869 ms
+               Introduced Kola Passik as the Serbian Prime Minister involved in the assassination plot
+  [HEARD] 'Kola Passik, the Serbian Prime Minister and an enemy' -> 'Kola\u202fPassik – Serbian Prime Minister' corrected on the slide (0.5)
+13:06:38 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+13:06:38 INFO    copilot.presentation.engine: concern aa5e7a90ff2f (transcription, applied=True): 0 element(s); slide shows 'Kola\u202fPassik – Serbian Prime Minister'
+13:06:38 INFO    copilot.presentation.engine: no image for 'Assassination Trigger': has an image
+  [SLIDE] update 'Assassination Trigger' [members] v5 (4 items)
+  [  170.0s] at 11.15 am on June 28, 1914 in the (785 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (same_concept) acts=- hint=none lines=1 via groq_main#4 1211 ms
+               No new information added.
+13:06:45 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (nothing to display)
+  [  175.9s] Bosnian capital, Sarajevo (761 ms)
+  [  179.5s] France (377 ms)
+  [  180.6s] 13 and (394 ms)
+  [  182.1s] and his (397 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (same_concept) acts=- hint=none lines=4 via groq_main#5 1803 ms
+  [HEARD] 'App, austin' -> 'Austrian' corrected on the slide (0.5)
+13:06:53 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (nothing to display)
+13:06:53 INFO    copilot.presentation.engine: concern 745ba44f4482 (transcription, applied=True): 0 element(s); slide shows 'Austrian'
+  [  183.3s] Organistic wife Sophie Duchess of Rosenberg were shot dead by a Bosnian Serb (858 ms)
+  [  192.1s] Go. (1137 ms)
+  [  193.2s] to the low recipe. (831 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (same_concept) acts=other hint=key_points lines=1 via groq_main#4 2407 ms
+               Provided the exact date and time of the assassination.
+13:07:02 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+13:07:02 INFO    copilot.presentation.engine: no image for 'Assassination Trigger': has an image
+  [SLIDE] update 'Assassination Trigger' [members] v6 (5 items)
+  [  195.5s] the chief of the austria hungary general staff france graph (829 ms)
+  [  201.0s] cool (392 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (same_concept) acts=- hint=definition lines=3 via groq_main#5 1584 ms
+               Added that the Archduke's visit was to Sarajevo, the Bosnian capital.
+13:07:09 INFO    copilot.presentation.engine: revised S1: Archduke Franz Ferdinand: Heir to the Austrian Emperor Franz Josef; his planned visit to Sarajevo, the Bosnian capital, on a military…
+13:07:09 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (nothing to display)
+13:07:09 INFO    copilot.presentation.engine: no image for 'Assassination Trigger': has an image
+  [SLIDE] update 'Assassination Trigger' [members] v7 (5 items)
+  [  202.0s] Konad Wong, Hotzen Doth and the Foreign Minister, Le Porte. (836 ms)
+  [  208.5s] Good. (513 ms)
+  [  209.7s] Graph 1 (399 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=explanation hint=concept lines=2 via groq_main#4 3627 ms
+               Added that Sophie, Duchess of Hohenberg, the Archduke's wife, was killed by a Bosnian Serb.
+  [HEARD] 'Organistic wife Sophie Duchess of Rosenberg' -> "Archduke's wife Sophie, Duchess of Hohenberg" corrected on the slide (0.5)
+13:07:19 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+13:07:19 INFO    copilot.presentation.engine: concern 636f0eb1d1b7 (transcription, applied=True): 0 element(s); slide shows "Archduke's wife Sophie, Duchess of Hohenberg"
+13:07:19 INFO    copilot.presentation.engine: no image for 'Assassination Trigger': has an image
+  [SLIDE] update 'Assassination Trigger' [members] v8 (6 items)
+  [  211.3s] but told saw the crime as the occasion for measures (805 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (digression) acts=- hint=none lines=1 via groq_main#5 1070 ms
+               No new factual content was added; the line appears to be a transcription error.
+  [HEARD] 'to the low recipe' -> '(no clear intended content)' corrected on the slide (0.5)
+13:07:24 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (digression)
+13:07:24 INFO    copilot.presentation.engine: concern 7bd3abf4c61c (transcription, applied=True): 0 element(s); slide shows '(no clear intended content)'
+  [  216.5s] to humiliate Serbia and so to enhance Austria-Hungary prestige in the Balkans. (856 ms)
+  [  223.8s] Konad had already (423 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (digression) acts=- hint=none lines=2 via groq_main#4 5308 ms
+               No new factual content added
+13:07:37 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (digression)
+  [  225.5s] been assured by William II of Germany's support is Australia-Hungary should start up (824 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (digression) acts=- hint=none lines=1 via groq_main#5 1396 ms
+               No new factual content added
+  [HEARD] 'Konad Wong, Hotzen Doth, Le Porte' -> '' corrected on the slide (0.5)
+13:07:41 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (digression)
+  [  232.3s] Preventive war against subject this assurance was come fun (734 ms)
+  [  236.8s] in the week (426 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (same_concept) acts=- hint=none lines=1 via groq_main#4 5490 ms
+               Displayed a graph related to the assassination trigger
+13:07:53 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (nothing to display)
+13:07:53 INFO    copilot.presentation.engine: no image for 'Assassination Trigger': has an image
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=explanation hint=concept lines=1 via groq_main#5 1358 ms
+               Teacher noted the assassination served as a pretext for political measures.
+13:07:57 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+13:07:57 INFO    copilot.presentation.engine: no image for 'Assassination Trigger': has an image
+  [SLIDE] update 'Assassination Trigger' [members] v9 (7 items)
+  [  242.3s] following the assassination before William on July 6 set off upon his annual cruise to the North Cape of Norway. (907 ms)
+  [  255.8s] The Austenian decides. (630 ms)
+  [  257.8s] to present (402 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=explanation hint=none lines=1 via groq_main#5 1948 ms
+               Teacher explained Austria‑Hungary’s motive: humiliate Serbia and boost its Balkan prestige.
+13:08:05 INFO    copilot.presentation.engine: revised S5: The assassination was used as a pretext to humiliate Serbia and enhance Austria‑Hungary prestige in the Balkans
+13:08:05 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+13:08:05 INFO    copilot.presentation.engine: no image for 'Assassination Trigger': has an image
+  [SLIDE] update 'Assassination Trigger' [members] v10 (7 items)
+  [UNDERSTAND] World War 1 > Assassination Trigger (same_concept) acts=- hint=none lines=1 via groq_main#4 2040 ms
+13:08:13 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (nothing to display)
+  [  259.2s] an unexpected ultimatum to Serbia and then to the nuclear war, relying on Germany to deter Russia from intervention through the term of the ultimatum, which finally occurred on July 19th. (1200 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=explanation hint=concept lines=1 via groq_main#5 2468 ms
+               Germany assured Austria‑Hungary of support before the assassination.
+  [HEARD] 'William II, Australia-Hungary' -> 'Wilhelm II, Austria-Hungary' corrected on the slide (0.5)
+13:08:22 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+13:08:22 INFO    copilot.presentation.engine: concern d4fe65000e61 (transcription, applied=True): 0 element(s); slide shows 'Wilhelm II, Austria-Hungary'
+13:08:22 INFO    copilot.presentation.engine: no image for 'Assassination Trigger': has an image
+  [SLIDE] update 'Assassination Trigger' [members] v11 (8 items)
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=explanation hint=key_points lines=2 via groq_main#4 1803 ms
+               Teacher added that Germany's assurance prompted a preventive war against Serbia within a week.
+  [HEARD] 'subject this assurance was come fun' -> "Germany's assurance led to a preventive war against Serbia within a week" corrected on the slide (0.5)
+13:08:29 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+13:08:29 INFO    copilot.presentation.engine: concern ab465e883e92 (transcription, applied=True): 0 element(s); slide shows "Germany's assurance led to a preventive war against Serbia within a week"
+  [SLIDE] update 'Assassination Trigger' [members] v12 (8 items)
+  [SLIDE] add    'Assassination Trigger' [key_points] v1 (1 items)
+13:08:29 INFO    copilot.presentation.engine: image search 'Assassination timeline graph' (diagram) for 'Assassination Trigger'
+  [  274.0s] Its delivery was postponed through the evening of July 23, since by that time the French President Raymond Poincaré and his premier, René Vibey, in a canny. (1088 ms)
+13:08:32 INFO    copilot.presentation.engine: image 'Assassination timeline graph': none (no usable candidates)
+  [IMAGE] 'Assassination timeline graph' -> none (no usable candidates) (2.5 s)
+  [  285.5s] who had set off (431 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (digression) acts=- hint=none lines=1 via groq_main#5 2090 ms
+               Teacher mentioned Wilhelm's July 6 cruise to Norway, unrelated to the assassination trigger.
+13:08:37 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (digression)
+  [  288.4s] on the state visit to Russia on July 15th would be on their way home and therefore unable to come, sir. (953 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=explanation hint=key_points lines=2 via groq_main#4 2609 ms
+               Austria‑Hungary decides to present an ultimatum to Serbia
+  [HEARD] 'Austenian' -> 'Austrians' corrected on the slide (0.5)
+13:08:46 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+13:08:46 INFO    copilot.presentation.engine: concern 7067ee442d69 (transcription, applied=True): 0 element(s); slide shows 'Austrians'
+  [SLIDE] update 'Assassination Trigger' [key_points] v2 (2 items)
+13:08:46 INFO    copilot.presentation.engine: image search 'Austria‑Hungary ultimatum' (photo) for 'Assassination Trigger'
+13:08:51 INFO    copilot.visuals.finder: image search 'Austria‑Hungary ultimatum': 7 slow download(s) dropped
+13:08:51 INFO    copilot.presentation.engine: image 'Austria‑Hungary ultimatum': none (downloads failed)
+  [IMAGE] 'Austria‑Hungary ultimatum' -> none (downloads failed) (4.6 s)
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=- hint=none lines=1 via groq_main#5 1796 ms
+               Added date and purpose of Austria‑Hungary’s ultimatum
+13:08:53 INFO    copilot.presentation.engine: revised S2: Austria‑Hungary presents an ultimatum to Serbia on July 19, hoping Germany will deter Russian intervention
+13:08:53 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (nothing to display)
+  [SLIDE] update 'Assassination Trigger' [key_points] v3 (2 items)
+  [  298.3s] and immediate reaction with their Russian Alaskan when the delivery was announced on July 24. Russia declared the Austrian on rate. (1038 ms)
+  [  308.9s] Must not be allowed to crush her beard. (577 ms)
+13:09:04 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Its delivery was postponed through the evening of July 23, since by that time the French President Raymond Poincaré and his premier, René Vibey, in a canny']
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=explanation hint=key_points lines=2 via groq_main#4 4092 ms
+               Teacher corrected the ultimatum delivery date to July 23.
+  [CONCERN] (factual) Austria‑Hungary presents an ultimatum to Serbia on July 19 -> Austria‑Hungary presents its ultimatum to Serbia on July 23 (0.95, slide shows the correction)
+13:09:04 INFO    copilot.presentation.engine: revised S2: Austria‑Hungary presents its ultimatum to Serbia on July 23, after a delay
+13:09:04 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+13:09:04 INFO    copilot.presentation.engine: concern 057ee137fa4c (factual, applied=True): 2 element(s); slide shows 'July 23'
+  [SLIDE] update 'Assassination Trigger' [key_points] v4 (2 items)
+  [SLIDE] update 'Assassination Trigger' [key_points] v5 (3 items)
+  [  311.6s] Serbia replied to the ultimate amount on 25th, accepting most of its demand but protesting against two of them. (924 ms)
+  [  319.7s] namely the Serbian officials should be demised. (612 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (digression) acts=- hint=none lines=1 via groq_main#5 1517 ms
+               Teacher noted Wilhelm's state visit to Russia on July 15 would prevent his attendance
+13:09:09 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (digression)
+  [  324.0s] and austria hungary's behest and (687 ms)
+13:09:18 INFO    copilot.understanding.interpreter: dropped 1 revision(s) with unknown refs
+13:09:18 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Russia declared the Austrian on rate']
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_main#5 2323 ms
+               Added Russia's immediate reaction to the July 24 announcement of the Austro‑Hungarian ultimatum.
+  [HEARD] 'Alaskan' -> 'ally' corrected on the slide (0.5)
+13:09:18 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+13:09:18 INFO    copilot.presentation.engine: concern 8980b47307e5 (transcription, applied=True): 0 element(s); slide shows 'ally'
+  [SLIDE] update 'Assassination Trigger' [key_points] v6 (5 items)
+  [UNDERSTAND] World War 1 > Assassination Trigger (same_concept) acts=- hint=none lines=1 via groq_main#4 2224 ms
+  [HEARD] 'Must not be allowed to crush her beard' -> '' corrected on the slide (0.5)
+13:09:26 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (nothing to display)
+  [  328.8s] that Austria-Hungarian officials should take part on Serbian soil in proceedings against organizations hostile to Austria-Hungary through Serbia offered to submit the issue to international arbitration. (1011 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (same_concept) acts=explanation hint=key_points lines=2 via groq_main#5 2114 ms
+               Serbia's response to the Austro‑Hungarian ultimatum, accepting most points but rejecting two, including the removal of officials.
+13:09:34 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+  [SLIDE] update 'Assassination Trigger' [key_points] v7 (7 items)
+  [  341.8s] Austria-Hungary prominently served diplomatic relations and ordered partial mobilisation. (742 ms)
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=- hint=key_points lines=1 via groq_main#4 1965 ms
+               Clarified that Germany acted at Austria‑Hungary's behest
+13:09:41 INFO    copilot.presentation.engine: revised S1: Germany's support, at Austria‑Hungary's behest, encouraged a preventive war against Serbia within a week
+13:09:41 INFO    copilot.presentation.engine: planner: noop World War 1 > Assassination Trigger (nothing to display)
+  [SLIDE] update 'Assassination Trigger' [key_points] v8 (7 items)
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 2263 ms
+               Added Austria‑Hungary's demand for officials on Serbian soil and Serbia's arbitration offer
+13:09:50 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+  [SLIDE] add    'Assassination Trigger' [key_points] v1 (2 items)
+  [UNDERSTAND] World War 1 > Assassination Trigger (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1453 ms
+               Austria-Hungary ordered partial mobilisation during the assassination crisis
+13:09:57 INFO    copilot.presentation.engine: planner: update World War 1 > Assassination Trigger (same frame)
+  [SLIDE] update 'Assassination Trigger' [key_points] v2 (3 items)
+13:09:57 INFO    copilot.presentation.engine: no image 'Wilhelm II' on 'Assassination Trigger': not about the slide (similarity 0.13)
+13:10:36 INFO    copilot.presentation.engine: concern 057ee137fa4c dismissed: slide shows 'July 23'
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261012-130329-fff7: 65 segments, 602 words, state v136, 596 events logged
+        CommandReceived=43, ConceptSignal=63, ConcernRaised=15, ConcernResolved=1, DeckState=44, ImageChoices=2, ImageReady=6, ImageRequested=6, InterpretRequested=37, InterpretationReady=37, LifecycleChanged=5, SlideContextChanged=29, SlideOverflow=2, SlidePatch=40, StateChanged=136, TranscriptFinal=65, UtteranceClassified=65
+        stt: 65 published, 0 dropped, latency p50=691 ms p95=1169 ms max=1214 ms
+        understanding: 37 interpretations (37 by LLM, 0 fallbacks, 0 repaired), max 8 calls/min, prompt tokens max=2033 avg=1918, latency p50=2103 ms max=5490 ms
+        presentation: 6 slides; planner ops {'noop': 15, 'new': 1, 'update': 19, 'continue': 2}; revisions 7, corrections shown 3, shown as said 0
+        images: {'requests': 6, 'found': 2, 'none': 4}; slides with an image 2/6
+          1. [key_points] World War 1 [part 1]  (v7, ['points', 'points'])
+          2. [key_points] World War 1 [part 2]  (v4, ['points'])
+          3. [key_points] Outbreak  (v7, ['points', 'definition', 'image', 'points'])
+          4. [members] Assassination Trigger [part 1]  (v12, ['definition', 'image', 'points', 'facts'])
+          5. [key_points] Assassination Trigger [part 2]  (v8, ['points'])
+          6. [key_points] Assassination Trigger [part 3]  (v2, ['points'])
+        providers: {'groq_main#4': 23, 'groq_main#5': 14}; triggers: {'max_wait': 4, 'words': 2, 'pause': 2, 'boundary': 29}; outline: ['World War 1 > Overview, Outbreak, Assassination Trigger']; concerns: 15
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261012-130329-fff7\session.sqlite

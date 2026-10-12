@@ -1,0 +1,91 @@
+[    1.6] Well there you went, let us start with our first chapter, Basic concepts of Chemistry.
+[    7.8] Let us understand what chemistry is.
+[   10.2] Chemistry is the branch of science which deals with the composition, structure and properties of metal.
+[   18.1] Anthony Laurent Levisu
+[   21.0] is called the father of chemistry.
+[   25.5] branch of chemistry it can be inorganic, organic, physical or analytical chemistry.
+[   39.9] Let us study about momentum.
+[   42.0] Matter is anything which occupies some space and has some mass.
+[   45.7] it is made up of small particles which have some space between them.
+[   49.6] The matter particles attract each other and are in the state of continuous motion.
+[   55.9] classification of metal
+[   58.4] Metal clay can be classified into two groups.
+[   61.8] Physical Classification, Chemical Classification.
+[   65.4] In physical classification it can be
+[   69.5] further classified into solid, liquid or gas.
+[   73.3] In chemical classification it can be further classified into pure substances or mixtures.
+[   87.6] Let us study about pure substances.
+[   90.4] they have characteristics different from the mixtures
+[   93.6] they have fixed compositions whereas mixtures may contain big opponents in any ratio and their compositions is variable.
+[  102.1] Elements, it is the simplest form of pure substances which can neither be decomposed nor be built from simpler substances from ordinary physical and chemical methods. It cannot contain only one kind of atoms.
+[  118.5] the number of elements known till date is 118
+[  125.4] An element can be a metal, non-metal or a metalloid.
+[  131.2] comports. It is also the form of matter which can be formed by combining two or more elements in a definite ratio by mass.
+[  139.5] it can be decomposed into its constant elements by suitable chemical methods.
+[  145.1] For example, water, H2O, is made up of hydrogen and oxygen in the ratio of 1 to 8 by mass.
+[  154.2] Compounds can be of two types, Inorganic, Organic.
+[  172.0] Now let us study about mixtures.
+[  174.8] These are made up of two or more pure substances. They can possess variable compositions and can be separated.
+[  182.7] into their components by some physical methods.
+[  186.8] Mixtures can be homogeneous or heterogeneous.
+[  190.9] Some popular mixture separation methods are
+[  193.7] filtration, distillation, sublimation
+[  197.5] crystallization magnetic separation and atomolysis
+[  209.3] the latest.
+[  210.5] I appreciate it.
+[  213.9] atoms and molecules.
+[  216.3] Atom is the smallest particle of an element which can take part in a chemical reaction.
+[  222.6] it may or
+[  224.2] It may or may not be capable of independent existence.
+[  228.7] is the simplest particle of matter that has independent existence. It may be homoatomic
+[  236.7] example H2Cl2N2
+[  240.5] They have to be.
+[  242.6] O3 triatomic or heteroatomic example HCl NH3 CH
+[  249.0] etc.
+[  276.4] Let us study about the diodes at atomic theory.
+[  279.7] It was proposed in 1803.
+[  282.3] This theory was based on the law of chemical combination.
+[  285.7] In basic question, it's R
+[  289.4] First, all substances are made up of tiny, indivisible particles called atoms.
+[  295.6] Second, in each element, the atoms are alike.
+[  299.7] and have the same mass, the atoms of different elements, differ in mass.
+[  307.9] called atoms may neither be created nor be destroyed during any physical or chemical reaction.
+[  316.6] Fourth, Compounds or Molecules result
+[  319.7] from combination of atoms in some simple numerical ratio.
+[  333.5] its limitations are
+[  335.9] First, it failed to explain how atoms combine to form molecules.
+[  341.0] Second, it does not explain the difference in masses, size and valences of atoms in different elements.
+[  363.2] Let us study about the atomic mass.
+[  366.2] Attangement mask is the average relative atomic mass of an atom.
+[  371.4] It indicates that how many times an atom of an element is heavier as compared to one twelfth the part of the mass of one atom of carbon dwell.
+[  381.7] So, average atomic mass equals average mass of an atom upon 112 times mass of an atom of C12.
+[  412.0] Let us study about the Gram atomic mass, GAN.
+[  416.1] atomic mass of an element expressed in gram is called gram atomic mass or gram atom or mole atom.
+[  426.5] Let us study molecular mass.
+[  429.0] It is this.
+[  430.6] Mass of a molecule.
+[  432.5] that is
+[  433.7] Number of items of molecule is heavier than 1 twelfth the mass of C12 atom. Molecular mass of a substance is an additive property and can be calculated by taking
+[  446.7] algebraic sum of the atomic masses of all the elements of different elements present in one molecule.
+[  454.2] The formula is molecular mass equals average relative mass of one molecule upon 1 by 12 times mass of C12 atom.
+[  470.0] Formula Mass Some substances such as sodium chloride do not contain discrete molecules as their constituent units. The formula such as NaCl is used to calculate the formula mass instead of molecular mass.
+[  483.8] as in the solid state sodium chloride does not exist as a single entity.
+[  511.4] equivalent mass. It is the mass of an element or a compound which would combine with or
+[  519.1] 1 part of hydrogen or 8 part of oxygen or 35.5 parts of chlorine.
+[  538.7] Let us study the mole concept.
+[  540.9] The term move was suggested by Coswipe.
+[  544.4] its latin word, mor, means keep
+[  548.4] A mole is defined as the amount of substance which contains same number of elementary particles, atom molecules and ions as the number of atoms present in 12 grams of carbon C12.
+[  562.0] 1 mole equals 6.023 into 10 to the power 23 atoms equals 1 gram atom equals gram atomic mass.
+[  574.6] this 6.023 into 10 to the power 23 is the abbegetter number
+[  582.5] in honor of the Avogadro
+[  585.1] and is devoted by N.Have
+[  591.2] the volume occupied by one mole
+[  593.8] of a gaseous substance is called molar volume or a gram molecular volume.
+[  601.6] The formula is number of moles equals amount of substance in gram upon molar mass.
+[  630.3] Let us study Stichometer
+[  632.6] The relative portions in which the reactants react and products are formed is called stichometry.
+[  641.0] limiting reagents. It is the reactant which is completely consumed during the reaction.
+[  648.0] excess reagents. It is the reactant which is not completely consumed and remains unreacted during the reaction.
+[  659.6] percent yield. The actual yield of a product in any reaction is usually less than the theoretical yields because of the occurrence of certain site reactions.
+[  671.6] The formula is percent yield equals actual yield upon theoretical yield 10 to 100.

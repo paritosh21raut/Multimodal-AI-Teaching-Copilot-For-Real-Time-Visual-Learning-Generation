@@ -1,0 +1,1035 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (7.7 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.5 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_4         openai/gpt-oss-120b            88k of 200k tokens IN USE
+        GROQ_API_KEY_5         openai/gpt-oss-120b           155k of 200k tokens ok
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           198k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b            99k of 200k tokens ok
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~10.4 h
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 242 lecture minutes
+
+[READY] session 20261012-131824-6883
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+13:18:35 INFO    copilot.visuals.service: CLIP ready in 0.8 s (CPU)
+13:18:42 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    1.2s] Hello everyone, let us learn about deep learning. (787 ms)
+  [    4.0s] Deep learning is a type of machine learning that teaches computers to perform tasks by learning from examples like (896 ms)
+  [   11.5s] Humans do. (624 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning (new_topic) acts=definition hint=definition lines=3 via groq_main#4 2119 ms
+               Introduced deep learning as a machine‑learning approach that learns from examples like humans.
+13:19:02 INFO    copilot.presentation.engine: planner: new Machine Learning > Deep Learning (first content slide)
+  [SLIDE] add    'Deep Learning' [definition] v1 (1 items)
+13:19:02 INFO    copilot.presentation.engine: no image 'neural network diagram' on 'Deep Learning': not about the slide (similarity 0.25)
+  [   13.1s] Imagine teaching a computer to recognize cats instead of telling it to look for whiskers, ears and a tail. You show it thousands of pictures of cats. The computer finds the common patterns all by itself and learns how to identify a cat. (1368 ms)
+  [SLIDE] update 'Deep Learning' [definition] v2 (1 items)
+  [   28.1s] (dropped: empty) 
+  [   28.6s] This is the essence of deep learning. (477 ms)
+  [SLIDE] update 'Deep Learning' [definition] v3 (1 items)
+13:19:15 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The computer finds the common patterns all by itself and learns how to identify a cat']
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=explanation,explanation hint=example lines=1 via groq_main#4 2429 ms
+               Provided a cat‑recognition example illustrating deep learning’s pattern learning.
+13:19:15 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning (same frame)
+  [SLIDE] update 'Deep Learning' [definition] v4 (3 items)
+13:19:15 INFO    copilot.presentation.engine: image search 'cat recognition example' (photo) for 'Deep Learning'
+13:19:20 INFO    copilot.visuals.finder: image search 'cat recognition example': 4 slow download(s) dropped
+13:19:20 INFO    copilot.presentation.engine: image 'cat recognition example': none (downloads failed)
+  [IMAGE] 'cat recognition example' -> none (downloads failed) (4.5 s)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=explanation hint=concept lines=1 via groq_main#4 1895 ms
+               Teacher emphasized the core idea of deep learning.
+13:19:23 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning (same frame)
+  [SLIDE] update 'Deep Learning' [definition] v5 (3 items)
+  [   34.9s] In technical terms, deep learning uses something called neural networks, which are inspired by the human brain. (922 ms)
+  [SLIDE] update 'Deep Learning' [definition] v6 (4 items)
+  [   41.6s] These networks consist of layers of interconnected nodes that process information. The more layers, the deeper the network, allowing it to learn more complex features and perform more sophisticated tasks. (1138 ms)
+  [SLIDE] update 'Deep Learning' [definition] v7 (4 items)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=definition hint=definition lines=1 via groq_main#4 1908 ms
+               Teacher explained that deep learning relies on neural networks modeled after the human brain.
+13:19:40 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning (same frame)
+  [SLIDE] update 'Deep Learning' [definition] v8 (4 items)
+  [SLIDE] add    'Deep Learning' [members] v1 (1 items)
+  [   59.4s] Now let's start with the evaluation of machine learning to deep learning. (831 ms)
+  [SLIDE] update 'Deep Learning' [definition] v9 (3 items)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=explanation hint=concept lines=1 via groq_main#4 1973 ms
+               Explained that neural networks have layered nodes, with deeper networks learning complex features for advanced tasks.
+13:19:48 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning (same frame)
+  [SLIDE] update 'Deep Learning' [members] v2 (4 items)
+  [UNDERSTAND] Machine Learning > Evaluation (sibling_concept) acts=- hint=none lines=1 via groq_main#4 2233 ms
+               Teacher announced moving to evaluation of machine learning and deep learning.
+13:20:02 INFO    copilot.presentation.engine: planner: noop Machine Learning > Evaluation (nothing to display)
+  [   62.9s] First, what is Machine Learning? Machine Learning is itself a subset of artificial intelligence that enables computers to learn from data and make decisions without explicit programming. (1032 ms)
+  [   75.3s] We take the puzzles, various techniques and algorithms that allow system to recognize patterns, make predictions that improve performance over time. You can explore the difference between machine learning and AI in a separate article. (1141 ms)
+  [   90.7s] How deep learning differs from traditional machine learning? (736 ms)
+  [UNDERSTAND] Machine Learning > Machine Learning (sibling_concept) acts=definition hint=definition lines=1 via groq_main#4 4558 ms
+               Introduced the definition of Machine Learning as a subset of AI that learns from data.
+13:20:18 INFO    copilot.presentation.engine: planner: continue Machine Learning > Machine Learning (new facet)
+  [SLIDE] add    'Machine Learning' [definition] v1 (1 items)
+13:20:23 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['You can explore the difference between machine learning and AI in a separate article']
+  [UNDERSTAND] Machine Learning > Definition (same_concept) acts=explanation hint=definition lines=1 via groq_main#4 1351 ms
+               Added that ML uses techniques to recognize patterns and improve predictions over time.
+13:20:23 INFO    copilot.presentation.engine: revised S1: Machine Learning: a subset of artificial intelligence that enables computers to learn from data, recognize patterns, and make predictions…
+13:20:23 INFO    copilot.presentation.engine: planner: continue Machine Learning > Definition (new facet)
+13:20:23 INFO    copilot.presentation.engine: supporting Definition content stays on the sparse definition slide 'Machine Learning'
+  [SLIDE] update 'Machine Learning' [definition] v2 (1 items)
+  [SLIDE] update 'Machine Learning' [definition] v3 (2 items)
+  [   93.7s] While machine learning has been a transformative technology in its own right, deep learning takes its step further by automating many of the tasks that typically require (1034 ms)
+  [  105.7s] human expertise (410 ms)
+13:20:34 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Definition' -> same_concept
+  [UNDERSTAND] Machine Learning > Definition (same_concept) acts=question hint=none lines=1 via groq_main#4 4212 ms
+               Teacher asked how deep learning differs from traditional machine learning.
+13:20:34 INFO    copilot.presentation.engine: planner: noop Machine Learning > Definition (nothing to display)
+  [  107.7s] Deep learning is essentially a specialized subset of machine learning, distinguished by its use of neural networks with three or more layers. These neural networks attempt to simulate the behavior of human brain. (1146 ms)
+  [SLIDE] update 'Machine Learning' [definition] v4 (3 items)
+  [  120.9s] a bit afar (423 ms)
+  [SLIDE] update 'Machine Learning' [definition] v5 (2 items)
+  [UNDERSTAND] Machine Learning > Deep Learning (sibling_concept) acts=definition,explanation hint=none lines=3 via groq_main#4 5249 ms
+               Deep learning is a specialized subset of ML that uses multi‑layer neural networks to automate tasks needing human expertise.
+13:20:51 INFO    copilot.presentation.engine: planner: continue Machine Learning > Deep Learning (new facet)
+  [SLIDE] add    'Deep Learning' [definition] v1 (2 items)
+13:20:51 INFO    copilot.presentation.engine: image search 'neural network layers' (diagram) for 'Deep Learning'
+  [  122.9s] from matching its ability in order to learn from large amounts of data you can explore machine learning versus deep learning. (786 ms)
+13:20:55 INFO    copilot.visuals.finder: image search 'neural network layers': 4 slow download(s) dropped
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=- hint=none lines=2 via groq_main#5 1088 ms
+               No new substantive content was added to the slide.
+13:20:56 INFO    copilot.presentation.engine: planner: noop Machine Learning > Deep Learning (nothing to display)
+13:20:57 INFO    copilot.visuals.finder: image search 'neural network layers' (diagram, labels preferred): 4 candidate(s), 3 accepted (0 labelled), 6.40 s {'search_s': 2.75, 'download_s': 1.75, 'clip_s': 0.16, 'full_s': 1.67, 'total_s': 6.4}
+  [IMAGE] 'neural network layers' -> File:Colored neural network.svg (6.4 s)
+13:20:57 INFO    copilot.presentation.engine: image 'neural network layers' on 'Deep Learning': File:Colored neural network.svg
+  [SLIDE] update 'Deep Learning' [definition] v2 (3 items)
+  [  132.3s] three buttons (536 ms)
+  [  133.8s] of feature engineering. Feature engineering is the process of selecting, transforming or creating the most relevant variables known as features from raw data to use in machine models. (988 ms)
+  [UNDERSTAND] Machine Learning > Feature Engineering (sibling_concept) acts=definition hint=definition lines=2 via groq_main#4 2880 ms
+               Introduced feature engineering as selecting and transforming raw data variables for models.
+13:21:13 INFO    copilot.presentation.engine: planner: continue Machine Learning > Feature Engineering (new facet)
+  [SLIDE] add    'Feature Engineering' [definition] v1 (1 items)
+  [  147.4s] For example, if you are building a weather prediction model, the raw data might include temperature, humidity, wind speed and barometric pressure. (1037 ms)
+  [  156.8s] feature engineering would involve determining (566 ms)
+  [  160.0s] which of these variables are (524 ms)
+  [  162.2s] most important for predicting the weather and possibly transforming them. (753 ms)
+  [UNDERSTAND] Machine Learning > Feature Engineering (same_concept) acts=example hint=example lines=4 via groq_main#4 1675 ms
+               Provided a weather‑prediction example illustrating how feature engineering selects and transforms key variables.
+13:21:33 INFO    copilot.presentation.engine: planner: update Machine Learning > Feature Engineering (same frame)
+  [SLIDE] update 'Feature Engineering' [definition] v2 (2 items)
+  [  167.6s] to make them more useful for the model. In traditional machine learning, future engineering is often a manual and time-consuming process that requires domain expertise. However, one of the advantages of deep learning is that it can automate quickly. (1312 ms)
+  [  181.9s] learn relevant features from the raw data reducing the need of manual intervention. (730 ms)
+  [UNDERSTAND] Machine Learning > Feature Engineering (elaboration) acts=explanation hint=concept lines=1 via groq_main#4 2924 ms
+               Explained that traditional feature engineering is manual and deep learning can automate it.
+13:21:54 INFO    copilot.presentation.engine: planner: update Machine Learning > Feature Engineering (same frame)
+  [SLIDE] update 'Feature Engineering' [definition] v3 (4 items)
+  [  190.3s] Why is Deep Learning important? (720 ms)
+  [UNDERSTAND] Machine Learning > Feature Engineering (elaboration) acts=- hint=concept lines=1 via groq_main#4 4533 ms
+               Deep learning can learn relevant features from raw data, reducing manual effort.
+13:22:04 INFO    copilot.presentation.engine: revised S3: Deep learning can learn relevant features from raw data, reducing the need for manual intervention.
+13:22:04 INFO    copilot.presentation.engine: planner: noop Machine Learning > Feature Engineering (nothing to display)
+  [SLIDE] update 'Feature Engineering' [definition] v4 (4 items)
+  [  194.6s] because models trained on structured data can learn easily from unstructured data. (758 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning Importance (sibling_concept) acts=explanation hint=key_points lines=2 via groq_main#5 1770 ms
+               Deep learning can learn from unstructured data even when trained on structured data, highlighting its importance.
+13:22:11 INFO    copilot.presentation.engine: planner: continue Machine Learning > Deep Learning Importance (new facet)
+  [SLIDE] add    'Deep Learning Importance' [key_points] v1 (1 items)
+13:22:11 INFO    copilot.presentation.engine: image 'neural network layers' kept on 'Deep Learning Importance' (same visual as this topic's image)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v2 (2 items)
+  [  204.5s] which reduces time and resources in standard realizing data sets. (732 ms)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v3 (3 items)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=- hint=key_points lines=1 via groq_main#4 1930 ms
+               Deep learning reduces time and resources needed to prepare data sets.
+13:22:19 INFO    copilot.presentation.engine: revised S1: Models trained on structured data can learn from unstructured data, reducing time and resources for data set preparation.
+13:22:19 INFO    copilot.presentation.engine: planner: noop Machine Learning > Deep Learning (nothing to display)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v4 (2 items)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v5 (2 items)
+  [  210.1s] Due to introduction of graphic processing units, GPUs, deep learning models can process large amount of data with lightning speed. (953 ms)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v6 (3 items)
+  [  218.5s] Deep learning models provide the most accurate (632 ms)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v7 (3 items)
+  [  221.8s] results in computer vision, natural language processing and audio processing. (701 ms)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v8 (3 items)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=explanation,explanation hint=key_points lines=3 via groq_main#4 2364 ms
+               GPUs speed up deep learning and it achieves top accuracy in vision, language, and audio tasks.
+13:22:34 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+13:22:34 INFO    copilot.presentation.engine: no image for 'Deep Learning Importance': has an image
+  [SLIDE] update 'Deep Learning Importance' [key_points] v9 (2 items)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v10 (4 items)
+  [  227.8s] Most models require machine learning engineer intervention, but deep learning models can detect all kinds of patterns automatically. (910 ms)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v11 (5 items)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 2324 ms
+               Deep learning models can automatically detect all pattern types, reducing engineer intervention.
+13:22:42 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+13:22:42 INFO    copilot.presentation.engine: no image for 'Deep Learning Importance': has an image
+  [SLIDE] update 'Deep Learning Importance' [key_points] v12 (4 items)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v13 (5 items)
+  [  237.7s] Now let us study some core concepts of deep learning. (741 ms)
+13:22:51 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Deep Learning' -> same_concept
+  [UNDERSTAND] Machine Learning > Deep Learning (same_concept) acts=transition hint=none lines=1 via groq_main#4 3329 ms
+               Teacher announces upcoming core concepts of deep learning.
+13:22:51 INFO    copilot.presentation.engine: planner: noop Machine Learning > Deep Learning (nothing to display)
+  [  241.7s] neural networks at the heart of deep learning are neural networks which are going to (880 ms)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v14 (6 items)
+  [  247.1s] computational models inspired by human brain. (695 ms)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v15 (6 items)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=definition hint=definition lines=2 via groq_main#5 2082 ms
+               Neural networks, computational models inspired by the human brain, are the core of deep learning.
+13:22:58 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v16 (5 items)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v17 (5 items)
+  [SLIDE] add    'Deep Learning Importance' [members] v1 (1 items)
+13:22:58 INFO    copilot.presentation.engine: image 'neural network layers' kept on 'Deep Learning Importance' (same visual as this topic's image)
+  [SLIDE] update 'Deep Learning Importance' [members] v2 (2 items)
+  [  254.2s] These networks consist of interconnected nodes or neurons that work together to process information and make decisions. (920 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=explanation hint=concept lines=1 via groq_main#4 2535 ms
+               Networks consist of interconnected nodes that process information and make decisions.
+13:23:09 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+13:23:09 INFO    copilot.presentation.engine: no image for 'Deep Learning Importance': has an image
+  [SLIDE] update 'Deep Learning Importance' [members] v3 (3 items)
+  [  263.0s] Just like our brains has different regions from different tasks, a neural network has a layer designated to specific functions. (991 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 5773 ms
+               Layers in a neural network are assigned specific functions, like brain regions for tasks.
+13:23:21 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+13:23:21 INFO    copilot.presentation.engine: no image for 'Deep Learning Importance': has an image
+  [SLIDE] update 'Deep Learning Importance' [members] v4 (4 items)
+  [  271.9s] deep neural networks. What makes a neural network deep is the number of layers it has between the input and output. (892 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=definition hint=definition lines=1 via groq_main#4 1902 ms
+               A deep neural network has many layers between input and output, defining its depth.
+13:23:39 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+13:23:39 INFO    copilot.presentation.engine: no image for 'Deep Learning Importance': two concepts side by side
+  [SLIDE] update 'Deep Learning Importance' [concept] v5 (4 items)
+  [  280.7s] A deep neural network has multiple layers, allowing it to learn more complex features and make more accurate predictions. The depth of these networks is what gives deep learning its name and its power to solve. (1310 ms)
+  [  294.4s] intricate problems. (495 ms)
+  [  297.8s] activation function (423 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=definition hint=definition lines=1 via groq_main#5 2814 ms
+               Multiple layers let deep neural networks learn complex features and improve prediction accuracy, giving deep learning its name and power.
+13:23:48 INFO    copilot.presentation.engine: revised S2: Deep neural network: A neural network with many layers between input and output that learns complex features and makes more accurate…
+13:23:48 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+13:23:48 INFO    copilot.presentation.engine: no image for 'Deep Learning Importance': two concepts side by side
+  [SLIDE] update 'Deep Learning Importance' [concept] v6 (4 items)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 3104 ms
+               Deep learning is highlighted as useful for tackling intricate problems.
+13:23:56 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+13:23:56 INFO    copilot.presentation.engine: no image for 'Deep Learning Importance': two concepts side by side
+  [SLIDE] update 'Deep Learning Importance' [concept] v7 (5 items)
+  [  300.0s] In neural networks, activation functions are like the decision makers. They determine what information should be passed along the next layers. These functions add a level of complexity, enabling the network to learn from the data and make (1326 ms)
+  [SLIDE] update 'Deep Learning Importance' [concept] v8 (6 items)
+  [  314.6s] wants decisions. (445 ms)
+  [SLIDE] update 'Deep Learning Importance' [concept] v9 (5 items)
+13:24:02 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Deep Learning' -> same_concept
+  [UNDERSTAND] Machine Learning > Deep Learning (same_concept) acts=definition hint=concept lines=1 via groq_main#5 1241 ms
+               Introduced activation functions as the rule that decides each neuron’s output.
+13:24:02 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+13:24:02 INFO    copilot.presentation.engine: no image for 'Deep Learning Importance': two concepts side by side
+  [SLIDE] update 'Deep Learning Importance' [concept] v10 (6 items)
+  [  317.3s] Now let's understand how deep learning works. (664 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning (same_concept) acts=- hint=definition lines=2 via groq_main#4 1950 ms
+               Activation functions decide which information moves to subsequent layers, adding complexity that enables learning.
+13:24:11 INFO    copilot.presentation.engine: revised S6: Activation function: A function that determines a neuron’s output from its input and decides what information passes to the next layers,…
+13:24:11 INFO    copilot.presentation.engine: planner: noop Machine Learning > Deep Learning (nothing to display)
+13:24:11 INFO    copilot.presentation.engine: no image for 'Deep Learning Importance': two concepts side by side
+  [SLIDE] update 'Deep Learning Importance' [concept] v11 (6 items)
+  [  321.5s] Deep learning uses feature extraction to recognize similar features to the same label and then use decision boundaries to determine which features accurately present each label. (1118 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=transition hint=none lines=1 via groq_main#5 2231 ms
+               Teacher announced moving to explanation of how deep learning works.
+13:24:19 INFO    copilot.presentation.engine: planner: noop Machine Learning > Deep Learning (nothing to display)
+  [  333.2s] In the cat and dog classification, deep learning models will extract information such as the eyes, face and body shape of animals and divide them into two classes. (1208 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=explanation,example hint=none lines=2 via groq_main#4 3049 ms
+               Teacher explained feature extraction and decision boundaries, then illustrated with a cat‑dog classification example.
+13:24:32 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+  [SLIDE] add    'Deep Learning Importance' [key_points] v1 (3 items)
+13:24:32 INFO    copilot.presentation.engine: image search 'cat and dog classification diagram' (photo) for 'Deep Learning Importance'
+  [  344.1s] The deep learning model consists of deep learning neural networks. (741 ms)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v2 (4 items)
+13:24:37 INFO    copilot.visuals.finder: image search 'cat and dog classification diagram': 5 slow download(s) dropped
+13:24:37 INFO    copilot.presentation.engine: image 'cat and dog classification diagram': none (downloads failed)
+  [IMAGE] 'cat and dog classification diagram' -> none (downloads failed) (4.5 s)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=definition hint=definition lines=1 via groq_main#5 1170 ms
+               The deep learning model is made up of deep learning neural networks.
+13:24:38 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v3 (3 items)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v4 (4 items)
+  [  348.6s] The simple neural network consists of an input layer, a hidden layer and output layer. Deep learning model consists of multiple hidden layers with additional layers that the model's accuracy has improved. (1066 ms)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v5 (5 items)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=definition,definition hint=definition lines=1 via groq_main#4 2299 ms
+               Described simple neural network structure and how deep learning models add multiple hidden layers for higher accuracy.
+13:24:48 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+13:24:48 INFO    copilot.presentation.engine: no image for 'Deep Learning Importance': two concepts side by side
+  [SLIDE] update 'Deep Learning Importance' [key_points] v6 (4 items)
+  [SLIDE] update 'Deep Learning Importance' [concept] v7 (6 items)
+  [  362.3s] the input layer contains raw data and they transfer the data to hidden layers nodes the hidden layer nodes clarifies class classifies the data point based on broader target information and (1219 ms)
+  [  376.7s] with every subsequent layer the scope of the target value narrows (777 ms)
+  [  381.1s] down the procedure accurate assumptions the output layer uses hidden layer information to select the most probable level in our case (897 ms)
+13:25:17 WARNING copilot.llm.router: llm groq_main#4 failed: connect failed: ConnectTimeout
+  [  391.2s] accurately predicting a dog's image rather than a cat's. (819 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=explanation hint=none lines=3 via groq_main#5 5831 ms
+               Described data flow through input, hidden, and output layers, noting narrowing of target scope across layers.
+13:25:21 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Importance (same frame)
+  [SLIDE] add    'Deep Learning Importance' [key_points] v1 (4 items)
+13:25:21 INFO    copilot.presentation.engine: image 'neural network layers' kept on 'Deep Learning Importance' (same visual as this topic's image)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v2 (5 items)
+  [UNDERSTAND] Machine Learning > Deep Learning (same_concept) acts=- hint=key_points lines=1 via groq_main#5 1295 ms
+               Clarified that the output layer predicts the most likely class, such as a dog over a cat
+13:25:24 INFO    copilot.presentation.engine: revised S4: Output layer selects the most probable class, e.g., accurately predicts a dog image rather than a cat
+13:25:24 INFO    copilot.presentation.engine: planner: noop Machine Learning > Deep Learning (nothing to display)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v3 (5 items)
+  [  405.8s] Now let's differentiate between Artificial Intelligence and Deep Learning. (704 ms)
+  [UNDERSTAND] Machine Learning > Artificial Intelligence vs Deep Learning (sibling_concept) acts=transition hint=none lines=1 via groq_main#5 1343 ms
+               Teacher announced a comparison between Artificial Intelligence and Deep Learning.
+13:25:36 INFO    copilot.presentation.engine: planner: noop Machine Learning > Artificial Intelligence vs Deep Learning (nothing to display)
+  [  410.8s] Artificial Intelligence is the concept that intelligent machines can be built to mimic human behavior or surpass human intelligence. (862 ms)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v4 (6 items)
+  [  418.6s] AI uses machine learning and deep learning methods to complete human tasks. In short, AI is deep learning as it is the most advanced algorithm capable of making intelligent decisions. (1108 ms)
+  [SLIDE] update 'Deep Learning Importance' [key_points] v5 (6 items)
+  [UNDERSTAND] Machine Learning > Artificial Intelligence vs Deep Learning (same_concept) acts=definition,explanation hint=definition lines=2 via groq_main#5 2344 ms
+               Defined Artificial Intelligence and clarified its relationship to machine learning and deep learning
+  [CONCERN] (factual) AI is deep learning as it is the most advanced algorithm capable of making intelligent decisions -> AI includes many methods; deep learning is one advanced subset (0.95, slide shows the correction)
+13:25:57 INFO    copilot.presentation.engine: planner: continue Machine Learning > Artificial Intelligence vs Deep Learning (new facet)
+13:25:57 INFO    copilot.presentation.engine: concern d9bd5cc67400 (factual, applied=True): 0 element(s); slide shows 'AI includes many methods; deep learning is a subset'
+  [SLIDE] update 'Deep Learning Importance' [key_points] v6 (5 items)
+  [SLIDE] add    'Artificial Intelligence vs Deep Learning' [members] v1 (3 items)
+  [  438.8s] Let's start with what is deep learning used for? (781 ms)
+  [UNDERSTAND] Machine Learning > Artificial Intelligence vs Deep Learning (same_concept) acts=question hint=none lines=1 via groq_main#4 1832 ms
+               Teacher asks students what deep learning is used for.
+13:26:20 INFO    copilot.presentation.engine: planner: noop Machine Learning > Artificial Intelligence vs Deep Learning (nothing to display)
+  [  442.0s] Recently, the world of technology has seen the surge in artificial intelligence applications and they all are powered by deep learning models. The applications range from recommending movies on Netflix to Amazon Warehouse Management System. (1204 ms)
+  [  457.0s] (dropped: empty) 
+  [  458.9s] Some of the use cases are Complevision (679 ms)
+13:26:29 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Recently, the world of technology has seen the surge in artificial intelligence applications and they all are powered by deep learning models']
+  [UNDERSTAND] Machine Learning > Artificial Intelligence vs Deep Learning (elaboration) acts=explanation,explanation hint=example lines=1 via groq_main#4 2328 ms
+               AI applications are powered by deep learning, such as Netflix recommendations and Amazon warehouse management.
+13:26:29 INFO    copilot.presentation.engine: planner: update Machine Learning > Artificial Intelligence vs Deep Learning (same frame)
+  [SLIDE] update 'Artificial Intelligence vs Deep Learning' [members] v2 (6 items)
+  [  461.6s] Computer vision is used in self-driving cars to detect objects and avoid collisions. It is also used for face recognition, pose estimation, image classification and anomaly detection. (1035 ms)
+  [  475.8s] Automatic Speech Recognition (557 ms)
+13:26:43 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Artificial Intelligence vs Deep Learning' -> same_concept
+  [UNDERSTAND] Machine Learning > Artificial Intelligence vs Deep Learning (same_concept) acts=explanation hint=example lines=2 via groq_main#4 3567 ms
+               Added computer‑vision use cases of deep learning such as self‑driving cars and face recognition.
+  [HEARD] 'Complevision' -> 'Computer vision' corrected on the slide (0.5)
+13:26:43 INFO    copilot.presentation.engine: planner: update Machine Learning > Artificial Intelligence vs Deep Learning (same frame)
+13:26:43 INFO    copilot.presentation.engine: member 'Artificial Intelligence' explained in depth: its own slide under Machine Learning > Artificial Intelligence vs Deep Learning
+13:26:43 INFO    copilot.presentation.engine: concern de8f6e4ac2e1 (transcription, applied=True): 0 element(s); slide shows 'Computer vision'
+  [SLIDE] update 'Artificial Intelligence vs Deep Learning' [members] v3 (9 items)
+  [SLIDE] add    'Artificial Intelligence' [key_points] v1 (2 items)
+13:26:43 INFO    copilot.presentation.engine: no image 'self‑driving car sensor' on 'Artificial Intelligence': not about the slide (similarity 0.10)
+  [  477.8s] ESR is used by billions of people worldwide. It is in our phones and is commonly activated by saying hey google or hey Siri. Such audio applications are also used for text to speech audio classification and (1337 ms)
+  [SLIDE] update 'Artificial Intelligence' [key_points] v2 (3 items)
+  [  491.9s] Voice activity detection. (882 ms)
+  [SLIDE] update 'Artificial Intelligence' [key_points] v3 (3 items)
+13:27:01 WARNING copilot.understanding.interpreter: model left out 2 spoken sentence(s); shown as said: ['ESR is used by billions of people worldwide', 'It is in our phones and is commonly activated by saying hey google or hey Siri']
+  [UNDERSTAND] Machine Learning > Artificial Intelligence vs Deep Learning (elaboration) acts=explanation,explanation hint=example lines=3 via groq_main#4 2577 ms
+               Added deep‑learning applications: speech recognition and related audio tasks
+13:27:01 INFO    copilot.presentation.engine: planner: update Machine Learning > Artificial Intelligence vs Deep Learning (same frame)
+  [SLIDE] update 'Artificial Intelligence' [key_points] v4 (2 items)
+  [SLIDE] update 'Artificial Intelligence' [key_points] v5 (6 items)
+13:27:01 INFO    copilot.presentation.engine: image search 'speech recognition diagram' (diagram) for 'Artificial Intelligence'
+  [  493.8s] In generative way man, generative AI has seen a surge in demand as (844 ms)
+  [SLIDE] update 'Artificial Intelligence' [key_points] v6 (7 items)
+13:27:04 INFO    copilot.presentation.engine: image 'speech recognition diagram': none (no usable candidates)
+  [IMAGE] 'speech recognition diagram' -> none (no usable candidates) (3.3 s)
+  [  500.9s] Cryptopunk NFT just sold for 1 million dollars. Cryptopunk is a generative art collection that was created using deep learning models. The introduction of the GPT-4 models by OpenAI has revolutionized (1381 ms)
+  [SLIDE] update 'Artificial Intelligence' [key_points] v7 (7 items)
+  [  514.9s] the text generation domain with a powerful GPT tool. (546 ms)
+  [SLIDE] update 'Artificial Intelligence' [key_points] v8 (7 items)
+  [UNDERSTAND] Machine Learning > Generative AI (sibling_concept) acts=explanation hint=concept lines=2 via groq_main#4 3093 ms
+               Introduced generative AI growth, a deep‑learning‑based art NFT example, and GPT‑4’s impact.
+13:27:25 INFO    copilot.presentation.engine: planner: continue Machine Learning > Generative AI (new facet)
+  [SLIDE] add    'Generative AI' [key_points] v1 (3 items)
+13:27:25 INFO    copilot.presentation.engine: image search 'generative AI artwork' (photo) for 'Generative AI'
+13:27:30 INFO    copilot.visuals.finder: image search 'generative AI artwork': 7 slow download(s) dropped
+13:27:30 INFO    copilot.presentation.engine: image 'generative AI artwork': none (downloads failed)
+  [IMAGE] 'generative AI artwork' -> none (downloads failed) (4.5 s)
+  [  519.2s] Now you can teach models to write and in turn will write code for your data science projects. (868 ms)
+  [SLIDE] update 'Artificial Intelligence' [key_points] v9 (6 items)
+  [SLIDE] update 'Generative AI' [key_points] v2 (4 items)
+  [  525.6s] translation. Deep learning translation is not limited to large language translation. (791 ms)
+  [SLIDE] update 'Generative AI' [key_points] v3 (4 items)
+  [UNDERSTAND] Machine Learning > Generative AI (same_concept) acts=explanation hint=key_points lines=2 via groq_main#4 2636 ms
+               Introduced text generation with GPT and code‑writing capabilities for data‑science projects using generative AI.
+13:27:38 INFO    copilot.presentation.engine: planner: update Machine Learning > Generative AI (same frame)
+  [SLIDE] update 'Generative AI' [key_points] v4 (6 items)
+  [  532.5s] as we are now able to translate photos to text using OCR or translate text to image by using nvidia gua gang 2 (964 ms)
+  [SLIDE] update 'Generative AI' [key_points] v5 (6 items)
+  [UNDERSTAND] Machine Learning > Generative AI (elaboration) acts=explanation hint=key_points lines=2 via groq_main#4 5798 ms
+               Added translation applications of deep learning, covering OCR photo‑to‑text and text‑to‑image generation.
+13:28:01 INFO    copilot.presentation.engine: planner: update Machine Learning > Generative AI (same frame)
+  [SLIDE] update 'Generative AI' [key_points] v6 (5 items)
+  [SLIDE] update 'Generative AI' [key_points] v7 (8 items)
+  [  547.7s] Time series forecasting is used for predicting market crashes, stock prices, (773 ms)
+  [  560.7s] and changes in weather. The financial sector survives on speculations and future predictions. Deep learning and time series models are better than humans in detecting patterns and so are pivotal tools in this (1170 ms)
+  [  574.9s] and small industries. (628 ms)
+  [UNDERSTAND] Machine Learning > Time Series Forecasting (sibling_concept) acts=explanation hint=key_points lines=1 via groq_main#4 2001 ms
+               Time series forecasting predicts market crashes and stock prices.
+13:28:21 INFO    copilot.presentation.engine: planner: continue Machine Learning > Time Series Forecasting (new facet)
+  [SLIDE] add    'Time Series Forecasting' [key_points] v1 (2 items)
+13:28:34 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The financial sector survives on speculations and future predictions']
+  [UNDERSTAND] Machine Learning > Time Series Forecasting (same_concept) acts=explanation,explanation hint=key_points lines=2 via groq_main#4 2442 ms
+               Added weather and small‑industry predictions to time series forecasting.
+13:28:34 INFO    copilot.presentation.engine: planner: update Machine Learning > Time Series Forecasting (same frame)
+  [SLIDE] update 'Time Series Forecasting' [key_points] v2 (5 items)
+  [  576.9s] Automation. Deep learning is used for automation, doing tasks, for example training robots for warehouse management. The most popular application is playing video games and getting better at solving puzzles. (1383 ms)
+  [SLIDE] update 'Time Series Forecasting' [key_points] v3 (6 items)
+  [  589.4s] Recently, OpenAI Data's DataAmp Pro Team OG, which shocked the world as people were not expecting all 5 robots to outsmart the world champions. (1024 ms)
+  [SLIDE] update 'Time Series Forecasting' [key_points] v4 (6 items)
+13:28:48 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The most popular application is playing video games and getting better at solving puzzles']
+  [UNDERSTAND] Machine Learning > Automation (sibling_concept) acts=example,explanation hint=example lines=2 via groq_main#4 1995 ms
+               Introduced deep‑learning‑based automation with robots for warehouse tasks and competitive game playing.
+  [HEARD] "OpenAI Data's DataAmp Pro Team OG" -> "OpenAI's DataAmp team" corrected on the slide (0.5)
+13:28:48 INFO    copilot.presentation.engine: planner: continue Machine Learning > Automation (new facet)
+13:28:48 INFO    copilot.presentation.engine: concern a476d220d893 (transcription, applied=True): 0 element(s); slide shows "OpenAI's DataAmp team"
+  [SLIDE] update 'Time Series Forecasting' [key_points] v5 (5 items)
+  [SLIDE] add    'Automation' [example] v1 (2 items)
+13:28:48 INFO    copilot.presentation.engine: image search 'warehouse robots' (photo) for 'Automation'
+13:28:52 INFO    copilot.visuals.finder: image search 'warehouse robots': 4 slow download(s) dropped
+13:28:55 INFO    copilot.visuals.finder: image search 'warehouse robots': 1 slow download(s) dropped
+13:28:55 INFO    copilot.visuals.finder: image search 'warehouse robots' (photo): 3 candidate(s), 2 accepted (0 labelled), 7.70 s {'search_s': 2.27, 'download_s': 2.2, 'clip_s': 0.16, 'full_s': 3.05, 'total_s': 7.7}
+  [IMAGE] 'warehouse robots' -> File:AIMM-is-picking-up-a-working-part-form-the-warehouse.jpg (7.7 s)
+13:28:55 INFO    copilot.presentation.engine: image 'warehouse robots' on 'Automation': File:AIMM-is-picking-up-a-working-part-form-the-warehouse.jpg
+  [SLIDE] update 'Automation' [example] v2 (3 items)
+  [  602.5s] Customer feedback. Deep learning is used for handling customer's feedback and completes. It is used in every chatbot application to provide seamless customer services. (1114 ms)
+  [SLIDE] update 'Automation' [example] v3 (4 items)
+  [  612.7s] Biomedical (413 ms)
+  [SLIDE] update 'Automation' [example] v4 (3 items)
+  [UNDERSTAND] Machine Learning > Automation (elaboration) acts=explanation hint=example lines=1 via groq_main#4 2023 ms
+               Deep learning is used to automate customer‑feedback handling in chatbot applications.
+13:29:00 INFO    copilot.presentation.engine: planner: update Machine Learning > Automation (same frame)
+13:29:00 INFO    copilot.presentation.engine: no image for 'Automation': has an image
+  [SLIDE] update 'Automation' [example] v5 (4 items)
+  [  614.3s] This field has benefited the most with the introduction to deep learning. Deep learning is used in biomedicine to detect cancer, build stable medicines, (1039 ms)
+  [  622.9s] for anomaly detection in chest x-rays and to assist medical equipments. (742 ms)
+13:29:12 WARNING copilot.llm.router: LLM groq_main now uses GROQ_API_KEY_5 (GROQ_API_KEY_4 is spent)
+  [UNDERSTAND] Machine Learning > Biomedical (sibling_concept) acts=explanation hint=example lines=3 via groq_main#5 2458 ms
+               Deep learning is applied in biomedicine for cancer detection, drug design, X‑ray anomaly detection, and medical equipment assistance.
+13:29:15 INFO    copilot.presentation.engine: planner: continue Machine Learning > Biomedical (new facet)
+  [SLIDE] add    'Biomedical' [key_points] v1 (4 items)
+13:29:15 INFO    copilot.presentation.engine: image search 'medical imaging' (photo) for 'Biomedical'
+13:29:19 INFO    copilot.visuals.finder: image search 'medical imaging': 7 slow download(s) dropped
+13:29:19 INFO    copilot.presentation.engine: image 'medical imaging': none (downloads failed)
+  [IMAGE] 'medical imaging' -> none (downloads failed) (4.5 s)
+  [  633.6s] Now let's learn about different types of deep learning models and how they work. (917 ms)
+  [  639.4s] First, supervised learning. Supervised learning uses a labeled dataset to train models to either classify data or predict values. The dataset contains features and (1020 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning Models (sibling_concept) acts=definition hint=definition lines=2 via groq_main#5 3246 ms
+               Introduced supervised learning as a deep learning model type that trains on labeled data for classification or prediction.
+13:29:45 INFO    copilot.presentation.engine: planner: continue Machine Learning > Deep Learning Models (new facet)
+  [SLIDE] add    'Deep Learning Models' [members] v1 (1 items)
+13:29:45 INFO    copilot.presentation.engine: image 'neural network layers' kept on 'Deep Learning Models' (same visual as this topic's image)
+  [SLIDE] update 'Deep Learning Models' [members] v2 (2 items)
+  [  649.3s] target labels which allow the algorithm to learn over time by minimizing the loss between predicted and actual labels. Supervised learning can be divided into classification and regression problems. (1327 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=definition hint=definition lines=1 via groq_main#5 2372 ms
+               Supervised learning learns from labeled data by minimizing loss, covering classification and regression.
+13:30:01 INFO    copilot.presentation.engine: revised S1: Uses a labeled dataset; algorithm learns by minimizing loss between predicted and actual labels, handling classification or regression…
+13:30:01 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Models (same frame)
+13:30:01 INFO    copilot.presentation.engine: no image for 'Deep Learning Models': has an image
+  [SLIDE] update 'Deep Learning Models' [members] v3 (2 items)
+  [  661.7s] classification. The classification algorithm divides the dataset into various categories based on feature extraction. The popular deep learning models are ResNet-50 for image classification and BERT language model. (1188 ms)
+  [  676.5s] for text classification. (444 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning (elaboration) acts=explanation hint=concept lines=2 via groq_main#5 3268 ms
+               Provided classification examples and named ResNet‑50 and BERT as popular deep‑learning models.
+13:30:10 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Models (same frame)
+13:30:10 INFO    copilot.presentation.engine: no image for 'Deep Learning Models': has an image
+  [SLIDE] update 'Deep Learning Models' [members] v4 (4 items)
+  [  682.2s] Regression. Instead of dividing the dataset into categories, the regression model learns the relationship between input and output variables to predict the outcome. Regression models are commonly used for predictive analysis, weather forecasting, (1183 ms)
+  [  695.5s] in predicting stock market performance. LSTM and RNN are popular deep learning regression models. (793 ms)
+13:30:30 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Deep Learning' -> same_concept
+  [UNDERSTAND] Machine Learning > Deep Learning (same_concept) acts=explanation hint=concept lines=2 via groq_main#5 3812 ms
+               Introduced regression models in deep learning with examples and noted LSTM and RNN as common architectures
+13:30:30 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Models (same frame)
+13:30:30 INFO    copilot.presentation.engine: no image for 'Deep Learning Models': has an image
+  [SLIDE] update 'Deep Learning Models' [members] v5 (7 items)
+  [  703.0s] Unsupervised learning Unsupervised learning algorithms learn the patterns within the unlabelled dataset and create clusters. Deep learning models can learn hidden patterns without human intervention and these models are often used. (1125 ms)
+  [  716.9s] in recommendation engines. (839 ms)
+  [UNDERSTAND] Machine Learning > Unsupervised Learning (sibling_concept) acts=definition,explanation hint=concept lines=2 via groq_main#5 2058 ms
+               Introduced unsupervised learning as a deep‑learning approach that finds patterns in unlabelled data and is used in recommendation engines
+13:30:45 INFO    copilot.presentation.engine: planner: continue Machine Learning > Unsupervised Learning (new facet)
+  [SLIDE] add    'Unsupervised Learning' [definition] v1 (2 items)
+13:30:45 INFO    copilot.presentation.engine: image search 'cluster diagram' (diagram) for 'Unsupervised Learning'
+13:30:50 INFO    copilot.visuals.finder: image search 'cluster diagram': 5 slow download(s) dropped
+13:30:50 INFO    copilot.presentation.engine: image 'cluster diagram': none (downloads failed)
+  [IMAGE] 'cluster diagram' -> none (downloads failed) (4.5 s)
+  [  719.7s] Unsupervised learning is used for grouping various species, medical imaging and market research. The most common deep learning model for clustering is the deep embedded clustering algorithm. (1234 ms)
+  [SLIDE] update 'Unsupervised Learning' [definition] v2 (3 items)
+  [UNDERSTAND] Machine Learning > Unsupervised Learning (elaboration) acts=explanation,definition hint=key_points lines=1 via groq_main#5 1954 ms
+               Unsupervised learning clusters data for species grouping, medical imaging, and market research, using deep embedded clustering.
+13:31:12 INFO    copilot.presentation.engine: planner: update Machine Learning > Unsupervised Learning (same frame)
+13:31:12 INFO    copilot.presentation.engine: no image for 'Unsupervised Learning': two concepts side by side
+  [SLIDE] update 'Unsupervised Learning' [definition] v3 (2 items)
+  [SLIDE] update 'Unsupervised Learning' [concept] v4 (6 items)
+  [  733.9s] Reinforcement learning is a machine learning method where agents learn various behaviors from the environment. This agent takes random actions and gets rewarded. The agent learns to achieve goals by trial and error in a complex environment. (1380 ms)
+  [SLIDE] update 'Unsupervised Learning' [concept] v5 (7 items)
+  [  748.6s] without human intervention just like a baby with encouragement from (701 ms)
+  [SLIDE] update 'Unsupervised Learning' [concept] v6 (6 items)
+  [UNDERSTAND] Machine Learning > Reinforcement Learning (sibling_concept) acts=definition hint=definition lines=1 via groq_main#5 2454 ms
+               Introduced reinforcement learning as agents learning via trial‑and‑error rewards in an environment
+13:31:21 INFO    copilot.presentation.engine: planner: continue Machine Learning > Reinforcement Learning (new facet)
+  [SLIDE] add    'Reinforcement Learning' [definition] v1 (1 items)
+13:31:21 INFO    copilot.presentation.engine: image search 'agent and environment diagram' (diagram) for 'Reinforcement Learning'
+  [  753.0s] Its parents learn to work and he learns to perform certain tasks by maximizing rewards. (765 ms)
+13:31:25 INFO    copilot.visuals.finder: image search 'agent and environment diagram': 1 slow download(s) dropped
+13:31:25 INFO    copilot.presentation.engine: image 'agent and environment diagram': none (downloads failed)
+  [IMAGE] 'agent and environment diagram' -> none (downloads failed) (4.5 s)
+  [UNDERSTAND] Machine Learning > Reinforcement Learning (same_concept) acts=- hint=definition lines=1 via groq_main#5 2231 ms
+               RL learns without human intervention, like a baby receiving encouragement
+13:31:28 INFO    copilot.presentation.engine: revised S1: Reinforcement learning: A machine learning method where agents learn behaviors from the environment without human intervention, taking…
+13:31:28 INFO    copilot.presentation.engine: planner: noop Machine Learning > Reinforcement Learning (nothing to display)
+  [SLIDE] update 'Reinforcement Learning' [definition] v2 (1 items)
+  [  763.3s] and the designer sets the reward policy. Recently, RL has seen (811 ms)
+  [SLIDE] update 'Reinforcement Learning' [definition] v3 (1 items)
+  [  769.5s] high demands in automation due to advancement in robotics self driving cars defeating (872 ms)
+  [SLIDE] update 'Reinforcement Learning' [definition] v4 (1 items)
+  [  774.8s] pro players in games and landing rocket back to earth. (608 ms)
+13:31:45 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Pro players in games and landing rocket back to earth']
+  [UNDERSTAND] Machine Learning > Reinforcement Learning (same_concept) acts=explanation,explanation hint=key_points lines=4 via groq_main#5 2446 ms
+               Added reward policy and high‑profile RL applications in automation, gaming, and rocketry
+13:31:45 INFO    copilot.presentation.engine: planner: update Machine Learning > Reinforcement Learning (same frame)
+  [SLIDE] update 'Reinforcement Learning' [definition] v5 (6 items)
+  [  781.9s] Generative Adversarial Networks GANs use two neural networks and together they produce synthetic instances of positional data. GANs have gained a lot of popularity in recent years. (1241 ms)
+  [  796.5s] as they are able to mimic some of the great artists to produce masterpieces. (893 ms)
+  [UNDERSTAND] Machine Learning > Generative Adversarial Networks (sibling_concept) acts=explanation hint=concept lines=2 via groq_main#5 3860 ms
+               Introduced GANs as dual‑network models that generate synthetic data and imitate artistic styles, noting their recent popularity.
+13:32:10 INFO    copilot.presentation.engine: planner: continue Machine Learning > Generative Adversarial Networks (new facet)
+  [SLIDE] add    'Generative Adversarial Networks' [key_points] v1 (3 items)
+  [  801.9s] They are widely used for generating synthetic art, video, music and text. (765 ms)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v2 (4 items)
+13:32:16 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['They are widely used for generating synthetic art, video, music and text']
+  [UNDERSTAND] Machine Learning > Generative Adversarial Networks (same_concept) acts=other,explanation hint=key_points lines=1 via groq_main#5 2066 ms
+               GANs are applied to create synthetic art, video, music, and text
+13:32:16 INFO    copilot.presentation.engine: planner: update Machine Learning > Generative Adversarial Networks (same frame)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v3 (3 items)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v4 (4 items)
+  [  814.4s] how GANs work in synthetic image generation. (660 ms)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v5 (5 items)
+  [  818.3s] first the generator network (466 ms)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v6 (5 items)
+  [  820.5s] take input of random noise and generate fake images. The generated image and the real image are fed into a discriminator. The discriminator decides whether the generated image is real or not. (1211 ms)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v7 (5 items)
+  [UNDERSTAND] Machine Learning > Generative Adversarial Networks (elaboration) acts=- hint=none lines=3 via groq_main#5 2311 ms
+               Described how the generator and discriminator work together to produce synthetic images.
+13:32:42 INFO    copilot.presentation.engine: revised S1: Generator creates fake images from random noise; Discriminator judges each image as real or fake
+13:32:42 INFO    copilot.presentation.engine: planner: noop Machine Learning > Generative Adversarial Networks (nothing to display)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v8 (4 items)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v9 (4 items)
+13:32:43 INFO    copilot.presentation.engine: image search 'GAN architecture' (diagram) for 'Generative Adversarial Networks'
+  [  834.1s] it returns probabilities from 0 to 1 where 0 represents a fake image and 1 represents an authenticate image. (803 ms)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v10 (5 items)
+13:32:47 INFO    copilot.visuals.finder: image search 'GAN architecture': 1 slow download(s) dropped
+13:32:47 INFO    copilot.presentation.engine: image 'GAN architecture': none (downloads failed)
+  [IMAGE] 'GAN architecture' -> none (downloads failed) (4.5 s)
+13:32:51 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['It returns probabilities from 0 to 1 where 0 represents a fake image and 1 represents an authenticate image']
+  [UNDERSTAND] Machine Learning > Generative Adversarial Networks (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_main#5 2464 ms
+               Discriminator gives a 0‑to‑1 probability indicating fake or real image.
+13:32:51 INFO    copilot.presentation.engine: planner: update Machine Learning > Generative Adversarial Networks (same frame)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v11 (4 items)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v12 (5 items)
+  [SLIDE] add    'Generative Adversarial Networks' [key_points] v1 (1 items)
+  [  842.7s] GANs architecture contains two feedback loops. The discriminator is the feedback loop and with real images whereas the generator is the feedback loop. (1122 ms)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v2 (2 items)
+  [  851.0s] They look in sync to produce more authentic images. (730 ms)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v3 (2 items)
+  [UNDERSTAND] Machine Learning > Generative Adversarial Networks (elaboration) acts=explanation hint=concept lines=2 via groq_main#5 2472 ms
+               GANs use two feedback loops—discriminator and generator—that work together in sync to improve image authenticity.
+13:33:05 INFO    copilot.presentation.engine: planner: update Machine Learning > Generative Adversarial Networks (same frame)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v4 (1 items)
+  [SLIDE] update 'Generative Adversarial Networks' [key_points] v5 (3 items)
+  [  868.8s] graph neural network. A graph is a data structure that consists of edges and vertices. The edges can be directed if they are bi-directional dependencies between vertices. Good. (1329 ms)
+  [  881.0s] also known as directed graphs. (450 ms)
+  [UNDERSTAND] Machine Learning > Graph Neural Networks (sibling_concept) acts=definition,definition hint=definition lines=2 via groq_main#5 2770 ms
+               Introduced graph neural networks and defined graphs, including directed graphs, as data structures for ML models.
+13:33:31 INFO    copilot.presentation.engine: planner: continue Machine Learning > Graph Neural Networks (new facet)
+  [SLIDE] add    'Graph Neural Networks' [definition] v1 (2 items)
+13:33:31 INFO    copilot.presentation.engine: image search 'graph diagram' (diagram) for 'Graph Neural Networks'
+13:33:34 INFO    copilot.presentation.engine: image 'graph diagram': none (no usable candidates)
+  [IMAGE] 'graph diagram' -> none (no usable candidates) (2.9 s)
+  [  885.8s] The Graph Neural Network is a type of deep learning architecture that directly operates a graph structure. GNNs are applied in large dataset analysis recommendations. Systems with (1090 ms)
+  [SLIDE] update 'Graph Neural Networks' [definition] v2 (3 items)
+  [  898.3s] contributions. (416 ms)
+  [SLIDE] update 'Graph Neural Networks' [definition] v3 (2 items)
+  [  899.9s] They are also used for node classification, link prediction and clustering. (819 ms)
+  [  906.5s] Graph neural networks have performed better than convolutional neural networks. (791 ms)
+  [UNDERSTAND] Machine Learning > Graph Neural Networks (elaboration) acts=explanation hint=key_points lines=3 via groq_main#5 2176 ms
+               Added applications of GNNs: large‑scale analysis, recommendations, node classification, link prediction, clustering.
+13:33:56 INFO    copilot.presentation.engine: planner: update Machine Learning > Graph Neural Networks (same frame)
+  [SLIDE] update 'Graph Neural Networks' [definition] v4 (5 items)
+13:33:56 INFO    copilot.presentation.engine: image search 'graph neural network diagram' (diagram) for 'Graph Neural Networks'
+  [  912.4s] Natural Language Processing (554 ms)
+13:34:01 INFO    copilot.visuals.finder: image search 'graph neural network diagram': 1 slow download(s) dropped
+13:34:02 INFO    copilot.visuals.finder: image search 'graph neural network diagram' (diagram, labels preferred): 6 candidate(s), 1 accepted (0 labelled), 5.81 s {'search_s': 2.61, 'download_s': 1.89, 'clip_s': 0.24, 'full_s': 1.05, 'total_s': 5.81}
+  [IMAGE] 'graph neural network diagram' -> File:Colored neural network.svg (5.8 s)
+13:34:02 INFO    copilot.presentation.engine: no room for an image on 'Graph Neural Networks'
+13:34:04 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Graph Neural Networks' -> same_concept
+  [UNDERSTAND] Machine Learning > Graph Neural Networks (same_concept) acts=comparison hint=comparison lines=1 via groq_main#5 1864 ms
+               GNNs outperform CNNs on graph‑structured tasks.
+13:34:04 INFO    copilot.presentation.engine: planner: noop Machine Learning > Graph Neural Networks (nothing to display)
+13:34:12 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Graph Neural Networks' -> same_concept
+  [UNDERSTAND] Machine Learning > Graph Neural Networks (same_concept) acts=application hint=application lines=1 via groq_main#5 2029 ms
+               Added Natural Language Processing as an application of GNNs.
+13:34:12 INFO    copilot.presentation.engine: planner: update Machine Learning > Graph Neural Networks (same frame)
+  [SLIDE] update 'Graph Neural Networks' [definition] v5 (6 items)
+13:34:12 INFO    copilot.presentation.engine: no room for an image on 'Graph Neural Networks'
+13:34:13 INFO    copilot.presentation.engine: slide ed0cb8a03c7a overflows on the display; further content continues on a new slide
+  [  916.0s] NLP uses deep learning to read decipher and understand human language. It is widely used for processing speech, text and images. The introduction of transfer learning has taken NLP to the next level. (1237 ms)
+  [  928.5s] as we are able to fine tune the model with a few samples and achieve state of the art performance. (899 ms)
+13:34:23 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['It is widely used for processing speech, text and images']
+  [UNDERSTAND] Machine Learning > Graph Neural Networks (elaboration) acts=explanation,explanation hint=none lines=2 via groq_main#5 3405 ms
+               Added explanation of NLP using deep learning, transfer learning, and fine‑tuning with few samples.
+13:34:23 INFO    copilot.presentation.engine: planner: update Machine Learning > Graph Neural Networks (same frame)
+  [SLIDE] update 'Graph Neural Networks' [definition] v6 (6 items)
+  [SLIDE] add    'Graph Neural Networks' [key_points] v1 (3 items)
+13:34:23 INFO    copilot.presentation.engine: image search 'NLP pipeline' (diagram) for 'Graph Neural Networks'
+  [  935.9s] NLP can be divided into multiple fields. (765 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v2 (4 items)
+13:34:26 INFO    copilot.presentation.engine: image 'NLP pipeline': none (no usable candidates)
+  [IMAGE] 'NLP pipeline' -> none (no usable candidates) (2.1 s)
+  [  939.7s] Translation, translating human languages, molecular structure and mathematical equations Summarization, summarizing large sums of text into (986 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v3 (4 items)
+  [  948.7s] saved lines while maintaining the key information. (574 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v4 (3 items)
+  [  952.4s] classification. (424 ms)
+13:34:42 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Saved lines while maintaining the key information']
+  [UNDERSTAND] Machine Learning > Graph Neural Networks (elaboration) acts=classification,explanation hint=none lines=3 via groq_main#5 5452 ms
+               Listed major fields of NLP: translation, molecular structure, equations, and summarization.
+13:34:42 INFO    copilot.presentation.engine: planner: update Machine Learning > Graph Neural Networks (same frame)
+13:34:42 INFO    copilot.presentation.engine: no image for 'Graph Neural Networks': nothing relevant found for 'NLP pipeline' before
+  [SLIDE] update 'Graph Neural Networks' [key_points] v5 (5 items)
+  [  953.8s] dividing the text into various categories. Generation, text to text, generation, it can be used to generate entire essay with a single line of text. (1127 ms)
+13:34:53 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Graph Neural Networks' -> same_concept
+  [UNDERSTAND] Machine Learning > Graph Neural Networks (same_concept) acts=explanation hint=none lines=2 via groq_main#6 2053 ms
+               Introduced classification and text‑generation as applications of graph neural networks in NLP.
+13:34:53 INFO    copilot.presentation.engine: planner: update Machine Learning > Graph Neural Networks (same frame)
+13:34:53 INFO    copilot.presentation.engine: no image for 'Graph Neural Networks': nothing relevant found for 'NLP pipeline' before
+  [SLIDE] add    'Graph Neural Networks' [key_points] v1 (2 items)
+  [  964.9s] conversational, virtual assistant, retaining past knowledge of conversation and mimicking human conventions. (902 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v2 (3 items)
+  [UNDERSTAND] Machine Learning > Graph Neural Networks (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 1834 ms
+               Introduced conversational virtual assistants as a GNN application in NLP.
+13:35:00 INFO    copilot.presentation.engine: planner: update Machine Learning > Graph Neural Networks (same frame)
+13:35:00 INFO    copilot.presentation.engine: no image for 'Graph Neural Networks': nothing relevant found for 'NLP pipeline' before
+  [SLIDE] update 'Graph Neural Networks' [key_points] v3 (2 items)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v4 (3 items)
+  [  973.0s] Answering questions. AI answers questions by using Q&O data. (835 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v5 (4 items)
+  [  977.9s] feature extraction to tick patterns in features, in text and graphs, information such as name, entity recognition and parts of speech. (1064 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v6 (4 items)
+  [  986.7s] Sentence similarities. Evaluating similarities between various texts. (759 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v7 (4 items)
+13:35:17 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Graph Neural Networks' -> same_concept
+  [UNDERSTAND] Machine Learning > Graph Neural Networks (same_concept) acts=explanation hint=key_points lines=2 via groq_main#5 2760 ms
+               Added question answering and feature extraction as GNN applications in NLP.
+13:35:17 INFO    copilot.presentation.engine: planner: update Machine Learning > Graph Neural Networks (same frame)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v8 (6 items)
+13:35:17 INFO    copilot.presentation.engine: image search 'graph neural network applications' (diagram) for 'Graph Neural Networks'
+  [  991.4s] converting tasks (527 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v9 (6 items)
+  [  995.0s] to audible speech (472 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v10 (6 items)
+13:35:22 INFO    copilot.visuals.finder: image search 'graph neural network applications': 6 slow download(s) dropped
+13:35:22 INFO    copilot.presentation.engine: image 'graph neural network applications': none (downloads failed)
+  [IMAGE] 'graph neural network applications' -> none (downloads failed) (4.5 s)
+  [  996.7s] Automatic speech recognition Understanding various sounds and converting them into text Optical character recognition Extraction of text from images (903 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v11 (6 items)
+13:35:37 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Graph Neural Networks' -> same_concept
+  [UNDERSTAND] Machine Learning > Graph Neural Networks (same_concept) acts=explanation hint=key_points lines=4 via groq_main#5 3627 ms
+               Added GNN applications: sentence similarity, speech conversion, automatic speech recognition, and optical character recognition.
+13:35:37 INFO    copilot.presentation.engine: planner: update Machine Learning > Graph Neural Networks (same frame)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v12 (5 items)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v13 (6 items)
+  [SLIDE] add    'Graph Neural Networks' [key_points] v1 (3 items)
+  [ 1013.6s] Now let's take a deeper look at deep learning concepts. (697 ms)
+13:35:55 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Graph Neural Networks' -> same_concept
+  [UNDERSTAND] Machine Learning > Graph Neural Networks (same_concept) acts=transition hint=none lines=1 via groq_main#5 2054 ms
+               Teacher announces moving to deep learning concepts
+13:35:55 INFO    copilot.presentation.engine: planner: noop Machine Learning > Graph Neural Networks (nothing to display)
+  [ 1017.1s] Activation function In neural networks, the activation function produces output decision boundaries and it is used to improve performance of the model. The activation function is a mathematical expression that decides the (1245 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v2 (4 items)
+  [ 1030.6s] whether the input should pass through a neuron or not based on its significance. (787 ms)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v3 (4 items)
+13:36:04 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Whether the input should pass through a neuron or not based on its significance']
+  [UNDERSTAND] Machine Learning > Activation Function (new_topic) acts=definition,explanation hint=definition lines=2 via groq_main#6 3103 ms
+               Defined activation function and its role in neural networks
+13:36:04 INFO    copilot.presentation.engine: planner: continue Machine Learning > Activation Function (new facet)
+  [SLIDE] update 'Graph Neural Networks' [key_points] v4 (3 items)
+  [SLIDE] add    'Activation Function' [definition] v1 (2 items)
+13:36:04 INFO    copilot.presentation.engine: image search 'neuron activation diagram' (diagram) for 'Activation Function'
+  [ 1036.8s] It also provides non-linearity to networks without activation function the neural network (732 ms)
+  [SLIDE] update 'Activation Function' [definition] v2 (3 items)
+13:36:09 INFO    copilot.visuals.finder: image search 'neuron activation diagram': 5 slow download(s) dropped
+13:36:09 INFO    copilot.presentation.engine: image 'neuron activation diagram': none (downloads failed)
+  [IMAGE] 'neuron activation diagram' -> none (downloads failed) (4.5 s)
+  [ 1043.2s] becomes a simple linear regression model (581 ms)
+  [SLIDE] update 'Activation Function' [definition] v3 (2 items)
+  [ 1046.7s] there are several types of activation functions tanh, red loop, sigmoid, linear, softmax, swish (1018 ms)
+  [ 1057.2s] These functions produce various output boundaries. (619 ms)
+  [UNDERSTAND] Machine Learning > Activation Function (elaboration) acts=explanation hint=concept lines=4 via groq_main#5 3059 ms
+               Explained why activation functions add non‑linearity, listed common types, and their effect on output boundaries.
+  [HEARD] 'red loop' -> 'ReLU' corrected on the slide (0.5)
+13:36:28 INFO    copilot.presentation.engine: planner: update Machine Learning > Activation Function (same frame)
+13:36:28 INFO    copilot.presentation.engine: concern 5ef663c28597 (transcription, applied=True): 1 element(s); slide shows 'ReLU'
+  [SLIDE] update 'Activation Function' [definition] v4 (6 items)
+  [ 1061.7s] Loss function. The loss function is a difference between actual and predicted values. It allows neural networks to track the model's overall performance. Depending on specific problems, we choose a certain type of function. (1292 ms)
+  [SLIDE] update 'Activation Function' [definition] v5 (7 items)
+  [ 1075.8s] For example, means squared error. (520 ms)
+  [SLIDE] update 'Activation Function' [definition] v6 (7 items)
+  [ 1078.3s] loss equals sum. (451 ms)
+  [SLIDE] update 'Activation Function' [definition] v7 (7 items)
+13:36:47 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Depending on specific problems, we choose a certain type of function']
+  [UNDERSTAND] Machine Learning > Loss Function (sibling_concept) acts=definition,example,explanation hint=definition lines=3 via groq_main#5 3056 ms
+               Introduced loss function as performance metric and gave mean squared error as an example
+13:36:47 INFO    copilot.presentation.engine: planner: continue Machine Learning > Loss Function (new facet)
+13:36:47 INFO    copilot.presentation.engine: image hint 'Loss Function curves' for 'Loss Function' from its sibling subtopic
+  [SLIDE] update 'Activation Function' [definition] v8 (6 items)
+  [SLIDE] add    'Loss Function' [definition] v1 (3 items)
+13:36:47 INFO    copilot.presentation.engine: image search 'Loss Function curves' (diagram) for 'Loss Function'
+  [ 1080.1s] of predicted minus i guess you'll (2249 ms)
+  [SLIDE] update 'Loss Function' [definition] v2 (4 items)
+  [ 1083.3s] by 2. (1215 ms)
+  [SLIDE] update 'Loss Function' [definition] v3 (3 items)
+13:36:52 INFO    copilot.visuals.finder: image search 'Loss Function curves': 4 slow download(s) dropped
+13:36:52 INFO    copilot.presentation.engine: image 'Loss Function curves': none (downloads failed)
+  [IMAGE] 'Loss Function curves' -> none (downloads failed) (4.5 s)
+  [UNDERSTAND] Machine Learning > Loss Function (same_concept) acts=definition hint=definition lines=2 via groq_main#5 2730 ms
+               Clarified loss function formula as (predicted‑actual)² / 2
+  [HEARD] "of predicted minus i guess you'll / by 2" -> '(predicted - actual)² / 2' corrected on the slide (0.5)
+13:36:55 INFO    copilot.presentation.engine: revised S1: Loss function: A difference between actual and predicted values, squared and divided by 2, that lets neural networks track overall…
+13:36:55 INFO    copilot.presentation.engine: planner: update Machine Learning > Loss Function (same frame)
+13:36:55 INFO    copilot.presentation.engine: concern 29826cfa2570 (transcription, applied=True): 0 element(s); slide shows '(predicted - actual)² / 2'
+13:36:55 INFO    copilot.presentation.engine: image hint 'Loss Function curves' for 'Loss Function' from its sibling subtopic
+  [SLIDE] update 'Loss Function' [definition] v4 (3 items)
+  [ 1086.3s] The most used loss function in deep learning are Binary Cross Entropy, Categorial Hinge, Mean Squared Error, Q-bar (1154 ms)
+  [ 1095.5s] sparse categorial (435 ms)
+  [ 1097.5s] cross entropy (415 ms)
+  [UNDERSTAND] Machine Learning > Loss Function (same_concept) acts=classification hint=none lines=3 via groq_main#5 2465 ms
+               Listed additional common loss functions such as binary cross entropy, categorical hinge, sparse categorical and cross entropy.
+13:37:20 INFO    copilot.presentation.engine: planner: update Machine Learning > Loss Function (same frame)
+13:37:20 INFO    copilot.presentation.engine: image hint 'Loss Function curves' for 'Loss Function' from its sibling subtopic
+  [SLIDE] update 'Loss Function' [definition] v5 (3 items)
+  [SLIDE] add    'Loss Function' [hierarchy] v1 (1 items)
+  [ 1103.9s] back propagation in forwarding propagation. AB initializes our neural network with random inputs to produce an output that is random to make our model perform better we adjust weights (1138 ms)
+  [ 1118.2s] randomly using. (492 ms)
+  [ 1120.5s] back propagation. (415 ms)
+  [ 1122.3s] To track the model's performance, we need a loss function that will find global minima and maximize the model accuracy. (982 ms)
+  [UNDERSTAND] Machine Learning > Backpropagation (sibling_concept) acts=explanation hint=none lines=3 via groq_main#5 4086 ms
+               Introduced random weight initialization and backpropagation for adjusting network weights.
+13:37:39 INFO    copilot.presentation.engine: planner: continue Machine Learning > Backpropagation (new facet)
+  [SLIDE] add    'Backpropagation' [key_points] v1 (2 items)
+13:37:39 INFO    copilot.presentation.engine: image search 'neural network training diagram' (diagram) for 'Backpropagation'
+13:37:43 INFO    copilot.visuals.finder: image search 'neural network training diagram': 8 slow download(s) dropped
+13:37:43 INFO    copilot.presentation.engine: image 'neural network training diagram': none (downloads failed)
+  [IMAGE] 'neural network training diagram' -> none (downloads failed) (4.5 s)
+  [ 1132.1s] stochastic gradient descent gradient descent is used to optimize loss function by changing weight in a controlled way to achieve minimum loss (883 ms)
+  [SLIDE] update 'Backpropagation' [key_points] v2 (3 items)
+  [UNDERSTAND] Machine Learning > Backpropagation (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 2371 ms
+               Explained loss function goal and SGD as the optimizer for backpropagation.
+13:37:56 INFO    copilot.presentation.engine: planner: update Machine Learning > Backpropagation (same frame)
+  [SLIDE] update 'Backpropagation' [key_points] v3 (2 items)
+  [SLIDE] update 'Backpropagation' [key_points] v4 (4 items)
+  [ 1141.1s] Now we have an objective but we need direction to on whether the increase or decrease the weights to achieve better performance. The derivative of the loss function will give us direction and we can use it to benefit the weights of the network. (1351 ms)
+  [SLIDE] update 'Backpropagation' [key_points] v5 (5 items)
+  [UNDERSTAND] Machine Learning > Backpropagation (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 2168 ms
+               Derivative of the loss function tells how to adjust weights for better performance.
+13:38:03 INFO    copilot.presentation.engine: planner: update Machine Learning > Backpropagation (same frame)
+  [SLIDE] update 'Backpropagation' [key_points] v6 (4 items)
+  [SLIDE] update 'Backpropagation' [key_points] v7 (5 items)
+  [ 1156.0s] the equation below shows w equals w minus jw in stochastic gradient descent samples are divided into batches instead of using the entire data set to optimize gradient descent (1196 ms)
+  [SLIDE] update 'Backpropagation' [key_points] v8 (6 items)
+  [ 1168.7s] This is useful if you want to achieve minimum loss faster and optimized (804 ms)
+  [SLIDE] update 'Backpropagation' [key_points] v9 (6 items)
+  [ 1174.1s] Computational Power (450 ms)
+  [SLIDE] update 'Backpropagation' [key_points] v10 (5 items)
+  [UNDERSTAND] Machine Learning > Backpropagation (elaboration) acts=explanation,explanation hint=process_flow lines=3 via groq_main#5 1905 ms
+               Introduced the SGD weight‑update equation and mini‑batch training to achieve faster loss minimization, noting the need for computational power.
+13:38:33 INFO    copilot.presentation.engine: planner: update Machine Learning > Backpropagation (same frame)
+  [SLIDE] update 'Backpropagation' [key_points] v11 (8 items)
+  [ 1176.4s] Hyperparameters are the tunable parameters adjusted before running the training process. These parameters directly affect model performance and help you achieve faster global minimum. (1066 ms)
+13:38:41 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Backpropagation' -> same_concept
+  [UNDERSTAND] Machine Learning > Backpropagation (same_concept) acts=definition,explanation hint=none lines=1 via groq_main#5 2483 ms
+               Introduced hyperparameters as tunable parameters set before training that affect performance and speed convergence to the global minimum.
+13:38:41 INFO    copilot.presentation.engine: planner: update Machine Learning > Backpropagation (same frame)
+  [SLIDE] update 'Backpropagation' [key_points] v12 (8 items)
+  [SLIDE] add    'Backpropagation' [members] v1 (3 items)
+  [ 1191.6s] Some of the most used hyperparameters are learning rate, batch size, number of epochs. (726 ms)
+  [ 1199.5s] Now let's learn about some popular algorithms of deep learning. (802 ms)
+  [UNDERSTAND] Machine Learning > Backpropagation (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1560 ms
+               Listed common hyperparameters: learning rate, batch size, epochs.
+13:38:48 INFO    copilot.presentation.engine: planner: update Machine Learning > Backpropagation (same frame)
+  [SLIDE] update 'Backpropagation' [members] v2 (6 items)
+13:38:48 INFO    copilot.presentation.engine: image search 'neural network training diagram' (diagram) for 'Backpropagation'
+13:38:53 INFO    copilot.visuals.finder: image search 'neural network training diagram': 8 slow download(s) dropped
+13:38:53 INFO    copilot.presentation.engine: image 'neural network training diagram': none (downloads failed)
+  [IMAGE] 'neural network training diagram' -> none (downloads failed) (4.5 s)
+  [ 1203.4s] The Convolutional Neural Networks The Convolutional Neural Network, CNN, is a feed-forward neural network capable of producing a structured array of data. (1103 ms)
+  [ 1212.8s] It is widely used for computer vision applications such as image classification. (737 ms)
+  [UNDERSTAND] Machine Learning > Convolutional Neural Networks (sibling_concept) acts=definition hint=definition lines=2 via groq_main#5 3436 ms
+               Introduced CNN as a feed‑forward network that outputs structured data
+13:39:04 INFO    copilot.presentation.engine: planner: continue Machine Learning > Convolutional Neural Networks (new facet)
+  [SLIDE] add    'Convolutional Neural Networks' [definition] v1 (1 items)
+13:39:04 INFO    copilot.presentation.engine: image search 'Convolutional Neural Network diagram' (diagram) for 'Convolutional Neural Networks'
+13:39:10 INFO    copilot.visuals.finder: image source failed: ReadTimeout('')
+13:39:10 INFO    copilot.visuals.finder: image search 'Convolutional Neural Network diagram': 3 slow download(s) dropped
+  [ 1218.3s] CNNs are good at recognizing patterns, lines and shapes. The CNN consists of Convolutional Layers. (948 ms)
+13:39:10 INFO    copilot.presentation.engine: image 'Convolutional Neural Network diagram': none (downloads failed)
+  [IMAGE] 'Convolutional Neural Network diagram' -> none (downloads failed) (6.4 s)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v2 (1 items)
+  [UNDERSTAND] Machine Learning > Convolutional Neural Networks (elaboration) acts=explanation hint=key_points lines=2 via groq_main#6 1879 ms
+               Added that CNNs are popular for vision tasks and excel at pattern, line, and shape recognition using convolutional layers.
+13:39:16 INFO    copilot.presentation.engine: planner: update Machine Learning > Convolutional Neural Networks (same frame)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v3 (1 items)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v4 (3 items)
+  [ 1225.5s] pooling layer and output layer. The image classification models usually contain multiple convolution layers followed by pooling layers as additional layers increase the accuracy of the model. (1137 ms)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v5 (4 items)
+  [ 1237.9s] recurrent neural network (430 ms)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v6 (4 items)
+  [ 1239.9s] The current neural networks are different from feed-forward (789 ms)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v7 (4 items)
+  [ 1244.2s] networks as the output of (577 ms)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v8 (4 items)
+  [UNDERSTAND] Machine Learning > Convolutional Neural Networks (elaboration) acts=explanation,definition hint=key_points lines=4 via groq_main#5 2714 ms
+               Added pooling and output layers, noted accuracy boost, and introduced recurrent neural networks.
+13:39:42 INFO    copilot.presentation.engine: planner: update Machine Learning > Convolutional Neural Networks (same frame)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v9 (3 items)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v10 (6 items)
+  [SLIDE] add    'Convolutional Neural Networks' [members] v1 (1 items)
+  [ 1247.0s] the layer is fed back into this input to predict the output of the layer. This helps it perform better with sequential data as it can store the information of previous samples to predict future samples. (1154 ms)
+  [SLIDE] update 'Convolutional Neural Networks' [members] v2 (1 items)
+  [UNDERSTAND] Machine Learning > Convolutional Neural Networks (elaboration) acts=- hint=definition lines=1 via groq_main#5 2916 ms
+               Added that RNN feeds its own layer output back as input to handle sequential data.
+13:39:51 INFO    copilot.presentation.engine: revised S1: Recurrent Neural Network (RNN): Connections form directed cycles, feeding a layer’s output back as input, allowing it to store previous…
+13:39:51 INFO    copilot.presentation.engine: planner: noop Machine Learning > Convolutional Neural Networks (nothing to display)
+  [SLIDE] update 'Convolutional Neural Networks' [members] v3 (1 items)
+  [SLIDE] update 'Convolutional Neural Networks' [members] v4 (1 items)
+  [ 1263.2s] In traditional neural networks the output of the layer is calculated based on the current input value but in RNN the output is calculated based on previous inputs too (1128 ms)
+  [SLIDE] update 'Convolutional Neural Networks' [members] v5 (1 items)
+  [ 1272.8s] This makes it quite good for ad-libting the next word for casting stock prices in VHS bots and anomaly detection. (1005 ms)
+  [SLIDE] update 'Convolutional Neural Networks' [members] v6 (1 items)
+13:40:08 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Convolutional Neural Networks' -> same_concept
+  [UNDERSTAND] Machine Learning > Convolutional Neural Networks (same_concept) acts=explanation hint=none lines=2 via groq_main#5 1681 ms
+               Explained that RNNs use past inputs and are useful for language, finance, and anomaly tasks.
+13:40:08 INFO    copilot.presentation.engine: planner: update Machine Learning > Convolutional Neural Networks (same frame)
+  [SLIDE] update 'Convolutional Neural Networks' [members] v7 (3 items)
+  [ 1282.6s] Long short term memory networks, LSTM, are advanced type of recurrent neural networks that can retain greater information on past values. It solves vanishing gradient problems that exist in simple RNN. (1283 ms)
+  [ 1297.5s] The typical RNN consists of repeating neural networks with a large dimension layer whereas LSTM consists of four interactive layers that communicate to large segments of data. (992 ms)
+  [UNDERSTAND] Machine Learning > Long Short-Term Memory Networks (sibling_concept) acts=definition hint=definition lines=1 via groq_main#5 2493 ms
+               Introduced LSTM as an advanced RNN that keeps more past information and fixes vanishing gradients
+13:40:37 INFO    copilot.presentation.engine: planner: continue Machine Learning > Long Short-Term Memory Networks (new facet)
+  [SLIDE] add    'Long Short-Term Memory Networks' [definition] v1 (1 items)
+13:40:37 INFO    copilot.presentation.engine: image search 'LSTM cell diagram' (diagram) for 'Long Short-Term Memory Networks'
+  [ 1313.1s] deep learning frameworks let's learn about deep learning frameworks (682 ms)
+  [SLIDE] update 'Long Short-Term Memory Networks' [definition] v2 (1 items)
+13:40:41 INFO    copilot.visuals.finder: image search 'LSTM cell diagram': 1 slow download(s) dropped
+13:40:41 INFO    copilot.presentation.engine: image 'LSTM cell diagram': none (downloads failed)
+  [IMAGE] 'LSTM cell diagram' -> none (downloads failed) (4.5 s)
+  [UNDERSTAND] Machine Learning > Deep Learning Frameworks (sibling_concept) acts=comparison hint=comparison lines=2 via groq_main#5 2004 ms
+               Explains that typical RNNs use a single large repeating layer, while LSTMs use four interacting layers for larger data segments.
+13:40:55 INFO    copilot.presentation.engine: planner: continue Machine Learning > Deep Learning Frameworks (new facet)
+13:40:55 INFO    copilot.presentation.engine: no image for 'Deep Learning Frameworks': comparison needs the full width
+  [SLIDE] update 'Long Short-Term Memory Networks' [definition] v3 (1 items)
+  [SLIDE] add    'Deep Learning Frameworks' [comparison] v1 (1 items)
+  [ 1316.8s] TensorFlow is an open source library used for creating deep learning applications. It includes all the necessary tools for you to experiment and develop commercial AI products. It supports both CPU, GPU and TPU. (1316 ms)
+  [ 1331.3s] for creating complex models. (462 ms)
+13:41:03 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['It includes all the necessary tools for you to experiment and develop commercial AI products']
+  [UNDERSTAND] Machine Learning > Deep Learning Frameworks (elaboration) acts=definition,explanation hint=definition lines=2 via groq_main#5 1754 ms
+               Introduced TensorFlow as an open‑source deep learning framework supporting multiple hardware types.
+13:41:03 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Frameworks (same frame)
+13:41:03 INFO    copilot.presentation.engine: no image for 'Deep Learning Frameworks': comparison needs the full width
+  [SLIDE] update 'Deep Learning Frameworks' [comparison] v2 (3 items)
+  [ 1335.5s] DF was originally developed by Google AI team for internal use and now is available to the public. (927 ms)
+  [ 1342.6s] the trends of flow (447 ms)
+  [ 1344.3s] API is available for browser based application, mobile device and tensorflow extended. (821 ms)
+  [ 1349.4s] is ideal for production (452 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning Frameworks (elaboration) acts=explanation,explanation hint=key_points lines=3 via groq_main#5 3672 ms
+               Added details on TensorFlow's origin and API availability across platforms
+  [HEARD] 'the trends of flow' -> '(unclear, possibly about data flow trends)' corrected on the slide (0.5)
+13:41:19 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Frameworks (same frame)
+13:41:19 INFO    copilot.presentation.engine: concern 7355c1b0ff66 (transcription, applied=True): 0 element(s); slide shows '(unclear, possibly about data flow trends)'
+13:41:19 INFO    copilot.presentation.engine: no image for 'Deep Learning Frameworks': comparison needs the full width
+  [SLIDE] update 'Deep Learning Frameworks' [comparison] v3 (7 items)
+  [ 1351.6s] TF has now become the industry standard mandate. (790 ms)
+  [ 1355.3s] is used for both academic research and developing deep learning models in production. (835 ms)
+  [UNDERSTAND] Machine Learning > Deep Learning Frameworks (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 3083 ms
+               TensorFlow is highlighted as ideal for production and now the industry‑standard deep learning framework.
+13:41:28 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Frameworks (same frame)
+13:41:28 INFO    copilot.presentation.engine: no image for 'Deep Learning Frameworks': comparison needs the full width
+  [SLIDE] update 'Deep Learning Frameworks' [comparison] v4 (9 items)
+  [UNDERSTAND] Machine Learning > Deep Learning Frameworks (same_concept) acts=- hint=none lines=1 via groq_main#6 2045 ms
+               TensorFlow is used for academic research and production deep‑learning models
+13:41:35 INFO    copilot.presentation.engine: revised S2: It is used for both academic research and developing deep learning models in production
+13:41:35 INFO    copilot.presentation.engine: planner: noop Machine Learning > Deep Learning Frameworks (nothing to display)
+  [SLIDE] update 'Deep Learning Frameworks' [comparison] v5 (9 items)
+  [ 1364.4s] TF also comes with TensorFlow which is dashboard capable of analyzing your machine learning experiments. (1016 ms)
+  [ 1370.9s] Recently TensorFlow developers have integrated Keras into its framework, which is popular for developing deep learning networks. (947 ms)
+13:41:45 WARNING copilot.llm.router: llm groq_main#5 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Machine Learning > Deep Learning Frameworks (same_concept) acts=explanation hint=comparison lines=2 via groq_main#6 6473 ms
+               Added TensorBoard dashboard and Keras integration to TensorFlow framework
+  [HEARD] 'TensorFlow' -> 'TensorBoard' corrected on the slide (0.5)
+13:41:49 INFO    copilot.presentation.engine: planner: update Machine Learning > Deep Learning Frameworks (same frame)
+13:41:49 INFO    copilot.presentation.engine: concern 1859b7732dc4 (transcription, applied=True): 1 element(s); slide shows 'TensorBoard'
+  [SLIDE] update 'Deep Learning Frameworks' [comparison] v6 (9 items)
+  [SLIDE] add    'Deep Learning Frameworks' [key_points] v1 (2 items)
+13:41:49 INFO    copilot.presentation.engine: image search 'TensorFlow framework diagram' (diagram) for 'Deep Learning Frameworks'
+13:41:53 INFO    copilot.presentation.engine: image 'TensorFlow framework diagram': none (no usable candidates)
+  [IMAGE] 'TensorFlow framework diagram' -> none (no usable candidates) (3.7 s)
+  [ 1380.8s] Keras is a neural network framework written in Python and capable of running on multiple frameworks such as tensorflow and the anyway. (1039 ms)
+  [SLIDE] update 'Deep Learning Frameworks' [key_points] v2 (3 items)
+  [ 1389.8s] Keras is an open source library developed to enable fast experimentation in deep learning. (905 ms)
+  [SLIDE] update 'Deep Learning Frameworks' [key_points] v3 (3 items)
+  [ 1396.5s] so that you can easily convert your concept into working applications (874 ms)
+  [SLIDE] update 'Deep Learning Frameworks' [key_points] v4 (3 items)
+  [UNDERSTAND] Machine Learning > Keras (sibling_concept) acts=definition hint=definition lines=2 via groq_main#6 2438 ms
+               Defined Keras as a Python‑based, open‑source neural network framework for rapid deep‑learning experiments.
+13:42:09 INFO    copilot.presentation.engine: planner: continue Machine Learning > Keras (new facet)
+  [SLIDE] add    'Keras' [definition] v1 (1 items)
+13:42:09 INFO    copilot.presentation.engine: image search 'Keras library diagram' (diagram) for 'Keras'
+13:42:13 INFO    copilot.presentation.engine: image 'Keras library diagram': none (no usable candidates)
+  [IMAGE] 'Keras library diagram' -> none (no usable candidates) (3.8 s)
+  [ 1402.4s] the documentation is quite easy to understand and API is similar to NumPy which allows you to easily integrate it with any data science. (982 ms)
+  [SLIDE] update 'Deep Learning Frameworks' [key_points] v5 (2 items)
+  [SLIDE] update 'Keras' [definition] v2 (1 items)
+  [UNDERSTAND] Machine Learning > Keras (elaboration) acts=explanation hint=key_points lines=2 via groq_main#6 2927 ms
+               Teacher emphasized Keras’s ease of turning ideas into applications and its NumPy‑like, easy‑to‑understand API.
+13:42:22 INFO    copilot.presentation.engine: planner: update Machine Learning > Keras (same frame)
+13:42:22 INFO    copilot.presentation.engine: no image for 'Keras': nothing relevant found for 'Keras library diagram' before
+  [SLIDE] update 'Keras' [definition] v3 (1 items)
+  [SLIDE] update 'Keras' [definition] v4 (3 items)
+  [ 1411.9s] projects just like tf, kira can also run on CPU, GPU and TPU based on available hardware (813 ms)
+  [SLIDE] update 'Keras' [definition] v5 (4 items)
+  [ 1418.8s] Bye guys. (427 ms)
+  [SLIDE] update 'Keras' [definition] v6 (3 items)
+  [ 1420.0s] It is. (436 ms)
+  [UNDERSTAND] Machine Learning > Keras (same_concept) acts=- hint=definition lines=2 via groq_main#6 1868 ms
+               Keras can run on CPU, GPU, or TPU depending on the hardware.
+13:42:29 INFO    copilot.presentation.engine: revised S1: Keras: A Python neural network framework that runs on multiple back‑ends such as TensorFlow and can execute on CPU, GPU, or TPU based on…
+13:42:29 INFO    copilot.presentation.engine: planner: noop Machine Learning > Keras (nothing to display)
+  [SLIDE] update 'Keras' [definition] v7 (3 items)
+  [ 1421.0s] The most popular and easiest deep learning framework. It uses tensorflow instead of numpy adding (1021 ms)
+  [ 1427.6s] to perform fast neural numerical (597 ms)
+  [ 1431.8s] Computational (1819 ms)
+  [UNDERSTAND] Machine Learning > Keras (same_concept) acts=- hint=definition lines=1 via groq_main#6 3787 ms
+               Teacher affirmed the Keras definition.
+13:42:39 INFO    copilot.presentation.engine: planner: noop Machine Learning > Keras (nothing to display)
+  [ 1433.8s] powered by GPU. PyTorch is mainly used for deep learning and developing complex machine learning models. Academic researchers prefer using PyTorch because it is its flexibility and ease to use. (1103 ms)
+  [SLIDE] update 'Keras' [definition] v8 (4 items)
+  [UNDERSTAND] Machine Learning > Keras (elaboration) acts=other hint=key_points lines=3 via groq_main#5 3300 ms
+               Keras is the most popular, easiest framework and uses TensorFlow as its backend for fast computations.
+  [HEARD] 'instead of numpy adding to perform fast neural numerical Computational' -> 'uses TensorFlow backend to perform fast neural computations' corrected on the slide (0.5)
+13:42:54 INFO    copilot.presentation.engine: planner: update Machine Learning > Keras (same frame)
+13:42:54 INFO    copilot.presentation.engine: concern f8f95dd9e592 (transcription, applied=True): 0 element(s); slide shows 'uses TensorFlow backend to perform fast neural computations'
+13:42:54 INFO    copilot.presentation.engine: no image for 'Keras': nothing relevant found for 'Keras library diagram' before
+  [SLIDE] update 'Keras' [definition] v9 (4 items)
+  [SLIDE] add    'Keras' [facts] v1 (1 items)
+  [ 1446.9s] It is written in C++ and Python and it also comes with GPUs and TPUs acceleration. (860 ms)
+  [SLIDE] update 'Keras' [definition] v10 (3 items)
+  [ 1453.2s] it has become a one-step and one-stop solution. (755 ms)
+13:43:01 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Keras' -> same_concept
+  [UNDERSTAND] Machine Learning > Keras (same_concept) acts=other,other hint=key_points lines=2 via groq_main#5 2234 ms
+               Keras is written in C++/Python and supports GPU/TPU acceleration; PyTorch is noted for flexibility in research.
+13:43:01 INFO    copilot.presentation.engine: planner: update Machine Learning > Keras (same frame)
+13:43:01 INFO    copilot.presentation.engine: no image for 'Keras': 6 fact tiles
+  [SLIDE] update 'Keras' [facts] v2 (1 items)
+  [ 1456.6s] for all model deep living models (537 ms)
+  [ 1462.1s] Now let's come to the computation. (660 ms)
+  [UNDERSTAND] Machine Learning > Keras (same_concept) acts=other hint=key_points lines=1 via groq_main#5 2615 ms
+               Keras is described as a one-step, one-stop solution for building models.
+13:43:09 INFO    copilot.presentation.engine: planner: update Machine Learning > Keras (same frame)
+13:43:09 INFO    copilot.presentation.engine: no image for 'Keras': 7 fact tiles
+  [SLIDE] update 'Keras' [facts] v3 (1 items)
+  [UNDERSTAND] Machine Learning > Keras (elaboration) acts=other hint=key_points lines=1 via groq_main#5 1759 ms
+               Keras works for all deep learning models.
+13:43:17 INFO    copilot.presentation.engine: planner: update Machine Learning > Keras (same frame)
+13:43:17 INFO    copilot.presentation.engine: no image for 'Keras': 8 fact tiles
+  [SLIDE] update 'Keras' [facts] v4 (1 items)
+  [ 1464.3s] We have covered all what deep learning is, some of the basics of deep learning, how it works and its applications. We have also learnt how deep learning networks work and what about the different types of deep learning models. (1420 ms)
+  [UNDERSTAND] Machine Learning > Computation (sibling_concept) acts=transition hint=none lines=1 via groq_main#5 4417 ms
+               Introduced the computation subtopic for Keras
+13:43:27 INFO    copilot.presentation.engine: planner: noop Machine Learning > Computation (nothing to display)
+  [ 1478.5s] Finally, we have been introduced to some popular deep learning frameworks. (828 ms)
+  [UNDERSTAND] Machine Learning > Computation (same_concept) acts=recap hint=key_points lines=2 via groq_main#6 1844 ms
+               Teacher summarized deep learning basics and introduced popular frameworks
+13:43:33 INFO    copilot.presentation.engine: planner: continue Machine Learning > Computation (new facet)
+13:43:33 INFO    copilot.presentation.engine: image hint 'Computation library diagram' for 'Computation' from its sibling subtopic
+  [SLIDE] add    'Computation' [key_points] v1 (3 items)
+13:43:33 INFO    copilot.presentation.engine: image search 'Computation library diagram' (diagram) for 'Computation'
+13:43:37 INFO    copilot.presentation.engine: image 'Computation library diagram': none (no usable candidates)
+  [IMAGE] 'Computation library diagram' -> none (no usable candidates) (3.8 s)
+[PAUSE] paused: what is said now is not put on slides (Resume to continue)
+  [ 1516.4s] (paused, not used) Okay, I'm gonna do that. (780 ms)
+13:44:02 INFO    copilot.understanding.service: paused: not interpreted: Okay, I'm gonna do that.
+  [ 1519.3s] (paused, not used) This isn't it at all. (1456 ms)
+13:44:07 INFO    copilot.understanding.service: paused: not interpreted: This isn't it at all.
+  [ 1522.1s] (paused, not used) Done. (746 ms)
+13:44:08 INFO    copilot.understanding.service: paused: not interpreted: Done.
+  [ 1523.3s] (paused, not used) But it's nothing. (491 ms)
+13:44:09 INFO    copilot.understanding.service: paused: not interpreted: But it's nothing.
+  [ 1526.3s] (paused, not used) That's it. (522 ms)
+13:44:12 INFO    copilot.understanding.service: paused: not interpreted: That's it.
+13:45:39 INFO    copilot.presentation.engine: teacher delete_item on 'Machine Learning': 1288954afa7e ''
+  [SLIDE] update 'Machine Learning' [definition] v6 (1 items)
+13:46:20 INFO    copilot.materials.service: material ready: Machine Learning - Summary - 12 Oct 2026 (summary, 1 LLM calls, 2069 tokens)
+[MATERIAL] Machine Learning - Summary - 12 Oct 2026 ready, 1 LLM call, 2,069 tokens
+  [SLIDE] add    'Summary' [key_points] v1 (5 items)
+13:46:22 INFO    copilot.materials.service: material ready: Machine Learning - Key concepts - 12 Oct 2026 (concepts, 1 LLM calls, 2263 tokens)
+[MATERIAL] Machine Learning - Key concepts - 12 Oct 2026 ready, 1 LLM call, 2,263 tokens
+  [SLIDE] add    'Key concepts' [facts] v1 (1 items)
+  [SLIDE] add    'Key concepts' [facts] v1 (1 items)
+13:47:04 WARNING copilot.llm.router: LLM groq_main now uses GROQ_API_KEY_6 (GROQ_API_KEY_5 is spent)
+13:47:19 INFO    copilot.materials.service: material ready: Machine Learning - Notes - 12 Oct 2026.pdf (notes, 7 LLM calls, 11417 tokens)
+[MATERIAL] Machine Learning - Notes - 12 Oct 2026.pdf ready, 7 LLM calls, 11,417 tokens
+13:47:23 INFO    copilot.materials.service: material ready: Machine Learning - Assignment - 12 Oct 2026.pdf (assignment, 1 LLM calls, 2224 tokens)
+[MATERIAL] Machine Learning - Assignment - 12 Oct 2026.pdf ready, 1 LLM call, 2,224 tokens
+  [ 1851.9s] (paused, not used) Say hi up in here. (892 ms)
+13:49:38 INFO    copilot.understanding.service: paused: not interpreted: Say hi up in here.
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261012-131824-6883: 195 segments, 3006 words, state v408, 2184 events logged
+        CommandReceived=276, ConceptSignal=189, ConcernRaised=8, DeckState=309, ImageChoices=6, ImageReady=23, ImageRequested=23, InterpretRequested=106, InterpretationReady=106, LLMCallFailed=2, LifecycleChanged=6, SlideContextChanged=102, SlideOverflow=2, SlidePatch=232, StateChanged=408, TranscriptFinal=195, UtteranceClassified=189, UtteranceDropped=2
+        stt: 195 published, 2 dropped, latency p50=835 ms p95=1337 ms max=2249 ms
+        understanding: 106 interpretations (106 by LLM, 0 fallbacks, 0 repaired), max 7 calls/min, prompt tokens max=2087 avg=1971, latency p50=2438 ms max=6473 ms
+        presentation: 37 slides; planner ops {'new': 1, 'update': 62, 'noop': 20, 'continue': 23, 'teacher_delete_item': 1}; revisions 13, corrections shown 2, shown as said 0
+        images: {'requests': 23, 'found': 3, 'none': 20}; slides with an image 5/40
+          1. [definition] Deep Learning [part 1]  (v9, ['definition', 'points'])
+          2. [members] Deep Learning [part 2]  (v2, ['definition', 'points'])
+          3. [definition] Machine Learning  (v6, ['definition'])
+          4. [definition] Deep Learning  (v2, ['definition', 'points', 'image'])
+          5. [definition] Feature Engineering  (v4, ['definition', 'example', 'points'])
+          6. [key_points] Deep Learning Importance [part 1]  (v17, ['points', 'image'])
+          7. [concept] Deep Learning Importance [part 2]  (v11, ['definition', 'definition', 'points', 'points', 'definition'])
+          8. [concept] Deep Learning Importance [part 3]  (v7, ['points', 'example', 'definition', 'definition'])
+          9. [key_points] Deep Learning Importance [part 4]  (v6, ['points', 'image'])
+          10. [members] Artificial Intelligence vs Deep Learning  (v3, ['definition', 'points'])
+          11. [key_points] Artificial Intelligence  (v9, ['points'])
+          12. [key_points] Generative AI  (v7, ['points'])
+          13. [key_points] Time Series Forecasting  (v5, ['points'])
+          14. [example] Automation  (v5, ['example', 'points', 'image'])
+          15. [key_points] Biomedical  (v1, ['points'])
+          16. [members] Deep Learning Models  (v5, ['definition', 'image', 'points'])
+          17. [concept] Unsupervised Learning  (v6, ['definition', 'points', 'definition'])
+          18. [definition] Reinforcement Learning  (v5, ['definition', 'points'])
+          19. [key_points] Generative Adversarial Networks [part 1]  (v12, ['points'])
+          20. [key_points] Generative Adversarial Networks [part 2]  (v5, ['points'])
+          21. [definition] Graph Neural Networks [part 1]  (v6, ['definition', 'points', 'example'])
+          22. [key_points] Graph Neural Networks [part 2]  (v5, ['points', 'hierarchy'])
+          23. [key_points] Graph Neural Networks [part 3]  (v13, ['points'])
+          24. [key_points] Graph Neural Networks [part 4]  (v4, ['points'])
+          25. [definition] Activation Function  (v8, ['definition', 'points'])
+          26. [definition] Loss Function [part 1]  (v5, ['definition', 'example', 'points'])
+          27. [hierarchy] Loss Function [part 2]  (v1, ['hierarchy'])
+          28. [key_points] Backpropagation [part 1]  (v12, ['points'])
+          29. [members] Backpropagation [part 2]  (v2, ['definition', 'points'])
+          30. [definition] Convolutional Neural Networks [part 1]  (v10, ['definition', 'points'])
+          31. [members] Convolutional Neural Networks [part 2]  (v7, ['definition', 'points'])
+          32. [definition] Long Short-Term Memory Networks  (v3, ['definition'])
+          33. [comparison] Deep Learning Frameworks [part 1]  (v6, ['comparison', 'definition', 'points'])
+          34. [key_points] Deep Learning Frameworks [part 2]  (v5, ['points'])
+          35. [definition] Keras [part 1]  (v10, ['definition', 'points'])
+          36. [facts] Keras [part 2]  (v4, ['facts'])
+          37. [key_points] Computation  (v1, ['points'])
+          38. [key_points] Summary  (v1, ['points'])
+          39. [facts] Key concepts [part 1]  (v1, ['facts'])
+          40. [facts] Key concepts [part 2]  (v1, ['facts'])
+        providers: {'groq_main#4': 35, 'groq_main#5': 61, 'groq_main#6': 10}; triggers: {'max_wait': 33, 'words': 24, 'pause': 33, 'boundary': 16}; outline: ['Machine Learning > Activation Function, Loss Function, Backpropagation, Convolutional Neural Networks, Long Short-Term Memory Networks, Deep Learning Frameworks, Keras, Computation']; concerns: 8
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261012-131824-6883\session.sqlite

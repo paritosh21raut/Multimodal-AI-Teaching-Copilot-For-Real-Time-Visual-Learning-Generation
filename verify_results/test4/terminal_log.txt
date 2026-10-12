@@ -1,0 +1,416 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (5.5 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.5 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_3         openai/gpt-oss-120b           116k of 200k tokens IN USE
+        GROQ_API_KEY_4         openai/gpt-oss-120b           193k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~25 min
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 264 lecture minutes
+
+[READY] session 20261012-000922-de12
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+00:09:30 INFO    copilot.visuals.service: CLIP ready in 1.1 s (CPU)
+00:09:33 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    2.1s] Let us study the atomic structure. (494 ms)
+  [    5.2s] But first, let us start with atom. (551 ms)
+  [    8.3s] John Dalton proposed in 1808 that atom is the smallest indivisible particle of matter. (722 ms)
+  [UNDERSTAND] Atomic Structure > Atom (new_topic) acts=transition hint=none lines=2 via groq_main#3 1817 ms
+               Introduced atomic structure and began with the concept of an atom.
+00:09:53 INFO    copilot.presentation.engine: planner: noop Atomic Structure > Atom (nothing to display)
+  [   17.0s] atomic radii are of the order of 10 to the power minus 8 centimeter. (677 ms)
+  [   22.3s] It contains three subatomic particles, namely electrons, protons and neutrons. (678 ms)
+00:10:04 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Atomic radii are of the order of 10 to the power minus 8 centimeter']
+  [UNDERSTAND] Atomic Structure > Atom (same_concept) acts=definition,other,explanation,explanation hint=concept lines=3 via groq_main#3 1186 ms
+               Defined atom as indivisible particle, gave its size and listed its three subparticles
+00:10:04 INFO    copilot.presentation.engine: planner: new Atomic Structure > Atom (first content slide)
+  [SLIDE] add    'Atom' [definition] v1 (4 items)
+00:10:04 INFO    copilot.presentation.engine: image search 'atom diagram' (diagram) for 'Atom'
+  [IMAGE] 'atom diagram' -> File:Atom Diagram.svg (0.0 s, cached)
+00:10:04 INFO    copilot.presentation.engine: image 'atom diagram' on 'Atom': File:Atom Diagram.svg
+  [SLIDE] update 'Atom' [definition] v2 (5 items)
+  [   29.2s] Let us study them individually. (381 ms)
+  [SLIDE] update 'Atom' [definition] v3 (6 items)
+  [   32.2s] electrons (411 ms)
+  [SLIDE] update 'Atom' [definition] v4 (6 items)
+  [   33.7s] Electron was discovered as a result of study of cathode rays by J.J. Thompson. (793 ms)
+  [SLIDE] update 'Atom' [definition] v5 (6 items)
+  [   40.6s] It was named by Stonie. (492 ms)
+  [SLIDE] update 'Atom' [definition] v6 (5 items)
+  [UNDERSTAND] Atomic Structure > Electrons (sub_concept) acts=definition hint=definition lines=3 via groq_main#3 1383 ms
+               Introduced the electron and noted its discovery by J.J. Thompson using cathode rays
+00:10:19 INFO    copilot.presentation.engine: planner: continue Atomic Structure > Electrons (new facet)
+00:10:19 INFO    copilot.presentation.engine: slide 'Electrons' waits for the min dwell time
+00:10:19 INFO    copilot.presentation.engine: image search 'electron diagram' (diagram) for 'Electrons'
+  [SLIDE] add    'Electrons' [definition] v1 (1 items)
+00:10:25 INFO    copilot.visuals.finder: image search 'electron diagram' (diagram, labels preferred): 8 candidate(s), 3 accepted (0 labelled), 6.13 s {'search_s': 2.64, 'download_s': 1.08, 'clip_s': 0.14, 'full_s': 2.24, 'total_s': 6.13}
+  [IMAGE] 'electron diagram' -> File:Electron shell 117 Tennessine - no label.svg (6.1 s)
+00:10:25 INFO    copilot.presentation.engine: image 'electron diagram' on 'Electrons': File:Electron shell 117 Tennessine - no label.svg
+  [SLIDE] update 'Electrons' [definition] v2 (2 items)
+  [   43.3s] it carries a unit negative charge that is minus 1.6 into 10 to the power minus 19 coulombs (589 ms)
+  [UNDERSTAND] Atomic Structure > Electrons (same_concept) acts=explanation hint=key_points lines=2 via groq_main#3 1435 ms
+               Added the electron’s name origin and its unit negative charge.
+00:10:37 INFO    copilot.presentation.engine: planner: update Atomic Structure > Electrons (same frame)
+00:10:37 INFO    copilot.presentation.engine: no image for 'Electrons': has an image
+  [SLIDE] update 'Electrons' [definition] v3 (4 items)
+  [   51.8s] Mass of electron is 9.11 x 10-31 kg and mass of 1 mole of electron is 0.55 mg. (764 ms)
+  [SLIDE] update 'Electrons' [definition] v4 (5 items)
+  [   65.5s] Some of the characteristics of cathode rays are (585 ms)
+  [SLIDE] update 'Electrons' [definition] v5 (5 items)
+  [UNDERSTAND] Atomic Structure > Electrons (elaboration) acts=other hint=key_points lines=1 via groq_main#3 1048 ms
+               Provided the electron's mass and the mass of one mole of electrons.
+00:10:45 INFO    copilot.presentation.engine: planner: update Atomic Structure > Electrons (same frame)
+00:10:45 INFO    copilot.presentation.engine: no image for 'Electrons': has an image
+  [SLIDE] update 'Electrons' [definition] v6 (6 items)
+00:10:45 INFO    copilot.presentation.engine: slide 3513b1d26d03 overflows on the display; further content continues on a new slide
+  [   69.0s] these travel in straight line away from cathode and produces fluorescence. (570 ms)
+  [SLIDE] update 'Electrons' [definition] v7 (6 items)
+  [   74.2s] when strike the glass wall of discharge tube (513 ms)
+  [SLIDE] update 'Electrons' [definition] v8 (6 items)
+  [   78.5s] this causes mechanical motion in the small pine. (600 ms)
+  [SLIDE] update 'Electrons' [definition] v9 (5 items)
+  [UNDERSTAND] Atomic Structure > Electrons (elaboration) acts=explanation hint=key_points lines=4 via groq_main#3 1495 ms
+               Described how cathode rays travel straight, cause fluorescence, and move a small paddle in a discharge tube.
+00:10:59 INFO    copilot.presentation.engine: planner: update Atomic Structure > Electrons (same frame)
+  [SLIDE] update 'Electrons' [definition] v10 (5 items)
+  [SLIDE] add    'Electrons' [key_points] v1 (3 items)
+00:10:59 INFO    copilot.presentation.engine: image search 'discharge tube with cathode rays' (diagram) for 'Electrons'
+  [   84.4s] Will you listen to their part? (758 ms)
+00:11:04 INFO    copilot.visuals.finder: image search 'discharge tube with cathode rays' (diagram, labels preferred): 7 candidate(s), 3 accepted (1 labelled), 5.00 s {'search_s': 1.43, 'download_s': 1.36, 'clip_s': 0.13, 'full_s': 2.07, 'total_s': 5.0}
+  [IMAGE] 'discharge tube with cathode rays' -> File:Cathode ray tube diagram-en.svg (5.0 s)
+00:11:04 INFO    copilot.presentation.engine: image 'discharge tube with cathode rays' on 'Electrons': File:Cathode ray tube diagram-en.svg
+  [SLIDE] update 'Electrons' [key_points] v2 (4 items)
+  [UNDERSTAND] Atomic Structure > Electrons (same_concept) acts=question hint=none lines=1 via groq_main#3 1034 ms
+               Teacher asked the class a question about the electrons
+00:11:07 INFO    copilot.presentation.engine: planner: noop Atomic Structure > Electrons (nothing to display)
+  [   88.8s] This produces X-ray when strike with metal or hard deflected. (659 ms)
+  [   93.6s] by electric and magnetic field. (302 ms)
+  [UNDERSTAND] Atomic Structure > Electrons (elaboration) acts=explanation hint=key_points lines=2 via groq_main#3 1147 ms
+               X‑rays are generated when electrons hit metal and the rays are steered by electric and magnetic fields.
+00:11:15 INFO    copilot.presentation.engine: planner: update Atomic Structure > Electrons (same frame)
+00:11:15 INFO    copilot.presentation.engine: no image for 'Electrons': has an image
+  [SLIDE] update 'Electrons' [key_points] v3 (6 items)
+  [  101.4s] Let us study about protons. (544 ms)
+  [SLIDE] update 'Electrons' [key_points] v4 (7 items)
+  [  103.9s] Furthermore, discovered proton on the basis of anode ray experiment. (705 ms)
+  [SLIDE] update 'Electrons' [key_points] v5 (7 items)
+  [  109.7s] It carries a unit positive charge of positive 1.6 into 10 to the power minus 19 coulombs. (716 ms)
+  [SLIDE] update 'Electrons' [key_points] v6 (7 items)
+  [UNDERSTAND] Atomic Structure > Protons (sibling_concept) acts=explanation hint=concept lines=2 via groq_main#3 1102 ms
+               Introduced protons and noted their discovery through the anode ray experiment.
+00:11:32 INFO    copilot.presentation.engine: planner: continue Atomic Structure > Protons (new facet)
+00:11:32 INFO    copilot.presentation.engine: image hint 'Protons diagram' for 'Protons' from its sibling subtopic
+  [SLIDE] add    'Protons' [key_points] v1 (1 items)
+00:11:32 INFO    copilot.presentation.engine: image search 'Protons diagram' (diagram) for 'Protons'
+  [  116.7s] the mass of proton is 1.007276 (596 ms)
+  [SLIDE] update 'Electrons' [key_points] v7 (6 items)
+  [SLIDE] update 'Protons' [key_points] v2 (2 items)
+00:11:37 INFO    copilot.visuals.finder: image search 'Protons diagram' (diagram, labels preferred): 4 candidate(s), 3 accepted (1 labelled), 5.11 s {'search_s': 2.43, 'download_s': 1.14, 'clip_s': 0.09, 'full_s': 1.42, 'total_s': 5.11}
+  [IMAGE] 'Protons diagram' -> File:Protons repel.svg (5.1 s)
+00:11:37 INFO    copilot.presentation.engine: image 'Protons diagram' on 'Protons': File:Protons repel.svg
+  [SLIDE] update 'Protons' [key_points] v3 (3 items)
+  [  122.4s] Mu. (284 ms)
+  [SLIDE] update 'Protons' [key_points] v4 (2 items)
+  [UNDERSTAND] Atomic Structure > Protons (elaboration) acts=other hint=key_points lines=3 via groq_main#3 5441 ms
+               Protons have a +1.6×10⁻¹⁹ C charge and a mass of 1.007276 u.
+  [HEARD] 'Mu.' -> 'u' corrected on the slide (0.5)
+00:11:44 INFO    copilot.presentation.engine: planner: update Atomic Structure > Protons (same frame)
+00:11:44 INFO    copilot.presentation.engine: concern 1a6b9e24124b (transcription, applied=True): 1 element(s); slide shows 'u'
+  [SLIDE] update 'Protons' [key_points] v5 (3 items)
+  [  124.6s] that lead to the power, in e by m, ratio of protons is 9.58 into 10 to the power minus 4 coulombs per gram. (848 ms)
+  [SLIDE] update 'Protons' [key_points] v6 (4 items)
+00:11:49 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['That lead to the power, in e by m, ratio of protons is 9.58 into 10 to the power minus 4 coulombs per gram']
+  [UNDERSTAND] Atomic Structure > Protons (same_concept) acts=other,explanation hint=key_points lines=1 via groq_main#4 1029 ms
+               Protons have a charge of 9.58×10⁻⁴ coulombs per gram.
+00:11:49 INFO    copilot.presentation.engine: planner: update Atomic Structure > Protons (same frame)
+  [SLIDE] update 'Protons' [key_points] v7 (3 items)
+  [SLIDE] update 'Protons' [key_points] v8 (4 items)
+  [  136.4s] This E by Phi M ratio is maximum for Hydrogen gas. (669 ms)
+  [SLIDE] update 'Protons' [key_points] v9 (5 items)
+  [UNDERSTAND] Atomic Structure > Protons (same_concept) acts=other hint=key_points lines=1 via groq_main#3 5174 ms
+               The e/m ratio is highest for hydrogen gas.
+00:12:02 INFO    copilot.presentation.engine: planner: update Atomic Structure > Protons (same frame)
+  [SLIDE] update 'Protons' [key_points] v10 (4 items)
+  [SLIDE] update 'Protons' [key_points] v11 (4 items)
+  [  147.6s] neutrons neutrons are neutral particles it was discovered by chadwick 1932 (643 ms)
+  [SLIDE] update 'Protons' [key_points] v12 (5 items)
+  [  155.4s] the mass of neutron is 1.675 x 10-24 gm or 1.008665 (725 ms)
+  [SLIDE] update 'Protons' [key_points] v13 (5 items)
+  [  165.3s] Mu. (413 ms)
+  [UNDERSTAND] Atomic Structure > Neutrons (sibling_concept) acts=definition,other hint=none lines=3 via groq_main#3 1558 ms
+               Introduced neutrons as neutral particles discovered in 1932 with a mass of 1.675×10⁻²⁴ g (1.008665 u).
+00:12:23 INFO    copilot.presentation.engine: planner: continue Atomic Structure > Neutrons (new facet)
+  [SLIDE] update 'Protons' [key_points] v14 (4 items)
+  [SLIDE] add    'Neutrons' [definition] v1 (2 items)
+00:12:23 INFO    copilot.presentation.engine: image search 'neutron diagram' (diagram) for 'Neutrons'
+00:12:27 INFO    copilot.visuals.finder: image search 'neutron diagram': 1 slow download(s) dropped
+00:12:28 INFO    copilot.visuals.finder: image search 'neutron diagram' (diagram, labels preferred): 7 candidate(s), 3 accepted (1 labelled), 5.59 s {'search_s': 2.55, 'download_s': 1.95, 'clip_s': 0.14, 'full_s': 0.92, 'total_s': 5.59}
+  [IMAGE] 'neutron diagram' -> File:Neutron star cross section numbered.svg (5.6 s)
+00:12:28 INFO    copilot.presentation.engine: image 'neutron diagram' on 'Neutrons': File:Neutron star cross section numbered.svg
+  [SLIDE] update 'Neutrons' [definition] v2 (3 items)
+  [  180.7s] Let us understand the Thompson's atomic model. It states that the atom is a positive sphere with number of electrons distributed within the sphere. (847 ms)
+  [  191.6s] It is also known as the Plum coding model. (549 ms)
+  [UNDERSTAND] Atomic Structure > Thompson Model (sibling_concept) acts=definition hint=definition lines=1 via groq_main#3 1233 ms
+               Introduced Thompson's atomic model: a positively charged sphere containing electrons.
+00:12:50 INFO    copilot.presentation.engine: planner: continue Atomic Structure > Thompson Model (new facet)
+  [SLIDE] add    'Thompson Model' [members] v1 (1 items)
+00:12:50 INFO    copilot.presentation.engine: image search 'Thompson atomic model diagram' (diagram) for 'Thompson Model'
+00:12:52 INFO    copilot.presentation.engine: image 'Thompson atomic model diagram': none (no usable candidates)
+  [IMAGE] 'Thompson atomic model diagram' -> none (no usable candidates) (1.4 s)
+  [  194.6s] It explains the neutrality of an atom. (507 ms)
+  [  198.0s] This model could not explain the results of render force thread to experiment. (686 ms)
+  [UNDERSTAND] Atomic Structure > Thompson Model (same_concept) acts=other,explanation hint=concept lines=3 via groq_main#3 1466 ms
+               Added alternative name, noted neutrality explanation, and limitation regarding Rutherford experiment
+  [HEARD] 'render force thread to experiment' -> 'Rutherford scattering experiment' corrected on the slide (0.5)
+00:12:59 INFO    copilot.presentation.engine: planner: update Atomic Structure > Thompson Model (same frame)
+00:12:59 INFO    copilot.presentation.engine: concern c20bd23cb8a3 (transcription, applied=True): 1 element(s); slide shows 'Rutherford scattering experiment'
+  [SLIDE] update 'Thompson Model' [members] v2 (4 items)
+00:12:59 INFO    copilot.presentation.engine: image search 'Thomson atomic model diagram' (diagram) for 'Thompson Model'
+  [  203.8s] Let us study the Rutherford's nuclear model of atom. (576 ms)
+00:13:02 INFO    copilot.visuals.finder: image search 'Thomson atomic model diagram' (diagram, labels preferred): 3 candidate(s), 2 accepted (0 labelled), 3.44 s {'search_s': 1.48, 'download_s': 0.96, 'clip_s': 0.07, 'full_s': 0.92, 'total_s': 3.44}
+  [IMAGE] 'Thomson atomic model diagram' -> File:Thomson atom seven electrons.svg (3.4 s)
+00:13:02 INFO    copilot.presentation.engine: image 'Thomson atomic model diagram' on 'Thompson Model': File:Thomson atom seven electrons.svg
+  [SLIDE] update 'Thompson Model' [members] v3 (5 items)
+  [  207.4s] It is based on Alpha Particle Scattering Experiment. (515 ms)
+  [  211.1s] Therefore presented them. (440 ms)
+  [UNDERSTAND] Atomic Structure > Rutherford's Nuclear Model (sibling_concept) acts=explanation hint=concept lines=2 via groq_main#4 995 ms
+               Introduced Rutherford's nuclear model, noting it stems from the alpha‑particle scattering experiment.
+00:13:08 INFO    copilot.presentation.engine: planner: continue Atomic Structure > Rutherford's Nuclear Model (new facet)
+00:13:08 INFO    copilot.presentation.engine: image hint "Rutherford's Nuclear Model diagram" for "Rutherford's Nuclear Model" from its sibling subtopic
+  [SLIDE] add    "Rutherford's Nuclear Model" [key_points] v1 (1 items)
+00:13:08 INFO    copilot.presentation.engine: image search "Rutherford's Nuclear Model diagram" (diagram) for "Rutherford's Nuclear Model"
+  [  213.2s] Most of that is empty. (469 ms)
+00:13:10 INFO    copilot.presentation.engine: image "Rutherford's Nuclear Model diagram": none (no usable candidates)
+  [IMAGE] "Rutherford's Nuclear Model diagram" -> none (no usable candidates) (1.6 s)
+  [  215.8s] atom possesses for highly dense (499 ms)
+  [  218.7s] positively examined. (1114 ms)
+  [UNDERSTAND] Atomic Structure > Rutherford's Nuclear Model (elaboration) acts=explanation hint=key_points lines=4 via groq_main#3 1021 ms
+               Added that the atom has a highly dense, positively charged nucleus.
+00:13:17 INFO    copilot.presentation.engine: planner: update Atomic Structure > Rutherford's Nuclear Model (same frame)
+00:13:17 INFO    copilot.presentation.engine: image hint "Rutherford's Nuclear Model diagram" for "Rutherford's Nuclear Model" from its sibling subtopic
+00:13:17 INFO    copilot.presentation.engine: no image for "Rutherford's Nuclear Model": nothing relevant found for "Rutherford's Nuclear Model diagram" before
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v2 (2 items)
+  [  222.5s] and the radius of the order 10 to the power minus 13 centimeter. (636 ms)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v3 (3 items)
+00:13:25 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The radius of the order 10 to the power minus 13 centimeter']
+  [UNDERSTAND] Atomic Structure > Rutherford's Nuclear Model (elaboration) acts=other,explanation hint=key_points lines=1 via groq_main#4 857 ms
+               The nucleus radius is about 10⁻¹³ cm.
+00:13:25 INFO    copilot.presentation.engine: planner: update Atomic Structure > Rutherford's Nuclear Model (same frame)
+00:13:25 INFO    copilot.presentation.engine: image hint "Rutherford's Nuclear Model diagram" for "Rutherford's Nuclear Model" from its sibling subtopic
+00:13:25 INFO    copilot.presentation.engine: no image for "Rutherford's Nuclear Model": nothing relevant found for "Rutherford's Nuclear Model diagram" before
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v4 (2 items)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v5 (4 items)
+  [  229.2s] and tell mass of the atom is centric. (518 ms)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v6 (5 items)
+  [  234.7s] He said dig it, yes. (606 ms)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v7 (4 items)
+  [UNDERSTAND] Atomic Structure > Rutherford's Nuclear Model (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 1092 ms
+               Mass of the atom is concentrated in the nucleus
+00:13:33 INFO    copilot.presentation.engine: planner: update Atomic Structure > Rutherford's Nuclear Model (same frame)
+00:13:33 INFO    copilot.presentation.engine: image hint "Rutherford's Nuclear Model diagram" for "Rutherford's Nuclear Model" from its sibling subtopic
+00:13:33 INFO    copilot.presentation.engine: no image for "Rutherford's Nuclear Model": nothing relevant found for "Rutherford's Nuclear Model diagram" before
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v8 (5 items)
+  [  237.7s] electrons revolve around the nucleus in circular orbits. (613 ms)
+  [UNDERSTAND] Atomic Structure > Rutherford's Nuclear Model (elaboration) acts=explanation hint=concept lines=2 via groq_main#4 1431 ms
+               Students learned that electrons travel in circular orbits around the nucleus in Rutherford's model.
+00:13:42 INFO    copilot.presentation.engine: planner: update Atomic Structure > Rutherford's Nuclear Model (same frame)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v9 (6 items)
+00:13:42 INFO    copilot.presentation.engine: image search 'atom with circular electron orbits' (diagram) for "Rutherford's Nuclear Model"
+  [  242.1s] Electrodes and the nucleus all hang together by electrostatic force of attraction. (732 ms)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v10 (7 items)
+00:13:44 INFO    copilot.visuals.finder: image search 'atom with circular electron orbits' (diagram, labels preferred): 1 candidate(s), 1 accepted (0 labelled), 2.55 s {'search_s': 1.46, 'download_s': 0.52, 'clip_s': 0.04, 'full_s': 0.51, 'total_s': 2.55}
+  [IMAGE] 'atom with circular electron orbits' -> File:Atomic-orbital-clouds spd m0.png (2.5 s)
+00:13:44 INFO    copilot.presentation.engine: no room for an image on "Rutherford's Nuclear Model"
+  [UNDERSTAND] Atomic Structure > Rutherford's Nuclear Model (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 899 ms
+               Electrostatic attraction binds electrons to the nucleus
+00:13:49 INFO    copilot.presentation.engine: planner: update Atomic Structure > Rutherford's Nuclear Model (same frame)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v11 (6 items)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v12 (7 items)
+00:13:49 INFO    copilot.presentation.engine: no room for an image on "Rutherford's Nuclear Model"
+  [  252.8s] the drawbacks of that first model are (480 ms)
+  [  256.2s] according to electromagnetic theory when charged particles are in accelerated the electromagnetic radiations. (717 ms)
+00:14:03 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic "Rutherford's Nuclear Model" -> same_concept
+  [UNDERSTAND] Atomic Structure > Rutherford's Nuclear Model (same_concept) acts=explanation,explanation hint=concept lines=2 via groq_main#3 1365 ms
+               Discussed drawbacks of Thomson model and radiation from accelerating charges
+00:14:03 INFO    copilot.presentation.engine: planner: update Atomic Structure > Rutherford's Nuclear Model (same frame)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v13 (9 items)
+00:14:04 INFO    copilot.presentation.engine: no room for an image on "Rutherford's Nuclear Model"
+  [  265.4s] which comes by electronic motion and thus orbits continuously. (511 ms)
+  [  271.1s] It will shrink. (354 ms)
+  [UNDERSTAND] Atomic Structure > Rutherford's Nuclear Model (elaboration) acts=- hint=concept lines=1 via groq_main#4 1346 ms
+               Clarified that radiation arises from the continuous motion of electrons in their orbits.
+00:14:11 INFO    copilot.presentation.engine: revised S8: Accelerated charged particles emit electromagnetic radiation, which comes from electronic motion and thus orbits continuously
+00:14:11 INFO    copilot.presentation.engine: planner: noop Atomic Structure > Rutherford's Nuclear Model (nothing to display)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v14 (9 items)
+  [  272.4s] So the atom is unstable. That's because it explains (636 ms)
+00:14:12 INFO    copilot.presentation.engine: slide 4d4dd617c763 overflows on the display; further content continues on a new slide
+  [  277.0s] The every instability of atom. (554 ms)
+  [UNDERSTAND] Atomic Structure > Rutherford's Nuclear Model (same_concept) acts=explanation hint=key_points lines=1 via groq_main#3 2038 ms
+               The atom will shrink due to radiation loss.
+00:14:20 INFO    copilot.presentation.engine: planner: update Atomic Structure > Rutherford's Nuclear Model (same frame)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v15 (9 items)
+  [SLIDE] add    "Rutherford's Nuclear Model" [key_points] v1 (1 items)
+00:14:20 INFO    copilot.presentation.engine: image 'atom with circular electron orbits' kept on "Rutherford's Nuclear Model" (same visual as this topic's image)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v2 (2 items)
+  [  284.1s] it doesn't say anything about the electronic distribution around the eye nucleus. (648 ms)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v3 (3 items)
+  [UNDERSTAND] Atomic Structure > Rutherford's Nuclear Model (elaboration) acts=explanation hint=key_points lines=3 via groq_main#4 1038 ms
+               The teacher noted that the Rutherford model leaves the atom unstable and fails to explain electron distribution.
+00:14:27 INFO    copilot.presentation.engine: planner: update Atomic Structure > Rutherford's Nuclear Model (same frame)
+00:14:27 INFO    copilot.presentation.engine: no image for "Rutherford's Nuclear Model": has an image
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v4 (2 items)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v5 (4 items)
+  [  292.4s] That is really atomic number. (492 ms)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v6 (5 items)
+  [  294.4s] I turned it into a bar of an element (347 ms)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v7 (5 items)
+  [  299.2s] correct corresponds to the total number of protons present in the nucleus or total number of electrons present in the neutral atom (698 ms)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v8 (5 items)
+  [UNDERSTAND] Atomic Structure > Atomic Number (sibling_concept) acts=definition hint=definition lines=3 via groq_main#3 1075 ms
+               Defined atomic number as the count of protons (or electrons in a neutral atom).
+00:14:48 INFO    copilot.presentation.engine: planner: continue Atomic Structure > Atomic Number (new facet)
+  [SLIDE] update "Rutherford's Nuclear Model" [key_points] v9 (4 items)
+  [SLIDE] add    'Atomic Number' [definition] v1 (1 items)
+00:14:48 INFO    copilot.presentation.engine: image search 'periodic table element' (photo) for 'Atomic Number'
+  [  310.2s] the mass number a the mass of the nucleus is due to proton and neutrons (461 ms)
+  [SLIDE] update 'Atomic Number' [definition] v2 (1 items)
+  [  316.1s] Thus, they are collectively called nucleons. (529 ms)
+00:14:54 INFO    copilot.visuals.finder: image search 'periodic table element' (photo): 8 candidate(s), 3 accepted (0 labelled), 5.88 s {'search_s': 1.47, 'download_s': 1.13, 'clip_s': 0.16, 'full_s': 3.07, 'total_s': 5.88}
+  [IMAGE] 'periodic table element' -> File:Periodic Table-1.png (5.9 s)
+00:14:54 INFO    copilot.presentation.engine: image 'periodic table element' on 'Atomic Number': File:Periodic Table-1.png
+  [SLIDE] update 'Atomic Number' [definition] v3 (2 items)
+  [  320.1s] the total number of nuclei is termed as the mass of the atom. (610 ms)
+  [UNDERSTAND] Atomic Structure > Mass Number (sibling_concept) acts=definition,explanation hint=none lines=3 via groq_main#3 1563 ms
+               Introduced mass number as the total protons and neutrons, noting they are called nucleons
+00:15:01 INFO    copilot.presentation.engine: planner: continue Atomic Structure > Mass Number (new facet)
+00:15:01 INFO    copilot.presentation.engine: slide 'Mass Number' waits for the min dwell time
+  [SLIDE] update 'Atomic Number' [definition] v4 (2 items)
+00:15:01 INFO    copilot.presentation.engine: image search 'atomic nucleus' (diagram) for 'Mass Number'
+  [SLIDE] add    'Mass Number' [definition] v1 (2 items)
+00:15:06 INFO    copilot.visuals.finder: image search 'atomic nucleus' (diagram, labels preferred): 6 candidate(s), 3 accepted (1 labelled), 4.85 s {'search_s': 1.48, 'download_s': 1.51, 'clip_s': 0.11, 'full_s': 1.73, 'total_s': 4.85}
+  [IMAGE] 'atomic nucleus' -> File:Radioactive decay of atomic nucleus (PSF).png (4.8 s)
+00:15:06 INFO    copilot.presentation.engine: image 'atomic nucleus' on 'Mass Number': File:Radioactive decay of atomic nucleus (PSF).png
+  [SLIDE] update 'Mass Number' [definition] v2 (3 items)
+  [  333.9s] different types of atomic species. (590 ms)
+  [SLIDE] update 'Mass Number' [definition] v3 (4 items)
+  [  336.7s] caused isotopes. These are the species with same atomic number but different mass number. (503 ms)
+  [SLIDE] update 'Mass Number' [definition] v4 (4 items)
+  [  344.2s] isobars species with same mass number but different (629 ms)
+  [SLIDE] update 'Mass Number' [definition] v5 (4 items)
+  [UNDERSTAND] Atomic Structure > Isotopes (sibling_concept) acts=definition hint=definition lines=2 via groq_main#3 1364 ms
+               Isotopes are atoms that share an atomic number yet have different mass numbers.
+00:15:24 INFO    copilot.presentation.engine: planner: continue Atomic Structure > Isotopes (new facet)
+  [SLIDE] add    'Isotopes' [definition] v1 (1 items)
+00:15:24 INFO    copilot.presentation.engine: image search 'isotope chart' (diagram) for 'Isotopes'
+  [  349.7s] atomic number (329 ms)
+  [SLIDE] update 'Mass Number' [definition] v6 (3 items)
+  [SLIDE] update 'Isotopes' [definition] v2 (1 items)
+00:15:30 INFO    copilot.visuals.finder: image search 'isotope chart' (diagram, labels preferred): 7 candidate(s), 3 accepted (0 labelled), 5.47 s {'search_s': 1.5, 'download_s': 1.85, 'clip_s': 0.14, 'full_s': 1.96, 'total_s': 5.47}
+  [IMAGE] 'isotope chart' -> File:Isotope CNO.svg (5.5 s)
+00:15:30 INFO    copilot.presentation.engine: image 'isotope chart' on 'Isotopes': File:Isotope CNO.svg
+  [SLIDE] update 'Isotopes' [definition] v3 (2 items)
+  [  352.8s] isotopes species having same number of neutrons. (626 ms)
+  [UNDERSTAND] Atomic Structure > Isobars (sibling_concept) acts=definition hint=definition lines=3 via groq_main#3 1853 ms
+               Introduced isobars definition and flagged incorrect isotopes definition
+  [CONCERN] (factual) isotopes species having same number of neutrons -> Isotopes are species with the same atomic number but different mass numbers (0.95, slide shows the correction)
+00:15:34 INFO    copilot.presentation.engine: planner: continue Atomic Structure > Isobars (new facet)
+00:15:34 INFO    copilot.presentation.engine: slide 'Isobars' waits for the min dwell time
+00:15:34 INFO    copilot.presentation.engine: concern 117b85f1f936 (factual, applied=True): 0 element(s); slide shows 'same atomic number but different mass numbers'
+  [SLIDE] update 'Isotopes' [definition] v4 (2 items)
+00:15:34 INFO    copilot.presentation.engine: image search 'isobars chart' (diagram) for 'Isobars'
+00:15:39 INFO    copilot.visuals.finder: image search 'isobars chart' (diagram, labels preferred): 8 candidate(s), 1 accepted (0 labelled), 5.05 s {'search_s': 1.64, 'download_s': 1.84, 'clip_s': 0.14, 'full_s': 1.41, 'total_s': 5.05}
+  [IMAGE] 'isobars chart' -> File:P-T Diagram of the Pseudo-isobaric temperature gliding binary heat pump.png (5.0 s)
+00:15:39 INFO    copilot.presentation.engine: image 'isobars chart' on 'Isobars': File:P-T Diagram of the Pseudo-isobaric temperature gliding binary heat pump.png
+  [SLIDE] add    'Isobars' [definition] v1 (2 items)
+  [  361.6s] isodifers species with same isotopic number (532 ms)
+  [  369.7s] isoelectric species with same number of electrons (569 ms)
+  [  378.4s] species having same number of atoms and same (559 ms)
+  [  381.7s] number of electrons (296 ms)
+00:16:01 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Isobars' -> same_concept
+  [UNDERSTAND] Atomic Structure > Isobars (same_concept) acts=definition,definition hint=definition lines=4 via groq_main#3 2049 ms
+               Introduced definitions for isoelectric and a misheard term likely intended as isobars
+  [HEARD] 'isodifers' -> 'isobars' corrected on the slide (0.5)
+  [HEARD] 'species having same number of atoms and same number of electrons' -> 'Isoelectric species have the same number of electrons' corrected on the slide (0.5)
+00:16:01 INFO    copilot.presentation.engine: planner: update Atomic Structure > Isobars (same frame)
+00:16:01 INFO    copilot.presentation.engine: concern 393f7c764826 (transcription, applied=True): 1 element(s); slide shows 'isobars'
+00:16:01 INFO    copilot.presentation.engine: concern 1dfa0089219b (transcription, applied=True): 0 element(s); slide shows 'Isoelectric species have the same number of electrons'
+00:16:01 INFO    copilot.presentation.engine: no image for 'Isobars': two concepts side by side
+  [SLIDE] update 'Isobars' [concept] v2 (3 items)
+  [SLIDE] update 'Isobars' [concept] v3 (3 items)
+  [  391.1s] Now let us study the electromagnetic theory. (547 ms)
+  [  394.2s] That makes sense. (648 ms)
+  [UNDERSTAND] Atomic Structure > Isobars (new_topic) acts=transition hint=none lines=1 via groq_main#3 1063 ms
+               Teacher announced moving to electromagnetic theory
+00:16:11 INFO    copilot.presentation.engine: planner: noop Atomic Structure > Isobars (nothing to display)
+  [  395.9s] the energy is emitted from source continuously in the form of radiations and magnetic field. (678 ms)
+  [UNDERSTAND] Atomic Structure > Isobars (new_topic) acts=explanation hint=concept lines=2 via groq_main#4 1512 ms
+               Energy is emitted continuously as radiation and magnetic field in electromagnetic theory.
+00:16:20 INFO    copilot.presentation.engine: planner: update Atomic Structure > Isobars (same frame)
+00:16:20 INFO    copilot.presentation.engine: no image for 'Isobars': two concepts side by side
+  [SLIDE] update 'Isobars' [concept] v4 (4 items)
+  [  403.5s] All the electromagnetic waves travel with (452 ms)
+  [SLIDE] update 'Isobars' [concept] v5 (5 items)
+  [  406.8s] the velocity of light that is 3 into 10 to the power 8 meter per second (651 ms)
+  [SLIDE] update 'Isobars' [concept] v6 (5 items)
+  [  412.2s] and do not require any video for (517 ms)
+  [SLIDE] update 'Isobars' [concept] v7 (4 items)
+  [  416.0s] of propagation. (493 ms)
+  [UNDERSTAND] Electromagnetic Theory > Wave Speed (new_topic) acts=other hint=concept lines=4 via groq_main#3 1200 ms
+               Electromagnetic waves travel at the speed of light (3×10^8 m/s) and need no medium to propagate.
+00:16:34 INFO    copilot.presentation.engine: planner: new Electromagnetic Theory > Wave Speed (new topic confirmed (boundary cue/shift))
+  [SLIDE] add    'Wave Speed' [facts] v1 (1 items)
+00:16:34 INFO    copilot.presentation.engine: image search 'electromagnetic wave' (diagram) for 'Wave Speed'
+00:16:39 INFO    copilot.visuals.finder: image search 'electromagnetic wave' (diagram, labels preferred): 4 candidate(s), 3 accepted (1 labelled), 4.95 s {'search_s': 1.7, 'download_s': 1.1, 'clip_s': 0.08, 'full_s': 2.04, 'total_s': 4.95}
+  [IMAGE] 'electromagnetic wave' -> File:Electromagnetic wave EN.svg (5.0 s)
+00:16:39 INFO    copilot.presentation.engine: image 'electromagnetic wave' on 'Wave Speed': File:Electromagnetic wave EN.svg
+  [SLIDE] update 'Wave Speed' [facts] v2 (2 items)
+  [  445.5s] Let us understand code. (504 ms)
+  [  447.6s] It is the region or space where probability of finding an electron is maximum. (683 ms)
+  [UNDERSTAND] Electromagnetic Theory > Electron Probability Region (digression) acts=definition hint=definition lines=2 via groq_main#3 1257 ms
+               Defines the electron cloud as the region of highest electron probability.
+00:17:09 INFO    copilot.presentation.engine: planner: noop Electromagnetic Theory > Electron Probability Region (digression)
+  [  453.8s] It is also called the peak. We are sure. (589 ms)
+  [  458.5s] zero probability space is called mode. (634 ms)
+  [UNDERSTAND] Electromagnetic Theory > Electron Cloud (sibling_concept) acts=definition,definition hint=definition lines=2 via groq_main#3 2207 ms
+               Defined peak as highest probability point and mode as zero‑probability region in the electron cloud.
+00:17:19 INFO    copilot.presentation.engine: planner: continue Electromagnetic Theory > Electron Cloud (new facet)
+  [SLIDE] add    'Electron Cloud' [concept] v1 (2 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261012-000922-de12: 76 segments, 673 words, state v147, 641 events logged
+        CommandReceived=4, ConceptSignal=76, ConcernRaised=5, DeckState=14, ImageChoices=12, ImageReady=14, ImageRequested=14, InterpretRequested=35, InterpretationReady=35, LifecycleChanged=5, SlideContextChanged=32, SlideOverflow=6, SlidePatch=90, StateChanged=147, TranscriptFinal=76, UtteranceClassified=76
+        stt: 76 published, 0 dropped, latency p50=585 ms p95=793 ms max=1114 ms
+        understanding: 35 interpretations (35 by LLM, 0 fallbacks, 0 repaired), max 8 calls/min, prompt tokens max=2004 avg=1907, latency p50=1346 ms max=5441 ms
+        presentation: 14 slides; planner ops {'noop': 5, 'new': 2, 'continue': 10, 'update': 18}; revisions 1, corrections shown 3, shown as said 0
+        images: {'requests': 14, 'found': 12, 'none': 2}; slides with an image 11/14
+          1. [definition] Atom  (v6, ['definition', 'facts', 'points', 'image'])
+          2. [definition] Electrons [part 1]  (v10, ['definition', 'image', 'points', 'facts'])
+          3. [key_points] Electrons [part 2]  (v7, ['points', 'image'])
+          4. [key_points] Protons  (v14, ['points', 'image', 'facts'])
+          5. [definition] Neutrons  (v2, ['definition', 'facts', 'image'])
+          6. [members] Thompson Model  (v3, ['definition', 'facts', 'points', 'image'])
+          7. [key_points] Rutherford's Nuclear Model [part 1]  (v15, ['points', 'facts'])
+          8. [key_points] Rutherford's Nuclear Model [part 2]  (v9, ['points', 'image'])
+          9. [definition] Atomic Number  (v4, ['definition', 'image'])
+          10. [definition] Mass Number  (v6, ['definition', 'points', 'image'])
+          11. [definition] Isotopes  (v4, ['definition', 'image'])
+          12. [concept] Isobars  (v7, ['definition', 'definition', 'definition', 'points'])
+          13. [facts] Wave Speed  (v2, ['facts', 'image'])
+          14. [concept] Electron Cloud  (v1, ['definition', 'definition'])
+        providers: {'groq_main#3': 28, 'groq_main#4': 7}; triggers: {'max_wait': 8, 'pause': 21, 'boundary': 6}; outline: ["Atomic Structure > Protons, Neutrons, Thompson Model, Rutherford's Nuclear Model, Atomic Number, Mass Number, Isotopes, Isobars", 'Electromagnetic Theory > Wave Speed, Electron Cloud']; concerns: 5
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261012-000922-de12\session.sqlite

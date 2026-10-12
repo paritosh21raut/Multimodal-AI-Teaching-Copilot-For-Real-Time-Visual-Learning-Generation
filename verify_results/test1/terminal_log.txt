@@ -1,0 +1,201 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (11.2 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_2         openai/gpt-oss-120b           105k of 200k tokens IN USE
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 288 lecture minutes
+
+[READY] session 20261011-234016-10a9
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+23:40:30 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+23:42:27 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    4.6s] Hello everyone, let us learn about the Newton's laws of motion. (593 ms)
+  [    8.7s] first let us take a background of this sir Isaac Newton (623 ms)
+  [   15.0s] from 1643 to 1727. He was an English scientist and mathematician famous for his discovery of the law of gravity. He also discovered the three laws of motion. (852 ms)
+  [UNDERSTAND] Newton's Laws of Motion > Background (new_topic) acts=transition,explanation hint=concept lines=2 via groq_main#2 1354 ms
+               Introduced Sir Isaac Newton as the background for his laws of motion
+23:42:57 INFO    copilot.presentation.engine: planner: new Newton's Laws of Motion > Background (first content slide)
+  [SLIDE] add    'Background' [key_points] v1 (1 items)
+  [   28.0s] Newton's laws of motion are (430 ms)
+  [SLIDE] update 'Background' [key_points] v2 (2 items)
+  [   31.1s] Newton's law gives three laws of motion. The first law states that an object at rest tends to stay at rest and an object in motion tends to stay in motion unless acted upon. (822 ms)
+  [SLIDE] update 'Background' [key_points] v3 (2 items)
+  [   45.5s] by unbalanced force. (351 ms)
+  [SLIDE] update 'Background' [key_points] v4 (2 items)
+  [UNDERSTAND] Newton's Laws of Motion > Background (same_concept) acts=explanation hint=key_points lines=2 via groq_main#2 1881 ms
+               Added Newton’s lifespan and achievements to the background slide.
+23:43:16 INFO    copilot.presentation.engine: revised S1: Sir Isaac Newton (1643–1727) was an English scientist and mathematician who discovered gravity and the three laws of motion.
+23:43:16 INFO    copilot.presentation.engine: planner: update Newton's Laws of Motion > Background (same frame)
+  [SLIDE] update 'Background' [key_points] v5 (2 items)
+  [SLIDE] update 'Background' [key_points] v6 (3 items)
+  [   47.5s] So what does this mean? Basically, the object will keep doing what it was doing unless acted on by an unbalanced force. (784 ms)
+  [SLIDE] update 'Background' [key_points] v7 (3 items)
+  [UNDERSTAND] Newton's Laws of Motion > First Law (sub_concept) acts=definition hint=definition lines=2 via groq_main#2 1166 ms
+               Defined the first law of motion as inertia resisting changes without unbalanced force
+23:43:28 INFO    copilot.presentation.engine: planner: continue Newton's Laws of Motion > First Law (new facet)
+  [SLIDE] add    'First Law' [definition] v1 (1 items)
+  [   57.7s] If the object was sitting still, it will remain stationary. If it was moving at a constant velocity, it will keep moving. (681 ms)
+  [SLIDE] update 'Background' [key_points] v8 (2 items)
+  [SLIDE] update 'First Law' [definition] v2 (1 items)
+  [UNDERSTAND] Newton's Laws of Motion > First Law (elaboration) acts=explanation hint=key_points lines=2 via groq_main#2 1174 ms
+               Clarified that objects remain at rest or move uniformly unless an unbalanced force acts.
+23:43:36 INFO    copilot.presentation.engine: planner: update Newton's Laws of Motion > First Law (same frame)
+  [SLIDE] update 'First Law' [definition] v3 (1 items)
+  [SLIDE] update 'First Law' [definition] v4 (3 items)
+  [   65.2s] it takes force to change the motion of an object. (520 ms)
+  [SLIDE] update 'First Law' [definition] v5 (4 items)
+  [   71.0s] What is meant by unbalanced force? (588 ms)
+  [SLIDE] update 'First Law' [definition] v6 (3 items)
+  [UNDERSTAND] Newton's Laws of Motion > First Law (elaboration) acts=explanation hint=concept lines=1 via groq_main#2 2038 ms
+               Force is needed to change an object's motion
+23:43:45 INFO    copilot.presentation.engine: planner: update Newton's Laws of Motion > First Law (same frame)
+  [SLIDE] update 'First Law' [definition] v7 (4 items)
+  [   75.2s] So, Unbalanced Force is if a force on an object are equal and opposite. (484 ms)
+  [   81.0s] They are said to be barristers. (336 ms)
+  [UNDERSTAND] Newton's Laws of Motion > Unbalanced Force (sub_concept) acts=definition hint=definition lines=2 via groq_main#2 1531 ms
+               Provided the correct definition of unbalanced force, correcting the teacher’s mistaken description.
+  [CONCERN] (factual) Unbalanced Force is if a force on an object are equal and opposite. -> Unbalanced force is when the forces on an object are not equal and opposite. (0.95, slide shows the correction)
+23:43:54 INFO    copilot.presentation.engine: planner: continue Newton's Laws of Motion > Unbalanced Force (new facet)
+23:43:54 INFO    copilot.presentation.engine: concern 76d91d1df030 (factual, applied=True): 1 element(s); slide shows 'not equal and opposite'
+  [SLIDE] add    'Unbalanced Force' [definition] v1 (1 items)
+  [   83.3s] and the force experience no change in motion. (569 ms)
+  [   87.2s] But if they are not equal and opposite then the forces are unbalanced and the motion of the object changes. (698 ms)
+  [UNDERSTAND] Newton's Laws of Motion > Unbalanced Force (digression) acts=- hint=none lines=1 via groq_main#2 3957 ms
+               No new slide content was added.
+  [HEARD] 'They are said to be barristers' -> '' corrected on the slide (0.5)
+23:44:04 INFO    copilot.presentation.engine: planner: noop Newton's Laws of Motion > Unbalanced Force (digression)
+  [UNDERSTAND] Newton's Laws of Motion > Unbalanced Force (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 1470 ms
+               Balanced forces result in no change in motion
+23:44:10 INFO    copilot.presentation.engine: planner: update Newton's Laws of Motion > Unbalanced Force (same frame)
+  [SLIDE] update 'Unbalanced Force' [definition] v2 (2 items)
+  [  102.4s] Newton's first law of motion is also called the law of inertia. (688 ms)
+  [SLIDE] update 'Unbalanced Force' [definition] v3 (3 items)
+  [UNDERSTAND] Newton's Laws of Motion > Unbalanced Force (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 4507 ms
+               Unbalanced forces cause a change in an object's motion.
+23:44:21 INFO    copilot.presentation.engine: planner: update Newton's Laws of Motion > Unbalanced Force (same frame)
+  [SLIDE] update 'Unbalanced Force' [definition] v4 (4 items)
+  [  107.8s] Inertia is the tendency of an object to resist changes in its state of motion. (654 ms)
+  [SLIDE] update 'Unbalanced Force' [definition] v5 (4 items)
+  [  114.8s] Thanks. (446 ms)
+  [SLIDE] update 'Unbalanced Force' [definition] v6 (3 items)
+  [UNDERSTAND] Newton's Laws of Motion > Inertia (sibling_concept) acts=definition hint=definition lines=2 via groq_main#3 1034 ms
+               Introduced inertia as the tendency to resist changes in motion and linked it to the first law.
+23:44:25 INFO    copilot.presentation.engine: planner: continue Newton's Laws of Motion > Inertia (new facet)
+  [SLIDE] add    'Inertia' [definition] v1 (1 items)
+  [  116.1s] Really careful. (799 ms)
+  [  120.0s] Newton's first law. (581 ms)
+  [UNDERSTAND] Newton's Laws of Motion > First Law (sibling_concept) acts=transition hint=none lines=3 via groq_main#2 4241 ms
+               Introduced Newton's first law as the next subtopic
+23:44:37 INFO    copilot.presentation.engine: planner: noop Newton's Laws of Motion > First Law (nothing to display)
+  [  126.9s] Now let us start about Newton's second law, the F equals to M M. (519 ms)
+  [  132.3s] Force equals mass times acceleration. Acceleration is the measurement of how quickly an object is changing speed. (674 ms)
+  [UNDERSTAND] Newton's Laws of Motion > Second Law (sibling_concept) acts=definition,definition hint=definition lines=2 via groq_main#2 1188 ms
+               Introduced Newton's second law and defined acceleration
+23:44:55 INFO    copilot.presentation.engine: planner: continue Newton's Laws of Motion > Second Law (new facet)
+  [SLIDE] add    'Second Law' [concept] v1 (2 items)
+  [  139.6s] then what does this F equal to M in its force is directly proportional to the mass and acceleration (761 ms)
+  [  146.0s] Imagine a ball of a certain mass moving at a certain acceleration. This ball has a certain force. (650 ms)
+  [  153.5s] Now imagine we take the bolt (517 ms)
+  [  156.1s] twice as big (277 ms)
+23:45:11 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Imagine a ball of a certain mass moving at a certain acceleration']
+  [UNDERSTAND] Newton's Laws of Motion > Second Law (elaboration) acts=explanation hint=definition lines=2 via groq_main#2 5448 ms
+               Clarified that force is directly proportional to mass and acceleration.
+23:45:11 INFO    copilot.presentation.engine: revised S1: Force equals mass times acceleration; force is directly proportional to mass and acceleration
+23:45:11 INFO    copilot.presentation.engine: planner: update Newton's Laws of Motion > Second Law (same frame)
+23:45:11 INFO    copilot.presentation.engine: no image for 'Second Law': two concepts side by side
+  [SLIDE] update 'Second Law' [concept] v2 (2 items)
+  [SLIDE] update 'Second Law' [concept] v3 (3 items)
+  [  158.8s] but keep the acceleration constant. F equals to m in says that this new ball has twice the force of the old ball. (746 ms)
+  [UNDERSTAND] Newton's Laws of Motion > Second Law (elaboration) acts=explanation hint=example lines=3 via groq_main#3 1670 ms
+               Doubling mass with constant acceleration doubles the force, illustrating the second law.
+23:45:20 INFO    copilot.presentation.engine: planner: update Newton's Laws of Motion > Second Law (same frame)
+23:45:20 INFO    copilot.presentation.engine: no image for 'Second Law': two concepts side by side
+  [SLIDE] update 'Second Law' [concept] v4 (4 items)
+  [  172.1s] What does f equals to ma say? (542 ms)
+  [  174.9s] F equals to m basically means that the force of an object comes from its mass and its acceleration. (639 ms)
+  [UNDERSTAND] Newton's Laws of Motion > Second Law (elaboration) acts=explanation hint=key_points lines=2 via groq_main#2 1161 ms
+               Teacher explained that F=ma means force comes from mass and acceleration.
+23:45:37 INFO    copilot.presentation.engine: planner: update Newton's Laws of Motion > Second Law (same frame)
+23:45:37 INFO    copilot.presentation.engine: no image for 'Second Law': two concepts side by side
+  [SLIDE] update 'Second Law' [concept] v5 (5 items)
+  [  181.7s] If you double the mass, you double the force. You double the acceleration, you double the force. (715 ms)
+  [  191.1s] Now let us understand the third law of Newton. (524 ms)
+  [UNDERSTAND] Newton's Laws of Motion > Second Law (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 1733 ms
+               Doubling acceleration also doubles the force, reinforcing F=ma proportionality.
+23:45:45 INFO    copilot.presentation.engine: planner: update Newton's Laws of Motion > Second Law (same frame)
+23:45:45 INFO    copilot.presentation.engine: no image for 'Second Law': two concepts side by side
+  [SLIDE] update 'Second Law' [concept] v6 (6 items)
+  [  196.3s] It states that for every action there is equal and opposite reaction. (548 ms)
+  [UNDERSTAND] Newton's Laws of Motion > Third Law (sibling_concept) acts=definition hint=definition lines=2 via groq_main#3 1322 ms
+               Introduced Newton's third law as action-reaction principle.
+23:45:53 INFO    copilot.presentation.engine: planner: continue Newton's Laws of Motion > Third Law (new facet)
+  [SLIDE] add    'Third Law' [definition] v1 (1 items)
+  [  203.2s] What does this mean? (552 ms)
+  [  205.5s] This means that for every force acting on an object, there is an equal and a force acting in the opposite direction. Right now gravity is pulling down. (772 ms)
+  [UNDERSTAND] Newton's Laws of Motion > Third Law (elaboration) acts=explanation hint=definition lines=2 via groq_main#2 1873 ms
+               Teacher clarified the third law: every force has an equal opposite force, illustrated by gravity pulling down.
+23:46:08 INFO    copilot.presentation.engine: revised S1: For every force acting on an object, an equal force acts in the opposite direction
+23:46:08 INFO    copilot.presentation.engine: planner: update Newton's Laws of Motion > Third Law (same frame)
+  [SLIDE] update 'Third Law' [definition] v2 (1 items)
+  [SLIDE] update 'Third Law' [definition] v3 (2 items)
+  [  215.6s] in your seat but Newton's third law says your seat is pushing up against you with equal force (586 ms)
+  [SLIDE] update 'Third Law' [definition] v4 (3 items)
+  [  223.9s] This is why you are not moving. (492 ms)
+  [SLIDE] update 'Third Law' [definition] v5 (3 items)
+  [UNDERSTAND] Newton's Laws of Motion > Third Law (elaboration) acts=explanation hint=key_points lines=2 via groq_main#2 1948 ms
+               The seat exerts an upward force equal to gravity, so the net force is zero and you stay still.
+23:46:18 INFO    copilot.presentation.engine: planner: update Newton's Laws of Motion > Third Law (same frame)
+  [SLIDE] update 'Third Law' [definition] v6 (2 items)
+  [SLIDE] update 'Third Law' [definition] v7 (4 items)
+23:46:18 INFO    copilot.presentation.engine: image search 'person on seat forces' (diagram) for 'Third Law'
+  [  228.6s] There is a balanced force acting on you. (649 ms)
+  [SLIDE] update 'Third Law' [definition] v8 (5 items)
+23:46:23 INFO    copilot.visuals.finder: image search 'person on seat forces': 1 slow download(s) dropped
+23:46:23 INFO    copilot.presentation.engine: image 'person on seat forces': none (downloads failed)
+  [IMAGE] 'person on seat forces' -> none (downloads failed) (4.5 s)
+  [  231.8s] Gravity pulling down, your state pushing up. (516 ms)
+  [SLIDE] update 'Third Law' [definition] v9 (5 items)
+  [UNDERSTAND] Newton's Laws of Motion > Third Law (elaboration) acts=- hint=concept lines=2 via groq_main#3 1532 ms
+               Introduced the idea of balanced forces acting on you, reinforcing that equal opposite forces result in no motion.
+23:46:26 INFO    copilot.presentation.engine: revised S4: Balanced forces keep you stationary
+23:46:26 INFO    copilot.presentation.engine: planner: noop Newton's Laws of Motion > Third Law (nothing to display)
+  [SLIDE] update 'Third Law' [definition] v10 (4 items)
+  [SLIDE] update 'Third Law' [definition] v11 (4 items)
+[PAUSE] paused: what is said now is not put on slides (Resume to continue)
+23:47:03 INFO    copilot.presentation.engine: concern 76d91d1df030 dismissed: slide shows 'not equal and opposite'
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261011-234016-10a9: 37 segments, 469 words, state v82, 359 events logged
+        CommandReceived=29, ConceptSignal=37, ConcernRaised=2, ConcernResolved=1, DeckState=28, ImageReady=1, ImageRequested=1, InterpretRequested=20, InterpretationReady=20, LifecycleChanged=6, SlideContextChanged=18, SlidePatch=39, StateChanged=82, ThemeChanged=1, TranscriptFinal=37, UtteranceClassified=37
+        stt: 37 published, 0 dropped, latency p50=587 ms p95=821 ms max=852 ms
+        understanding: 20 interpretations (20 by LLM, 0 fallbacks, 0 repaired), max 8 calls/min, prompt tokens max=1986 avg=1897, latency p50=1671 ms max=5448 ms
+        presentation: 6 slides; planner ops {'new': 1, 'update': 11, 'continue': 5, 'noop': 3}; revisions 4, corrections shown 1, shown as said 0
+        images: {'requests': 1, 'found': 0, 'none': 1}; slides with an image 0/6
+          1. [key_points] Background  (v8, ['points'])
+          2. [definition] First Law  (v7, ['definition', 'points'])
+          3. [definition] Unbalanced Force  (v6, ['definition', 'points'])
+          4. [definition] Inertia  (v1, ['definition'])
+          5. [concept] Second Law  (v6, ['definition', 'definition', 'points'])
+          6. [definition] Third Law  (v11, ['definition', 'points'])
+        providers: {'groq_main#2': 15, 'groq_main#3': 5}; triggers: {'max_wait': 7, 'words': 1, 'pause': 7, 'boundary': 5}; outline: ["Newton's Laws of Motion > Background, First Law, Unbalanced Force, Inertia, Second Law, Third Law"]; concerns: 2
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261011-234016-10a9\session.sqlite

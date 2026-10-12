@@ -1,0 +1,189 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (5.3 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_2         openai/gpt-oss-120b            71k of 200k tokens IN USE
+        GROQ_API_KEY_3         openai/gpt-oss-120b           189k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 282 lecture minutes
+
+[READY] session 20261011-234920-2c78
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+23:49:27 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+23:51:16 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    1.4s] Let us learn about fluid mechanics. (546 ms)
+  [UNDERSTAND] Fluid Mechanics > Introduction (new_topic) acts=transition hint=none lines=1 via groq_main#2 1378 ms
+               Teacher announces the start of fluid mechanics
+23:51:35 INFO    copilot.presentation.engine: planner: noop Fluid Mechanics > Introduction (nothing to display)
+  [    3.7s] Fluid mechanics is the branch of physics and engineering that studies the behavior of fluids, including liquids, gas, and plasma, at rest and in motion, as well as their interaction with solid contrast. (924 ms)
+  [   18.6s] the code definition and behavior (488 ms)
+  [UNDERSTAND] Fluid Mechanics > Introduction (same_concept) acts=definition hint=definition lines=1 via groq_main#2 1571 ms
+               Defined fluid mechanics as the study of fluid behavior in rest, motion, and interaction with solids.
+23:51:43 INFO    copilot.presentation.engine: planner: new Fluid Mechanics > Introduction (first content slide)
+  [SLIDE] add    'Fluid Mechanics' [definition] v1 (1 items)
+  [   21.0s] What is a fluid? A fluid is a substance like water or air that cannot resist a shearing or tangential force when pushing sideways. It continuously deforms and flows. (748 ms)
+  [UNDERSTAND] Fluid Mechanics > Introduction (same_concept) acts=definition hint=definition lines=2 via groq_main#2 1450 ms
+               Defined a fluid as a substance that cannot resist shear forces and continuously deforms and flows.
+23:51:55 INFO    copilot.presentation.engine: planner: update Fluid Mechanics > Introduction (same frame)
+  [SLIDE] update 'Fluid Mechanics' [definition] v2 (2 items)
+23:51:55 INFO    copilot.presentation.engine: image search 'fluid diagram' (diagram) for 'Fluid Mechanics'
+  [   34.3s] Unlike a solid object that holds its shape. (405 ms)
+  [SLIDE] update 'Fluid Mechanics' [definition] v3 (3 items)
+  [   38.1s] viscosity for fluid's internal friction or resistance to flow. (550 ms)
+  [SLIDE] update 'Fluid Mechanics' [definition] v4 (3 items)
+23:52:01 INFO    copilot.visuals.finder: image search 'fluid diagram' (diagram, labels preferred): 2 candidate(s), 2 accepted (1 labelled), 5.72 s {'search_s': 2.63, 'download_s': 1.17, 'clip_s': 0.05, 'full_s': 1.85, 'total_s': 5.72}
+  [IMAGE] 'fluid diagram' -> File:Cerebro spinal fluid leak svg hariadhi.svg (5.7 s)
+23:52:01 INFO    copilot.presentation.engine: image 'fluid diagram' on 'Fluid Mechanics': File:Cerebro spinal fluid leak svg hariadhi.svg
+  [SLIDE] update 'Fluid Mechanics' [definition] v5 (4 items)
+  [UNDERSTAND] Fluid Mechanics > Introduction (elaboration) acts=definition hint=definition lines=2 via groq_main#2 1277 ms
+               Added contrast between fluids and solids and defined viscosity as internal friction resisting flow.
+23:52:03 INFO    copilot.presentation.engine: revised S2: Fluid: a substance like water or air that cannot resist shear forces, continuously deforms and flows, unlike a solid that holds its shape
+23:52:03 INFO    copilot.presentation.engine: planner: update Fluid Mechanics > Introduction (same frame)
+23:52:03 INFO    copilot.presentation.engine: image removed from 'Fluid Mechanics': two concepts side by side
+  [SLIDE] update 'Fluid Mechanics' [definition] v6 (3 items)
+  [SLIDE] update 'Fluid Mechanics' [definition] v7 (3 items)
+  [SLIDE] update 'Fluid Mechanics' [concept] v8 (4 items)
+  [SLIDE] update 'Fluid Mechanics' [concept] v9 (3 items)
+  [   44.5s] The main branches of fluid dynamics are (499 ms)
+  [   47.8s] Fluid statics, that is hydrostatic, it is the study of fluids at rest. It focuses on properties like hydrostatics, pressure, buoyancy, Pascal's principle, example of what are stored behind a dam. (782 ms)
+23:52:22 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ["It focuses on properties like hydrostatics, pressure, buoyancy, Pascal's principle, example of what are stored behind a dam"]
+  [UNDERSTAND] Fluid Mechanics > Branches (sibling_concept) acts=classification,explanation hint=none lines=2 via groq_main#2 993 ms
+               Introduced fluid statics as a main branch of fluid dynamics, studying fluids at rest and related properties.
+23:52:22 INFO    copilot.presentation.engine: planner: continue Fluid Mechanics > Branches (new facet)
+  [SLIDE] add    'Branches' [key_points] v1 (1 items)
+23:52:22 INFO    copilot.presentation.engine: image search 'hydrostatic pressure diagram' (diagram) for 'Branches'
+23:52:27 INFO    copilot.visuals.finder: image search 'hydrostatic pressure diagram' (diagram, labels preferred): 5 candidate(s), 3 accepted (1 labelled), 5.58 s {'search_s': 2.05, 'download_s': 1.51, 'clip_s': 0.1, 'full_s': 1.89, 'total_s': 5.58}
+  [IMAGE] 'hydrostatic pressure diagram' -> File:Bubble to show hydrostatic pressure.svg (5.6 s)
+23:52:27 INFO    copilot.presentation.engine: image 'hydrostatic pressure diagram' on 'Branches': File:Bubble to show hydrostatic pressure.svg
+  [SLIDE] update 'Branches' [key_points] v2 (2 items)
+  [   63.5s] Fluid Kinematics, the study of fluid motion such as velocities, streamlines and flow patterns without explicitly looking at the forces causing the movements. (765 ms)
+  [SLIDE] update 'Branches' [key_points] v3 (3 items)
+  [UNDERSTAND] Fluid Mechanics > Fluid Kinematics (sibling_concept) acts=definition hint=definition lines=1 via groq_main#2 1280 ms
+               Introduced Fluid Kinematics as the study of fluid motion, focusing on velocities, streamlines, and flow patterns.
+23:52:34 INFO    copilot.presentation.engine: planner: continue Fluid Mechanics > Fluid Kinematics (new facet)
+23:52:34 INFO    copilot.presentation.engine: slide 'Fluid Kinematics' waits for the min dwell time
+  [SLIDE] update 'Branches' [key_points] v4 (2 items)
+23:52:34 INFO    copilot.presentation.engine: image search 'fluid streamlines diagram' (diagram) for 'Fluid Kinematics'
+  [SLIDE] add    'Fluid Kinematics' [definition] v1 (1 items)
+  [   78.7s] Fluid Dynamics (526 ms)
+  [SLIDE] update 'Fluid Kinematics' [definition] v2 (1 items)
+23:52:39 INFO    copilot.visuals.finder: image search 'fluid streamlines diagram' (diagram, labels preferred): 6 candidate(s), 3 accepted (0 labelled), 4.89 s {'search_s': 2.19, 'download_s': 1.48, 'clip_s': 0.13, 'full_s': 1.06, 'total_s': 4.89}
+  [IMAGE] 'fluid streamlines diagram' -> File:Streamlines around a NACA 0012.svg (4.9 s)
+23:52:39 INFO    copilot.presentation.engine: image 'fluid streamlines diagram' on 'Fluid Kinematics': File:Streamlines around a NACA 0012.svg
+  [SLIDE] update 'Fluid Kinematics' [definition] v3 (2 items)
+  [   80.5s] the study of fluids in motion (421 ms)
+  [   82.9s] and the forces like pressure, energy and movement. (559 ms)
+  [UNDERSTAND] Fluid Mechanics > Fluid Dynamics (sibling_concept) acts=definition hint=definition lines=3 via groq_main#2 1326 ms
+               Defined Fluid Dynamics as the study of fluids in motion and the forces such as pressure, energy, and movement.
+23:52:46 INFO    copilot.presentation.engine: planner: continue Fluid Mechanics > Fluid Dynamics (new facet)
+23:52:46 INFO    copilot.presentation.engine: slide 'Fluid Dynamics' waits for the min dwell time
+  [SLIDE] update 'Fluid Kinematics' [definition] v4 (2 items)
+23:52:46 INFO    copilot.presentation.engine: image search 'fluid flow diagram' (diagram) for 'Fluid Dynamics'
+  [   87.5s] that drives that motion (549 ms)
+23:52:51 INFO    copilot.visuals.finder: image search 'fluid flow diagram' (diagram, labels preferred): 5 candidate(s), 3 accepted (0 labelled), 5.18 s {'search_s': 2.15, 'download_s': 1.2, 'clip_s': 0.09, 'full_s': 1.7, 'total_s': 5.18}
+  [IMAGE] 'fluid flow diagram' -> File:Tangential Flow between Coaxial Cylinders.jpg (5.2 s)
+23:52:51 INFO    copilot.presentation.engine: image 'fluid flow diagram' on 'Fluid Dynamics': File:Tangential Flow between Coaxial Cylinders.jpg
+  [SLIDE] add    'Fluid Dynamics' [definition] v1 (2 items)
+  [   90.3s] example, air passing over an airplane wings or water moving through a pipe (634 ms)
+  [   98.0s] Key principles and equations. (567 ms)
+  [UNDERSTAND] Fluid Mechanics > Fluid Dynamics (elaboration) acts=definition,example,explanation hint=definition lines=3 via groq_main#2 1750 ms
+               Added the driving force phrase to the definition, gave real‑world examples, and noted key principles and equations.
+23:53:02 INFO    copilot.presentation.engine: revised S1: Fluid Dynamics: the study of fluids in motion and the forces like pressure, energy and movement that drives that motion
+23:53:02 INFO    copilot.presentation.engine: planner: update Fluid Mechanics > Fluid Dynamics (same frame)
+23:53:02 INFO    copilot.presentation.engine: no image for 'Fluid Dynamics': has an image
+  [SLIDE] update 'Fluid Dynamics' [definition] v2 (2 items)
+  [SLIDE] update 'Fluid Dynamics' [definition] v3 (4 items)
+  [  100.6s] continuity equation. Based on the conversation of conservation of mass, it states that the mass flow rate remains constant throughout a continuous stream. (807 ms)
+  [SLIDE] update 'Fluid Dynamics' [definition] v4 (5 items)
+  [UNDERSTAND] Fluid Mechanics > Fluid Dynamics (elaboration) acts=definition hint=definition lines=1 via groq_main#2 1633 ms
+               Introduced the continuity equation, stating mass flow rate stays constant in a continuous stream.
+23:53:10 INFO    copilot.presentation.engine: planner: update Fluid Mechanics > Fluid Dynamics (same frame)
+23:53:10 INFO    copilot.presentation.engine: image removed from 'Fluid Dynamics': two concepts side by side
+  [SLIDE] update 'Fluid Dynamics' [definition] v5 (4 items)
+  [SLIDE] update 'Fluid Dynamics' [concept] v6 (5 items)
+  [SLIDE] update 'Fluid Dynamics' [concept] v7 (4 items)
+  [  111.5s] Bernoulli's principle. (490 ms)
+  [  113.2s] based on the conservation of energy. It relates a fluid speed, elevation and internal pressure. (729 ms)
+23:53:20 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Fluid Dynamics' -> same_concept
+  [UNDERSTAND] Fluid Mechanics > Fluid Dynamics (same_concept) acts=definition hint=definition lines=2 via groq_main#3 1146 ms
+               Introduced Bernoulli's principle linking speed, elevation, and pressure through energy conservation.
+23:53:20 INFO    copilot.presentation.engine: planner: update Fluid Mechanics > Fluid Dynamics (same frame)
+  [SLIDE] update 'Fluid Dynamics' [concept] v8 (4 items)
+  [SLIDE] add    'Fluid Dynamics' [members] v1 (1 items)
+23:53:20 INFO    copilot.presentation.engine: image 'fluid flow diagram' kept on 'Fluid Dynamics' (same visual as this topic's image)
+  [SLIDE] update 'Fluid Dynamics' [members] v2 (2 items)
+  [  121.7s] Pascal's law. (723 ms)
+  [  123.3s] states that pressure applied to an enclosed fluid is transmitted equally in all directions. (715 ms)
+23:53:28 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Fluid Dynamics' -> same_concept
+  [UNDERSTAND] Fluid Mechanics > Fluid Dynamics (same_concept) acts=definition hint=definition lines=2 via groq_main#2 981 ms
+               Introduced Pascal's law, stating pressure in an enclosed fluid transmits equally in all directions.
+23:53:28 INFO    copilot.presentation.engine: planner: update Fluid Mechanics > Fluid Dynamics (same frame)
+23:53:28 INFO    copilot.presentation.engine: no image for 'Fluid Dynamics': two concepts side by side
+  [SLIDE] update 'Fluid Dynamics' [concept] v3 (2 items)
+  [  131.5s] The common applications are (505 ms)
+  [  133.5s] engineering (296 ms)
+  [  134.8s] In engineering designing pumps, turbines, pipelines, (679 ms)
+  [  139.6s] HVAC systems and the aerodynamics of cars and aircrafts. (574 ms)
+  [  144.8s] Medicine and Biology (311 ms)
+  [UNDERSTAND] Fluid Mechanics > Fluid Dynamics (elaboration) acts=explanation hint=key_points lines=4 via groq_main#2 1148 ms
+               Listed common engineering applications of fluid dynamics.
+23:53:44 INFO    copilot.presentation.engine: planner: update Fluid Mechanics > Fluid Dynamics (same frame)
+23:53:44 INFO    copilot.presentation.engine: no image for 'Fluid Dynamics': two concepts side by side
+  [SLIDE] update 'Fluid Dynamics' [concept] v4 (5 items)
+  [  146.6s] in it analyzing blood circulation through veins and hair movements in the human respiratory system. (720 ms)
+  [  154.5s] geophysics and metrology (448 ms)
+  [UNDERSTAND] Fluid Mechanics > Applications in Medicine and Biology (sibling_concept) acts=explanation hint=example lines=2 via groq_main#2 4689 ms
+               Fluid dynamics is applied to study blood flow and respiratory hair movement in medicine and biology.
+23:53:59 INFO    copilot.presentation.engine: planner: continue Fluid Mechanics > Applications in Medicine and Biology (new facet)
+  [SLIDE] add    'Applications in Medicine and Biology' [key_points] v1 (2 items)
+23:53:59 INFO    copilot.presentation.engine: image search 'blood flow diagram' (diagram) for 'Applications in Medicine and Biology'
+  [  157.3s] modeling oceans, currents, weather patterns and wind movements in the atmosphere. (632 ms)
+23:54:06 INFO    copilot.visuals.finder: image search 'blood flow diagram' (diagram, labels preferred): 5 candidate(s), 3 accepted (3 labelled), 6.37 s {'search_s': 2.14, 'download_s': 1.2, 'clip_s': 0.1, 'full_s': 2.9, 'total_s': 6.37}
+  [IMAGE] 'blood flow diagram' -> File:Homeostasis of blood sugar.png (6.4 s)
+23:54:06 INFO    copilot.presentation.engine: image 'blood flow diagram' on 'Applications in Medicine and Biology': File:Homeostasis of blood sugar.png
+  [SLIDE] update 'Applications in Medicine and Biology' [key_points] v2 (3 items)
+  [UNDERSTAND] Fluid Mechanics > Applications in Medicine and Biology (elaboration) acts=explanation hint=key_points lines=2 via groq_main#3 2166 ms
+               Added fluid mechanics applications in geophysics, metrology, and atmospheric/ocean modeling.
+23:54:09 INFO    copilot.presentation.engine: planner: update Fluid Mechanics > Applications in Medicine and Biology (same frame)
+23:54:09 INFO    copilot.presentation.engine: no image for 'Applications in Medicine and Biology': has an image
+  [SLIDE] update 'Applications in Medicine and Biology' [key_points] v3 (5 items)
+  [  162.5s] computational fluid dynamics using computer software to simulate and visualize complex fluid flows before building physical prototypes. (634 ms)
+  [SLIDE] update 'Applications in Medicine and Biology' [key_points] v4 (6 items)
+  [UNDERSTAND] Fluid Mechanics > Applications in Medicine and Biology (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 1518 ms
+               Introduced computational fluid dynamics as a simulation tool for fluid flow studies
+23:54:16 INFO    copilot.presentation.engine: planner: update Fluid Mechanics > Applications in Medicine and Biology (same frame)
+23:54:16 INFO    copilot.presentation.engine: no image for 'Applications in Medicine and Biology': has an image
+  [SLIDE] update 'Applications in Medicine and Biology' [key_points] v5 (5 items)
+  [SLIDE] update 'Applications in Medicine and Biology' [key_points] v6 (6 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261011-234920-2c78: 29 segments, 313 words, state v64, 297 events logged
+        CommandReceived=21, ConceptSignal=29, DeckState=23, ImageChoices=6, ImageReady=5, ImageRequested=5, InterpretRequested=15, InterpretationReady=15, LifecycleChanged=5, SlideContextChanged=16, SlidePatch=35, StateChanged=64, TranscriptFinal=29, UtteranceClassified=29
+        stt: 29 published, 0 dropped, latency p50=567 ms p95=807 ms max=924 ms
+        understanding: 15 interpretations (15 by LLM, 0 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=1975 avg=1898, latency p50=1378 ms max=4689 ms
+        presentation: 6 slides; planner ops {'noop': 1, 'new': 1, 'update': 9, 'continue': 4}; revisions 2, corrections shown 0, shown as said 0
+        images: {'requests': 5, 'found': 5, 'none': 0}; slides with an image 3/6
+          1. [concept] Fluid Mechanics  (v9, ['definition', 'points', 'definition'])
+          2. [key_points] Branches  (v4, ['points', 'image'])
+          3. [definition] Fluid Kinematics  (v4, ['definition', 'image'])
+          4. [concept] Fluid Dynamics [part 1]  (v8, ['definition', 'example', 'points', 'definition'])
+          5. [concept] Fluid Dynamics [part 2]  (v4, ['definition', 'definition', 'points'])
+          6. [key_points] Applications in Medicine and Biology  (v6, ['points', 'image'])
+        providers: {'groq_main#2': 13, 'groq_main#3': 2}; triggers: {'max_wait': 6, 'pause': 8, 'boundary': 1}; outline: ['Fluid Mechanics > Introduction, Branches, Fluid Kinematics, Fluid Dynamics, Applications in Medicine and Biology']; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261011-234920-2c78\session.sqlite

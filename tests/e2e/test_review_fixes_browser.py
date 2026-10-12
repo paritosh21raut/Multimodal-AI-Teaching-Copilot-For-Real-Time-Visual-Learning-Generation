@@ -114,7 +114,7 @@ async def test_start_card_chapters_search_and_tiles(tmp_path):
             await asyncio.sleep(0.4)  # the corner check fades in (160 ms)
             check = control.locator(f"{notes_tile} .tile-check")
             assert await check.evaluate("e => getComputedStyle(e).opacity") == "1"
-            await control.click(".materials .segmented button:has-text('Pick chapters')")
+            await control.click(".materials .segmented button:text-is('Chapters')")  # F-010c #2: was "Pick chapters"
             await control.click(".materials .pick-wrap .menu-button")
             await control.click(".menu-row:has-text('Chapter 1 · Cells')")
             await control.wait_for_selector(".menu-row.on:has-text('Chapter 1 · Cells')")

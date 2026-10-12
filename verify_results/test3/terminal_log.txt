@@ -1,0 +1,509 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (5.2 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.2 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_2         openai/gpt-oss-120b            43k of 200k tokens IN USE
+        GROQ_API_KEY_3         openai/gpt-oss-120b           184k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 278 lecture minutes
+
+[READY] session 20261011-235623-b72e
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+23:56:29 INFO    copilot.visuals.service: CLIP ready in 0.4 s (CPU)
+23:56:36 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    1.6s] Well there you went, let us start with our first chapter, Basic concepts of Chemistry. (719 ms)
+  [    7.8s] Let us understand what chemistry is. (512 ms)
+  [   10.2s] Chemistry is the branch of science which deals with the composition, structure and properties of metal. (678 ms)
+  [   18.1s] Anthony Laurent Levisu (544 ms)
+23:56:58 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['There you went, let us start with our first chapter, Basic concepts of Chemistry']
+  [UNDERSTAND] Chemistry > Definition (new_topic) acts=definition,explanation hint=definition lines=3 via groq_main#2 1486 ms
+               Defined chemistry as the science of composition, structure, and properties of matter.
+  [CONCERN] (factual) Chemistry is the branch of science which deals with the composition, structure and properties of metal. -> Chemistry is the branch of science which deals with the composition, structure and properties of matter. (0.9, slide shows the correction)
+23:56:58 INFO    copilot.presentation.engine: planner: new Chemistry > Definition (first content slide)
+23:56:58 INFO    copilot.presentation.engine: concern c7534d6c6070 (factual, applied=True): 1 element(s); slide shows 'matter'
+  [SLIDE] add    'What is chemistry?' [definition] v1 (2 items)
+  [   21.0s] is called the father of chemistry. (455 ms)
+23:57:05 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Definition' -> same_concept
+  [UNDERSTAND] Chemistry > Definition (same_concept) acts=other hint=key_points lines=2 via groq_main#2 1010 ms
+               Anthony Laurent Levisu is identified as the father of chemistry.
+23:57:05 INFO    copilot.presentation.engine: planner: update Chemistry > Definition (same frame)
+  [SLIDE] update 'What is chemistry?' [definition] v2 (3 items)
+  [   25.5s] branch of chemistry it can be inorganic, organic, physical or analytical chemistry. (677 ms)
+  [SLIDE] update 'What is chemistry?' [definition] v3 (4 items)
+  [UNDERSTAND] Chemistry > Definition (elaboration) acts=classification hint=hierarchy lines=1 via groq_main#2 901 ms
+               Chemistry includes inorganic, organic, physical, and analytical branches.
+23:57:13 INFO    copilot.presentation.engine: planner: update Chemistry > Definition (same frame)
+  [SLIDE] update 'What is chemistry?' [definition] v4 (3 items)
+  [SLIDE] update 'What is chemistry?' [definition] v5 (3 items)
+  [SLIDE] add    'What is chemistry?' [hierarchy] v1 (1 items)
+  [   39.9s] Let us study about momentum. (626 ms)
+  [   42.0s] Matter is anything which occupies some space and has some mass. (553 ms)
+  [   45.7s] it is made up of small particles which have some space between them. (637 ms)
+  [   49.6s] The matter particles attract each other and are in the state of continuous motion. (702 ms)
+  [UNDERSTAND] Chemistry > Definition (new_topic) acts=definition,explanation hint=definition lines=3 via groq_main#2 1085 ms
+               Defined matter as space‑occupying mass and explained its composition of spaced‑out particles
+23:57:32 INFO    copilot.presentation.engine: planner: update Chemistry > Definition (same frame)
+  [SLIDE] update 'What is chemistry?' [hierarchy] v2 (3 items)
+  [   55.9s] classification of metal (488 ms)
+  [   58.4s] Metal clay can be classified into two groups. (549 ms)
+  [UNDERSTAND] Chemistry > Definition (elaboration) acts=explanation hint=concept lines=1 via groq_main#2 1425 ms
+               Matter particles attract each other and are constantly moving
+23:57:41 INFO    copilot.presentation.engine: revised S2: It is made up of small particles that have space between them; the particles attract each other and are in continuous motion
+23:57:41 INFO    copilot.presentation.engine: planner: update Chemistry > Definition (same frame)
+  [SLIDE] update 'What is chemistry?' [hierarchy] v3 (3 items)
+  [SLIDE] update 'What is chemistry?' [hierarchy] v4 (4 items)
+  [   61.8s] Physical Classification, Chemical Classification. (533 ms)
+  [   65.4s] In physical classification it can be (516 ms)
+  [   69.5s] further classified into solid, liquid or gas. (583 ms)
+  [UNDERSTAND] Chemistry > Classification of Metals (sibling_concept) acts=classification,classification hint=none lines=5 via groq_main#2 1205 ms
+               Introduced metal clay classification into physical and chemical groups, with physical further split into solid, liquid, and gas.
+23:57:51 INFO    copilot.presentation.engine: planner: continue Chemistry > Classification of Metals (new facet)
+23:57:51 INFO    copilot.presentation.engine: no image for 'Classification of Metals': groups needs the full width
+  [SLIDE] add    'Classification of Metals' [groups] v1 (1 items)
+  [   73.3s] In chemical classification it can be further classified into pure substances or mixtures. (612 ms)
+23:57:59 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Classification of Metals' -> same_concept
+  [UNDERSTAND] Chemistry > Classification of Metals (same_concept) acts=classification hint=hierarchy lines=1 via groq_main#2 1104 ms
+               Chemical classification of metals splits into pure substances and mixtures.
+23:57:59 INFO    copilot.presentation.engine: planner: update Chemistry > Classification of Metals (same frame)
+23:57:59 INFO    copilot.presentation.engine: no image for 'Classification of Metals': groups needs the full width
+  [SLIDE] update 'Classification of Metals' [groups] v2 (1 items)
+  [   87.6s] Let us study about pure substances. (614 ms)
+  [   90.4s] they have characteristics different from the mixtures (537 ms)
+  [   93.6s] they have fixed compositions whereas mixtures may contain big opponents in any ratio and their compositions is variable. (730 ms)
+  [UNDERSTAND] Chemistry > Pure Substances (sibling_concept) acts=explanation hint=none lines=3 via groq_main#2 1656 ms
+               Pure substances have fixed composition, unlike mixtures which vary in composition.
+23:58:21 INFO    copilot.presentation.engine: planner: continue Chemistry > Pure Substances (new facet)
+  [SLIDE] add    'Pure Substances' [key_points] v1 (2 items)
+  [  102.1s] Elements, it is the simplest form of pure substances which can neither be decomposed nor be built from simpler substances from ordinary physical and chemical methods. It cannot contain only one kind of atoms. (844 ms)
+  [SLIDE] update 'Pure Substances' [key_points] v2 (3 items)
+  [  117.1s] (dropped: empty) 
+  [UNDERSTAND] Chemistry > Elements (sub_concept) acts=definition hint=definition lines=1 via groq_main#2 1563 ms
+               Defined elements as the simplest pure substances composed of a single type of atom.
+  [HEARD] 'cannot contain only one kind of atoms' -> 'contain only one kind of atom' corrected on the slide (0.5)
+23:58:36 INFO    copilot.presentation.engine: planner: continue Chemistry > Elements (new facet)
+23:58:36 INFO    copilot.presentation.engine: concern 4847662a0ff6 (transcription, applied=True): 0 element(s); slide shows 'contain only one kind of atom'
+  [SLIDE] update 'Pure Substances' [key_points] v3 (2 items)
+  [SLIDE] add    'Elements' [definition] v1 (1 items)
+23:58:36 INFO    copilot.presentation.engine: image search 'Elements diagram' (diagram) for 'Elements'
+  [  118.5s] the number of elements known till date is 118 (568 ms)
+  [SLIDE] update 'Elements' [definition] v2 (1 items)
+23:58:41 INFO    copilot.visuals.finder: image source failed: ReadTimeout('')
+23:58:41 INFO    copilot.presentation.engine: image 'Elements diagram': none (no usable candidates)
+  [IMAGE] 'Elements diagram' -> none (no usable candidates) (5.3 s)
+  [  125.4s] An element can be a metal, non-metal or a metalloid. (590 ms)
+  [SLIDE] update 'Elements' [definition] v3 (1 items)
+  [UNDERSTAND] Chemistry > Elements (elaboration) acts=other,classification hint=key_points lines=2 via groq_main#2 2669 ms
+               There are 118 known elements, which can be metals, non-metals, or metalloids.
+23:58:49 INFO    copilot.presentation.engine: planner: update Chemistry > Elements (same frame)
+23:58:49 INFO    copilot.presentation.engine: no image for 'Elements': nothing relevant found for 'Elements diagram' before
+  [SLIDE] update 'Elements' [definition] v4 (1 items)
+  [SLIDE] update 'Elements' [definition] v5 (3 items)
+  [  131.2s] comports. It is also the form of matter which can be formed by combining two or more elements in a definite ratio by mass. (790 ms)
+  [  139.5s] it can be decomposed into its constant elements by suitable chemical methods. (680 ms)
+  [UNDERSTAND] Chemistry > Compounds (sibling_concept) acts=definition hint=definition lines=2 via groq_main#2 1276 ms
+               Defined compounds as substances formed from two or more elements in fixed mass ratios, decomposable by chemical methods.
+23:59:10 INFO    copilot.presentation.engine: planner: continue Chemistry > Compounds (new facet)
+23:59:10 INFO    copilot.presentation.engine: image hint 'Compounds diagram' for 'Compounds' from its sibling subtopic
+  [SLIDE] add    'Compounds' [definition] v1 (1 items)
+23:59:10 INFO    copilot.presentation.engine: image search 'Compounds diagram' (diagram) for 'Compounds'
+  [  145.1s] For example, water, H2O, is made up of hydrogen and oxygen in the ratio of 1 to 8 by mass. (703 ms)
+  [SLIDE] update 'Compounds' [definition] v2 (1 items)
+23:59:14 INFO    copilot.visuals.finder: image search 'Compounds diagram': 1 slow download(s) dropped
+23:59:16 INFO    copilot.visuals.finder: image search 'Compounds diagram' (diagram, labels preferred): 3 candidate(s), 1 accepted (0 labelled), 5.90 s {'search_s': 3.1, 'download_s': 1.4, 'clip_s': 0.07, 'full_s': 1.3, 'total_s': 5.9}
+  [IMAGE] 'Compounds diagram' -> File:Cross compound steam engine, diagram (New Catechism of the Steam Engine, 1904).jpg (5.9 s)
+  [  154.2s] Compounds can be of two types, Inorganic, Organic. (548 ms)
+23:59:16 INFO    copilot.presentation.engine: image 'Compounds diagram' on 'Compounds': File:Cross compound steam engine, diagram (New Catechism of the Steam Engine, 1904).jpg
+  [SLIDE] update 'Compounds' [definition] v3 (2 items)
+  [UNDERSTAND] Chemistry > Compounds (elaboration) acts=example hint=example lines=1 via groq_main#3 1073 ms
+               Added water as an example of a compound with its mass ratio
+23:59:18 INFO    copilot.presentation.engine: planner: update Chemistry > Compounds (same frame)
+  [SLIDE] update 'Compounds' [definition] v4 (2 items)
+  [SLIDE] update 'Compounds' [definition] v5 (3 items)
+  [UNDERSTAND] Chemistry > Compounds (elaboration) acts=classification hint=none lines=1 via groq_main#2 867 ms
+               Compounds are classified as inorganic or organic.
+23:59:25 INFO    copilot.presentation.engine: planner: update Chemistry > Compounds (same frame)
+  [SLIDE] update 'Compounds' [definition] v6 (4 items)
+23:59:26 INFO    copilot.presentation.engine: slide 56a474126d50 overflows on the display; further content continues on a new slide
+  [  172.0s] Now let us study about mixtures. (540 ms)
+  [  174.8s] These are made up of two or more pure substances. They can possess variable compositions and can be separated. (714 ms)
+  [  182.7s] into their components by some physical methods. (567 ms)
+  [UNDERSTAND] Chemistry > Mixtures (sibling_concept) acts=definition hint=definition lines=3 via groq_main#2 1157 ms
+               Introduced mixtures as combinations of pure substances with variable composition that are separable by physical methods.
+23:59:45 INFO    copilot.presentation.engine: planner: continue Chemistry > Mixtures (new facet)
+23:59:45 INFO    copilot.presentation.engine: image hint 'Mixtures diagram' for 'Mixtures' from its sibling subtopic
+  [SLIDE] add    'Mixtures' [definition] v1 (1 items)
+23:59:45 INFO    copilot.presentation.engine: image search 'Mixtures diagram' (diagram) for 'Mixtures'
+  [  186.8s] Mixtures can be homogeneous or heterogeneous. (505 ms)
+  [SLIDE] update 'Mixtures' [definition] v2 (1 items)
+23:59:50 INFO    copilot.visuals.finder: image search 'Mixtures diagram' (diagram, labels preferred): 3 candidate(s), 2 accepted (0 labelled), 5.22 s {'search_s': 2.53, 'download_s': 0.67, 'clip_s': 0.07, 'full_s': 1.94, 'total_s': 5.22}
+  [IMAGE] 'Mixtures diagram' -> File:Bayesian-gaussian-mixture.svg (5.2 s)
+23:59:50 INFO    copilot.presentation.engine: image 'Mixtures diagram' on 'Mixtures': File:Bayesian-gaussian-mixture.svg
+  [SLIDE] update 'Mixtures' [definition] v3 (2 items)
+  [  190.9s] Some popular mixture separation methods are (522 ms)
+  [  193.7s] filtration, distillation, sublimation (508 ms)
+  [UNDERSTAND] Chemistry > Mixtures (same_concept) acts=classification hint=none lines=1 via groq_main#2 4718 ms
+               Mixtures are classified as homogeneous or heterogeneous.
+23:59:56 INFO    copilot.presentation.engine: planner: update Chemistry > Mixtures (same frame)
+23:59:56 INFO    copilot.presentation.engine: no image for 'Mixtures': has an image
+  [SLIDE] update 'Mixtures' [definition] v4 (2 items)
+  [SLIDE] update 'Mixtures' [definition] v5 (3 items)
+  [  197.5s] crystallization magnetic separation and atomolysis (657 ms)
+  [  209.3s] the latest. (628 ms)
+  [  210.5s] I appreciate it. (287 ms)
+  [UNDERSTAND] Chemistry > Mixtures (elaboration) acts=explanation hint=key_points lines=4 via groq_main#3 1073 ms
+               Listed common methods for separating mixtures.
+00:00:09 INFO    copilot.presentation.engine: planner: update Chemistry > Mixtures (same frame)
+  [SLIDE] update 'Mixtures' [definition] v6 (3 items)
+  [SLIDE] add    'Mixtures' [key_points] v1 (6 items)
+00:00:09 INFO    copilot.presentation.engine: image search 'homogeneous heterogeneous mixture' (diagram) for 'Mixtures'
+00:00:13 INFO    copilot.visuals.finder: image search 'homogeneous heterogeneous mixture' (diagram, labels preferred): 2 candidate(s), 1 accepted (0 labelled), 4.29 s {'search_s': 1.8, 'download_s': 2.18, 'clip_s': 0.05, 'full_s': 0.24, 'total_s': 4.29}
+  [IMAGE] 'homogeneous heterogeneous mixture' -> File:Homogeneous heterogeneous.svg (4.3 s)
+00:00:13 INFO    copilot.presentation.engine: image 'homogeneous heterogeneous mixture' on 'Mixtures': File:Homogeneous heterogeneous.svg
+  [SLIDE] update 'Mixtures' [key_points] v2 (7 items)
+  [  213.9s] atoms and molecules. (485 ms)
+  [  216.3s] Atom is the smallest particle of an element which can take part in a chemical reaction. (722 ms)
+  [  222.6s] it may or (310 ms)
+  [UNDERSTAND] Chemistry > Atoms (sibling_concept) acts=explanation,definition hint=definition lines=3 via groq_main#2 1479 ms
+               Introduced atoms as the smallest reactive particles of elements and noted mixtures contain atoms and molecules.
+00:00:22 INFO    copilot.presentation.engine: planner: continue Chemistry > Atoms (new facet)
+00:00:22 INFO    copilot.presentation.engine: slide 'Atoms' waits for the min dwell time
+00:00:22 INFO    copilot.presentation.engine: image hint 'Atoms diagram' for 'Atoms' from its sibling subtopic
+00:00:22 INFO    copilot.presentation.engine: image search 'Atoms diagram' (diagram) for 'Atoms'
+  [SLIDE] add    'Atoms' [key_points] v1 (2 items)
+  [  224.2s] It may or may not be capable of independent existence. (525 ms)
+00:00:25 INFO    copilot.visuals.finder: image search 'Atoms diagram' (diagram, labels preferred): 1 candidate(s), 0 accepted (0 labelled), 3.17 s {'search_s': 2.62, 'download_s': 0.51, 'clip_s': 0.03, 'full_s': 0.0, 'total_s': 3.17}
+00:00:25 INFO    copilot.presentation.engine: image 'Atoms diagram': none (no relevant image)
+  [IMAGE] 'Atoms diagram' -> none (no relevant image) (3.2 s)
+00:00:33 WARNING copilot.llm.router: LLM groq_main now uses GROQ_API_KEY_3 (GROQ_API_KEY_2 is spent)
+  [  228.7s] is the simplest particle of matter that has independent existence. It may be homoatomic (642 ms)
+  [UNDERSTAND] Chemistry > Atoms (same_concept) acts=definition hint=definition lines=2 via groq_main#3 1156 ms
+               Added that atoms may or may not be capable of independent existence.
+00:00:34 INFO    copilot.presentation.engine: revised S2: Atom: the smallest particle of an element that can take part in a chemical reaction and may or may not be capable of independent existence
+00:00:34 INFO    copilot.presentation.engine: planner: update Chemistry > Atoms (same frame)
+00:00:34 INFO    copilot.presentation.engine: image hint 'Atoms diagram' for 'Atoms' from its sibling subtopic
+00:00:34 INFO    copilot.presentation.engine: no image for 'Atoms': nothing relevant found for 'Atoms diagram' before
+  [SLIDE] update 'Atoms' [key_points] v2 (2 items)
+  [  236.7s] example H2Cl2N2 (500 ms)
+  [  240.5s] They have to be. (311 ms)
+  [UNDERSTAND] Chemistry > Atoms (elaboration) acts=definition,example hint=definition lines=3 via groq_main#3 1553 ms
+               Refined atom definition and gave a molecular example
+00:00:43 INFO    copilot.presentation.engine: revised S2: Atom: Simplest particle of matter with independent existence; may be homoatomic
+00:00:43 INFO    copilot.presentation.engine: planner: update Chemistry > Atoms (same frame)
+  [SLIDE] update 'Atoms' [key_points] v3 (2 items)
+  [SLIDE] update 'Atoms' [key_points] v4 (3 items)
+00:00:43 INFO    copilot.presentation.engine: image search 'atom diagram' (diagram) for 'Atoms'
+  [  242.6s] O3 triatomic or heteroatomic example HCl NH3 CH (520 ms)
+  [SLIDE] update 'Atoms' [key_points] v5 (4 items)
+00:00:47 INFO    copilot.visuals.finder: image search 'atom diagram' (diagram, labels preferred): 6 candidate(s), 2 accepted (0 labelled), 4.26 s {'search_s': 2.22, 'download_s': 1.36, 'clip_s': 0.12, 'full_s': 0.54, 'total_s': 4.26}
+  [IMAGE] 'atom diagram' -> File:Atom Diagram.svg (4.3 s)
+00:00:47 INFO    copilot.presentation.engine: image 'atom diagram' on 'Atoms': File:Atom Diagram.svg
+  [SLIDE] update 'Atoms' [key_points] v6 (5 items)
+  [  249.0s] etc. (314 ms)
+  [SLIDE] update 'Atoms' [key_points] v7 (4 items)
+  [UNDERSTAND] Chemistry > Atoms (elaboration) acts=example hint=example lines=2 via groq_main#3 1644 ms
+               Provided additional molecule examples, highlighting triatomic and heteroatomic types.
+00:00:51 INFO    copilot.presentation.engine: planner: update Chemistry > Atoms (same frame)
+00:00:51 INFO    copilot.presentation.engine: no image for 'Atoms': has an image
+  [SLIDE] update 'Atoms' [key_points] v8 (5 items)
+  [  276.4s] Let us study about the diodes at atomic theory. (559 ms)
+  [  279.7s] It was proposed in 1803. (533 ms)
+00:01:20 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Atoms' -> same_concept
+  [UNDERSTAND] Chemistry > Atoms (same_concept) acts=transition hint=none lines=1 via groq_main#3 1232 ms
+               Teacher announced the next subtopic on diodes in atomic theory.
+00:01:20 INFO    copilot.presentation.engine: planner: noop Chemistry > Atoms (nothing to display)
+  [  282.3s] This theory was based on the law of chemical combination. (561 ms)
+  [  285.7s] In basic question, it's R (484 ms)
+  [UNDERSTAND] Chemistry > Atoms (elaboration) acts=explanation hint=concept lines=2 via groq_main#3 1078 ms
+               Introduced the 1803 atomic theory and its basis on the law of chemical combination.
+00:01:28 INFO    copilot.presentation.engine: planner: update Chemistry > Atoms (same frame)
+00:01:28 INFO    copilot.presentation.engine: no image for 'Atoms': has an image
+  [SLIDE] update 'Atoms' [key_points] v9 (7 items)
+00:01:29 INFO    copilot.presentation.engine: slide f8a352bba970 overflows on the display; further content continues on a new slide
+  [  289.4s] First, all substances are made up of tiny, indivisible particles called atoms. (677 ms)
+  [UNDERSTAND] Chemistry > Atoms (same_concept) acts=- hint=none lines=1 via groq_main#3 1119 ms
+               No new substantive content added
+  [HEARD] 'R' -> 'Unable to determine intended content' corrected on the slide (0.5)
+00:01:36 INFO    copilot.presentation.engine: planner: noop Chemistry > Atoms (nothing to display)
+00:01:36 INFO    copilot.presentation.engine: concern ed6e79159901 (transcription, applied=True): 0 element(s); slide shows 'Unable to determine intended content'
+  [  295.6s] Second, in each element, the atoms are alike. (662 ms)
+  [  299.7s] and have the same mass, the atoms of different elements, differ in mass. (757 ms)
+  [UNDERSTAND] Chemistry > Atoms (elaboration) acts=explanation hint=concept lines=3 via groq_main#3 1288 ms
+               Emphasized atoms as indivisible particles, identical within an element, and differing in mass between elements.
+00:01:45 INFO    copilot.presentation.engine: planner: update Chemistry > Atoms (same frame)
+  [SLIDE] update 'Atoms' [key_points] v10 (7 items)
+  [SLIDE] add    'Atoms' [key_points] v1 (3 items)
+00:01:45 INFO    copilot.presentation.engine: image search 'molecule structures' (diagram) for 'Atoms'
+00:01:49 INFO    copilot.visuals.finder: image search 'molecule structures' (diagram, labels preferred): 2 candidate(s), 2 accepted (1 labelled), 4.14 s {'search_s': 1.66, 'download_s': 0.93, 'clip_s': 0.05, 'full_s': 1.48, 'total_s': 4.14}
+  [IMAGE] 'molecule structures' -> File:Structure of a nucleotide within a DNA molecule.png (4.1 s)
+00:01:49 INFO    copilot.presentation.engine: image 'molecule structures' on 'Atoms': File:Structure of a nucleotide within a DNA molecule.png
+  [SLIDE] update 'Atoms' [key_points] v2 (4 items)
+  [  307.9s] called atoms may neither be created nor be destroyed during any physical or chemical reaction. (616 ms)
+  [SLIDE] update 'Atoms' [key_points] v3 (5 items)
+  [  316.6s] Fourth, Compounds or Molecules result (558 ms)
+  [SLIDE] update 'Atoms' [key_points] v4 (5 items)
+  [UNDERSTAND] Chemistry > Atoms (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 5143 ms
+               Atoms cannot be created or destroyed in reactions
+00:01:57 INFO    copilot.presentation.engine: planner: update Chemistry > Atoms (same frame)
+00:01:57 INFO    copilot.presentation.engine: no image for 'Atoms': has an image
+  [SLIDE] update 'Atoms' [key_points] v5 (6 items)
+  [  319.7s] from combination of atoms in some simple numerical ratio. (559 ms)
+  [SLIDE] update 'Atoms' [key_points] v6 (6 items)
+00:02:03 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Atoms' -> same_concept
+  [UNDERSTAND] Chemistry > Atoms (same_concept) acts=explanation hint=concept lines=2 via groq_main#4 1109 ms
+               Atoms combine in simple ratios to form compounds or molecules.
+00:02:03 INFO    copilot.presentation.engine: planner: update Chemistry > Atoms (same frame)
+00:02:03 INFO    copilot.presentation.engine: no image for 'Atoms': has an image
+  [SLIDE] update 'Atoms' [key_points] v7 (5 items)
+  [SLIDE] update 'Atoms' [key_points] v8 (6 items)
+  [  333.5s] its limitations are (554 ms)
+  [  335.9s] First, it failed to explain how atoms combine to form molecules. (691 ms)
+  [UNDERSTAND] Chemistry > Atoms (elaboration) acts=explanation hint=none lines=2 via groq_main#3 1396 ms
+               Teacher explained that the 1803 atomic theory cannot explain how atoms combine into molecules.
+00:02:26 INFO    copilot.presentation.engine: planner: update Chemistry > Atoms (same frame)
+00:02:26 INFO    copilot.presentation.engine: no image for 'Atoms': has an image
+  [SLIDE] update 'Atoms' [key_points] v9 (7 items)
+  [  341.0s] Second, it does not explain the difference in masses, size and valences of atoms in different elements. (484 ms)
+  [UNDERSTAND] Chemistry > Atoms (same_concept) acts=- hint=key_points lines=1 via groq_main#3 1327 ms
+               Added that atoms differ in size and valence as well as mass across elements
+00:02:34 INFO    copilot.presentation.engine: revised S3: Atoms of different elements have different masses, sizes, and valences
+00:02:34 INFO    copilot.presentation.engine: planner: noop Chemistry > Atoms (nothing to display)
+  [SLIDE] update 'Atoms' [key_points] v10 (7 items)
+  [  363.2s] Let us study about the atomic mass. (526 ms)
+  [  366.2s] Attangement mask is the average relative atomic mass of an atom. (616 ms)
+  [UNDERSTAND] Chemistry > Atomic Mass (sub_concept) acts=definition hint=definition lines=2 via groq_main#3 2178 ms
+               Introduced atomic mass as the average relative atomic mass of an atom
+  [HEARD] 'Attangement mask' -> 'Atomic mass' corrected on the slide (0.5)
+00:02:57 INFO    copilot.presentation.engine: planner: continue Chemistry > Atomic Mass (new facet)
+00:02:57 INFO    copilot.presentation.engine: concern 86611269b5d6 (transcription, applied=True): 1 element(s); slide shows 'Atomic mass'
+00:02:57 INFO    copilot.presentation.engine: image hint 'Atomic Mass diagram' for 'Atomic Mass' from its sibling subtopic
+  [SLIDE] add    'Atomic Mass' [members] v1 (1 items)
+00:02:57 INFO    copilot.presentation.engine: image search 'Atomic Mass diagram' (diagram) for 'Atomic Mass'
+  [  371.4s] It indicates that how many times an atom of an element is heavier as compared to one twelfth the part of the mass of one atom of carbon dwell. (666 ms)
+  [SLIDE] update 'Atomic Mass' [members] v2 (1 items)
+00:03:03 INFO    copilot.visuals.finder: image search 'Atomic Mass diagram' (diagram, labels preferred): 2 candidate(s), 2 accepted (0 labelled), 5.71 s {'search_s': 3.1, 'download_s': 0.85, 'clip_s': 0.05, 'full_s': 1.69, 'total_s': 5.71}
+  [IMAGE] 'Atomic Mass diagram' -> File:Basic Mass Spectrometer.jpg (5.7 s)
+00:03:03 INFO    copilot.presentation.engine: image 'Atomic Mass diagram' on 'Atomic Mass': File:Basic Mass Spectrometer.jpg
+  [SLIDE] update 'Atomic Mass' [members] v3 (2 items)
+  [UNDERSTAND] Chemistry > Atomic Mass (same_concept) acts=- hint=definition lines=1 via groq_main#3 2177 ms
+               Defined atomic mass as the multiple of an atom's weight compared to one‑twelfth of carbon‑12 mass.
+00:03:05 INFO    copilot.presentation.engine: revised S1: Average relative atomic mass indicates how many times an atom is heavier than one‑twelfth the mass of a carbon‑12 atom.
+00:03:05 INFO    copilot.presentation.engine: planner: noop Chemistry > Atomic Mass (nothing to display)
+  [SLIDE] update 'Atomic Mass' [members] v4 (2 items)
+  [SLIDE] update 'Atomic Mass' [members] v5 (2 items)
+  [  381.7s] So, average atomic mass equals average mass of an atom upon 112 times mass of an atom of C12. (613 ms)
+  [UNDERSTAND] Chemistry > Atomic Mass (elaboration) acts=- hint=definition lines=1 via groq_main#4 1557 ms
+               Teacher gave a numeric example of atomic mass relative to carbon‑12, likely mis‑heard.
+  [HEARD] '112 times' -> 'one‑twelfth' corrected on the slide (0.5)
+00:03:13 INFO    copilot.presentation.engine: planner: noop Chemistry > Atomic Mass (nothing to display)
+00:03:13 INFO    copilot.presentation.engine: concern 6a1e64d8c03c (transcription, applied=True): 0 element(s); slide shows 'one‑twelfth'
+  [  412.0s] Let us study about the Gram atomic mass, GAN. (604 ms)
+  [  416.1s] atomic mass of an element expressed in gram is called gram atomic mass or gram atom or mole atom. (656 ms)
+00:03:42 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Gram Atomic Mass' -> same_concept
+  [UNDERSTAND] Chemistry > Gram Atomic Mass (same_concept) acts=definition hint=definition lines=2 via groq_main#3 1141 ms
+               Introduced gram atomic mass as the atomic mass of an element expressed in grams
+00:03:42 INFO    copilot.presentation.engine: planner: update Chemistry > Atomic Mass (same frame)
+  [SLIDE] update 'Atomic Mass' [concept] v6 (2 items)
+  [  426.5s] Let us study molecular mass. (475 ms)
+  [  429.0s] It is this. (310 ms)
+  [  430.6s] Mass of a molecule. (446 ms)
+  [  432.5s] that is (276 ms)
+  [UNDERSTAND] Chemistry > Molecular Mass (sibling_concept) acts=definition hint=definition lines=4 via groq_main#3 1113 ms
+               Introduced molecular mass as the mass of a molecule
+00:04:05 INFO    copilot.presentation.engine: planner: continue Chemistry > Molecular Mass (new facet)
+00:04:05 INFO    copilot.presentation.engine: image hint 'Molecular Mass diagram' for 'Molecular Mass' from its sibling subtopic
+  [SLIDE] add    'Molecular Mass' [definition] v1 (1 items)
+00:04:05 INFO    copilot.presentation.engine: image search 'Molecular Mass diagram' (diagram) for 'Molecular Mass'
+  [  433.7s] Number of items of molecule is heavier than 1 twelfth the mass of C12 atom. Molecular mass of a substance is an additive property and can be calculated by taking (794 ms)
+  [SLIDE] update 'Molecular Mass' [definition] v2 (1 items)
+00:04:09 INFO    copilot.visuals.finder: image search 'Molecular Mass diagram': 1 slow download(s) dropped
+00:04:09 INFO    copilot.presentation.engine: image 'Molecular Mass diagram': none (downloads failed)
+  [IMAGE] 'Molecular Mass diagram' -> none (downloads failed) (4.7 s)
+  [  446.7s] algebraic sum of the atomic masses of all the elements of different elements present in one molecule. (651 ms)
+  [SLIDE] update 'Molecular Mass' [definition] v3 (1 items)
+  [UNDERSTAND] Chemistry > Molecular Mass (elaboration) acts=explanation hint=key_points lines=2 via groq_main#3 1204 ms
+               Molecular mass adds up atomic masses of all atoms in a molecule.
+00:04:13 INFO    copilot.presentation.engine: planner: update Chemistry > Molecular Mass (same frame)
+00:04:13 INFO    copilot.presentation.engine: image hint 'Molecular Mass diagram' for 'Molecular Mass' from its sibling subtopic
+  [SLIDE] update 'Molecular Mass' [definition] v4 (1 items)
+  [SLIDE] update 'Molecular Mass' [definition] v5 (2 items)
+  [  454.2s] The formula is molecular mass equals average relative mass of one molecule upon 1 by 12 times mass of C12 atom. (706 ms)
+  [SLIDE] update 'Molecular Mass' [definition] v6 (3 items)
+  [UNDERSTAND] Chemistry > Molecular Mass (same_concept) acts=formula hint=formula lines=1 via groq_main#3 1626 ms
+               Teacher gave a formula connecting molecular mass to the molecule's average relative mass and the carbon‑12 atom mass.
+  [HEARD] 'upon 1 by 12 times' -> '× (1/12) ×' corrected on the slide (0.5)
+00:04:26 INFO    copilot.presentation.engine: planner: update Chemistry > Molecular Mass (same frame)
+00:04:26 INFO    copilot.presentation.engine: concern 73fa5cbca995 (transcription, applied=True): 1 element(s); slide shows '× (1/12) ×'
+00:04:26 INFO    copilot.presentation.engine: image hint 'Molecular Mass diagram' for 'Molecular Mass' from its sibling subtopic
+  [SLIDE] update 'Molecular Mass' [definition] v7 (2 items)
+  [SLIDE] update 'Molecular Mass' [definition] v8 (3 items)
+  [  470.0s] Formula Mass Some substances such as sodium chloride do not contain discrete molecules as their constituent units. The formula such as NaCl is used to calculate the formula mass instead of molecular mass. (873 ms)
+  [  483.8s] as in the solid state sodium chloride does not exist as a single entity. (573 ms)
+00:04:54 WARNING copilot.understanding.interpreter: model left out 2 spoken sentence(s); shown as said: ['Formula Mass Some substances such as sodium chloride do not contain discrete molecules as their constituent units', 'As in the solid state sodium chloride does not exist as a single entity']
+  [UNDERSTAND] Chemistry > Formula Mass (sibling_concept) acts=definition,explanation hint=definition lines=2 via groq_main#3 1263 ms
+               Introduced formula mass as the mass calculated from a compound's formula, used when substances lack discrete molecules like NaCl.
+00:04:54 INFO    copilot.presentation.engine: planner: continue Chemistry > Formula Mass (new facet)
+  [SLIDE] add    'Formula Mass' [definition] v1 (3 items)
+00:04:54 INFO    copilot.presentation.engine: no image 'NaCl crystal lattice' on 'Formula Mass': not about the slide (similarity 0.18)
+  [  511.4s] equivalent mass. It is the mass of an element or a compound which would combine with or (730 ms)
+  [SLIDE] update 'Formula Mass' [definition] v2 (4 items)
+  [  519.1s] 1 part of hydrogen or 8 part of oxygen or 35.5 parts of chlorine. (621 ms)
+  [SLIDE] update 'Formula Mass' [definition] v3 (4 items)
+  [UNDERSTAND] Chemistry > Equivalent Mass (sibling_concept) acts=definition hint=definition lines=2 via groq_main#3 1251 ms
+               Defined equivalent mass as the amount that combines with fixed parts of H, O, or Cl.
+00:05:24 INFO    copilot.presentation.engine: planner: continue Chemistry > Equivalent Mass (new facet)
+00:05:24 INFO    copilot.presentation.engine: image hint 'Equivalent Mass diagram' for 'Equivalent Mass' from its sibling subtopic
+  [SLIDE] update 'Formula Mass' [definition] v4 (3 items)
+  [SLIDE] add    'Equivalent Mass' [definition] v1 (1 items)
+00:05:24 INFO    copilot.presentation.engine: image search 'Equivalent Mass diagram' (diagram) for 'Equivalent Mass'
+00:05:27 INFO    copilot.visuals.finder: image search 'Equivalent Mass diagram' (diagram, labels preferred): 1 candidate(s), 0 accepted (0 labelled), 3.11 s {'search_s': 2.15, 'download_s': 0.92, 'clip_s': 0.04, 'full_s': 0.0, 'total_s': 3.11}
+00:05:27 INFO    copilot.presentation.engine: image 'Equivalent Mass diagram': none (no relevant image)
+  [IMAGE] 'Equivalent Mass diagram' -> none (no relevant image) (3.1 s)
+  [  538.7s] Let us study the mole concept. (512 ms)
+  [SLIDE] update 'Equivalent Mass' [definition] v2 (1 items)
+  [  540.9s] The term move was suggested by Coswipe. (523 ms)
+  [SLIDE] update 'Equivalent Mass' [definition] v3 (1 items)
+  [UNDERSTAND] Chemistry > Mole Concept (sibling_concept) acts=transition hint=none lines=1 via groq_main#3 931 ms
+               Teacher announced the start of the mole concept.
+00:05:42 INFO    copilot.presentation.engine: planner: noop Chemistry > Mole Concept (nothing to display)
+  [  544.4s] its latin word, mor, means keep (632 ms)
+00:05:51 WARNING copilot.understanding.interpreter: interpretation from groq_main#3 invalid (schema: [{'type': 'int_parsing', 'loc': ('meta_lines', 0), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'The term move was suggested by Coswipe.'}]); one repair attempt
+00:05:51 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The term move was suggested by Coswipe']
+  [UNDERSTAND] Chemistry > Mole Concept (same_concept) acts=explanation hint=none lines=1 via groq_main#3 2074 ms
+               No new content added, only a meta comment.
+00:05:51 INFO    copilot.presentation.engine: planner: continue Chemistry > Mole Concept (new facet)
+00:05:51 INFO    copilot.presentation.engine: supporting Mole Concept content stays on the sparse definition slide 'Equivalent Mass'
+00:05:51 INFO    copilot.presentation.engine: image hint 'Mole Concept diagram' for 'Equivalent Mass' from its sibling subtopic
+  [SLIDE] update 'Equivalent Mass' [definition] v4 (2 items)
+00:05:51 INFO    copilot.presentation.engine: no image 'Mole Concept diagram' on 'Equivalent Mass': not about the slide (similarity 0.23)
+  [UNDERSTAND] Chemistry > Mole Concept (elaboration) acts=definition hint=definition lines=1 via groq_main#3 1394 ms
+               Explained the Latin origin of the word mole
+  [HEARD] 'mor' -> 'moles' corrected on the slide (0.5)
+00:05:59 INFO    copilot.presentation.engine: planner: update Chemistry > Mole Concept (same frame)
+00:05:59 INFO    copilot.presentation.engine: concern 9cd6b3559f46 (transcription, applied=True): 1 element(s); slide shows 'moles'
+00:05:59 INFO    copilot.presentation.engine: image hint 'Mole Concept diagram' for 'Equivalent Mass' from its sibling subtopic
+00:05:59 INFO    copilot.presentation.engine: no image for 'Equivalent Mass': two concepts side by side
+  [SLIDE] update 'Equivalent Mass' [concept] v5 (3 items)
+  [SLIDE] update 'Equivalent Mass' [concept] v6 (3 items)
+  [  548.4s] A mole is defined as the amount of substance which contains same number of elementary particles, atom molecules and ions as the number of atoms present in 12 grams of carbon C12. (717 ms)
+  [  562.0s] 1 mole equals 6.023 into 10 to the power 23 atoms equals 1 gram atom equals gram atomic mass. (679 ms)
+  [  572.4s] (dropped: filler_hallucination) Thank you.
+  [UNDERSTAND] Chemistry > Mole Concept (same_concept) acts=definition,other hint=definition lines=2 via groq_main#3 2740 ms
+               Defined a mole by reference to carbon‑12 atoms and gave Avogadro’s number and gram‑atom equivalence.
+00:06:12 INFO    copilot.presentation.engine: revised S3: Mole: the amount of substance which contains the same number of elementary particles—atoms, molecules, and ions—as the number of atoms…
+00:06:12 INFO    copilot.presentation.engine: planner: update Chemistry > Mole Concept (same frame)
+00:06:12 INFO    copilot.presentation.engine: image hint 'Mole Concept diagram' for 'Equivalent Mass' from its sibling subtopic
+00:06:12 INFO    copilot.presentation.engine: no image for 'Equivalent Mass': two concepts side by side
+  [SLIDE] update 'Equivalent Mass' [concept] v7 (3 items)
+  [SLIDE] update 'Equivalent Mass' [concept] v8 (4 items)
+  [  574.6s] this 6.023 into 10 to the power 23 is the abbegetter number (651 ms)
+  [  582.5s] in honor of the Avogadro (602 ms)
+  [  585.1s] and is devoted by N.Have (537 ms)
+  [  591.2s] the volume occupied by one mole (534 ms)
+  [  593.8s] of a gaseous substance is called molar volume or a gram molecular volume. (631 ms)
+  [UNDERSTAND] Chemistry > Mole Concept (elaboration) acts=explanation hint=key_points lines=4 via groq_main#3 1694 ms
+               Added that one mole has a characteristic volume and clarified Avogadro number wording.
+  [HEARD] 'abbegetter' -> 'Avogadro' corrected on the slide (0.5)
+  [HEARD] 'devoted by N.Have' -> 'named after Avogadro' corrected on the slide (0.5)
+00:06:37 INFO    copilot.presentation.engine: planner: update Chemistry > Mole Concept (same frame)
+00:06:37 INFO    copilot.presentation.engine: concern acf29dc1525a (transcription, applied=True): 0 element(s); slide shows 'Avogadro'
+00:06:37 INFO    copilot.presentation.engine: concern 1f67199e6349 (transcription, applied=True): 0 element(s); slide shows 'named after Avogadro'
+00:06:37 INFO    copilot.presentation.engine: image hint 'Mole Concept diagram' for 'Equivalent Mass' from its sibling subtopic
+00:06:37 INFO    copilot.presentation.engine: no image for 'Equivalent Mass': two concepts side by side
+  [SLIDE] update 'Equivalent Mass' [concept] v9 (5 items)
+00:06:45 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Mole Concept' -> same_concept
+  [UNDERSTAND] Chemistry > Mole Concept (same_concept) acts=definition hint=definition lines=1 via groq_main#4 1167 ms
+               Introduced the definition of molar volume for a gaseous substance.
+00:06:45 INFO    copilot.presentation.engine: planner: update Chemistry > Mole Concept (same frame)
+  [SLIDE] update 'Equivalent Mass' [concept] v10 (5 items)
+  [SLIDE] add    'Equivalent Mass' [members] v1 (1 items)
+00:06:45 INFO    copilot.presentation.engine: image search 'molar volume diagram' (diagram) for 'Equivalent Mass'
+  [  601.6s] The formula is number of moles equals amount of substance in gram upon molar mass. (625 ms)
+  [SLIDE] update 'Equivalent Mass' [members] v2 (1 items)
+00:06:48 INFO    copilot.visuals.finder: image search 'molar volume diagram' (diagram, labels preferred): 1 candidate(s), 1 accepted (1 labelled), 3.73 s {'search_s': 2.37, 'download_s': 0.6, 'clip_s': 0.04, 'full_s': 0.7, 'total_s': 3.73}
+  [IMAGE] 'molar volume diagram' -> File:Partial molar volume EN.svg (3.7 s)
+00:06:48 INFO    copilot.presentation.engine: image 'molar volume diagram' on 'Equivalent Mass': File:Partial molar volume EN.svg
+  [SLIDE] update 'Equivalent Mass' [members] v3 (2 items)
+  [UNDERSTAND] Chemistry > Mole Concept (elaboration) acts=formula hint=formula lines=1 via groq_main#3 1248 ms
+               Introduced the formula n = m / M for calculating moles from mass and molar mass.
+00:06:53 INFO    copilot.presentation.engine: planner: update Chemistry > Mole Concept (same frame)
+00:06:53 INFO    copilot.presentation.engine: no image for 'Equivalent Mass': has an image
+  [SLIDE] update 'Equivalent Mass' [members] v4 (2 items)
+  [SLIDE] update 'Equivalent Mass' [members] v5 (3 items)
+  [  630.3s] Let us study Stichometer (589 ms)
+  [  632.6s] The relative portions in which the reactants react and products are formed is called stichometry. (678 ms)
+  [UNDERSTAND] Chemistry > Stichometer (sibling_concept) acts=definition hint=definition lines=2 via groq_main#3 1499 ms
+               Introduced the definition of stoichiometry as the relative portions of reactants and products.
+  [HEARD] 'Stichometer' -> 'Stoichiometry' corrected on the slide (0.5)
+  [HEARD] 'stichometry' -> 'stoichiometry' corrected on the slide (0.5)
+00:07:23 INFO    copilot.presentation.engine: planner: continue Chemistry > Stichometer (new facet)
+00:07:23 INFO    copilot.presentation.engine: concern 7e7394d792c2 (transcription, applied=True): 0 element(s); slide shows 'Stoichiometry'
+00:07:23 INFO    copilot.presentation.engine: concern a1353406ab8e (transcription, applied=True): 1 element(s); slide shows 'stoichiometry'
+00:07:23 INFO    copilot.presentation.engine: image hint 'Stichometer diagram' for 'Stichometer' from its sibling subtopic
+  [SLIDE] add    'Stichometer' [members] v1 (1 items)
+  [SLIDE] update 'Stichometer' [members] v2 (1 items)
+00:07:23 INFO    copilot.presentation.engine: image search 'Stichometer diagram' (diagram) for 'Stichometer'
+  [  641.0s] limiting reagents. It is the reactant which is completely consumed during the reaction. (555 ms)
+  [SLIDE] update 'Stichometer' [members] v3 (1 items)
+00:07:25 INFO    copilot.presentation.engine: image 'Stichometer diagram': none (no usable candidates)
+  [IMAGE] 'Stichometer diagram' -> none (no usable candidates) (1.7 s)
+  [  648.0s] excess reagents. It is the reactant which is not completely consumed and remains unreacted during the reaction. (678 ms)
+  [SLIDE] update 'Stichometer' [members] v4 (1 items)
+00:07:35 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Stichometer' -> same_concept
+  [UNDERSTAND] Chemistry > Stichometer (same_concept) acts=definition,definition hint=definition lines=2 via groq_main#3 1020 ms
+               Defined limiting reagent as the reactant fully consumed and excess reagent as the reactant that remains unreacted.
+00:07:35 INFO    copilot.presentation.engine: planner: update Chemistry > Stichometer (same frame)
+00:07:35 INFO    copilot.presentation.engine: image hint 'Stichometer diagram' for 'Stichometer' from its sibling subtopic
+00:07:35 INFO    copilot.presentation.engine: no image for 'Stichometer': two concepts side by side
+  [SLIDE] update 'Stichometer' [members] v5 (1 items)
+  [SLIDE] update 'Stichometer' [concept] v6 (3 items)
+  [  659.6s] percent yield. The actual yield of a product in any reaction is usually less than the theoretical yields because of the occurrence of certain site reactions. (827 ms)
+  [  671.6s] The formula is percent yield equals actual yield upon theoretical yield 10 to 100. (606 ms)
+00:07:56 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Stichometer' -> same_concept
+  [UNDERSTAND] Chemistry > Stichometer (same_concept) acts=definition hint=definition lines=2 via groq_main#3 958 ms
+               Percent yield is defined as actual yield divided by theoretical yield times 100.
+00:07:56 INFO    copilot.presentation.engine: planner: update Chemistry > Stichometer (same frame)
+00:07:56 INFO    copilot.presentation.engine: image hint 'Stichometer diagram' for 'Stichometer' from its sibling subtopic
+00:07:56 INFO    copilot.presentation.engine: no image for 'Stichometer': two concepts side by side
+  [SLIDE] update 'Stichometer' [concept] v7 (4 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261011-235623-b72e: 91 segments, 999 words, state v187, 864 events logged
+        CommandReceived=54, ConceptSignal=91, ConcernRaised=11, DeckState=66, ImageChoices=7, ImageReady=12, ImageRequested=12, InterpretRequested=47, InterpretationReady=47, LifecycleChanged=5, SlideContextChanged=45, SlideOverflow=3, SlidePatch=93, StateChanged=187, TranscriptFinal=91, UtteranceClassified=91, UtteranceDropped=2
+        stt: 91 published, 2 dropped, latency p50=590 ms p95=790 ms max=873 ms
+        understanding: 47 interpretations (47 by LLM, 0 fallbacks, 1 repaired), max 6 calls/min, prompt tokens max=1993 avg=1918, latency p50=1263 ms max=5143 ms
+        presentation: 16 slides; planner ops {'new': 1, 'update': 28, 'continue': 12, 'noop': 6}; revisions 6, corrections shown 5, shown as said 0
+        images: {'requests': 12, 'found': 7, 'none': 5}; slides with an image 6/16
+          1. [definition] What is chemistry? [part 1]  (v5, ['definition', 'points', 'facts'])
+          2. [hierarchy] What is chemistry? [part 2]  (v4, ['hierarchy', 'definition', 'points'])
+          3. [groups] Classification of Metals  (v2, ['groups'])
+          4. [key_points] Pure Substances  (v3, ['points'])
+          5. [definition] Elements  (v5, ['definition', 'facts', 'hierarchy'])
+          6. [definition] Compounds  (v6, ['definition', 'image', 'example', 'hierarchy'])
+          7. [definition] Mixtures [part 1]  (v6, ['definition', 'image', 'hierarchy'])
+          8. [key_points] Mixtures [part 2]  (v2, ['points', 'image'])
+          9. [key_points] Atoms [part 1]  (v10, ['points', 'definition', 'example', 'image', 'example'])
+          10. [key_points] Atoms [part 2]  (v10, ['points', 'image'])
+          11. [concept] Atomic Mass  (v6, ['definition', 'definition'])
+          12. [definition] Molecular Mass  (v8, ['definition', 'points', 'formula'])
+          13. [definition] Formula Mass  (v4, ['definition', 'points'])
+          14. [concept] Equivalent Mass [part 1]  (v10, ['definition', 'points', 'definition', 'facts', 'points'])
+          15. [members] Equivalent Mass [part 2]  (v5, ['definition', 'image', 'formula'])
+          16. [concept] Stichometer  (v7, ['definition', 'definition', 'definition', 'definition'])
+        providers: {'groq_main#2': 15, 'groq_main#3': 29, 'groq_main#4': 3}; triggers: {'max_wait': 13, 'pause': 23, 'boundary': 7, 'words': 4}; outline: ['Chemistry > Mixtures, Atoms, Atomic Mass, Molecular Mass, Formula Mass, Equivalent Mass, Mole Concept, Stichometer']; concerns: 11
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261011-235623-b72e\session.sqlite

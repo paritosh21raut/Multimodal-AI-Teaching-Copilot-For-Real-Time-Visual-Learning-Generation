@@ -1,0 +1,14 @@
+{
+  "name": "test6",
+  "source": "mic",
+  "note": "self, histrory",
+  "session_id": "20261012-124921-c2c8",
+  "date": "2026-10-12 13:00",
+  "title": "",
+  "minutes": 2.6,
+  "utterances": 18,
+  "slides": 5,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": []
+}

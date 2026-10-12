@@ -1,0 +1,14 @@
+{
+  "name": "test3",
+  "source": "mic",
+  "note": "self, chemistry",
+  "session_id": "20261011-235623-b72e",
+  "date": "2026-10-12 00:08",
+  "title": "",
+  "minutes": 11.3,
+  "utterances": 91,
+  "slides": 16,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": []
+}

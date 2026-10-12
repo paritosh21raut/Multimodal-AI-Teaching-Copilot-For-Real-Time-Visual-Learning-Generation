@@ -1,0 +1,195 @@
+[    1.2] Hello everyone, let us learn about deep learning.
+[    4.0] Deep learning is a type of machine learning that teaches computers to perform tasks by learning from examples like
+[   11.5] Humans do.
+[   13.1] Imagine teaching a computer to recognize cats instead of telling it to look for whiskers, ears and a tail. You show it thousands of pictures of cats. The computer finds the common patterns all by itself and learns how to identify a cat.
+[   28.6] This is the essence of deep learning.
+[   34.9] In technical terms, deep learning uses something called neural networks, which are inspired by the human brain.
+[   41.6] These networks consist of layers of interconnected nodes that process information. The more layers, the deeper the network, allowing it to learn more complex features and perform more sophisticated tasks.
+[   59.4] Now let's start with the evaluation of machine learning to deep learning.
+[   62.9] First, what is Machine Learning? Machine Learning is itself a subset of artificial intelligence that enables computers to learn from data and make decisions without explicit programming.
+[   75.3] We take the puzzles, various techniques and algorithms that allow system to recognize patterns, make predictions that improve performance over time. You can explore the difference between machine learning and AI in a separate article.
+[   90.7] How deep learning differs from traditional machine learning?
+[   93.7] While machine learning has been a transformative technology in its own right, deep learning takes its step further by automating many of the tasks that typically require
+[  105.7] human expertise
+[  107.7] Deep learning is essentially a specialized subset of machine learning, distinguished by its use of neural networks with three or more layers. These neural networks attempt to simulate the behavior of human brain.
+[  120.9] a bit afar
+[  122.9] from matching its ability in order to learn from large amounts of data you can explore machine learning versus deep learning.
+[  132.3] three buttons
+[  133.8] of feature engineering. Feature engineering is the process of selecting, transforming or creating the most relevant variables known as features from raw data to use in machine models.
+[  147.4] For example, if you are building a weather prediction model, the raw data might include temperature, humidity, wind speed and barometric pressure.
+[  156.8] feature engineering would involve determining
+[  160.0] which of these variables are
+[  162.2] most important for predicting the weather and possibly transforming them.
+[  167.6] to make them more useful for the model. In traditional machine learning, future engineering is often a manual and time-consuming process that requires domain expertise. However, one of the advantages of deep learning is that it can automate quickly.
+[  181.9] learn relevant features from the raw data reducing the need of manual intervention.
+[  190.3] Why is Deep Learning important?
+[  194.6] because models trained on structured data can learn easily from unstructured data.
+[  204.5] which reduces time and resources in standard realizing data sets.
+[  210.1] Due to introduction of graphic processing units, GPUs, deep learning models can process large amount of data with lightning speed.
+[  218.5] Deep learning models provide the most accurate
+[  221.8] results in computer vision, natural language processing and audio processing.
+[  227.8] Most models require machine learning engineer intervention, but deep learning models can detect all kinds of patterns automatically.
+[  237.7] Now let us study some core concepts of deep learning.
+[  241.7] neural networks at the heart of deep learning are neural networks which are going to
+[  247.1] computational models inspired by human brain.
+[  254.2] These networks consist of interconnected nodes or neurons that work together to process information and make decisions.
+[  263.0] Just like our brains has different regions from different tasks, a neural network has a layer designated to specific functions.
+[  271.9] deep neural networks. What makes a neural network deep is the number of layers it has between the input and output.
+[  280.7] A deep neural network has multiple layers, allowing it to learn more complex features and make more accurate predictions. The depth of these networks is what gives deep learning its name and its power to solve.
+[  294.4] intricate problems.
+[  297.8] activation function
+[  300.0] In neural networks, activation functions are like the decision makers. They determine what information should be passed along the next layers. These functions add a level of complexity, enabling the network to learn from the data and make
+[  314.6] wants decisions.
+[  317.3] Now let's understand how deep learning works.
+[  321.5] Deep learning uses feature extraction to recognize similar features to the same label and then use decision boundaries to determine which features accurately present each label.
+[  333.2] In the cat and dog classification, deep learning models will extract information such as the eyes, face and body shape of animals and divide them into two classes.
+[  344.1] The deep learning model consists of deep learning neural networks.
+[  348.6] The simple neural network consists of an input layer, a hidden layer and output layer. Deep learning model consists of multiple hidden layers with additional layers that the model's accuracy has improved.
+[  362.3] the input layer contains raw data and they transfer the data to hidden layers nodes the hidden layer nodes clarifies class classifies the data point based on broader target information and
+[  376.7] with every subsequent layer the scope of the target value narrows
+[  381.1] down the procedure accurate assumptions the output layer uses hidden layer information to select the most probable level in our case
+[  391.2] accurately predicting a dog's image rather than a cat's.
+[  405.8] Now let's differentiate between Artificial Intelligence and Deep Learning.
+[  410.8] Artificial Intelligence is the concept that intelligent machines can be built to mimic human behavior or surpass human intelligence.
+[  418.6] AI uses machine learning and deep learning methods to complete human tasks. In short, AI is deep learning as it is the most advanced algorithm capable of making intelligent decisions.
+[  438.8] Let's start with what is deep learning used for?
+[  442.0] Recently, the world of technology has seen the surge in artificial intelligence applications and they all are powered by deep learning models. The applications range from recommending movies on Netflix to Amazon Warehouse Management System.
+[  458.9] Some of the use cases are Complevision
+[  461.6] Computer vision is used in self-driving cars to detect objects and avoid collisions. It is also used for face recognition, pose estimation, image classification and anomaly detection.
+[  475.8] Automatic Speech Recognition
+[  477.8] ESR is used by billions of people worldwide. It is in our phones and is commonly activated by saying hey google or hey Siri. Such audio applications are also used for text to speech audio classification and
+[  491.9] Voice activity detection.
+[  493.8] In generative way man, generative AI has seen a surge in demand as
+[  500.9] Cryptopunk NFT just sold for 1 million dollars. Cryptopunk is a generative art collection that was created using deep learning models. The introduction of the GPT-4 models by OpenAI has revolutionized
+[  514.9] the text generation domain with a powerful GPT tool.
+[  519.2] Now you can teach models to write and in turn will write code for your data science projects.
+[  525.6] translation. Deep learning translation is not limited to large language translation.
+[  532.5] as we are now able to translate photos to text using OCR or translate text to image by using nvidia gua gang 2
+[  547.7] Time series forecasting is used for predicting market crashes, stock prices,
+[  560.7] and changes in weather. The financial sector survives on speculations and future predictions. Deep learning and time series models are better than humans in detecting patterns and so are pivotal tools in this
+[  574.9] and small industries.
+[  576.9] Automation. Deep learning is used for automation, doing tasks, for example training robots for warehouse management. The most popular application is playing video games and getting better at solving puzzles.
+[  589.4] Recently, OpenAI Data's DataAmp Pro Team OG, which shocked the world as people were not expecting all 5 robots to outsmart the world champions.
+[  602.5] Customer feedback. Deep learning is used for handling customer's feedback and completes. It is used in every chatbot application to provide seamless customer services.
+[  612.7] Biomedical
+[  614.3] This field has benefited the most with the introduction to deep learning. Deep learning is used in biomedicine to detect cancer, build stable medicines,
+[  622.9] for anomaly detection in chest x-rays and to assist medical equipments.
+[  633.6] Now let's learn about different types of deep learning models and how they work.
+[  639.4] First, supervised learning. Supervised learning uses a labeled dataset to train models to either classify data or predict values. The dataset contains features and
+[  649.3] target labels which allow the algorithm to learn over time by minimizing the loss between predicted and actual labels. Supervised learning can be divided into classification and regression problems.
+[  661.7] classification. The classification algorithm divides the dataset into various categories based on feature extraction. The popular deep learning models are ResNet-50 for image classification and BERT language model.
+[  676.5] for text classification.
+[  682.2] Regression. Instead of dividing the dataset into categories, the regression model learns the relationship between input and output variables to predict the outcome. Regression models are commonly used for predictive analysis, weather forecasting,
+[  695.5] in predicting stock market performance. LSTM and RNN are popular deep learning regression models.
+[  703.0] Unsupervised learning Unsupervised learning algorithms learn the patterns within the unlabelled dataset and create clusters. Deep learning models can learn hidden patterns without human intervention and these models are often used.
+[  716.9] in recommendation engines.
+[  719.7] Unsupervised learning is used for grouping various species, medical imaging and market research. The most common deep learning model for clustering is the deep embedded clustering algorithm.
+[  733.9] Reinforcement learning is a machine learning method where agents learn various behaviors from the environment. This agent takes random actions and gets rewarded. The agent learns to achieve goals by trial and error in a complex environment.
+[  748.6] without human intervention just like a baby with encouragement from
+[  753.0] Its parents learn to work and he learns to perform certain tasks by maximizing rewards.
+[  763.3] and the designer sets the reward policy. Recently, RL has seen
+[  769.5] high demands in automation due to advancement in robotics self driving cars defeating
+[  774.8] pro players in games and landing rocket back to earth.
+[  781.9] Generative Adversarial Networks GANs use two neural networks and together they produce synthetic instances of positional data. GANs have gained a lot of popularity in recent years.
+[  796.5] as they are able to mimic some of the great artists to produce masterpieces.
+[  801.9] They are widely used for generating synthetic art, video, music and text.
+[  814.4] how GANs work in synthetic image generation.
+[  818.3] first the generator network
+[  820.5] take input of random noise and generate fake images. The generated image and the real image are fed into a discriminator. The discriminator decides whether the generated image is real or not.
+[  834.1] it returns probabilities from 0 to 1 where 0 represents a fake image and 1 represents an authenticate image.
+[  842.7] GANs architecture contains two feedback loops. The discriminator is the feedback loop and with real images whereas the generator is the feedback loop.
+[  851.0] They look in sync to produce more authentic images.
+[  868.8] graph neural network. A graph is a data structure that consists of edges and vertices. The edges can be directed if they are bi-directional dependencies between vertices. Good.
+[  881.0] also known as directed graphs.
+[  885.8] The Graph Neural Network is a type of deep learning architecture that directly operates a graph structure. GNNs are applied in large dataset analysis recommendations. Systems with
+[  898.3] contributions.
+[  899.9] They are also used for node classification, link prediction and clustering.
+[  906.5] Graph neural networks have performed better than convolutional neural networks.
+[  912.4] Natural Language Processing
+[  916.0] NLP uses deep learning to read decipher and understand human language. It is widely used for processing speech, text and images. The introduction of transfer learning has taken NLP to the next level.
+[  928.5] as we are able to fine tune the model with a few samples and achieve state of the art performance.
+[  935.9] NLP can be divided into multiple fields.
+[  939.7] Translation, translating human languages, molecular structure and mathematical equations Summarization, summarizing large sums of text into
+[  948.7] saved lines while maintaining the key information.
+[  952.4] classification.
+[  953.8] dividing the text into various categories. Generation, text to text, generation, it can be used to generate entire essay with a single line of text.
+[  964.9] conversational, virtual assistant, retaining past knowledge of conversation and mimicking human conventions.
+[  973.0] Answering questions. AI answers questions by using Q&O data.
+[  977.9] feature extraction to tick patterns in features, in text and graphs, information such as name, entity recognition and parts of speech.
+[  986.7] Sentence similarities. Evaluating similarities between various texts.
+[  991.4] converting tasks
+[  995.0] to audible speech
+[  996.7] Automatic speech recognition Understanding various sounds and converting them into text Optical character recognition Extraction of text from images
+[ 1013.6] Now let's take a deeper look at deep learning concepts.
+[ 1017.1] Activation function In neural networks, the activation function produces output decision boundaries and it is used to improve performance of the model. The activation function is a mathematical expression that decides the
+[ 1030.6] whether the input should pass through a neuron or not based on its significance.
+[ 1036.8] It also provides non-linearity to networks without activation function the neural network
+[ 1043.2] becomes a simple linear regression model
+[ 1046.7] there are several types of activation functions tanh, red loop, sigmoid, linear, softmax, swish
+[ 1057.2] These functions produce various output boundaries.
+[ 1061.7] Loss function. The loss function is a difference between actual and predicted values. It allows neural networks to track the model's overall performance. Depending on specific problems, we choose a certain type of function.
+[ 1075.8] For example, means squared error.
+[ 1078.3] loss equals sum.
+[ 1080.1] of predicted minus i guess you'll
+[ 1083.3] by 2.
+[ 1086.3] The most used loss function in deep learning are Binary Cross Entropy, Categorial Hinge, Mean Squared Error, Q-bar
+[ 1095.5] sparse categorial
+[ 1097.5] cross entropy
+[ 1103.9] back propagation in forwarding propagation. AB initializes our neural network with random inputs to produce an output that is random to make our model perform better we adjust weights
+[ 1118.2] randomly using.
+[ 1120.5] back propagation.
+[ 1122.3] To track the model's performance, we need a loss function that will find global minima and maximize the model accuracy.
+[ 1132.1] stochastic gradient descent gradient descent is used to optimize loss function by changing weight in a controlled way to achieve minimum loss
+[ 1141.1] Now we have an objective but we need direction to on whether the increase or decrease the weights to achieve better performance. The derivative of the loss function will give us direction and we can use it to benefit the weights of the network.
+[ 1156.0] the equation below shows w equals w minus jw in stochastic gradient descent samples are divided into batches instead of using the entire data set to optimize gradient descent
+[ 1168.7] This is useful if you want to achieve minimum loss faster and optimized
+[ 1174.1] Computational Power
+[ 1176.4] Hyperparameters are the tunable parameters adjusted before running the training process. These parameters directly affect model performance and help you achieve faster global minimum.
+[ 1191.6] Some of the most used hyperparameters are learning rate, batch size, number of epochs.
+[ 1199.5] Now let's learn about some popular algorithms of deep learning.
+[ 1203.4] The Convolutional Neural Networks The Convolutional Neural Network, CNN, is a feed-forward neural network capable of producing a structured array of data.
+[ 1212.8] It is widely used for computer vision applications such as image classification.
+[ 1218.3] CNNs are good at recognizing patterns, lines and shapes. The CNN consists of Convolutional Layers.
+[ 1225.5] pooling layer and output layer. The image classification models usually contain multiple convolution layers followed by pooling layers as additional layers increase the accuracy of the model.
+[ 1237.9] recurrent neural network
+[ 1239.9] The current neural networks are different from feed-forward
+[ 1244.2] networks as the output of
+[ 1247.0] the layer is fed back into this input to predict the output of the layer. This helps it perform better with sequential data as it can store the information of previous samples to predict future samples.
+[ 1263.2] In traditional neural networks the output of the layer is calculated based on the current input value but in RNN the output is calculated based on previous inputs too
+[ 1272.8] This makes it quite good for ad-libting the next word for casting stock prices in VHS bots and anomaly detection.
+[ 1282.6] Long short term memory networks, LSTM, are advanced type of recurrent neural networks that can retain greater information on past values. It solves vanishing gradient problems that exist in simple RNN.
+[ 1297.5] The typical RNN consists of repeating neural networks with a large dimension layer whereas LSTM consists of four interactive layers that communicate to large segments of data.
+[ 1313.1] deep learning frameworks let's learn about deep learning frameworks
+[ 1316.8] TensorFlow is an open source library used for creating deep learning applications. It includes all the necessary tools for you to experiment and develop commercial AI products. It supports both CPU, GPU and TPU.
+[ 1331.3] for creating complex models.
+[ 1335.5] DF was originally developed by Google AI team for internal use and now is available to the public.
+[ 1342.6] the trends of flow
+[ 1344.3] API is available for browser based application, mobile device and tensorflow extended.
+[ 1349.4] is ideal for production
+[ 1351.6] TF has now become the industry standard mandate.
+[ 1355.3] is used for both academic research and developing deep learning models in production.
+[ 1364.4] TF also comes with TensorFlow which is dashboard capable of analyzing your machine learning experiments.
+[ 1370.9] Recently TensorFlow developers have integrated Keras into its framework, which is popular for developing deep learning networks.
+[ 1380.8] Keras is a neural network framework written in Python and capable of running on multiple frameworks such as tensorflow and the anyway.
+[ 1389.8] Keras is an open source library developed to enable fast experimentation in deep learning.
+[ 1396.5] so that you can easily convert your concept into working applications
+[ 1402.4] the documentation is quite easy to understand and API is similar to NumPy which allows you to easily integrate it with any data science.
+[ 1411.9] projects just like tf, kira can also run on CPU, GPU and TPU based on available hardware
+[ 1418.8] Bye guys.
+[ 1420.0] It is.
+[ 1421.0] The most popular and easiest deep learning framework. It uses tensorflow instead of numpy adding
+[ 1427.6] to perform fast neural numerical
+[ 1431.8] Computational
+[ 1433.8] powered by GPU. PyTorch is mainly used for deep learning and developing complex machine learning models. Academic researchers prefer using PyTorch because it is its flexibility and ease to use.
+[ 1446.9] It is written in C++ and Python and it also comes with GPUs and TPUs acceleration.
+[ 1453.2] it has become a one-step and one-stop solution.
+[ 1456.6] for all model deep living models
+[ 1462.1] Now let's come to the computation.
+[ 1464.3] We have covered all what deep learning is, some of the basics of deep learning, how it works and its applications. We have also learnt how deep learning networks work and what about the different types of deep learning models.
+[ 1478.5] Finally, we have been introduced to some popular deep learning frameworks.
+[ 1516.4] Okay, I'm gonna do that.
+[ 1519.3] This isn't it at all.
+[ 1522.1] Done.
+[ 1523.3] But it's nothing.
+[ 1526.3] That's it.
+[ 1851.9] Say hi up in here.
