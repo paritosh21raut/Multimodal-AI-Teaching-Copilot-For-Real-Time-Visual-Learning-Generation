@@ -62,7 +62,8 @@ plugs into them.
   - **C** quiz (MCQ, time per question, count, topic incl. picked past lectures, leaderboard on the projector) and
     test (MCQ, count + duration, submit, scores to the teacher); students join through the share link with name +
     roll number, one submission per roll number; questions previewed / edited by the teacher before start
-  - **D** reference materials (upload + local index; most accurate / efficient use, LLM optional)
+  - **D** reference materials (upload + local index; most accurate / efficient use, LLM optional) — done 2026-10-12,
+    F-012: My Notes = study material (slides passage, own figures first, speech terms, quiz fact check)
 - V1c (crash recovery + soak) after V2, with a full crash-recovery diagnosis (user).
 
 ## V3 — Concept Simulation mode

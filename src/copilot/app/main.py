@@ -172,6 +172,7 @@ class App:
         self._now = Lifecycle.STARTING
         self.share = None  # display.share.ShareService (F-008)
         self.notes = None  # notes.service.NotesService (F-009)
+        self.reference = None  # notes.reference.ReferenceIndex: the notes as study material (F-012)
         self.materials = None  # materials.service.MaterialsService (F-010)
         self.assess = None  # assess.service.AssessService: quiz + test (F-011)
         self._notes_loader: Optional[asyncio.Task] = None
@@ -214,7 +215,7 @@ class App:
             log.exception("notes: embedder load failed")
             return
         if self.notes is not None:
-            self.notes.embedder = embedder
+            self.notes.set_embedder(embedder)
             await self.notes.announce()
 
     async def _init_understanding(self) -> None:
@@ -240,7 +241,8 @@ class App:
             print(f"[INIT]  concept embedder unavailable ({type(e).__name__}); using cue words only", flush=True)
             embedder = None
         if self.notes is not None and embedder is not None:
-            self.notes.embedder = embedder  # the notes follow the lecture with the same model (0 tokens)
+            # the notes follow the lecture and are indexed as study material with the same model (0 tokens)
+            self.notes.set_embedder(embedder)
             await self.notes.announce()
 
         async def on_failure(entry: str, error: str, will_retry: bool) -> None:
@@ -264,6 +266,7 @@ class App:
             self.bus, self.store, Interpreter(router, settings.interpreter), embedder, settings,
             speed=self.speed if self.simulate or self.audio_file else 1.0,
         )
+        self.understanding.reference = self.reference  # F-012: a matching passage of the study material
         self.understanding.attach()
         if not self.demo_slides:
             from copilot.presentation.engine import PresentationEngine, PresentationSettings
@@ -289,6 +292,7 @@ class App:
             print(f"[INIT]  images: off ({e}; pip install -e \".[images]\")", flush=True)
             return
         self.images = ImageService.from_config(self.bus, self.config)
+        self.images.reference = self.reference  # F-012: the teacher's own figures before the web
         self.images.attach()
         self.bus.subscribe("terminal_images", self._print_image, [ImageReady])
         print("[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background", flush=True)
@@ -365,7 +369,13 @@ class App:
 
         # the teacher's PDF notes (F-009): on this laptop, shown only in /control
         library = NotesLibrary(PROJECT_ROOT / self.config.get("app", "data_dir", "data") / "notes")
-        self.notes = NotesService(self.bus, library)
+        # ... which are also the lectures' study material (F-012): a local index, apart from the transcript
+        from copilot.notes.reference import ReferenceIndex, load_vocab
+
+        u = self.config.section("understanding")
+        self.reference = ReferenceIndex(
+            library, vocab=load_vocab(PROJECT_ROOT / u.get("embed_dir", "models/minilm") / "tokenizer.json"))
+        self.notes = NotesService(self.bus, library, reference=self.reference)
         self.notes.attach()
         await self.notes.announce()
         # lecture materials + past lectures (F-010): made when the teacher asks, from this and / or past lectures
@@ -404,7 +414,7 @@ class App:
         self.materials.on_done = self._print_material
         self.materials.attach()
         await self.materials.announce()
-        self.assess.source = LectureQuestions(self.materials)
+        self.assess.source = LectureQuestions(self.materials, reference=self.reference)  # F-012: checks facts
         self.assess.on_generated = self._print_assess
         self.assess.attach()
         await self.assess.announce()
@@ -555,6 +565,20 @@ class App:
             if demo is not None:
                 demo.cancel()
 
+    async def _study_terms(self) -> list[str]:
+        """Rare words of the study material in use, for Whisper (F-012; 0 tokens). Fixed when speech starts."""
+        if self.reference is None:
+            return []
+        try:
+            terms = await asyncio.to_thread(self.reference.terms)
+        except Exception:  # the lecture is heard without them
+            log.exception("study material terms failed")
+            return []
+        if terms:
+            print(f"[INIT]  speech: {len(terms)} terms from your study material ({', '.join(terms[:6])} ...)",
+                  flush=True)
+        return terms
+
     async def _run_speech(self) -> None:
         from copilot.stt.factory import make_source, segmenter_config, vocabulary_prompt
         from copilot.stt.pipeline import SpeechPipeline
@@ -566,7 +590,7 @@ class App:
             source,
             self.engine,
             segmenter=segmenter_config(self.config),
-            prompt=vocabulary_prompt(self.store.snapshot().setup),
+            prompt=vocabulary_prompt(self.store.snapshot().setup, await self._study_terms()),
         )
         try:
             self.speech.start()

@@ -24,6 +24,31 @@ from copilot.materials.content import lecture_content  # noqa: E402
 from copilot.materials.writer import PROMPT_MAX, SYSTEM, Writer  # noqa: E402
 
 
+def study_passages(files: list[str], lectures) -> list[str]:
+    """The passages the app would add (F-012), from these files indexed in a temporary library (real MiniLM)."""
+    import shutil
+    import tempfile
+
+    from copilot.assess.generator import reference_passages
+    from copilot.notes.library import NotesLibrary
+    from copilot.notes.reference import ReferenceIndex
+    from copilot.understanding.embedder import MiniLmEmbedder
+
+    tmp = Path(tempfile.mkdtemp(prefix="quizref-"))
+    try:
+        emb = MiniLmEmbedder(ROOT / "models" / "minilm")
+        emb.load()
+        lib = NotesLibrary(tmp)
+        ref = ReferenceIndex(lib, emb)
+        for f in files:
+            ref.build(lib.add(Path(f).read_bytes(), Path(f).name))
+        out = reference_passages(ref, lectures)
+        print(f"--- study material: {len(out)} passage(s) matched to the taught content")
+        return out
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 async def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
@@ -31,8 +56,12 @@ async def main() -> int:
     ap.add_argument("--count", type=int, default=15)
     ap.add_argument("--live", action="store_true", help="call the real LLM (uses free quota)")
     ap.add_argument("--out", help="write the questions as JSON here (--live)")
+    ap.add_argument("--reference", nargs="+", default=[],
+                    help="study material files (F-012): passages matched to the taught content check the facts")
+    ap.add_argument("--data", default=str(ROOT / "data"), help="data folder holding sessions/ (default: data)")
     args = ap.parse_args()
-    archive = LectureArchive(ROOT / "data" / "sessions", ROOT / "data" / "archive.json")
+    data = Path(args.data)
+    archive = LectureArchive(data / "sessions", data / "archive.json")
     records = [archive.load(s) for s in args.sessions]
     if any(r is None for r in records):
         print("not a lecture:", [s for s, r in zip(args.sessions, records) if r is None])
@@ -42,7 +71,8 @@ async def main() -> int:
         said = sum(approx_tokens(" ".join(s.said)) for s in lec.subtopics)
         print(f"{lec.id}: {lec.title} · {len(lec.topics)} topics · {len(lec.subtopics)} subtopics · "
               f"transcript ~{said} tokens")
-    text = prompt(lectures, args.count, [])
+    passages = study_passages(args.reference, lectures) if args.reference else []
+    text = prompt(lectures, args.count, [], passages)
     tokens = approx_tokens(SYSTEM) + approx_tokens(text) + 8
     print(f"--- prompt: ~{tokens} tokens in (limit {PROMPT_MAX}), answer up to {min(4000, 200 + 95 * args.count)}")
     if not args.live:
@@ -62,7 +92,7 @@ async def main() -> int:
         spent = Spent()
         source = LectureQuestions(None, Writer(router))
         qs = await source.questions(Prepared(" + ".join(l.title for l in lectures), [l.id for l in lectures],
-                                             lectures), args.count, [], spent)
+                                             lectures, passages), args.count, [], spent)
     for n, q in enumerate(qs, start=1):
         print(f"{n}. {q.text}")
         for i, o in enumerate(q.options):

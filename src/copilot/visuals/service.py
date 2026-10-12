@@ -8,19 +8,29 @@ ErrorRaised) — the teacher's own images still work.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import logging
 import time
 from dataclasses import asdict
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from copilot.core.bus import EventBus
 from copilot.core.config import PROJECT_ROOT, Config
 from copilot.core.events import ErrorRaised, Event, ImageReady, ImageRequested
-from copilot.visuals.cache import ImageCache
+from copilot.visuals.cache import CachedImage, ImageCache
 from copilot.visuals.finder import FinderSettings, ImageFinder
 
+if TYPE_CHECKING:
+    from copilot.notes.reference import ReferenceIndex
+
 log = logging.getLogger(__name__)
+
+
+
+def figure_image_id(doc_id: str, n: int) -> str:
+    """The image-cache id a reference figure gets (ImageCache.store: sha1 of the key)."""
+    return hashlib.sha1(f"ref:{doc_id}:{n}".encode("utf-8")).hexdigest()[:16]
 
 
 def cache_from_config(config: Config) -> ImageCache:
@@ -33,10 +43,12 @@ def finder_settings(config: Config) -> FinderSettings:
 
 
 class ImageService:
-    def __init__(self, bus: EventBus, finder: ImageFinder, clip_dir: Optional[Path] = None) -> None:
+    def __init__(self, bus: EventBus, finder: ImageFinder, clip_dir: Optional[Path] = None,
+                 reference: Optional["ReferenceIndex"] = None) -> None:
         self.bus = bus
         self.finder = finder
         self.clip_dir = clip_dir
+        self.reference = reference  # the teacher's My Notes figures (F-012), searched before the web
         self._queue: dict[str, ImageRequested] = {}  # slide_id -> latest request (coalescing)
         self._wake = asyncio.Event()
         self._tasks: list[asyncio.Task] = []
@@ -110,6 +122,39 @@ class ImageService:
                                                       query=req.query, kind=req.kind, reason="internal error"))
             self._idle.set()
 
+    async def _from_reference(self, req: ImageRequested) -> list[CachedImage]:
+        """The teacher's figures whose label matches the query and that pass the CLIP gate, best first (≤ keep);
+        stored in the image cache like any image (source "reference"), so the display needs nothing new."""
+        if self.reference is None or self.finder.scorer is None:
+            return []
+        try:
+            matches = await asyncio.to_thread(self.reference.figures, req.query)
+        except Exception:  # a broken index must not cost the slide its web image
+            log.exception("reference figures for %r failed", req.query)
+            return []
+        cands = [m for m in matches if figure_image_id(m.doc.id, m.figure.n) not in req.exclude]
+        if not cands:
+            return []
+        from PIL import Image
+
+        def score() -> list:
+            pairs = [(m, Image.open(m.path).convert("RGB")) for m in cands]
+            return [(m, img, s) for (m, img), s in zip(pairs, self.finder._score(req.query, req.kind, pairs))]
+        out = []
+        for m, img, (sim, margin) in await asyncio.to_thread(score):
+            # the same CLIP gate as web images (the label matched already; on the fixture the right figure scores
+            # 0.29-0.34, the other figures of the file 0.19-0.28 with a smaller margin)
+            ok = sim >= self.finder.s.min_similarity and margin >= self.finder.s.min_margin
+            log.info("reference figure %s p.%d f%d for %r: label %.3f, clip %.3f margin %+.3f -> %s", m.doc.name,
+                     m.figure.page, m.figure.n, req.query, m.score, sim, margin, "used" if ok else "no")
+            if ok:
+                meta = CachedImage(id="", width=0, height=0, alt=m.figure.label[:200] or req.query,
+                                   source="reference", title=f"{m.doc.name} p.{m.figure.page}",
+                                   licence="Your material", query=req.query, score=round(m.score + sim, 4))
+                out.append(await asyncio.to_thread(self.finder.cache.store, img,
+                                                   f"ref:{m.doc.id}:{m.figure.n}", meta))
+        return out[: self.finder.s.keep]
+
     async def _handle(self, req: ImageRequested) -> None:
         self.stats["requests"] += 1
         t0 = time.perf_counter()
@@ -117,6 +162,14 @@ class ImageService:
             await asyncio.wait_for(self._ready.wait(), self.finder.s.budget_s)
         except asyncio.TimeoutError:
             pass  # finder answers "no relevance model"
+        own = await self._from_reference(req)
+        if own:  # the teacher's own material first (F-012); Change image excludes them → the web search
+            self.stats["found"] += 1
+            self.stats["reference"] = self.stats.get("reference", 0) + 1
+            await self.bus.publish(ImageReady(
+                request_id=req.request_id, slide_id=req.slide_id, query=req.query, kind=req.kind,
+                images=[asdict(i) for i in own], seconds=round(time.perf_counter() - t0, 2)))
+            return
         res = await self.finder.find(req.query, req.kind, exclude=req.exclude, deeper=req.deeper)
         self.stats["found" if res.images else "none"] += 1
         if res.rejected:

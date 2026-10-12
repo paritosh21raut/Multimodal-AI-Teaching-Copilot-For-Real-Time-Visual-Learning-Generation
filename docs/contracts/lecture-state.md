@@ -31,8 +31,9 @@ LectureState
 `TopicNode(id, title, summary, subtopics: list[TopicNode], first_seen, last_seen)`
 
 `Concern(id, claim, issue, suggested_correction, confidence, status=open|accepted|kept|dismissed,
-kind=factual|transcription, wrong, right, applied, segment_id, segment_ids, request_id)`
-(`applied` = the projector shows the correction: confidence ≥ 0.75 factual / ≥ 0.4 transcription.)
+kind=factual|transcription, wrong, right, applied, segment_id, segment_ids, request_id, ref)`
+(`applied` = the projector shows the correction: confidence ≥ 0.75 factual / ≥ 0.4 transcription. `ref`: a factual
+concern raised while the prompt held a study-material passage = `InterpretationReady.reference`, "<file> p.N", F-012.)
 
 ## Invariants
 - `version` increments on every applied change; `StateChanged` carries the new version.

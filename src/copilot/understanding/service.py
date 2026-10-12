@@ -122,6 +122,7 @@ class UnderstandingService:
         self.store = store
         self.interpreter = interpreter
         self.embedder = embedder
+        self.reference = None  # notes.reference.ReferenceIndex (F-012): one passage per call when it clearly matches
         self.s = settings or UnderstandingSettings()
         self.speed = speed
         self.clock = clock
@@ -280,6 +281,22 @@ class UnderstandingService:
             self._in_flight = False
             self._wake.set()  # leftovers may already satisfy the gate
 
+    async def _reference(self, lines: list[BufferedLine], slide: str) -> Optional[tuple[str, str]]:
+        """(cite, passage) of the teacher's material clearly about these lines (+ the slide), or None. Only with an
+        LLM to read it; a failing index never stops the lecture."""
+        if self.reference is None or self.interpreter.router is None:
+            return None
+        query = " ".join([*(l.text for l in lines), " ".join(slide.split()[:40])])
+        try:
+            s = await asyncio.to_thread(self.reference.snippet, query)
+        except Exception:
+            log.exception("reference passage lookup failed")
+            return None
+        if s is None:
+            return None
+        log.info("[REF] %s (%.2f) for the interpretation", s.cite, s.score)
+        return s.cite, s.text
+
     async def _interpret(self, lines: list[BufferedLine], reason: str) -> None:
         state = self.store.snapshot()
         request_id = new_id()
@@ -290,8 +307,9 @@ class UnderstandingService:
         st.record_call(self._last_call)
         st.reasons[reason] = st.reasons.get(reason, 0) + 1
         st.sent_segments += len(seg_ids)
+        ref = await self._reference(lines, state.slide_context)
         try:
-            prompt: Optional[BuiltPrompt] = self.interpreter.build(state, lines)
+            prompt: Optional[BuiltPrompt] = self.interpreter.build(state, lines, ref)
         except PromptBudgetError:
             prompt = None  # the interpreter falls back and logs why
         await self.bus.publish(InterpretRequested(request_id=request_id, reason=reason, segment_ids=seg_ids,
@@ -315,6 +333,7 @@ class UnderstandingService:
             request_id=request_id, interpretation=res.interpretation, segment_ids=seg_ids,
             provider=res.provider, latency_ms=round(res.latency_ms, 1), fallback=res.fallback,
             fallback_reason=res.fallback_reason, slide_refs=dict(state.slide_refs),
+            reference=prompt.reference if prompt and not res.fallback else "",
         ))
         if not await self.store.wait_applied(request_id, APPLY_TIMEOUT_S):
             log.error("state store did not apply interpretation %s within %.0fs", request_id, APPLY_TIMEOUT_S)

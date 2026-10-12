@@ -14,7 +14,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Callable, Optional, Protocol
 
 from copilot.assess.model import (
@@ -41,6 +41,7 @@ class Prepared:
     title: str
     sources: list[str]
     material: Any = None  # the source's own content (slice 2: the lectures' taught content)
+    reference: list[str] = field(default_factory=list)  # F-012: the teacher's passages matched to the taught content
 
 
 @dataclass

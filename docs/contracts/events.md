@@ -15,7 +15,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `UtteranceClassified` | understanding | `segment_id`, `kind` (content/classroom_management/meta/filler/question_to_class), `maybe_meta`, `rule` |
 | `ConceptSignal` | understanding | `segment_id`, `shift_score`, `topic_shift`, `keyphrases`, `cues`, `boundary` |
 | `InterpretRequested` | understanding | `request_id`, `reason` (pause/words/boundary/max_wait/cap/flush), `segment_ids`, `prompt_tokens` |
-| `InterpretationReady` | understanding | `request_id`, `interpretation: Interpretation`, `segment_ids` (line n = `segment_ids[n-1]`), `provider` ("" = fallback), `latency_ms`, `fallback`, `fallback_reason`, `slide_refs` (refs the prompt showed) |
+| `InterpretationReady` | understanding | `request_id`, `interpretation: Interpretation`, `segment_ids` (line n = `segment_ids[n-1]`), `provider` ("" = fallback), `latency_ms`, `fallback`, `fallback_reason`, `slide_refs` (refs the prompt showed), `reference` ("<file> p.N" of the study-material passage the prompt held, F-012; "" = none) |
 | `LLMCallFailed` | llm | `provider`, `error`, `will_retry` |
 | `StateChanged` | state store | `version`, `changes` (topic/subtopic/outline/concerns) |
 | `SlidePatch` | deck | `slide_id`, `version`, `op` (add/update), `spec` (SlideSpec dump) |
@@ -30,7 +30,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `ImageChoices` | presentation engine | `slide_id`, `index`, `count` — the images this slide has shown, for the previous / next arrows (control only) |
 | `ShareChanged` | share service (F-008) | `state` (off/starting/on/failed), `url` (`<tunnel>/view` while on), `detail` (progress or why it failed) |
 | `ThemeChanged` | state store (F-009) | `theme` (light/dark): after `set_theme`; the hub repaints display, viewers and the control preview |
-| `NotesState` | notes service (F-009) | `docs`, `open`, `page`, `pages`, `follow`, `reason` (why following does nothing), `matched` (slide title) — control only, ephemeral |
+| `NotesState` | notes service (F-009) | `docs`, `open`, `page`, `pages`, `follow`, `reason` (why following does nothing), `matched` (slide title), F-012: docs carry `active` / `private`, `indexing` (id → 0..1), `used` ("<file> p.N" the last slide used), `notice` (a refused toggle) — control only, ephemeral |
 | `MaterialsState` | materials service (F-010) | `items` (made / being made: name, status, detail, tokens, …), `shared` ([{id, name}] PDFs students may download), `current` {id, title}, `llm`, `lectures_changed` — items to control, `shared` to viewers; ephemeral |
 | `AssessState` | assess service (F-011) | `control` (whole quiz / test, keys included → /control only), `public` (no key before it is due → /display + /view), `notice` (why the teacher's last action was refused), `llm`, `now`; ephemeral (saved in `data/assessments/`) |
 | `ErrorRaised` | any | `component`, `error`, `fatal` |
@@ -46,8 +46,8 @@ notes_follow(on), notes_remove(id), materials_create(items[{kind: summary|concep
 scope?: topic|lecture, count?, theme?}], lectures[past ids], current), materials_rename(id, name),
 materials_share(id, on), materials_remove(id), materials_show(id), lecture_hide(id), chapter_create(name, start?),
 chapter_rename(id, name), chapter_move(id, index), chapter_delete(id), lecture_move(id, chapter, start?),
-notes_project(on), assess_create(kind: quiz|test, count, seconds, minutes, show_answers, current, lectures,
-chapters), assess_edit(qid, text?, options?, answer?), assess_add(text, options, answer, after?), assess_delete(qid),
+notes_project(on), notes_use(id, on), notes_private(id, on) (F-012), assess_create(kind: quiz|test, count, seconds,
+minutes, show_answers, reference (F-012, default on), current, lectures, chapters), assess_edit(qid, text?, options?, answer?), assess_add(text, options, answer, after?), assess_delete(qid),
 assess_regen(qid), assess_open, assess_start, assess_pause, assess_resume, assess_hold(on), assess_next, assess_end,
 assess_close, assess_discard, assess_release(roll)` (quiz + test: F-011; students act over HTTP with their token,
 never by command; chapters, notes on the projector: F-010b; `materials_create` also takes `chapters[ids]`;

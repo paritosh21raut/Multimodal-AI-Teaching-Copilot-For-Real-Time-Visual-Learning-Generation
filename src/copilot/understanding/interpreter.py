@@ -506,9 +506,10 @@ class Interpreter:
         self.router = router
         self.s = settings or InterpreterSettings()
 
-    def build(self, state: LectureState, lines: Sequence[BufferedLine]) -> BuiltPrompt:
+    def build(self, state: LectureState, lines: Sequence[BufferedLine],
+              reference: Optional[tuple[str, str]] = None) -> BuiltPrompt:
         return build_prompt(state, lines, dynamic_budget=self.s.dynamic_budget_tokens,
-                            total_budget=self.s.prompt_budget_tokens)
+                            total_budget=self.s.prompt_budget_tokens, reference=reference)
 
     async def interpret(self, state: LectureState, lines: Sequence[BufferedLine],
                         prompt: Optional[BuiltPrompt] = None) -> InterpretResult:

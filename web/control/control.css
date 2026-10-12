@@ -591,6 +591,17 @@ button.primary:disabled { opacity: 0.4; cursor: default; }
 .start-card .menu { max-height: min(220px, 34vh); }
 .start-card .new-chapter { padding-left: 14px; }
 .start-note { margin: 0; font-size: 12px; color: var(--muted); }
+/* F-012: the study material for this lecture (the My Notes files in use) */
+.study { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.study-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.study-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; height: 30px; padding: 0 4px 0 10px;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 13px; }
+.study-chip > .ico { width: 15px; height: 15px; color: var(--accent); flex: none; }
+.study-chip .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+.study-chip button.icon { width: 22px; height: 22px; padding: 0; border-radius: 999px; }
+.study-chip button.icon .ico { width: 13px; height: 13px; }
+.study-chip.reading > .ico { animation: blink 1.2s ease-in-out infinite; }
+.study .ghost-pill { height: 30px; font-size: 13px; }
 .start-card button.start { justify-content: center; height: 44px; margin-top: 6px; font-size: 14px; letter-spacing: 0.01em;
   box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 32%, transparent); }
 .start-card button.start:hover:not(:disabled) { box-shadow: 0 10px 28px color-mix(in srgb, var(--accent) 42%, transparent); }
@@ -635,6 +646,26 @@ button:active:not(:disabled) { transform: scale(0.97); }
   transition: opacity 140ms ease, transform 160ms var(--ease-out), background-color 140ms ease, color 140ms ease; }
 .menu-line .row-remove .ico { width: 15px; height: 15px; }
 .menu-line:hover .row-remove, .menu-line .row-remove:focus-visible { opacity: 1; transform: none; }
+/* F-012: Use for lectures (book) / Private (lock), next to the bin on hover; a small mark after the name when on */
+.menu-line .row-flag { position: absolute; top: 50%; width: 28px; height: 28px; margin-top: -14px; padding: 0;
+  display: grid; place-items: center; border: 1px solid var(--line); border-radius: 999px; background: var(--surface);
+  color: var(--muted); opacity: 0; transform: scale(0.85);
+  transition: opacity 140ms ease, transform 160ms var(--ease-out), background-color 140ms ease, color 140ms ease; }
+.menu-line .row-flag:nth-of-type(2) { right: 70px; }
+.menu-line .row-flag:nth-of-type(3) { right: 38px; }
+.menu-line .row-flag .ico { width: 15px; height: 15px; }
+.menu-line .row-flag.on { color: var(--accent); background: var(--accent-soft); border-color: transparent; }
+.menu-line:hover .row-flag, .menu-line .row-flag:focus-visible { opacity: 1; transform: none; }
+.menu-line:hover .menu-row .flag-mark { opacity: 0; }
+.menu-row .flag-mark { width: 13px; height: 13px; flex: none; color: var(--accent); opacity: 0.8; transition: opacity 120ms ease; }
+.menu-line:hover .menu-row { padding-right: 104px; }
+.study-line { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 12px; color: var(--muted); min-width: 0; }
+.study-line .ico { width: 14px; height: 14px; flex: none; color: var(--accent); }
+.study-line span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.study-line b { color: var(--ink); font-weight: 600; }
+.study-line.off, .study-line.off .ico { color: var(--accent-2); }
+.concern-ref { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: var(--muted); }
+.concern-ref .ico { width: 14px; height: 14px; flex: none; color: var(--accent); }
 .menu-line .row-remove:hover { background: var(--accent-2-soft); border-color: transparent; color: var(--accent-2); }
 
 /* ---- drag in the Lectures tab (F-010c #1): the row lifts and follows; a gap opens where it lands ---- */

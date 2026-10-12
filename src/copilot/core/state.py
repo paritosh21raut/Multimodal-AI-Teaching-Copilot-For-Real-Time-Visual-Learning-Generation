@@ -65,6 +65,7 @@ class Concern(BaseModel):
     segment_id: str = ""        # first line the concern refers to
     segment_ids: list[str] = Field(default_factory=list)  # every line it refers to (content there is held back)
     request_id: str = ""        # interpretation that raised it
+    ref: str = ""               # factual: the teacher's reference passage the model had, "<file> p.N" (F-012)
 
 
 class LectureStats(BaseModel):
@@ -272,6 +273,7 @@ class LectureStateStore:
                 confidence=item.confidence, kind=item.kind, wrong=item.wrong, right=item.right,
                 applied=correction_applied(item.kind, item.confidence), segment_id=segs[0] if segs else "",
                 segment_ids=segs, request_id=ev.request_id,
+                ref=ev.reference if item.kind == "factual" else "",
             )
             s.concerns.append(concern)
             self._outbox.append(ConcernRaised(concern=concern.model_dump()))

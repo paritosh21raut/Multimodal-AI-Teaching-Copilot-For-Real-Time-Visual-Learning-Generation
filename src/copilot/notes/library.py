@@ -24,6 +24,7 @@ MAX_PAGES = 600
 RENDER_WIDTHS = (480, 720, 960, 1280, 1920)  # the client asks for one of these (nearest above): a small cache;
 # 1920: a page on the projector (F-010b)
 _ID = re.compile(r"[0-9a-f]{16}")
+MAX_ACTIVE = 10  # reference files in use at a time (F-012)
 MIN_TEXT_WORDS = 15  # fewer words in the whole file: a scan / pictures only, nothing to follow the lecture with
 
 
@@ -40,6 +41,8 @@ class NoteDoc:
     added: float = 0.0
     kind: str = "pdf"   # what the teacher added (F-010b): pdf | word | slides | text | image | web
     source: str = ""    # web: the link it was saved from
+    active: bool = True    # reference material for the lectures (F-012); at most MAX_ACTIVE files
+    private: bool = False  # never sent to the LLM (still used for images and speech recognition)
 
 
 class NotesLibrary:
@@ -94,9 +97,10 @@ class NotesLibrary:
         (self.root / f"{doc_id}.pdf").write_bytes(data)
         (self.root / f"{doc_id}.json").write_text(json.dumps(texts), encoding="utf-8")
         name = " ".join((name if kind == "web" else Path(name or "notes.pdf").name).split())[:120] or "notes.pdf"
-        doc = NoteDoc(doc_id, name, len(texts), sum(len(t.split()) for t in texts) >= MIN_TEXT_WORDS, time.time(),
-                      kind, source)
         index = self._index()
+        in_use = sum(1 for d in index["docs"] if d.get("active", True))
+        doc = NoteDoc(doc_id, name, len(texts), sum(len(t.split()) for t in texts) >= MIN_TEXT_WORDS, time.time(),
+                      kind, source, active=in_use < MAX_ACTIVE)
         index["docs"] = [asdict(doc)] + [d for d in index["docs"] if d.get("id") != doc_id]
         self._save_index(index)
         log.info("notes added %r -> %s (%d pages, text: %s)", doc.name, doc_id, doc.pages, doc.has_text)
@@ -111,11 +115,39 @@ class NotesLibrary:
         if index["open"] == doc_id:
             index["open"] = ""
         self._save_index(index)
-        for f in [self.root / f"{doc_id}.pdf", self.root / f"{doc_id}.json", *(self.root / doc_id).glob("*.png")]:
+        # the folder holds rendered pages and the reference index (F-012: chunks, figures)
+        for f in [self.root / f"{doc_id}.pdf", self.root / f"{doc_id}.json", *(self.root / doc_id).glob("*")]:
             f.unlink(missing_ok=True)
         if (self.root / doc_id).is_dir():
             (self.root / doc_id).rmdir()
         return len(index["docs"]) < before
+
+    def set_flags(self, doc_id: str, active: Optional[bool] = None, private: Optional[bool] = None) -> str:
+        """Use for lectures / private (F-012). Returns why it was refused ("" = done)."""
+        index = self._index()
+        d = next((d for d in index["docs"] if d.get("id") == doc_id), None)
+        if d is None:
+            return "unknown file"
+        if active and not d.get("active", True):
+            if sum(1 for x in index["docs"] if x.get("active", True)) >= MAX_ACTIVE:
+                return f"at most {MAX_ACTIVE} files can be used at a time"
+        if active is not None:
+            d["active"] = bool(active)
+        if private is not None:
+            d["private"] = bool(private)
+        self._save_index(index)
+        return ""
+
+    def pdf_path(self, doc_id: str) -> Path:
+        return self.root / f"{doc_id}.pdf"
+
+    def doc_dir(self, doc_id: str) -> Path:
+        return self.root / doc_id
+
+    @property
+    def pdf_lock(self) -> threading.Lock:
+        """pdfium is not thread-safe: every pdfium call in the app holds this."""
+        return self._lock
 
     # ---- pages -------------------------------------------------------------------------------
     def page_texts(self, doc_id: str) -> list[str]:

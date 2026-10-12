@@ -73,6 +73,7 @@ CommandKind = Literal[
     # chapters (F-010b): create {name, start?}; rename {id, name}; move {id, index}; delete {id};
     # lecture_move {id, chapter, start?}; notes_project {on}: the notes page on the projector
     "chapter_create", "chapter_rename", "chapter_move", "chapter_delete", "lecture_move", "notes_project",
+    "notes_use", "notes_private",  # F-012: study material per file
     # quiz + test (F-011, assess/service.py has the args)
     "assess_create", "assess_edit", "assess_add", "assess_delete", "assess_regen", "assess_open", "assess_start",
     "assess_pause", "assess_resume", "assess_hold", "assess_next", "assess_end", "assess_close", "assess_discard",
@@ -177,6 +178,7 @@ class InterpretationReady(Event):
     fallback: bool = False
     fallback_reason: str = ""
     slide_refs: dict[str, str] = Field(default_factory=dict)  # CURRENT SLIDE refs the prompt showed (revisions)
+    reference: str = ""         # the teacher's reference passage the prompt held, "<file> p.N" (F-012); "" = none
 
 
 class LLMCallFailed(Event):
@@ -261,6 +263,11 @@ class NotesState(Event):
     reason: str = ""   # why following the lecture does nothing ("" = it works)
     matched: str = ""  # the slide title the page was matched to
     projecting: bool = False  # the open page is on the projector (F-010b)
+    # reference material (F-012): docs carry active / private; files being indexed (id -> 0..1); the passage the
+    # last slide used ("<file> p.N"); a refused toggle ("at most 10 files ...")
+    indexing: dict[str, float] = Field(default_factory=dict)
+    used: str = ""
+    notice: str = ""
 
 
 class NotesProjected(Event):

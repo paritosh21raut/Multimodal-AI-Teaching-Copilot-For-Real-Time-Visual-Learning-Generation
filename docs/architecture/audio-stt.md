@@ -18,6 +18,9 @@
   `distil-small.en` and `medium.en` are configurable. The model is chosen in M1 after measuring WER/latency.
 - Runs in a dedicated thread; one utterance at a time; `beam_size` 1–2; `condition_on_previous_text=False`
   (avoids hallucination loops), plus a short `initial_prompt` with the subject/topic keywords for vocabulary priming.
+  F-012: + "Terms: …" with ≤ 30 words from the study material in use that MiniLM's WordPiece vocabulary does not know
+  and that are seen at least twice (`notes.reference.rare_terms`: GPIO, sinoatrial, thylakoid), fixed when speech
+  starts. Not yet measured on real audio with study material.
 - Emits `TranscriptFinal` (text, start/end time, avg logprob, no_speech_prob, language="en").
 - Optional partials (`TranscriptPartial`) for long utterances, used only by the Control View.
 - Hallucination guard: drop segments with high no_speech_prob or known filler hallucinations ("Thank you.", repeats).

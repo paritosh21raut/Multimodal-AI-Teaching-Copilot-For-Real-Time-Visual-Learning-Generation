@@ -52,6 +52,20 @@ named "in <language> language" (not English) is refused. Query cache key `<kind>
 2026-10-07 (4 runs × 10 queries): heart, plant cell, skeleton, digestive system, water cycle → English-labelled
 diagrams; Saturn / tiger unchanged; "downloads failed" (slow Wikimedia link) about equally often with and without.
 
+## The teacher's own figures first (F-012)
+Before the web, `ImageService._from_reference` looks through the figures of the study material in use (Private files
+too, since nothing leaves the laptop):
+- **Figures**: pypdfium2 image objects, minus page backgrounds and decorations repeated on 3 or more pages. Each is
+  rendered from its page region, so labels drawn over it stay.
+- **Label**: the caption, the text on the figure, the page heading and the file name. An image file the teacher added
+  is labelled by its name.
+- **Match**: label ↔ query by MiniLM ≥ 0.5, then the same CLIP gate as web images (0.22, margin 0.01).
+- **Accepted**: the figure goes into the image cache as `source="reference"`, titled `<file> p.N`.
+
+Change image excludes it, which brings in the web search. Measured on the fixture: the right figure scores CLIP
+0.29–0.34; "plant cell" ↔ the chloroplast scores label 0.47, so it is not used. In a recorded human-body lecture,
+"human skeleton" and "human heart and blood vessels" were answered by the teacher's figures.
+
 ## Generated diagrams
 Structured data from the Interpretation (steps, nodes, edges, events) → `DiagramBlock` → rendered client-side
 as SVG by layout components (flow, cycle, tree, timeline, causal graph, two-column contrast).

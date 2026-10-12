@@ -91,13 +91,28 @@ card for the teacher (user 2026-10-06) and logged in the terminal (`[HEARD]`).
 - Pause (round 4 step C): while the lecture is PAUSED the service drops new `TranscriptFinal` lines before the
   filter (counted as `paused_segments`); lines buffered before the pause are still interpreted.
 
+## Study material (F-012)
+`notes/reference.py`: the My Notes files as a local index (MiniLM chunks, figures, rare terms), apart from the
+transcript. Per call, `UnderstandingService._reference` looks for one passage clearly about the new lines + the slide
+(cosine ≥ 0.5; Private files never). It is added as `REFERENCE (teacher's material, <file> p.N)` with the rule "only to
+name, spell or state exactly what the NEW LINES say; never add content from it; a contradicting line is a factual
+concern". It takes ≤ 150 tokens and sits outside the 1200 dynamic room. It is dropped when the prompt would leave less
+than 150 tokens for a repair, and it costs nothing when nothing matches (dry check on 3 recorded lectures: 12 of 197
+units, +10 tokens per unit on average). `InterpretationReady.reference` carries the cite; a factual concern from that
+call gets `ref`.
+
 ## Quiz / test questions (F-011)
 `assess/generator.py`: only when the teacher presses Prepare quiz / Prepare test / regenerate. From → the materials service's
 `resolve` + `taught` (slides of the chosen lectures, `content.budgeted`, 2200 tokens, minus ≤ 500 for the stems to
 avoid on a regenerate; ≤ 3000 per prompt, never the transcript). One call for the set (+ one repair), one per
 regenerated question. Strict JSON `{questions: [{q, options[4], answer}]}`; invalid / repeated questions are dropped,
 a short set after the repair is an error (nothing made up). The core shuffles each question's options (seeded by
-its text). Dry check: `tools/quiz_check.py <session>` (0 tokens; `--live` = one real set).
+its text). Dry check: `tools/quiz_check.py <session>` (0 tokens; `--live` = one real set; `--reference f.pdf`).
+F-012, *Check facts with My Notes* (on by default): passages matched to the taught subtopics (≥ 0.5, ≤ 400 tokens,
+from what is left of the 3000) are added as REFERENCE "only to check facts; never ask about anything not in WHAT WAS
+TAUGHT; where they contradict, no question on that point". Guard: a question whose right answer is mostly words that
+were never taught but are in the passages is dropped, and the repair asks again. Lecture materials (summary, notes,
+assignment) do not use the study material: nothing there can be checked against a single answer.
 
 ## LLM layer (`copilot.llm`)
 - Router: Groq gpt-oss-120b → Groq qwen3.8-27b (separate 8k-TPM bucket; Groq also limits it to 1000 output

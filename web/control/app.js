@@ -97,6 +97,9 @@ const ICON = {
   hide: "M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.1A9.8 9.8 0 0 1 12 5c5 0 9 5 9 7a10 10 0 0 1-2.4 3.4M6.6 6.6C4.4 8 3 10.3 3 12c0 2 4 7 9 7a9.6 9.6 0 0 0 4.4-1.1",
   tree: "M4 5h6M4 5v14M4 12h6M4 19h6M14 5h6M14 12h6M14 19h6",
   notes: "M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h4",
+  // study material (F-012): an open book; private: a padlock
+  book: "M12 6.5C10.5 5 8 4.5 4 4.5v13c4 0 6.5.5 8 2 1.5-1.5 4-2 8-2v-13c-4 0-6.5.5-8 2zM12 6.5v13",
+  lock: "M7 11V8a5 5 0 0 1 10 0v3M5 11h14v9H5zM12 15v2",
   // an exam sheet with a pencil (user's pick 2026-10-12, from artifacts/polish/icon_candidates.png)
   quiz: "M5 3h9l3 3v6M5 3v18h7M8 8h6M8 12h4M14 21l1-3 5-5 2 2-5 5z",
   hold: "M6 5h4v14H6zM14 5h4v14h-4z",
@@ -350,7 +353,39 @@ const fitBelow = (el) => {
 };
 
 // ---- before the lecture (F-010b §1): pick the chapter, then Start (no Enter in the terminal needed) ----
-function StartCard({ lifecycle, materials, send }) {
+// F-012: the study material for this lecture (the My Notes files in use): × stops using one, Add takes a file
+function StudyMaterial({ notes, send }) {
+  const input = useRef(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const docs = (notes && notes.docs) || [];
+  const inUse = docs.filter((d) => d.active);
+  const reading = (notes && notes.indexing) || {};
+  const pick = async (e) => {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!f) return;
+    setBusy(true); setError("");
+    try { await uploadNotes(f, send); } catch (err) { setError(err.message); } finally { setBusy(false); }
+  };
+  return html`<div class="study">
+    <label class="start-label">Study material</label>
+    <div class="study-chips">
+      ${inUse.map((d) => html`<span key=${d.id} class=${"study-chip" + (d.id in reading ? " reading" : "")}
+          title=${d.id in reading ? `Reading… ${Math.round(reading[d.id] * 100)} %` : d.name}>
+        ${svg(ICON.book)}<span class="label">${d.name}</span>
+        <button class="icon" onClick=${() => send("notes_use", { id: d.id, on: false })} title="Don't use it for this lecture"
+          aria-label=${`Stop using ${d.name}`}>${svg(ICON.remove)}</button></span>`)}
+      <input ref=${input} type="file" accept=${NOTES_ACCEPT} hidden onChange=${pick} />
+      <button class="ghost-pill" onClick=${() => input.current.click()} disabled=${busy}
+        title="Your notes, a book, slides or images: used to show what you teach more accurately">
+        ${svg(ICON.add, busy ? "pulse" : "")}${busy ? "Adding…" : inUse.length ? "Add" : "Add notes, a book, slides…"}</button>
+    </div>
+    ${error && html`<p class="notes-error">${error}</p>`}
+  </div>`;
+}
+
+function StartCard({ lifecycle, materials, notes, send }) {
   const chapters = (materials && materials.chapters) || [];
   const testRun = !!(materials && materials.current && materials.current.test_run);
   const [chosen, setChosen] = useState(null);       // null: not picked yet → the last one used
@@ -400,6 +435,7 @@ function StartCard({ lifecycle, materials, send }) {
           </div>`}
         </div>`}
     ${testRun && html`<p class="start-note">Test run: it stays in Unsorted</p>`}
+    <${StudyMaterial} notes=${notes} send=${send} />
     <button class="primary start" onClick=${start} disabled=${!ready || sent || (naming && !name.trim())}>
       ${PLAY}${sent ? "Starting…" : "Start lecture"}</button>
   </div>`;
@@ -416,7 +452,7 @@ function NotesOnScreen({ shown, send }) {
 }
 
 function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice, adding, onAdded, theme,
-                   materials, notesShown, onScreenAssess }) {
+                   materials, notes, notesShown, onScreenAssess }) {
   const ref = useRef(null);
   const scale = useStageScale(ref);
   const [drag, setDrag] = useState(null); // null | "over" | "uploading"
@@ -458,7 +494,7 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
     ${spec && spec.layout !== "title" && !zoomed && !drag && !onScreen && html`<${ImageBar} spec=${spec} image=${image}
       choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`}
     <${NotesOnScreen} shown=${notesShown} send=${send} />
-    ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} send=${send} />`}
+    ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} notes=${notes} send=${send} />`}
     ${line && !drag && html`<div class=${"image-status" + (line.error ? " error" : "")}>
       ${line.busy && html`<span class="dot"></span>`}${line.text}</div>`}
     ${(lifecycle === "paused" || (deck && deck.blank) || onScreenAssess) && !zoomed && html`<div class="flags">
@@ -531,6 +567,7 @@ function Concerns({ concerns, send }) {
         : html`<p class="shows"><span>The slide shows what you said</span></p>
                ${c.suggested_correction && html`<p class="fix"><span>Correct</span> ${c.suggested_correction}</p>`}`}
       ${c.issue && html`<p class="issue">${c.issue}</p>`}
+      ${c.ref && html`<p class="concern-ref">${svg(ICON.book)}<span>Your material: ${c.ref}</span></p>`}
       <div class="concern-actions">
         ${c.applied
           ? html`<button onClick=${() => act(c.id, "keep")} title="Put back what you said on the slide">Show what I said</button>
@@ -652,7 +689,17 @@ function usePopover() {
 }
 
 // The notes in use; the menu lists every PDF and adds another one (user 2026-10-07: the select was out of style).
-function DocMenu({ docs, open, onOpen, onAdd, onLink, onRemove, busy }) {
+// F-012: each file is also study material — "Use for lectures" (book) and "Private" (lock) per file
+function DocFlags({ d, send }) {
+  return html`<button class=${"icon row-flag" + (d.active ? " on" : "")} aria-pressed=${!!d.active}
+      title=${d.active ? "Study material for your lectures (slides, images, speech) · click to stop using it" : "Not used for your lectures · click to use it as study material"}
+      onClick=${() => send("notes_use", { id: d.id, on: !d.active })}>${svg(ICON.book)}</button>
+    <button class=${"icon row-flag" + (d.private ? " on" : "")} aria-pressed=${!!d.private}
+      title=${d.private ? "Private: never sent to the AI (still used for images and speech) · click to allow" : "Click to keep it private: never sent to the AI"}
+      onClick=${() => send("notes_private", { id: d.id, on: !d.private })}>${svg(ICON.lock)}</button>`;
+}
+
+function DocMenu({ docs, open, onOpen, onAdd, onLink, onRemove, busy, send }) {
   const [shown, setShown, ref] = usePopover();
   return html`<div class="menu-wrap doc-menu" ref=${ref}>
     <button class=${"menu-button" + (shown ? " on" : "")} onClick=${() => setShown(!shown)} aria-expanded=${shown}>
@@ -661,7 +708,9 @@ function DocMenu({ docs, open, onOpen, onAdd, onLink, onRemove, busy }) {
       ${docs.map((d) => html`<div key=${d.id} class=${"menu-line" + (d.id === open.id ? " on" : "")}>
         <button role="menuitem" class=${"menu-row" + (d.id === open.id ? " on" : "")}
             onClick=${() => { setShown(false); if (d.id !== open.id) onOpen(d.id); }}>
-          ${svg(d.id === open.id ? ICON.check : docIcon(d))}<span>${d.name}</span><em>${pagesOf(d)}</em></button>
+          ${svg(d.id === open.id ? ICON.check : docIcon(d))}<span>${d.name}</span>
+          ${d.active && svg(ICON.book, "flag-mark")}${d.private && svg(ICON.lock, "flag-mark")}<em>${pagesOf(d)}</em></button>
+        <${DocFlags} d=${d} send=${send} />
         <button class="icon row-remove" title="Remove from my notes" onClick=${() => onRemove(d)}>${svg(ICON.bin)}</button>
       </div>`)}
       <div class="menu-sep"></div>
@@ -677,6 +726,19 @@ function DocMenu({ docs, open, onOpen, onAdd, onLink, onRemove, busy }) {
 // decoded), and the pages around it fetched ahead so a turn is instant.
 function usePreload(urls) {
   useEffect(() => { urls.filter(Boolean).forEach((u) => { const i = new Image(); i.src = u; }); }, [urls.join("|")]);
+}
+
+// F-012: what the study material is doing — being read, refused, used for the last slide, or how many files
+function StudyLine({ n }) {
+  const reading = Object.entries(n.indexing || {});
+  const inUse = (n.docs || []).filter((d) => d.active).length;
+  if (!reading.length && !n.notice && !inUse) return null;
+  const name = (id) => ((n.docs || []).find((d) => d.id === id) || {}).name || "a file";
+  return html`<p class=${"study-line" + (n.notice ? " off" : "")}>${svg(ICON.book)}
+    ${reading.length ? html`<span>Reading <b>${name(reading[0][0])}</b> as study material… ${Math.round(reading[0][1] * 100)} %</span>`
+      : n.notice ? html`<span>${n.notice}</span>`
+      : n.used ? html`<span>Used for the slide: <b>${n.used}</b></span>`
+      : html`<span>Study material: ${inUse} file${inUse === 1 ? "" : "s"} in use</span>`}</p>`;
 }
 
 function Notes({ notes, send, wide, onWide }) {
@@ -738,7 +800,7 @@ function Notes({ notes, send, wide, onWide }) {
       </div>`
     : html`<div class="notes-head">
         <${DocMenu} docs=${n.docs} open=${doc} onOpen=${(id) => send("notes_open", { id })} onAdd=${addFile}
-          onLink=${() => setLinking(true)} onRemove=${remove} busy=${!!busy} />
+          onLink=${() => setLinking(true)} onRemove=${remove} busy=${!!busy} send=${send} />
         ${doc.kind === "web" && doc.source && html`<a class="icon" href=${doc.source} target="_blank" rel="noopener"
           title="Open the original page">${svg(ICON.open)}</a>`}
         <button class="icon" onClick=${onWide} title=${wide ? "Narrower notes" : "Wider notes"} aria-pressed=${wide}>
@@ -765,6 +827,7 @@ function Notes({ notes, send, wide, onWide }) {
           <span class="track"><span class="knob"></span></span>Follow</label>
       </div>
       <p class=${"notes-note" + (n.reason && !n.projecting ? " off" : "")}>${note}</p>`}
+    <${StudyLine} n=${n} />
     ${error && html`<p class="notes-error">${error}</p>`}
   </div>`;
 }
@@ -1608,7 +1671,7 @@ function Stepper({ value, onChange, limits, unit, title }) {
 }
 
 function AssessSetup({ st, lectures, send, llm }) {
-  const defaults = { kind: "quiz", count: 15, seconds: 15, minutes: 15, show_answers: true };
+  const defaults = { kind: "quiz", count: 15, seconds: 15, minutes: 15, show_answers: true, reference: true };
   const [stored, setO] = useStored("assess-setup", defaults);  // the teacher's last choices, in this browser
   const o = { ...defaults, ...stored };
   const from = useFrom(st, lectures, null, () => {});
@@ -1626,6 +1689,9 @@ function AssessSetup({ st, lectures, send, llm }) {
       ${!quiz && html`<label class=${"switch" + (o.show_answers ? " on" : "")} title="After submitting, students see the correct answers">
         <input type="checkbox" checked=${o.show_answers} onChange=${(e) => setO({ ...o, show_answers: e.target.checked })} />
         <span class="track"><span class="knob"></span></span>Show answers after submit</label>`}
+      ${llm && html`<label class=${"switch" + (o.reference ? " on" : "")} title="Your study material (My Notes) checks the facts; the questions stay on what you taught">
+        <input type="checkbox" checked=${o.reference} onChange=${(e) => setO({ ...o, reference: e.target.checked })} />
+        <span class="track"><span class="knob"></span></span>Check facts with My Notes</label>`}
     </div>
     ${from.picker}
     <div class="make-foot">
@@ -1633,7 +1699,7 @@ function AssessSetup({ st, lectures, send, llm }) {
         ? (from.mode === "chapters" ? "Choose the chapters" : "Choose the lectures") : `Questions from ${from.title}`}</span>
       <button class="primary prepare" disabled=${llm && !from.sources}
         onClick=${() => send("assess_create", { kind: o.kind, count: o.count, seconds: o.seconds, minutes: o.minutes,
-          show_answers: o.show_answers, ...from.args })}>
+          show_answers: o.show_answers, reference: o.reference, ...from.args })}>
         ${svg(llm ? ICON.materials : ICON.edit)}${quiz ? "Prepare quiz" : "Prepare test"}</button>
     </div>
   </section>`;
@@ -1980,7 +2046,7 @@ function App() {
     <main class=${"grid" + (wide && tab === "notes" ? " notes-wide" : "")}>
       <section class="left">
         <${Preview} spec=${liveSpec} deck=${deck} lifecycle=${state.lifecycle} slides=${state.slides} send=${send} theme=${state.theme}
-          materials=${materials} notesShown=${state.notesShown} onScreenAssess=${onScreenAssess(state.assess)}
+          materials=${materials} notes=${state.notes} notesShown=${state.notesShown} onScreenAssess=${onScreenAssess(state.assess)}
           notice=${notice} onNotice=${setNotice} adding=${adding} onAdded=${() => setAdding(false)}
           status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} />
         <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle} theme=${state.theme}

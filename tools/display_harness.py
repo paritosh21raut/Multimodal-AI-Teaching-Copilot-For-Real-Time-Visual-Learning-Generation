@@ -69,11 +69,14 @@ async def display_harness(theme: str = "light", media_dir: Optional[Path] = None
     library = None
     if notes_dir is not None:
         from copilot.notes.library import NotesLibrary
+        from copilot.notes.reference import ReferenceIndex
         from copilot.notes.service import NotesService
 
         library = NotesLibrary(notes_dir)
-        notes = NotesService(bus, library, notes_embedder)
+        notes = NotesService(bus, library, reference=ReferenceIndex(library))  # also study material (F-012)
         notes.attach()
+        if notes_embedder is not None:
+            notes.set_embedder(notes_embedder)
         await notes.announce()
     archive = mstore = event_log = chapters = None
     if materials_dir is not None:
@@ -100,6 +103,7 @@ async def display_harness(theme: str = "light", media_dir: Optional[Path] = None
                            notes=library, archive=archive, materials=mstore, chapters=chapters, assess=assess)
     await server.start()
     harness = Harness(bus, deck, hub, server)
+    harness.notes = notes if notes_dir is not None else None
     clock_box.append(harness)
     if assess is not None:
         harness.assess = assess

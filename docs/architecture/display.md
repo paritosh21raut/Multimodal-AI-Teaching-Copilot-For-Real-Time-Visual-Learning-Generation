@@ -119,6 +119,18 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
   with FLIP (`useFlip`, `[data-flip]` keys); it still sends only `lecture_move` / `chapter_move`. Motion respects
   `prefers-reduced-motion`.
 
+- F-012 (study material): every My Notes file is also study material.
+  - The file menu row gets **Use for lectures** (book, on by default, ≤ 10) and **Private** (lock: never to the LLM)
+    on hover, with small marks after the name when they are on.
+  - The **study line** under the notes says one of: "Reading <file> … n %", a refusal, "Used for the slide: <file>
+    p.N", or "Study material: N files in use".
+  - The start card has a **Study material** row: chips for the files in use (× = not for this lecture) and Add, which
+    is the same upload as My Notes.
+  - A concern card cites "Your material: <file> p.N".
+  - The Quiz & Test setup has *Check facts with My Notes*.
+  - Nothing new reaches /display or /view, except a page the teacher projects (as before) and the teacher's figure as
+    a slide image.
+
 ## Lecture materials + past lectures (F-010, V2)
 - **Materials** tab: *From* chips (This lecture, + Past lecture menu), then tick cards — Summary slide (This topic /
   Whole lecture), Key concepts slide, Notes (PDF), Assignment (PDF, − 10 + questions), Slides (PowerPoint, Light /

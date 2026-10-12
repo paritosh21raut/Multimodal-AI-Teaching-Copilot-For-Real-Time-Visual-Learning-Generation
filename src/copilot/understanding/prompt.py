@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Sequence
+from typing import Optional, Sequence
 
 from copilot.core.state import LectureState
 from copilot.core.textutil import approx_tokens
@@ -157,6 +157,16 @@ class BuiltPrompt:
     messages: list[dict[str, str]]
     tokens: int          # estimate for the whole prompt
     dynamic_tokens: int  # estimate for the user message
+    reference: str = ""  # "<file> p.N" when a REFERENCE block is in it (F-012)
+
+
+# F-012: the teacher's own material, only when a passage clearly matches (notes.reference.snippet). Outside the
+# dynamic room; it never pushes the prompt past total_budget - REFERENCE_KEEP (the room a repair needs).
+REFERENCE_MAX_TOKENS = 150
+REFERENCE_MIN_TOKENS = 30
+REFERENCE_KEEP = 150
+REFERENCE_RULE = ("Use REFERENCE only to name, spell or state exactly what the NEW LINES say; never add content "
+                  "from it. A line that contradicts it is a factual concern.")
 
 
 def _clip(text: str, n: int = _FIELD_MAX_CHARS) -> str:
@@ -193,7 +203,8 @@ def _fit_outline(lines: list[str], max_tokens: int) -> str:
 
 
 def build_prompt(state: LectureState, lines: Sequence[BufferedLine], *, dynamic_budget: int,
-                 total_budget: int) -> BuiltPrompt:
+                 total_budget: int, reference: Optional[tuple[str, str]] = None) -> BuiltPrompt:
+    """reference: (cite, passage) from the teacher's material, or None."""
     setup = state.setup
     fields = [
         f"{k}={_clip(v)}" for k, v in (
@@ -234,6 +245,18 @@ def build_prompt(state: LectureState, lines: Sequence[BufferedLine], *, dynamic_
     total = dyn + approx_tokens(SYSTEM_PROMPT)
     if dyn > dynamic_budget or total > total_budget:
         raise PromptBudgetError(f"prompt over budget: dynamic {dyn}/{dynamic_budget}, total {total}/{total_budget}")
+    cite = ""
+    if reference is not None:
+        head = f"REFERENCE (teacher's material, {_clip(reference[0], 80)}): "
+        fixed_ref = approx_tokens(head) + approx_tokens(REFERENCE_RULE) + 4
+        room = min(REFERENCE_MAX_TOKENS, total_budget - REFERENCE_KEEP - total - fixed_ref)
+        passage = _clip_tokens(" ".join(reference[1].split()), max(0, room))
+        if room >= REFERENCE_MIN_TOKENS and passage:
+            parts.insert(parts.index("NEW LINES:"), head + passage + "\n" + REFERENCE_RULE)
+            user = "\n".join(parts)
+            dyn = approx_tokens(user)
+            total = dyn + approx_tokens(SYSTEM_PROMPT)
+            cite = reference[0]
     return BuiltPrompt(
-        [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user}], total, dyn
+        [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user}], total, dyn, cite
     )
