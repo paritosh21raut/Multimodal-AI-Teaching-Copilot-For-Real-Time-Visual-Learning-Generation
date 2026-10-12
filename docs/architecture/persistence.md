@@ -10,6 +10,9 @@
 - `data/sessions/<session_id>/lecture.json`: the lecture rebuilt from that log (F-010 past lectures), cached by the log's
   size + mtime
 - `data/materials/`: what the teacher made (F-010): `index.json` + `<id>.pdf | .pptx`
+- `data/assessments/<id>.json`: one quiz / test (F-011): questions + keys, participants (roll, name, token, answers,
+  submitted), clock fields; written atomically on every change (≤ 1 per 0.25 s tick). `lecture_id` + `sources` let
+  the Lectures tab list a lecture's results; CSV is made on request (`assess/store.results_csv`).
 - `data/archive.json`: lectures the teacher took off the Lectures list (nothing is deleted)
 - Writes are batched in a dedicated writer task (no blocking on the loop).
 

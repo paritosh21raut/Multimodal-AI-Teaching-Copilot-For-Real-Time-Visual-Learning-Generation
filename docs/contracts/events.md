@@ -32,6 +32,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `ThemeChanged` | state store (F-009) | `theme` (light/dark): after `set_theme`; the hub repaints display, viewers and the control preview |
 | `NotesState` | notes service (F-009) | `docs`, `open`, `page`, `pages`, `follow`, `reason` (why following does nothing), `matched` (slide title) — control only, ephemeral |
 | `MaterialsState` | materials service (F-010) | `items` (made / being made: name, status, detail, tokens, …), `shared` ([{id, name}] PDFs students may download), `current` {id, title}, `llm`, `lectures_changed` — items to control, `shared` to viewers; ephemeral |
+| `AssessState` | assess service (F-011) | `control` (whole quiz / test, keys included → /control only), `public` (no key before it is due → /display + /view), `notice` (why the teacher's last action was refused), `llm`, `now`; ephemeral (saved in `data/assessments/`) |
 | `ErrorRaised` | any | `component`, `error`, `fatal` |
 
 `TranscriptSegment`: `id, text, start, end, confidence, language="en", source="mic"|"sim"`.
@@ -45,7 +46,11 @@ notes_follow(on), notes_remove(id), materials_create(items[{kind: summary|concep
 scope?: topic|lecture, count?, theme?}], lectures[past ids], current), materials_rename(id, name),
 materials_share(id, on), materials_remove(id), materials_show(id), lecture_hide(id), chapter_create(name, start?),
 chapter_rename(id, name), chapter_move(id, index), chapter_delete(id), lecture_move(id, chapter, start?),
-notes_project(on)` (chapters, notes on the projector: F-010b; `materials_create` also takes `chapters[ids]`;
+notes_project(on), assess_create(kind: quiz|test, count, seconds, minutes, show_answers, current, lectures,
+chapters), assess_edit(qid, text?, options?, answer?), assess_add(text, options, answer, after?), assess_delete(qid),
+assess_regen(qid), assess_open, assess_start, assess_pause, assess_resume, assess_hold(on), assess_next, assess_end,
+assess_close, assess_discard, assess_release(roll)` (quiz + test: F-011; students act over HTTP with their token,
+never by command; chapters, notes on the projector: F-010b; `materials_create` also takes `chapters[ids]`;
 materials + past lectures:
 F-010; themes + notes: F-009; editing and sharing: F-008; image commands: F-007b; `change_image` on a slide without an image = the teacher's Find image; `set_image` follows `POST /api/upload`; zoom is a deck display flag).
 

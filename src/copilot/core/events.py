@@ -73,6 +73,10 @@ CommandKind = Literal[
     # chapters (F-010b): create {name, start?}; rename {id, name}; move {id, index}; delete {id};
     # lecture_move {id, chapter, start?}; notes_project {on}: the notes page on the projector
     "chapter_create", "chapter_rename", "chapter_move", "chapter_delete", "lecture_move", "notes_project",
+    # quiz + test (F-011, assess/service.py has the args)
+    "assess_create", "assess_edit", "assess_add", "assess_delete", "assess_regen", "assess_open", "assess_start",
+    "assess_pause", "assess_resume", "assess_hold", "assess_next", "assess_end", "assess_close", "assess_discard",
+    "assess_release",
 ]
 
 
@@ -279,6 +283,18 @@ class MaterialsState(Event):
     lectures_changed: int = 0  # bumps when the past-lecture list changed (a lecture hidden / moved)
     chapters: list[dict[str, Any]] = Field(default_factory=list)  # [{id, name, number, label}] in order (F-010b)
     last_chapter: str = ""    # preselected on the start card
+
+
+class AssessState(Event):
+    """The quiz / test (F-011). `control` (everything, the answer keys included) goes to /control only; `public`
+    (never a key before it is due) to /display and the students' pages. Both empty: none open. Saved in
+    data/assessments, so ephemeral here."""
+    ephemeral: ClassVar[bool] = True
+    control: dict[str, Any] = Field(default_factory=dict)
+    public: dict[str, Any] = Field(default_factory=dict)
+    notice: str = ""   # why the teacher's last action was refused (control only)
+    llm: bool = False  # questions can be written (an LLM is configured)
+    now: float = 0.0   # server clock when made (pages count `left` down from their receipt)
 
 
 class ErrorRaised(Event):

@@ -15,6 +15,7 @@ from pydantic import ValidationError
 
 from copilot.core.bus import EventBus
 from copilot.core.events import (
+    AssessState,
     AudioLevel,
     Command,
     CommandReceived,
@@ -88,6 +89,8 @@ class DisplayHub:
         self.materials: Optional[dict] = None  # lecture materials (F-010), control only
         self.shared: list[dict] = []  # PDFs the students may download (F-010), to every viewer
         self.notes_shown: dict = {"on": False, "doc_id": "", "page": 0, "name": ""}  # F-010b, every role
+        self.assess_control: dict = {}  # the quiz / test with its answer keys (F-011), control only
+        self.assess_public: dict = {}   # the same without keys before they are due: display + students
 
     def attach(self) -> None:
         self._bus.subscribe(
@@ -95,7 +98,7 @@ class DisplayHub:
             [SlidePatch, DeckState, LifecycleChanged, TranscriptFinal, UtteranceDropped, ConcernRaised,
              ConcernResolved, ImageRequested, ImageReady, ImageChoices, ShareChanged, ThemeChanged, NotesState,
              NotesProjected,
-             MaterialsState],
+             MaterialsState, AssessState],
         )
         # Audio levels are high-rate and only matter "now": drop old ones if the hub lags.
         self._bus.subscribe("display_hub_audio", self._on_event, [AudioLevel], queue_size=4, overflow="drop_oldest")
@@ -140,8 +143,19 @@ class DisplayHub:
             msg["viewers"] = self.viewers
             msg["notes"] = self.notes
             msg["materials"] = self.materials
+            msg["assess"] = dict(self.assess_control)
+        else:  # the projector and the students: never an answer key before it is due (F-011)
+            msg["assess"] = self._assess_for(role)
         if role == "viewer":  # the PDFs the teacher shares (F-010)
             msg["shared"] = list(self.shared)
+        return msg
+
+    def _assess_for(self, role: Role) -> dict:
+        """The quiz / test for the projector or a student (no keys before due). The projector also gets the students'
+        join link while one is open (its lobby QR); the share state itself stays the teacher's (F-008)."""
+        msg: dict = {"public": dict(self.assess_public)}
+        if role == "display" and self.assess_public and self.share.get("state") == "on":
+            msg["join_url"] = self.share.get("url", "")
         return msg
 
     async def handle_client_message(self, conn: Connection, msg: dict) -> Optional[str]:
@@ -228,6 +242,8 @@ class DisplayHub:
         elif isinstance(event, ShareChanged):  # control only: the student link and its state
             self.share = {"state": event.state, "url": event.url, "detail": event.detail}
             self._broadcast({"type": "share", **self.share}, key=("share",), roles=("control",))
+            if self.assess_public:  # an open quiz / test shows the join link on the projector (F-011)
+                self._broadcast({"type": "assess", **self._assess_for("display")}, key=("assess",), roles=("display",))
         elif isinstance(event, NotesState):  # control only: the teacher's own notes never reach a slide page
             self.notes = event.model_dump(include={"docs", "open", "page", "pages", "follow", "reason", "matched",
                                                    "projecting"})
@@ -242,6 +258,13 @@ class DisplayHub:
             if event.shared != self.shared:
                 self.shared = list(event.shared)
                 self._broadcast({"type": "shared", "items": self.shared}, key=("shared",), roles=("viewer",))
+        elif isinstance(event, AssessState):  # control: the whole quiz / test; display + students: the public part
+            self.assess_control = event.model_dump(include={"control", "public", "notice", "llm", "now"})
+            self._broadcast({"type": "assess", **self.assess_control}, key=("assess",), roles=("control",))
+            if event.public != self.assess_public:
+                self.assess_public = dict(event.public)
+                for role in ("display", "viewer"):
+                    self._broadcast({"type": "assess", **self._assess_for(role)}, key=("assess",), roles=(role,))
         elif isinstance(event, ThemeChanged):  # every slide page repaints; students follow the teacher's theme
             self.theme = event.theme
             self._broadcast({"type": "theme", "theme": self.theme}, key=("theme",))

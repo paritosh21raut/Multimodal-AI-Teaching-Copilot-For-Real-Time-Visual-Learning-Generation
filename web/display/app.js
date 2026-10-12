@@ -2,6 +2,7 @@
 import { html, render, useEffect, useReducer, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
 import { Glass, Slide, ZoomedImage, imageOf, useGlassExit, useStageScale } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
+import { ProjectorAssess, StudentAssess } from "../shared/assess.js";
 
 const SLIDE_MS = 380;
 // /view: the same page for students on the shared link (F-008): it only watches, it sends nothing back
@@ -79,14 +80,24 @@ function App() {
   // the teacher clicked the slide's image in /control: it fills the screen until Back / Esc (blank still wins)
   const notes = state.notesShown && state.notesShown.on && !(deck && deck.blank) ? state.notesShown : null;
   const zoomed = deck && deck.zoom && !deck.blank && !notes ? imageOf(state.slides[deck.zoom]) : null;
+  // a quiz / test the teacher opened (F-011): over the slide on the projector; the join form on students' pages
+  const pub = state.assess && state.assess.public;
+  const [dismissed, setDismissed] = useState("");  // a student's "Back to the lecture" after it ended
+  const open = pub && ["lobby", "running", "finished"].includes(pub.status) ? pub : null;
+  const quiz = open && !(VIEWER && dismissed === open.id) ? open : null;
+  useEffect(() => { if (VIEWER) document.title = quiz ? (quiz.kind === "test" ? "Test" : "Quiz") : "Live lecture"; }, [quiz && quiz.kind]);
+  // while a quiz / test covers the page the slide stage is not drawn (in Edge the composited slide layer showed
+  // through the overlay on a phone, real-app check 2026-10-12)
   return html`<div class="viewport" ref=${containerRef}>
-    <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
+    ${quiz && (VIEWER ? html`<${StudentAssess} key=${quiz.id} pub=${quiz} at=${state.assess.at} onHide=${() => setDismissed(quiz.id)} />`
+      : html`<${ProjectorAssess} pub=${quiz} at=${state.assess.at} joinUrl=${state.assess.join_url} />`)}
+    <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})`, display: quiz ? "none" : undefined }}>
       ${layers.map((l) => html`<${Slide} key=${l.spec.id} spec=${l.spec} phase=${l.phase} onOverflow=${onOverflow} />`)}
       ${zoomed && html`<${ZoomedImage} key=${zoomed.image_id || zoomed.url} image=${zoomed} />`}
       ${glass && html`<${Glass} leaving=${glass === "leaving"} />`}
     </div>
     ${notes && html`<${NotesPage} shown=${notes} />`}
-    ${VIEWER && html`<${SharedFiles} items=${state.shared} />`}
+    ${VIEWER && !quiz && html`<${SharedFiles} items=${state.shared} />`}
   </div>`;
 }
 

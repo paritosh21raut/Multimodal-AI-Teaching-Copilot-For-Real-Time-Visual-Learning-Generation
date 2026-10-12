@@ -5,6 +5,7 @@ import {
   Glass, Slide, ZoomedImage, editableText, imageOf, partLabel, shownTitle, useGlassExit, useStageScale,
 } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
+import { LETTERS, Leaderboard, OptionGrid, TimerRing, useLeft } from "../shared/assess.js";
 
 const KEYS = {
   ArrowRight: ["next"], ArrowLeft: ["prev"],
@@ -96,6 +97,9 @@ const ICON = {
   hide: "M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.1A9.8 9.8 0 0 1 12 5c5 0 9 5 9 7a10 10 0 0 1-2.4 3.4M6.6 6.6C4.4 8 3 10.3 3 12c0 2 4 7 9 7a9.6 9.6 0 0 0 4.4-1.1",
   tree: "M4 5h6M4 5v14M4 12h6M4 19h6M14 5h6M14 12h6M14 19h6",
   notes: "M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h4",
+  quiz: "M9.2 9a2.9 2.9 0 1 1 4 2.7c-.7.3-1.2 1-1.2 1.8v.5M12 17.5h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z",
+  hold: "M6 5h4v14H6zM14 5h4v14h-4z",
+  skip: "M5 5l9 7-9 7zM18 5v14",
 };
 
 // ---- styled tooltip (F-010b #11): every `title` in /control shows in the app's style instead of the native box ----
@@ -403,7 +407,7 @@ function NotesOnScreen({ shown, send }) {
 }
 
 function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice, adding, onAdded, theme,
-                   materials, notesShown }) {
+                   materials, notesShown, onScreenAssess }) {
   const ref = useRef(null);
   const scale = useStageScale(ref);
   const [drag, setDrag] = useState(null); // null | "over" | "uploading"
@@ -448,7 +452,8 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
     ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} send=${send} />`}
     ${line && !drag && html`<div class=${"image-status" + (line.error ? " error" : "")}>
       ${line.busy && html`<span class="dot"></span>`}${line.text}</div>`}
-    ${(lifecycle === "paused" || (deck && deck.blank)) && !zoomed && html`<div class="flags">
+    ${(lifecycle === "paused" || (deck && deck.blank) || onScreenAssess) && !zoomed && html`<div class="flags">
+      ${onScreenAssess && html`<span class="flag">${onScreenAssess.toUpperCase()} ON SCREEN</span>`}
       ${lifecycle === "paused" && html`<span class="flag paused">PAUSED</span>`}
       ${deck && deck.blank && html`<span class="flag warn">BLANK</span>`}
     </div>`}
@@ -892,13 +897,10 @@ function MadeRow({ m, send }) {
   </li>`;
 }
 
-function Materials({ materials, lectures, send, preselect, onPreselected }) {
-  const st = materials || { items: [], current: { id: "", title: "" }, llm: false, chapters: [] };
+// From (F-010b #7): this lecture · picked lectures (this one among them) · whole chapters. Shared by Materials and the
+// quiz / test setup (F-011): `args` is what the server's MaterialsService.resolve reads.
+function useFrom(st, lectures, preselect, onPreselected) {
   const chapters = st.chapters || [];
-  const [ticks, setTicks] = useState({});
-  const [opts, setOpts] = useState({ scope: "topic", count: DEFAULT_QUESTIONS, theme: "light" });
-  const [names, setNames] = useState({});
-  // From (F-010b #7): this lecture · picked lectures (this one among them) · whole chapters
   const [mode, setMode] = useState("this");
   const [picked, setPicked] = useState([]);       // lecture ids ("now" = this lecture)
   const [pickedCh, setPickedCh] = useState([]);   // chapter ids
@@ -918,21 +920,7 @@ function Materials({ materials, lectures, send, preselect, onPreselected }) {
   const title = mode === "chapters"
     ? joinedTitle(chapterIds.map((id) => (chapters.find((c) => c.id === id) || {}).label))
     : joinedTitle(mode === "this" ? [nameOf("now")] : picked.map(nameOf));
-  const chosen = KINDS.filter((k) => ticks[k.kind]);
-  const blocked = (k) => (k.llm && !st.llm) || (k.kind === "summary" && opts.scope === "topic" && !current);
   const sources = mode === "this" ? 1 : mode === "lectures" ? picked.length : chapterIds.length;
-  const ready = chosen.length > 0 && sources > 0 && !chosen.some(blocked);
-  const create = () => {
-    const items = chosen.map((k) => ({
-      kind: k.kind, name: k.file ? (names[k.kind] || "").trim() || autoName(k.kind, title) : "",
-      ...(k.kind === "summary" ? { scope: opts.scope } : {}),
-      ...(k.kind === "assignment" ? { count: opts.count } : {}),
-      ...(k.kind === "pptx" ? { theme: opts.theme } : {}),
-    }));
-    send("materials_create", mode === "chapters" ? { items, lectures: [], current: false, chapters: chapterIds }
-      : { items, lectures: pastIds, current });
-    setTicks({}); setNames({});
-  };
   const lectureRows = lectures === null ? null : [{ id: "now", title: st.current.title || "This lecture", note: "now" },
     ...past.map((l) => ({ id: l.id, title: l.title, note: l.date.split(",")[0] }))];
   const chapterRows = chapters.map((c) => {
@@ -941,6 +929,39 @@ function Materials({ materials, lectures, send, preselect, onPreselected }) {
   });
   const summary = (ids, rows, none, word) => (!ids.length ? none : ids.length === 1
     ? ((rows || []).find((r) => r.id === ids[0]) || {}).title || `1 ${word}` : `${ids.length} ${word}s`);
+  const args = mode === "chapters" ? { lectures: [], current: false, chapters: chapterIds } : { lectures: pastIds, current };
+  const picker = html`<div class="from">
+    <span class="from-label">From</span>
+    <${Segmented} value=${mode} options=${FROM_OPTIONS} onChange=${setMode} />
+    ${mode === "lectures" && html`<${Checklist} rows=${lectureRows} picked=${picked} empty="No lectures yet"
+      label=${summary(picked, lectureRows, "Choose lectures…", "lecture")} onToggle=${(id) => setPicked(toggled(picked, id))} />`}
+    ${mode === "chapters" && html`<${Checklist} rows=${chapterRows} picked=${chapterIds}
+      empty="No chapters yet: make one in the Lectures tab"
+      label=${summary(chapterIds, chapterRows, "Choose chapters…", "chapter")} onToggle=${(id) => setPickedCh(toggled(chapterIds, id))} />`}
+  </div>`;
+  return { mode, current, title, sources, args, picker };
+}
+
+function Materials({ materials, lectures, send, preselect, onPreselected }) {
+  const st = materials || { items: [], current: { id: "", title: "" }, llm: false, chapters: [] };
+  const chapters = st.chapters || [];
+  const [ticks, setTicks] = useState({});
+  const [opts, setOpts] = useState({ scope: "topic", count: DEFAULT_QUESTIONS, theme: "light" });
+  const [names, setNames] = useState({});
+  const { mode, current, title, sources, args, picker } = useFrom(st, lectures, preselect, onPreselected);
+  const chosen = KINDS.filter((k) => ticks[k.kind]);
+  const blocked = (k) => (k.llm && !st.llm) || (k.kind === "summary" && opts.scope === "topic" && !current);
+  const ready = chosen.length > 0 && sources > 0 && !chosen.some(blocked);
+  const create = () => {
+    const items = chosen.map((k) => ({
+      kind: k.kind, name: k.file ? (names[k.kind] || "").trim() || autoName(k.kind, title) : "",
+      ...(k.kind === "summary" ? { scope: opts.scope } : {}),
+      ...(k.kind === "assignment" ? { count: opts.count } : {}),
+      ...(k.kind === "pptx" ? { theme: opts.theme } : {}),
+    }));
+    send("materials_create", { items, ...args });
+    setTicks({}); setNames({});
+  };
   const setCount = (n) => setOpts({ ...opts, count: Math.max(1, Math.min(30, n || DEFAULT_QUESTIONS)) });
   const option = (k) => {
     if (!ticks[k.kind]) return null;
@@ -965,15 +986,7 @@ function Materials({ materials, lectures, send, preselect, onPreselected }) {
   const items = st.items || [];
   return html`<div class="materials">
     <section class="make">
-      <div class="from">
-        <span class="from-label">From</span>
-        <${Segmented} value=${mode} options=${FROM_OPTIONS} onChange=${setMode} />
-        ${mode === "lectures" && html`<${Checklist} rows=${lectureRows} picked=${picked} empty="No lectures yet"
-          label=${summary(picked, lectureRows, "Choose lectures…", "lecture")} onToggle=${(id) => setPicked(toggled(picked, id))} />`}
-        ${mode === "chapters" && html`<${Checklist} rows=${chapterRows} picked=${chapterIds}
-          empty="No chapters yet: make one in the Lectures tab"
-          label=${summary(chapterIds, chapterRows, "Choose chapters…", "chapter")} onToggle=${(id) => setPickedCh(toggled(chapterIds, id))} />`}
-      </div>
+      ${picker}
       <ul class="kinds">${KINDS.map((k) => html`<li key=${k.kind} class=${"kind" + (ticks[k.kind] ? " on" : "") + (blocked(k) ? " off" : "")}>
         <button class="kind-head" role="checkbox" aria-checked=${!!ticks[k.kind]} disabled=${k.llm && !st.llm}
             title=${k.llm && !st.llm ? "Needs the LLM (this run has none)" : ""}
@@ -1517,9 +1530,240 @@ function LectureViewer({ id, start = 0, made, onClose, onMake, send }) {
             ${s.part && html`<span class="part">${partLabel(s.part)}</span>`}</li>`)}</ol>
           ${made.length > 0 && html`<div class="viewer-made"><h3>Made from it</h3>
             <ul>${made.map((m) => html`<${MadeRow} key=${m.id} m=${m} send=${send} />`)}</ul></div>`}
+          <${PastAssessments} lectureId=${id} />
         </aside>
       </div>
     </div>
+  </div>`;
+}
+
+// ---- quiz + test (F-011): setup → preview / edit → lobby → live → results; every action is a command ----
+const ASSESS_LIMITS = { count: [1, 40], seconds: [5, 120], minutes: [1, 180] };
+
+function Stepper({ value, onChange, limits, unit, title }) {
+  const [lo, hi] = limits;
+  // what is being typed stays until it is committed (a live update re-rendering the page must not reset it)
+  const [draft, setDraft] = useState(null);
+  const set = (n) => onChange(Math.max(lo, Math.min(hi, Number.isFinite(n) ? n : value)));
+  const commit = () => { if (draft !== null) { set(parseInt(draft, 10)); setDraft(null); } };
+  return html`<div class="stepper" title=${title}>
+    <button class="icon" onClick=${() => set(value - 1)} disabled=${value <= lo} aria-label=${`Fewer ${unit}`}>−</button>
+    <input type="number" min=${lo} max=${hi} value=${draft ?? value} aria-label=${title}
+      onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Enter") commit(); }}
+      onInput=${(e) => setDraft(e.target.value)} onChange=${commit} onBlur=${commit} />
+    <button class="icon" onClick=${() => set(value + 1)} disabled=${value >= hi} aria-label=${`More ${unit}`}>+</button>
+    <span>${unit}</span></div>`;
+}
+
+function AssessSetup({ st, lectures, send, llm }) {
+  const defaults = { kind: "quiz", count: 15, seconds: 15, minutes: 15, show_answers: true };
+  const [stored, setO] = useStored("assess-setup", defaults);  // the teacher's last choices, in this browser
+  const o = { ...defaults, ...stored };
+  const from = useFrom(st, lectures, null, () => {});
+  const quiz = o.kind === "quiz";
+  return html`<section class="make assess-setup">
+    <${Segmented} value=${o.kind} options=${[["quiz", "Live quiz", "One question at a time, timed, with a leaderboard"],
+      ["test", "Test", "All questions at once, one time limit, submit"]]} onChange=${(v) => setO({ ...o, kind: v })} />
+    <div class="assess-opts">
+      <label><span>Questions</span><${Stepper} value=${o.count} limits=${ASSESS_LIMITS.count} unit="" title="Number of questions"
+        onChange=${(v) => setO({ ...o, count: v })} /></label>
+      ${quiz ? html`<label><span>Time per question</span><${Stepper} value=${o.seconds} limits=${ASSESS_LIMITS.seconds} unit="s"
+          title="Seconds per question" onChange=${(v) => setO({ ...o, seconds: v })} /></label>`
+        : html`<label><span>Duration</span><${Stepper} value=${o.minutes} limits=${ASSESS_LIMITS.minutes} unit="min"
+          title="Minutes for the whole test" onChange=${(v) => setO({ ...o, minutes: v })} /></label>`}
+      ${!quiz && html`<label class=${"switch" + (o.show_answers ? " on" : "")} title="After submitting, students see the correct answers">
+        <input type="checkbox" checked=${o.show_answers} onChange=${(e) => setO({ ...o, show_answers: e.target.checked })} />
+        <span class="track"><span class="knob"></span></span>Show answers after submit</label>`}
+    </div>
+    ${from.picker}
+    <div class="make-foot">
+      <span class="make-note">${!llm ? "No LLM in this run: you write the questions" : !from.sources
+        ? (from.mode === "chapters" ? "Choose the chapters" : "Choose the lectures") : `Questions from ${from.title}`}</span>
+      <button class="primary" disabled=${llm && !from.sources}
+        onClick=${() => send("assess_create", { kind: o.kind, count: o.count, seconds: o.seconds, minutes: o.minutes,
+          show_answers: o.show_answers, ...from.args })}>
+        ${svg(ICON.quiz)}${llm ? "Write questions" : "Start writing"}</button>
+    </div>
+  </section>`;
+}
+
+function QuestionEditor({ q, onSave, onCancel }) {
+  const [text, setText] = useState(q ? q.text : "");
+  const [options, setOptions] = useState(q ? [...q.options] : ["", "", "", ""]);
+  const [answer, setAnswer] = useState(q ? q.answer : 0);
+  const ok = text.trim() && options.every((x) => x.trim()) && new Set(options.map((x) => x.trim().toLowerCase())).size === 4;
+  const keys = (e) => { e.stopPropagation(); if (e.key === "Escape") onCancel(); };
+  return html`<div class="q-editor" onKeyDown=${keys}>
+    <textarea rows="2" placeholder="Question" value=${text} onInput=${(e) => setText(e.target.value)}
+      ref=${(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus())}></textarea>
+    ${options.map((x, i) => html`<div key=${i} class=${"q-opt-edit o" + i + (answer === i ? " is-key" : "")}>
+      <button class="key-pick" role="radio" aria-checked=${answer === i} title="Mark as the correct answer" onClick=${() => setAnswer(i)}>
+        ${answer === i ? svg(ICON.check) : LETTERS[i]}</button>
+      <input value=${x} placeholder=${`Option ${LETTERS[i]}`} onInput=${(e) => setOptions(options.map((y, j) => (j === i ? e.target.value : y)))} />
+    </div>`)}
+    <div class="q-editor-foot"><span class="make-note">${ok ? "The ✓ marks the correct answer" : "A question, 4 different options"}</span>
+      <button onClick=${onCancel}>Cancel</button>
+      <button class="primary small" disabled=${!ok} onClick=${() => onSave({ text: text.trim(), options: options.map((x) => x.trim()), answer })}>Save</button></div>
+  </div>`;
+}
+
+function QuestionCard({ q, n, send, regenerating, llm, editing, onEdit }) {
+  if (editing) {
+    return html`<li class="q-card editing"><${QuestionEditor} q=${q}
+      onSave=${(v) => { send("assess_edit", { qid: q.id, ...v }); onEdit(null); }} onCancel=${() => onEdit(null)} /></li>`;
+  }
+  return html`<li class=${"q-card" + (regenerating ? " busy" : "")}>
+    <div class="q-head"><span class="q-n">${n}</span><p>${q.text}</p>
+      <div class="q-actions">
+        <button class="icon" title="Edit" onClick=${() => onEdit(q.id)} disabled=${regenerating}>${svg(ICON.edit)}</button>
+        ${llm && html`<button class="icon" title="Write a different question" onClick=${() => send("assess_regen", { qid: q.id })}
+          disabled=${regenerating}>${regenerating ? html`<span class="spinner"></span>` : svg(ICON.change)}</button>`}
+        <button class="icon danger" title="Delete" onClick=${() => send("assess_delete", { qid: q.id })}>${svg(ICON.bin)}</button>
+      </div></div>
+    <ol class="q-opts">${q.options.map((x, i) => html`<li key=${i} class=${i === q.answer ? "is-key" : ""}>
+      <span class=${"q-letter o" + i}>${LETTERS[i]}</span><span>${x}</span>${i === q.answer && svg(ICON.check, "key-tick")}</li>`)}</ol>
+  </li>`;
+}
+
+function ResultsTable({ c }) {
+  const quiz = c.kind === "quiz";
+  const rows = c.students || [];
+  if (!rows.length) return html`<p class="made-empty">Nobody joined.</p>`;
+  const time = (t) => { if (!t) return ""; const d = new Date(t * 1000); return d.toTimeString().slice(0, 5); };
+  return html`<div class="results-wrap"><table class="results">
+    <thead><tr><th>#</th><th>Name</th><th>Roll</th><th class="num">${quiz ? "Points" : "Score"}</th><th class="num">Right</th>
+      <th>${quiz ? "Time" : "Submitted"}</th></tr></thead>
+    <tbody>${rows.map((r) => html`<tr key=${r.roll}><td>${r.rank}</td><td>${r.name}</td><td class="roll">${r.roll}</td>
+      <td class="num"><b>${quiz ? r.score.toLocaleString() : `${r.score} / ${c.total}`}</b></td><td class="num">${r.correct}</td>
+      <td class="muted">${quiz ? (r.time ? `${r.time} s` : "") : r.submitted_at ? `${time(r.submitted_at)}${r.auto ? " · auto" : ""}` : r.status}</td></tr>`)}</tbody>
+  </table></div>`;
+}
+
+const csvLink = (c) => html`<a class="button-link" href=${`/api/assess/${c.id}/results.csv`} download>${svg(ICON.download)}CSV</a>`;
+
+function AssessLive({ c, at, send }) {
+  const left = useLeft({ left: c.left, paused: c.paused, at });
+  const quiz = c.kind === "quiz";
+  const finished = c.status === "finished";
+  const reveal = c.step === "reveal";
+  const counts = !quiz && { joined: c.joined, progress: (c.students || []).filter((s) => s.status === "in progress").length, submitted: c.submitted };
+  return html`<div class="assess-live">
+    ${!finished && html`<div class="live-head">
+      <div><p class="eyebrow-c">${quiz ? `Question ${c.index + 1} of ${c.total}` : "Test running"}</p>
+        <p class="live-sub">${quiz ? `${c.answered} of ${c.joined} answered` : `${counts.submitted} of ${c.joined} submitted · ${counts.progress} writing`}</p></div>
+      ${quiz && reveal ? html`<span class="pill ok">${c.held ? "Waiting for you" : "Answer shown"}</span>`
+        : html`<${TimerRing} left=${left} total=${quiz ? c.seconds : c.minutes * 60} paused=${c.paused} size="md" />`}
+    </div>`}
+    ${quiz && !finished && c.question && html`<div class="live-q"><p>${c.question.text}</p>
+      <${OptionGrid} question=${c.question} answer=${c.answer} distribution=${reveal ? c.distribution : null} compact /></div>`}
+    ${!finished && html`<div class="live-controls">
+      ${c.paused ? html`<button class="primary small" onClick=${() => send("assess_resume")}>${svg(ICON.play)}Resume</button>`
+        : html`<button onClick=${() => send("assess_pause")} title=${quiz ? "Pause the whole quiz (the timer stops)" : "Pause the test (the clock stops)"}>${svg(ICON.pause)}Pause</button>`}
+      ${quiz && html`<button class=${c.hold_next ? "on" : ""} aria-pressed=${!!c.hold_next} onClick=${() => send("assess_hold", { on: !c.hold_next })}
+        title="After this answer, wait for you before the next question">${svg(ICON.hold)}Hold next</button>`}
+      ${quiz && html`<button onClick=${() => send("assess_next")} disabled=${c.paused}
+        title=${reveal ? "Go to the next question now" : "Close this question and show the answer"}>${svg(ICON.skip)}${reveal ? "Next" : "Show answer"}</button>`}
+      <span class="spacer"></span>
+      <button class="danger-text" onClick=${() => confirm(`End the ${quiz ? "quiz" : "test"} now?${quiz ? "" : " Every student is submitted."}`) && send("assess_end")}>End</button>
+    </div>`}
+    ${finished && html`<div class="live-head done"><div><p class="eyebrow-c">${quiz ? "Quiz" : "Test"} finished</p>
+      <p class="live-sub">${c.joined} student${c.joined === 1 ? "" : "s"} · ${c.total} questions</p></div>
+      ${csvLink(c)}<button class="primary small" onClick=${() => send("assess_close")}>Back to the lecture</button></div>`}
+    ${quiz && !finished ? html`<div class="live-board"><h3>Leaderboard</h3>${(c.students || []).length
+        ? html`<${Leaderboard} rows=${c.students} limit=${10} />` : html`<p class="made-empty">Nobody joined yet.</p>`}</div>`
+      : html`<div class="live-board"><h3>${finished ? "Results" : "Students"}</h3>${finished ? html`<${ResultsTable} c=${c} />`
+        : html`<${StudentList} c=${c} send=${send} />`}</div>`}
+  </div>`;
+}
+
+function StudentList({ c, send }) {
+  const rows = [...(c.students || [])].sort((a, b) => a.joined_at - b.joined_at);
+  if (!rows.length) return html`<p class="made-empty">Nobody joined yet.</p>`;
+  return html`<ul class="student-list">${rows.map((s) => html`<li key=${s.roll}>
+    <span class="who"><b>${s.name}</b><small>${s.roll}</small></span>
+    ${c.kind === "test" && html`<span class=${"chip " + s.status.replace(" ", "-")}>${s.status === "submitted" ? `submitted · ${s.score}/${c.total}`
+      : s.status === "in progress" ? `${s.answers_in} of ${c.total}` : "joined"}</span>`}
+    ${c.status !== "finished" && html`<button class="icon" title="Let this roll number join again from another device (answers kept)"
+      onClick=${() => confirm(`Let ${s.name} (${s.roll}) join again from another device?`) && send("assess_release", { roll: s.roll })}>${svg(ICON.change)}</button>`}
+  </li>`)}</ul>`;
+}
+
+function Assess({ assess, materials, lectures, share, send }) {
+  const st = materials || { items: [], current: { id: "", title: "" }, llm: false, chapters: [] };
+  const a = assess || {};
+  const c = a.control || {};
+  const [editing, setEditing] = useState(null);  // a question id, or "new"
+  const notice = a.notice && html`<p class="assess-notice" role="alert">${a.notice}</p>`;
+  if (!c.id) {
+    return html`<div class="materials assess">${notice}<${AssessSetup} st=${st} lectures=${lectures} send=${send} llm=${!!a.llm} />
+      <p class="made-empty">Students answer on the shared link: the join form opens on their page by itself. The lecture pauses while it runs.</p></div>`;
+  }
+  const quiz = c.kind === "quiz";
+  const what = quiz ? "quiz" : "test";
+  if (c.status === "generating") {
+    return html`<div class="materials assess"><div class="assess-working"><span class="spinner"></span>
+      <div><b>Writing ${c.count} questions…</b><small>From what was taught · one LLM call</small></div>
+      <button onClick=${() => send("assess_discard")}>Cancel</button></div></div>`;
+  }
+  if (c.status === "draft" || c.status === "lobby") {
+    const lobby = c.status === "lobby";
+    const regen = c.regenerating || [];
+    return html`<div class="materials assess">
+      ${notice}
+      ${lobby && html`<section class="lobby-card">
+        <div class="lobby-top"><div><p class="eyebrow-c">Lobby · ${what} is on the projector</p>
+          <p class="lobby-n"><b>${c.joined}</b> joined</p></div>
+          <button class="primary" disabled=${!c.joined} onClick=${() => send("assess_start")} title=${c.joined ? "" : "Wait for students to join"}>
+            ${svg(ICON.play)}Start</button></div>
+        ${share.state !== "on" && html`<p class="share-warn">Sharing is off: students can't reach the join form.
+          <button class="small" onClick=${() => send("share_start")} disabled=${share.state === "starting"}>${svg(ICON.share)}${share.state === "starting" ? "Starting…" : "Share with students"}</button></p>`}
+        <${StudentList} c=${c} send=${send} />
+      </section>`}
+      <section class="q-preview">
+        <div class="made-head"><h3>${c.total} question${c.total === 1 ? "" : "s"}${c.title ? html`<span>${c.title}</span>` : ""}</h3>
+          <span class="muted small">${quiz ? `${c.seconds} s each` : `${c.minutes} min${c.show_answers ? " · answers shown after submit" : ""}`}</span></div>
+        ${c.error && html`<p class="assess-notice soft">${c.error}</p>`}
+        <ol class="q-list">${(c.questions || []).map((q, i) => html`<${QuestionCard} key=${q.id} q=${q} n=${i + 1} send=${send} llm=${a.llm}
+          regenerating=${regen.includes(q.id)} editing=${editing === q.id} onEdit=${setEditing} />`)}
+          ${editing === "new" && html`<li class="q-card editing"><${QuestionEditor}
+            onSave=${(v) => { send("assess_add", v); setEditing(null); }} onCancel=${() => setEditing(null)} /></li>`}</ol>
+        ${editing !== "new" && html`<button class="add-q" onClick=${() => setEditing("new")}>${svg(ICON.add)}Add a question</button>`}
+      </section>
+      <div class="make-foot sticky">
+        <button onClick=${() => confirm(`Discard this ${what}?`) && send("assess_discard")}>Discard</button>
+        <span class="make-note">${lobby ? "Students are joining" : `Nothing is shown until you open the ${what}`}</span>
+        ${!lobby && html`<button class="primary" disabled=${!c.total} onClick=${() => send("assess_open")}
+          title="Shows the join screen on the projector and the students' pages; pauses the lecture">${svg(ICON.students)}Open the ${what}</button>`}
+      </div>
+    </div>`;
+  }
+  return html`<div class="materials assess">${notice}<${AssessLive} c=${c} at=${a.at} send=${send} /></div>`;
+}
+
+// Past quizzes / tests of a lecture (Lectures tab → the lecture viewer): the results table + CSV
+function PastAssessments({ lectureId }) {
+  const [items, setItems] = useState(null);
+  const [open, setOpen] = useState(null);
+  useEffect(() => {
+    let gone = false;
+    fetch(`/api/assess?lecture=${encodeURIComponent(lectureId)}`, { cache: "no-store" }).then((r) => r.json())
+      .then((res) => { if (!gone) setItems(res.assessments || []); }).catch(() => { if (!gone) setItems([]); });
+    return () => { gone = true; };
+  }, [lectureId]);
+  useEffect(() => {
+    if (!open || open.c) return;
+    fetch(`/api/assess/${open.id}`, { cache: "no-store" }).then((r) => r.json()).then((c) => setOpen({ id: open.id, c }));
+  }, [open && open.id]);
+  if (!items || !items.length) return null;
+  return html`<div class="viewer-made past-assess"><h3>Quizzes and tests</h3>
+    <ul>${items.map((x) => html`<li key=${x.id} class=${"made ready" + (open && open.id === x.id ? " on" : "")}>
+      <span class="made-icon">${svg(ICON.quiz)}</span>
+      <button class="made-main as-link" onClick=${() => setOpen(open && open.id === x.id ? null : { id: x.id })}>
+        <span class="made-name">${x.kind === "quiz" ? "Quiz" : "Test"}${x.title ? ` · ${x.title}` : ""}</span>
+        <span class="made-meta">${ago(x.created)} · ${x.students} student${x.students === 1 ? "" : "s"} · ${x.questions} questions</span></button>
+      <div class="made-actions"><a class="icon" href=${`/api/assess/${x.id}/results.csv`} download title="Download the results (CSV)">${svg(ICON.download)}</a></div>
+    </li>`)}</ul>
+    ${open && (open.c ? html`<${ResultsTable} c=${open.c} />` : html`<p class="made-empty">Loading…</p>`)}
   </div>`;
 }
 
@@ -1537,6 +1781,18 @@ function SidePanel({ tab, onTab, children }) {
   </section>`;
 }
 const Tab = ({ children }) => children;
+// "quiz" / "test" while it covers the projector (lobby → results), else ""
+const onScreenAssess = (a) => {
+  const p = a && a.public;
+  return p && ["lobby", "running", "finished"].includes(p.status) ? p.kind : "";
+};
+// the quiz / test tab's badge: students joined while it is open, "…" while questions are written
+const assessBadge = (a) => {
+  const c = a && a.control;
+  if (!c || !c.id) return "";
+  if (c.status === "generating") return "…";
+  return c.status === "lobby" || c.status === "running" ? `${c.joined}` : "";
+};
 
 // ---- transcript (F-008): a strip at the bottom with the last line; click to read it all ----
 function TranscriptStrip({ lines }) {
@@ -1610,7 +1866,7 @@ function App() {
   const [preselect, setPreselect] = useState(null);  // "Make materials" from that lecture
   const materials = state.materials;
   const listVersion = `${materials ? materials.lectures_changed : 0}:${materials ? materials.items.length : 0}`;
-  const lectures = useLectures(tab === "materials" || tab === "lectures", listVersion,
+  const lectures = useLectures(tab === "materials" || tab === "lectures" || tab === "assess", listVersion,
     state.deck ? state.deck.slide_ids.length : 0);
   const notesOpen = state.notes && state.notes.open;
   useEffect(() => { if (!notesOpen) setWide(false); }, [notesOpen]);  // F-010b #6: no notes, default width
@@ -1661,7 +1917,7 @@ function App() {
     <main class=${"grid" + (wide && tab === "notes" ? " notes-wide" : "")}>
       <section class="left">
         <${Preview} spec=${liveSpec} deck=${deck} lifecycle=${state.lifecycle} slides=${state.slides} send=${send} theme=${state.theme}
-          materials=${materials} notesShown=${state.notesShown}
+          materials=${materials} notesShown=${state.notesShown} onScreenAssess=${onScreenAssess(state.assess)}
           notice=${notice} onNotice=${setNotice} adding=${adding} onAdded=${() => setAdding(false)}
           status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} />
         <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle} theme=${state.theme}
@@ -1681,6 +1937,9 @@ function App() {
               badge=${materials && materials.items.some((m) => m.status === "working") ? "…" : ""}>
             <${Materials} materials=${materials} lectures=${lectures} send=${send}
               preselect=${preselect} onPreselected=${() => setPreselect(null)} />
+          </${Tab}>
+          <${Tab} id="assess" label="Quiz & test" icon=${ICON.quiz} badge=${assessBadge(state.assess)}>
+            <${Assess} assess=${state.assess} materials=${materials} lectures=${lectures} share=${state.share} send=${send} />
           </${Tab}>
           <${Tab} id="lectures" label="Lectures" icon=${ICON.lectures}>
             <${Lectures} lectures=${lectures} chapters=${(materials && materials.chapters) || []} version=${listVersion}

@@ -136,6 +136,30 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
   (`GET /api/materials/<id>/file`: anyone for a shared PDF, the teacher for everything; `/api/lectures*` teacher only).
 - `/web/export/index.html` + `export.js`: the page headless Edge uses to draw slides for the PPTX (not for people).
 
+## Quiz + test (F-011, V2 group C)
+- **Quiz & test** tab in /control: Live quiz / Test, questions (− 15 +), seconds per question or minutes, *Show
+  answers after submit* (test), the same **From** picker as Materials (`useFrom`) → **Write questions**
+  (`assess_create`). Preview: every question with its key (✓), edit inline (text, 4 options, click a letter to mark
+  the key), regenerate one (LLM), delete, **Add a question**. Without an LLM the draft starts empty (the teacher
+  writes). **Open** → lobby (join link warning if sharing is off, joined list, release a roll number) → **Start**.
+  Live quiz: question + key + answers in / distribution, timer, Pause / Resume, Hold next, Show answer / Next, End,
+  leaderboard. Live test: timer, joined / writing / submitted chips per student, Pause / Resume, End. Finished:
+  results table + **CSV** → **Back to the lecture** (`assess_close`). The preview carries "QUIZ ON SCREEN".
+- **Projector** (`/display`, `shared/assess.js` `ProjectorAssess`): over the slides from lobby to close. Lobby: QR
+  (`GET /api/share/qr.svg`, segno) + link (two unbroken lines) + count + names. Quiz: question + ring timer + 4
+  colour + shape tiles + "N of M answered"; reveal: right tile ringed, others dimmed, each tile filled by its share,
+  top 5; final: podium (3rd, 2nd, 1st rise) + 4–10. Test: big ring clock, submitted bar, late-join QR. Pause badge.
+  The projector gets the join link (`join_url`) only inside the quiz / test message while one is open; the share
+  state stays the teacher's (F-008).
+- **Students** (`/view`, `StudentAssess`): the page switches to a banner + join form when the teacher opens one;
+  lobby (pulse + count); quiz: question + big tiles → "Answer locked in" → Correct +points / Not quite + the answer +
+  score and rank → final rank + top 10; test: timer, answered count, numbered navigation, choices, Previous / Next,
+  Submit (confirm) → score (+ the review with the correct answers unless turned off). "Back to the lecture" after it
+  ends. Token in `localStorage` (`copilot-assess:<id>`) → a refresh rejoins; last name + roll prefill the next form.
+- Pages refetch their own state only on phase changes (status / question / step / pause), not on every classmate's
+  answer. All motion follows `prefers-reduced-motion`. Class names are prefixed (`as-`, `opt`, `ring-`, `pod`) so
+  `slide.css` / `control.css` never style them.
+
 ## Teacher controls
 Control View buttons and keyboard shortcuts (when focused): `←/→` navigate, `Space` pause / resume,
 `B` blank, `N` force new slide (End lecture: button only; `Esc` closes a zoomed image). The terminal also accepts

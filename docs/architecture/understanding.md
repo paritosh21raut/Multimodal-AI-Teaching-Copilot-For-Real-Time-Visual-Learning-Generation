@@ -91,6 +91,14 @@ card for the teacher (user 2026-10-06) and logged in the terminal (`[HEARD]`).
 - Pause (round 4 step C): while the lecture is PAUSED the service drops new `TranscriptFinal` lines before the
   filter (counted as `paused_segments`); lines buffered before the pause are still interpreted.
 
+## Quiz / test questions (F-011)
+`assess/generator.py`: only when the teacher presses Write questions / regenerate. From → the materials service's
+`resolve` + `taught` (slides of the chosen lectures, `content.budgeted`, 2200 tokens, minus ≤ 500 for the stems to
+avoid on a regenerate; ≤ 3000 per prompt, never the transcript). One call for the set (+ one repair), one per
+regenerated question. Strict JSON `{questions: [{q, options[4], answer}]}`; invalid / repeated questions are dropped,
+a short set after the repair is an error (nothing made up). The core shuffles each question's options (seeded by
+its text). Dry check: `tools/quiz_check.py <session>` (0 tokens; `--live` = one real set).
+
 ## LLM layer (`copilot.llm`)
 - Router: Groq gpt-oss-120b → Groq qwen3.8-27b (separate 8k-TPM bucket; Groq also limits it to 1000 output
   tokens/min). OpenRouter is removed (user 2026-10-06: its free model answered 404 for days).

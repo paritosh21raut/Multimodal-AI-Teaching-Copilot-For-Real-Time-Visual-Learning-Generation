@@ -46,6 +46,7 @@
 | Persistence | `copilot.persistence` | Event log, snapshots, session archive |
 | Post-lecture | `copilot.postlecture` | Notes, summaries, quiz, PPTX (offline jobs) |
 | Simulator | `copilot.sim` | Script → timed transcript events (replaces audio + STT) |
+| Quiz + test | `copilot.assess` | F-011: deterministic state machine (clock, scoring, roll registry, tokens), store, service (single writer), gated question writer |
 
 ## Lifecycle states
 `STARTING → READY → LIVE ⇄ PAUSED → ENDING → ENDED` (`FAILED` reachable from any state, with a reason).

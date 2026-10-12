@@ -21,6 +21,7 @@ from copilot.core.config import PROJECT_ROOT
 from copilot.display.hub import Connection, DisplayHub
 
 if TYPE_CHECKING:
+    from copilot.assess.service import AssessService
     from copilot.materials.archive import LectureArchive
     from copilot.materials.chapters import ChapterBook
     from copilot.materials.store import MaterialStore
@@ -124,10 +125,11 @@ def is_local(client_host: Optional[str], headers) -> bool:
 def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
                upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None,
                notes: Optional["NotesLibrary"] = None, archive: Optional["LectureArchive"] = None,
-               materials: Optional["MaterialStore"] = None, chapters: Optional["ChapterBook"] = None) -> FastAPI:
+               materials: Optional["MaterialStore"] = None, chapters: Optional["ChapterBook"] = None,
+               assess: Optional["AssessService"] = None) -> FastAPI:
     """control_key: the teacher key for /control, /display, uploads and commands from outside this machine
     (None = no check, the in-process test harness). archive / materials: past lectures and the materials made
-    from them (F-010)."""
+    from them (F-010). assess: the quiz / test (F-011): students join and answer here, by their token."""
     app = FastAPI(title="Teaching Copilot", docs_url=None, redoc_url=None)
 
     def trusted(conn) -> bool:  # an HTTP request or a WebSocket
@@ -309,6 +311,102 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
                             content_disposition_type="inline" if inline and path.suffix == ".pdf" else "attachment",
                             headers={"Cache-Control": "no-store"})
 
+    # ---- quiz + test (F-011) ---------------------------------------------------------------------------------
+    # Students: join with name + roll number → a token (kept in their page); every later call carries it. They get
+    # their own state only, and never an answer key before it is due (model.student_view). Teacher: results.
+    from copilot.assess.model import AssessError
+
+    async def _student(request: Request, act) -> JSONResponse:
+        if assess is None:
+            return JSONResponse({"error": "No quiz or test is open."}, status_code=404)
+        try:
+            body = await request.json() if request.method == "POST" else {}
+        except ValueError:
+            body = {}
+        if not isinstance(body, dict):
+            body = {}
+        token = str(body.get("token") or request.headers.get("x-assess-token") or "")[:64]
+        try:
+            return JSONResponse(await act(body, token), headers={"Cache-Control": "no-store"})
+        except AssessError as e:
+            return JSONResponse({"error": str(e)}, status_code=409, headers={"Cache-Control": "no-store"})
+
+    @app.post("/api/assess/join")
+    async def assess_join(request: Request):
+        return await _student(request, lambda b, t: assess.join(str(b.get("name") or "")[:200],
+                                                                str(b.get("roll") or "")[:200], t))
+
+    @app.get("/api/assess/me")
+    async def assess_me(request: Request):
+        async def me(b, t):
+            return assess.me(t)
+        return await _student(request, me)
+
+    @app.post("/api/assess/answer")
+    async def assess_answer(request: Request):
+        return await _student(request, lambda b, t: assess.answer(t, str(b.get("qid") or "")[:64], b.get("choice")))
+
+    @app.post("/api/assess/submit")
+    async def assess_submit(request: Request):
+        return await _student(request, lambda b, t: assess.submit(t))
+
+    @app.get("/api/share/qr.svg")
+    async def share_qr():
+        """The students' link as a QR code (the projector's lobby); only while sharing is on."""
+        url = hub.share.get("url") if hub.share.get("state") == "on" else ""
+        if not url:
+            return Response(status_code=404)
+        import io
+
+        import segno
+
+        out = io.BytesIO()
+        segno.make(url, error="m").save(out, kind="svg", scale=10, border=2, dark="#111111", light="#ffffff")
+        return Response(out.getvalue(), media_type="image/svg+xml", headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/assess")
+    async def assess_list(request: Request, lecture: str = ""):
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
+        if assess is None or not re.fullmatch(r"[\w-]{1,64}", lecture):
+            return JSONResponse({"assessments": []})
+        from copilot.assess.store import summary
+
+        items = await asyncio.to_thread(assess.store.for_lecture, lecture)
+        return JSONResponse({"assessments": [summary(a) for a in items]}, headers={"Cache-Control": "no-store"})
+
+    def _assessment(aid: str):
+        if assess is None:
+            return None
+        if assess.current is not None and assess.current.id == aid:
+            return assess.current
+        return assess.store.load(aid)
+
+    @app.get("/api/assess/{aid}")
+    async def assess_one(request: Request, aid: str):
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
+        a = _assessment(aid)
+        if a is None:
+            return JSONResponse({"error": "not found"}, status_code=404)
+        import time as _time
+
+        return JSONResponse(a.control_view(_time.time()), headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/assess/{aid}/results.csv")
+    async def assess_csv(request: Request, aid: str):
+        if not trusted(request):
+            return Response(status_code=403)
+        a = _assessment(aid)
+        if a is None:
+            return Response(status_code=404)
+        from copilot.assess.store import csv_name, results_csv
+
+        name = urllib.parse.quote(csv_name(a))
+        return Response("﻿" + results_csv(a), media_type="text/csv; charset=utf-8",
+                        headers={"Cache-Control": "no-store",
+                                 "Content-Disposition": f"attachment; filename*=UTF-8''{name}"})
+
     @app.get("/")
     async def root(request: Request):
         return RedirectResponse("/control" if trusted(request) else "/view")
@@ -403,12 +501,13 @@ class DisplayServer:
                  web_root: Path = WEB_ROOT, media: Optional["ImageCache"] = None,
                  upload_max_bytes: int = 10 * 1024 * 1024, control_key: Optional[str] = None,
                  notes: Optional["NotesLibrary"] = None, archive: Optional["LectureArchive"] = None,
-                 materials: Optional["MaterialStore"] = None, chapters: Optional["ChapterBook"] = None) -> None:
+                 materials: Optional["MaterialStore"] = None, chapters: Optional["ChapterBook"] = None,
+                 assess: Optional["AssessService"] = None) -> None:
         self.host, self.port = host, port
         self.control_key = control_key
         self._server = _EmbeddedServer(
             uvicorn.Config(create_app(hub, web_root, media, upload_max_bytes, control_key, notes, archive, materials,
-                                      chapters),
+                                      chapters, assess),
                            host=host, port=port, log_level="warning", lifespan="off")
         )
         self._task: Optional[asyncio.Task] = None

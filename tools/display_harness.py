@@ -28,6 +28,13 @@ class Harness:
     def __init__(self, bus: EventBus, deck: Deck, hub: DisplayHub, server: DisplayServer) -> None:
         self.bus, self.deck, self.hub, self.server = bus, deck, hub, server
         self.materials = None  # materials.service.MaterialsService when materials_dir was given (F-010)
+        self.assess = None  # assess.service.AssessService when assess_dir was given (F-011)
+        self.clock_offset = 0.0  # seconds added to the quiz / test clock (tests jump ahead instead of waiting)
+
+    def clock(self) -> float:
+        import time
+
+        return time.time() + self.clock_offset
 
     @property
     def url(self) -> str:
@@ -41,7 +48,8 @@ class Harness:
 async def display_harness(theme: str = "light", media_dir: Optional[Path] = None, notes_dir: Optional[Path] = None,
                           notes_embedder=None, store: bool = False, materials_dir: Optional[Path] = None,
                           sessions_dir: Optional[Path] = None, session_id: str = "harness",
-                          materials_router=None) -> AsyncIterator[Harness]:
+                          materials_router=None, assess_dir: Optional[Path] = None,
+                          assess_source=None) -> AsyncIterator[Harness]:
     """media_dir: image cache served under /media (default: the app's cache, so cached lecture images show).
     notes_dir: a teacher-notes library (F-009) served to /control, with NotesService (follows the slides when
     notes_embedder is given). store: a LectureStateStore too (owns the slide theme: the dock's light / dark).
@@ -80,10 +88,23 @@ async def display_harness(theme: str = "light", media_dir: Optional[Path] = None
         chapters = ChapterBook(materials_dir / "chapters.json")  # F-010b
         event_log = EventLog(sessions / session_id / "session.sqlite")  # "this lecture", as the app logs it
         await event_log.open(bus)
+    assess = None
+    clock_box: list[Harness] = []
+    if assess_dir is not None:  # quiz + test (F-011); assess_source: a fake question writer (0 tokens) or None
+        from copilot.assess.service import AssessService
+        from copilot.assess.store import AssessmentStore
+
+        assess = AssessService(bus, AssessmentStore(assess_dir), session_id, source=assess_source,
+                               clock=lambda: clock_box[0].clock(), tick_s=0.1)
     server = DisplayServer(hub, port=free_port(), media=ImageCache(media_dir or PROJECT_ROOT / "data/cache/images"),
-                           notes=library, archive=archive, materials=mstore, chapters=chapters)
+                           notes=library, archive=archive, materials=mstore, chapters=chapters, assess=assess)
     await server.start()
     harness = Harness(bus, deck, hub, server)
+    clock_box.append(harness)
+    if assess is not None:
+        harness.assess = assess
+        assess.attach()
+        await assess.announce()
     if mstore is not None:
         from copilot.materials.render import Renderer
         from copilot.materials.service import MaterialsService
@@ -99,6 +120,8 @@ async def display_harness(theme: str = "light", media_dir: Optional[Path] = None
     finally:
         if harness.materials is not None:
             await harness.materials.close()
+        if harness.assess is not None:
+            await harness.assess.close()
         await harness.server.stop()  # tests may replace the server (restart scenarios)
         await bus.close()
         if event_log is not None:

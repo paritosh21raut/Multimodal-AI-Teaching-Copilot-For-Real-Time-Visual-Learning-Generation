@@ -1,7 +1,8 @@
 # Current State
 
-_Last updated: 2026-10-12: **F-010c UI polish done** (8 items after the group B review, 0 LLM tokens); next
-**F-011 group C (quiz + test)**, user answers already given; then group D doubts (F-012). Before: 2026-10-07 (night): **group B review fixes done** (15 issues, F-010b, 0 LLM tokens); next group C
+_Last updated: 2026-10-12 (evening): **F-011 group C (quiz + test) done** (7 slices, 2,519 Groq tokens); next: the
+user's review of group C, then group D doubts (F-012, ask as text first). Before: 2026-10-12: **F-010c UI polish
+done** (8 items after the group B review, 0 LLM tokens). Before: 2026-10-07 (night): **group B review fixes done** (15 issues, F-010b, 0 LLM tokens); next group C
 (quiz + test, F-011: ask its doubts first), then group D (F-012). Before: 2026-10-07 (evening): **V2 group B done**
 (lecture materials + past lectures, F-010). Before: 2026-10-07: **V2 group A done** (themes, teacher notes, labelled images). Before:
 2026-10-06 (night): **V1 long-test fixes done** (session 20261006-193517-c513; speed, lost content,
@@ -17,6 +18,36 @@ viewer role, control token; live slide editing; lecture structure tree in /contr
 Then V1c._
 
 ## Now
+- **F-011 quiz + test (2026-10-12), verified** (spec `docs/specs/F-011-quiz-test.md`; user decisions in the brief):
+  - Core `copilot/assess/`: `model.py` state machine (every method takes `now`; quiz question → reveal 6 s → next /
+    held; test global clock + auto-submit; pause freezes time), `scoring.py` (1000 → 700 by answer time, wrong 0),
+    roll registry (normalised roll, token in the student's browser, refresh rejoins, duplicate refused, teacher
+    can release a roll), `store.py` (`data/assessments/<id>.json`, CSV), `service.py` (single writer, commands
+    `assess_*`, ticker, lecture auto-pause on Open / resume on Close), `generator.py` (gated LLM: bounded slides of
+    the From lectures, one call + one repair, strict JSON, options shuffled by the core). Event `AssessState`
+    (control: keys; public: none before due). Student HTTP `/api/assess/join|me|answer|submit`; teacher
+    `/api/assess`, `/api/assess/{id}`, `results.csv`; `/api/share/qr.svg` (new dep `segno`).
+  - UI: `/view` join form + banner (auto), lobby, quiz tiles → locked → verdict + rank → final; test paper with
+    navigation, submit, review. `/display` lobby QR + names, question + ring timer, reveal (fills + top 5), podium,
+    test clock + submitted bar. `/control` "Quiz & test" tab: setup (From picker shared with Materials via
+    `useFrom`), preview / edit / add / delete / regenerate, lobby, live controls (Pause, Hold next, Next, End),
+    results + CSV; past results in the lecture viewer (Lectures tab). The projector gets the join link only inside
+    the quiz message (share state stays control-only, F-008 test unchanged).
+  - Found + fixed on the way: CSS class clashes with slide.css (`.card`, `.step`, `.primary` …: prefixed);
+    stepper input lost typed values on any live re-render (draft until commit); in Edge the slide stage
+    composited over the student overlay with real slides (stage not drawn while a quiz covers the page); the
+    students' Materials button over the test; tied scores share a rank; podium heights by place.
+  - Verified: 534 fast (+21), 36 Edge (+6 `test_assess_browser`: students join / duplicate / rejoin / no key in any
+    WS frame or HTTP body before due / auto-submit; teacher flow in /control; projector both themes with QR).
+    Real app (`--simulate photosynthesis --demo-slides --no-understanding`, 0 tokens; teacher wrote the questions in
+    /control): /view switched in 0.08 s, lecture live → paused → live after each, duplicate roll refused, refresh
+    kept question + timer, auto-advance, CSV, test (dark slides) submit 2/2, rejoin kept answers, auto-submit at
+    1:00, no page errors. Screenshots `artifacts/assess/` (+ `app/`) looked at.
+  - Live Groq (slice 7): `tools/quiz_check.py 20261006-193517-c513 --count 15 --live`: 15/15 usable, keys right on
+    review, 1 call, **2,519 tokens**. Dry: 1,838 tokens in (15 Q, one lecture), 2,441 (40 Q, two lectures).
+  - Not verified: a real phone over the Cloudflare tunnel; a generation through the running app's button (the same
+    code path as the tool, which was run live); 40+ students at once.
+  - Process slip: one early test-file rename was made with `sed` instead of the Edit tool.
 - **F-010c UI polish (2026-10-12), 0 LLM tokens** (spec `docs/specs/F-010c-ui-polish.md`, user's 8 review items):
   - Lectures-tab drag is a pointer drag with FLIP animation (HTML5 drag removed). The row lifts and follows the pointer.
     A dashed gap opens in the chapter under the pointer, at the lecture's place in the current sort, and the rows below

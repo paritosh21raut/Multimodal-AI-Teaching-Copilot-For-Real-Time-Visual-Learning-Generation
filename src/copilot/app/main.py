@@ -173,6 +173,7 @@ class App:
         self.share = None  # display.share.ShareService (F-008)
         self.notes = None  # notes.service.NotesService (F-009)
         self.materials = None  # materials.service.MaterialsService (F-010)
+        self.assess = None  # assess.service.AssessService: quiz + test (F-011)
         self._notes_loader: Optional[asyncio.Task] = None
         self.control_key = secrets.token_urlsafe(18)  # the teacher key for /control from outside this machine
 
@@ -254,6 +255,8 @@ class App:
         if self.materials is not None:  # summary, key concepts, notes, assignment (F-010) use the same keys
             self.materials.writer.router = router
             await self.materials.announce()
+        if self.assess is not None:  # quiz / test questions (F-011) are written by the same writer
+            await self.assess.announce()
         names = [e.name for e in router.entries]
         print(f"[INIT]  LLM providers: {' -> '.join(names)}", flush=True)
         settings = UnderstandingSettings.from_config(self.config)
@@ -378,11 +381,19 @@ class App:
         archive = LectureArchive(data / "sessions", data / "archive.json", current_id=self.session_id)
         store = MaterialStore(data / "materials")
         chapters = ChapterBook(data / "chapters.json")  # F-010b: lectures grouped in chapters
+        # quiz + test (F-011): only when the teacher asks; students answer on the share link (the server's
+        # student endpoints call it); its questions come from the materials service's lectures (below)
+        from copilot.assess.generator import LectureQuestions
+        from copilot.assess.service import AssessService
+        from copilot.assess.store import AssessmentStore
+
+        self.assess = AssessService(self.bus, AssessmentStore(data / "assessments"), self.session_id)
         self.server = DisplayServer(
             hub, self.config.get("display", "host", "127.0.0.1"), int(self.config.get("display", "port", 8765)),
             media=cache_from_config(self.config),
             upload_max_bytes=int(float(self.config.get("images", "upload_max_mb", 10)) * 1024 * 1024),
             control_key=self.control_key, notes=library, archive=archive, materials=store, chapters=chapters,
+            assess=self.assess,
         )
         await self.server.start()
         self._server_started = asyncio.get_running_loop().time()
@@ -393,6 +404,10 @@ class App:
         self.materials.on_done = self._print_material
         self.materials.attach()
         await self.materials.announce()
+        self.assess.source = LectureQuestions(self.materials)
+        self.assess.on_generated = self._print_assess
+        self.assess.attach()
+        await self.assess.announce()
         from copilot.display.share import ShareService
 
         self.share = ShareService(
@@ -403,6 +418,11 @@ class App:
             start_timeout_s=float(self.config.get("display", "share_start_timeout_s", 45.0)))
         self.share.attach()
         self.bus.subscribe("terminal_share", self._print_share, [ShareChanged])
+
+    def _print_assess(self, a, spent) -> None:
+        cost = f", {spent.calls} LLM call{'s' if spent.calls != 1 else ''}, {spent.tokens:,} tokens" if spent.calls else ""
+        print(f"[{a.kind.upper()}] {len(a.questions)} questions ready{cost}" + (f" ({a.error})" if a.error else ""),
+              flush=True)
 
     def _print_material(self, m) -> None:
         if m.status == "ready":
@@ -586,6 +606,8 @@ class App:
                 if not await self.materials.wait_idle(MATERIALS_FINISH_S):
                     print("[END]   materials not finished; they show as interrupted", flush=True)
             await self.materials.close()
+        if self.assess is not None:  # a running quiz / test is saved as it is
+            await self.assess.close()
         if self.presentation is not None:
             await self.presentation.stop()
         if self.images is not None:

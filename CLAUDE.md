@@ -58,6 +58,7 @@ Original requirements: `docs/brief/master-prompt.md` (read only when requirement
 .venv/Scripts/python tools/prompt_ab.py --dry <session>[:i,j]   # rebuild recorded prompts (0 tokens); without --dry: real A/B
 .venv/Scripts/python tools/replay_interpretations.py <session> light --images   # recorded LLM answers + real image search (0 tokens)
 .venv/Scripts/python tools/materials_check.py <session>   # lecture-material prompts from a recorded lecture (0 tokens); --live: real Groq + files
+.venv/Scripts/python tools/quiz_check.py <session> [--count 15]   # quiz/test prompt from a recorded lecture (0 tokens); --live: one real set
 .venv/Scripts/python tools/paper_eval.py latency <session...>   # paper: end-to-end latency from live logs (0 tokens)
 .venv/Scripts/python tools/baseline_llm_slides.py <session> [--metrics]   # paper: LLM-controlled baseline (~700 tok/unit); --metrics 0 tokens
 .venv/Scripts/python tools/eval_test.py run --note "..." [-- <copilot args>]   # paper validation test -> verify_results/testN; see docs/paper/VALIDATION.md

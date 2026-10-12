@@ -194,8 +194,9 @@ class MaterialsService:
                     dated.append((rec.started, lid))
         return [lid for _, lid in sorted(set(dated))]
 
-    def _create(self, args: dict[str, Any]) -> bool:
-        items = [i for i in args.get("items") or [] if isinstance(i, dict) and i.get("kind") in KINDS]
+    def resolve(self, args: dict[str, Any]) -> Optional[tuple[list[str], bool, str]]:
+        """The From choice {current, lectures, chapters} → (lecture ids, this lecture included, title); None when it
+        names no lecture. Shared with the quiz / test (F-011)."""
         past = [str(x) for x in args.get("lectures") or [] if isinstance(x, str) and x != self.session_id]
         current = bool(args.get("current", True))
         chapter_ids = [str(c) for c in args.get("chapters") or [] if self.chapters.get(str(c))]
@@ -203,10 +204,9 @@ class MaterialsService:
             in_chapters = self._chapter_lectures(chapter_ids)  # (this lecture first below: a topic summary reads it)
             current = self.session_id in in_chapters
             past = [lid for lid in in_chapters if lid != self.session_id]
-        if not items or (not past and not current):
-            return False
+        if not past and not current:
+            return None
         ids = ([self.session_id] if current else []) + list(dict.fromkeys(past))
-        request = _Request(ids, current)
         titles = [self._title or "This lecture"] if current else []
         for lid in past:
             rec = self.archive.load(lid)
@@ -214,6 +214,19 @@ class MaterialsService:
         title = joined_title(titles)
         if chapter_ids:  # named after the chapters: "Chapter 3 · Cell biology"
             title = joined_title([self.chapters.get(c)["label"] for c in chapter_ids])
+        return ids, current, title
+
+    async def taught(self, ids: list[str], current: bool) -> list[Lecture]:
+        """What was taught in these lectures (MaterialError when one has no slides)."""
+        return await self._lectures(_Request(ids, current))
+
+    def _create(self, args: dict[str, Any]) -> bool:
+        items = [i for i in args.get("items") or [] if isinstance(i, dict) and i.get("kind") in KINDS]
+        resolved = self.resolve(args)
+        if not items or resolved is None:
+            return False
+        ids, current, title = resolved
+        request = _Request(ids, current)
         for item in items:
             kind = item["kind"]
             options: dict[str, Any] = {}
