@@ -1,0 +1,83 @@
+[    0.5] How do you demonstrate that something that is invisible to the eye actually exists? So this is a common challenge. And so today I'm going to tell you about how the electron and the nucleus were discovered at a time, a very low tech.
+[   14.9] Time in our scientific history, how they were able to figure this out. And let me just sort of set the stage of what people were thinking around this time and how these discoveries really changed everything.
+[   29.2] So in the late 1890s, chemists were patting each other on the back and physicists too are thinking, boy, we have it all figured out. We have a real complete understanding of our universe.
+[   44.1] We have atomic theory of matter. We have Newtonian mechanics. This is really great. And in fact, someone said these words, which are really dangerous words, that our future discoveries must be looked for.
+[   57.3] In the sixth decimal place.
+[   60.1] So honestly, I think when I started studying chemistry, I kind of thought everything about chemistry was probably already known, and it was just sort of fine tuning things. I was absolutely wrong at that time, and this statement was absolutely wrong and really came right before.
+[   74.8] For the major discovery of the electron, where they realized they hadn't really understood anything about the atomic theory of matter.
+[   84.4] More experiments are always dangerous because they can change everything. And that's why I really like science. All right, so the experiment I'm going to tell you today, JJ Thompson's discovery of the electron, or one of the experiments I'll tell you about today.
+[   98.8] And this is really a pretty simple experiment. So JJ Thompson was interested in this thing called cathode rays. He had hydrogen gas, and he took an evacuated glass cylinder, and he put hydrogen gas in it.
+[  112.0] And then he applied a current to that, and he could see these rays coming off. And he thought that was pretty cool. And so he was wondering about these rays. Are they made up of negatively charged particles, positively charged particles? Are they neutral? What are these things?
+[  127.0] So we decided to do this experiment, and he wondered whether if he took two plates and had charges associated with them, whether he would see the cathode rays deflected or not. Well first, he didn't apply any cr-
+[  141.1] Current, so it was just neutral, just to see if putting these plates in would affect anything in any way. And so when he did that, when there was zero voltage difference between these two plates,
+[  154.2] He could see the cathode ray hit this phosphor screen, and there was no deflection.
+[  160.4] All right, then he said, OK, now I'm going to charge things up and see if I can see a deflection. So he did that.
+[  167.8] And he saw the following.
+[  169.9] There was a deflection.
+[  172.4] And so now the different voltage between the plates was greater than 0. And now he saw the cathode ray was being deflected a distance of delta x over here.
+[  185.2] And it was being deflected toward the positive plate.
+[  189.5] So that said to him that the cathode ray contained negatively charged particles. You'll notice that the word negatively is the only word on the screen in blue. And if you look at your notes,
+[  203.9] You'll see that there's a blank spot.
+[  206.5] Just pointing out there might be a correlation there. OK.
+[  211.3] So...
+[  213.1] He knew some things also from classical work that was done in the time.
+[  219.3] And...
+[  221.9] Didn't reset my boards.
+[  224.6] So he knew something about what it meant if there was deflection.
+[  230.4] So we have our
+[  232.4] Deflection of the negatively charged particles.
+[  236.3] And he knew that that was going to be proportional to the charge of the negatively charged particle.
+[  244.3] And it was going to be directly proportional to that and inversely proportional to the mass.
+[  251.0] The negative charge particle.
+[  255.0] So it was a pretty big deflection. So he wasn't sure maybe there was a very big charge, or maybe there was a very small mass, or maybe both.
+[  263.4] So then he wanted to see what happened if you really kind of got things going, and he applied even more voltage difference.
+[  272.9] So he did that, and when he did that.
+[  276.5] He saw this.
+[  278.2] He saw another deflection.
+[  281.1] But this time it was much smaller.
+[  284.2] And it was toward the negatively charged plate.
+[  288.3] So he realized that in addition to the negatively charged particle,
+[  294.4] There was also a positively charged particle.
+[  298.7] So for that particle then...
+[  304.0] The deflection of the positively charged particle should also be proportional to the charge on the positively charged particle.
+[  314.0] And inversely proportional,
+[  316.3] To the mass of the positively charged particle.
+[  321.6] But there is a big difference in this deflection.
+[  324.8] Toward the positive plate there was a big deflection. Toward the negative plate it was pretty small.
+[  331.4] So he knew that...
+[  334.0] This deflection was much bigger than that one. And then he thought about, is that going to be due to charge or mass? But he said,
+[  343.0] The charges...
+[  345.5] Should be the same.
+[  347.8] Because it's neutral normally, so those charges must equal each other. The absolute values at least must equal each other.
+[  357.0] So then we can think about...
+[  359.2] The comparison of these deflections.
+[  367.6] So if we take the absolute value of the deflection of the negatively charged particle over
+[  376.0] The absolute value of the deflection of the positively charged particle. On the top here, we're going to have the charge of the negatively charged particle over the mass of the negatively charged particle.
+[  389.4] Particle and the absolute value of that term over
+[  394.7] The charge of the positively charged particle over the mass of the positively charged particle.
+[  402.0] But now, if you say that the charges are equal to each other,
+[  408.4] At least the absolute values of them. We can get rid of that term.
+[  413.5] And just see that the mass then of the positively charged particle.
+[  418.7] Over the negatively charged particle remains.
+[  422.2] So if this is going to be big.
+[  424.9] And we know it is. It's a big difference. The negatively charged particle deflected a lot more than the positively charged particle. That means that the difference in masses also has to be big.
+[  437.5] And that that negatively charged particle must be a lot smaller in mass than the positively charged particle.
+[  445.3] So...
+[  447.1] If we go up.
+[  448.8] Oops!
+[  453.1] So the mass of
+[  455.6] The negatively charged particle must be
+[  459.3] A lot smaller.
+[  461.1] Then the mass of the positively charged particle, and actually it's about 2,000 times smaller.
+[  468.9] So he was able to figure all of this out by just doing this pretty simple experiment. So he had now a small.
+[  478.3] Negatively charged particle and also a positively charged particle. And later the negatively charged particle got a name.
+[  486.2] The negatively charged particle got the name of the electron, and its mass was determined in another interesting experiment I won't tell you about, and it was determined to be really small, about 9 times 10 to the minus 31 kilograms.
+[  501.2] So through this experiment, he was able to figure out that in these cathode rays, you had something that was tiny, this electron, and that mean that this idea that atoms were the smallest thing out there was incorrect.
+[  515.2] That's what everyone believed. They were patting themselves on the back. They had figured it all out. But there was something smaller than the atom. There was this electron, this negatively charged particle that was really tiny.
+[  527.2] So that's pretty cool. It's a pretty low-tech experiment. It figured out something that really changed the way that we thought about science.
+[  535.0] So what about the nucleus? So we had the electron, and we also had this idea there was something positively charged going on there. And of course, in that experiment, that was H+. But what about the nucleus?
+[  547.6] So Rutherford is credited with the discovery of the nucleus. So this was a little later. And he had been studying radioactive material. And his good friend, Marie Curie from France, would often send him interesting samples.
+[  561.9] For him to study. I'm not sure quite how they got from France to England. Some of these were really cancer-causing things. I don't know how many people touched them without safety precautions on the way. But anyway.
+[  575.2] It's interesting to note that Rutherford actually did not die of cancer despite this research. He was literally the victim of his own success. So after his great discovery of the nucleus,
+[  589.0] He became a knight.
+[  595.4] And at one point he became sick and he needed a doctor.

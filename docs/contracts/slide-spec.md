@@ -13,6 +13,8 @@ SlideSpec
   language = "en", theme_hint?
   origin: lecture | materials                        # materials: a summary / key-concepts slide the teacher asked
                                                      # for (F-010); never counted as taught content
+  pending = false                                    # F-013: opened from a spoken announcement, not yet confirmed by
+                                                     # an interpretation (title shown, "listening" dots while empty)
 
 Block (discriminated by `type`), each with a stable `id` and items with stable ids:
   definition   { term, definition, notes[] }
@@ -26,7 +28,10 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
                                                                          # start: first step number on a next part
   comparison   { columns[{id, heading}], rows[{id, aspect, cells[]}] }
   timeline     { events[{id, when, label, detail?}] }
-  hierarchy    { root{label, children[...]} }
+  hierarchy    { root{label, children[...]}, provisional = false }   # provisional (F-013): members as the teacher
+                                                                     # names them, faded; never merged into, not in
+                                                                     # the prompt's CURRENT SLIDE, replaced by the
+                                                                     # interpretation
   cause_effect { links[{id, cause, effect}] }
   formula      { latex, spoken, variables[{symbol, meaning, unit?, latex?}] }   # latex from mathtext (F-007a);
                # consecutive slide-wide formulas (≤ 4, said together) render as ONE set: stacked cards, one legend

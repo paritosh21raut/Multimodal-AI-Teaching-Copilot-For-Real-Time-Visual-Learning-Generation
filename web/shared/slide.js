@@ -274,15 +274,20 @@ export const imageColumn = (aspect) => {
 
 function Block({ b, wide, termInTitle, narrow, card }) {
   switch (b.type) {
-    case "definition": return html`<${Definition} b=${b} termInTitle=${termInTitle} card=${card && !termInTitle} />`;
+    case "definition": {
+      const d = html`<${Definition} b=${b} termInTitle=${termInTitle} card=${card && !termInTitle} />`;
+      return b.provisional ? html`<div class="heard">${d}</div>` : d;  // F-013 S1b: being said, not yet interpreted
+    }
     case "points": return html`<${Points} b=${b} wide=${wide} />`;
     case "facts": return html`<${Facts} b=${b} narrow=${narrow} />`;
     case "process": return html`<${Process} b=${b} />`;
     case "comparison": return html`<${Comparison} b=${b} />`;
     case "timeline": return html`<${Timeline} b=${b} />`;
     case "cause_effect": return html`<${CauseEffect} b=${b} />`;
-    case "hierarchy": return narrow ? html`<${NarrowTree} root=${b.root} />`
-      : html`<div class="tree"><${TreeNode} n=${b.root} root /></div>`;
+    case "hierarchy": {
+      const tree = narrow ? html`<${NarrowTree} root=${b.root} />` : html`<div class="tree"><${TreeNode} n=${b.root} root /></div>`;
+      return b.provisional ? html`<div class="heard">${tree}</div>` : tree;
+    }
     case "formula": return html`<${Formula} b=${b} />`;
     case "formula_set": return html`<${FormulaSet} b=${b} />`;
     case "image": return html`<${Figure} b=${b} />`;
@@ -383,7 +388,9 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
   }
   const members = spec.layout === "members";
   const { main, below, aside, image } = splitBlocks(spec.blocks, members);
-  const defs = spec.blocks.filter((b) => b.type === "definition");
+  const defs = spec.blocks.filter((b) => b.type === "definition" && !b.provisional);
+  const liveDef = spec.blocks.find((b) => b.type === "definition" && b.provisional);  // F-013 S1b: being said
+  const liveInTitle = liveDef && titleNames(spec.title, liveDef.term);
   const title = spec.title;
   // Terms defined after other content (long test 2026-10-06): one row of cards where the first of them stands,
   // instead of a part II / a giant heading (composer.trailing_definitions)
@@ -406,11 +413,14 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
       ${spec.blocks.filter((b) => b.about === d.id).map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} />`)}
     </div>`)}</div>`;
   const stack = (blocks) => groupFormulas(blocks).map((b) => html`<${Block} key=${b.id} b=${b}
-    wide=${!aside.length && !image} narrow=${!!image} termInTitle=${b === def} card=${b.type === "definition" && b !== def} />`);
+    wide=${!aside.length && !image} narrow=${!!image} termInTitle=${b === def || (b === liveDef && liveInTitle)}
+    card=${b.type === "definition" && b !== def && !(b === liveDef && liveInTitle)} />`);
   const bodyClass = "slide-body" + (aside.length ? " with-aside" : "") + (image ? (below ? " image-top" : " with-image") : "");
   const figure = image && html`<div class="image-col"><${Figure} key=${image.id} b=${image}
     onClick=${onImageClick && !image.ghost ? () => onImageClick(image) : undefined} /></div>`;
-  return html`<section data-slide=${spec.id} class=${`slide layout-${spec.layout} ${phase}`} style=${style}>
+  // F-013: a slide opened from the teacher's announcement, before its first content (title now, body listening)
+  const listening = spec.pending && !spec.blocks.length;
+  return html`<section data-slide=${spec.id} class=${`slide layout-${spec.layout} ${phase}${spec.pending ? " pending" : ""}`} style=${style}>
     <header class="slide-head">
       ${(spec.facet || spec.continuation_of) && html`<div class="crumb">
         ${spec.subtitle && html`<span>${spec.subtitle}</span>`}
@@ -418,6 +428,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
         ${spec.continuation_of && !spec.facet && html`<span class="cont">continued</span>`}
       </div>`}
       <h1 class="slide-title"><span data-edit="title">${rich(title)}</span>${spec.part && html`<span class="part" title=${`Part ${spec.part}`}>${partLabel(spec.part)}</span>`}</h1>
+      ${listening && html`<div class="listening" aria-label="Listening"><span></span><span></span><span></span></div>`}
     </header>
     <div ref=${bodyRef} class=${bodyClass}
       style=${image ? { "--img-col": `${imageColumn(image.aspect)}px` } : null}>

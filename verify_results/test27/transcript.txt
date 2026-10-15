@@ -1,0 +1,123 @@
+[    5.2] Introduction to Ethical Hacking Ethical hacking is an important branch of cybersecurity that focuses on protecting computers, networks, applications, and digital information from cyber attacks.
+[   18.4] In today's world, technology plays a major role in our daily lives. We use the internet for online banking, shopping, education, communication, and storing personal information.
+[   31.4] As our dependence on technology increases, the risk of cybercrime also increases. Cybercriminals may attempt to steal confidential information, access private accounts,
+[   43.9] damage computer systems or misuse personal data. To prevent these activities, organizations need professionals who understand how cyber attacks happen and how to protect systems against them.
+[   57.7] Ethical hacking helps fulfil this need by identifying security weaknesses before malicious attackers can exploit them.
+[   66.8] Understanding Hacking.
+[   68.7] Hacking refers to identifying and exploiting weaknesses in computer systems, networks, software or digital devices. A person who performs hacking activities is called a hacker.
+[   82.8] To understand hacking, consider the example of a house with a weak lock. A person may try to identify that weakness and use it to enter the house. Similarly, a hacker examines a
+[   96.1] computer system to discover weaknesses that could allow unauthorized access. Hacking can be performed for different purposes. Some hackers attempt to steal information, commit fraud,
+[  108.7] or damage systems where others use their technical knowledge to improve security.
+[  113.7] Therefore, hacking is not always malicious. Its legality and ethical nature depends on authorization, the methods used, and the purpose of the activity.
+[  126.2] ethical hacking is authorized process of examining computer systems, networks and applications to identify security vulnerabilities and help correct them.
+[  140.9] It is performed by trained professionals who have permission from the system owner and follow clearly defined rules. Ethical hackers are commonly known as white hat hackers.
+[  153.2] They use their knowledge of hacking techniques to protect digital systems rather than harm them. For example, a college may have an online portal containing student records.
+[  165.5] attendance details and examination results. If an unauthorized person breaks into the portal to steal information, it is a cyber attack. However, if the college appoints a cybersecurity professional,
+[  179.7] to test the portal, discover weaknesses and recommend security improvements. It is ethical hacking.
+[  186.4] The main objective of Ethical Hacking is to identify vulnerabilities, reduce security risks, protect sensitive information, and improve the overall security of digital systems.
+[  198.8] type of hackers.
+[  201.1] Hackers are commonly classified into three categories based on their intentions and activities. White hat hackers are ethical hackers who work with proper authorization.
+[  213.7] They help organization identify vulnerabilities, evaluate security measures and protect system from cyber attacks. They may work for companies, governments, organization or cybersecurity firms.
+[  227.7] Black Hat Hackers Black Hat Hackers access system without authorization for malicious purposes. Their activities may include stealing confidential information, spreading malware,
+[  240.9] committing financial fraud or damaging computer networks. These activities are illegal.
+[  247.8] Gray hat hackers. Gray hat hackers operate between the white hat and black hat categories. They may discover viral neighborhoods without obtaining permission even if they do not intend to cause harm.
+[  261.1] However, good intentions do not automatically make unauthorized access legal or ethical.
+[  268.8] The major difference between these categories is how hackers obtain access, what they do with the information they discover, and whether they have permission to perform their activities.
+[  281.2] That's how ethical hacking works. Ethical hacking follows a systematic process to ensure that security testing is conducted safely and effectively. The first stage is planning and authorization.
+[  294.7] Before testing begins, the ethical hacker obtains permission from the system owner. The scope of testing, permitted methods and limitations are established to prevent unnecessary risk.
+[  307.9] The second stage is recoil nimpsils
+[  312.3] which involves gathering information about the targeted system. This may include identifying the technologies used, understanding the system structure and collecting information.
+[  324.6] publicly available information relevant to the assessment. The third stage is Scanning and Vulnerability Identification. The ethical hacker examines the system for potential weaknesses.
+[  337.8] such as outdated software in secure configuration or weak access control.
+[  343.5] The fourth stage is controlled testing. The hacker verifies whether the identified vulnerabilities can actually be exploited within the approved scope. Testing
+[  355.7] must be performed carefully to avoid damaging systems, disrupting services, or exposing confidential information. The final stage is Reporting and Remediation. The ethical hack
+[  368.0] The organization then fixes the weaknesses and may arrange another assessment to confirm the problems have been resolved.
+[  380.8] This systematic approach enables the organization to strengthen their security and reduce the possibility of successful cyber attacks.
+[  391.5] type of ethical hackers.
+[  395.1] type of ethical hackings
+[  397.7] Ethical hacking can be performed on different types of digital systems.
+[  403.0] Web application hacking focuses on identifying security weaknesses in websites and web applications.
+[  410.2] Examples include insecure login systems, improper access controls, and vulnerabilities that could expose user information.
+[  421.9] Network hacking involves examining computer networks, routers, servers, and connected devices to identify weaknesses that could allow unauthorized access. Wireless network
+[  436.2] this stage
+[  488.1] Wireless network testing focuses on evaluating the security of Wi-Fi networks and wireless communication systems. It helps identify weak passwords in secure configurations and other potential risk systems.
+[  502.7] hacking involves testing the security of computer operating systems and servers to discover vulnerabilities and weaknesses in access control. Social engineering assessment examined
+[  515.7] how human behaviour can affect security. For example, an unauthorized assessment may test whether employees can recognize suspicious emails or fraudulent messages. Each type of ethical hacking addresses
+[  529.2] different aspects of cybersecurity and organization may use several types together to develop stronger protection.
+[  538.7] common tools used in ethical hacking.
+[  542.3] Ethical hackers use specialized tools to examine, system detect vulnerabilities and evaluate security. Nmap is a network scanning tool used to discover devices on network and identify available network services.
+[  557.2] Byershark is a network protocol analyzer that allows professionals to examine new network traffic and investigate communication-related programs. Bob should
+[  570.2] is a tool commonly used for testing the security of web applications. It helps professionals inspect HTTP requests and responses and identify possible applications where there are queries.
+[  582.7] Metasploit framework is used for
+[  587.0] control security testing and vulnerability validation in authorized environments Kali Linux is a Linux distribution that includes many tools used for penetration testing, digital forensics and
+[  600.4] security research. These tools are useful for cybersecurity professionals but using a tool does not automatically make an activity ethical. Proper authorization, technical knowledge and
+[  613.3] once they will use our ascension.
+[  616.6] Advantages and importance of ethical hacking Ethical hacking offers several benefits to individuals, businesses and other organizations First, it helps identify vulnerabilities before malicious attackers discover them
+[  631.3] are weak. Identification allows organizations to address security problems and reduce the risk of cyber attacks. Second, ethical hacking helps protect sensitive information including customer reports, financial details,
+[  644.9] password and confidential business data. Third, it improves network and application security by helping organizations evaluate their existing security measures and identifying areas that require improvement.
+[  660.4] Finally, Ethical Hacking supports security awareness. It encourages organizations to adopt safer practices, improve employee training, and adapt update software regularly and develop better incident response.
+[  675.3] procedures. Thus, Ethical Hacking is not limited to finding vulnerabilities. It also contributes to building a safer and more reliable digital environment, ethical hacking and cyber security.
+[  689.5] ethical hacking and cyber security are closely related but they are not exactly the same. Cyber security is the broader field concerned with protecting computer system networks, applications and data from digital threats.
+[  703.9] It includes areas such as access control, encryption, network security, incident response, risk management, and data protection. Ethical hacking is one part of cybersecurity.
+[  716.7] It focuses particularly on testing systems to identify weaknesses and verify whether security measures are effective.
+[  725.3] For example, installing anti-virus software using strong password and enabling multi-factor authentication and cyber security practices. Hiring an authorized professional to test whether a system can be accessed by exploiting
+[  739.8] A vulnerability is an example of ethical hacking. Those are important because effective cybersecurity requires not only preventive measures but also regular evaluation of whether those measures work as intended.
+[  754.3] Ethical hacking has become a promising career area as organizations increasingly depend on digital
+[  766.3] technologists and faces growing cybersecurity risks.
+[  810.8] People interested in this field can explore roles such as ethical hacker, penetration tester, security analyst, vulnerability assessment specialist, and application security engineer to begin learning ethical hacking.
+[  825.2] first understand computer networks, operating system and basic programming, web technologies and common security concepts. They can then study networking tools, web applications, security vulnerability, assessment and penetration testing techniques.
+[  838.6] Practical experience is also important. Beginners can practice it intentionally by using applications and the security training platforms and virtual laboratories where testing is permitted.
+[  851.9] Ethical hackers must also develop problem solving skills, attention to details, communication skills and a strong understanding of legal and professional responsibilities. Certification and hands-on projects can further support career development.
+[  867.4] ethical and ethical responsibilities. Ethical hacking must always be performed responsibly. A person should never assume that discovering a vulnerability gives them permission to access or else the system.
+[  880.6] Before beginning any assessment, the hacker must obtain appropriate authorization and follow the accurate scope. They must protect confidential information, avoid unnecessary disruption, document their findings accurately.
+[  894.3] and report vulnerability to the appropriate people. Unauthorized access to data theft and damage to computer systems can have serious legal consequences in India's cyber world.
+[  908.1] Offenses are addressed under applicable laws including the Information Technology Act 2000 as amended. Responsible ethical hacking therefore requires both technical expertise and
+[  921.0] and respect for privacy, security and the law.
+[  925.8] common cyber security threats. Ethical hackers study different types of cyber threats to understand how attackers target computer systems and how these attacks can be prevented. One common threat is phishing.
+[  940.1] in which attackers send fake emails, messages, or websites to trick people into sharing password, banking information, or other sensitive data. Other threat is malware, which refers to malicious op-
+[  953.7] designed to harm systems, steal information, or gain unauthorized access. Viruses, worms, ransomware, and spyware are examples of malware. Password attacks involve
+[  967.0] attempts to obtain or guess passwords to access accounts. Weak and reused passwords make it easier for attackers to compromise multiple accounts.
+[  977.8] denial of service attacks also known as PEWS
+[  983.1] I think.
+[  984.7] attempt to make a website or online service unavailable by overwhelming it with requests or traffic ethical hackers help organization
+[  996.7] Understand these threats, test their defenses and unauthor.
+[ 1001.0] in authorized environments and determine suitable protective measures.
+[ 1006.8] Difference between ethical hacking and penetration testing. Ethical hacking and penetration testing are closely related concept but they are not identical. Ethical hacking is a broad term that includes authorized activities
+[ 1019.4] to identify and improve security weaknesses. It can involve reviewing, configuration, examining, systems testing, applications and evaluating security practices.
+[ 1032.0] Penetration testing is a more specific activity in which professionals simulate selected real-world attacks against an animal.
+[ 1041.5] and authorized system to determine whether vulnerabilities can be exploited and what impact they could have. For example, a new people hacker may review for companies network configuration.
+[ 1053.6] and security policies. A penetration tester may conduct a controlled test to determine whether a particular witness allows unauthorized access.
+[ 1064.1] therefore penetration
+[ 1066.9] Testing is one of the important techniques
+[ 1075.9] used in ethical hacking and cybersecurity assessments. Preventing majors against cyber attacks. Although ethical hacking helps identify vulnerabilities, everyone has a role to play in maintaining digital security.
+[ 1090.9] Some important preventive measures include using strong uni-passwords for different accounts and enabling multi-factor authentication whenever possible.
+[ 1102.9] Keep operating system application and antivirus software updated.
+[ 1108.0] a wording, suspicious links attachment and unknown downloads.
+[ 1113.1] Using secure networks and protecting welfare connection with strong passwords, packing up important information regularly, limiting access to confidential information to authorized users.
+[ 1126.1] providing cybersecurity awareness training to MQS and students. Organizations should also conduct regular security assessment and establish procedures corresponding to security incidents.
+[ 1138.5] practices reduce the risk of cyber attacks and help protect personal and organizational information.
+[ 1146.4] Future scope of ethical hacking. The future of ethical hacking is closely connected to the increasing use of digital technology, businesses, educational institutions, hospitals, banks and government organizations all depend on computer systems and networks.
+[ 1161.2] Protecting these systems has therefore become increasingly important. Emerging technologies such as artificial intelligence, cloud computing, the internet of things and connected smart devices create new security challenges. Ethical hackers.
+[ 1176.2] We need to understand these technologies and identify the weaknesses that may arise from their issues.
+[ 1182.1] Artificial intelligence can also assist cybersecurity professionals by helping analyze large amounts of security data and identify unusual activities.
+[ 1192.8] At the same time, attackers may misuse AI to create more convincing phishing messages or automate certain malicious activities. As a result, organizations need to create cyber security.
+[ 1205.3] professionals who can adapt to changing threats, evaluate new technologies and develop effective security strategies. Ethical hacking is therefore an important area for students interested in technology problem solving and digital security.
+[ 1221.7] Conclusion, a secure digital world is not created by technology alone. It also requires responsible people who know how to protect it.
+[ 1313.3] I don't want to see you again.
+[ 1322.6] No, no, no, no, no. Manjim, important point sir. Thank you.
+[ 1328.4] I will make a future scoop of ethical hacking, so you can see what I mean.
+[ 1334.6] what's wrong with you? no, I'm positive
+[ 1340.1] Then you have to have books, have books, have books. Have books!
+[ 1343.2] That's the topic.
+[ 1346.2] the difference between ethical hacking and penetration hacking. Testing is different than preventing you from majoring in cyber attacks. Future scope of ethical hacking is different.
+[ 1357.0] I'm going to pull it out
+[ 1364.3] future scope of ethical hacking. The future of ethical hacking is closely connected to the increasing use of digital technology, businesses, educational institutions, hospitals, banks and government organizations.
+[ 1377.8] all depend on computer systems and networks. Protecting these systems has therefore become increasingly important. Emerging technologies such as artificial intelligence, cloud computing, the internet of things,
+[ 1391.5] and connected smart devices create new security challenges. Ethical hackers need to understand these technologies to identify the weaknesses that may arise from their use. Artificial intelligence can also assist cyber security.
+[ 1406.5] security professional by helping analyze large amount of security data and identify unusual activities. At the same time, attackers may misuse AI to create more convincing phishing messages.
+[ 1419.6] or automate certain malicious activities. As a result, organizations need state cybersecurity professionals who can adapt to changing threats, evaluate new technologies, and develop effective security strategies.
+[ 1433.4] Ethical Hacking is there for an important area for students interested in technology, problem solving and digital security.
+[ 1459.7] Amen.
+[ 1463.8] I'm not sure if I'll be able to do it again
+[ 1467.6] I'll buzz at them.
+[ 1548.6] End lecture.

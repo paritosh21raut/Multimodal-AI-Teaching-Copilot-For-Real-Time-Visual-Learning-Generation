@@ -1,0 +1,41 @@
+# F-013 S1 live check: the first ~3 min of test3 (speaker A, chemistry) as Whisper heard it.
+# Announcements ("Let us study about pure substances"), a classification, misheard words ("momentum" = matter).
+@setup subject=Chemistry grade=11
+
+Well there you went, let us start with our first chapter, Basic concepts of Chemistry.
+Let us understand what chemistry is.
+Chemistry is the branch of science which deals with the composition, structure and properties of metal.
+Anthony Laurent Levisu
+is called the father of chemistry.
+branch of chemistry it can be inorganic, organic, physical or analytical chemistry.
+[pause 4.0]
+Let us study about momentum.
+Matter is anything which occupies some space and has some mass.
+it is made up of small particles which have some space between them.
+The matter particles attract each other and are in the state of continuous motion.
+classification of metal
+Metal clay can be classified into two groups.
+Physical Classification, Chemical Classification.
+In physical classification it can be
+further classified into solid, liquid or gas.
+In chemical classification it can be further classified into pure substances or mixtures.
+[pause 4.0]
+Let us study about pure substances.
+they have characteristics different from the mixtures
+they have fixed compositions whereas mixtures may contain big opponents in any ratio and their compositions is variable.
+[pause 2.5]
+Elements, it is the simplest form of pure substances which can neither be decomposed nor be built from simpler substances from ordinary physical and chemical methods. It cannot contain only one kind of atoms.
+[pause 4.0]
+the number of elements known till date is 118
+An element can be a metal, non-metal or a metalloid.
+comports. It is also the form of matter which can be formed by combining two or more elements in a definite ratio by mass.
+[pause 2.3]
+it can be decomposed into its constant elements by suitable chemical methods.
+For example, water, H2O, is made up of hydrogen and oxygen in the ratio of 1 to 8 by mass.
+[pause 3.1]
+Compounds can be of two types, Inorganic, Organic.
+[pause 4.0]
+Now let us study about mixtures.
+These are made up of two or more pure substances. They can possess variable compositions and can be separated.
+into their components by some physical methods.
+Mixtures can be homogeneous or heterogeneous.

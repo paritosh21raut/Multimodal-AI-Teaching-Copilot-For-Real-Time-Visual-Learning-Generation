@@ -1,7 +1,7 @@
 {
   "name": "test3",
   "source": "mic",
-  "note": "self, chemistry",
+  "note": "speaker A, chemistry",
   "session_id": "20261011-235623-b72e",
   "date": "2026-10-12 00:08",
   "title": "",
@@ -10,5 +10,7 @@
   "slides": 16,
   "theme": "light",
   "simulated": false,
-  "copilot_args": []
+  "copilot_args": [],
+  "speaker": "speaker A",
+  "subject": "chemistry"
 }

@@ -1,0 +1,16 @@
+{
+  "name": "test27",
+  "source": "mic",
+  "note": "speaker B, hacking",
+  "session_id": "20261014-154721-2030",
+  "date": "2026-10-14 16:14",
+  "title": "",
+  "minutes": 25.8,
+  "utterances": 123,
+  "slides": 29,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker B",
+  "subject": "hacking"
+}

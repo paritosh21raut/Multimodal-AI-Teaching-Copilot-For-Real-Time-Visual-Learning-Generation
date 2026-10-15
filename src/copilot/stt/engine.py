@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 import math
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
@@ -38,6 +38,7 @@ class SttResult:
     compression_ratio: float
     infer_ms: float
     rejected: Optional[str] = None  # reason, if the guard rejected it
+    words: list[tuple[str, float, float]] = field(default_factory=list)  # (word, start s, end s) when asked for
 
 
 def guard(text: str, duration_s: float, avg_logprob: float, no_speech_prob: float, compression_ratio: float) -> Optional[str]:
@@ -76,7 +77,7 @@ class WhisperEngine:
         self.transcribe(np.zeros(16_000, dtype=np.float32))  # warm-up (CUDA kernels, allocator)
         return time.perf_counter() - t0
 
-    def transcribe(self, audio: np.ndarray, prompt: Optional[str] = None) -> SttResult:
+    def transcribe(self, audio: np.ndarray, prompt: Optional[str] = None, words: bool = False) -> SttResult:
         if self._model is None:
             raise RuntimeError("WhisperEngine.load() not called")
         t0 = time.perf_counter()
@@ -87,7 +88,8 @@ class WhisperEngine:
             condition_on_previous_text=False,
             initial_prompt=prompt or None,
             vad_filter=False,  # we already segmented with VAD
-            without_timestamps=True,
+            without_timestamps=not words,
+            word_timestamps=words,
         )
         segments = list(segments)
         infer_ms = (time.perf_counter() - t0) * 1000
@@ -107,4 +109,6 @@ class WhisperEngine:
             compression_ratio=comp,
             infer_ms=infer_ms,
             rejected=guard(text, duration, avg_lp, no_speech, comp),
+            words=[(w.word.strip(), float(w.start), float(w.end)) for s in segments for w in (s.words or [])]
+            if words else [],
         )

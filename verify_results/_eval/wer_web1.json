@@ -1,0 +1,11 @@
+{
+ "test": "web1",
+ "ref_words": 1257,
+ "hyp_words": 1236,
+ "S": 18,
+ "D": 46,
+ "I": 25,
+ "wer": 0.0708,
+ "minutes": 10.0,
+ "captions": "MIT7_016F18_lec11_300k.srt"
+}

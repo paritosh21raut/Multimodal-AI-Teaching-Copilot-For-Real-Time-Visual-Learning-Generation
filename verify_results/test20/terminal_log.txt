@@ -1,0 +1,327 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (5.6 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_4         openai/gpt-oss-120b            90k of 200k tokens IN USE
+        GROQ_API_KEY_5         openai/gpt-oss-120b           193k of 200k tokens ok
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           150k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b            45k of 200k tokens ok
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~2.5 h
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 235 lecture minutes
+
+[READY] session 20261015-105146-025e
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+10:51:53 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, thermodynamics, digestive, photoelectrons, cerebrum, cerebellum ...)
+  [    0.4s] French Revolution was a time of social and political appeals in France and its colonies that began in 1789 and ended in 1799. Inspired by the liberal and radical ideas, (759 ms)
+  [   13.2s] It overthrows the monarch key, influences the decline of absolute monarchies in other parts of Europe. (677 ms)
+10:52:22 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['French Revolution was a time of social and political appeals in France and its colonies that began in 1789 and ended in 1799']
+  [UNDERSTAND] French Revolution > Overview (new_topic) acts=explanation,explanation hint=key_points lines=2 via groq_main#4 1801 ms
+               The French Revolution (1789‑1799) was a social‑political upheaval that toppled the monarchy and inspired Europe.
+10:52:22 INFO    copilot.presentation.engine: planner: new French Revolution > Overview (first content slide)
+  [SLIDE] add    'French Revolution' [key_points] v1 (3 items)
+  [   22.7s] The French Revolution is the American Revolution of 1776 was a costly affair that left the country in a state of nearly bankruptcy. King Louis extra-vagant (832 ms)
+  [SLIDE] update 'French Revolution' [key_points] v2 (4 items)
+  [   35.7s] Spending also did not help matters. Empty royal coffers, poor harvest and a rise in poor food prices had created feelings of unrest among the poor, rural and urban countries. (780 ms)
+  [SLIDE] update 'French Revolution' [key_points] v3 (4 items)
+  [   47.8s] Populace. (320 ms)
+  [SLIDE] update 'French Revolution' [key_points] v4 (4 items)
+  [UNDERSTAND] French Revolution > Overview (elaboration) acts=explanation hint=key_points lines=2 via groq_main#4 3321 ms
+               Added causes of financial crisis and unrest: bankruptcy, empty coffers, poor harvest, high food prices, and King Louis's extravagance.
+  [HEARD] 'is the American Revolution of 1776' -> 'was a costly affair that left France nearly bankrupt' corrected on the slide (0.5)
+10:52:50 INFO    copilot.presentation.engine: planner: update French Revolution > Overview (same frame)
+10:52:50 INFO    copilot.presentation.engine: concern 6676ee72caa4 (transcription, applied=True): 0 element(s); slide shows 'was a costly affair that left France nearly bankrupt'
+  [SLIDE] update 'French Revolution' [key_points] v5 (6 items)
+  [SLIDE] add    'French Revolution' [key_points] v1 (1 items)
+  [   49.1s] The matter was further worsened by the imposition of taxes that provided no relief. As a result, rioting, looting, and general strikes became the norm towards the end of 1786. (873 ms)
+  [SLIDE] update 'French Revolution' [key_points] v6 (5 items)
+  [SLIDE] update 'French Revolution' [key_points] v2 (2 items)
+10:53:05 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['As a result, rioting, looting, and general strikes became the norm towards the end of 1786']
+  [UNDERSTAND] French Revolution > Overview (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#4 2066 ms
+               Taxes worsened conditions, leading to widespread rioting and strikes by 1786.
+10:53:05 INFO    copilot.presentation.engine: planner: update French Revolution > Overview (same frame)
+  [SLIDE] update 'French Revolution' [key_points] v3 (1 items)
+  [SLIDE] update 'French Revolution' [key_points] v4 (4 items)
+  [   62.0s] A universal lantax was proposed by the controller general Charles Alexandre Descartes. (738 ms)
+  [   67.7s] Caluni. (304 ms)
+10:53:14 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Overview' -> same_concept
+  [UNDERSTAND] French Revolution > Overview (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 2420 ms
+               Describes Descartes' proposal of a universal tax
+  [HEARD] 'lantax' -> 'tax' corrected on the slide (0.5)
+10:53:14 INFO    copilot.presentation.engine: planner: update French Revolution > Overview (same frame)
+10:53:14 INFO    copilot.presentation.engine: concern c67b428fd1e3 (transcription, applied=True): 1 element(s); slide shows 'tax'
+  [SLIDE] update 'French Revolution' [key_points] v5 (5 items)
+10:53:14 INFO    copilot.presentation.engine: image search 'Charles Alexandre Descartes' (photo) for 'French Revolution'
+  [   69.2s] This tax reform would no longer exempt the privileges classes like the clergy and the nobility. (709 ms)
+10:53:18 INFO    copilot.visuals.finder: image search 'Charles Alexandre Descartes': 7 slow download(s) dropped
+10:53:21 INFO    copilot.visuals.finder: image search 'Charles Alexandre Descartes' (photo): 1 candidate(s), 1 accepted (0 labelled), 7.29 s {'search_s': 2.83, 'download_s': 1.66, 'clip_s': 0.04, 'full_s': 2.74, 'total_s': 7.29}
+  [IMAGE] 'Charles Alexandre Descartes' -> File:Lesueur Charles-Alexandre 1818.JPG (7.3 s)
+10:53:21 INFO    copilot.presentation.engine: no room for an image on 'French Revolution'
+10:53:22 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Overview' -> same_concept
+  [UNDERSTAND] French Revolution > Overview (same_concept) acts=definition hint=definition lines=1 via groq_main#4 2439 ms
+               Introduced the term Cahiers de doléances as lists of citizen grievances.
+  [HEARD] 'Caluni' -> 'Cahiers de doléances' corrected on the slide (0.5)
+10:53:22 INFO    copilot.presentation.engine: planner: update French Revolution > Overview (same frame)
+10:53:22 INFO    copilot.presentation.engine: concern 61b30d7ad597 (transcription, applied=True): 1 element(s); slide shows 'Cahiers de doléances'
+  [SLIDE] add    'French Revolution' [definition] v1 (1 items)
+10:53:22 INFO    copilot.presentation.engine: image 'Charles Alexandre Descartes' kept on 'French Revolution' (same visual as this topic's image)
+  [SLIDE] update 'French Revolution' [definition] v2 (2 items)
+  [UNDERSTAND] French Revolution > Overview (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1241 ms
+               Tax reform would remove privileges for clergy and nobility
+10:53:30 INFO    copilot.presentation.engine: planner: update French Revolution > Overview (same frame)
+10:53:30 INFO    copilot.presentation.engine: no image for 'French Revolution': has an image
+  [SLIDE] update 'French Revolution' [definition] v3 (3 items)
+  [   77.5s] As had been the case of four centuries, the king summoned the estate general to pass these measures. The estate general was an assembly that represented the French nobility, clergy and middle class. (822 ms)
+  [SLIDE] update 'French Revolution' [definition] v4 (4 items)
+  [   92.0s] The last time the estate's general was called was in 1614. The date of the meeting was fixed on 5th May 1789. (722 ms)
+  [SLIDE] update 'French Revolution' [definition] v5 (4 items)
+  [UNDERSTAND] French Revolution > Overview (elaboration) acts=explanation hint=key_points lines=2 via groq_main#4 1939 ms
+               Introduced the Estates General, its composition, last meeting in 1614 and the 1789 convening date.
+10:53:41 INFO    copilot.presentation.engine: planner: update French Revolution > Overview (same frame)
+10:53:41 INFO    copilot.presentation.engine: no image for 'French Revolution': has an image
+  [SLIDE] update 'French Revolution' [definition] v6 (3 items)
+  [SLIDE] update 'French Revolution' [definition] v7 (7 items)
+10:53:42 INFO    copilot.presentation.engine: slide c7b08e568334 overflows on the display; further content continues on a new slide
+  [  100.2s] When grievances were grievances of these three estates would be presented to the Japa king. (847 ms)
+  [UNDERSTAND] French Revolution > Overview (same_concept) acts=definition hint=definition lines=1 via groq_main#5 1625 ms
+               Explained that each estate's cahiers de doléances were presented to the king.
+  [HEARD] 'Japa' -> 'king' corrected on the slide (0.5)
+10:53:49 INFO    copilot.presentation.engine: revised S1: Lists of grievances from the three estates presented to the king
+10:53:49 INFO    copilot.presentation.engine: planner: update French Revolution > Overview (same frame)
+10:53:49 INFO    copilot.presentation.engine: concern 0189d99927ab (transcription, applied=True): 2 element(s); slide shows 'king'
+  [SLIDE] update 'French Revolution' [definition] v8 (7 items)
+  [SLIDE] add    'French Revolution' [definition] v1 (1 items)
+10:53:49 INFO    copilot.presentation.engine: image 'Charles Alexandre Descartes' kept on 'French Revolution' (same visual as this topic's image)
+  [SLIDE] update 'French Revolution' [definition] v2 (2 items)
+  [  107.3s] Now let us discuss the causes of French Revolution. (640 ms)
+  [UNDERSTAND] French Revolution > Causes (sibling_concept) acts=transition hint=none lines=1 via groq_main#4 1333 ms
+               Teacher announced moving to the causes of the French Revolution.
+10:53:57 INFO    copilot.presentation.engine: planner: noop French Revolution > Causes (nothing to display)
+  [  111.7s] 1. Social. The social conditions in France in the late 18th century were extremely unequal and exploitative. The clergy and the nobility formed the first two estates and were the most privileged classes in the French society. (859 ms)
+  [UNDERSTAND] French Revolution > Causes (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1068 ms
+               Added social inequality as a cause of the French Revolution.
+10:54:19 INFO    copilot.presentation.engine: planner: continue French Revolution > Causes (new facet)
+  [SLIDE] add    'Causes' [key_points] v1 (2 items)
+  [  126.2s] They were exempt from payment of taxes and this to the state. On the other hand, the third estate, which consisted of peasants and co-workers, formed the majority of the population. They were burdened with excessive taxes with no political and social rights. (768 ms)
+  [SLIDE] update 'Causes' [key_points] v2 (3 items)
+  [  141.2s] As a result, they were extremely disconnected. (502 ms)
+  [SLIDE] update 'Causes' [key_points] v3 (2 items)
+  [  145.2s] That's it. (305 ms)
+  [UNDERSTAND] French Revolution > Causes (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 2666 ms
+               Added that the privileged estates were tax‑exempt and the third estate was the taxed majority without rights
+10:54:29 INFO    copilot.presentation.engine: revised S2: Clergy and nobility formed the first two estates, were privileged, and exempt from paying taxes
+10:54:29 INFO    copilot.presentation.engine: planner: update French Revolution > Causes (same frame)
+  [SLIDE] update 'Causes' [key_points] v4 (2 items)
+  [SLIDE] update 'Causes' [key_points] v5 (3 items)
+  [UNDERSTAND] French Revolution > Causes (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1370 ms
+               The estates were described as being extremely disconnected.
+10:54:35 INFO    copilot.presentation.engine: planner: update French Revolution > Causes (same frame)
+  [SLIDE] update 'Causes' [key_points] v6 (4 items)
+  [  146.3s] Economic, as a result of numerous wars wages by Louis XVI, the state of workforce was empty. The situation was made even more complex by France's involvement in the American war of independence and the (896 ms)
+  [  161.3s] (dropped: empty) 
+  [  161.7s] Faculty system of taxation, while the privileged classes were excused from (664 ms)
+  [UNDERSTAND] French Revolution > Causes (same_concept) acts=- hint=none lines=1 via groq_main#4 4268 ms
+               No new content added; teacher concluded the causes slide.
+10:54:46 INFO    copilot.presentation.engine: planner: noop French Revolution > Causes (nothing to display)
+  [  167.7s] The third state was more burdened with them. Political. The Berberan kings of France, Louis XVI was an extremely autocratic and weak-willed king who led a life of ops king. (973 ms)
+10:55:03 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Economic, as a result of numerous wars wages by Louis XVI, the state of workforce was empty']
+  [UNDERSTAND] French Revolution > Causes (same_concept) acts=explanation,explanation hint=key_points lines=2 via groq_main#4 3776 ms
+               Added economic hardship from wars and an unfair tax system as causes of the French Revolution.
+10:55:03 INFO    copilot.presentation.engine: planner: update French Revolution > Causes (same frame)
+  [SLIDE] update 'Causes' [key_points] v7 (6 items)
+  [SLIDE] add    'Causes' [key_points] v1 (1 items)
+  [  182.0s] Luxury. This led to a lot of dysentery. (518 ms)
+  [UNDERSTAND] French Revolution > Causes (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1640 ms
+               Added political cause of the French Revolution, highlighting Louis XVI's autocratic weakness.
+10:55:08 INFO    copilot.presentation.engine: revised S1: Economic hardship from wars and an unfair tax system caused widespread suffering
+10:55:08 INFO    copilot.presentation.engine: planner: update French Revolution > Causes (same frame)
+  [SLIDE] update 'Causes' [key_points] v2 (1 items)
+  [SLIDE] update 'Causes' [key_points] v3 (2 items)
+  [  185.9s] Chantment among the masses who then were leading life of extreme poverty and widespread hunger. (628 ms)
+  [UNDERSTAND] French Revolution > Causes (digression) acts=other hint=none lines=1 via groq_main#4 4177 ms
+               Teacher mentioned luxury leading to dysentery, a digressive comment.
+10:55:19 INFO    copilot.presentation.engine: planner: noop French Revolution > Causes (digression)
+10:55:25 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Causes' -> same_concept
+  [UNDERSTAND] French Revolution > Causes (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 1089 ms
+               Added social discontent due to extreme poverty and hunger as another cause of the Revolution.
+10:55:25 INFO    copilot.presentation.engine: planner: update French Revolution > Causes (same frame)
+  [SLIDE] update 'Causes' [key_points] v4 (3 items)
+  [  193.1s] Intellectual, the 18th century was marked by a conscious refusal by French thinkers of the divine rights theory. Philosophers like Roosevelt rejected the paradigm of (709 ms)
+  [  207.5s] Absolute monarch. (291 ms)
+10:55:37 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Intellectual Causes' -> same_concept
+  [UNDERSTAND] French Revolution > Intellectual Causes (same_concept) acts=explanation hint=key_points lines=2 via groq_main#4 4359 ms
+               Introduced intellectual causes: Enlightenment rejection of divine right and absolute monarchy.
+  [HEARD] 'Roosevelt' -> 'Rousseau' corrected on the slide (0.5)
+10:55:37 INFO    copilot.presentation.engine: planner: update French Revolution > Causes (same frame)
+10:55:37 INFO    copilot.presentation.engine: concern f9dcf622168d (transcription, applied=True): 1 element(s); slide shows 'Rousseau'
+  [SLIDE] update 'Causes' [key_points] v5 (5 items)
+  [  216.6s] And promulgated the doctorate. (624 ms)
+  [SLIDE] update 'Causes' [key_points] v6 (6 items)
+  [  221.4s] Inequality. (434 ms)
+  [SLIDE] update 'Causes' [key_points] v7 (5 items)
+  [  223.9s] of man and sovereignty. (538 ms)
+  [UNDERSTAND] French Revolution > Causes (elaboration) acts=explanation hint=key_points lines=3 via groq_main#5 1867 ms
+               Added inequality of man and sovereignty as a cause of the French Revolution.
+  [HEARD] 'doctorate' -> 'Declaration' corrected on the slide (0.5)
+10:55:48 INFO    copilot.presentation.engine: planner: update French Revolution > Causes (same frame)
+10:55:48 INFO    copilot.presentation.engine: concern eef6a441ce05 (transcription, applied=True): 0 element(s); slide shows 'Declaration'
+  [SLIDE] update 'Causes' [key_points] v8 (6 items)
+10:55:48 INFO    copilot.presentation.engine: image search 'French Revolution causes' (diagram) for 'Causes'
+10:55:54 INFO    copilot.visuals.finder: image search 'French Revolution causes' (diagram, labels preferred): 4 candidate(s), 3 accepted (0 labelled), 5.70 s {'search_s': 2.2, 'download_s': 1.28, 'clip_s': 0.09, 'full_s': 2.11, 'total_s': 5.7}
+  [IMAGE] 'French Revolution causes' -> File:French constitution of 1791.svg (5.7 s)
+10:55:54 INFO    copilot.presentation.engine: no room for an image on 'Causes'
+  [  228.2s] of people, they played a pivotal role in exposing the fault lines of the whole political system i.e. (721 ms)
+  [SLIDE] update 'Causes' [key_points] v9 (7 items)
+  [  236.0s] NCM Phrygium and articulating the popular discontinue. (683 ms)
+  [SLIDE] update 'Causes' [key_points] v10 (6 items)
+10:56:01 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Causes' -> same_concept
+  [UNDERSTAND] French Revolution > Causes (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1228 ms
+               People actively exposed political system faults, adding a social cause
+10:56:01 INFO    copilot.presentation.engine: planner: update French Revolution > Causes (same frame)
+  [SLIDE] update 'Causes' [key_points] v11 (7 items)
+10:56:01 INFO    copilot.presentation.engine: no room for an image on 'Causes'
+  [UNDERSTAND] French Revolution > Causes (same_concept) acts=- hint=key_points lines=1 via groq_main#4 3318 ms
+               Added articulation of popular discontent to the social cause
+  [HEARD] 'NCM Phrygium and discontinue' -> 'and articulating the popular discontent' corrected on the slide (0.5)
+10:56:11 INFO    copilot.presentation.engine: revised S7: The people actively exposed political system faults and articulated popular discontent
+10:56:11 INFO    copilot.presentation.engine: planner: noop French Revolution > Causes (nothing to display)
+10:56:11 INFO    copilot.presentation.engine: concern 6cb7bc6c9329 (transcription, applied=True): 0 element(s); slide shows 'and articulating the popular discontent'
+  [SLIDE] update 'Causes' [key_points] v12 (7 items)
+  [  250.4s] Stages of French Revolution Stage 1 The meeting of the State General Despite the non-Aristocratic members outnumbering the aristocrats in terms of the population, yet (751 ms)
+  [SLIDE] update 'Causes' [key_points] v13 (8 items)
+  [  263.0s] They could not output it by the other two bodies. Before the meeting of the estate general on May 5th, members of the third estate began to mobilize the support of equal voting rights, which would (960 ms)
+  [SLIDE] update 'Causes' [key_points] v14 (8 items)
+  [UNDERSTAND] French Revolution > Stages (sibling_concept) acts=process hint=timeline lines=2 via groq_main#4 1915 ms
+               Introduced Stage 1 of the Revolution: the Estates General meeting and the third estate’s demand for equal voting rights.
+10:56:39 INFO    copilot.presentation.engine: planner: continue French Revolution > Stages (new facet)
+10:56:39 INFO    copilot.presentation.engine: no image for 'Stages': process needs the full width
+  [SLIDE] update 'Causes' [key_points] v15 (7 items)
+  [SLIDE] add    'Stages' [process_flow] v1 (2 items)
+  [  275.3s] We base on head and not by status. While the middle class believe that (576 ms)
+  [  281.0s] Fiscal and judicial reforms were the need of the nobles were against the idea of giving up the privileges they had enjoyed under the (780 ms)
+  [  292.1s] Traditional system when the meeting was closed. (598 ms)
+  [  295.1s] Conveit the (306 ms)
+  [UNDERSTAND] French Revolution > Stages (elaboration) acts=explanation hint=key_points lines=3 via groq_main#4 1802 ms
+               Teacher explained middle‑class merit ideas and noble resistance during the Estates General closure.
+10:56:56 INFO    copilot.presentation.engine: planner: update French Revolution > Stages (same frame)
+10:56:56 INFO    copilot.presentation.engine: no image for 'Stages': process needs the full width
+  [SLIDE] update 'Stages' [process_flow] v2 (5 items)
+  [  296.9s] Education, nutrition, over the voting process has turned to open hostel. (644 ms)
+  [  301.6s] Between the three orders, thus the original purpose of the meeting and the authority of the king who called it being neglected. (643 ms)
+  [UNDERSTAND] French Revolution > Stages (digression) acts=- hint=none lines=2 via groq_main#4 1615 ms
+               No clear new content; transcription errors detected.
+  [HEARD] 'Conveit' -> 'Convey' corrected on the slide (0.5)
+  [HEARD] 'Education, nutrition, over the voting process has turned to open hostel' -> '[Unclear content – likely mis‑heard]' corrected on the slide (0.5)
+10:57:10 INFO    copilot.presentation.engine: planner: noop French Revolution > Stages (digression)
+10:57:10 INFO    copilot.presentation.engine: concern d3218c83a70e (transcription, applied=True): 0 element(s); slide shows 'Convey'
+10:57:10 INFO    copilot.presentation.engine: concern b593390a69dc (transcription, applied=True): 0 element(s); slide shows '[Unclear content – likely mis‑heard]'
+  [UNDERSTAND] French Revolution > Stages (same_concept) acts=explanation hint=process_flow lines=1 via groq_main#4 3970 ms
+               Teacher explained that the Estates General closed because its original purpose and the king’s authority were neglected, keeping the old system.
+10:57:20 INFO    copilot.presentation.engine: revised S5: Closure ignored meeting’s purpose and king’s authority, preserving traditional system
+10:57:20 INFO    copilot.presentation.engine: planner: update French Revolution > Stages (same frame)
+10:57:20 INFO    copilot.presentation.engine: no image for 'Stages': process needs the full width
+  [SLIDE] update 'Stages' [process_flow] v3 (5 items)
+  [  311.8s] With further talks having failed the third estate met along and formerly adopted the title of National Assembly. On June 17, 1789, they gathered in the nearby Indore Tennis Court and took the oath of office. (864 ms)
+  [SLIDE] update 'Stages' [process_flow] v4 (6 items)
+  [  324.8s] This oath was known as the Tennis Court Oath. The members of this new assembly go not to this prince until the reforms they had initiated. (939 ms)
+  [SLIDE] update 'Stages' [process_flow] v5 (6 items)
+10:57:39 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Stages' -> same_concept
+  [UNDERSTAND] French Revolution > Stages (same_concept) acts=process hint=process_flow lines=2 via groq_main#4 4662 ms
+               The third estate created the National Assembly and pledged the Tennis Court Oath.
+10:57:39 INFO    copilot.presentation.engine: planner: update French Revolution > Stages (same frame)
+10:57:39 INFO    copilot.presentation.engine: no image for 'Stages': process needs the full width
+  [SLIDE] update 'Stages' [process_flow] v6 (5 items)
+  [SLIDE] update 'Stages' [process_flow] v7 (7 items)
+  [  336.0s] Seeing no other option, Louis XVI had to absorb the three assemblies into the new order. Stage 2, the French Revolution begins. (778 ms)
+  [SLIDE] update 'Stages' [process_flow] v8 (8 items)
+  [UNDERSTAND] French Revolution > Stages (same_concept) acts=process hint=process_flow lines=1 via groq_main#5 1284 ms
+               Louis XVI merged the three estates, marking the start of the Revolution
+10:57:44 INFO    copilot.presentation.engine: planner: update French Revolution > Stages (same frame)
+10:57:44 INFO    copilot.presentation.engine: no image for 'Stages': process needs the full width
+  [SLIDE] update 'Stages' [process_flow] v9 (7 items)
+  [SLIDE] update 'Stages' [process_flow] v10 (8 items)
+  [  349.7s] Stage 3 Declaration of Rights of Man Stage 4 Regime of Terror (621 ms)
+  [SLIDE] update 'Stages' [process_flow] v11 (9 items)
+  [  356.0s] Stay's fun. (339 ms)
+  [SLIDE] update 'Stages' [process_flow] v12 (8 items)
+  [  357.2s] End of the French Revolution. (340 ms)
+10:58:00 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Stages' -> same_concept
+  [UNDERSTAND] French Revolution > Stages (same_concept) acts=process hint=process_flow lines=3 via groq_main#4 1758 ms
+               Added stages 3 and 4 and noted the end of the French Revolution.
+10:58:00 INFO    copilot.presentation.engine: planner: update French Revolution > Stages (same frame)
+10:58:00 INFO    copilot.presentation.engine: no image for 'Stages': process needs the full width
+  [SLIDE] update 'Stages' [process_flow] v13 (9 items)
+  [SLIDE] add    'Stages' [process_flow] v1 (2 items)
+  [  361.5s] Significance of French Revolution. (610 ms)
+  [  363.8s] After all its fault, (317 ms)
+  [  365.7s] The French solution is highly regarded as a turning point in modern history as the rise of new ideas stem. (724 ms)
+  [  371.0s] In liberalism, enlightenment and democracy, these ideals were carried out. (708 ms)
+  [UNDERSTAND] French Revolution > Significance (sibling_concept) acts=explanation hint=key_points lines=3 via groq_main#4 1411 ms
+               The French Revolution is presented as a turning point that sparked new ideas in modern history.
+10:58:16 INFO    copilot.presentation.engine: planner: continue French Revolution > Significance (new facet)
+10:58:16 INFO    copilot.presentation.engine: image hint 'French Revolution Significance' for 'Why French Revolution matters' from its sibling subtopic
+  [SLIDE] add    'Why French Revolution matters' [key_points] v1 (2 items)
+10:58:16 INFO    copilot.presentation.engine: image search 'French Revolution Significance' (diagram) for 'Why French Revolution matters'
+10:58:20 INFO    copilot.visuals.finder: image search 'French Revolution Significance' (diagram, labels preferred): 3 candidate(s), 3 accepted (0 labelled), 3.59 s {'search_s': 1.62, 'download_s': 0.67, 'clip_s': 0.06, 'full_s': 1.23, 'total_s': 3.59}
+  [IMAGE] 'French Revolution Significance' -> File:French constitution of 1791.svg (3.6 s)
+10:58:20 INFO    copilot.presentation.engine: image 'French Revolution Significance' on 'Why French Revolution matters': File:French constitution of 1791.svg
+  [SLIDE] update 'Why French Revolution matters' [key_points] v2 (3 items)
+  [  376.2s] Throughout Europe by French armies that fought many wars. (522 ms)
+  [  381.4s] To preserve the republic existence, it inspired the common folk. (651 ms)
+  [  385.6s] In Europe, who rise against their own monarchs. (557 ms)
+  [  389.8s] In a wave of revolutionary fear. (728 ms)
+  [UNDERSTAND] French Revolution > Significance (elaboration) acts=explanation hint=key_points lines=3 via groq_main#4 5408 ms
+               The Revolution’s significance includes spreading liberal, Enlightenment, and democratic ideals across Europe and inspiring ordinary people to defend the republic.
+10:58:32 INFO    copilot.presentation.engine: planner: update French Revolution > Significance (same frame)
+  [SLIDE] update 'Why French Revolution matters' [key_points] v3 (6 items)
+  [UNDERSTAND] French Revolution > Significance (same_concept) acts=explanation hint=key_points lines=2 via groq_main#5 1527 ms
+               The Revolution inspired uprisings and a wave of fear throughout Europe.
+10:58:42 INFO    copilot.presentation.engine: planner: update French Revolution > Significance (same frame)
+  [SLIDE] update 'Why French Revolution matters' [key_points] v4 (6 items)
+  [SLIDE] add    'Why French Revolution matters' [key_points] v1 (2 items)
+10:58:42 INFO    copilot.presentation.engine: image 'French Revolution Significance' kept on 'Why French Revolution matters' (next part of a topic with an image)
+  [SLIDE] update 'Why French Revolution matters' [key_points] v2 (3 items)
+  [  393.1s] Although most were harshly put down, the revolutions would continue into the early years of the 19th century which saw the fall of many absolute monarchs all over Europe. (843 ms)
+  [SLIDE] update 'Why French Revolution matters' [key_points] v3 (4 items)
+  [  404.9s] Above all, the French Revolution brought an end of feudalism and made a path for future advances in broadly defined individual freedoms. (714 ms)
+  [SLIDE] update 'Why French Revolution matters' [key_points] v4 (4 items)
+  [  415.7s] (dropped: filler_hallucination) Thank you.
+  [UNDERSTAND] French Revolution > Significance (elaboration) acts=explanation hint=key_points lines=2 via groq_main#4 1992 ms
+               The Revolution’s impact lasted into the 19th century, ending feudalism and fostering individual freedoms across Europe.
+10:58:57 INFO    copilot.presentation.engine: planner: update French Revolution > Significance (same frame)
+  [SLIDE] update 'Why French Revolution matters' [key_points] v5 (3 items)
+  [SLIDE] update 'Why French Revolution matters' [key_points] v6 (5 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261015-105146-025e: 53 segments, 856 words, state v118, 527 events logged
+        CommandReceived=28, ConceptSignal=53, ConcernRaised=9, DeckState=34, ImageChoices=4, ImageReady=3, ImageRequested=3, InterpretRequested=32, InterpretationReady=32, LifecycleChanged=5, SlideContextChanged=29, SlideOverflow=2, SlidePatch=67, StateChanged=118, TranscriptFinal=53, UtteranceClassified=53, UtteranceDropped=2
+        stt: 53 published, 2 dropped, latency p50=683 ms p95=939 ms max=973 ms
+        understanding: 32 interpretations (32 by LLM, 0 fallbacks, 0 repaired), max 7 calls/min, prompt tokens max=2052 avg=1921, latency p50=1915 ms max=5408 ms
+        presentation: 10 slides; planner ops {'new': 1, 'update': 23, 'noop': 5, 'continue': 3}; revisions 5, corrections shown 4, shown as said 0
+        images: {'requests': 3, 'found': 3, 'none': 0}; slides with an image 4/10
+          1. [key_points] French Revolution [part 1]  (v6, ['points'])
+          2. [key_points] French Revolution [part 2]  (v5, ['points'])
+          3. [definition] French Revolution [part 3]  (v8, ['definition', 'image', 'points'])
+          4. [definition] French Revolution [part 4]  (v2, ['definition', 'image'])
+          5. [key_points] Causes [part 1]  (v7, ['points'])
+          6. [key_points] Causes [part 2]  (v15, ['points'])
+          7. [process_flow] Stages [part 1]  (v13, ['process', 'points'])
+          8. [process_flow] Stages [part 2]  (v1, ['process'])
+          9. [key_points] Why French Revolution matters [part 1]  (v4, ['points', 'image'])
+          10. [key_points] Why French Revolution matters [part 2]  (v6, ['points', 'image'])
+        providers: {'groq_main#4': 25, 'groq_main#5': 7}; triggers: {'words': 9, 'max_wait': 8, 'boundary': 7, 'pause': 8}; outline: ['French Revolution > Overview, Causes, Stages, Significance']; concerns: 9
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261015-105146-025e\session.sqlite

@@ -1,0 +1,140 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (14.2 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (1.1 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_3         openai/gpt-oss-120b           112k of 200k tokens IN USE
+        GROQ_API_KEY_4         openai/gpt-oss-120b           190k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           195k of 200k tokens ok
+        GROQ_API_KEY_1         openai/gpt-oss-120b            13k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~3 min
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 239 lecture minutes
+
+[READY] session 20261014-193148-097a
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+19:32:07 INFO    copilot.visuals.service: CLIP ready in 2.4 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, digestive, photoelectrons, cerebrum, cerebellum, intestine ...)
+  [    1.1s] Schrodinger's wave equation or Schrodinger's equation is one of the most fundamental equations of quantum physics and is an important topic for us. (1030 ms)
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (new_topic) acts=definition hint=definition lines=1 via groq_main#3 2270 ms
+               Introduced Schrödinger's equation as a fundamental quantum physics equation
+19:32:37 INFO    copilot.presentation.engine: planner: new Quantum Physics > Schrödinger's Equation (first content slide)
+  [SLIDE] add    "Schrödinger's Equation" [definition] v1 (1 items)
+  [   11.1s] The equation also called Schrodinger equation is basically a differential equation and is widely used in chemistry and physics to solve problems based on the atomic structure of matter. (1139 ms)
+  [SLIDE] update "Schrödinger's Equation" [definition] v2 (1 items)
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (elaboration) acts=- hint=definition lines=1 via groq_main#3 1556 ms
+               Equation is a differential equation widely used in chemistry and physics for atomic structure problems
+19:33:00 INFO    copilot.presentation.engine: revised S1: Schrödinger's equation: A fundamental differential equation used in chemistry and physics to solve atomic structure problems
+19:33:00 INFO    copilot.presentation.engine: planner: noop Quantum Physics > Schrödinger's Equation (nothing to display)
+  [SLIDE] update "Schrödinger's Equation" [definition] v3 (1 items)
+  [SLIDE] update "Schrödinger's Equation" [definition] v4 (1 items)
+  [   21.5s] The Schrodinger equation, the behaviour of particles within electric fields of force, or the change of the physical quantity over time, having Schrodinger developed the equation was even awarded, awarded. (1217 ms)
+  [SLIDE] update "Schrödinger's Equation" [definition] v5 (1 items)
+  [   36.2s] It was a global site in 1933. (1244 ms)
+  [SLIDE] update "Schrödinger's Equation" [definition] v6 (1 items)
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (elaboration) acts=explanation hint=definition lines=1 via groq_main#3 1704 ms
+               Added how the equation describes particle behavior and noted Schrödinger's Nobel award.
+  [HEARD] 'electric fields of force, was even awarded, awarded' -> 'electric fields, was awarded the Nobel Prize' corrected on the slide (0.5)
+19:33:08 INFO    copilot.presentation.engine: planner: update Quantum Physics > Schrödinger's Equation (same frame)
+19:33:08 INFO    copilot.presentation.engine: concern 2e943bdb63f5 (transcription, applied=True): 0 element(s); slide shows 'electric fields, was awarded the Nobel Prize'
+  [SLIDE] update "Schrödinger's Equation" [definition] v7 (4 items)
+19:33:08 INFO    copilot.notes.service: notes follow: slide "Schrödinger's Equation" -> page 5
+  [   39.9s] Schrodinger wave equation is a mathematical expression involving the inertia and position of the left on its face and face, taking into (1030 ms)
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (digression) acts=- hint=none lines=1 via groq_main#3 1998 ms
+               No new slide content; statement appears unrelated or mis‑heard.
+  [HEARD] 'global site' -> '' corrected on the slide (0.5)
+19:33:16 INFO    copilot.presentation.engine: planner: noop Quantum Physics > Schrödinger's Equation (digression)
+  [   47.5s] Account the Maturb Wave nature of the ehrlich, organs and an atom. It is based on the three considerations. They are Classical Blaze Wave Equation, (1016 ms)
+  [SLIDE] update "Schrödinger's Equation" [definition] v8 (5 items)
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (elaboration) acts=explanation hint=concept lines=2 via groq_main#3 2722 ms
+               Teacher explained that the Schrödinger wave equation expresses energy and position, incorporates particle wave nature, and builds on classical wave concepts.
+  [HEARD] 'inertia and position of the left on its face and face' -> 'energy and position of a particle' corrected on the slide (0.5)
+  [HEARD] 'Maturb Wave nature of the ehrlich, organs and an atom' -> 'wave nature of electrons, protons and an atom' corrected on the slide (0.5)
+19:33:33 INFO    copilot.presentation.engine: planner: update Quantum Physics > Schrödinger's Equation (same frame)
+19:33:33 INFO    copilot.presentation.engine: concern dd9be56c0ad0 (transcription, applied=True): 1 element(s); slide shows 'energy and position of a particle'
+19:33:33 INFO    copilot.presentation.engine: concern a8f137f14414 (transcription, applied=True): 0 element(s); slide shows 'wave nature of electrons, protons and an atom'
+  [SLIDE] update "Schrödinger's Equation" [definition] v9 (4 items)
+  [SLIDE] update "Schrödinger's Equation" [definition] v10 (7 items)
+19:33:33 INFO    copilot.presentation.engine: image search 'wavefunction diagram' (diagram) for "Schrödinger's Equation"
+  [   57.1s] Probably, the hypothesis of the matter wave is the conservation of energy. The Schrodinger equation gives us a detailed account of the form of the wave function or probability waves that control the motion of some smaller particles. (1301 ms)
+19:33:38 INFO    copilot.visuals.finder: image search 'wavefunction diagram': 7 slow download(s) dropped
+19:33:38 INFO    copilot.presentation.engine: image 'wavefunction diagram': none (downloads failed)
+  [IMAGE] 'wavefunction diagram' -> none (downloads failed) (4.5 s)
+  [   71.2s] The equation also explains how the waves are influenced by external factors. Moreover, the equation makes use of the energy conservation concept that offers details about the behavior of the electron. (1129 ms)
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (elaboration) acts=explanation hint=definition lines=1 via groq_main#3 2848 ms
+               The equation gives a detailed form of the wave function that controls particle motion.
+  [CONCERN] (factual) the hypothesis of the matter wave is the conservation of energy -> The hypothesis of matter waves is that particles exhibit wave-like behavior (de Broglie hypothesis) (0.95, slide shows the correction)
+19:33:52 INFO    copilot.presentation.engine: planner: update Quantum Physics > Schrödinger's Equation (same frame)
+19:33:52 INFO    copilot.presentation.engine: concern 7f060fd45d79 (factual, applied=True): 0 element(s); slide shows 'wave-like behavior'
+  [SLIDE] update "Schrödinger's Equation" [definition] v11 (7 items)
+  [SLIDE] add    "Schrödinger's Equation" [key_points] v1 (1 items)
+  [   83.3s] Attached to the nucleus. Beside by calculating the Schrodinger equation, we obtain (753 ms)
+  [SLIDE] update "Schrödinger's Equation" [key_points] v2 (2 items)
+  [   89.4s] Psi and Tyto which help us determine the quantum system. (767 ms)
+  [SLIDE] update "Schrödinger's Equation" [key_points] v3 (2 items)
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (elaboration) acts=explanation hint=none lines=3 via groq_main#3 2373 ms
+               The equation explains external influences on waves and uses energy conservation to detail electron behavior, yielding ψ and τ for the system.
+  [HEARD] 'Attached to the nucleus. Beside by calculating the Schrodinger equation, we obtain' -> 'Potential energy attached to the nucleus; solving the Schrödinger equation yields the wave function' corrected on the slide (0.5)
+  [HEARD] 'Psi and Tyto' -> 'Ψ (psi) and τ (tau)' corrected on the slide (0.5)
+19:34:01 INFO    copilot.presentation.engine: planner: update Quantum Physics > Schrödinger's Equation (same frame)
+19:34:01 INFO    copilot.presentation.engine: concern 71ac9307499d (transcription, applied=True): 0 element(s); slide shows 'Potential energy attached to the nucleus; solving the Schrödinger equation yields the wave function'
+19:34:01 INFO    copilot.presentation.engine: concern 9c0d7ade3145 (transcription, applied=True): 0 element(s); slide shows 'Ψ (psi) and τ (tau)'
+  [SLIDE] update "Schrödinger's Equation" [key_points] v4 (1 items)
+  [SLIDE] update "Schrödinger's Equation" [key_points] v5 (4 items)
+  [   94.3s] Numbers as well as the orientation and shape of orbitals where electrons are bound in the molecules or an atom. (945 ms)
+  [SLIDE] update "Schrödinger's Equation" [key_points] v6 (5 items)
+  [  103.2s] There are two equations which are time-dependent Schrodinger equation and the time-independent Schrodinger equation. The time-dependent Schrodinger equation is represented as this. (1192 ms)
+  [SLIDE] update "Schrödinger's Equation" [key_points] v7 (5 items)
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 2119 ms
+               The equation also determines orbital numbers, orientations, and shapes for bound electrons.
+19:34:22 INFO    copilot.presentation.engine: planner: update Quantum Physics > Schrödinger's Equation (same frame)
+  [SLIDE] update "Schrödinger's Equation" [key_points] v8 (6 items)
+  [  121.5s] The timing depends on your equation as proposed for that expression. (783 ms)
+  [SLIDE] update "Schrödinger's Equation" [key_points] v9 (5 items)
+19:34:30 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic "Schrödinger's Equation" -> same_concept
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (same_concept) acts=classification hint=hierarchy lines=1 via groq_main#3 2403 ms
+               Introduces the two forms of Schrödinger's equation: time‑dependent and time‑independent.
+19:34:30 INFO    copilot.presentation.engine: planner: update Quantum Physics > Schrödinger's Equation (same frame)
+  [SLIDE] add    "Schrödinger's Equation" [hierarchy] v1 (1 items)
+  [  126.8s] That's half time. We'll see. That's half a week. (1140 ms)
+19:34:37 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The timing depends on your equation as proposed for that expression']
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_main#4 1482 ms
+               Clarifies that timing depends on which form of the Schrödinger equation is used.
+19:34:37 INFO    copilot.presentation.engine: planner: update Quantum Physics > Schrödinger's Equation (same frame)
+  [SLIDE] update "Schrödinger's Equation" [hierarchy] v2 (3 items)
+  [  132.0s] Energy operator, Hamiltonian, and E-Hetero-Hetero-Hetero-Hetero-Hetero-Hetero-Hetero. (1933 ms)
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (digression) acts=- hint=none lines=1 via groq_main#3 1560 ms
+               Teacher mentions "half time" and "half a week" without adding slide content.
+19:34:45 INFO    copilot.presentation.engine: planner: noop Quantum Physics > Schrödinger's Equation (digression)
+  [UNDERSTAND] Quantum Physics > Schrödinger's Equation (elaboration) acts=definition hint=definition lines=1 via groq_main#4 3859 ms
+               Introduced the energy operator, also called the Hamiltonian, as the total‑energy term in Schrödinger's equation.
+  [HEARD] 'E-Hetero-Hetero-Hetero-Hetero-Hetero-Hetero-Hetero' -> 'energy term E' corrected on the slide (0.5)
+19:34:56 INFO    copilot.presentation.engine: concern 62cfb7a3820f (transcription, applied=True): 0 element(s); slide shows 'energy term E'
+  [SLIDE] add    "Schrödinger's Equation" [members] v1 (1 items)
+19:35:00 INFO    copilot.presentation.engine: concern 7f060fd45d79 dismissed: slide shows 'wave-like behavior'
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261014-193148-097a: 15 segments, 294 words, state v42, 189 events logged
+        CommandReceived=16, ConceptSignal=15, ConcernRaised=8, ConcernResolved=1, DeckState=13, ImageReady=1, ImageRequested=1, InterpretRequested=12, InterpretationReady=12, LifecycleChanged=5, SlideContextChanged=10, SlidePatch=23, StateChanged=42, TranscriptFinal=15, UtteranceClassified=15
+        stt: 15 published, 0 dropped, latency p50=1129 ms p95=1933 ms max=1933 ms
+        understanding: 12 interpretations (12 by LLM, 0 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=2019 avg=1898, latency p50=2270 ms max=3859 ms
+        presentation: 4 slides; planner ops {'new': 1, 'noop': 3, 'update': 8}; revisions 1, corrections shown 1, shown as said 0
+        images: {'requests': 1, 'found': 0, 'none': 1}; slides with an image 0/4
+          1. [definition] Schrödinger's Equation [part 1]  (v11, ['definition', 'points'])
+          2. [key_points] Schrödinger's Equation [part 2]  (v9, ['points'])
+          3. [hierarchy] Schrödinger's Equation [part 3]  (v2, ['hierarchy', 'callout', 'callout'])
+          4. [members] Schrödinger's Equation [part 4]  (v1, ['definition'])
+        providers: {'groq_main#3': 10, 'groq_main#4': 2}; triggers: {'pause': 5, 'max_wait': 3, 'boundary': 2, 'words': 2}; outline: ["Quantum Physics > Schrödinger's Equation"]; concerns: 8
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261014-193148-097a\session.sqlite

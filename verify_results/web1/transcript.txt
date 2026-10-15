@@ -1,0 +1,70 @@
+[    0.7] So you can see that here. There's most bacteria. There's about one micron to 10 micron. But our cells span from tens of microns to hundreds of microns, and even larger than that because the
+[   14.0] The human egg is on the order of a millimeter in size. This is not a human egg, but this is a frog egg. You can see often the egg cells are the biggest of all cells. The biggest cell is an ostrich egg. It's about 15 centimeters, I believe.
+[   29.1] Okay, so cells span a huge wide range of sizes.
+[   35.1] I'm going to start with the simplest, which is a bacteria cell. And what I want to point out about this cell is its simplicity. OK? So here you can see this is an electron micrograph of a bacterial cell here.
+[   49.0] And this is a cartoon just illustrating some of the key features. You have a plasma membrane and a cell wall. The cell wall here is in sort of the periplasmic space is in green.
+[   62.3] And this encapsulates the cytoplasm. And the only other real structure you can see in this case is this nucleoid structure in the middle. And what the nucleoid is is just the chromosome of the bacterium.
+[   78.5] OK? And I want to point out that later on in the course, Professor Imperiali is going to come back and tell you about antibiotics and how bacteria can develop antibiotic resistance.
+[   91.6] Which is of critical importance for biology and medicine.
+[   97.8] So our cells are more complicated than this. And that's because if you look at this EM here, you can see that eukaryotic cells, and we are eukaryotes, have membrane-bound compartments. There's a nucleus here that houses
+[  112.8] Our nuclear DNA. And also, there is a series of membrane compartments that span the cytoplasm.
+[  122.7] OK? Now, our cells, even in a single organism, such as us, our cells have incredible diversity and specialization.
+[  135.5] So there's diversity within a single organism. There is specialization.
+[  145.2] So as we develop from
+[  147.7] A single cell.
+[  149.6] Our cells acquire properties that allow them to carry out specific functions in our bodies. And an extreme example of this is shown up here. These are pictures or drawings of neurons.
+[  164.6] From Ramon y Cajal. And you can see how this looks nothing like the cartoon picture of a cell I just showed you. These cells have
+[  174.4] Highly dendritic sort of arrays of protrusions. And these cells have evolved such that they are very good at sort of transmitting information in the body, right? An extreme example of a nerve is a sciatic nerve.
+[  188.9] Which extends from the base of your spinal cord all the way down into your foot. So it's about a meter long. That's an extreme specialization for a cell.
+[  199.1] OK? So these cells are specialized, but what's important to note is that
+[  205.7] Within a single organism, the genomic DNA of a cell is more or less the same. OK, so.
+[  215.1] Genomic DNA.
+[  219.3] Is the same with some exceptions, some of which we'll get to in the course. The genomic DNA is the same. What's different is the genes that are being expressed in these cells and the proteins that they encode that.
+[  232.7] Give these cells different functions.
+[  237.1] So what's different...
+[  240.0] And what allows cells to acquire these different functionalities is a different gene expression.
+[  261.1] OK, so that's the overview. Now I want to talk about compartments.
+[  269.0] And if we go back to this cartoon that I showed you from your
+[  274.5] I just wanted to point out that right now at MIT and the Broad, there is a project that's ongoing to really define all the cell types that are present in humans.
+[  288.6] And this is known as the human cell atlas.
+[  292.8] And I just want you to take a minute to think about, if you wanted to find different cell types, what would you look at to classify these cell types?
+[  302.9] Anyone have an idea?
+[  305.2] Yes, what's your name? Rachel.
+[  309.1] What's that? You could look at function. That might be a little subjective in how to interpret. What defines the function of the cell?
+[  323.3] But is there something, I guess, within that cell that would define what its function is?
+[  329.1] Yeah, what's your name?
+[  331.1] Semantar? Semantar. Semantak?
+[  334.3] Alright, yeah.
+[  336.5] Gene expression, right? What genes are these cells expressing, right?
+[  341.4] So what they're doing is they're isolating single cells from tissues. And then they're looking at gene expression. So which type of molecule here would be the molecule you'd want to look at if you wanted a gene expression?
+[  355.4] Want to look at gene expression.
+[  360.9] So, uh...
+[  364.0] Not miles.
+[  365.5] Malik.
+[  369.2] mRNA, exactly. Malik is exactly right. So you look at the mRNA, right? Because if there's mRNA, that means that gene was expressed and is possibly encoding the translation of a protein.
+[  384.2] So that's what they're doing. They're isolating single cells and doing a massive single cell RNA-seq project. And that's helping to identify new cell types in the human body.
+[  396.0] OK, coming back to compartments, so I showed you this picture. You can see there are lots of membrane-bound compartments in the cell. You can see the lines in this cartoon represent lipid bilayers. And so these are compartments.
+[  410.7] Departments that are completely encapsulated by a lipid bilayer. And I'm going to remind you of something that Professor Imperiali told you about already. And the reason I'm saying it again is because it is so freaking important.
+[  425.4] OK, so if we consider a lipid bilayer.
+[  430.5] Where the circles are the polar head groups of the lipids and the squiggly lines are the fatty acid chains, I'm not going to draw all the fatty acid chains.
+[  444.4] So this is a lipid bilayer.
+[  451.4] And these head groups, are they hydrophilic or hydrophobic?
+[  457.9] Yes, what's your name? Stephen.
+[  460.8] They're hydrophilic. They like water, right? The water is on sort of the different faces here. These are hydrophilic.
+[  472.8] Okay, how about this central region here?
+[  476.5] Yes, name? Ori. Ori. Hydrophobic. Hydrophobic. Good. Right? That's excellent. OK.
+[  485.1] So these are hydrophobic.
+[  488.8] Hydrophobic. So what that means is you have this hydrophobic layer that is surrounding each of these compartments, and that's going to serve as a barrier such that water and things dissolved in water cannot pass.
+[  502.0] So each of these compartments that are membrane bound have a
+[  512.0] Properties in the lumen, that's in the interior of the compartment that's going to be different from that of the cytoplasm. And the cell, the interior of the cytoplasm, is going to be different from that of the extracellular space.
+[  527.4] So let me just give you some examples of how things are different inside and outside the cell and also inside and outside these compartments.
+[  537.0] So if we consider
+[  539.3] The Exoplasm.
+[  541.2] Versus the cytoplasm.
+[  547.3] We can consider the concentration of various ions. Now I want to get the concentrations right. Let's consider sodium.
+[  556.3] Monovalent cation, potassium.
+[  561.2] And calcium. I'm just going to use these as illustrations.
+[  566.1] So sodium is concentrated outside the cell, about 150 millimolar.
+[  573.3] And is less concentrated in the cytoplasm. So there's a huge difference in sodium between the outside and the inside of the cell.
+[  583.9] OK, potassium. Now, you might think potassium would be a lot like sodium. It's a monovalent cation. It's a similar size. But it actually shows the flip distribution. So it's 4 millimolar.
+[  597.9] In the exoplasm and a hundred

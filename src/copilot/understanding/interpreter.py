@@ -434,12 +434,21 @@ def _spoken_sentences(lines: Sequence[BufferedLine]) -> list[tuple[int, str]]:
     return out
 
 
+def _announced(text: str) -> str:
+    """The topic a line announces: the spoken cues (F-013: "The second topic is X", "What is X?", "Difference between
+    A and B"), else the older announcement pattern."""
+    from copilot.understanding.cues import detect
+    from copilot.understanding.prompt import announced_subject
+
+    cues = detect(text)
+    cue = cues.of("compare") or cues.of("topic")
+    return cue.name if cue is not None else announced_subject(text)
+
+
 def _confirmed(subject: str, lines: Sequence[BufferedLine]) -> bool:
     """An announced subject counts only when the unit's other words mention it: "Let's learn about MATLAB" (Whisper
     for "matter") followed by sentences about matter is not a slide titled MATLAB (live test 2026-10-06)."""
-    from copilot.understanding.prompt import announced_subject
-
-    rest = " ".join(s for l in lines for s in re.split(r"(?<=[.!?])\s+", l.text) if not announced_subject(s))
+    rest = " ".join(s for l in lines for s in re.split(r"(?<=[.!?])\s+", l.text) if not _announced(s))
     return bool(_stems(subject) & _stems(rest))
 
 
@@ -449,20 +458,18 @@ def fallback_interpretation(state: LectureState, lines: Sequence[BufferedLine]) 
     about X" moves to the subtopic X when the unit goes on to talk about X. Fragments ("diatomic triatomic or ...")
     are not slide text; neither are asides, thanks and short remarks unrelated to the lecture ("Thank you very much",
     "It's a waste of time"); they stay in the transcript and log."""
-    from copilot.understanding.prompt import announced_subject
-
     topic = state.topic(state.current_topic_id)
     sub = state.subtopic()
     title = topic.title if topic else (state.setup.expected_topic or "Lecture")
     acts: list[DiscourseAct] = []
     points: list[str] = []
-    announced = next((a for l in lines if not l.maybe_meta for a in [announced_subject(" ".join(l.text.split()))]
+    announced = next((a for l in lines if not l.maybe_meta for a in [_announced(" ".join(l.text.split()))]
                       if a), "")
     sentences = _spoken_sentences(lines)
     subject = _stems(" ".join([title, sub.title if sub else "", announced, state.slide_context]))
     for n, sentence in sentences:
         tidy = tidy_spoken(" ".join(sentence.split()[:30]))
-        if len(tidy.split()) < 4 or tidy.endswith("?") or announced_subject(tidy) or _NOT_CONTENT.search(tidy):
+        if len(tidy.split()) < 4 or tidy.endswith("?") or _announced(tidy) or _NOT_CONTENT.search(tidy):
             continue
         if len(tidy.split()) < FALLBACK_SHORT_WORDS:
             others = " ".join(s for m, s in sentences if s is not sentence)
@@ -496,6 +503,12 @@ def fallback_interpretation(state: LectureState, lines: Sequence[BufferedLine]) 
             title = named
         else:
             subtopic, relation = named, "sibling_concept"
+    elif topic is None and not state.setup.expected_topic:
+        # no topic yet and none announced: the first term the unit defines names it (test29, Groq unreachable for
+        # the whole lecture: "Economics is an important subject ..." gave 12 slides titled "Lecture")
+        term = next((a.items.term for a in acts if a.act == "definition" and a.items.term), "")
+        if term:
+            title = term
     return Interpretation(topic=title, subtopic=subtopic, relation=relation, acts=acts,
                           representation_hint="definition" if any(a.act == "definition" for a in acts)
                           else "key_points")

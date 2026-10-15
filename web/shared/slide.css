@@ -61,6 +61,16 @@
   to { opacity: 1; transform: none; }
 }
 .provisional { opacity: 0.55; font-style: italic; }
+/* F-013: heard, not yet interpreted: an announced slide's title, a list as the teacher names it */
+.heard { opacity: 0.6; }
+.slide.pending .slide-title { opacity: 0.82; }
+.listening { display: flex; gap: 14px; padding: 22px 6px 0; }
+.listening span { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); opacity: 0.25;
+  animation: listening 1.4s var(--ease) infinite; }
+.listening span:nth-child(2) { animation-delay: 0.2s; }
+.listening span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes listening { 30% { opacity: 0.8; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .listening span { animation: none; opacity: 0.45; } }
 .added { color: var(--muted); }
 .added::after { content: " ✦"; font-size: 0.7em; color: var(--accent-2); vertical-align: super; }
 

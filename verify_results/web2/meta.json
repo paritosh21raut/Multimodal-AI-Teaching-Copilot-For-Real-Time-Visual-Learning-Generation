@@ -1,0 +1,21 @@
+{
+  "name": "web2",
+  "source": "web",
+  "note": "web, chemistry; MIT OCW 5.111 Principles of Chemical Science F14, lec 2 'Discovery of electron and nucleus'; https://archive.org/download/MIT5.111F14/MIT5_111F14_L02_300k.mp4; CC BY-NC-SA 3.0; clip 3:00-13:00",
+  "session_id": "20261015-114312-d473",
+  "date": "2026-10-15 11:53",
+  "title": "",
+  "minutes": 10.0,
+  "utterances": 83,
+  "slides": 9,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [
+    "--audio-file",
+    "artifacts/web_audio/web2.wav",
+    "--no-wait",
+    "--no-open",
+    "--subject",
+    "Chemistry"
+  ]
+}

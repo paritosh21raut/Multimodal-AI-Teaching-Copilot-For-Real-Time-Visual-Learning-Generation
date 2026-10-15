@@ -1,0 +1,628 @@
+{
+ "lectures": 18,
+ "minutes": 191.4,
+ "tokens": 499144,
+ "failed": 0,
+ "total": {
+  "baseline": {
+   "rewritten": 1439,
+   "shown": 3763,
+   "missing": 1400,
+   "distinct": 2127,
+   "slides": 152,
+   "rewritten_share": 0.3824,
+   "missing_share": 0.6582,
+   "per_min": 0.794,
+   "P": 0.7234,
+   "R": 0.3858,
+   "F1": 0.4314,
+   "Pk": 0.3589
+  },
+  "copilot": {
+   "rewritten": 91,
+   "shown": 4515,
+   "missing": 81,
+   "distinct": 1298,
+   "slides": 239,
+   "rewritten_share": 0.0202,
+   "missing_share": 0.0624,
+   "per_min": 1.249,
+   "P": 0.7801,
+   "R": 0.4245,
+   "F1": 0.4908,
+   "Pk": 0.3169
+  }
+ },
+ "paired": {
+  "rewritten": {
+   "mean_a": 0.4144,
+   "mean_b": 0.0227,
+   "diff": 0.3916,
+   "ci": [
+    0.3175,
+    0.4657
+   ],
+   "p": 7.62939453125e-06,
+   "a_better": 18,
+   "n": 18
+  },
+  "missing": {
+   "mean_a": 0.6653,
+   "mean_b": 0.0693,
+   "diff": 0.596,
+   "ci": [
+    0.5102,
+    0.6823
+   ],
+   "p": 7.62939453125e-06,
+   "a_better": 18,
+   "n": 18
+  },
+  "P": {
+   "mean_a": 0.7801,
+   "mean_b": 0.7234,
+   "diff": 0.0567,
+   "ci": [
+    -0.0572,
+    0.1551
+   ],
+   "p": 0.340576171875,
+   "a_better": 12,
+   "n": 18
+  },
+  "Pk": {
+   "mean_a": 0.3589,
+   "mean_b": 0.3169,
+   "diff": 0.042,
+   "ci": [
+    -0.0064,
+    0.0983
+   ],
+   "p": 0.14911651611328125,
+   "a_better": 11,
+   "n": 18
+  }
+ },
+ "per_lecture": [
+  {
+   "lecture": "test3",
+   "units": 47,
+   "tokens": 25377,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 55,
+    "shown": 164,
+    "missing": 53,
+    "distinct": 111,
+    "slides": 12,
+    "per_min": 1.0619469026548671,
+    "P": 0.75,
+    "R": 0.5625,
+    "F1": 0.6429,
+    "Pk": 0.2955
+   },
+   "copilot": {
+    "rewritten": 8,
+    "shown": 196,
+    "missing": 8,
+    "distinct": 86,
+    "slides": 16,
+    "per_min": 1.415929203539823,
+    "P": 0.9231,
+    "R": 0.75,
+    "F1": 0.8276,
+    "Pk": 0.1591
+   }
+  },
+  {
+   "lecture": "test10",
+   "units": 54,
+   "tokens": 25388,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 54,
+    "shown": 225,
+    "missing": 53,
+    "distinct": 120,
+    "slides": 14,
+    "per_min": 0.9589041095890412,
+    "P": 0.6429,
+    "R": 0.7386,
+    "F1": 0.6704,
+    "Pk": 0.2179
+   },
+   "copilot": {
+    "rewritten": 14,
+    "shown": 406,
+    "missing": 7,
+    "distinct": 108,
+    "slides": 19,
+    "per_min": 1.3013698630136987,
+    "P": 0.7083,
+    "R": 0.683,
+    "F1": 0.6782,
+    "Pk": 0.241
+   }
+  },
+  {
+   "lecture": "test14",
+   "units": 22,
+   "tokens": 16234,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 52,
+    "shown": 108,
+    "missing": 52,
+    "distinct": 65,
+    "slides": 2,
+    "per_min": 0.125,
+    "P": 1.0,
+    "R": 0.2222,
+    "F1": 0.3636,
+    "Pk": 0.36
+   },
+   "copilot": {
+    "rewritten": 4,
+    "shown": 98,
+    "missing": 4,
+    "distinct": 45,
+    "slides": 10,
+    "per_min": 0.625,
+    "P": 1.0,
+    "R": 0.6667,
+    "F1": 0.8,
+    "Pk": 0.14
+   }
+  },
+  {
+   "lecture": "test15",
+   "units": 43,
+   "tokens": 32659,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 154,
+    "shown": 230,
+    "missing": 151,
+    "distinct": 162,
+    "slides": 2,
+    "per_min": 0.19047619047619047,
+    "P": 1.0,
+    "R": 0.1603,
+    "F1": 0.2762,
+    "Pk": 0.4921
+   },
+   "copilot": {
+    "rewritten": 4,
+    "shown": 113,
+    "missing": 4,
+    "distinct": 66,
+    "slides": 15,
+    "per_min": 1.4285714285714286,
+    "P": 0.75,
+    "R": 0.2404,
+    "F1": 0.364,
+    "Pk": 0.4603
+   }
+  },
+  {
+   "lecture": "test17",
+   "units": 23,
+   "tokens": 14644,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 69,
+    "shown": 109,
+    "missing": 68,
+    "distinct": 79,
+    "slides": 2,
+    "per_min": 0.3076923076923077,
+    "P": 0.5,
+    "R": 0.1071,
+    "F1": 0.1736,
+    "Pk": 0.5517
+   },
+   "copilot": {
+    "rewritten": 2,
+    "shown": 65,
+    "missing": 2,
+    "distinct": 21,
+    "slides": 7,
+    "per_min": 1.0769230769230769,
+    "P": 0.7857,
+    "R": 0.5714,
+    "F1": 0.6429,
+    "Pk": 0.2986
+   }
+  },
+  {
+   "lecture": "test20",
+   "units": 32,
+   "tokens": 23958,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 117,
+    "shown": 175,
+    "missing": 113,
+    "distinct": 119,
+    "slides": 1,
+    "per_min": 0.14492753623188406,
+    "P": 1.0,
+    "R": 0.0871,
+    "F1": 0.1603,
+    "Pk": 0.3627
+   },
+   "copilot": {
+    "rewritten": 5,
+    "shown": 215,
+    "missing": 5,
+    "distinct": 54,
+    "slides": 10,
+    "per_min": 1.4492753623188406,
+    "P": 1.0,
+    "R": 0.3485,
+    "F1": 0.5167,
+    "Pk": 0.2451
+   }
+  },
+  {
+   "lecture": "test21",
+   "units": 36,
+   "tokens": 23476,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 55,
+    "shown": 120,
+    "missing": 53,
+    "distinct": 114,
+    "slides": 13,
+    "per_min": 1.5476190476190474,
+    "P": 0.5385,
+    "R": 0.6364,
+    "F1": 0.5833,
+    "Pk": 0.2941
+   },
+   "copilot": {
+    "rewritten": 3,
+    "shown": 290,
+    "missing": 3,
+    "distinct": 94,
+    "slides": 12,
+    "per_min": 1.4285714285714286,
+    "P": 0.6,
+    "R": 0.2727,
+    "F1": 0.375,
+    "Pk": 0.3824
+   }
+  },
+  {
+   "lecture": "test22",
+   "units": 42,
+   "tokens": 28850,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 112,
+    "shown": 169,
+    "missing": 109,
+    "distinct": 157,
+    "slides": 9,
+    "per_min": 0.9574468085106382,
+    "P": 0.5556,
+    "R": 0.625,
+    "F1": 0.5882,
+    "Pk": 0.4
+   },
+   "copilot": {
+    "rewritten": 3,
+    "shown": 268,
+    "missing": 3,
+    "distinct": 98,
+    "slides": 18,
+    "per_min": 1.9148936170212765,
+    "P": 0.7778,
+    "R": 0.875,
+    "F1": 0.8235,
+    "Pk": 0.1429
+   }
+  },
+  {
+   "lecture": "test23",
+   "units": 73,
+   "tokens": 31432,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 51,
+    "shown": 169,
+    "missing": 46,
+    "distinct": 174,
+    "slides": 37,
+    "per_min": 2.681159420289855,
+    "P": 0.4459,
+    "R": 0.918,
+    "F1": 0.5999,
+    "Pk": 0.2657
+   },
+   "copilot": {
+    "rewritten": 10,
+    "shown": 358,
+    "missing": 7,
+    "distinct": 128,
+    "slides": 34,
+    "per_min": 2.463768115942029,
+    "P": 0.5238,
+    "R": 0.613,
+    "F1": 0.5645,
+    "Pk": 0.3712
+   }
+  },
+  {
+   "lecture": "test24",
+   "units": 42,
+   "tokens": 27743,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 86,
+    "shown": 193,
+    "missing": 85,
+    "distinct": 127,
+    "slides": 8,
+    "per_min": 0.6956521739130435,
+    "P": 0.6875,
+    "R": 0.5227,
+    "F1": 0.5936,
+    "Pk": 0.25
+   },
+   "copilot": {
+    "rewritten": 4,
+    "shown": 304,
+    "missing": 4,
+    "distinct": 93,
+    "slides": 16,
+    "per_min": 1.391304347826087,
+    "P": 0.8889,
+    "R": 0.7636,
+    "F1": 0.8211,
+    "Pk": 0.1625
+   }
+  },
+  {
+   "lecture": "test25",
+   "units": 39,
+   "tokens": 25785,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 84,
+    "shown": 155,
+    "missing": 83,
+    "distinct": 122,
+    "slides": 8,
+    "per_min": 0.898876404494382,
+    "P": 0.5625,
+    "R": 0.3393,
+    "F1": 0.3875,
+    "Pk": 0.394
+   },
+   "copilot": {
+    "rewritten": 2,
+    "shown": 328,
+    "missing": 2,
+    "distinct": 94,
+    "slides": 17,
+    "per_min": 1.9101123595505618,
+    "P": 0.7083,
+    "R": 0.6577,
+    "F1": 0.6213,
+    "Pk": 0.3435
+   }
+  },
+  {
+   "lecture": "test29",
+   "units": 52,
+   "tokens": 35605,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 83,
+    "shown": 202,
+    "missing": 81,
+    "distinct": 153,
+    "slides": 13,
+    "per_min": 0.9558823529411765,
+    "P": 0.6923,
+    "R": 0.3397,
+    "F1": 0.4558,
+    "Pk": 0.4551
+   },
+   "copilot": {
+    "rewritten": 0,
+    "shown": 391,
+    "missing": 0,
+    "distinct": 70,
+    "slides": 13,
+    "per_min": 0.9558823529411765,
+    "P": 1.0,
+    "R": 0.0377,
+    "F1": 0.0728,
+    "Pk": 0.5337
+   }
+  },
+  {
+   "lecture": "web1",
+   "units": 46,
+   "tokens": 21720,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 56,
+    "shown": 203,
+    "missing": 48,
+    "distinct": 95,
+    "slides": 9,
+    "per_min": 0.9,
+    "P": 0.6667,
+    "R": 0.6278,
+    "F1": 0.6462,
+    "Pk": 0.2348
+   },
+   "copilot": {
+    "rewritten": 7,
+    "shown": 369,
+    "missing": 7,
+    "distinct": 62,
+    "slides": 10,
+    "per_min": 1.0,
+    "P": 1.0,
+    "R": 0.5278,
+    "F1": 0.6905,
+    "Pk": 0.1894
+   }
+  },
+  {
+   "lecture": "web2",
+   "units": 46,
+   "tokens": 23389,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 63,
+    "shown": 260,
+    "missing": 63,
+    "distinct": 82,
+    "slides": 3,
+    "per_min": 0.3,
+    "P": 1.0,
+    "R": 0.2382,
+    "F1": 0.3808,
+    "Pk": 0.2807
+   },
+   "copilot": {
+    "rewritten": 8,
+    "shown": 299,
+    "missing": 8,
+    "distinct": 63,
+    "slides": 9,
+    "per_min": 0.9,
+    "P": 0.5,
+    "R": 0.0794,
+    "F1": 0.136,
+    "Pk": 0.3434
+   }
+  },
+  {
+   "lecture": "web3",
+   "units": 56,
+   "tokens": 27336,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 48,
+    "shown": 259,
+    "missing": 47,
+    "distinct": 87,
+    "slides": 7,
+    "per_min": 0.7,
+    "P": 0.4286,
+    "R": 0.25,
+    "F1": 0.3158,
+    "Pk": 0.3802
+   },
+   "copilot": {
+    "rewritten": 5,
+    "shown": 188,
+    "missing": 5,
+    "distinct": 42,
+    "slides": 7,
+    "per_min": 0.7,
+    "P": 0.625,
+    "R": 0.2083,
+    "F1": 0.3125,
+    "Pk": 0.3306
+   }
+  },
+  {
+   "lecture": "web4",
+   "units": 75,
+   "tokens": 44854,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 110,
+    "shown": 406,
+    "missing": 110,
+    "distinct": 127,
+    "slides": 3,
+    "per_min": 0.3,
+    "P": 1.0,
+    "R": 0.1875,
+    "F1": 0.3158,
+    "Pk": 0.3586
+   },
+   "copilot": {
+    "rewritten": 4,
+    "shown": 108,
+    "missing": 4,
+    "distinct": 51,
+    "slides": 7,
+    "per_min": 0.7,
+    "P": 1.0,
+    "R": 0.1875,
+    "F1": 0.3158,
+    "Pk": 0.352
+   }
+  },
+  {
+   "lecture": "web5",
+   "units": 37,
+   "tokens": 24236,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 57,
+    "shown": 169,
+    "missing": 53,
+    "distinct": 78,
+    "slides": 5,
+    "per_min": 0.5,
+    "P": 0.8,
+    "R": 0.1833,
+    "F1": 0.2979,
+    "Pk": 0.4609
+   },
+   "copilot": {
+    "rewritten": 7,
+    "shown": 360,
+    "missing": 7,
+    "distinct": 60,
+    "slides": 9,
+    "per_min": 0.9,
+    "P": 1.0,
+    "R": 0.0917,
+    "F1": 0.1678,
+    "Pk": 0.5234
+   }
+  },
+  {
+   "lecture": "web6",
+   "units": 85,
+   "tokens": 46458,
+   "failed": 0,
+   "baseline": {
+    "rewritten": 133,
+    "shown": 447,
+    "missing": 132,
+    "distinct": 155,
+    "slides": 4,
+    "per_min": 0.4,
+    "P": 0.75,
+    "R": 0.1987,
+    "F1": 0.3128,
+    "Pk": 0.4065
+   },
+   "copilot": {
+    "rewritten": 1,
+    "shown": 159,
+    "missing": 1,
+    "distinct": 63,
+    "slides": 10,
+    "per_min": 1.0,
+    "P": 0.25,
+    "R": 0.0662,
+    "F1": 0.1043,
+    "Pk": 0.4856
+   }
+  }
+ ]
+}

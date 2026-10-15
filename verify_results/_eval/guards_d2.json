@@ -1,0 +1,455 @@
+{
+ "coverage": 0.8664,
+ "coverage_without_guard": 0.7766,
+ "gain_pp": 8.98,
+ "gain_ci_pp": [
+  6.37,
+  11.72
+ ],
+ "facts": 669,
+ "facts_via_guard": 60,
+ "guard_sentences": 80,
+ "churn": {
+  "shown": 4515,
+  "lost": 91,
+  "by_teacher": 7,
+  "by_correction": 0,
+  "lost_share": 0.0202
+ },
+ "per_lecture": [
+  {
+   "lecture": "test3",
+   "annotator": "A",
+   "facts": 13,
+   "via_guard": 0,
+   "coverage": 0.8076923076923077,
+   "coverage_without_guard": 0.8076923076923077,
+   "guard_sentences": 4
+  },
+  {
+   "lecture": "test3",
+   "annotator": "B",
+   "facts": 32,
+   "via_guard": 1,
+   "coverage": 0.9375,
+   "coverage_without_guard": 0.90625,
+   "guard_sentences": 4
+  },
+  {
+   "lecture": "test10",
+   "annotator": "A",
+   "facts": 14,
+   "via_guard": 1,
+   "coverage": 0.75,
+   "coverage_without_guard": 0.7142857142857143,
+   "guard_sentences": 4
+  },
+  {
+   "lecture": "test10",
+   "annotator": "B",
+   "facts": 29,
+   "via_guard": 2,
+   "coverage": 1.0,
+   "coverage_without_guard": 0.9310344827586207,
+   "guard_sentences": 4
+  },
+  {
+   "lecture": "test14",
+   "annotator": "A",
+   "facts": 11,
+   "via_guard": 3,
+   "coverage": 0.8636363636363636,
+   "coverage_without_guard": 0.6818181818181818,
+   "guard_sentences": 3
+  },
+  {
+   "lecture": "test14",
+   "annotator": "B",
+   "facts": 17,
+   "via_guard": 3,
+   "coverage": 1.0,
+   "coverage_without_guard": 0.8235294117647058,
+   "guard_sentences": 3
+  },
+  {
+   "lecture": "test15",
+   "annotator": "A",
+   "facts": 13,
+   "via_guard": 2,
+   "coverage": 0.7692307692307693,
+   "coverage_without_guard": 0.6153846153846154,
+   "guard_sentences": 6
+  },
+  {
+   "lecture": "test15",
+   "annotator": "B",
+   "facts": 20,
+   "via_guard": 4,
+   "coverage": 1.0,
+   "coverage_without_guard": 0.8,
+   "guard_sentences": 6
+  },
+  {
+   "lecture": "test17",
+   "annotator": "A",
+   "facts": 10,
+   "via_guard": 0,
+   "coverage": 0.85,
+   "coverage_without_guard": 0.85,
+   "guard_sentences": 1
+  },
+  {
+   "lecture": "test17",
+   "annotator": "B",
+   "facts": 12,
+   "via_guard": 0,
+   "coverage": 0.9583333333333334,
+   "coverage_without_guard": 0.9583333333333334,
+   "guard_sentences": 1
+  },
+  {
+   "lecture": "test20",
+   "annotator": "A",
+   "facts": 10,
+   "via_guard": 1,
+   "coverage": 0.7,
+   "coverage_without_guard": 0.65,
+   "guard_sentences": 3
+  },
+  {
+   "lecture": "test20",
+   "annotator": "B",
+   "facts": 18,
+   "via_guard": 3,
+   "coverage": 1.0,
+   "coverage_without_guard": 0.8333333333333334,
+   "guard_sentences": 3
+  },
+  {
+   "lecture": "test21",
+   "annotator": "A",
+   "facts": 15,
+   "via_guard": 0,
+   "coverage": 0.7333333333333333,
+   "coverage_without_guard": 0.7333333333333333,
+   "guard_sentences": 0
+  },
+  {
+   "lecture": "test21",
+   "annotator": "B",
+   "facts": 25,
+   "via_guard": 0,
+   "coverage": 1.0,
+   "coverage_without_guard": 1.0,
+   "guard_sentences": 0
+  },
+  {
+   "lecture": "test22",
+   "annotator": "A",
+   "facts": 16,
+   "via_guard": 1,
+   "coverage": 0.78125,
+   "coverage_without_guard": 0.75,
+   "guard_sentences": 2
+  },
+  {
+   "lecture": "test22",
+   "annotator": "B",
+   "facts": 28,
+   "via_guard": 2,
+   "coverage": 1.0,
+   "coverage_without_guard": 0.9285714285714286,
+   "guard_sentences": 2
+  },
+  {
+   "lecture": "test23",
+   "annotator": "A",
+   "facts": 20,
+   "via_guard": 2,
+   "coverage": 0.8,
+   "coverage_without_guard": 0.7,
+   "guard_sentences": 6
+  },
+  {
+   "lecture": "test23",
+   "annotator": "B",
+   "facts": 43,
+   "via_guard": 4,
+   "coverage": 1.0,
+   "coverage_without_guard": 0.9069767441860465,
+   "guard_sentences": 6
+  },
+  {
+   "lecture": "test24",
+   "annotator": "A",
+   "facts": 17,
+   "via_guard": 1,
+   "coverage": 0.8529411764705882,
+   "coverage_without_guard": 0.8235294117647058,
+   "guard_sentences": 3
+  },
+  {
+   "lecture": "test24",
+   "annotator": "B",
+   "facts": 32,
+   "via_guard": 2,
+   "coverage": 0.984375,
+   "coverage_without_guard": 0.921875,
+   "guard_sentences": 3
+  },
+  {
+   "lecture": "test25",
+   "annotator": "A",
+   "facts": 18,
+   "via_guard": 0,
+   "coverage": 0.6666666666666666,
+   "coverage_without_guard": 0.6666666666666666,
+   "guard_sentences": 4
+  },
+  {
+   "lecture": "test25",
+   "annotator": "B",
+   "facts": 27,
+   "via_guard": 0,
+   "coverage": 1.0,
+   "coverage_without_guard": 1.0,
+   "guard_sentences": 4
+  },
+  {
+   "lecture": "test29",
+   "annotator": "A",
+   "facts": 23,
+   "via_guard": 0,
+   "coverage": 0.6739130434782609,
+   "coverage_without_guard": 0.6739130434782609,
+   "guard_sentences": 0
+  },
+  {
+   "lecture": "test29",
+   "annotator": "B",
+   "facts": 39,
+   "via_guard": 0,
+   "coverage": 0.9871794871794872,
+   "coverage_without_guard": 0.9871794871794872,
+   "guard_sentences": 0
+  },
+  {
+   "lecture": "web1",
+   "annotator": "A",
+   "facts": 15,
+   "via_guard": 5,
+   "coverage": 0.8,
+   "coverage_without_guard": 0.5,
+   "guard_sentences": 9
+  },
+  {
+   "lecture": "web1",
+   "annotator": "B",
+   "facts": 17,
+   "via_guard": 5,
+   "coverage": 0.9705882352941176,
+   "coverage_without_guard": 0.7058823529411765,
+   "guard_sentences": 9
+  },
+  {
+   "lecture": "web2",
+   "annotator": "A",
+   "facts": 11,
+   "via_guard": 2,
+   "coverage": 0.7272727272727273,
+   "coverage_without_guard": 0.5909090909090909,
+   "guard_sentences": 12
+  },
+  {
+   "lecture": "web2",
+   "annotator": "B",
+   "facts": 11,
+   "via_guard": 1,
+   "coverage": 0.9090909090909091,
+   "coverage_without_guard": 0.8181818181818182,
+   "guard_sentences": 12
+  },
+  {
+   "lecture": "web3",
+   "annotator": "A",
+   "facts": 7,
+   "via_guard": 1,
+   "coverage": 0.7142857142857143,
+   "coverage_without_guard": 0.6428571428571429,
+   "guard_sentences": 7
+  },
+  {
+   "lecture": "web3",
+   "annotator": "B",
+   "facts": 10,
+   "via_guard": 2,
+   "coverage": 1.0,
+   "coverage_without_guard": 0.8,
+   "guard_sentences": 7
+  },
+  {
+   "lecture": "web4",
+   "annotator": "A",
+   "facts": 15,
+   "via_guard": 0,
+   "coverage": 0.5666666666666667,
+   "coverage_without_guard": 0.5666666666666667,
+   "guard_sentences": 3
+  },
+  {
+   "lecture": "web4",
+   "annotator": "B",
+   "facts": 19,
+   "via_guard": 1,
+   "coverage": 1.0,
+   "coverage_without_guard": 0.9473684210526315,
+   "guard_sentences": 3
+  },
+  {
+   "lecture": "web5",
+   "annotator": "A",
+   "facts": 13,
+   "via_guard": 2,
+   "coverage": 0.8461538461538461,
+   "coverage_without_guard": 0.6923076923076923,
+   "guard_sentences": 4
+  },
+  {
+   "lecture": "web5",
+   "annotator": "B",
+   "facts": 23,
+   "via_guard": 3,
+   "coverage": 1.0,
+   "coverage_without_guard": 0.8695652173913043,
+   "guard_sentences": 4
+  },
+  {
+   "lecture": "web6",
+   "annotator": "A",
+   "facts": 12,
+   "via_guard": 3,
+   "coverage": 0.5416666666666666,
+   "coverage_without_guard": 0.375,
+   "guard_sentences": 9
+  },
+  {
+   "lecture": "web6",
+   "annotator": "B",
+   "facts": 14,
+   "via_guard": 3,
+   "coverage": 1.0,
+   "coverage_without_guard": 0.7857142857142857,
+   "guard_sentences": 9
+  }
+ ],
+ "churn_per_lecture": {
+  "test3": {
+   "shown": 196,
+   "lost": 8,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "test10": {
+   "shown": 406,
+   "lost": 14,
+   "by_teacher": 5,
+   "by_correction": 0
+  },
+  "test14": {
+   "shown": 98,
+   "lost": 4,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "test15": {
+   "shown": 113,
+   "lost": 4,
+   "by_teacher": 2,
+   "by_correction": 0
+  },
+  "test17": {
+   "shown": 65,
+   "lost": 2,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "test20": {
+   "shown": 215,
+   "lost": 5,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "test21": {
+   "shown": 290,
+   "lost": 3,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "test22": {
+   "shown": 268,
+   "lost": 3,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "test23": {
+   "shown": 358,
+   "lost": 10,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "test24": {
+   "shown": 304,
+   "lost": 4,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "test25": {
+   "shown": 328,
+   "lost": 2,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "test29": {
+   "shown": 391,
+   "lost": 0,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "web1": {
+   "shown": 369,
+   "lost": 7,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "web2": {
+   "shown": 299,
+   "lost": 8,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "web3": {
+   "shown": 188,
+   "lost": 5,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "web4": {
+   "shown": 108,
+   "lost": 4,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "web5": {
+   "shown": 360,
+   "lost": 7,
+   "by_teacher": 0,
+   "by_correction": 0
+  },
+  "web6": {
+   "shown": 159,
+   "lost": 1,
+   "by_teacher": 0,
+   "by_correction": 0
+  }
+ }
+}

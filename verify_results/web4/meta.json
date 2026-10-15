@@ -1,0 +1,21 @@
+{
+  "name": "web4",
+  "source": "web",
+  "note": "web, physics; MIT OCW 8.01 Physics I F99, lec 1 'Powers of ten, units, dimensions, measurements'; https://archive.org/download/MIT8.01F99/01.mp4; CC BY-NC-SA 3.0 US; clip 4:00-14:00",
+  "session_id": "20261015-120423-be5e",
+  "date": "2026-10-15 12:15",
+  "title": "",
+  "minutes": 10.0,
+  "utterances": 157,
+  "slides": 7,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [
+    "--audio-file",
+    "artifacts/web_audio/web4.wav",
+    "--no-wait",
+    "--no-open",
+    "--subject",
+    "Physics"
+  ]
+}

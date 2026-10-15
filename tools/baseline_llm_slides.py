@@ -33,7 +33,8 @@ SYSTEM = (
 
 
 def load(session: str):
-    db = sqlite3.connect(ROOT / "data" / "sessions" / session / "session.sqlite")
+    test = ROOT / "verify_results" / session / "session" / "session.sqlite"  # a validation test name (eval_test.py)
+    db = sqlite3.connect(test if test.exists() else ROOT / "data" / "sessions" / session / "session.sqlite")
     ev = [(t, ty, json.loads(p)) for t, ty, p in db.execute("select ts, type, payload from events order by seq")]
     lines = {p["segment"]["id"]: (p["segment"]["start"], p["segment"]["end"], p["segment"]["text"])
              for _, ty, p in ev if ty == "TranscriptFinal"}
@@ -63,6 +64,10 @@ async def run(session: str, limit: int | None) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / f"{session}.json"
     done = json.loads(path.read_text()) if path.exists() else []
+    # failed answers at the end (provider outage, daily quota) are asked again; an earlier one stays (later units
+    # were answered with its slide)
+    while done and str(done[-1]["entry"]).startswith("failed"):
+        done.pop()
     slide = None
     if done:
         slide = done[-1].get("slide")
@@ -77,8 +82,15 @@ async def run(session: str, limit: int | None) -> None:
             msgs = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": user}]
             t0 = time.perf_counter()
             try:
-                r = await router.complete(msgs, est_tokens=len(SYSTEM + user) // 4, max_tokens=500,
-                                          deadline=time.monotonic() + 60)
+                for attempt in range(4):  # an outage of the free provider: wait and ask again
+                    try:
+                        r = await router.complete(msgs, est_tokens=len(SYSTEM + user) // 4, max_tokens=500,
+                                                  deadline=time.monotonic() + 60)
+                        break
+                    except Exception:  # noqa: BLE001
+                        if attempt == 3:
+                            raise
+                        await asyncio.sleep(30.0)
                 text = r.response.text
                 m = re.search(r"\{.*\}", text, re.S)
                 ans = json.loads(m.group(0)) if m else {}

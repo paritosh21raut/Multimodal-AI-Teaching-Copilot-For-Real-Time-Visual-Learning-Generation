@@ -1,0 +1,84 @@
+[    5.8] The topic is Networking.
+[    9.3] and information for your AI teaching.
+[   13.7] Computer networking fundamentals
+[   16.8] Computer networking is the process of connecting two or more computing devices to exchange information and share resources. A network can connect computers, smartphones, servers,
+[   30.0] printers and other devices.
+[   32.8] main components sender the device that sends information
+[   37.7] receiver the device that received information.
+[   42.4] Transmission medium, the wired or wireless path to which data travel.
+[   48.5] Network Devices, Routers, Switches, Access Points and Modems
+[   57.0] protocols, rules that allow devices to communicate.
+[   64.1] Second one is OSM model.
+[   67.2] the 7 layers of networking.
+[   83.4] is a 7 layer reference model used to understand network communication. The first layer is physical layer which deals with transmitting bits through cables or wireless signals.
+[   96.1] The second layer is data link layer which handles communication across local network links. Ethernet is an example of a technology used at this layer.
+[  106.9] The third layer is the network layer which handles logical addressing and routing.
+[  112.8] Internet Protocol operates at this layer. The fourth layer is the transport layer which provides transport services. TCP supports reliable order delivery while UDP provides a count.
+[  125.7] Connectionless Transport Service.
+[  128.4] The fifth layer is the season layer which represents functions related to managing communication seasons.
+[  137.0] The sixth layer is the presentation layer which
+[  140.5] represent functions such as data formatting and encoding.
+[  145.4] The seventh layer is Application layer.
+[  148.7] which provides network services used by applications such as web browsing and domain name resolution.
+[  156.4] The OSI model helps network engineers understand communication processes and troubleshoot network problems systematically.
+[  167.8] The third topic is TCP.
+[  170.8] IP model and Internet communication.
+[  174.9] The TCP IP protocol suite is the foundation of communication across the internet.
+[  181.7] A common 4-layer TCP IP model includes
+[  185.9] Application layer protocols such as sjtp, dns and smdp
+[  192.4] Second is transport layer TCP and UDP.
+[  196.1] Third is Internet Layer, IP addressing and packet forwarding.
+[  200.8] Fourth one is Network Access Layer.
+[  203.5] Communication over technologies such as Ethernet and Wi-Fi, TCP and UDP serve different purposes. TCP provides reliable, ordered byte stream delivery.
+[  216.8] UDP provides
+[  218.7] Datagram delivery without TCP is built in reliability and ordering guarantees.
+[  229.8] Fourth topic is IP addressing and subnetting.
+[  234.3] An IP address is a logical address used to identify or network
+[  240.5] interface for communication using the Internet protocol.
+[  245.2] The two important versions are IPv4 and IPv6. IPv4 uses 32-bit addresses, commonly written in dotted decimal notation.
+[  256.5] example 192.168.1.10
+[  262.3] IPV6 used 128 bit addresses written using hexadecimal groups separated by column.
+[  271.5] Example.
+[  273.0] 2001 colon db8 colon
+[  278.3] double colon 10.
+[  280.4] A subnet mask or IPv4 prefix identifies the network portion of an address.
+[  287.2] For example, the prefix 192.168.1.0.24 represent an IPv4 subnet containing 256 total addresses from
+[  300.8] 192.168.1.10
+[  305.1] through 192.168.1.225.
+[  309.8] In an conventional IPv4 slash 24 subnet comma 254 addresses are available for ordinary host assignments because network and broadcast addresses are reserved.
+[  323.6] Subnetting helps network administrators organize devices, manage addresses, space, and separate networks.
+[  350.3] The fifth topic is Networking devices, routers, switches, hub and access point.
+[  361.4] A router connects different IP networks and forward packets towards their destinations. A network switch connects devices within a local network and forwards Ethernet frames using MAC address information.
+[  375.6] A hub is a simpler device that repeats incoming signals to its other ports instead of intelligently forwarding frames to a specific destination.
+[  386.0] A wireless access point allows laptops, smartphones and other wireless devices to connect to a network using Wi-Fi.
+[  394.5] A modem performs a signal conversion or modulation function needed for a particular communication technology.
+[  402.4] A firewall filters network traffic according to configured security policies. These devices work together to provide connectivity, enable communication, and protect network infrastructure.
+[  415.6] 6th topic is Network Topology.
+[  419.3] A network topology describes how devices and network links are arranged. A major type includes
+[  426.4] Start topology devices connect to a central switch or hub. 2nd one is burst topology devices share a common communication backbone.
+[  436.3] Third one is Ring Topology.
+[  439.1] devices connect in a logical or physical ring. Fourth one is mesh topology. Devices have multiple interconnections.
+[  447.9] Fifth is trade apology. Devices are arranged in odd hierarchy.
+[  454.1] hybrid topology.
+[  461.5] 7th topic is DNS- How Domain Names Work.
+[  466.6] The Domain Name System, DNS, translates domain names into information related to localities
+[  474.7] Internet Services, most commonly IP addresses.
+[  479.5] A simplified DNS resolution process is, 1. The user enters a domain name. 2. The device seeks available local information such as its DNS cache. 3. If necessary, a DNS query is sent to a resolver.
+[  494.4] 4. Resolver obtained the required DNS record potentially
+[  499.0] creating other DNA serbs.
+[  502.1] 50 is the browser uses the resulting address to connect to the destination service.
+[  507.8] DNS also supports other record types including MX records for mail routing.
+[  520.0] So, 8th topic is how Wi-Fi works.
+[  524.7] Wi-Fi is a family of wireless networking technologies based on IEEE 802.111 standards.
+[  532.2] It allows compatible devices to communicate other radio waves rather than requiring a physical Ethernet cable. A typical home's Wi-Fi network includes a wireless router or access point and connected devices. Important concepts include
+[  547.2] SSID, the network name, Access point, the device providing wireless network access, Frequency band, Wi-Fi can operate in bands including 2.4 GHz, 5 GHz and well supported and permitted 6 GHz.
+[  562.2] Authentication and encryption helps control access and protect wireless communications. Indifference other wireless devices walls and computing networks can affect performance.
+[  579.0] 9th topic is Network Security and Firewalls.
+[  584.8] network infrastructure connected devices and transmit information from unauthorized access and other traits.
+[  592.2] Important Security Mechanism includes Firewalls. Firewalls filters traffic based on configured rules. Encryption protects information by making it unreadable to
+[  603.1] Parties without the required keys. Authentications. Verifies the identity of a user or device.
+[  610.1] Instruction detection system Monitor activity identifies a species pattern network segmentation. Separates the network into sections to help testing.
+[  621.0] access and limit the spread of incidents. Common threats include phishing, malware, denial of service attacks, unauthorized access, and misconfigured network services.
+[  634.3] Security requires multiple layers of protection rather than relying on one device or topology.
+[  685.7] I don't know how to do this, I don't know
+[  690.7] Go for it all.

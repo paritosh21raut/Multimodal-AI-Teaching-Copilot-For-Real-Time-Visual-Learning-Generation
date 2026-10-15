@@ -1,0 +1,16 @@
+{
+  "name": "test15",
+  "source": "mic",
+  "note": "speaker A, physics",
+  "session_id": "20261014-190101-b51b",
+  "date": "2026-10-14 19:15",
+  "title": "",
+  "minutes": 10.5,
+  "utterances": 66,
+  "slides": 15,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker A",
+  "subject": "physics"
+}

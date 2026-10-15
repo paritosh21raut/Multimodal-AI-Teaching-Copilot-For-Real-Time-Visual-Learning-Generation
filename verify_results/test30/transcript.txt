@@ -1,0 +1,285 @@
+[   17.1] An intrinsic semiconductor is a pure semiconductor. A silicon crystal is an intrinsic semiconductor if every atom in the crystal is a silicon atom.
+[   31.0] At room temperature, a silicon crystal acts like an insulator because it has only a few free electrons and holes provided by the thermal energy.
+[   41.3] flow of free electrons
+[   45.4] A silicon crystal between charged metallic plates assumes that thermal energy has produced a free electron and a hole. The free electron is in a large orbit at the right end of the crystal.
+[   60.0] because of the negatively charged plate. The free electron is repelled to the left. The free electron can move from one large orbit to the next until it reaches the positive place.
+[   73.9] Flow of Folds
+[   76.3] The holes attract the valence electron at point A. This causes the valence electron to move into the hole. When the valence electron at point A moves to the left, it can move to the right.
+[   89.0] creates a new wall at point A. The effect is the same as moving the original walls to the right. The new walls at point A can then attract or capture another valence electron in this way.
+[  103.2] Valence electrons can travel along the path shown by the arrow. This means the walls can move the opposite way along path ABCDEF acting the same as a positive charge.
+[  120.0] types of flow.
+[  124.2] It has the same number of free electrons and volts. This is because thermal energy produce free electrons and volts in pair, the applied voltage will force the free electrons to flow left and the volts to the right.
+[  139.1] fluoride
+[  140.3] When the free electrons arrive at the left end of the crystal, they enter the external wire and flow to the positive battery terminal. On the other hand, the free electrons at the negative battery terminal will flow to the right end of the crystal.
+[  154.7] At this point, they enter the crystal and recombine with the volts that arrive at the right end of the crystal. In this way, a steady flow of 3 electrons and volts occurs inside the semiconductor.
+[  169.1] Note that there is no hole flow outside the semiconductor.
+[  175.2] 1. Doping a semiconductor One way to increase conductivity of a semiconductor is by doping.
+[  182.0] This means adding impurity atoms to an intrinsic crystal to alter its electrical conductivity. A job semiconductor is called an Extensive Semiconductor.
+[  194.8] Increasing the free electrons. How does a manufacturer dope a silicon crystal? The first step is to melt a pure silicon crystals. This breaks a covalent bond and changes the silicon from a solid to a liquid.
+[  209.1] It increases the number of free electrons.
+[  211.8] Pentavalent atoms are added to the molten silicon. Pentavalent atoms have 5 electrons in the valence orbit.
+[  220.1] For example, of pentavalent atoms includes arsenic, antimony and phosphorus because these materials will donate an extra electrons to the silicon crystal.
+[  232.8] They are often referred to as toner impurities.
+[  237.1] So...
+[  238.3] how the doped silicon crystal appears after it cools down and reform its solid crystal structure. A pentavalent atom is in the center surrounded by 4 silicon atoms.
+[  250.8] As before, the neighboring atoms share an electron with the central atom, but this time, there is an extra electron left over. Remember that each pentavalent atom has 5 valence electrons.
+[  264.7] Only 8 electrons can fit into the balance orbit.
+[  271.9] orbit
+[  273.3] In other words, it is a free electron. Each pentavalent or donor atom in a silicon crystal produces one free electron. This is how a free electron is used.
+[  285.0] on manufacturer controls that conductivity of a dock
+[  289.0] Semiconductor, the more impurity that is added to greater the conductivity. In this way, the semiconductor may be
+[  297.4] Nightly or Heavily Docked
+[  299.7] A lightly dropped semiconductor has a high resistance, where a heavily dropped semiconductor has a low resistance, increasing the number of holes.
+[  310.2] How can we dope a pure silicon crystal to get an excess of holes? By using a trivalent impurity, one those atoms have only three valence electrons. For example,
+[  323.6] include aluminum, boron and gallium.
+[  327.8] So, a Travalent atom in the center, it is surrounded by 4 silicon atoms, each sharing one of its valence electrons. Since the Travalent atom originally had only 3 valence electrons,
+[  341.8] electrons and each neighbor shares one electron. Only seven electrons are in the valence orbit. This means that a ball exists in the valence orbit of each prevalent atoms. A prevalent atom is
+[  354.8] also called a Acceptor item because each holes it contributes and accepts a free electron during combination.
+[  362.7] Points to remember, before manufacturer can dope a semiconductor, they must produce it as a pure crystal. Then by controlling the amount of impurity, they can
+[  374.7] personally control the properties of semiconductors. Historically, pure germanium crystals were
+[  389.7] device were made of germanium. Eventually, manufacturing techniques, improved and pure silicon crystals became available because of its advantages.
+[  402.6] become the most popular and useful semiconductor material.
+[  407.1] two types of extrinsic semiconductors.
+[  411.4] A semiconductor can be docked to have an excess of free electrons or an excess of holes. Because of this, there are two types of docked semiconductor.
+[  422.4] First one is n-type semiconductor.
+[  425.2] A silicon that has been doped with a pentavalent impurity is called an n-type semiconductor.
+[  433.6] where the N stands for negative.
+[  438.6] Since the free electrons outnumber the volts is an n-type semiconductor.
+[  448.8] and the holes are called the minority carriers.
+[  453.0] Because of
+[  456.2] Because of the applied voltage, the free electrons move to the left and the voles move to the right. When a voles arrives at the right end of the crystal, one of the free electrons from the external circuit enters the semiconductor.
+[  469.7] and recombines with the walls.
+[  472.8] Second is P-type semiconductor.
+[  475.6] Silicon that has been doped with a trivalent impurity is called a p-type semiconductor, where the p stands for positive.
+[  484.2] So P-type semiconductors, since volts outnumber free electrons, the volts are referred to as the majority carriers.
+[  493.2] and the free electrons are known as the minority carriers. Because of the applied voltage, the free electrons move to the left and move to the right.
+[  504.0] The volts arriving at the right end of the crystal will recombine with free electrons from the external circuit.
+[  511.6] There is also a flow of minority carriers. The three electrons in the side, the semiconductors flow from right to left.
+[  520.3] Because there are so few minority carriers, they have almost no effect in the circuit.
+[  529.6] The unbiased diode by itself a piece of n-type semiconductors is about as useful as a carbon resistor. The same can be said for a p-type semiconductor.
+[  542.0] But, when a manufacturer dopes a crystal so that one half of it is p-type and the other half is n-type, something new combines into existence. The border between p-type and n-type is
+[  556.0] called the PN junction. The PN junction has led to all kinds of inventions including diodes, transistors and integrated circuits. Understanding the PN junction enables
+[  569.8] you to understand all kinds of semiconductor devices. The unbiased diode, as discussed in the preceding section, each turbulent atom is in our dope silicon crystal.
+[  583.4] produce one hole.
+[  585.4] For this reason, we can visualize a piece of p-type semiconductor as shown on the left side.
+[  592.1] Its circle minus sign is the travelent atom and each plus sign is the most in its valence orbit. Similarly, we can visualize the pentavalent atoms and free electrons
+[  604.7] of an n-type semiconductor as shown on the right side. Each circle plus sign represents a pentavalent atom and each minus sign is the free electron. It contributes to the semiconductor. Notice that
+[  617.4] Each piece of semiconductor material is electrically neutral because number of pulses and
+[  625.1] Okay, minus S is equal.
+[  632.1] the depletion region layer because of the repulsion for each other the free electrons on the n side
+[  642.1] some of the free electrons diffuse across the junction.
+[  646.4] When a free electron enters the P region, it becomes a minority carrier with so many balls around it. Its minority carrier has a short lifetime soon after entering the P region. The free electron
+[  661.3] recombines with the holes.
+[  665.8] When it happens, the walls disappear and the free electrons become a balanced electron. Each time an electron diffuses across a junction, it creates a pair of ions. When an electron leaves,
+[  679.3] the n side, it leaves behind a pentavalent atom that is short or negative charged. This pentavalent atom can combine suppositive ions.
+[  688.8] After the migrating electron falls into a vole on the pea side, it makes a negative ion out of the travelant atom that captures it.
+[  700.1] So the circle positive signs are the positive ions and the circle minus signs are the negative ions. The ions are fixed in the crystal structure because of the covalent bonding and they cannot move around like free electrons and holes.
+[  715.1] Each pair of positive and negative ions at the junction is called a dipole. The creation of dipole means that one 3 electron and one hole have been taken out of circulation.
+[  727.6] As the number of dipoles builds up, the region near the junction is the empatied of carriers. We call this charge MT region the depletion rear.
+[  738.6] Barrier Potential
+[  741.7] Each dipole has an
+[  743.6] the electric field between the positive and negative ions. Therefore, if additional free electrons enter the depletion layer, the electric field tries to push this electron back into the end region.
+[  756.6] strength of the electric field increases with each crossing electron until equilibrium is reached. To the first approximation, this means that the electric field eventually stops the diffusion of electrons.
+[  771.1] I cross the junction.
+[  776.9] Forward Bias
+[  779.8] The negative source terminal is connected to the AND type.
+[  784.0] material and the positive terminal is connected to the p-type material.
+[  790.4] This connection produces what is called forward bias, flow of free electron.
+[  796.1] the battery pushes holes and free electrons towards the junction. If the battery voltage is less than the barrier potential, the free electrons do not push enough energy to get through the depletion layer.
+[  811.9] When they enter the depletion layer, the ions will push them back into the n region.
+[  822.6] there is no
+[  824.8] current through the diode when the DC voltage source is greater than the barrier potential.
+[  834.0] This time the free electrons have enough energy to pass through the
+[  841.0] Depletion layer and recombine with in holes.
+[  844.5] If you visualize all the holes in the P region moving to the
+[  849.9] try it and
+[  851.5] all the free electrons moving to the left. You will have the basic idea somewhere in the vicinity of the junction these opposite charges recombine. Since free electrons continuously enter the right
+[  866.1] end of the diode and goals are being continuously created at the left end.
+[  872.5] There is a continuous current through the diode, the flow of one electron.
+[  877.2] Let us follow single electron through this entire circuit. After the free electron leaves the negative terminal of the patchy, it enters the right end of the diode. It travels through the end region until it reaches the junction.
+[  892.3] When the battery voltage is greater than 0.7V, the free electrons have enough energy to get across the depletion layer. Soon after the free electron has entered the pre-region, it recombines with the volts.
+[  907.3] In another words, the free electron becomes a valence electron as valence electron it continues to travel to the left passing from one wall to another wall.
+[  917.6] to the analto next until it reaches the left end of the dart when it leaves
+[  923.6] the left end of the diode a new
+[  927.4] hole appears and the process begins again.
+[  932.2] since there are billions of electrons.
+[  941.6] Taking the same journey, we get a continuous current through the diode.
+[  946.5] A series register is used to limit the amount of forward current.
+[  954.3] So what to remember?
+[  956.5] current flows easily in a forward biased diode.
+[  961.4] as long as the applied voltage is greater than the barrier potential.
+[  967.3] There will be a large continuous current in the current. In other words, if the source voltage is greater than 0.7V, a silicon diode allows a continuous current in the forward direction.
+[  982.8] Reverse wires.
+[  984.8] Turn the DC source around and you get
+[  989.1] The negative battery terminal is connected to the P side and the positive battery terminal to the N side. This connection provides what is called reverse bias. Depletion layer wins.
+[ 1001.5] The negative battery terminal attracts volts.
+[ 1005.2] and the positive body terminal attract the free electrons because of these holes and free electrons flow away from the junction.
+[ 1015.4] Therefore, the depletion layers get wider. How wide does the depletion layer get in?
+[ 1023.3] When the holes and electrons move away from the junction, the newly created ions increase the difference of potential across the depletion layer.
+[ 1033.8] The wider the depletion layer, the greater the difference of potential.
+[ 1041.9] difference of potential equals the applied reverse voltage. When it happens electrons and volts stop moving away from the junction.
+[ 1055.1] the minority carrier current.
+[ 1057.7] Is there any current after the depletion layer stabilizes? Yes, a small current exists with reverse bias. Recall that thermal energy continuously creates pair of free electrons and holes.
+[ 1072.5] This means that few minority carriers exist on both sides of the junction. Most of these recombine with the majority carriers.
+[ 1084.8] but those inside the depletion layer may exist long enough to get across the junction.
+[ 1095.5] in the external circuit.
+[ 1097.9] Assume that the thermal energy has created a free electron and hole.
+[ 1103.7] near the junction. The depletion layer pushes the free electron to the right.
+[ 1109.2] forcing one electron to relieve the right end of the crystal.
+[ 1114.9] The hole in the depletion layer is close to the left. This extra hole on the P side lets one electron enter the left end of the crystal and fall into a hole.
+[ 1128.6] since thermal energy is continuously producing electron oil.
+[ 1133.6] pure inside the depletion layer a small continuous current flow in the external circuit.
+[ 1140.7] The reverse current caused by the thermally produced minority carriers is called the saturation current.
+[ 1149.8] The equations, the saturation current is symbols
+[ 1154.6] by I s. The name saturation means that we cannot get more minority carriers current than is produced by the thermal energy. In other words,
+[ 1166.9] increasing the reverse voltage will not increase the number of thermally created minority carriers.
+[ 1175.3] What to remember, the reverse current in a diode consists of a minority carrier current and a surface leakage current. In most applications, the reverse current
+[ 1188.7] in a silicon is so small that you don't even notice it. The main idea to remember is this current is approximately zero in a reverse bias silicon diode.
+[ 1238.7] half wave rectifier.
+[ 1242.1] half a rectifier circuit.
+[ 1244.2] AC source produces a sinusoidal voltage assuming an ideal diode. The positive half cycle of source voltage will
+[ 1255.2] Forward Bias of Diode
+[ 1258.0] Since the switch is closed,
+[ 1262.9] On the negative half cycle, the diode is reverse biased. In this case, the ideal diode will appear as an open switch as shown.
+[ 1455.9] capacitor input filter.
+[ 1459.1] The Chalk input filter produces a DC output voltage equal to the average value of the rectified voltage. The capacitor input filter produces a DC output voltage
+[ 1471.5] equal to the peak value of the rectified voltage. This type of filter is the most widely used in power supplies.
+[ 1487.1] Basic idea.
+[ 1489.2] AC source, a diode and a capacitor. The key
+[ 1493.4] to understanding a capacitor input filter is understanding what this simple circuit does during the first quarter cycle.
+[ 1508.9] so effect of load register.
+[ 1512.6] For the capacitor input filter to be useful we need to connect.
+[ 1518.0] a load resistor across the capacitor as shown in figure.
+[ 1522.8] As long as the RLC time constant is much greater than the period, the capacitor remains almost fully charged and the load voltage is approximately Vp.
+[ 1535.6] The only derivation from a perfect DC voltage is this small ripple.
+[ 1541.1] The smaller the peak to peak value of the ripple, the more closely to the output.
+[ 1549.2] approaches a perfect DC voltage. Between peaks, the diode is off and the capacitor discharges through the load resistor.
+[ 1560.0] In other words, the capacitor supplies the load current since the capacitor discharges only slightly between peaks.
+[ 1569.1] The peak to peak ripple is small. When the next peak arrives, the diode conducts briefly and recharges the capacitor to the peak value. A key question is, what side should the capacitor be for?
+[ 1583.4] proper operation.
+[ 1585.6] Before discussing capacitor size, consider what happens with the capacitor size.
+[ 1591.8] or the rectifier circuit.
+[ 1595.0] Full wave filtering.
+[ 1597.2] If we connect a full wave or a bridge rectifier to capacitor input filter, the peak to peak ripple is cut in half.
+[ 1606.1] When a full wave voltage is applied to the RC circuit, the capacitor discharges for only half as long. Therefore, the peak to peak ripple is half the size it would be with a half wave rectifier.
+[ 1623.1] ripple formula
+[ 1626.6] Here is the derivation we will use the estimate the peak to peak ripple output of any capacitor input filter.
+[ 1635.2] Vr equals to 1 upon Fc.
+[ 1638.5] where Vr equals to peak to peak ripple voltage, I equals to DC load current, F equals to ripple frequency, C equals to capacitance.
+[ 1653.7] This is an approximation not an exact derivation.
+[ 1658.0] We can use this formula to estimate the peak to peak ripple when a more accurate answer is needed. One solution is to use a computer with a circuit stimulator like multisim.
+[ 1671.0] For instance, if the DC load current is 10
+[ 1675.1] milliampere and the capacitance is 200 microfarad the ripple with a bridge rectifier and capacitor input filter is
+[ 1686.3] Vr equals to
+[ 1688.4] 10 milliampere divided by
+[ 1691.9] 120Hz
+[ 1694.1] into 200 uF
+[ 1697.2] is equal to 0.417 Vpp.
+[ 1729.6] peak inverse voltage and surge current. The peak inverse voltage, PIV, is the maximum voltage across the non-conducting diode of a rectifier. This voltage must be less than the breakdown voltage of the diode.
+[ 1743.2] Otherwise the diode will be destroyed, the peak reverse voltage depends on the type of rectifier and filter. The worst case occurs with capacitor input filter as discussed earlier data sheets from various manufacturers.
+[ 1758.2] use many different symbols to indicate the maximum reverse voltage rating of a diode. Sometimes, the symbols indicate different conditions of measurements, some of the data sheets.
+[ 1771.2] The maximum reverse voltage rating are PIV, PRV, VB, VBR, VR, VRM.
+[ 1783.9] Vrwm and Vrmax.
+[ 1790.7] half wave rectifier with capacitor input filter.
+[ 1798.4] This is the part of the circuit that determines how much reverse voltage is across the dart. The rest of the circuit has no effect and is omitted for the
+[ 1808.7] sake of clarity. In the worst case, the peak secondary voltage is on the negative peak and the capacitor is fully charged with a voltage of PP. Apply Kirchhoff's voltage law and you
+[ 1821.3] can see right away that the peak inverse voltage across the non-conducting diode is
+[ 1828.6] PIV equals to 2VP. For instance, if the peak secondary voltage is 15V, the peak inverse voltage is 30V. As long as the breakdown voltage of the diode is greater than this,
+[ 1842.0] the diode will not be damaged.
+[ 1844.3] Full wave rectifier with capacitor input filter.
+[ 1848.1] So, the essential part of a full wave rectifier needed to calculate the peak reverse inverse voltage. Again, the secondary voltage is at the negative peak. In this case, the lower diode act like a short.
+[ 1862.9] or close switch and the upper diode is open.
+[ 1867.9] Kjotch's law implies
+[ 1871.2] PIV equals to VP.
+[ 1874.4] Bridge rectifier with capacitor input filter
+[ 1879.4] This is all you need to calculate the peak inverse voltage since the upper diode is shorted and the lower one is open. The peak inverse voltage across the lower diode is PIV equals to PIV.
+[ 1893.5] Another advantage of the bridge rectifier is that
+[ 1897.5] It has the lowest peak inverse voltage for a given load voltage. To produce the same load voltage, the full wave rectifier would need twice as much secondary voltage.
+[ 1918.8] calculating fuse current. When troubleshooting, you may need to calculate the primary current to determine whether fuse is adequate or not. The easiest way to do this with a real transformer is to assume that the
+[ 1932.9] Input power equals to the output power.
+[ 1936.5] PIN equals to POUT.
+[ 1943.6] of figure 4
+[ 1945.3] B shows the fused transformer driving of filter rectifier is the 0.1 A fused adequate. Here is how to estimate the primary current when troubleshooting the output powers.
+[ 1958.4] It was the DC volt power.
+[ 1961.2] Pout equals to Vi.
+[ 1964.0] ignore the power losses in the rectifier and the transformers in the output most equal to the power.
+[ 2033.9] The Zenre Diode. Small signal and rectifier diode are never intentionally operated in the breakdown region because this
+[ 2042.8] may damage them. A Zener diode is different. It is a silicon diode that the manufacturer has optimized for operation in the breakdown region. The Zener diode is the backbone of voltage regulator circuit that
+[ 2057.1] holds the load voltage almost constant despite large changes in line voltage and load resistance.
+[ 2070.5] Zener Resistance In the third approximation of a silicon diode, the forward voltage across a diode equals the knee voltage plus the additional voltage across the work resistance.
+[ 2085.9] Similarly, in the breakdown region, the reverse voltage across the diode equals the breakdown voltage.
+[ 2093.8] plus the additional voltage across the bulk resistance. In the reverse region, the bulk resistance is referred to the
+[ 2102.4] As the zener resistance, this resistance equals in reverse of the slope in the breakdown region. In other words, the more vertical and breakdown region, the smaller the zener resistance.
+[ 2116.2] General Regulator
+[ 2118.6] A Zener diode is sometimes called a voltage regulator diode because it maintains a constant output voltage.
+[ 2126.5] even though the current
+[ 2128.7] though it changes. For normal operation you have to reverse bias the general diode.
+[ 2135.4] To get breakdown operation, the source voltage Vs must be greater than the zener breakdown voltage Vz. A series resistor Rs is always used to limit the zener current to less than its maximum current rating.
+[ 2149.7] Otherwise, the Zener Diode will burn out like any device with too much power dissipation.
+[ 2157.5] O'Hams law
+[ 2159.3] The voltage across the series or current limiting resistor equals the difference between the source voltage and the Zener voltage. Therefore, the current through the resistor is
+[ 2171.3] I s equals to V s minus V z upon R s.
+[ 2189.9] the loaded zener regulator
+[ 2194.1] The Zener diode operates in the breakdown region and volts the load voltage constant. Even if the source voltage changes or the load resistance varies, the load voltage will remain fixed and equal to the Zener voltage.
+[ 2207.7] breakdown operation
+[ 2211.3] So the operation in the breakdown region because of the voltage divider the Thevenin's voltage facing the diode is
+[ 2221.3] Vth equals to RL upon RS plus RL
+[ 2227.9] in 2vs
+[ 2230.0] This is the voltage that exists when the Zener diode is disconnected from the circuit. The Thevenin's voltage has to be greater than the Zener voltage otherwise breakdown cannot occur.
+[ 2244.6] unless otherwise indicated in all subsequent discussion, we assume that the xenodiod is operating in the breakdown region.
+[ 2256.7] Is equals to Vs minus Vz upon Rs.
+[ 2263.3] This is Ohm's law applied to the current limiting resistor. It is the same whether or not there is a load resistor. In other words, if you disconnect the load resistor, the current through the series resistor still
+[ 2277.2] equal the voltage across the resistor divided by the resistance.
+[ 2282.2] load current
+[ 2283.7] Ideally, the load voltage equals the zener voltage because the load resistor is in parallel with the zener diode as an equation.
+[ 2292.6] VL equals to VZ. This allows us to use Ohm's law to calculate the load current. IL equals to VL upon Irel.
+[ 2336.8] LED voltage and current.
+[ 2340.2] Usually current limiting resistor that prevents the current from exceeding the maximum current rating on the diode. Since the resistor has a node voltage
+[ 2353.3] of wires on the left and a node voltage
+[ 2357.3] of PD on the right.
+[ 2359.2] The voltage across the resistor is the difference between the two voltages.
+[ 2364.0] of it
+[ 2365.3] With Ohm's law, the series current is Is equal to Vs minus Vd upon Rs.
+[ 2372.8] the most
+[ 2374.4] commercially available LEDs, the typical voltage drop is from 1.5 to 2.5V for current between 10 and 50 milliampere.
+[ 2386.7] The exact voltage drop depends on the LED current.
+[ 2390.4] color, tolerance and so on. Unless otherwise specified, you will use a normal drop of 2V. When troubleshooting or analyzing the LED circuit,
+[ 2402.5] LED brightness. The brightness of an LED depends on the current. When VS is much greater than VD, the brightness of the LED is approximately constant.
+[ 2414.7] For instance, a TIL222 is a green LED with a forward voltage of between 1.8 minimum and 3.0 volt maximum for a current of 25 milliampere.
+[ 2429.2] If a current like figure
+[ 2432.2] mass produced using TIL222. The brightness of the LED will be almost constant if PS
+[ 2441.8] If Vs is only slightly more than Vd, the LED brightness will vary noticeably from one circuit to the next.
+[ 2457.9] Save and Segment Display.
+[ 2461.0] It contains 7 rectangular LEDs.
+[ 2465.4] a through G.
+[ 2469.1] Each LED is called a segment because it forms part of the character being displayed.
+[ 2475.8] schematic diagram of the 7-segment display. External series registers are included to limit the current to safe levels. By grounding one or more registers, we can form any
+[ 2490.4] digit from 0 through 9.
+[ 2493.4] For instance, by grounding A, B and C, we get a 7. Grounding A, B, C, D and G produces a 3.
+[ 2505.6] A 7 segment display can also display capital letters A, C, E and F.
+[ 2515.1] plus lower cases letters b and d. Microprocessor trainers often use 7-segment displays that shows all digits from 0 to 10.
+[ 2528.0] through 9 plus a, b, c, d, e and f. The 7-segment indicator is referred to as the
+[ 2538.2] common anode type because all anodes are connected together also available in the common cathode type in which all cathodes are connected together.
+[ 2548.3] Photodiode
+[ 2550.1] As previously discussed, one component of reverse current in a diode is the flow of minority carriers. These carriers exist because thermal energy keeps
+[ 2559.6] disloading valence electrons from their orbit producing free electrons and walls in the process. The lifetime of minority carriers is short but while they exist they can
+[ 2572.4] contribute to the Jeeva's current.
+[ 2574.9] When light energy bombards a p-n junction, it can dislodge valence electrons.
+[ 2583.6] striking the junction, the larger the reverse current in a diode. A photodiode has been optimized for its sensitivity to light in this diode or window.
+[ 2596.5] light pass through the package to the junction.
+[ 2602.0] produces free electrons and holes.
+[ 2605.9] The stronger the light, the greater the number of minority carriers.
+[ 2611.4] and the large reverse current.
+[ 2614.4] Octo coupler
+[ 2615.9] and octocoupler also called an
+[ 2619.0] also called an
+[ 2620.9] Optiostat?
+[ 2623.2] opto isolator
+[ 2625.3] combines an LED and a photodiode in a single package. It has an LED on the input side and a photodiode on the output side, the left source voltage and the
+[ 2639.8] series that is the setup or current through the led the then the led from
+[ 2646.8] then the light from the LED heats the photodiode and this sets
+[ 2651.9] of reverse current in the output current. This reverse current produces voltage across the output resistor. The output voltage then equals the output supply voltage minus the voltage across the resistor. When the input voltage is
+[ 2666.1] The amount of light is fluctuating, this means that the output voltage is varying in step with the input voltage.
+[ 2673.2] This is why the combination of LEDs and photodiode is called an optocoupler.
+[ 2680.5] The device can couple an input signal to the output circuit. Other types of octocoupler use photo transistor, photo thyristor and other photo
+[ 2693.1] devices in their output circuit side. These devices will be discussed in later chapter.

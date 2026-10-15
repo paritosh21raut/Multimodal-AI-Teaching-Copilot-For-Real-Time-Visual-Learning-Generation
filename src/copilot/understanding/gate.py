@@ -25,6 +25,9 @@ class BufferedLine:
         return approx_tokens(self.text)
 
 
+ANNOUNCE_MIN_WORDS = 3
+
+
 @dataclass
 class GateConfig:
     pause_s: float = 1.2
@@ -57,8 +60,15 @@ class DiscourseBuffer:
     def _tail(self) -> list[BufferedLine]:
         return self.lines[self._cuts[-1]:] if self._cuts else self.lines
 
-    def add(self, line: BufferedLine, boundary: bool = False) -> None:
-        if boundary:
+    def add(self, line: BufferedLine, boundary: bool = False, announce: bool = False) -> None:
+        """announce (F-013): the line announces a topic ("Now let's study mixtures"). What came before belongs to the
+        previous topic, so the unit is cut even after an unfinished sentence (tests 18, 19: the end of one topic
+        was shown on the next topic's slide); only a tiny scrap (< ANNOUNCE_MIN_WORDS) still joins the new unit."""
+        if announce:
+            tail = self._tail()
+            if tail and sum(l.words for l in tail) >= ANNOUNCE_MIN_WORDS:
+                self._cut_here()
+        elif boundary:
             tail = self._tail()
             scrap = bool(tail) and sum(l.words for l in tail) < self.min_unit_words
             unfinished = bool(tail) and self.whole_sentences and not ends_sentence(tail[-1].text)

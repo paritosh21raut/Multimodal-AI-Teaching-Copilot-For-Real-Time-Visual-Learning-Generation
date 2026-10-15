@@ -1,0 +1,23 @@
+[    2.3] Let us finish the terms between ANM, CNN and RNN. The artificial neural network has become the backbone of modern AI and deep learning. Among them, ANM.
+[   11.8] The artificial neuromotor, CNN, the convolutional neuromotor, and RNA, the recurrent neuromotor, are the most widely used parts predicted.
+[   21.1] Each has a unique structure and strength on application.
+[   24.4] ENM, an artificial neural network, is a network of interconnected neurons that where data flows forward from input to output. It can have one or more hidden layers, allowing it to learn complex factors from structured data composed of inputs.
+[   39.0] Hidden and output plate, worked with tabular or circuit data can capture complex events using hidden layer.
+[   47.5] Foil-sollering and can operate with incomplete information. Advantages? Distributed memory provided within foil-sollering can handle incomplete knowledge. Disadvantages? Hardware dependence and requires clear quality.
+[   61.2] That works out terribly nicely.
+[   63.2] The formulation of the neurotransmitters.
+[   67.4] A convolutional neural network is a type of ANM designed to process state-like data such as image or videos, produce a convolutional and pooling layer to automatically extract physical dimensionality.
+[   80.4] Specialised for swimming and maneuvering. Automatically detected.
+[   85.1] Important features of the manual engineering uses for smoothing and weighing weight sharing to reduce parameters. High accuracy for image recognition.
+[   97.6] Automatic feature extraction due to spinal cord disadvantages require large amount of training data cannot inherently encode object position or orientation.
+[  108.2] The recurrent neural network, the RNN, is designed for sequential data which becomes selective that allows information to process across
+[  116.6] Science test is particularly useful for modeling time-dependent students. Science-series data is used on high-level memory cells, retaining source information.
+[  130.0] We read that LSTM and GRU handles long-term dependencies useful in NLP's teeth recognition and chimes with prediction. Advantages? Remember previous input for sequence modeling.
+[  142.8] Effective for time's inspiration and beta. Disadvantageous training as can suffer from gradient managing characteristics. Limited capability of very long sequences.
+[  169.5] Take a look at the difference between all the definition of AN and which feed forward neuron and its work of neurons, so that input to all puts optional immunity than death.
+[  179.2] CNN, convolutional neural network for automatic spatial features like traction in image with orbitals. RNN, neural network with recurrent connections to process sequential data. The type of data in CNN is cellular or structured data.
+[  193.5] In PNS, the immunized videos are spatial data. For RNN, the segmental time period takes all three.
+[  202.2] The fixed-life input in TNN, yes it has fixed-life spectrum. For TNN, yes fixed-life image is fixed-life but for RNN, no as it is that it handles variable length decreases.
+[  216.1] The model complexity for ANN is equal to moderate for TNN it is moderate to high and for RNN it is high.
+[  225.4] Application of PNN is Pattern Recognition Basic of Computer Engine. For PNN image recognition, object detection and digital editing. For CNN, it is text.
+[  239.4] Language modeling and time predictors.

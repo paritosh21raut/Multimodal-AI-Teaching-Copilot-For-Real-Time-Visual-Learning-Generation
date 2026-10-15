@@ -1,0 +1,513 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (4.4 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_6         openai/gpt-oss-120b           153k of 200k tokens IN USE
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~21.7 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~22.1 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~22.3 h
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 119 lecture minutes
+
+[READY] session 20261014-165332-508b
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+16:53:37 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+16:53:44 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [   13.6s] Economics is an important subject that helps us understand money, businesses, jobs, prices, markets, government. (870 ms)
+16:54:21 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+16:54:21 WARNING copilot.llm.router: LLM groq_alt now uses GROQ_API_KEY_3
+16:54:21 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+16:54:21 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+16:54:21 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+16:54:21 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+16:54:21 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (new_topic) acts=definition hint=definition lines=1 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 20 ms
+16:54:21 INFO    copilot.presentation.engine: planner: new Lecture > Lecture (first content slide)
+  [SLIDE] add    'Lecture' [definition] v1 (1 items)
+  [   23.9s] policies and how countries develop. I will explain economics from the basics using simple English and real life example so you can understand the subject even if you are starting from zero. (804 ms)
+  [SLIDE] update 'Lecture' [definition] v2 (1 items)
+  [   36.2s] What is Economics? Economics is the study of how individuals, businesses, and governments use limited resources to satisfy (810 ms)
+  [SLIDE] update 'Lecture' [definition] v3 (1 items)
+  [   46.1s] unlimited human wants. In simple words, economics helps us understand how people earn and spend money. (710 ms)
+  [SLIDE] update 'Lecture' [definition] v4 (1 items)
+16:54:39 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 42s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 42s); groq_alt#4: skipped (cooldown 42s); groq_alt#5: skipped (cooldown 42s); groq_alt#6: skipped (cooldown 42s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=definition,explanation hint=definition lines=3 via FALLBACK llm: groq_main#6: skipped (cooldown 42s); groq_main#3: skipped (daily quota spen 1 ms
+16:54:39 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [definition] v5 (1 items)
+  [SLIDE] update 'Lecture' [definition] v6 (3 items)
+  [   53.8s] Why the prices of product increase or decrease? How businesses make profits? Why some countries are rich and others are poor? How governments collect taxes and spend money? (746 ms)
+  [SLIDE] update 'Lecture' [definition] v7 (4 items)
+  [   65.9s] why unemployment and inflation occurs. Example, imagine you have Rs 100, (651 ms)
+  [SLIDE] update 'Lecture' [definition] v8 (4 items)
+  [   73.6s] you want to buy a book for Rs 300. (557 ms)
+  [SLIDE] update 'Lecture' [definition] v9 (3 items)
+16:55:02 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 19s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 19s); groq_alt#4: skipped (cooldown 19s); groq_alt#5: skipped (cooldown 19s); groq_alt#6: skipped (cooldown 19s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=3 via FALLBACK llm: groq_main#6: skipped (cooldown 19s); groq_main#3: skipped (daily quota spen 0 ms
+16:55:02 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [definition] v10 (4 items)
+  [   77.2s] Clothes for Rs.500 Headphones for Rs.600 (553 ms)
+  [SLIDE] update 'Lecture' [definition] v11 (5 items)
+  [   81.6s] Your total wants cost Rs. 400 but you have only Rs. 1000. You must decide what to buy and what to postpone. This is an example of my equation. (904 ms)
+  [SLIDE] update 'Lecture' [definition] v12 (5 items)
+16:55:22 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+16:55:22 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+16:55:22 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+16:55:22 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+16:55:22 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+16:55:22 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 11 ms
+16:55:22 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [definition] v13 (4 items)
+  [SLIDE] update 'Lecture' [definition] v14 (6 items)
+16:55:23 INFO    copilot.presentation.engine: slide a01e90e14254 overflows on the display; further content continues on a new slide
+  [   93.6s] economic problem because your resources are limited but your wants exceed your available resources. (738 ms)
+16:55:30 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 52s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 52s); groq_alt#4: skipped (cooldown 52s); groq_alt#5: skipped (cooldown 52s); groq_alt#6: skipped (cooldown 52s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 52s); groq_main#3: skipped (daily quota spen 0 ms
+16:55:30 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [  103.3s] The two main dances of economics. Economics is broadly divided into two major branches. 1. Microeconomics. Microeconomics studies the economic decisions of individuals. (870 ms)
+16:55:56 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 26s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 26s); groq_alt#4: skipped (cooldown 26s); groq_alt#5: skipped (cooldown 26s); groq_alt#6: skipped (cooldown 26s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 26s); groq_main#3: skipped (daily quota spen 0 ms
+16:55:56 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [definition] v15 (6 items)
+  [SLIDE] add    'Lecture' [key_points] v1 (3 items)
+  [  116.1s] households, and businesses. It focuses on small economic units. Topic includes demand and supply, consumer behavior, product pricing, production cost, business profits, (806 ms)
+  [SLIDE] update 'Lecture' [key_points] v2 (4 items)
+  [  128.8s] completion between companies. (334 ms)
+  [SLIDE] update 'Lecture' [key_points] v3 (4 items)
+16:56:06 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 16s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 16s); groq_alt#4: skipped (cooldown 16s); groq_alt#5: skipped (cooldown 16s); groq_alt#6: skipped (cooldown 16s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 16s); groq_main#3: skipped (daily quota spen 0 ms
+16:56:06 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v4 (3 items)
+  [SLIDE] update 'Lecture' [key_points] v5 (5 items)
+  [  132.0s] Example, suppose the price of a smartphone decreases from 20,000 to 15,000. More people may decide to purchase it. Microeconomics studies how consumers respond to change in prices. (809 ms)
+  [SLIDE] update 'Lecture' [key_points] v6 (6 items)
+  [  145.8s] and how businesses make. (373 ms)
+  [SLIDE] update 'Lecture' [key_points] v7 (6 items)
+  [  147.5s] pricing decisions. (286 ms)
+  [SLIDE] update 'Lecture' [key_points] v8 (6 items)
+16:56:23 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+16:56:23 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+16:56:23 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+16:56:23 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+16:56:23 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+16:56:23 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=3 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 7 ms
+16:56:23 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v9 (5 items)
+  [SLIDE] update 'Lecture' [key_points] v10 (6 items)
+  [SLIDE] add    'Lecture' [key_points] v1 (2 items)
+  [  149.7s] 2. Macroeconomics. Macroeconomics studies the economy of an entire country of the world. The focus is on large-scale economic activities. Topic includes (774 ms)
+  [SLIDE] update 'Lecture' [key_points] v2 (3 items)
+  [  162.5s] Gross Domestic Product GDP. (335 ms)
+  [SLIDE] update 'Lecture' [key_points] v3 (3 items)
+  [  166.4s] inflation and employment, national income, incoming growth. (651 ms)
+  [SLIDE] update 'Lecture' [key_points] v4 (3 items)
+16:56:40 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 43s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 43s); groq_alt#4: skipped (cooldown 43s); groq_alt#5: skipped (cooldown 43s); groq_alt#6: skipped (cooldown 43s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=3 via FALLBACK llm: groq_main#6: skipped (cooldown 43s); groq_main#3: skipped (daily quota spen 0 ms
+16:56:40 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v5 (2 items)
+  [SLIDE] update 'Lecture' [key_points] v6 (5 items)
+  [  172.3s] government budgets, interest rates and monetary policy, international trades. (643 ms)
+  [SLIDE] update 'Lecture' [key_points] v7 (6 items)
+16:56:48 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 35s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 35s); groq_alt#4: skipped (cooldown 35s); groq_alt#5: skipped (cooldown 35s); groq_alt#6: skipped (cooldown 35s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 35s); groq_main#3: skipped (daily quota spen 0 ms
+16:56:48 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [SLIDE] update 'Lecture' [key_points] v8 (5 items)
+  [  180.9s] So remember, micro equals to small economic units, macro equals to the economy as a whole. (781 ms)
+  [SLIDE] update 'Lecture' [key_points] v9 (6 items)
+  [  189.4s] basic concept of economics. They are the foundational concept you should understand first. (734 ms)
+  [SLIDE] update 'Lecture' [key_points] v10 (6 items)
+16:57:02 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 21s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 21s); groq_alt#4: skipped (cooldown 21s); groq_alt#5: skipped (cooldown 21s); groq_alt#6: skipped (cooldown 21s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 21s); groq_main#3: skipped (daily quota spen 0 ms
+16:57:02 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v11 (5 items)
+  [SLIDE] update 'Lecture' [key_points] v12 (7 items)
+  [  197.2s] First is, Sky City. (562 ms)
+  [  199.6s] Sacity means that resources are limited compared with people's wants. Resources include money, time, land, labor, raw materials, and energy. (732 ms)
+16:57:17 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 6s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 6s); groq_alt#4: skipped (cooldown 6s); groq_alt#5: skipped (cooldown 6s); groq_alt#6: skipped (cooldown 6s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 6s); groq_main#3: skipped (daily quota spent 1 ms
+16:57:17 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v13 (8 items)
+  [SLIDE] add    'Lecture' [key_points] v1 (2 items)
+  [  211.8s] For example, you have 2 hours to study but you need to prepare 5 subjects. Because your time is limited, you must decide how to use it. (882 ms)
+16:57:27 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+16:57:27 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+16:57:27 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+16:57:27 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+16:57:27 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+16:57:27 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 11 ms
+16:57:27 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v2 (4 items)
+  [  222.8s] Scarcity is one of the fundamental reasons economic decision making exists. (669 ms)
+  [SLIDE] update 'Lecture' [key_points] v3 (5 items)
+16:57:46 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 41s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 41s); groq_alt#4: skipped (cooldown 41s); groq_alt#5: skipped (cooldown 41s); groq_alt#6: skipped (cooldown 41s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 41s); groq_main#3: skipped (daily quota spen 1 ms
+16:57:46 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v4 (4 items)
+  [SLIDE] update 'Lecture' [key_points] v5 (5 items)
+  [  229.1s] 2. Opportunity Cost. Opportunity Cost is the value of the next best alternative you give when making a choice. (734 ms)
+  [SLIDE] update 'Lecture' [key_points] v6 (6 items)
+  [  242.3s] and can choose between buying a book and moving to a movie. (565 ms)
+  [SLIDE] update 'Lecture' [key_points] v7 (6 items)
+16:58:00 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 27s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 27s); groq_alt#4: skipped (cooldown 27s); groq_alt#5: skipped (cooldown 27s); groq_alt#6: skipped (cooldown 27s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=definition hint=definition lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 27s); groq_main#3: skipped (daily quota spen 0 ms
+16:58:00 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v8 (5 items)
+  [SLIDE] update 'Lecture' [key_points] v9 (6 items)
+  [  246.5s] If you buy the book, the movie is your next best alternative that you give up. Therefore, the opportunity cost of buying the book is the value you would have received from going to the movie. (993 ms)
+  [SLIDE] update 'Lecture' [key_points] v10 (7 items)
+  [  258.7s] Opportunity cost can involve time and opportunity is not just money. Demand. (569 ms)
+  [SLIDE] update 'Lecture' [key_points] v11 (7 items)
+16:58:10 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 18s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 18s); groq_alt#4: skipped (cooldown 18s); groq_alt#5: skipped (cooldown 18s); groq_alt#6: skipped (cooldown 18s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 18s); groq_main#3: skipped (daily quota spen 1 ms
+16:58:10 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v12 (6 items)
+  [SLIDE] add    'Lecture' [key_points] v1 (3 items)
+  [  264.8s] Demand refers to the quality of a product consumers are willing and able to purchase at different prices during a given period. (804 ms)
+  [SLIDE] update 'Lecture' [key_points] v2 (4 items)
+  [  273.5s] Generally, when the price decreases, the quantity demanded increases, assuming all the factors remain unchanged. (662 ms)
+  [SLIDE] update 'Lecture' [key_points] v3 (4 items)
+16:58:27 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 0s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 0s); groq_alt#4: skipped (cooldown 0s); groq_alt#5: skipped (cooldown 0s); groq_alt#6: skipped (cooldown 0s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 0s); groq_main#3: skipped (daily quota spent 0 ms
+16:58:27 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v4 (3 items)
+  [SLIDE] update 'Lecture' [key_points] v5 (5 items)
+  [  283.6s] 4th one is Supply. Supply refers to the quantity of a product (651 ms)
+  [  288.6s] that produce are willing and able to sell at different prices during a given period. (679 ms)
+16:58:46 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+16:58:46 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+16:58:46 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+16:58:46 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+16:58:46 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+16:58:46 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 6 ms
+16:58:46 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] add    'Lecture' [key_points] v1 (1 items)
+  [  297.4s] Generally, when the sealing price increases, producers are willing to supply more assuming all the factors remain unchanged. (792 ms)
+  [SLIDE] update 'Lecture' [key_points] v2 (2 items)
+16:58:54 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 52s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 52s); groq_alt#4: skipped (cooldown 52s); groq_alt#5: skipped (cooldown 52s); groq_alt#6: skipped (cooldown 52s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 52s); groq_main#3: skipped (daily quota spen 0 ms
+16:58:54 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v3 (1 items)
+  [SLIDE] update 'Lecture' [key_points] v4 (2 items)
+  [  308.1s] 5th one is Market Equilibrium Market Equilibrium occurs when the quantity demanded equals the quantity supplied at particular price. (809 ms)
+  [SLIDE] update 'Lecture' [key_points] v5 (3 items)
+16:59:04 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 42s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 42s); groq_alt#4: skipped (cooldown 42s); groq_alt#5: skipped (cooldown 42s); groq_alt#6: skipped (cooldown 42s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 42s); groq_main#3: skipped (daily quota spen 0 ms
+16:59:04 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [SLIDE] update 'Lecture' [key_points] v6 (2 items)
+  [  319.5s] 6. Production. Production means creating goods or providing services to satisfy human wants. (726 ms)
+  [SLIDE] update 'Lecture' [key_points] v7 (3 items)
+16:59:13 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 33s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 33s); groq_alt#4: skipped (cooldown 33s); groq_alt#5: skipped (cooldown 33s); groq_alt#6: skipped (cooldown 33s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 33s); groq_main#3: skipped (daily quota spen 0 ms
+16:59:13 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v8 (2 items)
+  [SLIDE] update 'Lecture' [key_points] v9 (3 items)
+  [  328.7s] So, Money, Banking and Finance. Economics also explains how money moves through an economy. (708 ms)
+  [SLIDE] update 'Lecture' [key_points] v10 (4 items)
+16:59:34 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 12s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 12s); groq_alt#4: skipped (cooldown 12s); groq_alt#5: skipped (cooldown 12s); groq_alt#6: skipped (cooldown 12s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 12s); groq_main#3: skipped (daily quota spen 0 ms
+16:59:34 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v11 (3 items)
+  [SLIDE] update 'Lecture' [key_points] v12 (5 items)
+  [  337.4s] Money is anything generally accepted as payment for goods and services. It means functions are medium of exchange, used to buy and sell products. (828 ms)
+  [  349.9s] Unit of account used to express prices Store of value used to transfer purchasing power into the future Standard of deferred payment used to express future payments and debits (903 ms)
+16:59:49 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+16:59:49 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+16:59:49 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+16:59:49 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+16:59:49 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+16:59:49 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (same_concept) acts=definition,explanation hint=definition lines=1 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 15 ms
+16:59:49 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] add    'Lecture' [definition] v1 (2 items)
+  [  366.6s] So inflation is a sustained increase in the general price level of goods and services over time. (752 ms)
+  [SLIDE] update 'Lecture' [definition] v2 (3 items)
+17:00:00 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 49s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 49s); groq_alt#4: skipped (cooldown 49s); groq_alt#5: skipped (cooldown 49s); groq_alt#6: skipped (cooldown 49s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=definition hint=definition lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 49s); groq_main#3: skipped (daily quota spen 0 ms
+17:00:00 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [definition] v3 (2 items)
+  [SLIDE] update 'Lecture' [concept] v4 (3 items)
+  [  375.2s] So inflation rate equals to new price minus old price upon old price. (725 ms)
+  [SLIDE] update 'Lecture' [concept] v5 (4 items)
+17:00:08 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 41s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 41s); groq_alt#4: skipped (cooldown 41s); groq_alt#5: skipped (cooldown 41s); groq_alt#6: skipped (cooldown 41s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 41s); groq_main#3: skipped (daily quota spen 0 ms
+17:00:08 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [concept] v6 (3 items)
+  [SLIDE] update 'Lecture' [concept] v7 (4 items)
+  [  384.9s] Common causes of inflation include increased demand for goods and services. (709 ms)
+  [SLIDE] update 'Lecture' [concept] v8 (5 items)
+17:00:20 INFO    copilot.presentation.engine: slide 2ffdaaeb3e8e overflows on the display; further content continues on a new slide
+  [  393.5s] 2. Higher production and transportation cost 3. Supply distribution 4. Changes in money and credit condition (763 ms)
+  [SLIDE] update 'Lecture' [concept] v9 (5 items)
+17:00:37 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 12s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 12s); groq_alt#4: skipped (cooldown 12s); groq_alt#5: skipped (cooldown 12s); groq_alt#6: skipped (cooldown 12s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 12s); groq_main#3: skipped (daily quota spen 1 ms
+17:00:37 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [concept] v10 (4 items)
+  [SLIDE] add    'Lecture' [key_points] v1 (2 items)
+  [  404.3s] Interest rate is the cost of borrowing money or their return on lending or dis- (591 ms)
+  [SLIDE] update 'Lecture' [key_points] v2 (3 items)
+  [  412.9s] depositing money for example (622 ms)
+  [SLIDE] update 'Lecture' [key_points] v3 (3 items)
+  [  417.8s] After one year the interest is I equals to P into R into T divided by 100. (660 ms)
+  [SLIDE] update 'Lecture' [key_points] v4 (3 items)
+17:00:50 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+17:00:50 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+17:00:50 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+17:00:50 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+17:00:50 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+17:00:50 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=3 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 11 ms
+17:00:50 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [SLIDE] update 'Lecture' [key_points] v5 (2 items)
+  [  424.4s] P equals to principal, R equals to annual interest rate, and T equals to time. (598 ms)
+  [SLIDE] update 'Lecture' [key_points] v6 (3 items)
+17:00:58 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 52s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 52s); groq_alt#4: skipped (cooldown 52s); groq_alt#5: skipped (cooldown 52s); groq_alt#6: skipped (cooldown 52s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 52s); groq_main#3: skipped (daily quota spen 0 ms
+17:00:58 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v7 (2 items)
+  [SLIDE] update 'Lecture' [key_points] v8 (3 items)
+  [  431.2s] Banking. Banks provide services such as accepting deposits, providing loans, processing payments, supporting businesses, transactions, facilitating savings and investment. (842 ms)
+  [SLIDE] update 'Lecture' [key_points] v9 (4 items)
+17:01:11 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 39s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 39s); groq_alt#4: skipped (cooldown 39s); groq_alt#5: skipped (cooldown 39s); groq_alt#6: skipped (cooldown 39s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 39s); groq_main#3: skipped (daily quota spen 1 ms
+17:01:11 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v10 (3 items)
+  [SLIDE] update 'Lecture' [key_points] v11 (4 items)
+  [  481.6s] JDP and Economic Growth. What is JDP? JDP stands for Gross Domestic Product. Means the value of final goods and services produced within a country border during a specified period. (944 ms)
+  [SLIDE] update 'Lecture' [key_points] v12 (5 items)
+17:02:14 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+17:02:14 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+17:02:14 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+17:02:14 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+17:02:14 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+17:02:14 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 7 ms
+17:02:14 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v13 (4 items)
+  [SLIDE] update 'Lecture' [key_points] v14 (6 items)
+  [SLIDE] add    'Lecture' [key_points] v1 (1 items)
+  [  495.7s] GDP is one of the most widely used indicators of economic activity. For example, India's GDP includes the value of eligible final goods and services produced within India including production by (931 ms)
+  [SLIDE] update 'Lecture' [key_points] v2 (2 items)
+  [  510.7s] for an owned company operating there. (508 ms)
+  [SLIDE] update 'Lecture' [key_points] v3 (1 items)
+  [  513.7s] GDP formula, the expenditure approach to GDP is expressed as (723 ms)
+  [  519.9s] GDP equals to C plus I plus G plus (666 ms)
+  [  525.2s] in bracket x minus m bracket close (600 ms)
+17:02:34 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 40s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 40s); groq_alt#4: skipped (cooldown 40s); groq_alt#5: skipped (cooldown 40s); groq_alt#6: skipped (cooldown 40s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=5 via FALLBACK llm: groq_main#6: skipped (cooldown 40s); groq_main#3: skipped (daily quota spen 0 ms
+17:02:34 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v4 (3 items)
+  [  529.0s] where C equals to consumption expenditure, I equals to investment expenditure, G equals to government expenditure on final goods and services, X equals to exports, M equals to imports. (901 ms)
+  [SLIDE] update 'Lecture' [key_points] v5 (4 items)
+17:02:49 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 25s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 25s); groq_alt#4: skipped (cooldown 25s); groq_alt#5: skipped (cooldown 25s); groq_alt#6: skipped (cooldown 25s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 25s); groq_main#3: skipped (daily quota spen 0 ms
+17:02:49 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [SLIDE] update 'Lecture' [key_points] v6 (3 items)
+  [  547.7s] unemployment and poverty. Unemployment occurs when people who are available for and seeking work cannot find (745 ms)
+  [  557.1s] Common categories include (546 ms)
+17:03:20 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+17:03:20 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+17:03:20 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+17:03:20 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+17:03:20 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+17:03:20 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=2 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 10 ms
+17:03:20 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [  560.8s] Frictional unemployment. People are temporarily between jobs. Structural unemployment. Workers' skills do not match the job available or the economy changes in ways that reduce demand for their occupations. (862 ms)
+  [SLIDE] update 'Lecture' [key_points] v7 (4 items)
+17:03:33 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 47s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 47s); groq_alt#4: skipped (cooldown 47s); groq_alt#5: skipped (cooldown 47s); groq_alt#6: skipped (cooldown 47s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 47s); groq_main#3: skipped (daily quota spen 0 ms
+17:03:33 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v8 (3 items)
+  [SLIDE] update 'Lecture' [key_points] v9 (5 items)
+  [  574.8s] cyclical unemployment, unemployment associated with economic downturns, seasonal unemployment, employment varies with seasons or recurring periods of activity. (785 ms)
+17:03:41 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 39s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 39s); groq_alt#4: skipped (cooldown 39s); groq_alt#5: skipped (cooldown 39s); groq_alt#6: skipped (cooldown 39s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 39s); groq_main#3: skipped (daily quota spen 0 ms
+17:03:41 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [  589.3s] Poverty refers to a situation in which people lack sufficient resources to meet essential needs or participate adequately in society. (643 ms)
+17:03:49 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 31s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 31s); groq_alt#4: skipped (cooldown 31s); groq_alt#5: skipped (cooldown 31s); groq_alt#6: skipped (cooldown 31s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 31s); groq_main#3: skipped (daily quota spen 0 ms
+17:03:49 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] add    'Lecture' [key_points] v1 (1 items)
+  [  600.1s] It can involve limited access to food, housing, healthcare, education. (726 ms)
+  [SLIDE] update 'Lecture' [key_points] v2 (2 items)
+  [  607.7s] clean water (266 ms)
+  [SLIDE] update 'Lecture' [key_points] v3 (1 items)
+  [  609.5s] Employment opportunity (458 ms)
+17:03:57 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 23s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 23s); groq_alt#4: skipped (cooldown 23s); groq_alt#5: skipped (cooldown 23s); groq_alt#6: skipped (cooldown 23s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 23s); groq_main#3: skipped (daily quota spen 0 ms
+17:03:57 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v4 (2 items)
+17:04:05 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 15s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 15s); groq_alt#4: skipped (cooldown 15s); groq_alt#5: skipped (cooldown 15s); groq_alt#6: skipped (cooldown 15s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 15s); groq_main#3: skipped (daily quota spen 0 ms
+17:04:05 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [  616.1s] The three major economic sectors. First is primary sector. (638 ms)
+  [  620.4s] extract or produce natural resources, e.g. agriculture, fishing, mining and forestry. (808 ms)
+17:04:13 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 7s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 7s); groq_alt#4: skipped (cooldown 7s); groq_alt#5: skipped (cooldown 7s); groq_alt#6: skipped (cooldown 7s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 7s); groq_main#3: skipped (daily quota spent 0 ms
+17:04:13 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [  626.8s] Second one is secondary sector. (571 ms)
+17:04:21 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+17:04:21 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+17:04:21 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+17:04:21 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+17:04:21 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+17:04:21 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=3 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 7 ms
+17:04:21 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v5 (5 items)
+  [  629.2s] produces raw materials and manufacture products. Example, electronics manufacturing, automobile production and construction. (778 ms)
+  [SLIDE] update 'Lecture' [key_points] v6 (6 items)
+  [  638.2s] Third one is territory sector produces zombies. (604 ms)
+  [SLIDE] update 'Lecture' [key_points] v7 (6 items)
+  [  642.1s] example banking, education, software, development and telecommunication. (696 ms)
+  [SLIDE] update 'Lecture' [key_points] v8 (6 items)
+17:04:35 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 46s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 46s); groq_alt#4: skipped (cooldown 46s); groq_alt#5: skipped (cooldown 46s); groq_alt#6: skipped (cooldown 46s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=3 via FALLBACK llm: groq_main#6: skipped (cooldown 46s); groq_main#3: skipped (daily quota spen 1 ms
+17:04:35 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v9 (5 items)
+  [SLIDE] update 'Lecture' [key_points] v10 (7 items)
+17:04:36 INFO    copilot.presentation.engine: slide 0946460a37fa overflows on the display; further content continues on a new slide
+  [  647.9s] this sector had interconnected for example electronics manufacturing depends on raw materials, factors (720 ms)
+  [  656.0s] transport from banking and software devices. (619 ms)
+17:04:45 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 37s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 37s); groq_alt#4: skipped (cooldown 37s); groq_alt#5: skipped (cooldown 37s); groq_alt#6: skipped (cooldown 37s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 37s); groq_main#3: skipped (daily quota spen 0 ms
+17:04:45 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [  684.6s] different types of economic systems. (565 ms)
+  [  689.4s] The economic system describes how a society organizes the production and distribution of goods and services. (766 ms)
+17:05:26 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+17:05:26 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+17:05:26 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+17:05:26 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+17:05:26 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+17:05:26 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 6 ms
+17:05:26 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] add    'Lecture' [key_points] v1 (1 items)
+  [  699.2s] 1. Capitalistic Economy (568 ms)
+  [SLIDE] update 'Lecture' [key_points] v2 (2 items)
+  [  703.2s] Private, individuals and businesses play a major role in oving resources and making production decisions. Example, the United States is commonly described as having a market-oriented capitalistic (947 ms)
+  [SLIDE] update 'Lecture' [key_points] v3 (2 items)
+17:05:46 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 40s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 40s); groq_alt#4: skipped (cooldown 40s); groq_alt#5: skipped (cooldown 40s); groq_alt#6: skipped (cooldown 40s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 40s); groq_main#3: skipped (daily quota spen 0 ms
+17:05:46 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v4 (1 items)
+  [SLIDE] update 'Lecture' [key_points] v5 (2 items)
+  [  718.2s] although its government also plays a sustained role. (620 ms)
+  [SLIDE] update 'Lecture' [key_points] v6 (3 items)
+  [  723.6s] economic role. (456 ms)
+  [SLIDE] update 'Lecture' [key_points] v7 (3 items)
+17:05:54 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 32s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 32s); groq_alt#4: skipped (cooldown 32s); groq_alt#5: skipped (cooldown 32s); groq_alt#6: skipped (cooldown 32s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 32s); groq_main#3: skipped (daily quota spen 0 ms
+17:05:54 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [  725.8s] Second one is Socialistic Economy. (488 ms)
+  [SLIDE] update 'Lecture' [key_points] v8 (3 items)
+17:06:02 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 24s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 24s); groq_alt#4: skipped (cooldown 24s); groq_alt#5: skipped (cooldown 24s); groq_alt#6: skipped (cooldown 24s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 24s); groq_main#3: skipped (daily quota spen 0 ms
+17:06:02 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v9 (2 items)
+  [SLIDE] update 'Lecture' [key_points] v10 (3 items)
+  [  728.8s] The socialist economy system emphasizes social or public ownership and control of important productive resources, though the agreements vary widely. (737 ms)
+  [SLIDE] update 'Lecture' [key_points] v11 (4 items)
+  [  741.8s] 3. Mixed Economy (528 ms)
+  [SLIDE] update 'Lecture' [key_points] v12 (4 items)
+  [  745.1s] A mixed economy combines private economic activity with government participation and regulations. (684 ms)
+  [SLIDE] update 'Lecture' [key_points] v13 (4 items)
+17:06:19 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 7s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 7s); groq_alt#4: skipped (cooldown 7s); groq_alt#5: skipped (cooldown 7s); groq_alt#6: skipped (cooldown 7s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=3 via FALLBACK llm: groq_main#6: skipped (cooldown 7s); groq_main#3: skipped (daily quota spent 0 ms
+17:06:19 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v14 (3 items)
+  [SLIDE] update 'Lecture' [key_points] v15 (4 items)
+  [SLIDE] add    'Lecture' [key_points] v1 (1 items)
+  [  752.2s] India is generally described as a mixed economy because private businesses operate alongside public enterprises, government services and economic regulation. (817 ms)
+  [SLIDE] update 'Lecture' [key_points] v2 (2 items)
+17:06:30 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+17:06:30 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+17:06:30 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+17:06:30 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+17:06:30 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+17:06:30 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 14 ms
+17:06:30 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v3 (1 items)
+  [SLIDE] update 'Lecture' [key_points] v4 (2 items)
+  [  766.4s] Economics in everyday life. (474 ms)
+  [SLIDE] update 'Lecture' [key_points] v5 (3 items)
+  [  769.4s] You do not need to be an economist to see economics in action. (629 ms)
+  [SLIDE] update 'Lecture' [key_points] v6 (3 items)
+17:06:39 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 50s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 50s); groq_alt#4: skipped (cooldown 50s); groq_alt#5: skipped (cooldown 50s); groq_alt#6: skipped (cooldown 50s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 50s); groq_main#3: skipped (daily quota spen 0 ms
+17:06:39 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v7 (2 items)
+  [SLIDE] update 'Lecture' [key_points] v8 (4 items)
+  [  779.3s] economics and technology. (511 ms)
+  [SLIDE] update 'Lecture' [key_points] v9 (5 items)
+  [  782.3s] in economics and technology is particularly relevant to technology and engineering. (581 ms)
+  [SLIDE] update 'Lecture' [key_points] v10 (5 items)
+17:06:59 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 31s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 31s); groq_alt#4: skipped (cooldown 31s); groq_alt#5: skipped (cooldown 31s); groq_alt#6: skipped (cooldown 31s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=- hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 31s); groq_main#3: skipped (daily quota spen 0 ms
+17:06:59 INFO    copilot.presentation.engine: planner: noop Lecture > Lecture (nothing to display)
+  [SLIDE] update 'Lecture' [key_points] v11 (4 items)
+  [  788.9s] For example, consider an electronics company deciding whether to manufacture a new circuit board. The company must consider component cost, manufacturing expenses, labor cost, equipment investment, product demand, selling price. (1046 ms)
+  [SLIDE] update 'Lecture' [key_points] v12 (5 items)
+  [  803.6s] combination expected profit. (285 ms)
+  [SLIDE] update 'Lecture' [key_points] v13 (5 items)
+17:07:11 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 18s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 18s); groq_alt#4: skipped (cooldown 18s); groq_alt#5: skipped (cooldown 18s); groq_alt#6: skipped (cooldown 18s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 18s); groq_main#3: skipped (daily quota spen 0 ms
+17:07:11 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v14 (4 items)
+  [SLIDE] update 'Lecture' [key_points] v15 (5 items)
+  [SLIDE] add    'Lecture' [key_points] v1 (1 items)
+  [  807.8s] So the profit before all are unaccounted expenses. (632 ms)
+  [SLIDE] update 'Lecture' [key_points] v2 (2 items)
+  [  811.7s] Profit equals to revenue minus total cost. (522 ms)
+  [SLIDE] update 'Lecture' [key_points] v3 (2 items)
+17:07:22 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 8s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 8s); groq_alt#4: skipped (cooldown 8s); groq_alt#5: skipped (cooldown 8s); groq_alt#6: skipped (cooldown 8s)
+  [UNDERSTAND] Lecture > - (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 8s); groq_main#3: skipped (daily quota spent 0 ms
+17:07:22 INFO    copilot.presentation.engine: planner: update Lecture > Lecture (same frame)
+  [SLIDE] update 'Lecture' [key_points] v4 (1 items)
+  [SLIDE] update 'Lecture' [key_points] v5 (3 items)
+17:07:58 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectError
+17:07:58 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectError
+17:07:58 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectError
+17:07:58 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectError
+17:07:58 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectError
+17:07:58 INFO    copilot.assess.service: quiz questions: 0 written (0 LLM calls, 0 tokens); no LLM answer: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+[QUIZ] 0 questions ready (no LLM answer: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261014-165332-508b: 91 segments, 1273 words, state v194, 943 events logged
+        CommandReceived=48, ConceptSignal=91, DeckState=56, InterpretRequested=52, InterpretationReady=52, LLMCallFailed=65, LifecycleChanged=5, SlideContextChanged=47, SlideOverflow=6, SlidePatch=145, StateChanged=194, TranscriptFinal=91, UtteranceClassified=91
+        stt: 91 published, 0 dropped, latency p50=696 ms p95=931 ms max=1046 ms
+        understanding: 52 interpretations (0 by LLM, 52 fallbacks, 0 repaired), max 7 calls/min, prompt tokens max=1888 avg=1810, latency p50=1 ms max=21 ms
+        presentation: 13 slides; planner ops {'new': 1, 'update': 39, 'noop': 12}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/13
+          1. [definition] Lecture [part 1]  (v15, ['definition', 'points'])
+          2. [key_points] Lecture [part 2]  (v10, ['points'])
+          3. [key_points] Lecture [part 3]  (v13, ['points'])
+          4. [key_points] Lecture [part 4]  (v12, ['points', 'definition'])
+          5. [key_points] Lecture [part 5]  (v5, ['points'])
+          6. [key_points] Lecture [part 6]  (v12, ['points'])
+          7. [concept] Lecture [part 7]  (v10, ['definition', 'points', 'definition', 'points'])
+          8. [key_points] Lecture [part 8]  (v14, ['points'])
+          9. [key_points] Lecture [part 9]  (v9, ['points'])
+          10. [key_points] Lecture [part 10]  (v10, ['points'])
+          11. [key_points] Lecture [part 11]  (v15, ['points'])
+          12. [key_points] Lecture [part 12]  (v15, ['points'])
+          13. [key_points] Lecture [part 13]  (v5, ['points'])
+        providers: -; triggers: {'max_wait': 23, 'words': 5, 'pause': 21, 'boundary': 3}; outline: ['Lecture > ']; concerns: 0
+        log: C:\Users\potda\Multimodal-AI-Teaching-Copilot-For-Real-Time-Visual-Learning-Generation\data\sessions\20261014-165332-508b\session.sqlite

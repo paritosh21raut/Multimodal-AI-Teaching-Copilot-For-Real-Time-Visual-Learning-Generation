@@ -1,0 +1,682 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (5.7 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~17.0 h
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~15.5 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~16.0 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~16.1 h
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              145k of 200k tokens IN USE
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              196k of 200k tokens ok
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~18.2 h
+        enough for about 68 lecture minutes
+
+[READY] session 20261014-230244-3508
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+23:02:51 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+[SHARE] starting the link ...
+[SHARE] waiting for the link to answer ...
+23:03:21 INFO    copilot.display.share: sharing https://carrier-took-jurisdiction-broadway.trycloudflare.com/view
+[SHARE] students: https://carrier-took-jurisdiction-broadway.trycloudflare.com/view
+        teacher control from another device: https://carrier-took-jurisdiction-broadway.trycloudflare.com/control?key=wSn4bVDccqxJqg1Bl2kyo3HM
+23:03:43 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    2.6s] Today we are going to learn about trigonometric function. (617 ms)
+  [UNDERSTAND] Trigonometric Function > Introduction (new_topic) acts=transition hint=none lines=1 via groq_alt#4 964 ms
+               The lesson introduces the topic of trigonometric functions.
+23:03:53 INFO    copilot.presentation.engine: planner: noop Trigonometric Function > Introduction (nothing to display)
+  [    8.5s] their mathematical formulas, their graphs and their applications in engineering. (598 ms)
+  [UNDERSTAND] Trigonometric Function > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1038 ms
+               The lesson covers trigonometric formulas, graphs, and engineering applications.
+23:04:10 INFO    copilot.presentation.engine: planner: new Trigonometric Function > Introduction (first content slide)
+  [SLIDE] add    'Trigonometric Function' [key_points] v1 (3 items)
+  [   13.8s] Trignometry is a branch of mathematics that studies the relationship between the angles and sides of triangle. It is widely used in physics, engineering, architecture, navigation and signal processing. (918 ms)
+  [SLIDE] update 'Trigonometric Function' [key_points] v2 (4 items)
+  [   28.0s] Let us begin with the three basic trigonometric functions. (615 ms)
+  [SLIDE] update 'Trigonometric Function' [key_points] v3 (4 items)
+  [   31.8s] sain, cosain and tangent. (592 ms)
+  [SLIDE] update 'Trigonometric Function' [key_points] v4 (4 items)
+23:04:20 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['It is widely used in physics, engineering, architecture, navigation and signal processing']
+  [UNDERSTAND] Trigonometric Function > Basic Functions (sibling_concept) acts=definition,classification,explanation hint=key_points lines=3 via groq_alt#4 1698 ms
+               Defined trigonometry as the study of triangle angles and sides, and introduced sine, cosine, and tangent as the three basic functions.
+  [HEARD] 'sain, cosain' -> 'sine, cosine' corrected on the slide (0.9)
+23:04:20 INFO    copilot.presentation.engine: planner: continue Trigonometric Function > Basic Functions (new facet)
+23:04:20 INFO    copilot.presentation.engine: slide 'Basic Functions' waits for the min dwell time
+23:04:20 INFO    copilot.presentation.engine: concern 1720cb80d7a1 (transcription, applied=True): 0 element(s); slide shows 'sine, cosine'
+  [SLIDE] update 'Trigonometric Function' [key_points] v5 (3 items)
+  [SLIDE] add    'Basic Functions' [members] v1 (3 items)
+  [   35.0s] In a right angle triangle, the sine of an angle is the ratio of the opposite side to the hypotenuse. (886 ms)
+  [   42.9s] The cosine of an angle is the ratio of the adjacent side to the hypotenuse. (715 ms)
+  [   49.0s] The tangent of an angle is the ratio of opposite side to the adjacent side. (658 ms)
+  [UNDERSTAND] Trigonometric Function > Basic Functions (elaboration) acts=definition,definition,definition hint=definition lines=3 via groq_alt#4 1142 ms
+               Defined sine, cosine, and tangent as ratios of sides in a right-angled triangle.
+23:04:39 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Basic Functions (same frame)
+23:04:39 INFO    copilot.presentation.engine: slide 'Basic Functions' waits for the min dwell time
+23:04:39 INFO    copilot.presentation.engine: no image for 'Basic Functions': two concepts side by side
+  [SLIDE] update 'Basic Functions' [members] v2 (3 items)
+  [SLIDE] add    'Basic Functions' [concept] v1 (3 items)
+  [   54.5s] These relationships are represented by three formulas. (571 ms)
+  [UNDERSTAND] Trigonometric Function > Basic Functions (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 2162 ms
+               The teacher notes that the relationships between sides and angles are represented by three formulas.
+23:04:48 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Basic Functions (same frame)
+23:04:48 INFO    copilot.presentation.engine: no image for 'Basic Functions': two concepts side by side
+  [SLIDE] update 'Basic Functions' [concept] v2 (4 items)
+  [   59.0s] sine theta equals opposite divided by hypotenuse, cosine theta equals adjacent divided by hypotenuse and tangent theta equals opposite divided by adjacent. (915 ms)
+  [SLIDE] update 'Basic Functions' [concept] v3 (5 items)
+  [UNDERSTAND] Trigonometric Function > Basic Functions (elaboration) acts=formula,formula,formula hint=formula lines=1 via groq_alt#4 1646 ms
+               The teacher explicitly states the mathematical formulas for sine, cosine, and tangent using the angle theta.
+23:05:09 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Basic Functions (same frame)
+23:05:09 INFO    copilot.presentation.engine: no image for 'Basic Functions': formula needs the full width
+  [SLIDE] update 'Basic Functions' [concept] v4 (4 items)
+  [SLIDE] update 'Basic Functions' [concept] v5 (5 items)
+  [SLIDE] add    'Basic Functions' [formula] v1 (2 items)
+  [   71.7s] Now, let us discuss the unit circle. A unit circle is a circle with a radius of one unit and its center at the origin of a coordinate system. (974 ms)
+  [   84.1s] It helps us understand trigonometric functions for different angles. (410 ms)
+  [   89.1s] On the unit circle, the horizontal coordinates represent cosine while the vertical coordinates represent sine. (662 ms)
+  [UNDERSTAND] Trigonometric Function > Unit Circle (sibling_concept) acts=definition,explanation hint=definition lines=2 via groq_alt#4 1179 ms
+               Defined the unit circle as a circle with radius one centered at the origin, used to understand trigonometric functions.
+23:05:21 INFO    copilot.presentation.engine: planner: continue Trigonometric Function > Unit Circle (new facet)
+23:05:21 INFO    copilot.presentation.engine: slide 'Unit Circle' waits for the min dwell time
+23:05:21 INFO    copilot.presentation.engine: image search 'unit circle' (diagram) for 'Unit Circle'
+  [SLIDE] add    'Unit Circle' [definition] v1 (2 items)
+23:05:26 INFO    copilot.visuals.finder: image search 'unit circle': 2 slow download(s) dropped
+  [   98.0s] Next, we will examine the graphs of sine and cosine. (707 ms)
+  [SLIDE] update 'Unit Circle' [definition] v2 (3 items)
+23:05:27 INFO    copilot.visuals.finder: image search 'unit circle' (diagram, labels preferred): 6 candidate(s), 2 accepted (0 labelled), 5.55 s {'search_s': 2.75, 'download_s': 1.74, 'clip_s': 0.15, 'full_s': 0.9, 'total_s': 5.55}
+  [IMAGE] 'unit circle' -> File:Unit circle.svg (5.5 s)
+23:05:27 INFO    copilot.presentation.engine: image 'unit circle' on 'Unit Circle': File:Unit circle.svg
+  [SLIDE] update 'Unit Circle' [definition] v3 (4 items)
+  [UNDERSTAND] Trigonometric Function > Unit Circle (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1034 ms
+               Explained that horizontal coordinates on the unit circle represent cosine and vertical coordinates represent sine.
+23:05:29 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Unit Circle (same frame)
+23:05:29 INFO    copilot.presentation.engine: no image for 'Unit Circle': has an image
+  [SLIDE] update 'Unit Circle' [definition] v4 (6 items)
+  [  102.5s] The sine function is written as y equals sine x. (650 ms)
+  [SLIDE] update 'Unit Circle' [definition] v5 (6 items)
+  [  106.8s] and the cosine function is written as y equals cosine x. (651 ms)
+  [SLIDE] update 'Unit Circle' [definition] v6 (6 items)
+  [  111.3s] Both functions produce repeating wave-like pattern. (641 ms)
+  [SLIDE] update 'Unit Circle' [definition] v7 (6 items)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (sibling_concept) acts=transition,definition,definition hint=key_points lines=3 via groq_alt#4 1098 ms
+               Introduced the standard function notation for sine and cosine graphs.
+23:05:40 INFO    copilot.presentation.engine: planner: continue Trigonometric Function > Graphs of Sine and Cosine (new facet)
+23:05:40 INFO    copilot.presentation.engine: image hint 'Graphs of Sine and Cosine coordinates' for 'Graphs of Sine and Cosine' from its sibling subtopic
+23:05:40 INFO    copilot.presentation.engine: no image for 'Graphs of Sine and Cosine': two concepts side by side
+  [SLIDE] add    'Graphs of Sine and Cosine' [concept] v1 (2 items)
+  [  115.4s] The standard period is 2 pi radian. (537 ms)
+  [SLIDE] update 'Unit Circle' [definition] v8 (5 items)
+  [  119.0s] which is equivalent to (290 ms)
+23:05:47 WARNING copilot.llm.router: llm groq_alt#4 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m47n5jhaek9sdgt85z510g09` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 698,
+  [  121.1s] 360 degree. (531 ms)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#5 2082 ms
+               Described sine and cosine graphs as repeating wave-like patterns with a standard period of 2π radians.
+23:05:49 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Graphs of Sine and Cosine (same frame)
+23:05:49 INFO    copilot.presentation.engine: image hint 'Graphs of Sine and Cosine coordinates' for 'Graphs of Sine and Cosine' from its sibling subtopic
+23:05:49 INFO    copilot.presentation.engine: no image for 'Graphs of Sine and Cosine': two concepts side by side
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v2 (4 items)
+  [  123.8s] Their amplitude is 1. (532 ms)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (same_concept) acts=- hint=none lines=1 via groq_alt#5 935 ms
+               Teacher began explaining an equivalence related to the trigonometric graphs.
+23:05:55 INFO    copilot.presentation.engine: planner: noop Trigonometric Function > Graphs of Sine and Cosine (nothing to display)
+  [  126.0s] The sine and cosine function are particularly important in electrical engineering because alternating current and voltage can be represented using sinusoidal waveform. (844 ms)
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v3 (5 items)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 2643 ms
+               Clarified that the standard period of 2π radians is equivalent to 360 degrees.
+23:06:05 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Graphs of Sine and Cosine (same frame)
+23:06:05 INFO    copilot.presentation.engine: image hint 'Graphs of Sine and Cosine coordinates' for 'Graphs of Sine and Cosine' from its sibling subtopic
+23:06:05 INFO    copilot.presentation.engine: no image for 'Graphs of Sine and Cosine': two concepts side by side
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v4 (6 items)
+  [  137.1s] For example, an alternating voltage can be written as V of t. (672 ms)
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v5 (6 items)
+  [  142.5s] equals b maximum multiplied by sine omega t. (643 ms)
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v6 (6 items)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1152 ms
+               Stated that the standard amplitude of sine and cosine graphs is 1.
+23:06:12 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Graphs of Sine and Cosine (same frame)
+23:06:12 INFO    copilot.presentation.engine: image hint 'Graphs of Sine and Cosine coordinates' for 'Graphs of Sine and Cosine' from its sibling subtopic
+23:06:12 INFO    copilot.presentation.engine: no image for 'Graphs of Sine and Cosine': two concepts side by side
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v7 (7 items)
+  [  146.8s] where V maximum is peak voltage and omega represents (585 ms)
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v8 (7 items)
+  [  151.2s] angular frequency. (280 ms)
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v9 (7 items)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (elaboration) acts=application hint=application lines=1 via groq_alt#4 2378 ms
+               Explained that sine and cosine functions are crucial in electrical engineering for representing alternating current and voltage.
+23:06:21 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Graphs of Sine and Cosine (same frame)
+23:06:21 INFO    copilot.presentation.engine: no image for 'Graphs of Sine and Cosine': two concepts side by side
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v10 (8 items)
+  [  153.8s] Trigonometric functions also have applications in communication systems. (650 ms)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (elaboration) acts=example hint=formula lines=2 via groq_alt#5 1121 ms
+               Provided the formula for alternating voltage using a sinusoidal function.
+23:06:28 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Graphs of Sine and Cosine (same frame)
+23:06:28 INFO    copilot.presentation.engine: no image for 'Graphs of Sine and Cosine': two concepts side by side
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v11 (8 items)
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v12 (7 items)
+  [  159.4s] Radio waves, sound waves and many other periodic signals can be represented or analyzed using sinusoidal functions. Engineers use these mathematical relationships to study signal. (874 ms)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (elaboration) acts=definition,definition hint=definition lines=2 via groq_alt#4 3682 ms
+               Defined V_max as peak voltage and omega as angular frequency in the AC voltage formula.
+23:06:38 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Graphs of Sine and Cosine (same frame)
+23:06:38 INFO    copilot.presentation.engine: no image for 'Graphs of Sine and Cosine': two concepts side by side
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v13 (7 items)
+  [SLIDE] add    'Graphs of Sine and Cosine' [concept] v1 (2 items)
+  [  172.4s] behavior and electrical circuit. (471 ms)
+  [  175.6s] To conclude, (284 ms)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (elaboration) acts=application hint=application lines=1 via groq_alt#5 770 ms
+               Noted that trigonometric functions are also applied in communication systems.
+23:06:43 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Graphs of Sine and Cosine (same frame)
+23:06:43 INFO    copilot.presentation.engine: no image for 'Graphs of Sine and Cosine': two concepts side by side
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v2 (3 items)
+  [  176.7s] trigonometric functions provide mathematical foundations for understanding angles, periodic (642 ms)
+23:06:55 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Engineers use these mathematical relationships to study signal']
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (elaboration) acts=application,explanation hint=application lines=1 via groq_alt#4 4127 ms
+               Explained that sinusoidal functions model radio waves, sound waves, and other periodic signals for engineering analysis.
+23:06:55 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Graphs of Sine and Cosine (same frame)
+23:06:55 INFO    copilot.presentation.engine: no image for 'Graphs of Sine and Cosine': two concepts side by side
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v3 (4 items)
+  [  185.3s] They are essential in mathematics, physics, electronics and telecommunications. (556 ms)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (elaboration) acts=transition hint=none lines=2 via groq_alt#5 2675 ms
+               Completed the explanation of engineering applications involving signal behavior and electrical circuits.
+23:07:01 INFO    copilot.presentation.engine: revised S3: Engineers use these mathematical relationships to study signal behavior and electrical circuits
+23:07:01 INFO    copilot.presentation.engine: planner: noop Trigonometric Function > Graphs of Sine and Cosine (nothing to display)
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v4 (4 items)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 3884 ms
+               Trigonometric functions provide the mathematical foundation for understanding angles and periodic phenomena.
+23:07:10 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Graphs of Sine and Cosine (same frame)
+23:07:10 INFO    copilot.presentation.engine: no image for 'Graphs of Sine and Cosine': two concepts side by side
+  [SLIDE] update 'Graphs of Sine and Cosine' [concept] v5 (6 items)
+  [UNDERSTAND] Trigonometric Function > Graphs of Sine and Cosine (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 697 ms
+               Highlighted the essential role of trigonometric functions in mathematics, physics, electronics, and telecommunications.
+23:07:15 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Graphs of Sine and Cosine (same frame)
+  [SLIDE] add    'Graphs of Sine and Cosine' [key_points] v1 (1 items)
+23:07:15 INFO    copilot.presentation.engine: image search 'AC voltage waveform' (diagram) for 'Graphs of Sine and Cosine'
+  [  212.0s] The second topic is Differential Calculus. (700 ms)
+  [SLIDE] update 'Graphs of Sine and Cosine' [key_points] v2 (2 items)
+23:07:21 INFO    copilot.visuals.finder: image search 'AC voltage waveform' (diagram, labels preferred): 7 candidate(s), 3 accepted (0 labelled), 5.48 s {'search_s': 1.86, 'download_s': 1.56, 'clip_s': 0.15, 'full_s': 1.89, 'total_s': 5.48}
+  [IMAGE] 'AC voltage waveform' -> File:Waveforms - capacitive reactance.svg (5.5 s)
+23:07:21 INFO    copilot.presentation.engine: no image 'AC voltage waveform' on 'Graphs of Sine and Cosine': not about the slide (similarity 0.24)
+  [  215.7s] Differential calculus is a branch of mathematics that studies how quantities (713 ms)
+  [SLIDE] update 'Graphs of Sine and Cosine' [key_points] v3 (2 items)
+  [  221.7s] Its central concept is the derivative. (561 ms)
+  [SLIDE] update 'Graphs of Sine and Cosine' [key_points] v4 (2 items)
+  [UNDERSTAND] Differential Calculus > Introduction (new_topic) acts=definition,explanation hint=key_points lines=3 via groq_alt#4 1421 ms
+               Introduced differential calculus as a branch of mathematics studying changing quantities, with the derivative as its central concept.
+23:07:33 INFO    copilot.presentation.engine: planner: update Trigonometric Function > Graphs of Sine and Cosine (new topic not yet confirmed)
+  [SLIDE] update 'Graphs of Sine and Cosine' [key_points] v5 (1 items)
+  [SLIDE] update 'Graphs of Sine and Cosine' [key_points] v6 (3 items)
+23:07:33 INFO    copilot.presentation.engine: no image 'AC voltage waveform' on 'Graphs of Sine and Cosine': not about the slide (similarity 0.17)
+  [  225.2s] The derivative measures the instantaneous rate of change of one. (542 ms)
+  [SLIDE] update 'Graphs of Sine and Cosine' [key_points] v7 (4 items)
+  [  230.2s] quantity with respect to another (470 ms)
+  [SLIDE] update 'Graphs of Sine and Cosine' [key_points] v8 (4 items)
+  [  233.7s] Geometrically, it represents the slope of a curve at a particular point. (682 ms)
+  [SLIDE] update 'Graphs of Sine and Cosine' [key_points] v9 (4 items)
+  [UNDERSTAND] Differential Calculus > Introduction (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#4 998 ms
+               Defined the derivative as the instantaneous rate of change and its geometric interpretation as the slope of a curve.
+23:07:47 INFO    copilot.presentation.engine: planner: new Differential Calculus > Introduction (new topic confirmed (two interpretations agree))
+23:07:47 INFO    copilot.presentation.engine: moving 2 item(s) of 'Differential Calculus' to the new topic's slide
+  [SLIDE] update 'Graphs of Sine and Cosine' [key_points] v10 (3 items)
+  [SLIDE] update 'Graphs of Sine and Cosine' [key_points] v11 (1 items)
+  [SLIDE] add    'Differential Calculus' [definition] v1 (4 items)
+  [  239.6s] For a function y equals to f of x, the derivation is written as. (723 ms)
+  [SLIDE] update 'Differential Calculus' [definition] v2 (5 items)
+  [  246.1s] dy by dx equals to f dash of x (672 ms)
+  [SLIDE] update 'Differential Calculus' [definition] v3 (5 items)
+  [UNDERSTAND] Differential Calculus > Introduction (elaboration) acts=formula hint=formula lines=1 via groq_alt#4 5186 ms
+               Introduced the standard notation for the derivative of a function y=f(x) as dy/dx.
+  [HEARD] 'derivation' -> 'derivative' corrected on the slide (0.8)
+23:07:59 INFO    copilot.presentation.engine: planner: update Differential Calculus > Introduction (same frame)
+23:07:59 INFO    copilot.presentation.engine: slide 'Differential Calculus' waits for the min dwell time
+23:07:59 INFO    copilot.presentation.engine: concern 0545c2e1a422 (transcription, applied=True): 0 element(s); slide shows 'derivative'
+  [SLIDE] update 'Differential Calculus' [definition] v4 (5 items)
+  [SLIDE] add    'Differential Calculus' [formula] v1 (1 items)
+  [  255.0s] The third topic is Integral Calculus. (685 ms)
+  [SLIDE] update 'Differential Calculus' [definition] v5 (4 items)
+23:08:03 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The third topic is Integral Calculus']
+  [UNDERSTAND] Differential Calculus > Introduction (elaboration) acts=definition,explanation hint=formula lines=2 via groq_alt#5 738 ms
+               Clarified that the derivative notation dy/dx is equivalent to f'(x).
+23:08:03 INFO    copilot.presentation.engine: planner: update Differential Calculus > Introduction (same frame)
+23:08:03 INFO    copilot.presentation.engine: no image for 'Differential Calculus': formula needs the full width
+  [SLIDE] update 'Differential Calculus' [formula] v2 (3 items)
+  [  259.0s] Integral Calculus studies accumulation and the calculation of quantities such as areas, volumes and total changes. (622 ms)
+  [UNDERSTAND] Integral Calculus > Introduction (new_topic) acts=definition hint=definition lines=1 via groq_alt#4 794 ms
+               Defined integral calculus as the study of accumulation, covering areas, volumes, and total changes.
+23:08:24 INFO    copilot.presentation.engine: planner: update Differential Calculus > Introduction (new topic not yet confirmed)
+23:08:24 INFO    copilot.presentation.engine: no image for 'Differential Calculus': formula needs the full width
+  [SLIDE] update 'Differential Calculus' [concept] v3 (4 items)
+  [  267.3s] Integration is closely related to differentiation. While differentiation measures instantaneous change, integration can accumulate small quantities over an interval. The integral of a function is written as (852 ms)
+  [  281.6s] integration of f of x d of x. (567 ms)
+  [UNDERSTAND] Integral Calculus > Introduction (elaboration) acts=explanation,definition hint=key_points lines=2 via groq_alt#4 1131 ms
+               Explained that integration accumulates quantities over an interval and introduced the standard integral notation ∫ f(x) dx.
+23:08:32 INFO    copilot.presentation.engine: planner: new Integral Calculus > Introduction (new topic confirmed (two interpretations agree))
+23:08:32 INFO    copilot.presentation.engine: moving 1 item(s) of 'Integral Calculus' to the new topic's slide
+23:08:32 INFO    copilot.presentation.engine: no image for 'Integral Calculus': two concepts side by side
+  [SLIDE] update 'Differential Calculus' [formula] v4 (3 items)
+  [SLIDE] add    'Integral Calculus' [concept] v1 (4 items)
+  [  301.5s] The fourth topic is Matrix and Determinants. A matrix is a rectangular arrangement of numbers organized into two rows and columns. (843 ms)
+  [  312.4s] are used to represent and solve system of linear equation efficiently. (558 ms)
+23:09:03 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The fourth topic is Matrix and Determinants']
+  [UNDERSTAND] Matrix and Determinants > Introduction (new_topic) acts=definition,application,explanation hint=definition lines=2 via groq_alt#4 1108 ms
+               Introduced matrices as rectangular number arrangements used to represent and solve linear systems.
+23:09:03 INFO    copilot.presentation.engine: planner: new Matrix and Determinants > Introduction (new topic confirmed (boundary cue/shift))
+  [SLIDE] add    'Matrix and Determinants' [definition] v1 (3 items)
+  [  320.8s] (dropped: empty) 
+  [  324.6s] Matrix can be added, multiplied, transposed and inverted when the relevant mathematical conditions are satisfied. Applications (756 ms)
+  [SLIDE] update 'Matrix and Determinants' [definition] v2 (4 items)
+  [  333.7s] Computer Graphics, Robotics, Circuit Analysis, Image Processing and Machine Learning (666 ms)
+  [SLIDE] update 'Matrix and Determinants' [definition] v3 (4 items)
+  [  339.9s] Fifth topic is Probability. (501 ms)
+  [SLIDE] update 'Matrix and Determinants' [definition] v4 (4 items)
+  [UNDERSTAND] Matrix and Determinants > Introduction (elaboration) acts=explanation,application,transition hint=key_points lines=3 via groq_alt#4 1544 ms
+               Listed matrix operations and their applications in fields like robotics and machine learning, then introduced Probability as the next topic.
+23:09:31 INFO    copilot.presentation.engine: planner: update Matrix and Determinants > Introduction (same frame)
+  [SLIDE] update 'Matrix and Determinants' [definition] v5 (3 items)
+  [SLIDE] update 'Matrix and Determinants' [definition] v6 (5 items)
+  [  342.3s] Probability is the branch of mathematics that measures the likelihood of an event occurring. (606 ms)
+  [SLIDE] update 'Matrix and Determinants' [definition] v7 (6 items)
+  [  349.6s] Its value ranged from 0 to 1. (600 ms)
+  [SLIDE] update 'Matrix and Determinants' [definition] v8 (5 items)
+  [UNDERSTAND] Probability > Introduction (new_topic) acts=definition hint=definition lines=1 via groq_alt#4 1009 ms
+               Defined probability as the branch of mathematics measuring the likelihood of events.
+23:09:39 INFO    copilot.presentation.engine: planner: update Matrix and Determinants > Introduction (new topic not yet confirmed)
+  [SLIDE] update 'Matrix and Determinants' [definition] v9 (5 items)
+  [SLIDE] add    'Matrix and Determinants' [definition] v1 (1 items)
+  [  353.0s] A probability of 0 represents an impossible event while a probability of 1 represents a certain event. (642 ms)
+  [UNDERSTAND] Probability > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1007 ms
+               Stated that probability values range from 0 to 1.
+23:09:47 INFO    copilot.presentation.engine: planner: new Probability > Introduction (new topic confirmed (boundary cue/shift))
+23:09:47 INFO    copilot.presentation.engine: moving 1 item(s) of 'Probability' to the new topic's slide
+23:09:47 INFO    copilot.presentation.engine: slide 'Probability' waits for the min dwell time
+  [  361.2s] for equally like outcome. (307 ms)
+  [  363.2s] P of E equals to favorable outcome upon total outcome. (632 ms)
+  [UNDERSTAND] Probability > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1794 ms
+               Clarified that a probability of 0 indicates an impossible event and 1 indicates a certain event.
+23:09:55 INFO    copilot.presentation.engine: planner: update Probability > Introduction (same frame)
+  [SLIDE] add    'Probability' [definition] v1 (4 items)
+  [UNDERSTAND] Probability > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1076 ms
+               Clarified that the probability formula applies to equally likely outcomes.
+23:10:03 INFO    copilot.presentation.engine: planner: update Probability > Introduction (same frame)
+  [SLIDE] update 'Probability' [definition] v2 (5 items)
+  [UNDERSTAND] Probability > Introduction (elaboration) acts=formula hint=formula lines=1 via groq_alt#4 2196 ms
+               Presented the formula for calculating probability as favorable outcomes divided by total outcomes.
+23:10:12 INFO    copilot.presentation.engine: planner: update Probability > Introduction (same frame)
+23:10:12 INFO    copilot.presentation.engine: slide 'Probability' waits for the min dwell time
+23:10:12 INFO    copilot.presentation.engine: no image for 'Probability': formula needs the full width
+  [SLIDE] update 'Probability' [definition] v3 (5 items)
+  [SLIDE] add    'Probability' [formula] v1 (1 items)
+  [  391.6s] Sixth topic is complex numbers. (517 ms)
+  [  394.5s] Complex numbers extend the real number system by introducing the imaginary unit I defined by I equals to under root of minus 1. (814 ms)
+  [  405.1s] i2=-1 (500 ms)
+  [UNDERSTAND] Complex Numbers > Introduction (new_topic) acts=definition,explanation hint=definition lines=2 via groq_alt#4 1051 ms
+               Introduced complex numbers as an extension of real numbers using the imaginary unit i = √(-1).
+23:10:32 INFO    copilot.presentation.engine: planner: new Complex Numbers > Introduction (new topic confirmed (boundary cue/shift))
+  [SLIDE] add    'Complex Numbers' [definition] v1 (2 items)
+  [  407.8s] A complex number has the general form. (608 ms)
+  [SLIDE] update 'Complex Numbers' [definition] v2 (3 items)
+  [  410.5s] z equals to a plus ib. (573 ms)
+  [SLIDE] update 'Complex Numbers' [definition] v3 (3 items)
+  [  414.1s] You good? (282 ms)
+  [SLIDE] update 'Complex Numbers' [definition] v4 (2 items)
+  [UNDERSTAND] Complex Numbers > Introduction (elaboration) acts=definition hint=definition lines=3 via groq_alt#5 1413 ms
+               Defined the general form of a complex number as z = a + ib.
+23:10:40 INFO    copilot.presentation.engine: revised S1: Imaginary unit: i = √(-1), so i² = -1
+23:10:40 INFO    copilot.presentation.engine: planner: update Complex Numbers > Introduction (same frame)
+  [SLIDE] update 'Complex Numbers' [definition] v5 (2 items)
+  [SLIDE] update 'Complex Numbers' [concept] v6 (3 items)
+  [  416.2s] A is the real part and B is the imaginary part. (533 ms)
+  [UNDERSTAND] Complex Numbers > Introduction (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#4 1005 ms
+               Identified 'a' as the real part and 'b' as the imaginary part in the general form of a complex number.
+23:10:48 INFO    copilot.presentation.engine: planner: update Complex Numbers > Introduction (same frame)
+  [SLIDE] update 'Complex Numbers' [concept] v7 (5 items)
+  [  422.6s] The magnitude of this complex number is (674 ms)
+  [  426.7s] mod of z equals to (538 ms)
+  [  430.3s] square root of a square plus b square. (580 ms)
+  [UNDERSTAND] Complex Numbers > Magnitude (sub_concept) acts=definition hint=formula lines=3 via groq_alt#4 3226 ms
+               Defined the magnitude (modulus) of a complex number z = a + ib as the square root of a squared plus b squared.
+23:11:01 INFO    copilot.presentation.engine: planner: continue Complex Numbers > Magnitude (new facet)
+  [SLIDE] add    'Magnitude' [definition] v1 (1 items)
+  [  435.1s] Complex numbers can also be represented as point in a complex plane, with the real part on the horizontal axis and the imaginary part on the vertical axis. (799 ms)
+  [SLIDE] update 'Magnitude' [definition] v2 (1 items)
+  [  445.3s] applications, AC circuit analysis, electrical impedance, signal processing, control system and communication engineering. (606 ms)
+  [SLIDE] update 'Magnitude' [definition] v3 (1 items)
+  [UNDERSTAND] Complex Numbers > Complex Plane (sibling_concept) acts=explanation hint=concept lines=1 via groq_alt#4 1389 ms
+               Explained that complex numbers are represented as points in the complex plane, with real and imaginary parts on horizontal and vertical axes respectively.
+23:11:18 INFO    copilot.presentation.engine: planner: continue Complex Numbers > Complex Plane (new facet)
+23:11:18 INFO    copilot.presentation.engine: supporting Complex Plane content stays on the sparse definition slide 'Magnitude'
+  [SLIDE] update 'Magnitude' [definition] v4 (4 items)
+23:11:18 INFO    copilot.presentation.engine: image search 'complex plane diagram' (diagram) for 'Magnitude'
+  [  453.8s] Seventh topic is coordinate geometry. (546 ms)
+23:11:23 INFO    copilot.visuals.finder: image search 'complex plane diagram': 2 slow download(s) dropped
+23:11:25 INFO    copilot.visuals.finder: image search 'complex plane diagram' (diagram, labels preferred): 6 candidate(s), 3 accepted (0 labelled), 6.69 s {'search_s': 2.43, 'download_s': 2.07, 'clip_s': 0.14, 'full_s': 2.02, 'total_s': 6.69}
+  [IMAGE] 'complex plane diagram' -> File:Complex plane diagram japanese.svg (6.7 s)
+23:11:25 INFO    copilot.presentation.engine: image 'complex plane diagram' on 'Magnitude': File:Complex plane diagram japanese.svg
+  [SLIDE] update 'Magnitude' [definition] v5 (5 items)
+  [UNDERSTAND] Complex Numbers > Applications (sibling_concept) acts=application hint=key_points lines=1 via groq_alt#5 1281 ms
+               Listed engineering applications of complex numbers including AC circuits, impedance, and signal processing.
+23:11:26 INFO    copilot.presentation.engine: planner: continue Complex Numbers > Applications (new facet)
+  [SLIDE] add    'Applications' [example] v1 (1 items)
+  [  457.1s] Coordinate Geometry combines Algebra and Geometry by representing points, lines and curves using coordinates. (710 ms)
+  [  465.7s] equation. (288 ms)
+  [UNDERSTAND] Coordinate Geometry > Introduction (new_topic) acts=transition hint=none lines=1 via groq_alt#4 969 ms
+               Teacher announced the start of the new topic: Coordinate Geometry.
+23:11:34 INFO    copilot.presentation.engine: planner: noop Coordinate Geometry > Introduction (new topic announced)
+  [  467.2s] A point in a two-dimension coordinate system is represented as (736 ms)
+  [  472.5s] x comma y (278 ms)
+  [  474.5s] the distance between two points. (543 ms)
+  [UNDERSTAND] Coordinate Geometry > Introduction (new_topic) acts=definition hint=definition lines=1 via groq_alt#5 1051 ms
+               Defined Coordinate Geometry as the combination of Algebra and Geometry using coordinates to represent geometric objects.
+23:11:42 INFO    copilot.presentation.engine: planner: new Coordinate Geometry > Introduction (new topic confirmed (two interpretations agree))
+  [SLIDE] add    'Coordinate Geometry' [definition] v1 (1 items)
+  [  477.7s] in bracket x1 comma y1 bracket close and in bracket x2 comma y2 bracket close is (705 ms)
+  [UNDERSTAND] Coordinate Geometry > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1031 ms
+               Noted that coordinate geometry uses equations to represent geometric objects.
+23:11:50 INFO    copilot.presentation.engine: planner: update Coordinate Geometry > Introduction (same frame)
+  [SLIDE] update 'Coordinate Geometry' [definition] v2 (2 items)
+  [  485.2s] d equals to square root of in bracket x2 minus x1 bracket square plus y2 minus y1 bracket square. (697 ms)
+23:11:59 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Coordinate Geometry > Introduction (elaboration) acts=definition,transition hint=key_points lines=3 via groq_alt#6 4091 ms
+               Introduced the standard (x, y) notation for points in a 2D coordinate system and announced the next concept: distance between points.
+23:12:01 INFO    copilot.presentation.engine: planner: update Coordinate Geometry > Introduction (same frame)
+  [SLIDE] update 'Coordinate Geometry' [concept] v3 (3 items)
+  [  495.3s] The straight line can be represented using the equation. (603 ms)
+  [SLIDE] update 'Coordinate Geometry' [concept] v4 (4 items)
+  [  499.2s] y equals to mx plus c. (333 ms)
+  [SLIDE] update 'Coordinate Geometry' [concept] v5 (4 items)
+  [UNDERSTAND] Coordinate Geometry > Distance Formula (sibling_concept) acts=explanation hint=key_points lines=1 via groq_alt#4 820 ms
+               Teacher introduced the notation for two points to calculate the distance between them.
+23:12:06 INFO    copilot.presentation.engine: planner: continue Coordinate Geometry > Distance Formula (new facet)
+  [SLIDE] add    'Distance Formula' [key_points] v1 (1 items)
+23:12:06 INFO    copilot.presentation.engine: image search 'distance between two points' (diagram) for 'Distance Formula'
+23:12:10 INFO    copilot.visuals.finder: image search 'distance between two points' (diagram, labels preferred): 4 candidate(s), 3 accepted (0 labelled), 4.61 s {'search_s': 1.85, 'download_s': 0.85, 'clip_s': 0.08, 'full_s': 1.81, 'total_s': 4.61}
+  [IMAGE] 'distance between two points' -> File:Illustration of great-circle distance.svg (4.6 s)
+23:12:10 INFO    copilot.presentation.engine: image 'distance between two points' on 'Distance Formula': File:Illustration of great-circle distance.svg
+  [SLIDE] update 'Distance Formula' [key_points] v2 (2 items)
+  [UNDERSTAND] Coordinate Geometry > Distance Formula (elaboration) acts=formula hint=formula lines=1 via groq_alt#6 1493 ms
+               Presented the algebraic formula for calculating the distance between two points in a coordinate plane.
+23:12:14 INFO    copilot.presentation.engine: planner: update Coordinate Geometry > Distance Formula (same frame)
+23:12:14 INFO    copilot.presentation.engine: no image for 'Distance Formula': has an image
+  [SLIDE] update 'Distance Formula' [key_points] v3 (3 items)
+  [UNDERSTAND] Coordinate Geometry > Equation of a Straight Line (sibling_concept) acts=definition hint=formula lines=2 via groq_alt#4 1170 ms
+               Introduced the standard slope-intercept form equation for a straight line.
+23:12:22 INFO    copilot.presentation.engine: planner: continue Coordinate Geometry > Equation of a Straight Line (new facet)
+  [SLIDE] update 'Coordinate Geometry' [concept] v6 (3 items)
+  [SLIDE] add    'Equation of a Straight Line' [definition] v1 (1 items)
+23:12:22 INFO    copilot.presentation.engine: image search 'straight line graph' (diagram) for 'Equation of a Straight Line'
+23:12:27 INFO    copilot.visuals.finder: image search 'straight line graph' (diagram, labels preferred): 5 candidate(s), 3 accepted (1 labelled), 5.55 s {'search_s': 1.89, 'download_s': 1.32, 'clip_s': 0.11, 'full_s': 2.21, 'total_s': 5.55}
+  [IMAGE] 'straight line graph' -> File:Mercator and straightened rhumb.png (5.5 s)
+23:12:27 INFO    copilot.presentation.engine: image 'straight line graph' on 'Equation of a Straight Line': File:Mercator and straightened rhumb.png
+  [SLIDE] update 'Equation of a Straight Line' [definition] v2 (2 items)
+  [  534.1s] Next topic is Statics. (580 ms)
+  [  538.8s] with collecting, organizing, analyzing and interpreting data. (648 ms)
+  [  545.0s] The three fundamental majors are Mean, Median and Mood. (614 ms)
+  [  550.0s] Consider the dataset. (473 ms)
+  [UNDERSTAND] Statistics > Measures of Central Tendency (new_topic) acts=transition,explanation,classification hint=key_points lines=3 via groq_alt#4 1755 ms
+               Transitioned to Statistics, defining it as data analysis and listing Mean, Median, and Mode as fundamental measures.
+  [HEARD] 'Mood' -> 'Mode' corrected on the slide (0.95)
+23:12:56 INFO    copilot.presentation.engine: planner: new Statistics > Measures of Central Tendency (new topic confirmed (boundary cue/shift))
+23:12:56 INFO    copilot.presentation.engine: concern b84da8a7c2eb (transcription, applied=True): 1 element(s); slide shows 'Mode'
+  [SLIDE] add    'Measures of Central Tendency' [key_points] v1 (2 items)
+  [  552.9s] 2 4 4 6 9 mean the sum of the all values divided by the number of values. (681 ms)
+  [SLIDE] update 'Measures of Central Tendency' [key_points] v2 (3 items)
+23:13:05 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Measures of Central Tendency' -> same_concept
+  [UNDERSTAND] Statistics > Measures of Central Tendency (same_concept) acts=definition,explanation hint=definition lines=2 via groq_alt#4 1215 ms
+               Defined the mean as the sum of values divided by the count, using the dataset 2, 4, 4, 6, 9 as an example.
+23:13:05 INFO    copilot.presentation.engine: planner: update Statistics > Measures of Central Tendency (same frame)
+  [SLIDE] update 'Measures of Central Tendency' [key_points] v3 (2 items)
+  [SLIDE] update 'Measures of Central Tendency' [key_points] v4 (4 items)
+23:13:05 INFO    copilot.presentation.engine: image search 'Mean calculation example' (diagram) for 'Measures of Central Tendency'
+23:13:08 INFO    copilot.presentation.engine: image 'Mean calculation example': none (no usable candidates)
+  [IMAGE] 'Mean calculation example' -> none (no usable candidates) (2.4 s)
+  [  562.3s] median the middle value after arranging the data in order (686 ms)
+  [  569.5s] mode, the most frequently occurring value here. (548 ms)
+  [UNDERSTAND] Statistics > Measures of Central Tendency (same_concept) acts=definition,definition hint=key_points lines=2 via groq_alt#4 987 ms
+               Defined median as the middle value and mode as the most frequent value in a dataset.
+23:13:18 INFO    copilot.presentation.engine: planner: update Statistics > Measures of Central Tendency (same frame)
+23:13:18 INFO    copilot.presentation.engine: no image for 'Measures of Central Tendency': two concepts side by side
+  [SLIDE] update 'Measures of Central Tendency' [concept] v5 (6 items)
+  [  574.7s] Statics are includes variance, standard derivation, correlation, regression and probability distribution. (639 ms)
+  [  583.5s] Applications are scientific research, quality testing, network performance, analysis, economics and artificial intelligence. (669 ms)
+  [UNDERSTAND] Statistics > Measures of Central Tendency (elaboration) acts=classification,application hint=key_points lines=2 via groq_alt#4 1722 ms
+               Listed additional statistical concepts like variance and correlation, and cited applications in research, economics, and AI.
+  [HEARD] 'derivation' -> 'Deviation' corrected on the slide (0.9)
+23:13:38 INFO    copilot.presentation.engine: planner: update Statistics > Measures of Central Tendency (same frame)
+23:13:38 INFO    copilot.presentation.engine: concern b20cb929f508 (transcription, applied=True): 1 element(s); slide shows 'Deviation'
+23:13:38 INFO    copilot.presentation.engine: no image for 'Measures of Central Tendency': groups needs the full width
+  [SLIDE] update 'Measures of Central Tendency' [concept] v6 (7 items)
+23:13:39 INFO    copilot.presentation.engine: slide 6aa16fe4bb52 overflows on the display; further content continues on a new slide
+  [  594.7s] 9th topic is graph theory. (615 ms)
+  [  598.7s] Graph theory studies relationship between objects using vertex and edge. (551 ms)
+  [UNDERSTAND] Graph Theory > Introduction (new_topic) acts=definition hint=definition lines=2 via groq_alt#4 1016 ms
+               Introduced graph theory as the study of relationships between objects using vertices and edges.
+23:13:54 INFO    copilot.presentation.engine: planner: update Statistics > Measures of Central Tendency (new topic not yet confirmed)
+  [SLIDE] update 'Measures of Central Tendency' [concept] v7 (7 items)
+  [SLIDE] add    'Measures of Central Tendency' [members] v1 (1 items)
+23:13:54 INFO    copilot.presentation.engine: image search 'median mode example' (diagram) for 'Measures of Central Tendency'
+  [  604.9s] graph can be represented as g equals to in bracket b comma in bracket close. (632 ms)
+  [SLIDE] update 'Measures of Central Tendency' [members] v2 (1 items)
+23:13:57 INFO    copilot.visuals.finder: image search 'median mode example' (diagram, labels preferred): 1 candidate(s), 1 accepted (1 labelled), 2.77 s {'search_s': 1.96, 'download_s': 0.44, 'clip_s': 0.04, 'full_s': 0.32, 'total_s': 2.77}
+  [IMAGE] 'median mode example' -> File:Visualisation mode median mean.svg (2.8 s)
+23:13:57 INFO    copilot.presentation.engine: image 'median mode example' on 'Measures of Central Tendency': File:Visualisation mode median mean.svg
+  [SLIDE] update 'Measures of Central Tendency' [members] v3 (2 items)
+  [  612.7s] Here B is the set of vertex and E is the set of edge connecting them. (772 ms)
+  [UNDERSTAND] Graph Theory > Introduction (elaboration) acts=definition hint=definition lines=1 via groq_alt#5 2040 ms
+               Defined the formal notation for a graph as G = (V, E), where V is vertices and E is edges.
+  [HEARD] 'b, in bracket close' -> 'V, E' corrected on the slide (0.8)
+23:14:03 INFO    copilot.presentation.engine: planner: new Graph Theory > Introduction (new topic confirmed (two interpretations agree))
+23:14:03 INFO    copilot.presentation.engine: moving 1 item(s) of 'Graph Theory' to the new topic's slide
+23:14:03 INFO    copilot.presentation.engine: slide 'Graph Theory' waits for the min dwell time
+23:14:03 INFO    copilot.presentation.engine: slide 'Graph Theory' waits for the min dwell time
+23:14:03 INFO    copilot.presentation.engine: concern 307a713cfb6f (transcription, applied=True): 1 element(s); slide shows 'V, E'
+  [SLIDE] update 'Measures of Central Tendency' [members] v4 (2 items)
+23:14:03 INFO    copilot.presentation.engine: image search 'graph theory vertices edges' (diagram) for 'Graph Theory'
+23:14:07 INFO    copilot.visuals.finder: image search 'graph theory vertices edges' (diagram, labels preferred): 1 candidate(s), 1 accepted (0 labelled), 4.00 s {'search_s': 1.78, 'download_s': 0.79, 'clip_s': 0.05, 'full_s': 1.37, 'total_s': 4.0}
+  [IMAGE] 'graph theory vertices edges' -> File:Graph example (Graph theory).png (4.0 s)
+23:14:07 INFO    copilot.presentation.engine: image 'graph theory vertices edges' on 'Graph Theory': File:Graph example (Graph theory).png
+  [  621.1s] 10th topic is Fourier Seize. (603 ms)
+  [UNDERSTAND] Graph Theory > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1414 ms
+               Clarified that V represents the set of vertices and E represents the set of edges in graph notation.
+  [HEARD] 'B' -> 'V' corrected on the slide (0.9)
+23:14:11 INFO    copilot.presentation.engine: planner: update Graph Theory > Introduction (same frame)
+23:14:11 INFO    copilot.presentation.engine: concern de8f718262ba (transcription, applied=True): 1 element(s); slide shows 'V'
+23:14:11 INFO    copilot.presentation.engine: no image for 'Graph Theory': has an image
+  [  624.3s] Curia series is a mathematical method for representing a suitable periodic function as a sum of sinusoidal components. (678 ms)
+  [SLIDE] add    'Graph Theory' [definition] v1 (1 items)
+  [  633.4s] A periodic function repeats its pattern after a fixed interval. (654 ms)
+  [SLIDE] add    'Graph Theory' [definition] v1 (4 items)
+  [UNDERSTAND] Fourier Series > Introduction (new_topic) acts=definition hint=definition lines=2 via groq_alt#4 4801 ms
+               Introduced Fourier Series as a method to represent periodic functions as sums of sinusoidal components.
+  [HEARD] 'Seize' -> 'Series' corrected on the slide (0.9)
+  [HEARD] 'Curia' -> 'Fourier' corrected on the slide (0.9)
+23:14:25 INFO    copilot.presentation.engine: planner: new Fourier Series > Introduction (new topic confirmed (boundary cue/shift))
+23:14:25 INFO    copilot.presentation.engine: slide 'Fourier Series' waits for the min dwell time
+23:14:25 INFO    copilot.presentation.engine: concern 6fc8ee24acb4 (transcription, applied=True): 1 element(s); slide shows 'Series'
+23:14:25 INFO    copilot.presentation.engine: concern 0abaee6056cc (transcription, applied=True): 1 element(s); slide shows 'Fourier'
+  [  638.4s] A general Fourier series can be written as f of x equals to (632 ms)
+  [  644.1s] a0 by 2 (290 ms)
+  [  645.6s] Loz! (878 ms)
+  [UNDERSTAND] Fourier Series > Introduction (elaboration) acts=definition,formula hint=formula lines=4 via groq_alt#5 1223 ms
+               Defined periodic functions and introduced the initial term of the general Fourier series formula.
+23:14:32 INFO    copilot.presentation.engine: planner: update Fourier Series > Introduction (same frame)
+23:14:32 INFO    copilot.presentation.engine: slide 'Fourier Series' waits for the min dwell time
+  [  649.9s] summation of n equals 1 to infinity. (525 ms)
+  [SLIDE] add    'Fourier Series' [definition] v1 (1 items)
+  [  654.0s] in bracket an cos of nx plus bn sin of nx bracket close (692 ms)
+  [SLIDE] add    'Fourier Series' [definition] v1 (2 items)
+  [  661.2s] the coefficient a n and b n determine the contribution of different cosine and sine components. (723 ms)
+23:14:54 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Summation of n equals 1 to infinity']
+  [UNDERSTAND] Fourier Series > Introduction (elaboration) acts=formula,explanation,explanation hint=formula lines=3 via groq_alt#4 1575 ms
+               Completed the general Fourier series formula and explained that coefficients determine the contribution of sine and cosine components.
+23:14:54 INFO    copilot.presentation.engine: revised S1: f(x) = a_0/2 + \sum_{n=1}^{\infty} (a_n \cos(nx) + b_n \sin(nx))
+23:14:54 INFO    copilot.presentation.engine: planner: update Fourier Series > Introduction (same frame)
+  [SLIDE] update 'Fourier Series' [definition] v2 (2 items)
+  [SLIDE] update 'Fourier Series' [definition] v3 (5 items)
+23:14:55 INFO    copilot.presentation.engine: slide 4db16ad5fa1a overflows on the display; further content continues on a new slide
+  [  674.1s] Eleventh topic is Differential Equation. Differential Equation is an equation involving an unknown function and one or more of its derivatives. For example, dy by dx equals to 2x. (851 ms)
+  [  687.3s] Integrating both sides gives y equals to x square plus c. (394 ms)
+  [UNDERSTAND] Differential Equation > Introduction (new_topic) acts=definition,example hint=definition lines=2 via groq_alt#4 1422 ms
+               Introduced differential equations as equations with unknown functions and derivatives, using dy/dx = 2x as an example.
+23:15:16 INFO    copilot.presentation.engine: planner: new Differential Equation > Introduction (new topic confirmed (boundary cue/shift))
+  [SLIDE] add    'Differential Equation' [definition] v1 (2 items)
+  [  691.6s] Differential equation describes how system change over time or space. (636 ms)
+  [UNDERSTAND] Differential Equation > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 998 ms
+               Explained that differential equations describe how systems change over time or space.
+23:15:24 INFO    copilot.presentation.engine: planner: update Differential Equation > Introduction (same frame)
+  [SLIDE] update 'Differential Equation' [definition] v2 (3 items)
+  [  701.6s] 12th topic is Laplace transform. (623 ms)
+  [SLIDE] update 'Differential Equation' [definition] v3 (4 items)
+  [  704.4s] A Laplace transform converts a function of (607 ms)
+  [SLIDE] update 'Differential Equation' [definition] v4 (4 items)
+  [  708.4s] time into a function of a complex variable. (619 ms)
+  [SLIDE] update 'Differential Equation' [definition] v5 (4 items)
+  [  711.8s] usually denoted by x. It is defined as f of x equals to (583 ms)
+  [SLIDE] update 'Differential Equation' [definition] v6 (4 items)
+  [UNDERSTAND] Laplace Transform > Introduction (new_topic) acts=definition hint=definition lines=3 via groq_alt#4 1132 ms
+               Introduced Laplace transform as a method converting time functions to complex variable functions.
+23:15:41 INFO    copilot.presentation.engine: planner: update Differential Equation > Introduction (new topic not yet confirmed)
+  [SLIDE] update 'Differential Equation' [definition] v7 (4 items)
+  [SLIDE] add    'Differential Equation' [definition] v1 (1 items)
+  [  717.3s] 0 to infinity f of t e raise to minus st. (566 ms)
+  [SLIDE] update 'Differential Equation' [definition] v8 (3 items)
+  [SLIDE] update 'Differential Equation' [definition] v2 (1 items)
+  [  725.5s] For example. (573 ms)
+  [SLIDE] update 'Differential Equation' [definition] v3 (1 items)
+  [UNDERSTAND] Laplace Transform > Introduction (elaboration) acts=formula hint=formula lines=2 via groq_alt#4 3167 ms
+               Defined the Laplace transform integral formula converting time functions to complex variables.
+23:15:51 INFO    copilot.presentation.engine: planner: new Laplace Transform > Introduction (new topic confirmed (two interpretations agree))
+23:15:51 INFO    copilot.presentation.engine: moving 1 item(s) of 'Laplace Transform' to the new topic's slide
+23:15:51 INFO    copilot.presentation.engine: slide 'Laplace Transform' waits for the min dwell time
+  [UNDERSTAND] Laplace Transform > Introduction (same_concept) acts=- hint=none lines=1 via groq_alt#5 597 ms
+               Teacher signaled an upcoming example.
+23:15:57 INFO    copilot.presentation.engine: planner: noop Laplace Transform > Introduction (nothing to display)
+  [  729.4s] Laplace transform simplifies many differential equations by converting differentiation into algebraic operations. (749 ms)
+  [  737.2s] while also allowing in (466 ms)
+  [SLIDE] add    'Laplace Transform' [definition] v1 (2 items)
+  [  739.5s] initial condition to be incorporated into the analysis. (661 ms)
+  [UNDERSTAND] Laplace Transform > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 4262 ms
+               Explained that Laplace transforms simplify differential equations by converting differentiation into algebraic operations.
+23:16:09 INFO    copilot.presentation.engine: planner: update Laplace Transform > Introduction (same frame)
+  [SLIDE] update 'Laplace Transform' [definition] v2 (4 items)
+  [UNDERSTAND] Laplace Transform > Introduction (same_concept) acts=- hint=none lines=1 via groq_alt#5 599 ms
+               Teacher began explaining an additional benefit of Laplace transforms.
+23:16:13 INFO    copilot.presentation.engine: planner: noop Laplace Transform > Introduction (nothing to display)
+  [  746.0s] The applications are control systems, electrical circuit analysis, automation, signal processing and system modeling. (628 ms)
+  [  754.2s] Number 3 (506 ms)
+  [UNDERSTAND] Laplace Transform > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 5790 ms
+               Explained that Laplace transforms allow initial conditions to be incorporated directly into the analysis.
+23:16:26 INFO    copilot.presentation.engine: planner: update Laplace Transform > Introduction (same frame)
+  [SLIDE] update 'Laplace Transform' [definition] v3 (5 items)
+  [  755.5s] 13th topic is Number Theory. Number Theory is a branch of Mathematics that studies integers and their properties. (769 ms)
+  [UNDERSTAND] Laplace Transform > Introduction (elaboration) acts=application hint=key_points lines=1 via groq_alt#5 741 ms
+               Listed key applications of Laplace transforms including control systems and signal processing.
+23:16:29 INFO    copilot.presentation.engine: planner: update Laplace Transform > Introduction (same frame)
+  [SLIDE] update 'Laplace Transform' [definition] v4 (5 items)
+  [SLIDE] add    'Laplace Transform' [example] v1 (1 items)
+  [  763.6s] Important concept includes prime numbers, divisibility factors, multiples and modular arithmetic. (656 ms)
+  [UNDERSTAND] Laplace Transform > Introduction (same_concept) acts=- hint=none lines=1 via groq_alt#4 4822 ms
+               Teacher referenced item number 3, likely continuing the list of applications.
+23:16:41 INFO    copilot.presentation.engine: planner: noop Laplace Transform > Introduction (nothing to display)
+  [  775.4s] Prime number is a whole number greater than 1 that has exactly 2 positive divisors, 1 and itself. (738 ms)
+  [UNDERSTAND] Number Theory > Introduction (new_topic) acts=definition hint=definition lines=1 via groq_alt#5 2043 ms
+               Introduced Number Theory as a branch of mathematics focused on integers and their properties.
+23:16:46 INFO    copilot.presentation.engine: planner: new Number Theory > Introduction (new topic confirmed (shift score))
+  [SLIDE] add    'Number Theory' [definition] v1 (1 items)
+  [  785.4s] Number 3 has Application means cryptography, digital security, coding theory and computer algorithm. (792 ms)
+  [SLIDE] update 'Number Theory' [definition] v2 (1 items)
+  [UNDERSTAND] Number Theory > Introduction (elaboration) acts=classification hint=key_points lines=1 via groq_alt#4 5070 ms
+               Listed key concepts in Number Theory including prime numbers, divisibility, multiples, and modular arithmetic.
+23:16:57 INFO    copilot.presentation.engine: planner: update Number Theory > Introduction (same frame)
+  [SLIDE] update 'Number Theory' [definition] v3 (2 items)
+  [UNDERSTAND] Number Theory > Prime Numbers (sub_concept) acts=definition hint=definition lines=1 via groq_alt#5 823 ms
+               Defined prime numbers as whole numbers greater than 1 with exactly two positive divisors.
+23:17:01 INFO    copilot.presentation.engine: planner: continue Number Theory > Prime Numbers (new facet)
+23:17:01 INFO    copilot.presentation.engine: slide 'Prime Numbers' waits for the min dwell time
+23:17:01 INFO    copilot.presentation.engine: image search 'prime number examples' (diagram) for 'Prime Numbers'
+  [SLIDE] add    'Prime Numbers' [definition] v1 (1 items)
+  [  792.2s] Applications are encryption, secure communication, digital signature and cyber security. (599 ms)
+  [SLIDE] update 'Number Theory' [definition] v4 (2 items)
+  [SLIDE] update 'Prime Numbers' [definition] v2 (1 items)
+23:17:06 INFO    copilot.visuals.finder: image search 'prime number examples' (diagram, labels preferred): 2 candidate(s), 1 accepted (0 labelled), 4.65 s {'search_s': 2.33, 'download_s': 1.68, 'clip_s': 0.06, 'full_s': 0.57, 'total_s': 4.65}
+  [IMAGE] 'prime number examples' -> File:Hexgrid prime number spiral.svg (4.7 s)
+23:17:06 INFO    copilot.presentation.engine: image 'prime number examples' on 'Prime Numbers': File:Hexgrid prime number spiral.svg
+  [SLIDE] update 'Prime Numbers' [definition] v3 (2 items)
+  [UNDERSTAND] Number Theory > Prime Numbers (elaboration) acts=application hint=key_points lines=1 via groq_alt#5 977 ms
+               Listed applications of prime numbers including cryptography, digital security, coding theory, and computer algorithms.
+23:17:09 INFO    copilot.presentation.engine: planner: update Number Theory > Prime Numbers (same frame)
+23:17:09 INFO    copilot.presentation.engine: no image for 'Prime Numbers': has an image
+  [SLIDE] update 'Prime Numbers' [definition] v4 (3 items)
+  [  799.3s] Fourth in topic is vector and vector algebra. A vector is a quantity that has both magnitude and direction. (750 ms)
+  [  809.7s] The two dimensional vector can be written as (647 ms)
+23:17:17 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Fourth in topic is vector and vector algebra']
+  [UNDERSTAND] Number Theory > Prime Numbers (elaboration) acts=explanation,definition,explanation hint=key_points lines=2 via groq_alt#4 1126 ms
+               Refined prime number applications to encryption and cyber security; introduced vectors as quantities with magnitude and direction.
+23:17:17 INFO    copilot.presentation.engine: revised S1: Encryption; Secure communication; Digital signature; Cyber security
+23:17:17 INFO    copilot.presentation.engine: planner: update Number Theory > Prime Numbers (same frame)
+  [SLIDE] update 'Prime Numbers' [definition] v5 (3 items)
+  [SLIDE] update 'Prime Numbers' [definition] v6 (3 items)
+  [SLIDE] update 'Prime Numbers' [definition] v7 (7 items)
+  [SLIDE] add    'Prime Numbers' [members] v1 (2 items)
+23:17:17 INFO    copilot.presentation.engine: image 'prime number examples' kept on 'Prime Numbers' (same visual as this topic's image)
+  [SLIDE] update 'Prime Numbers' [members] v2 (3 items)
+23:17:17 INFO    copilot.presentation.engine: slide 8190d441176f overflows on the display; further content continues on a new slide
+  [  812.7s] (dropped: empty) 
+  [  816.1s] It's magnitude is (675 ms)
+  [  821.1s] Mort of A plus B (624 ms)
+  [  823.3s] square root of a square x plus a square y. (603 ms)
+  [UNDERSTAND] Number Theory > Prime Numbers (elaboration) acts=formula hint=formula lines=4 via groq_alt#4 1561 ms
+               Defined the magnitude formula for a 2D vector as the square root of the sum of squared components.
+  [HEARD] 'Mort of A plus B' -> 'Magnitude of A' corrected on the slide (0.8)
+23:17:33 INFO    copilot.presentation.engine: planner: update Number Theory > Prime Numbers (same frame)
+23:17:33 INFO    copilot.presentation.engine: concern b1fe957ecd8e (transcription, applied=True): 0 element(s); slide shows 'Magnitude of A'
+23:17:33 INFO    copilot.presentation.engine: no image for 'Prime Numbers': has an image
+  [SLIDE] update 'Prime Numbers' [members] v3 (4 items)
+  [  840.7s] (dropped: empty) 
+[END]   finishing lecture understanding (0 buffered lines) ...
+[SHARE] stopped
+[ENDED] session 20261014-230244-3508: 122 segments, 1270 words, state v271, 1099 events logged
+        CommandReceived=7, ConceptSignal=122, ConcernRaised=9, DeckState=39, ImageChoices=8, ImageReady=9, ImageRequested=9, InterpretRequested=73, InterpretationReady=73, LLMCallFailed=2, LifecycleChanged=5, ShareChanged=4, SlideContextChanged=72, SlideOverflow=4, SlidePatch=145, StateChanged=271, TranscriptFinal=122, UtteranceClassified=122, UtteranceDropped=3
+        stt: 122 published, 3 dropped, latency p50=628 ms p95=852 ms max=974 ms
+        understanding: 73 interpretations (73 by LLM, 0 fallbacks, 0 repaired), max 8 calls/min, prompt tokens max=2107 avg=1959, latency p50=1215 ms max=5790 ms
+        presentation: 34 slides; planner ops {'noop': 7, 'new': 13, 'continue': 9, 'update': 44}; revisions 4, corrections shown 6, shown as said 0
+        images: {'requests': 9, 'found': 8, 'none': 1}; slides with an image 7/31
+          1. [key_points] Trigonometric Function  (v5, ['points'])
+          2. [members] Basic Functions [part 1]  (v2, ['definition', 'hierarchy', 'callout'])
+          3. [concept] Basic Functions [part 2]  (v5, ['definition', 'definition', 'definition', 'points', 'formula'])
+          4. [formula] Basic Functions [part 3]  (v1, ['formula', 'formula'])
+          5. [definition] Unit Circle  (v8, ['definition', 'points', 'image'])
+          6. [concept] Graphs of Sine and Cosine [part 1]  (v13, ['definition', 'definition', 'points', 'points', 'example'])
+          7. [concept] Graphs of Sine and Cosine [part 2]  (v5, ['definition', 'definition', 'example', 'points'])
+          8. [key_points] Graphs of Sine and Cosine [part 3]  (v11, ['points'])
+          9. [definition] Differential Calculus [part 1]  (v5, ['definition', 'points'])
+          10. [formula] Differential Calculus [part 2]  (v4, ['formula', 'definition', 'points'])
+          11. [concept] Integral Calculus  (v1, ['definition', 'points', 'definition'])
+          12. [definition] Matrix and Determinants [part 1]  (v9, ['definition', 'example', 'points'])
+          13. [definition] Probability [part 1]  (v3, ['definition', 'points'])
+          14. [formula] Probability [part 2]  (v1, ['formula'])
+          15. [concept] Complex Numbers  (v7, ['definition', 'points', 'definition', 'points'])
+          16. [definition] Magnitude  (v5, ['definition', 'points', 'image'])
+          17. [example] Applications  (v1, ['example'])
+          18. [concept] Coordinate Geometry  (v6, ['definition', 'points', 'definition'])
+          19. [key_points] Distance Formula  (v3, ['points', 'image', 'formula'])
+          20. [definition] Equation of a Straight Line  (v2, ['definition', 'image'])
+          21. [concept] Measures of Central Tendency [part 1]  (v7, ['points', 'groups', 'definition', 'points', 'definition', 'definition', 'example'])
+          22. [definition] Graph Theory [part 1]  (v1, ['definition'])
+          23. [definition] Graph Theory [part 2]  (v1, ['definition', 'image', 'points'])
+          24. [definition] Fourier Series [part 1]  (v1, ['definition'])
+          25. [definition] Fourier Series [part 2]  (v3, ['definition', 'formula', 'formula', 'callout', 'callout'])
+          26. [definition] Differential Equation [part 1]  (v8, ['definition', 'example', 'points'])
+          27. [definition] Laplace Transform [part 1]  (v4, ['definition', 'formula', 'points'])
+          28. [example] Laplace Transform [part 2]  (v1, ['example'])
+          29. [definition] Number Theory  (v4, ['definition', 'hierarchy'])
+          30. [definition] Prime Numbers [part 1]  (v7, ['definition', 'image', 'example', 'points'])
+          31. [members] Prime Numbers [part 2]  (v3, ['definition', 'points', 'image', 'formula'])
+        providers: {'groq_alt#4': 51, 'groq_alt#5': 20, 'groq_alt#6': 2}; triggers: {'pause': 19, 'max_wait': 15, 'words': 3, 'boundary': 36}; outline: ['Trigonometric Function > Introduction, Basic Functions, Unit Circle, Graphs of Sine and Cosine', 'Differential Calculus > Introduction', 'Integral Calculus > Introduction', 'Matrix and Determinants > Introduction', 'Probability > Introduction', 'Complex Numbers > Introduction, Magnitude, Complex Plane, Applications', 'Coordinate Geometry > Introduction, Distance Formula, Equation of a Straight Line', 'Statistics > Measures of Central Tendency', 'Graph Theory > Introduction', 'Fourier Series > Introduction', 'Differential Equation > Introduction', 'Laplace Transform > Introduction', 'Number Theory > Introduction, Prime Numbers']; concerns: 9
+        log: C:\Users\potda\Multimodal-AI-Teaching-Copilot-For-Real-Time-Visual-Learning-Generation\data\sessions\20261014-230244-3508\session.sqlite

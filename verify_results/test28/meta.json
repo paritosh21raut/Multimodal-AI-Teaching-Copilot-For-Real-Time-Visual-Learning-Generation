@@ -1,0 +1,16 @@
+{
+  "name": "test28",
+  "source": "mic",
+  "note": "speaker B, geography",
+  "session_id": "20261014-171211-0ee1",
+  "date": "2026-10-14 17:31",
+  "title": "",
+  "minutes": 15.9,
+  "utterances": 125,
+  "slides": 23,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker B",
+  "subject": "geography"
+}

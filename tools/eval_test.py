@@ -183,9 +183,10 @@ def export(name: str, session: str, source: str = "", note: str = "", copilot_ar
     meta_path = folder / "meta.json"
     old = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
     (folder / "session").mkdir(parents=True, exist_ok=True)
-    for f in ("session.sqlite", "lecture.json"):
-        if (src / f).exists():
-            shutil.copy2(src / f, folder / "session" / f)
+    with sqlite3.connect(src / "session.sqlite") as live, sqlite3.connect(folder / "session" / "session.sqlite") as copy:
+        live.backup(copy)  # includes rows still in the -wal file (a plain file copy can miss them)
+    if (src / "lecture.json").exists():
+        shutil.copy2(src / "lecture.json", folder / "session" / "lecture.json")
     lines = transcript_lines(src / "session.sqlite")
     (folder / "transcript.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -244,6 +245,7 @@ def list_tests() -> None:
 
 
 def main() -> None:
+    sys.stdout.reconfigure(errors="replace")  # a redirected stdout is cp1252 on Windows; the app prints any Unicode
     argv = sys.argv[1:]
     copilot_args = argv[argv.index("--") + 1:] if "--" in argv else []
     argv = argv[:argv.index("--")] if "--" in argv else argv

@@ -1,0 +1,327 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (7.9 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.5 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_2         openai/gpt-oss-120b           115k of 200k tokens IN USE
+        GROQ_API_KEY_3         openai/gpt-oss-120b           168k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           128k of 200k tokens ok
+        GROQ_API_KEY_1         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~6.0 h
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 251 lecture minutes
+
+[READY] session 20261014-132538-a5aa
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+13:25:48 INFO    copilot.visuals.service: CLIP ready in 1.1 s (CPU)
+13:27:44 INFO    copilot.materials.service: lecture 20261014-132538-a5aa starts in a new chapter fd6b06206635
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (organelles, eukaryotic, digestive, cytoplasm, prokaryotic, mitochondria ...)
+13:29:01 INFO    copilot.notes.library: notes added 'What Is Machine Learning? | Oracle India' -> 6f4fa30ffa0ed2f0 (10 pages, text: True)
+13:29:04 INFO    copilot.notes.reference: reference index 'What Is Machine Learning? | Oracle India': 153 chunks, 1 figures
+  [   83.2s] Hello everyone, let us learn about Machine Learning. Machine learning has become a household term in recent years as the concept moved from science fiction to a key driver of how businesses and organizations process information. (980 ms)
+  [   95.3s] With the pace of data creation continuing to grow exponentially, machine learning tools are pivotal for organizations looking for discovery patterns. These are trends and chart the most profitable path forward. (939 ms)
+13:29:36 INFO    copilot.understanding.service: [REF] What Is Machine Learning? | Oracle India p.1 (0.88) for the interpretation
+  [UNDERSTAND] Machine Learning > Definition (new_topic) acts=definition hint=definition lines=1 via groq_main#2 1993 ms
+               Introduced machine learning as a popular concept driving business information processing
+13:29:38 INFO    copilot.presentation.engine: planner: new Machine Learning > Definition (first content slide)
+  [SLIDE] add    'What is Machine Learning?' [definition] v1 (1 items)
+  [  109.4s] How commonplace is machine learning? If you clicked a recommendation of e-commerce website or streaming platform, be notified of potential (801 ms)
+  [SLIDE] update 'What is Machine Learning?' [definition] v2 (1 items)
+13:29:54 INFO    copilot.understanding.service: [REF] What Is Machine Learning? | Oracle India p.1 (0.89) for the interpretation
+  [UNDERSTAND] Machine Learning > Definition (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#2 2079 ms
+               Added why ML tools are pivotal and gave recommendation systems as a common example
+13:29:56 INFO    copilot.presentation.engine: planner: update Machine Learning > Definition (same frame)
+  [SLIDE] update 'What is Machine Learning?' [definition] v3 (1 items)
+  [SLIDE] update 'What is Machine Learning?' [definition] v4 (6 items)
+  [  120.9s] Misuses of credit cards or used transaction software have benefited from machine learning. It's used in finance, healthcare, marketing, retail and many other industries to exact valuable insights from data and automata. (853 ms)
+  [SLIDE] update 'What is Machine Learning?' [definition] v5 (7 items)
+  [  135.9s] processes. (320 ms)
+  [SLIDE] update 'What is Machine Learning?' [definition] v6 (6 items)
+13:30:03 INFO    copilot.understanding.service: [REF] What Is Machine Learning? | Oracle India p.1 (0.90) for the interpretation
+13:30:05 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Definition' -> same_concept
+13:30:05 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Misuses of credit cards or used transaction software have benefited from machine learning']
+  [UNDERSTAND] Machine Learning > Definition (same_concept) acts=classification,explanation hint=none lines=1 via groq_main#2 2771 ms
+               Added industries that apply machine learning, such as finance and healthcare.
+  [HEARD] 'automata' -> 'automate' corrected on the slide (0.5)
+13:30:05 INFO    copilot.presentation.engine: planner: update Machine Learning > Definition (same frame)
+13:30:05 INFO    copilot.presentation.engine: concern 7c3124954bbd (transcription, applied=True): 0 element(s); slide shows 'automate'
+  [SLIDE] update 'What is Machine Learning?' [definition] v7 (6 items)
+  [SLIDE] add    'What is Machine Learning?' [hierarchy] v1 (2 items)
+  [  137.1s] Now, what is Machine Learning? Machine Learning is a subset of Artificial Intelligence that focuses on building systems that learn and improve and other consumes more data. Artificial Intelligence is the broader term that refers to systems or machines that are (884 ms)
+  [  152.0s] That mimics human intelligence, machine learning. (446 ms)
+13:30:20 INFO    copilot.understanding.service: [REF] What Is Machine Learning? | Oracle India p.1 (0.89) for the interpretation
+  [UNDERSTAND] Machine Learning > Definition (same_concept) acts=definition,definition hint=definition lines=3 via groq_main#2 2767 ms
+               Teacher defined Machine Learning and Artificial Intelligence
+  [HEARD] 'and other consumes more data' -> 'as they consume more data' corrected on the slide (0.5)
+13:30:23 INFO    copilot.presentation.engine: planner: update Machine Learning > Definition (same frame)
+13:30:23 INFO    copilot.presentation.engine: concern 74ee17c03a28 (transcription, applied=True): 1 element(s); slide shows 'as they consume more data'
+  [SLIDE] update 'What is Machine Learning?' [hierarchy] v2 (3 items)
+  [SLIDE] add    'What is Artificial Intelligence?' [definition] v1 (1 items)
+13:30:23 INFO    copilot.presentation.engine: image search 'Machine Learning concept diagram' (diagram) for 'What is Artificial Intelligence?'
+13:30:28 INFO    copilot.visuals.finder: image search 'Machine Learning concept diagram': 1 slow download(s) dropped
+13:30:29 INFO    copilot.visuals.finder: image search 'Machine Learning concept diagram' (diagram, labels preferred): 3 candidate(s), 1 accepted (0 labelled), 5.81 s {'search_s': 2.84, 'download_s': 1.66, 'clip_s': 0.08, 'full_s': 1.22, 'total_s': 5.81}
+  [IMAGE] 'Machine Learning concept diagram' -> File:Machine learning workflow diagram.png (5.8 s)
+13:30:29 INFO    copilot.presentation.engine: image 'Machine Learning concept diagram' on 'What is Artificial Intelligence?': File:Machine learning workflow diagram.png
+  [SLIDE] update 'What is Artificial Intelligence?' [definition] v2 (2 items)
+13:30:29 INFO    copilot.notes.service: notes follow: slide 'What is Artificial Intelligence?' -> page 10
+  [  155.6s] The term is machine learning and AI are often discussed together and the term are sometimes used interchangeably but don't mean the same thing. (743 ms)
+13:30:31 INFO    copilot.understanding.service: [REF] What Is Machine Learning? | Oracle India p.1 (0.85) for the interpretation
+  [UNDERSTAND] Machine Learning > Definition (elaboration) acts=definition hint=definition lines=1 via groq_main#2 2698 ms
+               Clarified that machine learning and AI are related but distinct concepts.
+13:30:34 INFO    copilot.presentation.engine: planner: update Machine Learning > Definition (same frame)
+13:30:34 INFO    copilot.presentation.engine: no image for 'Artificial Intelligence and Machine Learning': two concepts side by side
+  [SLIDE] update 'Artificial Intelligence and Machine Learning' [concept] v3 (2 items)
+  [  176.6s] In short, all machine learning is AI but not all AI is machine learning. The key takeaways are, machine learning is a subset of AI. (746 ms)
+13:30:51 INFO    copilot.understanding.service: [REF] What Is Machine Learning? | Oracle India p.1 (0.91) for the interpretation
+  [UNDERSTAND] Machine Learning > Definition (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1912 ms
+               Machine learning is a subset of AI, so AI includes more than just machine learning.
+13:30:53 INFO    copilot.presentation.engine: planner: update Machine Learning > Definition (same frame)
+13:30:53 INFO    copilot.presentation.engine: no image for 'Artificial Intelligence and Machine Learning': two concepts side by side
+  [SLIDE] update 'Artificial Intelligence and Machine Learning' [concept] v4 (3 items)
+  [  187.1s] Off you go. (480 ms)
+13:30:59 INFO    copilot.understanding.service: [REF] What Is Machine Learning? | Oracle India p.10 (0.86) for the interpretation
+13:31:01 WARNING copilot.understanding.interpreter: interpretation from groq_main#2 invalid (schema: [{'type': 'int_parsing', 'loc': ('meta_lines', 0), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'Off you go.'}]); one repair attempt
+  [UNDERSTAND] Machine Learning > Definition (same_concept) acts=- hint=none lines=1 via groq_main#3 3104 ms
+13:31:02 INFO    copilot.presentation.engine: planner: noop Machine Learning > Definition (nothing to display)
+[PAUSE] paused: what is said now is not put on slides (Resume to continue)
+  [  239.2s] (paused, not used) Home. (765 ms)
+13:31:46 INFO    copilot.understanding.service: paused: not interpreted: Home.
+  [  248.8s] (paused, not used) I don't care. I mean, I thought you were 51. No, it's not happening. (2364 ms)
+13:32:01 INFO    copilot.understanding.service: paused: not interpreted: I don't care. I mean, I thought you were 51. No, it's not happening.
+  [  259.6s] (paused, not used) Eukaryotic, cerebrum. (1002 ms)
+13:32:08 INFO    copilot.understanding.service: paused: not interpreted: Eukaryotic, cerebrum.
+  [  278.4s] (paused, not used) Happy Thursday! Kumbh, taiyay! Arre, tu VS Code, var 3, hai chal, aajha naab! (2110 ms)
+13:32:32 INFO    copilot.understanding.service: paused: not interpreted: Happy Thursday! Kumbh, taiyay! Arre, tu VS Code, var 3, hai chal, aajha naab!
+  [  284.4s] (paused, not used) And, I'm gonna play on GitHub, I don't know how to play on GitHub, I'm gonna play on the main branch, but I'm gonna play on the main branch, so I'm gonna play on the main branch. (1784 ms)
+13:32:40 INFO    copilot.understanding.service: paused: not interpreted: And, I'm gonna play on GitHub, I don't know how to play on GitHub, I'm gonna play on the main branch, but I'm gonna play on the main branch, so I'm gonna play on the main branch.
+  [  293.2s] (paused, not used) This is the end of the video, thank you for watching, see you in the next video. (986 ms)
+13:32:44 INFO    copilot.understanding.service: paused: not interpreted: This is the end of the video, thank you for watching, see you in the next video.
+  [  306.5s] (paused, not used) Let us know in the comments section. (948 ms)
+13:32:54 INFO    copilot.understanding.service: paused: not interpreted: Let us know in the comments section.
+  [  311.0s] (paused, not used) So, let's see how it looks from the beginning. (2024 ms)
+13:33:02 INFO    copilot.understanding.service: paused: not interpreted: So, let's see how it looks from the beginning.
+  [  314.7s] (paused, not used) Something like that. (341 ms)
+13:33:02 INFO    copilot.understanding.service: paused: not interpreted: Something like that.
+  [  323.1s] (paused, not used) I will not be able to answer the same question. I will not be able to answer the same question. (1096 ms)
+13:33:15 INFO    copilot.understanding.service: paused: not interpreted: I will not be able to answer the same question. I will not be able to answer the same question.
+  [  332.7s] (paused, not used) Hello. (546 ms)
+13:33:20 INFO    copilot.understanding.service: paused: not interpreted: Hello.
+  [  334.3s] (paused, not used) This is the chat, you can watch it, and this is the chat, you can watch it, and this is the prom. (2593 ms)
+13:33:28 INFO    copilot.understanding.service: paused: not interpreted: This is the chat, you can watch it, and this is the chat, you can watch it, and this is the prom.
+  [  372.6s] (dropped: empty) 
+  [  378.8s] (paused, not used) The red carpet was rolled down all 20... (550 ms)
+13:34:09 INFO    copilot.understanding.service: paused: not interpreted: The red carpet was rolled down all 20...
+  [  391.0s] (dropped: empty) 
+  [  402.3s] (dropped: empty) 
+  [  405.2s] (dropped: empty) 
+  [  409.8s] (paused, not used) A great common sample. Power on! (524 ms)
+13:34:39 INFO    copilot.understanding.service: paused: not interpreted: A great common sample. Power on!
+  [  413.8s] (paused, not used) Traditional clothing. We arrived late last night at Melbourne Airport wearing some cultural attire in the traditional black puffer jacket. (727 ms)
+13:34:49 INFO    copilot.understanding.service: paused: not interpreted: Traditional clothing. We arrived late last night at Melbourne Airport wearing some cultural attire in the traditional black puffer jacket.
+  [  423.8s] (paused, not used) There's a national costume. (584 ms)
+13:34:59 INFO    copilot.understanding.service: paused: not interpreted: There's a national costume.
+  [  515.0s] (paused, not used) In this case, the feathers fell to the ground at a slower rate than the bowling ball because of air resistance. (788 ms)
+13:36:28 INFO    copilot.understanding.service: paused: not interpreted: In this case, the feathers fell to the ground at a slower rate than the bowling ball because of air resistance.
+13:39:02 INFO    copilot.notes.library: notes added 'Machine learning, explained | MIT Sloan' -> fa648e2b7bc27725 (14 pages, text: True)
+13:39:04 INFO    copilot.notes.reference: reference index 'Machine learning, explained | MIT Sloan': 105 chunks, 9 figures
+[LIVE]  resumed
+  [  697.5s] There are three subcategories of machine learning. (589 ms)
+13:39:38 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.2 (0.80) for the interpretation
+  [UNDERSTAND] Machine Learning > Definition (elaboration) acts=explanation hint=concept lines=1 via groq_main#2 2111 ms
+               Teacher noted that machine learning comprises three subcategories.
+13:39:40 INFO    copilot.presentation.engine: planner: update Machine Learning > Definition (same frame)
+13:39:40 INFO    copilot.presentation.engine: no image for 'Artificial Intelligence and Machine Learning': two concepts side by side
+  [SLIDE] update 'Artificial Intelligence and Machine Learning' [concept] v5 (4 items)
+  [  700.4s] Supervised learning. Supervised machine learning models are trained with labeled data sets which allow the model to run and grow more accurately over time. For example, an algorithm would be trained with pictures of dogs and other things, all labeled by humans, and the machine would (918 ms)
+  [  714.9s] and avebe, avebe, where to identify (446 ms)
+  [  719.0s] Features of dog on its own. Supervised learning is most common type of use today. (720 ms)
+13:39:51 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.5 (0.83) for the interpretation
+  [UNDERSTAND] Machine Learning > Supervised Learning (sub_concept) acts=definition hint=definition lines=3 via groq_main#2 2534 ms
+               Introduced supervised learning as a labeled‑data training method with a dog‑image example
+  [HEARD] 'avebe, avebe' -> '' corrected on the slide (0.5)
+13:39:53 INFO    copilot.presentation.engine: planner: continue Machine Learning > Supervised Learning (new facet)
+  [SLIDE] add    'Supervised Learning' [definition] v1 (1 items)
+13:39:53 INFO    copilot.presentation.engine: image search 'labeled dataset example' (photo) for 'Supervised Learning'
+13:39:58 INFO    copilot.visuals.finder: image search 'labeled dataset example': 1 slow download(s) dropped
+13:39:58 INFO    copilot.presentation.engine: image 'labeled dataset example': none (incomplete: 3 of 4 previews)
+  [IMAGE] 'labeled dataset example' -> none (incomplete: 3 of 4 previews) (4.6 s)
+  [  724.8s] Unsupervised Machine Learning In unsupervised machine learning, a program looks for patterns in unlabeled data. Unsupervised machine learning can find patterns or trends that people aren't explicitly looking for. For example, an unsupervised machine learning program (917 ms)
+  [SLIDE] update 'Supervised Learning' [definition] v2 (1 items)
+  [  739.4s] Good look. (465 ms)
+  [SLIDE] update 'Supervised Learning' [definition] v3 (1 items)
+13:40:17 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.5 (0.87) for the interpretation
+  [UNDERSTAND] Machine Learning > Unsupervised Machine Learning (sibling_concept) acts=definition hint=definition lines=2 via groq_main#2 2055 ms
+               Introduced unsupervised machine learning as pattern‑finding in unlabeled data
+13:40:20 INFO    copilot.presentation.engine: planner: continue Machine Learning > Unsupervised Machine Learning (new facet)
+  [SLIDE] add    'Machine Learning' [definition] v1 (1 items)
+13:40:20 INFO    copilot.presentation.engine: image search 'data clusters' (diagram) for 'Machine Learning'
+  [  740.4s] Through online sales data and identify different parts or different types of clients making purchases. Reinforcement. Reinforcements machine learning trains machines through trial and error too. (774 ms)
+13:40:23 INFO    copilot.visuals.finder: image search 'data clusters' (diagram, labels preferred): 3 candidate(s), 0 accepted (0 labelled), 3.77 s {'search_s': 2.37, 'download_s': 1.31, 'clip_s': 0.07, 'full_s': 0.0, 'total_s': 3.77}
+13:40:23 INFO    copilot.presentation.engine: image 'data clusters': none (no relevant image)
+  [IMAGE] 'data clusters' -> none (no relevant image) (3.8 s)
+  [  752.9s] Take the best action by establishing a reward system. Reinforcement learning can train models to play games or train autonomous vehicles to drive by telling the machine. (758 ms)
+13:40:29 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.5 (0.89) for the interpretation
+13:40:32 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Through online sales data and identify different parts or different types of clients making purchases']
+  [UNDERSTAND] Machine Learning > Reinforcement Learning (sibling_concept) acts=definition,explanation,explanation hint=definition lines=2 via groq_main#2 2794 ms
+               Introduced reinforcement learning as a trial‑and‑error method with a reward system and examples of games and autonomous vehicles.
+  [HEARD] 'Reinforcements' -> 'Reinforcement' corrected on the slide (0.5)
+13:40:32 INFO    copilot.presentation.engine: planner: continue Machine Learning > Reinforcement Learning (new facet)
+13:40:32 INFO    copilot.presentation.engine: slide 'Reinforcement Learning' waits for the min dwell time
+13:40:32 INFO    copilot.presentation.engine: concern 30e9f00f14de (transcription, applied=True): 1 element(s); slide shows 'Reinforcement'
+13:40:32 INFO    copilot.presentation.engine: image search 'reinforcement learning diagram' (diagram) for 'Reinforcement Learning'
+  [SLIDE] add    'Reinforcement Learning' [definition] v1 (4 items)
+  [  763.6s] When it made the right decision, which helps us to learn over time what actions it should take. (595 ms)
+13:40:37 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.5 (0.69) for the interpretation
+13:40:39 INFO    copilot.visuals.finder: image search 'reinforcement learning diagram' (diagram, labels preferred): 3 candidate(s), 2 accepted (0 labelled), 6.64 s {'search_s': 2.45, 'download_s': 1.64, 'clip_s': 0.07, 'full_s': 2.47, 'total_s': 6.64}
+  [IMAGE] 'reinforcement learning diagram' -> File:Concept of Reinforcement Learning.jpg (6.7 s)
+13:40:39 INFO    copilot.presentation.engine: image 'reinforcement learning diagram' on 'Reinforcement Learning': File:Concept of Reinforcement Learning.jpg
+  [SLIDE] update 'Reinforcement Learning' [definition] v2 (5 items)
+  [UNDERSTAND] Machine Learning > Reinforcement Learning (elaboration) acts=- hint=definition lines=1 via groq_main#2 2286 ms
+               Added that reinforcement learning learns optimal actions over time
+13:40:40 INFO    copilot.presentation.engine: revised S1: Trains machines by trial‑and‑error with rewards, learning optimal actions over time
+13:40:40 INFO    copilot.presentation.engine: planner: noop Machine Learning > Reinforcement Learning (nothing to display)
+  [SLIDE] update 'Reinforcement Learning' [definition] v3 (5 items)
+  [  772.4s] Natural language processing Natural language processing is the field of machine learning in which machines learn to understand natural language as spoken and written by humans. Instead of the data and numbers normally used to program computers, this allows (859 ms)
+  [  785.8s] Machines to recognize language, understand it and respond it as (489 ms)
+  [  793.1s] Well, as create new text and translate between languages, natural language processing. (713 ms)
+13:41:04 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.6 (0.75) for the interpretation
+  [UNDERSTAND] Machine Learning > Natural Language Processing (sibling_concept) acts=definition hint=definition lines=3 via groq_main#2 1962 ms
+               Introduced Natural Language Processing as a ML field that lets machines understand, respond to, generate, and translate human language
+13:41:06 INFO    copilot.presentation.engine: planner: continue Machine Learning > Natural Language Processing (new facet)
+  [SLIDE] add    'Natural Language Processing' [definition] v1 (1 items)
+13:41:06 INFO    copilot.presentation.engine: image search 'natural language processing diagram' (diagram) for 'Natural Language Processing'
+13:41:12 INFO    copilot.visuals.finder: image search 'natural language processing diagram' (diagram, labels preferred): 2 candidate(s), 1 accepted (0 labelled), 5.15 s {'search_s': 2.31, 'download_s': 1.49, 'clip_s': 0.05, 'full_s': 1.28, 'total_s': 5.15}
+  [IMAGE] 'natural language processing diagram' -> File:A development of natural language processing tools.png (5.2 s)
+13:41:12 INFO    copilot.presentation.engine: image 'natural language processing diagram' on 'Natural Language Processing': File:A development of natural language processing tools.png
+  [SLIDE] update 'Natural Language Processing' [definition] v2 (2 items)
+  [  798.5s] Enables familiar technologies like chatbots and digital assistants like Siri and Alexa. Neural networks are commonly used specific classes of machine learning algorithms. The artificial neural networks are modeled on the brain of human brains. (856 ms)
+  [  812.0s] in which thousands or millions of forcing nodes are (389 ms)
+13:41:22 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.6 (0.92) for the interpretation
+  [UNDERSTAND] Machine Learning > Natural Language Processing (elaboration) acts=definition,definition,example hint=none lines=1 via groq_main#2 2817 ms
+               Added examples of chatbots and defined neural and artificial neural networks
+13:41:25 INFO    copilot.presentation.engine: planner: update Machine Learning > Natural Language Processing (same frame)
+13:41:25 INFO    copilot.presentation.engine: no image for 'Natural Language Processing': two concepts side by side
+  [SLIDE] update 'Natural Language Processing' [concept] v3 (4 items)
+  [  816.7s] Interconnected and organized into layer. In an artificial neural network, cells or nodes are connected with each other processing inputs and producing an output that is sent to other neurons. Labeled data moves through the nodes or cells with (849 ms)
+  [  830.6s] Each cell performs a different function in a neural network. (416 ms)
+13:41:40 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.6 (0.80) for the interpretation
+  [  835.3s] Oh... (306 ms)
+  [UNDERSTAND] Machine Learning > Natural Language Processing (elaboration) acts=explanation hint=concept lines=3 via groq_main#2 2311 ms
+               Added details about the structure and function of artificial neural networks in NLP.
+13:41:42 INFO    copilot.presentation.engine: revised S3: Artificial neural networks: Modeled on the human brain; consist of thousands or millions of forcing nodes that are interconnected in…
+13:41:42 INFO    copilot.presentation.engine: planner: update Machine Learning > Natural Language Processing (same frame)
+  [SLIDE] update 'Natural Language Processing' [concept] v4 (4 items)
+  [SLIDE] update 'Natural Language Processing' [concept] v5 (4 items)
+  [SLIDE] add    'Natural Language Processing' [key_points] v1 (3 items)
+13:41:42 INFO    copilot.presentation.engine: image search 'Artificial neural network diagram' (diagram) for 'Natural Language Processing'
+13:41:49 INFO    copilot.visuals.finder: image search 'Artificial neural network diagram' (diagram, labels preferred): 7 candidate(s), 3 accepted (0 labelled), 6.59 s {'search_s': 2.31, 'download_s': 1.85, 'clip_s': 0.14, 'full_s': 2.27, 'total_s': 6.59}
+  [IMAGE] 'Artificial neural network diagram' -> File:Colored neural network.svg (6.6 s)
+13:41:49 INFO    copilot.presentation.engine: image 'Artificial neural network diagram' on 'Natural Language Processing': File:Colored neural network.svg
+  [SLIDE] update 'Natural Language Processing' [key_points] v2 (4 items)
+  [  837.9s] Trained to identify whether a picture contains a cat or not, the different nodes would access the information and arise at an output that indicates (641 ms)
+  [SLIDE] update 'Natural Language Processing' [key_points] v3 (5 items)
+  [  848.6s] The picture feature a cat. (456 ms)
+  [SLIDE] update 'Natural Language Processing' [key_points] v4 (5 items)
+13:41:57 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.6 (0.78) for the interpretation
+  [UNDERSTAND] Machine Learning > Natural Language Processing (elaboration) acts=- hint=concept lines=2 via groq_main#2 1842 ms
+               Added a concrete example of neural network nodes identifying a cat in an image.
+13:41:59 INFO    copilot.presentation.engine: revised S2: Nodes are interconnected in layers processing inputs to outputs; trained to identify a cat, they access information and produce an output…
+13:41:59 INFO    copilot.presentation.engine: planner: noop Machine Learning > Natural Language Processing (nothing to display)
+13:41:59 INFO    copilot.presentation.engine: no image for 'Natural Language Processing': has an image
+  [SLIDE] update 'Natural Language Processing' [key_points] v5 (4 items)
+  [SLIDE] update 'Natural Language Processing' [key_points] v6 (4 items)
+  [  870.0s] How businesses are using machine learning? Machine learning is the core of some companies' business model, like the case of Netflix's suggestion algorithm or Google search engine. Other companies are engaging deeply with machine learning. (920 ms)
+  [SLIDE] update 'Natural Language Processing' [key_points] v7 (5 items)
+  [  882.8s] So it's not their main business positions. (436 ms)
+  [SLIDE] update 'Natural Language Processing' [key_points] v8 (4 items)
+13:42:33 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.7 (0.89) for the interpretation
+13:42:35 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Other companies are engaging deeply with machine learning']
+  [UNDERSTAND] Machine Learning > Business Applications (sibling_concept) acts=example,explanation hint=example lines=1 via groq_main#2 2779 ms
+               Shows how companies like Netflix and Google use machine learning in their core services.
+13:42:35 INFO    copilot.presentation.engine: planner: continue Machine Learning > Business Applications (new facet)
+13:42:35 INFO    copilot.presentation.engine: image hint 'Business Applications diagram' for 'Business Applications' from its sibling subtopic
+  [SLIDE] add    'Business Applications' [example] v1 (2 items)
+13:42:35 INFO    copilot.presentation.engine: image search 'Business Applications diagram' (diagram) for 'Business Applications'
+13:42:38 INFO    copilot.presentation.engine: image 'Business Applications diagram': none (no usable candidates)
+  [IMAGE] 'Business Applications diagram' -> none (no usable candidates) (2.4 s)
+13:42:45 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.7 (0.76) for the interpretation
+  [  887.3s] Other machine learning, others are trying to determine how to use machine learning in the beneficial way. In my opinion, one of the hardest problems in machine learning is figuring out what problem I can solve with machine learning. (919 ms)
+  [UNDERSTAND] Machine Learning > Business Applications (same_concept) acts=- hint=none lines=1 via groq_main#2 1952 ms
+               Clarified that many companies' ML efforts are not their primary business focus.
+13:42:47 INFO    copilot.presentation.engine: revised S1: Other companies are engaging deeply with machine learning, though it’s not their main business positions
+13:42:47 INFO    copilot.presentation.engine: planner: noop Machine Learning > Business Applications (nothing to display)
+  [SLIDE] update 'Business Applications' [example] v2 (2 items)
+  [  900.2s] Shulman said there's still a gap in understanding. (549 ms)
+13:42:53 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.7 (0.84) for the interpretation
+  [UNDERSTAND] Machine Learning > Business Applications (elaboration) acts=explanation hint=none lines=1 via groq_main#2 1616 ms
+               Teacher highlights that companies struggle to find useful ML problems, noting it as a major challenge.
+13:42:54 INFO    copilot.presentation.engine: planner: update Machine Learning > Business Applications (same frame)
+13:42:54 INFO    copilot.presentation.engine: image hint 'Business Applications diagram' for 'Business Applications' from its sibling subtopic
+13:42:54 INFO    copilot.presentation.engine: no image for 'Business Applications': nothing relevant found for 'Business Applications diagram' before
+  [SLIDE] update 'Business Applications' [example] v3 (4 items)
+13:43:01 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.7 (0.79) for the interpretation
+  [UNDERSTAND] Machine Learning > Business Applications (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 2264 ms
+               Teacher notes a remaining gap in understanding of ML business applications per Shulman.
+13:43:03 INFO    copilot.presentation.engine: planner: update Machine Learning > Business Applications (same frame)
+13:43:03 INFO    copilot.presentation.engine: image hint 'Business Applications diagram' for 'Business Applications' from its sibling subtopic
+13:43:03 INFO    copilot.presentation.engine: no image for 'Business Applications': nothing relevant found for 'Business Applications diagram' before
+  [SLIDE] update 'Business Applications' [example] v4 (5 items)
+  [  917.5s] Project detection, machines can analyze (538 ms)
+  [  923.0s] How someone normally spends or when they normally shop, to identify potentially fraud-length, credit and transaction, log is attempted or spam image, authentic health lines or chat boxes. Many companies are developing (781 ms)
+13:43:27 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.7 (0.73) for the interpretation
+  [UNDERSTAND] Machine Learning > Business Applications (elaboration) acts=explanation hint=example lines=2 via groq_main#2 2820 ms
+               Added examples of fraud detection, spam filtering, and health chat‑bot verification as ML business applications.
+  [HEARD] 'fraud-length, log is attempted' -> 'fraud detection, attempted spam image, authentic health chat boxes' corrected on the slide (0.5)
+13:43:30 INFO    copilot.presentation.engine: planner: update Machine Learning > Business Applications (same frame)
+13:43:30 INFO    copilot.presentation.engine: concern e93f081bd1d8 (transcription, applied=True): 0 element(s); slide shows 'fraud detection, attempted spam image, authentic health chat boxes'
+  [SLIDE] update 'Business Applications' [example] v5 (5 items)
+  [SLIDE] add    'Business Applications' [key_points] v1 (3 items)
+13:43:30 INFO    copilot.presentation.engine: image search 'fraud detection diagram' (diagram) for 'Business Applications'
+13:43:33 INFO    copilot.presentation.engine: image 'fraud detection diagram': none (no usable candidates)
+  [IMAGE] 'fraud detection diagram' -> none (no usable candidates) (2.3 s)
+  [  935.9s] (dropped: empty) 
+  [  949.2s] Come up with appropriate responses. Self-driving cars. Much of the technology behind self-driving car is based on the machine learning, deep learning, particular. (816 ms)
+  [SLIDE] update 'Business Applications' [key_points] v2 (4 items)
+13:43:44 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.8 (0.76) for the interpretation
+13:43:46 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Business Applications' -> same_concept
+  [UNDERSTAND] Machine Learning > Business Applications (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 2255 ms
+               Added self‑driving cars and chatbot response generation as business applications of machine learning.
+13:43:46 INFO    copilot.presentation.engine: planner: update Machine Learning > Business Applications (same frame)
+  [SLIDE] update 'Business Applications' [key_points] v3 (3 items)
+  [SLIDE] update 'Business Applications' [key_points] v4 (5 items)
+13:43:46 INFO    copilot.presentation.engine: image search 'self‑driving car' (photo) for 'Business Applications'
+13:43:50 INFO    copilot.visuals.finder: image search 'self‑driving car': 8 slow download(s) dropped
+13:43:50 INFO    copilot.presentation.engine: image 'self‑driving car': none (downloads failed)
+  [IMAGE] 'self‑driving car' -> none (downloads failed) (4.5 s)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261014-132538-a5aa: 53 segments, 942 words, state v105, 462 events logged
+        CommandReceived=53, ConceptSignal=35, ConcernRaised=5, DeckState=30, ImageChoices=4, ImageReady=9, ImageRequested=9, InterpretRequested=22, InterpretationReady=22, LifecycleChanged=7, SlideContextChanged=24, SlidePatch=43, StateChanged=105, TranscriptFinal=53, UtteranceClassified=36, UtteranceDropped=5
+        stt: 53 published, 5 dropped, latency p50=758 ms p95=2110 ms max=2593 ms
+        understanding: 22 interpretations (22 by LLM, 0 fallbacks, 1 repaired), max 5 calls/min, prompt tokens max=2230 avg=2101, latency p50=2286 ms max=3104 ms
+        presentation: 10 slides; planner ops {'new': 1, 'update': 12, 'noop': 4, 'continue': 5}; revisions 4, corrections shown 2, shown as said 0
+        images: {'requests': 9, 'found': 4, 'none': 5}; slides with an image 2/10
+          1. [definition] What is Machine Learning? [part 1]  (v7, ['definition', 'points'])
+          2. [hierarchy] What is Machine Learning? [part 2]  (v2, ['hierarchy', 'callout', 'definition'])
+          3. [concept] Artificial Intelligence and Machine Learning [part 3]  (v5, ['definition', 'definition', 'points'])
+          4. [definition] Supervised Learning  (v3, ['definition'])
+          5. [definition] Machine Learning  (v1, ['definition'])
+          6. [definition] Reinforcement Learning  (v3, ['definition', 'points', 'image'])
+          7. [concept] Natural Language Processing [part 1]  (v5, ['definition', 'definition', 'definition', 'example'])
+          8. [key_points] Natural Language Processing [part 2]  (v8, ['points', 'image'])
+          9. [example] Business Applications [part 1]  (v5, ['example', 'points'])
+          10. [key_points] Business Applications [part 2]  (v4, ['points'])
+        providers: {'groq_main#2': 21, 'groq_main#3': 1}; triggers: {'max_wait': 5, 'words': 6, 'boundary': 5, 'pause': 6}; outline: ['Machine Learning > Definition, Supervised Learning, Unsupervised Machine Learning, Reinforcement Learning, Natural Language Processing, Business Applications']; concerns: 5
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261014-132538-a5aa\session.sqlite

@@ -1,0 +1,391 @@
+> python -m copilot --audio-file artifacts/web_audio/web5.wav --no-wait --no-open --subject Computer Science
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (6.5 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_1         openai/gpt-oss-120b            66k of 200k tokens IN USE
+        GROQ_API_KEY_2         openai/gpt-oss-120b            14k of 200k tokens ok
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~1.1 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~6.9 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~22.4 h
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~23.3 h
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              170k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              192k of 200k tokens ok
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              196k of 200k tokens ok
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 155 lecture minutes
+
+[READY] session 20261015-121551-aa74
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        subject=Computer Science grade=- topic=-
+[LIVE]  lecture started. Type q + Enter to end.
+12:15:59 INFO    copilot.visuals.service: CLIP ready in 0.4 s (CPU)
+[INIT]  speech: 30 terms from your study material (photoelectric, thermodynamics, digestive, photoelectrons, cerebrum, cerebellum ...)
+  [    1.3s] Now, the first question is what is a computer network? (706 ms)
+  [UNDERSTAND] Computer Science > Computer Network (new_topic) acts=question hint=none lines=1 via groq_main#1 3257 ms
+               Teacher asks students to define a computer network
+12:16:10 INFO    copilot.presentation.engine: planner: noop Computer Science > Computer Network (nothing to display)
+  [    6.5s] So, a computer network is a number of computers also known as nodes. (622 ms)
+  [   12.3s] Connected by some communication lines. So, we have these computers which are connected by some communication lines. (733 ms)
+12:16:21 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.6 (0.51) for the interpretation
+  [UNDERSTAND] Computer Science > Computer Network (same_concept) acts=definition hint=definition lines=2 via groq_main#1 2679 ms
+               Defined a computer network as computers (nodes) linked by communication lines
+12:16:24 INFO    copilot.presentation.engine: planner: new Computer Science > Computer Network (first content slide)
+  [SLIDE] add    'Computer Network' [definition] v1 (1 items)
+12:16:24 INFO    copilot.presentation.engine: image search 'computers connected diagram' (diagram) for 'Computer Network'
+12:16:29 INFO    copilot.visuals.finder: image search 'computers connected diagram': 1 slow download(s) dropped
+12:16:29 INFO    copilot.presentation.engine: image 'computers connected diagram': none (downloads failed)
+  [IMAGE] 'computers connected diagram' -> none (downloads failed) (4.5 s)
+  [   21.7s] So, two computers connected to the network can communicate with each other through other nodes if they are not directly connected, which means that computer does not have to be computer (885 ms)
+  [SLIDE] update 'Computer Network' [definition] v2 (1 items)
+  [   34.6s] Connected to all the other computers in the network in order to communicate with any of them. It may be an indirect communication via some other computer. (815 ms)
+  [UNDERSTAND] Computer Science > Computer Network (same_concept) acts=- hint=definition lines=2 via groq_main#1 2386 ms
+               Students learn that computers can communicate indirectly via intermediate nodes in a network
+12:16:48 INFO    copilot.presentation.engine: revised S1: Computer network: A number of computers (nodes) connected by communication lines, allowing any two computers to communicate directly or…
+12:16:48 INFO    copilot.presentation.engine: planner: noop Computer Science > Computer Network (nothing to display)
+  [SLIDE] update 'Computer Network' [definition] v3 (1 items)
+  [SLIDE] update 'Computer Network' [definition] v4 (1 items)
+  [   46.1s] And the other point is that (549 ms)
+  [   49.2s] These nodes, they are computers, but some of them are not computers. Some of them are sort of network devices. Now, there are various kinds of network devices like switches, routers, etcetera. (1065 ms)
+  [UNDERSTAND] Computer Science > Computer Network (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 2593 ms
+               Nodes can be computers or network devices like switches and routers.
+12:17:07 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [definition] v5 (2 items)
+  [   63.0s] So, they could also, so they facilitate the communication and running of this entire network. So, they are also taking as nodes in the network. So, finally, we have some of the nodes. (1009 ms)
+  [SLIDE] update 'Computer Network' [definition] v6 (3 items)
+  [   76.6s] Some nodes which may be either computers or there may be network devices like switches and routers and there is a communication between them. (712 ms)
+  [SLIDE] update 'Computer Network' [definition] v7 (3 items)
+  [   87.1s] This communication of course. (339 ms)
+  [SLIDE] update 'Computer Network' [definition] v8 (2 items)
+  [UNDERSTAND] Computer Science > Computer Network (same_concept) acts=- hint=definition lines=2 via groq_main#1 2377 ms
+               Clarified that nodes, including computers and devices, enable communication across the network.
+12:17:30 INFO    copilot.presentation.engine: revised S2: Nodes (computers, switches, routers) facilitate network communication
+12:17:30 INFO    copilot.presentation.engine: planner: noop Computer Science > Computer Network (nothing to display)
+  [SLIDE] update 'Computer Network' [definition] v9 (2 items)
+  [   90.1s] Uh... (453 ms)
+  [   91.7s] Can be of various types, we will come to that presently. (631 ms)
+  [UNDERSTAND] Computer Science > Computer Network (elaboration) acts=explanation hint=none lines=2 via groq_main#1 1884 ms
+               Teacher notes that network communication can occur in various types.
+12:17:39 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [definition] v10 (3 items)
+12:17:39 INFO    copilot.presentation.engine: image search 'network devices diagram' (diagram) for 'Computer Network'
+  [   97.8s] So, the computers can communicate with each other. Now, what do they communicate? (619 ms)
+  [SLIDE] update 'Computer Network' [definition] v11 (4 items)
+12:17:44 INFO    copilot.visuals.finder: image search 'network devices diagram': 3 slow download(s) dropped
+12:17:47 INFO    copilot.visuals.finder: image search 'network devices diagram': 1 slow download(s) dropped
+12:17:47 INFO    copilot.presentation.engine: image 'network devices diagram': none (downloads failed)
+  [IMAGE] 'network devices diagram' -> none (downloads failed) (7.7 s)
+  [UNDERSTAND] Computer Science > Computer Network (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 2132 ms
+               Students learn that computers communicate data or information across the network.
+12:17:58 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [definition] v12 (3 items)
+  [SLIDE] update 'Computer Network' [definition] v13 (4 items)
+  [  103.5s] They exchange information between different computers. Now, this information could be of any kind of information. They could be data used by a program or they could be (801 ms)
+  [SLIDE] update 'Computer Network' [definition] v14 (5 items)
+  [  116.9s] Some program itself or it could be any kind of information really. So, that is one of the basic and major use of computer network. (865 ms)
+  [SLIDE] update 'Computer Network' [definition] v15 (5 items)
+  [UNDERSTAND] Computer Science > Computer Network (same_concept) acts=- hint=concept lines=2 via groq_main#1 2557 ms
+               Network information can be any type, including program data or other content exchanged between computers.
+12:18:11 INFO    copilot.presentation.engine: revised S4: Computers exchange any kind of information, such as program data or other content
+12:18:11 INFO    copilot.presentation.engine: planner: noop Computer Science > Computer Network (nothing to display)
+  [SLIDE] update 'Computer Network' [definition] v16 (4 items)
+  [SLIDE] update 'Computer Network' [definition] v17 (4 items)
+  [  129.3s] Of course, there are other specialized uses of computer networks. For example, interconnected small computers. (720 ms)
+  [SLIDE] update 'Computer Network' [definition] v18 (5 items)
+  [  136.6s] So, this can replace a large computer. For example, you have a very large computation to perform and so for that either you need a very powerful and very large computer which may be costly. (868 ms)
+  [SLIDE] update 'Computer Network' [definition] v19 (5 items)
+  [UNDERSTAND] Computer Science > Computer Network (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 1772 ms
+               Teacher mentions specialized uses like networks of small interconnected computers.
+12:18:31 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [definition] v20 (6 items)
+  [UNDERSTAND] Computer Science > Computer Network (same_concept) acts=example hint=example lines=1 via groq_main#1 1771 ms
+               Networks of many small computers can substitute a single large, expensive computer for heavy tasks.
+12:18:44 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [definition] v21 (5 items)
+  [SLIDE] update 'Computer Network' [definition] v22 (5 items)
+  [SLIDE] add    'Computer Network' [example] v1 (1 items)
+  [  149.3s] The other option could be that you break up this work into very small pieces and assign them to the small computers. So, the small computers sort of do the computation. (816 ms)
+  [  161.7s] On that small chunk of the problem and then they communicate with each other to form the final solution. (663 ms)
+  [UNDERSTAND] Computer Science > Computer Network (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 2612 ms
+               Work can be split into tiny tasks for many small computers that compute and exchange results to solve the problem.
+12:18:54 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [example] v2 (3 items)
+12:18:54 INFO    copilot.presentation.engine: image search 'network devices diagram' (diagram) for 'Computer Network'
+12:19:01 INFO    copilot.visuals.finder: image search 'network devices diagram': 1 slow download(s) dropped
+12:19:01 INFO    copilot.presentation.engine: image 'network devices diagram': none (downloads failed)
+  [IMAGE] 'network devices diagram' -> none (downloads failed) (7.7 s)
+  [  172.2s] Then the other use of computer networks which is coming into vogue very much these days is that the it is you can use this network as a communication tool. We know the very basic say for example, (982 ms)
+  [SLIDE] update 'Computer Network' [example] v3 (4 items)
+  [  186.4s] You send emails to, I mean you can send emails to almost anybody these days and that is really a very cheap and very fast mode of communication. (901 ms)
+  [SLIDE] update 'Computer Network' [example] v4 (4 items)
+  [UNDERSTAND] Computer Science > Computer Network (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 2810 ms
+               Networks also serve as communication tools, allowing cheap and fast email exchange.
+12:19:21 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [example] v5 (3 items)
+  [SLIDE] update 'Computer Network' [example] v6 (5 items)
+  [  197.4s] Secondly, the computer network could also be used for direct communication. (616 ms)
+  [SLIDE] update 'Computer Network' [example] v7 (6 items)
+  [UNDERSTAND] Computer Science > Computer Network (same_concept) acts=explanation hint=key_points lines=1 via groq_main#1 2362 ms
+               Networks can also enable direct computer-to-computer communication.
+12:19:36 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [example] v8 (5 items)
+  [SLIDE] update 'Computer Network' [example] v9 (6 items)
+  [  201.2s] Communication like say you could have communicate through voice over a computer network, you can communicate through video over a computer network. So, all these different communication (838 ms)
+  [SLIDE] update 'Computer Network' [example] v10 (7 items)
+  [  215.9s] Is converging into this computer network and as a matter of fact, now a days when we talk about the network, we do not look upon it just as a computer network. (924 ms)
+  [SLIDE] update 'Computer Network' [example] v11 (7 items)
+12:19:53 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Is converging into this computer network and as a matter of fact, now a days when we talk about the network, we do not look upon it just as a']
+  [UNDERSTAND] Computer Science > Computer Network (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#1 3559 ms
+               Networks now support voice and video communication and are viewed as broader communication platforms, not just computer links.
+12:19:53 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [example] v12 (6 items)
+  [SLIDE] update 'Computer Network' [example] v13 (7 items)
+  [SLIDE] add    'Computer Network' [key_points] v1 (3 items)
+  [  229.2s] Bedrock on which say all this computing, communication, all these are converging. (786 ms)
+  [SLIDE] update 'Computer Network' [key_points] v2 (4 items)
+12:20:00 INFO    copilot.understanding.interpreter: act explanation on lines [1] had no items; using the spoken line
+  [UNDERSTAND] Computer Science > Computer Network (same_concept) acts=explanation hint=key_points lines=1 via groq_main#1 2777 ms
+               Network described as foundational platform for converging computing and communication.
+12:20:00 INFO    copilot.presentation.engine: revised S3: The network is the bedrock where computing and communication converge
+12:20:00 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [key_points] v3 (3 items)
+  [SLIDE] update 'Computer Network' [key_points] v4 (3 items)
+  [SLIDE] update 'Computer Network' [key_points] v5 (4 items)
+  [  237.4s] And then of course, you have some applications which are necessarily of distributed nature, all right. For example, let us say railway reservation system. (929 ms)
+  [SLIDE] update 'Computer Network' [key_points] v6 (5 items)
+  [  250.0s] Now obviously even if you had a large computer to handle all the railway reservations in the world in one place, but you would not want all the people to go to one place and (870 ms)
+  [SLIDE] update 'Computer Network' [key_points] v7 (5 items)
+12:20:27 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Of course, you have some applications which are necessarily of distributed nature, all right']
+  [UNDERSTAND] Computer Science > Computer Network (same_concept) acts=example,explanation hint=example lines=1 via groq_main#1 2116 ms
+               Introduced railway reservation system as a distributed network application.
+12:20:27 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [key_points] v8 (6 items)
+  [SLIDE] add    'Computer Network' [key_points] v1 (1 items)
+12:20:27 INFO    copilot.presentation.engine: image search 'network devices diagram' (diagram) for 'Computer Network'
+12:20:32 INFO    copilot.visuals.finder: image search 'network devices diagram': 3 slow download(s) dropped
+12:20:35 INFO    copilot.visuals.finder: image search 'network devices diagram': 1 slow download(s) dropped
+12:20:35 INFO    copilot.presentation.engine: image 'network devices diagram': none (downloads failed)
+  [IMAGE] 'network devices diagram' -> none (downloads failed) (7.7 s)
+  [  263.6s] So, these are sort of (628 ms)
+  [SLIDE] update 'Computer Network' [key_points] v9 (5 items)
+  [UNDERSTAND] Computer Science > Computer Network (same_concept) acts=explanation hint=key_points lines=2 via groq_main#1 2518 ms
+               Explains why a single central computer for worldwide railway reservations is undesirable.
+12:20:47 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [key_points] v2 (2 items)
+  [  275.8s] Examples of distributed systems, so this is a distributed reservation system. Similarly, there could be other kinds of distributed systems, there could be distributed databases and all kinds of applications. So, that is the other. (982 ms)
+  [SLIDE] update 'Computer Network' [key_points] v3 (3 items)
+  [  288.6s] Application of networks. (714 ms)
+  [SLIDE] update 'Computer Network' [key_points] v4 (3 items)
+  [UNDERSTAND] Computer Science > Computer Network (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 2781 ms
+               Provided examples of distributed systems and noted network applications
+12:20:55 INFO    copilot.presentation.engine: planner: update Computer Science > Computer Network (same frame)
+  [SLIDE] update 'Computer Network' [key_points] v5 (2 items)
+  [SLIDE] update 'Computer Network' [key_points] v6 (5 items)
+  [  292.5s] Now, a quick look at the history of this. (718 ms)
+12:21:03 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Computer Science > History (sibling_concept) acts=transition hint=none lines=1 via groq_main#2 4176 ms
+               Teacher announced a shift to the history of computer networks.
+12:21:05 INFO    copilot.presentation.engine: planner: noop Computer Science > History (nothing to display)
+  [  301.1s] Computers first and then we will sort of focus on. (649 ms)
+  [SLIDE] update 'Computer Network' [key_points] v7 (6 items)
+  [  306.4s] Computer networks. (343 ms)
+  [SLIDE] update 'Computer Network' [key_points] v8 (6 items)
+12:21:10 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'History' -> same_concept
+  [UNDERSTAND] Computer Science > History (same_concept) acts=transition hint=none lines=2 via groq_main#2 1376 ms
+               Teacher announced shift to the history of computer networks
+12:21:10 INFO    copilot.presentation.engine: planner: noop Computer Science > History (nothing to display)
+  [SLIDE] update 'Computer Network' [key_points] v9 (5 items)
+  [  309.1s] Well, in 1948 we have the first commercial computer installed. It was an UNIVAC that was a big company once upon a time. (880 ms)
+  [SLIDE] update 'Computer Network' [key_points] v10 (6 items)
+  [  319.3s] And then in 1958, the first US communication satellite became operational. (670 ms)
+  [SLIDE] update 'Computer Network' [key_points] v11 (6 items)
+  [UNDERSTAND] Computer Science > History (new_topic) acts=timeline hint=timeline lines=2 via groq_alt#5 4748 ms
+               Introduced early milestones in computer network history, correcting the installation date of the first commercial computer UNIVAC to 1951 and noting the 1958 launch of the first US communication satellite.
+  [CONCERN] (factual) In 1948 we have the first commercial computer installed. It was an UNIVAC -> In 1951, the first commercial computer (UNIVAC) was installed. (0.95, slide shows the correction)
+12:21:36 INFO    copilot.presentation.engine: planner: continue Computer Science > History (new facet)
+12:21:36 INFO    copilot.presentation.engine: concern 1a282479ad85 (factual, applied=True): 1 element(s); slide shows '1951'
+  [SLIDE] update 'Computer Network' [key_points] v12 (5 items)
+  [SLIDE] add    'History' [timeline] v1 (2 items)
+  [  327.3s] So, you see the network always has these two components. One is that you have to have these computers and then you have to have these communication channels and satellite communication is of course, one of an important. (872 ms)
+  [  341.4s] Medium of communication, (353 ms)
+  [  344.0s] Then in 1964, we have an airline reservation system which uses some kind of a packet switching network. It was proposed by the Rand Corporation. (778 ms)
+  [UNDERSTAND] Computer Science > History (same_concept) acts=explanation,timeline hint=timeline lines=3 via groq_alt#5 1598 ms
+               Explained network components and added the 1964 airline reservation system using packet switching to the timeline.
+12:21:57 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+  [SLIDE] update 'History' [timeline] v2 (5 items)
+  [  356.1s] And in 1969 ARPANET, the first packet switching network began its operation. This was actually a watershed event as we will see. (718 ms)
+  [SLIDE] update 'History' [timeline] v3 (6 items)
+  [  370.0s] On the way computer networks developed. (361 ms)
+  [SLIDE] update 'History' [timeline] v4 (6 items)
+12:22:20 WARNING copilot.llm.router: llm groq_main#1 failed: no complete response within 6.5s (retrying)
+12:22:26 WARNING copilot.llm.router: llm groq_main#1 failed: no complete response within 6.5s
+12:22:29 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectTimeout
+12:22:29 WARNING copilot.understanding.interpreter: interpretation fallback: llm: deadline exceeded; groq_main#1: Transient; groq_main#1: Transient; groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_main#6: skipped (daily quota spent); groq_alt#5: Unavailable; groq_alt#6: deadline
+  [UNDERSTAND] Computer Science > History (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: deadline exceeded; groq_main#1: Transient; groq_main#1: Transient; groq_mai 15184 ms
+12:22:29 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+  [SLIDE] update 'History' [timeline] v5 (5 items)
+  [SLIDE] update 'History' [timeline] v6 (8 items)
+  [  375.0s] Then in 1971, we have the first computer chip. Previous computers were made through very low level gates and all, but the first 4 bit small computer chip with 2300 transistors. (846 ms)
+  [  389.4s] And they became available in 1971. (583 ms)
+  [SLIDE] update 'History' [timeline] v7 (9 items)
+  [  393.2s] In 1972, (499 ms)
+  [  395.8s] Ethernet specifications was formulated. (722 ms)
+  [SLIDE] update 'History' [timeline] v8 (9 items)
+12:22:45 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+12:22:47 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectTimeout
+12:22:49 WARNING copilot.llm.router: llm groq_alt#1 failed: connect failed: ConnectTimeout
+12:22:55 WARNING copilot.llm.router: llm groq_alt#2 failed: no complete response within 6.5s (retrying)
+  [  402.6s] So, we will talk about protocols and different kinds of protocols and Ethernet remains one of the most important network protocols that we use. (769 ms)
+  [SLIDE] update 'History' [timeline] v9 (9 items)
+12:22:58 WARNING copilot.llm.router: llm groq_alt#2 failed: no complete response within 3.0s
+12:22:58 WARNING copilot.understanding.interpreter: interpretation fallback: llm: deadline exceeded; groq_main#1: Unavailable; groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_main#6: skipped (daily quota spent); groq_alt#5: skipped (cooldown 44s); groq_alt#6: Unavailable; groq_alt#1: Unavailable; groq_alt#2: Transient; groq_alt#2: Transient; groq_alt#3: deadline
+12:22:58 INFO    copilot.understanding.interpreter: fallback: short remark not shown: 'They became available in 1971'
+  [UNDERSTAND] Computer Science > History (same_concept) acts=explanation hint=key_points lines=4 via FALLBACK llm: deadline exceeded; groq_main#1: Unavailable; groq_main#2: skipped (daily qu 15518 ms
+12:22:58 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+  [SLIDE] update 'History' [timeline] v10 (9 items)
+  [SLIDE] add    'History' [key_points] v1 (3 items)
+  [  416.3s] Formulated in 1972. (305 ms)
+  [SLIDE] update 'History' [timeline] v11 (8 items)
+  [SLIDE] update 'History' [key_points] v2 (4 items)
+  [  419.4s] In 1974 IBM introduced its own version of network in SNA. (690 ms)
+  [SLIDE] update 'History' [key_points] v3 (4 items)
+  [UNDERSTAND] Computer Science > History (elaboration) acts=explanation,timeline,timeline hint=timeline lines=3 via groq_alt#2 1409 ms
+               Teacher elaborated on the 1972 formulation of Ethernet and introduced IBM's SNA network in 1974.
+12:23:10 INFO    copilot.presentation.engine: revised S3: Ethernet specifications formulated in 1972
+12:23:10 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+12:23:10 INFO    copilot.presentation.engine: slide 'History' waits for the min dwell time
+  [SLIDE] update 'History' [key_points] v4 (3 items)
+  [SLIDE] update 'History' [key_points] v5 (3 items)
+  [SLIDE] update 'History' [key_points] v6 (4 items)
+  [SLIDE] add    'History' [timeline] v1 (2 items)
+  [  426.1s] Then in 1975, Altair 8800, first commercial microcomputer that was sold as a kit. So, we are actually looking at the very brief. (892 ms)
+  [  437.5s] History of computers in general. So, in 1975, we had the Paul Allen and Bill Gates getting together, which eventually formed, they formed Microsoft. We all know about Microsoft. (847 ms)
+  [UNDERSTAND] Computer Science > History (same_concept) acts=timeline hint=timeline lines=1 via groq_alt#5 2819 ms
+               Added the 1975 release of the Altair 8800, the first commercial microcomputer sold as a kit, to the network history timeline.
+12:23:33 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+  [SLIDE] update 'History' [timeline] v2 (3 items)
+  [  451.4s] 1976, Osnay and Jobs built Apple I. So, Apple also had a lot of contribution to make in to computers in various aspects and the (861 ms)
+  [UNDERSTAND] Computer Science > History (elaboration) acts=timeline hint=timeline lines=1 via groq_alt#5 2726 ms
+               Added the 1975 formation of Microsoft by Paul Allen and Bill Gates to the history timeline.
+12:23:46 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+  [SLIDE] update 'History' [timeline] v3 (4 items)
+  [  464.1s] Windows system that we see today almost everywhere it was basically it started from apple computers. (640 ms)
+  [UNDERSTAND] Computer Science > History (elaboration) acts=timeline hint=timeline lines=2 via groq_main#1 3568 ms
+               Added 1976 Apple I to timeline and flagged incorrect claim about Windows origin
+  [CONCERN] (factual) Windows system ... basically it started from apple computers -> Windows was developed by Microsoft, not started from Apple computers (0.95, slide shows the correction)
+12:23:56 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+12:23:56 INFO    copilot.presentation.engine: concern 65c2c06512cd (factual, applied=True): 0 element(s); slide shows 'developed by Microsoft'
+12:23:56 INFO    copilot.presentation.engine: no image for 'History': timeline needs the full width
+  [SLIDE] update 'History' [timeline] v4 (5 items)
+  [  472.8s] In 1979, we had the VC Calc as the first commercial spreadsheet. So, that is a very popular application of computers these days. (760 ms)
+12:24:08 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['That is a very popular application of computers these days']
+  [UNDERSTAND] Computer Science > History (same_concept) acts=explanation,explanation hint=timeline lines=1 via groq_main#1 4835 ms
+               Added 1979 VC Calc as the first commercial spreadsheet to the history timeline.
+12:24:08 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+12:24:08 INFO    copilot.presentation.engine: no image for 'History': timeline needs the full width
+  [SLIDE] update 'History' [timeline] v5 (7 items)
+  [  483.6s] In 1981, IBM introduced IBM PC with one floppy drive. Later on, they changed it with a drive and a hard drive also. (800 ms)
+  [UNDERSTAND] Computer Science > History (same_concept) acts=timeline hint=timeline lines=1 via groq_main#1 2632 ms
+               Added 1981 IBM PC launch with floppy drive and later hard‑drive upgrade to the history timeline.
+12:24:17 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+12:24:17 INFO    copilot.presentation.engine: no image for 'History': timeline needs the full width
+  [SLIDE] update 'History' [timeline] v6 (8 items)
+  [  495.0s] And in 1983, TCP IP. So, this TCP IP is another network protocol that we are using. Actually, we use both Ethernet and Ethernet. (774 ms)
+  [  507.2s] So, we actually we have different protocols which are running on the network we require and how these different protocols are arranged and how they are used that I will cover today in the second part of the lecture. (831 ms)
+  [UNDERSTAND] Computer Science > History (same_concept) acts=timeline hint=timeline lines=1 via groq_main#1 2571 ms
+               Introduced 1983 TCP/IP as a network protocol in the history timeline
+12:24:45 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+12:24:45 INFO    copilot.presentation.engine: no image for 'History': timeline needs the full width
+  [SLIDE] add    'History' [timeline] v1 (1 items)
+  [  520.4s] So, this TCP IP is another important protocol that is still very much present today that became the official protocol of ARPANET. Remember ARPANET we talked about that is a network which was set up in USA. (965 ms)
+  [  533.2s] Under DRDO and which had a very far reaching impact on the way network developed. (697 ms)
+12:25:00 WARNING copilot.llm.router: llm groq_main#1 failed: no complete response within 6.5s (retrying)
+12:25:02 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+12:25:04 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectTimeout
+12:25:06 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectTimeout
+12:25:09 WARNING copilot.llm.router: llm groq_alt#1 failed: connect failed: ConnectTimeout
+12:25:09 WARNING copilot.understanding.interpreter: interpretation fallback: llm: deadline exceeded; groq_main#1: Transient; groq_main#1: Unavailable; groq_main#2: skipped (daily quota spent); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_main#6: skipped (daily quota spent); groq_alt#5: Unavailable; groq_alt#6: Unavailable; groq_alt#1: Unavailable; groq_alt#2: deadline
+  [UNDERSTAND] Computer Science > History (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: deadline exceeded; groq_main#1: Transient; groq_main#1: Unavailable; groq_m 15339 ms
+12:25:09 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+12:25:09 INFO    copilot.presentation.engine: no image for 'History': timeline needs the full width
+  [SLIDE] update 'History' [timeline] v2 (3 items)
+  [  539.9s] In 1984, Apple introduced GUI with Apple Macintosh and 1986, we see the first laptop PCs. (765 ms)
+  [SLIDE] update 'History' [timeline] v3 (4 items)
+  [UNDERSTAND] Computer Science > History (same_concept) acts=timeline hint=timeline lines=2 via groq_alt#2 5578 ms
+               Added 1984 Apple Macintosh GUI and 1986 first laptop PCs to the history timeline.
+  [CONCERN] (factual) TCP/IP was developed under DRDO -> TCP/IP was developed under the US Department of Defense (DoD). (0.95, slide shows the correction)
+12:25:15 INFO    copilot.presentation.engine: revised S1: TCP/IP became the official protocol of ARPANET under DRDO
+12:25:15 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+12:25:15 INFO    copilot.presentation.engine: concern b5e167057ef3 (factual, applied=True): 1 element(s); slide shows 'US Department of Defense (DoD)'
+12:25:15 INFO    copilot.presentation.engine: no image for 'History': timeline needs the full width
+  [SLIDE] update 'History' [timeline] v4 (3 items)
+  [SLIDE] update 'History' [timeline] v5 (3 items)
+  [SLIDE] update 'History' [timeline] v6 (5 items)
+  [SLIDE] update 'History' [timeline] v7 (5 items)
+  [  549.7s] So, IBM gives a multitasking OS for the PCs. (711 ms)
+  [SLIDE] update 'History' [timeline] v8 (6 items)
+  [  556.1s] 1989, Microsoft releases Windows, which is another multitasking system. (603 ms)
+  [SLIDE] update 'History' [timeline] v9 (6 items)
+  [  561.5s] That is the Microsoft version. (585 ms)
+  [SLIDE] update 'History' [timeline] v10 (6 items)
+12:25:29 WARNING copilot.llm.router: llm groq_alt#2 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m467cwmfekpbk61ygfeq61s2` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 132,
+  [UNDERSTAND] Computer Science > History (same_concept) acts=timeline hint=timeline lines=3 via groq_alt#3 2613 ms
+               Added 1988 IBM multitasking OS and 1989 Microsoft Windows to the history timeline.
+  [HEARD] 'IBM gives a multitasking OS for the PCs' -> '1988' corrected on the slide (0.6)
+12:25:31 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+12:25:31 INFO    copilot.presentation.engine: no image for 'History': timeline needs the full width
+  [SLIDE] update 'History' [timeline] v11 (5 items)
+  [SLIDE] update 'History' [timeline] v12 (7 items)
+  [  565.7s] 1989 NSF, that is the National Sounds Foundation of USA, it replaces ARPANET as internet backbone. (852 ms)
+  [SLIDE] update 'History' [timeline] v13 (8 items)
+  [  574.7s] And then WWW was invented by CERN physicist Tim Berners-Lee. (623 ms)
+  [SLIDE] update 'History' [timeline] v14 (8 items)
+  [  580.9s] In 1991. (305 ms)
+  [  582.9s] So, this advent of WWW that means the world wide web. (760 ms)
+  [SLIDE] update 'History' [timeline] v15 (8 items)
+12:25:50 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['WWW was invented by CERN physicist Tim Berners-Lee']
+  [UNDERSTAND] Computer Science > History (same_concept) acts=timeline,timeline,explanation hint=timeline lines=3 via groq_alt#2 3976 ms
+               Added 1989 NSFNET replacing ARPANET and 1991 invention of the World Wide Web by Tim Berners-Lee to the history timeline.
+  [CONCERN] (factual) NSF, that is the National Sounds Foundation of USA -> NSF stands for National Science Foundation (0.95, slide shows the correction)
+12:25:50 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+12:25:50 INFO    copilot.presentation.engine: concern ef88d4efe244 (factual, applied=True): 0 element(s); slide shows 'National Science Foundation'
+12:25:50 INFO    copilot.presentation.engine: no image for 'History': timeline needs the full width
+  [SLIDE] update 'History' [timeline] v16 (9 items)
+  [SLIDE] add    'History' [timeline] v1 (2 items)
+  [  589.3s] So, this really made the network very very popular. So, there was this kind of positive feedback going on as it became more popular more and more. (927 ms)
+[END]   finishing lecture understanding (1 buffered lines) ...
+  [SLIDE] update 'History' [timeline] v17 (8 items)
+12:26:08 WARNING copilot.llm.router: llm groq_alt#2 failed: no complete response within 6.5s (retrying)
+  [UNDERSTAND] Computer Science > History (same_concept) acts=- hint=timeline lines=1 via groq_alt#2 10693 ms
+               Teacher reiterates the advent of the World Wide Web.
+12:26:12 INFO    copilot.presentation.engine: planner: noop Computer Science > History (nothing to display)
+12:26:18 WARNING copilot.llm.router: llm groq_main#1 failed: timeout after 6.0s (ReadTimeout) (retrying)
+  [UNDERSTAND] Computer Science > History (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 11184 ms
+               Teacher explained that the Web’s popularity grew through a positive feedback loop.
+12:26:23 INFO    copilot.presentation.engine: planner: update Computer Science > History (same frame)
+12:26:23 INFO    copilot.presentation.engine: no image for 'History': timeline needs the full width
+  [SLIDE] update 'History' [timeline] v2 (3 items)
+[ENDED] session 20261015-121551-aa74: 66 segments, 1214 words, state v147, 601 events logged
+        CommandReceived=1, ConceptSignal=65, ConcernRaised=5, DeckState=9, ImageReady=4, ImageRequested=4, InterpretRequested=37, InterpretationReady=37, LLMCallFailed=17, LifecycleChanged=5, SlideContextChanged=40, SlidePatch=98, StateChanged=147, TranscriptFinal=66, UtteranceClassified=66
+        stt: 66 published, 0 dropped, latency p50=760 ms p95=982 ms max=1065 ms
+        understanding: 37 interpretations (34 by LLM, 3 fallbacks, 0 repaired), max 5 calls/min, prompt tokens max=2023 avg=1927, latency p50=2679 ms max=15518 ms
+        presentation: 9 slides; planner ops {'noop': 7, 'new': 1, 'update': 28, 'continue': 1}; revisions 6, corrections shown 2, shown as said 0
+        images: {'requests': 4, 'found': 0, 'none': 4}; slides with an image 0/9
+          1. [definition] Computer Network [part 1]  (v22, ['definition', 'points'])
+          2. [example] Computer Network [part 2]  (v13, ['example', 'points'])
+          3. [key_points] Computer Network [part 3]  (v9, ['points', 'example'])
+          4. [key_points] Computer Network [part 4]  (v12, ['points'])
+          5. [timeline] History [part 1]  (v11, ['timeline', 'points'])
+          6. [key_points] History [part 2]  (v6, ['points'])
+          7. [timeline] History [part 3]  (v6, ['timeline', 'callout', 'callout'])
+          8. [timeline] History [part 4]  (v17, ['timeline', 'points'])
+          9. [timeline] History [part 5]  (v2, ['timeline', 'callout', 'callout'])
+        providers: {'groq_main#1': 23, 'groq_main#2': 2, 'groq_alt#5': 4, 'groq_alt#2': 4, 'groq_alt#3': 1}; triggers: {'pause': 13, 'words': 11, 'max_wait': 13}; outline: ['Computer Science > Computer Network, History']; concerns: 5
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261015-121551-aa74\session.sqlite

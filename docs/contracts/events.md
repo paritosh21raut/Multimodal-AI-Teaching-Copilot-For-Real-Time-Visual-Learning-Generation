@@ -11,9 +11,11 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `AudioLevel` | audio / simulator (`vad=True`) | `rms`, `speaking` (segmenter state), `voice` (raw VAD frames; drives pause detection) (~5 Hz; **ephemeral**) |
 | `AudioDeviceLost` | audio | `detail` |
 | `UtteranceDropped` | STT | `start`, `end`, `reason`, `text` (guard rejection or STT error) |
-| `TranscriptFinal` | STT / simulator | `segment: TranscriptSegment`, `stt_latency_ms?` |
+| `TranscriptFinal` | STT / simulator | `segment: TranscriptSegment`, `stt_latency_ms?`, `utterance` (S1b; 0 = simulator) |
+| `TranscriptPartial` | STT (live model, S1b) | `utterance`, `start`, `text`, `stable` (agreed prefix), `sentences[(text, start)]`, `latency_ms`, `infer_ms`; instant display only, never the LLM |
+| `LiveCue` | understanding (S1b) | `utterance`, `start`, `announce`, `compare[]`, `list_head`, `list_items[]`, `list_count`, `item`, `term`, `definition`; from `TranscriptPartial.stable`, for the engine's faded live layer |
 | `UtteranceClassified` | understanding | `segment_id`, `kind` (content/classroom_management/meta/filler/question_to_class), `maybe_meta`, `rule` |
-| `ConceptSignal` | understanding | `segment_id`, `shift_score`, `topic_shift`, `keyphrases`, `cues`, `boundary` |
+| `ConceptSignal` | understanding | `segment_id`, `shift_score`, `topic_shift`, `keyphrases`, `cues`, `boundary`; F-013 spoken cues (`understanding.cues`): `announce` (topic name, "A vs B"), `compare[]`, `list_head`, `list_items[]`, `list_count`, `item`; `utterance`, `start` (lecture time of the line, links live cues to it) |
 | `InterpretRequested` | understanding | `request_id`, `reason` (pause/words/boundary/max_wait/cap/flush), `segment_ids`, `prompt_tokens` |
 | `InterpretationReady` | understanding | `request_id`, `interpretation: Interpretation`, `segment_ids` (line n = `segment_ids[n-1]`), `provider` ("" = fallback), `latency_ms`, `fallback`, `fallback_reason`, `slide_refs` (refs the prompt showed), `reference` ("<file> p.N" of the study-material passage the prompt held, F-012; "" = none) |
 | `LLMCallFailed` | llm | `provider`, `error`, `will_retry` |

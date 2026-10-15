@@ -1,0 +1,681 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (4.6 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_6         openai/gpt-oss-120b           153k of 200k tokens IN USE
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~21.3 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~21.8 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~22.0 h
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 119 lecture minutes
+
+[READY] session 20261014-171211-0ee1
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+[LIVE]  lecture started. Type q + Enter to end.
+17:12:17 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+  [   10.4s] The topic is water cycle and its role in earth geography. (683 ms)
+17:12:36 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The topic is water cycle and its role in earth geography']
+  [UNDERSTAND] Water Cycle > Role in Earth Geography (new_topic) acts=explanation hint=none lines=1 via groq_main#6 1303 ms
+               Introduced the water cycle and its importance in Earth geography
+17:12:36 INFO    copilot.presentation.engine: planner: new Water Cycle > Role in Earth Geography (first content slide)
+  [SLIDE] add    'Role in Earth Geography' [key_points] v1 (1 items)
+  [   19.5s] Introduction to the water cycle. (481 ms)
+  [SLIDE] update 'Role in Earth Geography' [key_points] v2 (2 items)
+  [   22.3s] Water cycle also known as the hydrological cycle is the continuous movement of water between all surface and the atmosphere. (852 ms)
+  [SLIDE] update 'Role in Earth Geography' [key_points] v3 (2 items)
+  [UNDERSTAND] Water Cycle > Role in Earth Geography (same_concept) acts=definition hint=definition lines=2 via groq_main#6 1334 ms
+               Defined the water cycle as the continuous movement of water between surface and atmosphere
+17:12:54 INFO    copilot.presentation.engine: planner: update Water Cycle > Role in Earth Geography (same frame)
+  [SLIDE] update 'Role in Earth Geography' [key_points] v4 (1 items)
+  [SLIDE] update 'Role in Earth Geography' [key_points] v5 (2 items)
+17:12:54 INFO    copilot.presentation.engine: image search 'water cycle diagram' (diagram) for 'Role in Earth Geography'
+17:12:58 INFO    copilot.visuals.finder: image search 'water cycle diagram' (diagram, labels preferred): 8 candidate(s), 3 accepted (2 labelled), 4.05 s {'search_s': 1.94, 'download_s': 0.98, 'clip_s': 0.14, 'full_s': 0.97, 'total_s': 4.05}
+  [IMAGE] 'water cycle diagram' -> File:Water Cycle-en.png (4.0 s)
+17:12:58 INFO    copilot.presentation.engine: image 'water cycle diagram' on 'Role in Earth Geography': File:Water Cycle-en.png
+  [SLIDE] update 'Role in Earth Geography' [key_points] v6 (3 items)
+  [   33.0s] Water moves through oceans, rivers, lakes, soil and the atmosphere. The sun provides the energy that (657 ms)
+  [SLIDE] update 'Role in Earth Geography' [key_points] v7 (4 items)
+  [   43.2s] Drives evaporation while gravity helps water (562 ms)
+  [SLIDE] update 'Role in Earth Geography' [key_points] v8 (4 items)
+  [   47.2s] Return to all surface and flow. (579 ms)
+  [SLIDE] update 'Role in Earth Geography' [key_points] v9 (4 items)
+  [UNDERSTAND] Water Cycle > Role in Earth Geography (elaboration) acts=explanation hint=key_points lines=3 via groq_main#6 2710 ms
+               Added how water moves through various reservoirs and the sun and gravity drive the cycle
+17:13:16 INFO    copilot.presentation.engine: planner: update Water Cycle > Role in Earth Geography (same frame)
+17:13:16 INFO    copilot.presentation.engine: no image for 'Role in Earth Geography': has an image
+  [SLIDE] update 'Role in Earth Geography' [key_points] v10 (3 items)
+  [SLIDE] update 'Role in Earth Geography' [key_points] v11 (6 items)
+  [   50.5s] The water cycle is essential for maintaining ecosystem, supporting agriculture, replenishing freshwater supplies and shaping earth's landscape. (823 ms)
+  [SLIDE] update 'Role in Earth Geography' [key_points] v12 (7 items)
+  [   63.3s] Speech (266 ms)
+  [SLIDE] update 'Role in Earth Geography' [key_points] v13 (6 items)
+  [UNDERSTAND] Water Cycle > Role in Earth Geography (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 2958 ms
+               The water cycle’s essential roles for ecosystems, agriculture, water supply, and landscape are highlighted.
+17:13:25 INFO    copilot.presentation.engine: planner: update Water Cycle > Role in Earth Geography (same frame)
+17:13:25 INFO    copilot.presentation.engine: no image for 'Role in Earth Geography': has an image
+  [SLIDE] update 'Role in Earth Geography' [key_points] v14 (10 items)
+  [   69.1s] Evaporation and Transcription. (638 ms)
+  [   72.7s] Evaporation occurs when (584 ms)
+  [UNDERSTAND] Water Cycle > Evaporation (sibling_concept) acts=explanation hint=key_points lines=3 via groq_main#6 1523 ms
+               Introduced evaporation as the heating‑by‑sun process that starts the water cycle
+17:13:42 INFO    copilot.presentation.engine: planner: continue Water Cycle > Evaporation (new facet)
+  [SLIDE] add    'Evaporation' [key_points] v1 (1 items)
+17:13:42 INFO    copilot.presentation.engine: image search 'evaporation diagram' (diagram) for 'Evaporation'
+  [   75.4s] Liquid water changes into water vapor. Heat from the sun causes water to evaporate from ocean, lakes, rivers, and other wet surfaces. (756 ms)
+  [SLIDE] update 'Evaporation' [key_points] v2 (2 items)
+  [   86.9s] Done. (268 ms)
+  [SLIDE] update 'Evaporation' [key_points] v3 (1 items)
+17:13:48 INFO    copilot.visuals.finder: image search 'evaporation diagram' (diagram, labels preferred): 4 candidate(s), 3 accepted (1 labelled), 5.95 s {'search_s': 2.35, 'download_s': 1.29, 'clip_s': 0.09, 'full_s': 2.2, 'total_s': 5.95}
+  [IMAGE] 'evaporation diagram' -> File:Triple-effect evaporators for sugar refining.jpg (6.0 s)
+17:13:48 INFO    copilot.presentation.engine: image 'evaporation diagram' on 'Evaporation': File:Triple-effect evaporators for sugar refining.jpg
+  [SLIDE] update 'Evaporation' [key_points] v4 (2 items)
+  [UNDERSTAND] Water Cycle > Evaporation (same_concept) acts=- hint=concept lines=1 via groq_main#6 1217 ms
+               Specified that liquid water becomes vapor when solar heat acts on oceans, lakes, rivers, and wet surfaces.
+17:13:50 INFO    copilot.presentation.engine: revised S1: Liquid water changes into water vapor as sun heats oceans, lakes, rivers, and other wet surfaces
+17:13:50 INFO    copilot.presentation.engine: planner: noop Water Cycle > Evaporation (nothing to display)
+  [SLIDE] update 'Evaporation' [key_points] v5 (2 items)
+  [   88.2s] The inspiration is the process by which plants release water vapour into the atmosphere mainly through tiny openings in their leaves called stomata. (861 ms)
+  [UNDERSTAND] Water Cycle > Transpiration (sibling_concept) acts=definition hint=definition lines=2 via groq_main#6 1352 ms
+               Introduced transpiration as the plant process releasing water vapor through stomata.
+17:14:00 INFO    copilot.presentation.engine: planner: continue Water Cycle > Transpiration (new facet)
+17:14:00 INFO    copilot.presentation.engine: image hint 'Transpiration diagram' for 'Transpiration' from its sibling subtopic
+  [SLIDE] add    'Transpiration' [definition] v1 (1 items)
+17:14:00 INFO    copilot.presentation.engine: image search 'Transpiration diagram' (diagram) for 'Transpiration'
+17:14:06 INFO    copilot.visuals.finder: image search 'Transpiration diagram' (diagram, labels preferred): 8 candidate(s), 3 accepted (0 labelled), 5.47 s {'search_s': 2.35, 'download_s': 1.22, 'clip_s': 0.14, 'full_s': 1.74, 'total_s': 5.47}
+  [IMAGE] 'Transpiration diagram' -> File:Transpiration Temperature Graph.svg (5.5 s)
+17:14:06 INFO    copilot.presentation.engine: image 'Transpiration diagram' on 'Transpiration': File:Transpiration Temperature Graph.svg
+  [SLIDE] update 'Transpiration' [definition] v2 (2 items)
+  [  101.2s] Together evaporation and transcription contribute water vapour to the atmosphere. Their combined movement of water is often called (669 ms)
+  [  112.0s] Ewep-Ewep-Poo transportation (761 ms)
+  [  122.4s] The third topic is Condensation and Cloud formation. (648 ms)
+17:14:26 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Transpiration' -> same_concept
+  [UNDERSTAND] Water Cycle > Transpiration (same_concept) acts=definition,transition hint=definition lines=3 via groq_main#6 2407 ms
+               Introduced evapotranspiration as the combined water vapor from evaporation and transpiration
+  [HEARD] 'Ewep-Ewep-Poo transportation' -> 'evapotranspiration' corrected on the slide (0.5)
+17:14:26 INFO    copilot.presentation.engine: planner: update Water Cycle > Transpiration (same frame)
+17:14:26 INFO    copilot.presentation.engine: concern 354cd4772302 (transcription, applied=True): 1 element(s); slide shows 'evapotranspiration'
+  [SLIDE] update 'Transpiration' [concept] v3 (2 items)
+  [  127.3s] As moist air rises, it generally expands and cools. When it reaches saturation, water vapour can condense into tiny liquid droplets or form ice crystals. (845 ms)
+  [  140.4s] These droplets and ice crystals form clouds. Cloud formation depends on atmospheric conditions, including temperature, humidity, and presence of particles. (727 ms)
+  [UNDERSTAND] Water Cycle > Condensation (sibling_concept) acts=definition hint=definition lines=1 via groq_main#6 3209 ms
+               Condensation occurs as rising moist air cools, forming tiny droplets or ice crystals.
+17:14:56 INFO    copilot.presentation.engine: planner: continue Water Cycle > Condensation (new facet)
+  [SLIDE] add    'Condensation' [definition] v1 (1 items)
+17:14:56 INFO    copilot.presentation.engine: image search 'cloud formation' (photo) for 'Condensation'
+  [  154.8s] on which droplets or ice crystal can form. (566 ms)
+  [SLIDE] update 'Condensation' [definition] v2 (1 items)
+17:15:00 INFO    copilot.visuals.finder: image search 'cloud formation' (photo): 8 candidate(s), 3 accepted (0 labelled), 3.67 s {'search_s': 1.92, 'download_s': 0.53, 'clip_s': 0.14, 'full_s': 1.05, 'total_s': 3.67}
+  [IMAGE] 'cloud formation' -> File:Lenticular Cloud over Harold's Cross Dublin Ireland 30-6-15.jpg (3.7 s)
+17:15:00 INFO    copilot.presentation.engine: image 'cloud formation' on 'Condensation': File:Lenticular Cloud over Harold's Cross Dublin Ireland 30-6-15.jpg
+  [SLIDE] update 'Condensation' [definition] v3 (2 items)
+  [  158.6s] Clouds play an important role in weather patterns and the distribution of (584 ms)
+  [  165.1s] for separation. (286 ms)
+  [SLIDE] update 'Condensation' [definition] v4 (2 items)
+17:15:07 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Water Cycle > Condensation (elaboration) acts=explanation,explanation hint=key_points lines=4 via groq_alt#3 3483 ms
+               Explained that condensation forms clouds, which depend on atmospheric conditions and influence weather patterns.
+17:15:08 INFO    copilot.presentation.engine: planner: update Water Cycle > Condensation (same frame)
+17:15:08 INFO    copilot.presentation.engine: no image for 'Condensation': has an image
+  [SLIDE] update 'Condensation' [definition] v5 (5 items)
+  [  178.1s] Next topic is (717 ms)
+  [  180.3s] precipitation. (270 ms)
+  [  181.8s] precipitation occurs when water falls from clouds to the earth surface. (594 ms)
+  [  187.9s] Common forms include rain, snow, (648 ms)
+  [UNDERSTAND] Water Cycle > Precipitation (sibling_concept) acts=definition hint=definition lines=3 via groq_alt#3 1044 ms
+               Introduced precipitation as the process where water falls from clouds to the Earth's surface.
+17:15:31 INFO    copilot.presentation.engine: planner: continue Water Cycle > Precipitation (new facet)
+  [SLIDE] add    'Precipitation' [definition] v1 (1 items)
+17:15:31 INFO    copilot.presentation.engine: image search 'rain falling from clouds' (photo) for 'Precipitation'
+  [  192.0s] Slit hail. (3326 ms)
+  [SLIDE] update 'Precipitation' [definition] v2 (1 items)
+17:15:38 INFO    copilot.visuals.finder: image search 'rain falling from clouds' (photo): 8 candidate(s), 3 accepted (0 labelled), 6.99 s {'search_s': 1.4, 'download_s': 1.86, 'clip_s': 0.26, 'full_s': 3.44, 'total_s': 6.99}
+  [IMAGE] 'rain falling from clouds' -> File:Nimbostratus virga.JPG (7.0 s)
+17:15:38 INFO    copilot.presentation.engine: image 'rain falling from clouds' on 'Precipitation': File:Nimbostratus virga.JPG
+  [SLIDE] update 'Precipitation' [definition] v3 (2 items)
+  [  193.9s] The types of precipitation depends on atmospheric temperature and other weather conditions. (668 ms)
+  [  200.8s] precipitation (260 ms)
+  [UNDERSTAND] Water Cycle > Precipitation (elaboration) acts=classification,explanation hint=key_points lines=4 via groq_alt#3 1299 ms
+               Listed common precipitation forms (rain, snow, sleet, hail) and noted that type depends on temperature and weather.
+  [HEARD] 'Slit' -> 'Sleet' corrected on the slide (0.9)
+17:15:49 INFO    copilot.presentation.engine: planner: update Water Cycle > Precipitation (same frame)
+17:15:49 INFO    copilot.presentation.engine: concern 3911bfe59638 (transcription, applied=True): 1 element(s); slide shows 'Sleet'
+17:15:49 INFO    copilot.presentation.engine: no image for 'Precipitation': has an image
+  [SLIDE] update 'Precipitation' [definition] v4 (2 items)
+  [SLIDE] update 'Precipitation' [definition] v5 (5 items)
+  [  202.5s] It is essential for agriculture and the survival of many terrestrial ecosystem. (662 ms)
+  [  215.1s] Fifth topic is Runoff Commod (516 ms)
+17:15:58 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectTimeout
+  [  218.0s] in filter duration and groundwater. (568 ms)
+17:16:00 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectTimeout
+17:16:02 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectTimeout
+17:16:04 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectTimeout
+17:16:04 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 11s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: Unavailable
+  [UNDERSTAND] Water Cycle > Precipitation (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 11s); groq_main#3: skipped (daily quota spen 8005 ms
+17:16:04 INFO    copilot.presentation.engine: planner: update Water Cycle > Precipitation (same frame)
+17:16:04 INFO    copilot.presentation.engine: no image for 'Precipitation': has an image
+  [SLIDE] update 'Precipitation' [definition] v6 (6 items)
+  [  222.6s] After precipitation reaches the ground, water can follow different pathways. (582 ms)
+  [SLIDE] update 'Precipitation' [definition] v7 (7 items)
+17:16:08 INFO    copilot.presentation.engine: slide d5fb1e8e31de overflows on the display; further content continues on a new slide
+17:16:10 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectTimeout
+17:16:10 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 48s); groq_alt#4: skipped (cooldown 50s); groq_alt#5: skipped (cooldown 52s); groq_alt#6: skipped (cooldown 54s)
+  [UNDERSTAND] Water Cycle > Precipitation (same_concept) acts=explanation hint=key_points lines=3 via FALLBACK llm: groq_main#6: Unavailable; groq_main#3: skipped (daily quota spent); groq_ma 2002 ms
+17:16:10 INFO    copilot.presentation.engine: planner: update Water Cycle > Precipitation (same frame)
+  [SLIDE] update 'Precipitation' [definition] v8 (6 items)
+  [SLIDE] update 'Precipitation' [definition] v9 (6 items)
+  [SLIDE] add    'Precipitation' [key_points] v1 (2 items)
+17:16:10 INFO    copilot.presentation.engine: image 'rain falling from clouds' kept on 'Precipitation' (same visual as this topic's image)
+  [SLIDE] update 'Precipitation' [key_points] v2 (3 items)
+  [  228.8s] surface runoff water flows over the land into streams (664 ms)
+  [SLIDE] update 'Precipitation' [key_points] v3 (4 items)
+  [  234.0s] rivers, lakes and eventually the ocean. (522 ms)
+  [SLIDE] update 'Precipitation' [key_points] v4 (4 items)
+17:16:17 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 53s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 41s); groq_alt#4: skipped (cooldown 43s); groq_alt#5: skipped (cooldown 45s); groq_alt#6: skipped (cooldown 47s)
+  [UNDERSTAND] Water Cycle > Precipitation (same_concept) acts=- hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 53s); groq_main#3: skipped (daily quota spen 0 ms
+17:16:17 INFO    copilot.presentation.engine: planner: noop Water Cycle > Precipitation (nothing to display)
+  [SLIDE] update 'Precipitation' [key_points] v5 (3 items)
+  [  240.5s] In filtration, water enters the soil from the ground surface. (674 ms)
+  [SLIDE] update 'Precipitation' [key_points] v6 (4 items)
+  [  247.3s] Groundwater deserts some infillterated water moves downwards and replenishes underground water bearing formations called aquifers. (722 ms)
+17:16:37 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 33s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 20s); groq_alt#4: skipped (cooldown 22s); groq_alt#5: skipped (cooldown 24s); groq_alt#6: skipped (cooldown 26s)
+  [UNDERSTAND] Water Cycle > Precipitation (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 33s); groq_main#3: skipped (daily quota spen 0 ms
+17:16:37 INFO    copilot.presentation.engine: planner: update Water Cycle > Precipitation (same frame)
+17:16:37 INFO    copilot.presentation.engine: no image for 'Precipitation': has an image
+  [SLIDE] update 'Precipitation' [key_points] v7 (3 items)
+  [SLIDE] update 'Precipitation' [key_points] v8 (4 items)
+  [SLIDE] update 'Precipitation' [key_points] v9 (5 items)
+17:16:50 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 20s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#3: skipped (cooldown 8s); groq_alt#4: skipped (cooldown 10s); groq_alt#5: skipped (cooldown 12s); groq_alt#6: skipped (cooldown 14s)
+  [UNDERSTAND] Water Cycle > Precipitation (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 20s); groq_main#3: skipped (daily quota spen 0 ms
+17:16:50 INFO    copilot.presentation.engine: planner: update Water Cycle > Precipitation (same frame)
+17:16:50 INFO    copilot.presentation.engine: no image for 'Precipitation': has an image
+  [SLIDE] update 'Precipitation' [key_points] v10 (4 items)
+  [SLIDE] update 'Precipitation' [key_points] v11 (5 items)
+  [  259.4s] This process depends on soil type, vegetation slope, rainfall intensity and geological conditions. Run off helps shape valley and river channels. (860 ms)
+  [SLIDE] update 'Precipitation' [key_points] v12 (6 items)
+  [  272.0s] while groundwater supplies water to wells, springs, agriculture and ecosystem. (596 ms)
+  [SLIDE] update 'Precipitation' [key_points] v13 (6 items)
+  [UNDERSTAND] Water Cycle > Runoff and Groundwater (sibling_concept) acts=explanation,explanation hint=key_points lines=2 via groq_alt#3 1230 ms
+               Explained factors affecting runoff and its role in shaping landforms, and listed uses of groundwater.
+17:16:59 INFO    copilot.presentation.engine: planner: continue Water Cycle > Runoff and Groundwater (new facet)
+  [SLIDE] update 'Precipitation' [key_points] v14 (5 items)
+  [SLIDE] add    'Runoff and Groundwater' [key_points] v1 (4 items)
+17:16:59 INFO    copilot.presentation.engine: image search 'water runoff river' (diagram) for 'Runoff and Groundwater'
+  [  279.0s] Sixth topic is the importance of the water cycle. (533 ms)
+17:17:03 INFO    copilot.visuals.finder: image search 'water runoff river' (diagram, labels preferred): 4 candidate(s), 3 accepted (1 labelled), 4.26 s {'search_s': 1.6, 'download_s': 1.07, 'clip_s': 0.08, 'full_s': 1.49, 'total_s': 4.26}
+  [IMAGE] 'water runoff river' -> File:Surface water cycle.svg (4.3 s)
+17:17:03 INFO    copilot.presentation.engine: image 'water runoff river' on 'Runoff and Groundwater': File:Surface water cycle.svg
+  [SLIDE] update 'Runoff and Groundwater' [key_points] v2 (5 items)
+  [UNDERSTAND] Water Cycle > Importance (sibling_concept) acts=transition hint=none lines=1 via groq_alt#3 804 ms
+               Introduced the importance of the water cycle as the next topic.
+17:17:07 INFO    copilot.presentation.engine: planner: noop Water Cycle > Importance (nothing to display)
+  [  286.3s] The water cycle is essential for both natural environments and human society. (690 ms)
+  [SLIDE] update 'Runoff and Groundwater' [key_points] v3 (6 items)
+  [  294.0s] The major contribution includes (588 ms)
+  [SLIDE] update 'Runoff and Groundwater' [key_points] v4 (5 items)
+  [UNDERSTAND] Water Cycle > Importance (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 1706 ms
+               Stated that the water cycle is essential for both natural environments and human society.
+17:17:15 INFO    copilot.presentation.engine: planner: continue Water Cycle > Importance (new facet)
+  [SLIDE] add    'Why Water Cycle matters' [key_points] v1 (1 items)
+  [  296.8s] fresh water supply. (285 ms)
+  [  299.0s] precipitation (260 ms)
+  [  300.5s] Deep plume sheets surface water and groundwater agriculture rainfall and store water support crop production (581 ms)
+  [  309.3s] Ecosystems. Plants and animals depend on the availability of water. (591 ms)
+  [UNDERSTAND] Water Cycle > Importance (elaboration) acts=explanation hint=key_points lines=5 via groq_main#6 1441 ms
+               The water cycle supplies fresh water, precipitation, agricultural water, and sustains ecosystems.
+17:17:34 INFO    copilot.presentation.engine: planner: update Water Cycle > Importance (same frame)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v2 (5 items)
+  [  314.7s] Climate regulation, evaporation, form of condensation and cloud formation influences the movement of energy and moisture through the climate system. Landscape formation, rivers and flowing water. (830 ms)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v3 (6 items)
+  [  327.3s] erode rocks, transport sediments and create valley and dates. (616 ms)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v4 (6 items)
+  [UNDERSTAND] Water Cycle > Importance (same_concept) acts=explanation hint=key_points lines=2 via groq_main#6 2428 ms
+               Adds climate regulation and landscape formation as important roles of the water cycle
+17:17:53 INFO    copilot.presentation.engine: planner: update Water Cycle > Importance (same frame)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v5 (5 items)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v6 (6 items)
+  [SLIDE] add    'Why Water Cycle matters' [key_points] v1 (1 items)
+17:17:53 INFO    copilot.presentation.engine: image search 'water cycle climate regulation diagram' (diagram) for 'Why Water Cycle matters'
+17:17:57 INFO    copilot.visuals.finder: image search 'water cycle climate regulation diagram' (diagram, labels preferred): 8 candidate(s), 3 accepted (2 labelled), 3.26 s {'search_s': 1.52, 'download_s': 0.58, 'clip_s': 0.15, 'full_s': 1.0, 'total_s': 3.26}
+  [IMAGE] 'water cycle climate regulation diagram' -> File:Water Cycle-en.png (3.3 s)
+17:17:57 INFO    copilot.presentation.engine: image 'water cycle climate regulation diagram' on 'Why Water Cycle matters': File:Water Cycle-en.png
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v2 (2 items)
+  [  373.7s] Today we are going to learn about plate tectonics and how it shapes earth's surface. (683 ms)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v3 (3 items)
+  [  380.6s] Earth's outer digit layer called the lithosphere is divided into several large and small tectonic plates. These plates move slowly over (769 ms)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v4 (3 items)
+  [UNDERSTAND] Water Cycle > Importance (new_topic) acts=transition hint=none lines=1 via groq_main#6 1583 ms
+               Teacher announces moving to the next topic: plate tectonics and its role in shaping Earth's surface.
+17:18:52 INFO    copilot.presentation.engine: planner: noop Water Cycle > Importance (nothing to display)
+  [  393.0s] geological time because of process occurring within earth. (644 ms)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v5 (3 items)
+  [UNDERSTAND] Plate Tectonics > Lithosphere and Plates (new_topic) acts=explanation hint=key_points lines=2 via groq_main#6 2433 ms
+               The lithosphere is split into tectonic plates that drift slowly over geological time.
+17:19:06 INFO    copilot.presentation.engine: planner: update Water Cycle > Importance (new topic not yet confirmed)
+17:19:06 INFO    copilot.presentation.engine: no image for 'Why Water Cycle matters': has an image
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v6 (2 items)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v7 (5 items)
+  [  397.8s] There are three major types of plate boundaries. At cover gun boundaries, plates move towards one another. Their collision can form mountain range and (831 ms)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v8 (6 items)
+  [  410.0s] subduction and lead to volcanic activity. At divergent boundaries plates move apart following magma to rise and form new crust. At transformed boundaries plates slide past one another. (835 ms)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v9 (6 items)
+  [UNDERSTAND] Plate Tectonics > Plate Boundaries (sibling_concept) acts=classification,explanation hint=hierarchy lines=2 via groq_main#6 1686 ms
+               Introduced three major plate boundary types and their motions
+17:19:25 INFO    copilot.presentation.engine: planner: new Plate Tectonics > Plate Boundaries (new topic confirmed (two interpretations agree))
+17:19:25 INFO    copilot.presentation.engine: moving 3 item(s) of 'Plate Tectonics' to the new topic's slide
+17:19:25 INFO    copilot.presentation.engine: slide 'Plate Boundaries' waits for the min dwell time
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v10 (5 items)
+  [SLIDE] update 'Why Water Cycle matters' [key_points] v11 (2 items)
+  [SLIDE] add    'Plate Boundaries' [key_points] v1 (4 items)
+17:19:25 INFO    copilot.presentation.engine: image search 'plate boundaries diagram' (diagram) for 'Plate Boundaries'
+17:19:29 INFO    copilot.visuals.finder: image search 'plate boundaries diagram' (diagram, labels preferred): 8 candidate(s), 1 accepted (0 labelled), 4.14 s {'search_s': 2.33, 'download_s': 0.79, 'clip_s': 0.14, 'full_s': 0.87, 'total_s': 4.14}
+  [IMAGE] 'plate boundaries diagram' -> File:Plate Boundaries Inforgraphic.jpg (4.1 s)
+17:19:29 INFO    copilot.presentation.engine: image 'plate boundaries diagram' on 'Plate Boundaries': File:Plate Boundaries Inforgraphic.jpg
+  [SLIDE] add    'Plate Boundaries' [key_points] v1 (4 items)
+  [  424.5s] sometimes causing earthquake. The Himalayas are a major example of mountain formation though the collision of the Indian plate and the Eurasian plate. (728 ms)
+  [SLIDE] update 'Plate Boundaries' [key_points] v2 (5 items)
+  [  436.2s] plate tectonic helps scientists explain earthquake volcanoes mountain formation and the changing agreement (727 ms)
+  [  444.0s] of contentment. It is one of the most important theories. (672 ms)
+  [SLIDE] update 'Plate Boundaries' [key_points] v3 (4 items)
+  [  448.7s] physical geography. (466 ms)
+  [UNDERSTAND] Plate Tectonics > Plate Boundaries (same_concept) acts=definition,explanation,explanation hint=key_points lines=3 via groq_main#6 3594 ms
+               Added earthquake cause, Himalaya example, and highlighted plate tectonics as a core theory
+  [HEARD] 'changing agreement' -> 'changing landscape' corrected on the slide (0.5)
+17:19:50 INFO    copilot.presentation.engine: revised S1: Convergent: plates move toward each other, causing collisions, mountain ranges, subduction, volcanic activity, and earthquakes; example:…
+17:19:50 INFO    copilot.presentation.engine: planner: update Plate Tectonics > Plate Boundaries (same frame)
+17:19:50 INFO    copilot.presentation.engine: concern 9b0a21e5a8fa (transcription, applied=True): 0 element(s); slide shows 'changing landscape'
+  [SLIDE] update 'Plate Boundaries' [key_points] v4 (4 items)
+  [SLIDE] update 'Plate Boundaries' [key_points] v5 (5 items)
+  [SLIDE] add    'Plate Boundaries' [key_points] v1 (2 items)
+17:19:50 INFO    copilot.presentation.engine: image search 'Himalayan mountain formation' (photo) for 'Plate Boundaries'
+  [  453.2s] 2. Earth's atmosphere and its layer (546 ms)
+  [SLIDE] update 'Plate Boundaries' [key_points] v2 (3 items)
+17:19:56 INFO    copilot.visuals.finder: image search 'Himalayan mountain formation' (photo): 5 candidate(s), 3 accepted (0 labelled), 6.33 s {'search_s': 1.83, 'download_s': 1.59, 'clip_s': 0.1, 'full_s': 2.79, 'total_s': 6.33}
+  [IMAGE] 'Himalayan mountain formation' -> File:Pumori, Nepal, Asia.jpg (6.3 s)
+17:19:56 INFO    copilot.presentation.engine: image 'Himalayan mountain formation' on 'Plate Boundaries': File:Pumori, Nepal, Asia.jpg
+  [SLIDE] update 'Plate Boundaries' [key_points] v3 (4 items)
+  [UNDERSTAND] Plate Tectonics > Plate Boundaries (new_topic) acts=transition hint=none lines=2 via groq_main#6 1122 ms
+               Teacher mentioned physical geography and introduced Earth’s atmospheric layers
+17:20:08 INFO    copilot.presentation.engine: planner: noop Plate Tectonics > Plate Boundaries (nothing to display)
+  [SLIDE] update 'Plate Boundaries' [key_points] v4 (3 items)
+  [  463.1s] Today we will discuss Earth Atmosphere and its 5 main layers. The atmosphere is a mixture of gases surrounding our planets. It contains approximately 78% Nitrogen and 21% Oxygen. (834 ms)
+  [SLIDE] update 'Plate Boundaries' [key_points] v5 (4 items)
+  [  477.7s] my volume in dry air. (314 ms)
+  [SLIDE] update 'Plate Boundaries' [key_points] v6 (3 items)
+  [UNDERSTAND] Earth Atmosphere > Atmosphere Layers (new_topic) acts=transition hint=none lines=1 via groq_main#6 1751 ms
+               Introduced Earth’s atmosphere and its five main layers
+17:20:19 INFO    copilot.presentation.engine: planner: noop Earth Atmosphere > Atmosphere Layers (new topic announced)
+  [  480.8s] with small (518 ms)
+  [  482.3s] quantities of other gases. (555 ms)
+  [UNDERSTAND] Earth Atmosphere > Atmosphere Layers (elaboration) acts=other hint=key_points lines=3 via groq_main#6 1519 ms
+               Nitrogen makes up about 78% of dry air, with only small amounts of other gases.
+17:20:27 INFO    copilot.presentation.engine: planner: new Earth Atmosphere > Atmosphere Layers (new topic confirmed (boundary cue/shift))
+  [SLIDE] add    'Atmosphere Layers' [facts] v1 (1 items)
+  [  485.6s] The first layer is the Z-droposphere, where most weather events occur. Above it is the stratosphere, which contains the ozone layer that absorbs much of the sun's harmful ultraviolet radiation. (860 ms)
+  [  499.6s] The third layer is Mesosphere where many incoming metroids bounce off. (627 ms)
+  [UNDERSTAND] Earth Atmosphere > Atmosphere Layers (same_concept) acts=definition,definition,definition hint=definition lines=2 via groq_main#6 2093 ms
+               Introduced troposphere, stratosphere with ozone UV absorption, and mesosphere where meteoroids burn up
+  [HEARD] 'Z-droposphere' -> 'Troposphere' corrected on the slide (0.5)
+17:20:45 INFO    copilot.presentation.engine: planner: update Earth Atmosphere > Atmosphere Layers (same frame)
+17:20:45 INFO    copilot.presentation.engine: concern 885795597e79 (transcription, applied=True): 1 element(s); slide shows 'Troposphere'
+17:20:45 INFO    copilot.presentation.engine: no image for 'Atmosphere Layers': two concepts side by side
+  [SLIDE] update 'Atmosphere Layers' [concept] v2 (4 items)
+  [  505.2s] Above it lies the atmosphere where (529 ms)
+  [  509.4s] the temperature can become extremely high. The outmost major layer is the exhaust pier which gradually transitions into space. (728 ms)
+17:21:02 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Atmosphere Layers' -> same_concept
+  [UNDERSTAND] Earth Atmosphere > Atmosphere Layers (same_concept) acts=definition hint=definition lines=2 via groq_main#6 2411 ms
+               Added the Exosphere as the outermost atmospheric layer with very high temperatures
+  [HEARD] 'exhaust pier' -> 'exosphere' corrected on the slide (0.5)
+17:21:02 INFO    copilot.presentation.engine: planner: update Earth Atmosphere > Atmosphere Layers (same frame)
+17:21:02 INFO    copilot.presentation.engine: concern e297432c11b7 (transcription, applied=True): 1 element(s); slide shows 'exosphere'
+  [SLIDE] update 'Atmosphere Layers' [concept] v3 (4 items)
+  [SLIDE] add    'Atmosphere Layers' [members] v1 (1 items)
+17:21:02 INFO    copilot.presentation.engine: image search 'Exosphere layer' (diagram) for 'Atmosphere Layers'
+17:21:09 INFO    copilot.visuals.finder: image search 'Exosphere layer' (diagram, labels preferred): 2 candidate(s), 2 accepted (1 labelled), 7.49 s {'search_s': 1.77, 'download_s': 1.73, 'clip_s': 0.05, 'full_s': 3.92, 'total_s': 7.49}
+  [IMAGE] 'Exosphere layer' -> File:Heaviside Layer (PSF).png (7.5 s)
+17:21:09 INFO    copilot.presentation.engine: image 'Exosphere layer' on 'Atmosphere Layers': File:Heaviside Layer (PSF).png
+  [SLIDE] update 'Atmosphere Layers' [members] v2 (2 items)
+  [  519.6s] Each atmospheric layer has different temperature and density characteristics. Together, the atmosphere supports life, influences weather and climate, and helps protect Earth. (708 ms)
+  [UNDERSTAND] Earth Atmosphere > Atmosphere Layers (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 1589 ms
+               Explained that atmospheric layers differ in temperature and density and together support life, weather, and protection.
+17:21:12 INFO    copilot.presentation.engine: planner: update Earth Atmosphere > Atmosphere Layers (same frame)
+17:21:12 INFO    copilot.presentation.engine: no image for 'Atmosphere Layers': has an image
+  [SLIDE] update 'Atmosphere Layers' [members] v3 (6 items)
+  [  536.1s] 3. Climate Zones of the World (563 ms)
+  [  541.5s] so the (566 ms)
+  [  544.0s] We are going to explore the major climate zones of the world. Climate refers to the long-term pattern of the temperature, precipitation and humidity and other atmospheric conditions in a region. (927 ms)
+  [UNDERSTAND] Earth Atmosphere > Climate Zones (sibling_concept) acts=definition hint=definition lines=3 via groq_main#6 2273 ms
+               Defined climate and announced study of the world’s major climate zones
+17:21:37 INFO    copilot.presentation.engine: planner: continue Earth Atmosphere > Climate Zones (new facet)
+  [SLIDE] add    'Climate Zones' [definition] v1 (1 items)
+17:21:37 INFO    copilot.presentation.engine: image search 'world climate zones' (diagram) for 'Climate Zones'
+17:21:39 INFO    copilot.presentation.engine: image 'world climate zones': none (no usable candidates)
+  [IMAGE] 'world climate zones' -> none (no usable candidates) (2.4 s)
+  [  556.8s] Tropical climates are generally warm throughout the year and may receive heavy rainfall, dry climates occur where (792 ms)
+  [SLIDE] update 'Climate Zones' [definition] v2 (1 items)
+  [  564.1s] Precipitation is limited, including many deserts. (552 ms)
+  [SLIDE] update 'Climate Zones' [definition] v3 (1 items)
+  [  568.4s] Temperate climates often experience moderate temperatures and seasonal changes. (545 ms)
+  [SLIDE] update 'Climate Zones' [definition] v4 (1 items)
+  [UNDERSTAND] Earth Atmosphere > Climate Zones (elaboration) acts=classification hint=none lines=3 via groq_main#6 1327 ms
+               Described tropical, dry, and temperate climate zones and their typical temperature and precipitation patterns.
+17:21:55 INFO    copilot.presentation.engine: planner: update Earth Atmosphere > Climate Zones (same frame)
+  [SLIDE] update 'Climate Zones' [definition] v5 (1 items)
+  [SLIDE] update 'Climate Zones' [definition] v6 (4 items)
+17:21:55 INFO    copilot.presentation.engine: image search 'world climate zones map' (diagram) for 'Climate Zones'
+  [  574.0s] continental climate commonly occurs in (636 ms)
+  [SLIDE] update 'Climate Zones' [definition] v7 (5 items)
+17:21:57 INFO    copilot.presentation.engine: image 'world climate zones map': none (no usable candidates)
+  [IMAGE] 'world climate zones map' -> none (no usable candidates) (2.4 s)
+  [  578.6s] inland region and can have hot summer and cold winters. Polar cammets are extremely cold and vegetation is limited in many areas. (1033 ms)
+  [SLIDE] update 'Climate Zones' [definition] v8 (5 items)
+17:22:10 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Climate Zones' -> same_concept
+  [UNDERSTAND] Earth Atmosphere > Climate Zones (same_concept) acts=definition,definition hint=definition lines=2 via groq_main#6 1466 ms
+               Introduced continental and polar climate zones with their typical temperature patterns.
+17:22:10 INFO    copilot.presentation.engine: planner: update Earth Atmosphere > Climate Zones (same frame)
+17:22:10 INFO    copilot.presentation.engine: no image for 'Climate Zones': two concepts side by side
+  [SLIDE] update 'Climate Zones' [definition] v9 (4 items)
+  [SLIDE] update 'Climate Zones' [definition] v10 (4 items)
+  [SLIDE] add    'Climate Zones' [concept] v1 (2 items)
+  [  588.8s] Climate depends on several factors, including latitude, (541 ms)
+  [  593.8s] altitude and ocean currents distance from the sea and mountain range. (559 ms)
+  [UNDERSTAND] Earth Atmosphere > Climate Zones (elaboration) acts=explanation hint=key_points lines=2 via groq_main#6 1330 ms
+               Climate depends on latitude, altitude, ocean currents, distance from sea, and mountain ranges.
+17:22:18 INFO    copilot.presentation.engine: planner: update Earth Atmosphere > Climate Zones (same frame)
+17:22:18 INFO    copilot.presentation.engine: no image for 'Climate Zones': two concepts side by side
+  [SLIDE] update 'Climate Zones' [concept] v2 (7 items)
+  [  599.7s] Different climate zones influence vegetation, agriculture, wildlife and human settlement. Understanding them helps your (778 ms)
+  [  610.8s] Graphverse explains why landscape and lifestyle vary across the world. (602 ms)
+  [UNDERSTAND] Earth Atmosphere > Climate Zones (elaboration) acts=explanation hint=key_points lines=2 via groq_main#6 1706 ms
+               Explained how climate zones influence ecosystems, agriculture, wildlife, and human lifestyles worldwide.
+17:22:36 INFO    copilot.presentation.engine: planner: update Earth Atmosphere > Climate Zones (same frame)
+17:22:36 INFO    copilot.presentation.engine: no image for 'Climate Zones': two concepts side by side
+  [SLIDE] update 'Climate Zones' [concept] v3 (9 items)
+  [  618.3s] So the fourth topic is Rivers and the formation of landforms. (698 ms)
+  [UNDERSTAND] Water Cycle > Rivers and Landforms (new_topic) acts=transition hint=none lines=1 via groq_main#6 3728 ms
+               Announced the next topic: Rivers and the formation of landforms.
+17:22:46 INFO    copilot.presentation.engine: planner: noop Water Cycle > Rivers and Landforms (new topic announced)
+  [  626.8s] Now we will learn how rivers shape earth's surface. (555 ms)
+  [  634.7s] processes, erosion, transportation and deposition. (518 ms)
+17:23:06 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Rivers and Landforms' -> same_concept
+  [UNDERSTAND] Water Cycle > Rivers and Landforms (same_concept) acts=process hint=process_flow lines=2 via groq_main#6 1208 ms
+               Introduced river processes: erosion, transportation, and deposition shaping landforms.
+17:23:06 INFO    copilot.presentation.engine: planner: new Water Cycle > Rivers and Landforms (new topic confirmed (boundary cue/shift))
+17:23:06 INFO    copilot.presentation.engine: no image for 'Rivers and Landforms': process needs the full width
+  [SLIDE] add    'Rivers and Landforms' [process_flow] v1 (3 items)
+  [  639.1s] Erosion removes rocks and soil from the riverbed and surrounding landscape. Transportation carries this material downstream while deposition occurs when the river losses enough energy to drop. (782 ms)
+  [  654.0s] sedimenting (278 ms)
+  [  655.6s] The mountains which on rivers can cut deep we shape valley. Waterfalls may forms. (791 ms)
+  [UNDERSTAND] Water Cycle > Rivers and Landforms (same_concept) acts=process,explanation hint=process_flow lines=3 via groq_main#6 1962 ms
+               Detailed how erosion, transportation, deposition work and how rivers create valleys and waterfalls.
+17:23:22 INFO    copilot.presentation.engine: revised S1: Erosion removes rocks and soil from the riverbed and surrounding landscape
+17:23:22 INFO    copilot.presentation.engine: revised S2: Transportation carries this material downstream
+17:23:22 INFO    copilot.presentation.engine: revised S3: Deposition occurs when the river loses enough energy to drop
+17:23:22 INFO    copilot.presentation.engine: planner: update Water Cycle > Rivers and Landforms (same frame)
+17:23:22 INFO    copilot.presentation.engine: no image for 'Rivers and Landforms': process needs the full width
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v2 (3 items)
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v3 (3 items)
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v4 (3 items)
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v5 (5 items)
+  [  661.9s] where water flows over a (534 ms)
+  [  664.4s] a steep drop (280 ms)
+  [  666.1s] further downstream. Rivers often develop windmenders which are large blends in their channels. (604 ms)
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v6 (6 items)
+  [UNDERSTAND] Water Cycle > Rivers and Landforms (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#3 1347 ms
+               Clarified waterfall formation and introduced meanders as downstream river features.
+  [HEARD] 'windmenders, blends' -> 'meanders, bends' corrected on the slide (0.9)
+17:23:32 INFO    copilot.presentation.engine: revised S5: Waterfalls form where water flows over steep drops
+17:23:32 INFO    copilot.presentation.engine: planner: update Water Cycle > Rivers and Landforms (same frame)
+17:23:32 INFO    copilot.presentation.engine: concern d377206495c0 (transcription, applied=True): 0 element(s); slide shows 'meanders, bends'
+17:23:32 INFO    copilot.presentation.engine: no image for 'Rivers and Landforms': process needs the full width
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v7 (5 items)
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v8 (5 items)
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v9 (6 items)
+  [  673.4s] Floodplains from where when river deposit sediment across nearby land during floods, dales can develop where rivers enter lakes or seas and (932 ms)
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v10 (7 items)
+  [  686.4s] deposit sediment. This landform demonstrates how flowing water gradually changes earth's surface. (696 ms)
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v11 (7 items)
+17:23:59 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ["This landform demonstrates how flowing water gradually changes earth's surface"]
+  [UNDERSTAND] Water Cycle > Rivers and Landforms (elaboration) acts=process,explanation hint=process_flow lines=2 via groq_main#6 1659 ms
+               Floodplains and dales are landforms created by river deposition during floods and where rivers meet lakes or seas.
+17:23:59 INFO    copilot.presentation.engine: planner: update Water Cycle > Rivers and Landforms (same frame)
+17:23:59 INFO    copilot.presentation.engine: no image for 'Rivers and Landforms': process needs the full width
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v12 (6 items)
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v13 (9 items)
+  [  694.3s] Giver are also important source of fresh water and support agricultural ecosystem and human settlement. (746 ms)
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v14 (10 items)
+  [  706.0s] Fifth topic is Deserts and (599 ms)
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v15 (10 items)
+17:24:07 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Rivers and Landforms' -> same_concept
+  [UNDERSTAND] Water Cycle > Rivers and Landforms (same_concept) acts=explanation hint=key_points lines=1 via groq_main#6 2380 ms
+               Rivers are highlighted as vital fresh‑water sources supporting agriculture, ecosystems, and settlements.
+17:24:07 INFO    copilot.presentation.engine: planner: update Water Cycle > Rivers and Landforms (same frame)
+17:24:07 INFO    copilot.presentation.engine: no image for 'Rivers and Landforms': process needs the full width
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v16 (11 items)
+  [  708.9s] desertification (274 ms)
+  [  712.7s] So best for natural landscape and environmental geography. (718 ms)
+  [UNDERSTAND] Water Cycle > Deserts and Desertification (sibling_concept) acts=explanation hint=concept lines=3 via groq_main#6 2642 ms
+               Introduced deserts and desertification as a new subtopic and noted their importance to natural landscape and environmental geography.
+17:24:17 INFO    copilot.presentation.engine: planner: continue Water Cycle > Deserts and Desertification (new facet)
+17:24:17 INFO    copilot.presentation.engine: image hint 'Deserts and Desertification diagram' for 'Deserts and Desertification' from its sibling subtopic
+  [SLIDE] update 'Rivers and Landforms' [process_flow] v17 (10 items)
+  [SLIDE] add    'Deserts and Desertification' [key_points] v1 (1 items)
+17:24:17 INFO    copilot.presentation.engine: image search 'Deserts and Desertification diagram' (diagram) for 'Deserts and Desertification'
+  [  717.1s] A desert is a region that receives very little. (593 ms)
+  [SLIDE] update 'Deserts and Desertification' [key_points] v2 (2 items)
+17:24:19 INFO    copilot.presentation.engine: image 'Deserts and Desertification diagram': none (no usable candidates)
+  [IMAGE] 'Deserts and Desertification diagram' -> none (no usable candidates) (1.7 s)
+  [  720.3s] Precipitation compared with the water loss through evaporation and other processes, desert can be hot or cold. (728 ms)
+  [SLIDE] update 'Deserts and Desertification' [key_points] v3 (2 items)
+  [UNDERSTAND] Water Cycle > Deserts and Desertification (elaboration) acts=definition,explanation hint=definition lines=2 via groq_main#6 1727 ms
+               Defined desert as low‑precipitation region and explained hot and cold desert types
+17:24:32 INFO    copilot.presentation.engine: planner: update Water Cycle > Deserts and Desertification (same frame)
+  [SLIDE] update 'Deserts and Desertification' [key_points] v4 (1 items)
+  [SLIDE] update 'Deserts and Desertification' [key_points] v5 (4 items)
+17:24:32 INFO    copilot.presentation.engine: image search 'desert landscape' (photo) for 'Deserts and Desertification'
+  [  728.0s] Example, include the Sahara Desert in Africa, the Arabian Desert in Western Asia, and the Gopi Desert in Asia. (847 ms)
+  [SLIDE] update 'Deserts and Desertification' [key_points] v6 (5 items)
+17:24:37 INFO    copilot.visuals.finder: image search 'desert landscape' (photo): 8 candidate(s), 3 accepted (0 labelled), 4.58 s {'search_s': 1.92, 'download_s': 1.01, 'clip_s': 0.15, 'full_s': 1.48, 'total_s': 4.58}
+  [IMAGE] 'desert landscape' -> File:Utah Dunes Landscape - West Desert District.jpg (4.6 s)
+17:24:37 INFO    copilot.presentation.engine: image 'desert landscape' on 'Deserts and Desertification': File:Utah Dunes Landscape - West Desert District.jpg
+  [SLIDE] update 'Deserts and Desertification' [key_points] v7 (6 items)
+  [  736.1s] Desert landscape can contain sand dunes, rocky platters, gravel, plains. (603 ms)
+  [SLIDE] update 'Deserts and Desertification' [key_points] v8 (6 items)
+  [  742.6s] and dry reverse channel. (296 ms)
+  [SLIDE] update 'Deserts and Desertification' [key_points] v9 (5 items)
+  [UNDERSTAND] Water Cycle > Deserts and Desertification (elaboration) acts=example,explanation hint=key_points lines=2 via groq_alt#3 1482 ms
+               Listed major desert examples and described typical desert landscape features like dunes and plateaus.
+  [HEARD] 'Gopi' -> 'Gobi' corrected on the slide (0.9)
+  [HEARD] 'platters' -> 'plateaus' corrected on the slide (0.8)
+17:24:44 INFO    copilot.presentation.engine: planner: update Water Cycle > Deserts and Desertification (same frame)
+17:24:44 INFO    copilot.presentation.engine: concern bc1128f9de43 (transcription, applied=True): 1 element(s); slide shows 'Gobi'
+17:24:44 INFO    copilot.presentation.engine: concern bb80e22e98b2 (transcription, applied=True): 1 element(s); slide shows 'plateaus'
+17:24:44 INFO    copilot.presentation.engine: no image for 'Deserts and Desertification': has an image
+  [SLIDE] update 'Deserts and Desertification' [key_points] v10 (7 items)
+  [  744.6s] Desertification is Lined. (463 ms)
+  [UNDERSTAND] Water Cycle > Deserts and Desertification (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#6 1877 ms
+               Added that deserts often contain dry river channels and that desertification is linked to land degradation.
+  [HEARD] 'reverse channel' -> 'river channel' corrected on the slide (0.5)
+  [HEARD] 'Lined' -> 'linked' corrected on the slide (0.5)
+17:24:56 INFO    copilot.presentation.engine: planner: update Water Cycle > Deserts and Desertification (same frame)
+17:24:56 INFO    copilot.presentation.engine: concern 6832ac514200 (transcription, applied=True): 0 element(s); slide shows 'river channel'
+17:24:56 INFO    copilot.presentation.engine: concern eb43906042b7 (transcription, applied=True): 1 element(s); slide shows 'linked'
+17:24:56 INFO    copilot.presentation.engine: no image for 'Deserts and Desertification': has an image
+  [SLIDE] update 'Deserts and Desertification' [key_points] v11 (9 items)
+  [  746.8s] Deradation in dry lands can result from interacting factors such as drought, inappropriate and management, vegetation, loss and soil erosion. (711 ms)
+  [  758.8s] Desertification does not simply mean that every desert is expanding, it refers to dream. (634 ms)
+  [UNDERSTAND] Water Cycle > Deserts and Desertification (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#3 1248 ms
+               Identified drought, poor management, vegetation loss, and soil erosion as factors causing land degradation in dry areas.
+  [HEARD] 'Deradation, inappropriate and management, vegetation, loss' -> 'Degradation, inappropriate land management, vegetation loss' corrected on the slide (0.9)
+17:25:04 INFO    copilot.presentation.engine: planner: update Water Cycle > Deserts and Desertification (same frame)
+17:25:04 INFO    copilot.presentation.engine: concern 7b727d07e5c0 (transcription, applied=True): 0 element(s); slide shows 'Degradation, inappropriate land management, vegetation loss'
+  [SLIDE] update 'Deserts and Desertification' [key_points] v12 (9 items)
+  [SLIDE] add    'Deserts and Desertification' [key_points] v1 (4 items)
+17:25:04 INFO    copilot.presentation.engine: image 'desert landscape' kept on 'Deserts and Desertification' (same visual as this topic's image)
+  [SLIDE] update 'Deserts and Desertification' [key_points] v2 (5 items)
+  [  765.1s] graduation of land in dry region. (586 ms)
+  [SLIDE] update 'Deserts and Desertification' [key_points] v3 (6 items)
+  [  768.8s] Planets and animals in deserts often have adaptations that help them to avoid limited water adaptability and temperature extremes. (818 ms)
+  [SLIDE] update 'Deserts and Desertification' [key_points] v4 (6 items)
+  [UNDERSTAND] Water Cycle > Deserts and Desertification (elaboration) acts=definition hint=definition lines=2 via groq_main#6 1781 ms
+               Desertification means land degradation in dry areas, not just desert expansion.
+  [HEARD] 'dream' -> 'degradation' corrected on the slide (0.5)
+  [HEARD] 'graduation' -> 'degradation' corrected on the slide (0.5)
+17:25:17 INFO    copilot.presentation.engine: planner: update Water Cycle > Deserts and Desertification (same frame)
+17:25:17 INFO    copilot.presentation.engine: concern 0336545f747a (transcription, applied=True): 1 element(s); slide shows 'degradation'
+17:25:17 INFO    copilot.presentation.engine: concern 7bb376d0d89b (transcription, applied=True): 1 element(s); slide shows 'degradation'
+17:25:17 INFO    copilot.presentation.engine: no image for 'Deserts and Desertification': has an image
+  [SLIDE] update 'Deserts and Desertification' [key_points] v5 (7 items)
+17:25:26 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Deserts and Desertification' -> same_concept
+  [UNDERSTAND] Water Cycle > Deserts and Desertification (same_concept) acts=explanation hint=key_points lines=1 via groq_main#6 2580 ms
+               Students learn that desert organisms adapt to scarce water and temperature extremes.
+17:25:26 INFO    copilot.presentation.engine: planner: update Water Cycle > Deserts and Desertification (same frame)
+17:25:26 INFO    copilot.presentation.engine: no image for 'Deserts and Desertification': has an image
+  [SLIDE] update 'Deserts and Desertification' [key_points] v6 (6 items)
+  [SLIDE] update 'Deserts and Desertification' [key_points] v7 (7 items)
+  [  783.9s] 6th topic is Ocean Currents and their effects on climate. (709 ms)
+  [  788.7s] Ocean currents are large-scale movements of seawater. They are influenced by wind, differences in water density, earth rotation and the shape of ocean basins. There are two broad categories. (878 ms)
+  [UNDERSTAND] Water Cycle > Deserts and Desertification (new_topic) acts=transition hint=none lines=1 via groq_main#6 4300 ms
+               Introduced Ocean Currents and their effects on climate as a new topic.
+17:25:43 INFO    copilot.presentation.engine: planner: noop Water Cycle > Deserts and Desertification (nothing to display)
+  [  803.5s] surface current strongly influenced by wind and earth rotation. (657 ms)
+  [  808.8s] deep ocean currents. (291 ms)
+  [UNDERSTAND] Ocean Currents > Types and Causes (new_topic) acts=definition,explanation,classification hint=key_points lines=3 via groq_alt#3 1435 ms
+               Defined ocean currents as large-scale seawater movements driven by wind, density, rotation, and basin shape, and classified them into surface and deep types.
+17:25:50 INFO    copilot.presentation.engine: planner: update Water Cycle > Deserts and Desertification (new topic not yet confirmed)
+  [SLIDE] add    'Deserts and Desertification' [members] v1 (6 items)
+17:25:50 INFO    copilot.presentation.engine: image search 'desert animal adaptation' (photo) for 'Deserts and Desertification'
+17:25:55 INFO    copilot.visuals.finder: image search 'desert animal adaptation' (photo): 8 candidate(s), 3 accepted (0 labelled), 4.83 s {'search_s': 1.93, 'download_s': 0.75, 'clip_s': 0.13, 'full_s': 2.0, 'total_s': 4.83}
+  [IMAGE] 'desert animal adaptation' -> File:015a Angolan giraffe silhouette at sunrise in the Kalahari Desert of Namibia Photo by Giles Laurent.jpg (4.8 s)
+17:25:55 INFO    copilot.presentation.engine: image 'desert animal adaptation' on 'Deserts and Desertification': File:015a Angolan giraffe silhouette at sunrise in the Kalahari Desert of Namibia Photo by Giles Laurent.jpg
+  [SLIDE] update 'Deserts and Desertification' [members] v2 (7 items)
+  [  810.9s] driven mainly by differences in water density caused by temperature and salinity. (655 ms)
+  [UNDERSTAND] Ocean Currents > Types and Causes (elaboration) acts=- hint=concept lines=1 via groq_main#6 3055 ms
+               Density differences driving currents arise from temperature and salinity variations.
+17:25:59 INFO    copilot.presentation.engine: revised S3: Influenced by water density differences due to temperature and salinity
+17:25:59 INFO    copilot.presentation.engine: planner: noop Ocean Currents > Types and Causes (nothing to display)
+  [SLIDE] update 'Deserts and Desertification' [members] v3 (7 items)
+  [  829.6s] 7th topic is glaciers and their impact on earth's surface. (593 ms)
+  [UNDERSTAND] Glaciers > Impact on Earth's Surface (new_topic) acts=transition hint=none lines=1 via groq_main#6 1508 ms
+               Teacher announced the next topic: glaciers and their impact on Earth’s surface.
+17:26:26 INFO    copilot.presentation.engine: planner: noop Glaciers > Impact on Earth's Surface (new topic announced)
+  [  834.4s] The glacier is a persistent body of ice that forms when snow accumulates over many years, becomes compacted and transformed into ice. Glaciers flow slowly under gravity and can (843 ms)
+  [  847.8s] T-shaped landscape. The major geographical effects include erosion, glaciers, (608 ms)
+  [  855.1s] scrap and remove rock. Transportation, they carry rocks and sediment. (549 ms)
+  [UNDERSTAND] Glaciers > Impact on Earth's Surface (elaboration) acts=definition,explanation hint=none lines=3 via groq_main#6 1709 ms
+               Defined glaciers and explained their erosion and sediment‑transport effects on the landscape
+17:26:39 INFO    copilot.presentation.engine: planner: new Glaciers > Impact on Earth's Surface (new topic confirmed (two interpretations agree))
+  [SLIDE] add    "Impact on Earth's Surface" [definition] v1 (3 items)
+17:26:39 INFO    copilot.presentation.engine: image search 'glacier landscape' (photo) for "Impact on Earth's Surface"
+  [  859.6s] deposition they have sediment behind as ice (570 ms)
+  [SLIDE] update "Impact on Earth's Surface" [definition] v2 (4 items)
+17:26:43 INFO    copilot.visuals.finder: image search 'glacier landscape' (photo): 8 candidate(s), 3 accepted (0 labelled), 4.05 s {'search_s': 1.41, 'download_s': 0.98, 'clip_s': 0.15, 'full_s': 1.49, 'total_s': 4.05}
+  [IMAGE] 'glacier landscape' -> File:Breiðamerkurjökull glacier, Iceland, 20240719 1427 2618.jpg (4.0 s)
+17:26:43 INFO    copilot.presentation.engine: image 'glacier landscape' on "Impact on Earth's Surface": File:Breiðamerkurjökull glacier, Iceland, 20240719 1427 2618.jpg
+  [SLIDE] update "Impact on Earth's Surface" [definition] v3 (5 items)
+  [  864.0s] melts or retrades. (481 ms)
+  [SLIDE] update "Impact on Earth's Surface" [definition] v4 (5 items)
+  [UNDERSTAND] Glaciers > Impact on Earth's Surface (same_concept) acts=explanation hint=key_points lines=2 via groq_alt#3 1569 ms
+               Explained glacier deposition, where sediment is dropped as ice melts or retreats.
+  [HEARD] 'retrades' -> 'retreats' corrected on the slide (0.9)
+17:26:47 INFO    copilot.presentation.engine: planner: update Glaciers > Impact on Earth's Surface (same frame)
+17:26:47 INFO    copilot.presentation.engine: concern d6b014340d23 (transcription, applied=True): 1 element(s); slide shows 'retreats'
+17:26:47 INFO    copilot.presentation.engine: no image for "Impact on Earth's Surface": has an image
+  [SLIDE] update "Impact on Earth's Surface" [definition] v5 (4 items)
+  [SLIDE] update "Impact on Earth's Surface" [definition] v6 (5 items)
+  [  877.7s] The 8th topic is the Indian Monsoon. (674 ms)
+  [SLIDE] update "Impact on Earth's Surface" [definition] v7 (6 items)
+17:27:01 INFO    copilot.presentation.engine: slide 850d00d39535 overflows on the display; further content continues on a new slide
+  [  882.2s] The Indian monsoon is a seasonal atmospheric circulation system that brings a large share of India's annual rainfall. (808 ms)
+  [SLIDE] update "Impact on Earth's Surface" [definition] v8 (6 items)
+  [UNDERSTAND] Indian Monsoon > Definition (new_topic) acts=transition,definition hint=definition lines=2 via groq_main#6 1773 ms
+               Introduced the Indian monsoon as a seasonal atmospheric circulation delivering most of India's rainfall.
+17:27:14 INFO    copilot.presentation.engine: planner: update Glaciers > Impact on Earth's Surface (new topic not yet confirmed)
+  [SLIDE] update "Impact on Earth's Surface" [definition] v9 (5 items)
+  [SLIDE] update "Impact on Earth's Surface" [definition] v10 (5 items)
+  [SLIDE] add    "Impact on Earth's Surface" [members] v1 (1 items)
+17:27:14 INFO    copilot.presentation.engine: no image 'glacier landscape' on "Impact on Earth's Surface": not about the slide (similarity 0.13)
+  [  890.8s] The Southwest Monsoon typically begins over part of southern India around June and (686 ms)
+  [SLIDE] update "Impact on Earth's Surface" [members] v2 (1 items)
+  [  896.8s] progresses across the country it's arrived. (492 ms)
+  [SLIDE] update "Impact on Earth's Surface" [members] v3 (1 items)
+  [  900.2s] and withdrawal vary from ear to ear. (526 ms)
+  [UNDERSTAND] Indian Monsoon > Definition (elaboration) acts=explanation hint=key_points lines=2 via groq_main#6 1516 ms
+               Added timing and progression details of the Southwest Monsoon.
+17:27:23 INFO    copilot.presentation.engine: planner: new Indian Monsoon > Definition (new topic confirmed (boundary cue/shift))
+17:27:23 INFO    copilot.presentation.engine: moving 1 item(s) of 'Indian Monsoon' to the new topic's slide
+17:27:23 INFO    copilot.presentation.engine: slide 'What is indian monsoon?' waits for the min dwell time
+17:27:23 INFO    copilot.presentation.engine: image search 'monsoon winds diagram' (diagram) for 'What is indian monsoon?'
+17:27:26 INFO    copilot.presentation.engine: image 'monsoon winds diagram': none (no usable candidates)
+  [IMAGE] 'monsoon winds diagram' -> none (no usable candidates) (2.3 s)
+  [  903.9s] The monsoon is influenced by seasonal differences in (562 ms)
+  [  908.7s] heating between land and sea atmospheric circulation, moisture transport and larger climate patterns. (689 ms)
+  [UNDERSTAND] Indian Monsoon > Definition (elaboration) acts=explanation hint=concept lines=3 via groq_main#6 2091 ms
+               Added factors influencing the monsoon and corrected withdrawal variation phrase.
+  [HEARD] 'ear to ear' -> 'year to year' corrected on the slide (0.5)
+17:27:38 INFO    copilot.presentation.engine: planner: update Indian Monsoon > Definition (same frame)
+17:27:38 INFO    copilot.presentation.engine: concern a1a9094c2a51 (transcription, applied=True): 1 element(s); slide shows 'year to year'
+17:27:38 INFO    copilot.presentation.engine: no image for 'What is indian monsoon?': nothing relevant found for 'monsoon winds diagram' before
+  [SLIDE] add    'What is indian monsoon?' [definition] v1 (8 items)
+  [  917.7s] The western ghats force moist air to rise producing sustenance. (655 ms)
+  [UNDERSTAND] Indian Monsoon > Definition (elaboration) acts=explanation hint=concept lines=1 via groq_main#6 5659 ms
+               Western Ghats lift moist air, helping sustain the monsoon
+17:27:49 INFO    copilot.presentation.engine: planner: update Indian Monsoon > Definition (same frame)
+  [SLIDE] update 'What is indian monsoon?' [definition] v2 (9 items)
+17:27:49 INFO    copilot.presentation.engine: no image 'Western Ghats' on 'What is indian monsoon?': not about the slide (similarity 0.19)
+  [  924.5s] orographic rainfall on the windward slope some region on the leeward slide gives you less rainfall because of the rain shadow effect (720 ms)
+  [  935.2s] The monsoon is important for agriculture. The reservoirs, groundwater recharge and water abability, weak or uneven rainfall can create agricultural difficulties while extremely heavy rainfall can cause (858 ms)
+  [  950.2s] flooding and landslides. (462 ms)
+  [UNDERSTAND] Indian Monsoon > Definition (elaboration) acts=explanation,explanation hint=key_points lines=3 via groq_main#6 1968 ms
+               Added orographic rain‑shadow effect and explained monsoon importance for agriculture and flood risks.
+17:28:13 INFO    copilot.presentation.engine: planner: update Indian Monsoon > Definition (same frame)
+  [SLIDE] update 'What is indian monsoon?' [definition] v3 (9 items)
+  [SLIDE] add    'What is indian monsoon?' [key_points] v1 (4 items)
+17:28:13 INFO    copilot.presentation.engine: image search 'rain shadow diagram' (diagram) for 'What is indian monsoon?'
+17:28:18 INFO    copilot.visuals.finder: image search 'rain shadow diagram' (diagram, labels preferred): 4 candidate(s), 3 accepted (1 labelled), 5.59 s {'search_s': 2.09, 'download_s': 1.49, 'clip_s': 0.09, 'full_s': 1.9, 'total_s': 5.59}
+  [IMAGE] 'rain shadow diagram' -> File:Rain shadow.svg (5.6 s)
+17:28:18 INFO    copilot.presentation.engine: image 'rain shadow diagram' on 'What is indian monsoon?': File:Rain shadow.svg
+  [SLIDE] update 'What is indian monsoon?' [key_points] v2 (5 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261014-171211-0ee1: 125 segments, 1411 words, state v247, 1166 events logged
+        CommandReceived=50, ConceptSignal=125, ConcernRaised=15, DeckState=73, ImageChoices=16, ImageReady=18, ImageRequested=18, InterpretRequested=61, InterpretationReady=61, LLMCallFailed=6, LifecycleChanged=5, SlideContextChanged=57, SlideOverflow=5, SlidePatch=159, StateChanged=247, TranscriptFinal=125, UtteranceClassified=125
+        stt: 125 published, 0 dropped, latency p50=636 ms p95=860 ms max=3326 ms
+        understanding: 61 interpretations (56 by LLM, 5 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=2095 avg=1964, latency p50=1706 ms max=8005 ms
+        presentation: 24 slides; planner ops {'new': 6, 'update': 37, 'continue': 8, 'noop': 10}; revisions 7, corrections shown 11, shown as said 0
+        images: {'requests': 18, 'found': 14, 'none': 4}; slides with an image 15/23
+          1. [key_points] Role in Earth Geography  (v14, ['points', 'definition', 'image', 'points'])
+          2. [key_points] Evaporation  (v5, ['points', 'image'])
+          3. [concept] Transpiration  (v3, ['definition', 'definition'])
+          4. [definition] Condensation  (v5, ['definition', 'image', 'points'])
+          5. [definition] Precipitation [part 1]  (v9, ['definition', 'image', 'hierarchy', 'points'])
+          6. [key_points] Precipitation [part 2]  (v14, ['points', 'image'])
+          7. [key_points] Runoff and Groundwater  (v4, ['points', 'image'])
+          8. [key_points] Why Water Cycle matters [part 1]  (v6, ['points'])
+          9. [key_points] Why Water Cycle matters [part 2]  (v11, ['points', 'image'])
+          10. [key_points] Plate Boundaries [part 1]  (v1, ['points', 'hierarchy'])
+          11. [key_points] Plate Boundaries [part 2]  (v5, ['points', 'image', 'definition'])
+          12. [key_points] Plate Boundaries [part 3]  (v6, ['points', 'image'])
+          13. [concept] Atmosphere Layers [part 1]  (v3, ['facts', 'definition', 'definition', 'definition'])
+          14. [members] Atmosphere Layers [part 2]  (v3, ['definition', 'image', 'points'])
+          15. [definition] Climate Zones [part 1]  (v10, ['definition', 'points'])
+          16. [concept] Climate Zones [part 2]  (v3, ['definition', 'definition', 'points', 'points'])
+          17. [process_flow] Rivers and Landforms  (v17, ['process', 'points'])
+          18. [key_points] Deserts and Desertification [part 1]  (v12, ['points', 'definition', 'points', 'image', 'example'])
+          19. [key_points] Deserts and Desertification [part 2]  (v7, ['points', 'image', 'definition', 'points'])
+          20. [members] Deserts and Desertification [part 3]  (v3, ['definition', 'points', 'hierarchy', 'image'])
+          21. [definition] Impact on Earth's Surface [part 1]  (v10, ['definition', 'points', 'image'])
+          22. [definition] What is indian monsoon? [part 1]  (v3, ['definition', 'points'])
+          23. [key_points] What is indian monsoon? [part 2]  (v2, ['points', 'image'])
+        providers: {'groq_main#6': 46, 'groq_alt#3': 10}; triggers: {'pause': 21, 'max_wait': 28, 'boundary': 4, 'words': 8}; outline: ['Water Cycle > Evaporation, Transpiration, Condensation, Precipitation, Runoff and Groundwater, Importance, Rivers and Landforms, Deserts and Desertification', 'Plate Tectonics > Lithosphere and Plates, Plate Boundaries', 'Earth Atmosphere > Atmosphere Layers, Climate Zones', 'Ocean Currents > Types and Causes', "Glaciers > Impact on Earth's Surface", 'Indian Monsoon > Definition']; concerns: 15
+        log: C:\Users\potda\Multimodal-AI-Teaching-Copilot-For-Real-Time-Visual-Learning-Generation\data\sessions\20261014-171211-0ee1\session.sqlite

@@ -1,0 +1,395 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (16.2 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.9 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_1         openai/gpt-oss-120b           101k of 200k tokens IN USE
+        GROQ_API_KEY_2         openai/gpt-oss-120b           185k of 200k tokens ok
+        GROQ_API_KEY_3         openai/gpt-oss-120b           178k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~2.2 h
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 258 lecture minutes
+
+[READY] session 20261013-204941-61c1
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+20:50:03 INFO    copilot.visuals.service: CLIP ready in 2.1 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (organelles, eukaryotic, digestive, cytoplasm, prokaryotic, mitochondria ...)
+[SHARE] starting the link ...
+[SHARE] waiting for the link to answer ...
+20:50:38 INFO    copilot.display.share: sharing https://human-isle-engineers-management.trycloudflare.com/view
+[SHARE] students: https://human-isle-engineers-management.trycloudflare.com/view
+        teacher control from another device: https://human-isle-engineers-management.trycloudflare.com/control?key=Z8PTey8A9xvpU5TCOD-QL121
+  [   23.2s] Have you ever seen a soldier? Great, a great Brahman. (7344 ms)
+  [   34.4s] (dropped: empty) 
+  [UNDERSTAND] Animals > Brahman (new_topic) acts=explanation hint=example lines=1 via groq_main#1 2346 ms
+               Introduced the Brahman breed as an example.
+20:50:58 INFO    copilot.presentation.engine: planner: new Animals > Brahman (first content slide)
+  [SLIDE] add    'Brahman' [key_points] v1 (1 items)
+20:50:58 INFO    copilot.presentation.engine: image search 'Brahman cattle' (photo) for 'Brahman'
+20:51:02 INFO    copilot.visuals.finder: image search 'Brahman cattle': 8 slow download(s) dropped
+20:51:02 INFO    copilot.presentation.engine: image 'Brahman cattle': none (downloads failed)
+  [IMAGE] 'Brahman cattle' -> none (downloads failed) (4.6 s)
+  [   59.3s] Thank you for watching! (785 ms)
+  [   61.0s] We'll use some help. (764 ms)
+  [   63.3s] Okay, we'll do this. Okay. (1218 ms)
+  [UNDERSTAND] Animals > Brahman (same_concept) acts=- hint=none lines=2 via groq_main#1 6209 ms
+               No new content added
+20:51:26 INFO    copilot.presentation.engine: planner: noop Animals > Brahman (nothing to display)
+20:51:34 INFO    copilot.presentation.engine: teacher delete_item on 'Brahman': f96633531b94 ''
+  [SLIDE] update 'Brahman' [key_points] v2 (0 items)
+  [UNDERSTAND] Animals > Brahman (same_concept) acts=- hint=none lines=1 via groq_main#1 5643 ms
+               No new content added
+20:51:37 INFO    copilot.presentation.engine: planner: noop Animals > Brahman (nothing to display)
+  [   76.8s] Where have you been? (924 ms)
+  [   80.7s] That's it, I'm done with the video. (1151 ms)
+  [UNDERSTAND] Animals > Brahman (same_concept) acts=- hint=none lines=2 via groq_main#1 1566 ms
+               Teacher concluded the Brahman segment
+20:51:52 INFO    copilot.presentation.engine: planner: noop Animals > Brahman (nothing to display)
+  [   84.8s] Let us talk about the digestive system. The digestive system is a continuous tube and network of organs that break down food into nutrients for energy, growth and cell repair while eliminating waste. (2314 ms)
+  [   97.7s] The main organs of the elementary canal are mouth, (1107 ms)
+20:52:14 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.1 (0.78) for the interpretation
+  [  102.6s] For achieving start, mechanical digestion, while saliva enzymes begin breaking down, starts. Esophagus, a muscular tube that uses wave-like (2196 ms)
+  [  116.3s] Movements to push foot down into the stomach. (1009 ms)
+  [UNDERSTAND] Animals > Digestive System (new_topic) acts=explanation,explanation hint=key_points lines=2 via groq_main#1 3859 ms
+               Defined the digestive system and listed its first organ, the mouth
+20:52:18 INFO    copilot.presentation.engine: planner: retitle Animals > Digestive System (new facet on an empty slide)
+  [SLIDE] update 'Digestive System' [key_points] v3 (4 items)
+20:52:18 INFO    copilot.presentation.engine: image search 'digestive system diagram' (diagram) for 'Digestive System'
+20:52:18 INFO    copilot.visuals.service: reference figure Digestive system | healthdirect p.3 f1 for 'digestive system diagram': label 0.612, clip 0.297 margin +0.071 -> used
+  [IMAGE] 'digestive system diagram' -> Digestive system | healthdirect p.3 (0.3 s)
+20:52:18 INFO    copilot.presentation.engine: image 'digestive system diagram' on 'Digestive System': Digestive system | healthdirect p.3
+  [SLIDE] update 'Digestive System' [key_points] v4 (5 items)
+  [  119.9s] Go along with the video. (933 ms)
+  [  121.9s] (dropped: filler_hallucination) Thank you.
+20:52:22 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.74) for the interpretation
+  [UNDERSTAND] Animals > Digestive System (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 4136 ms
+               Added details on mechanical digestion, saliva enzymes, and the esophagus’s role in moving food to the stomach.
+20:52:26 INFO    copilot.presentation.engine: planner: update Animals > Digestive System (same frame)
+20:52:26 INFO    copilot.presentation.engine: no image for 'Digestive System': has an image
+  [SLIDE] update 'Digestive System' [key_points] v5 (8 items)
+20:52:26 INFO    copilot.presentation.engine: slide 878798bf7ae6 overflows on the display; further content continues on a new slide
+20:52:30 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.1 (0.73) for the interpretation
+20:52:31 WARNING copilot.understanding.interpreter: interpretation from groq_main#1 invalid (schema: [{'type': 'int_parsing', 'loc': ('meta_lines', 0), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'Go along with the video.'}]); one repair attempt
+  [  124.2s] To forge down into the stomach. Stomach uses strong acids and digests enzymes to churn food into semi-fluid mixtures. (2167 ms)
+  [UNDERSTAND] Animals > Digestive System (same_concept) acts=- hint=none lines=1 via groq_main#1 2721 ms
+               No new content added, teacher prompted students to watch the video.
+20:52:33 INFO    copilot.presentation.engine: planner: noop Animals > Digestive System (nothing to display)
+20:52:44 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.1 (0.76) for the interpretation
+  [UNDERSTAND] Animals > Digestive System (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 2130 ms
+               Added how the stomach uses acids and enzymes to turn food into a semi‑fluid mixture.
+20:52:46 INFO    copilot.presentation.engine: planner: update Animals > Digestive System (same frame)
+  [SLIDE] update 'Digestive System' [key_points] v6 (8 items)
+  [SLIDE] add    'Digestive System' [key_points] v1 (1 items)
+20:52:46 INFO    copilot.presentation.engine: image search 'stomach digestion' (diagram) for 'Digestive System'
+  [  132.4s] Small intestine, the primary site of chemical digitization and absorbing nutrients into the bloodstream. Large intestine, absorb remaining water and minerals turning leftover waste into solid stool. (2515 ms)
+  [SLIDE] update 'Digestive System' [key_points] v2 (2 items)
+  [  146.5s] Rectum and Hanish stores and expels solid waste from body. (1246 ms)
+  [SLIDE] update 'Digestive System' [key_points] v3 (2 items)
+20:52:50 INFO    copilot.visuals.finder: image search 'stomach digestion': 2 slow download(s) dropped
+20:52:50 INFO    copilot.presentation.engine: image 'stomach digestion': none (downloads failed)
+  [IMAGE] 'stomach digestion' -> none (downloads failed) (4.6 s)
+20:52:57 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.78) for the interpretation
+20:52:59 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Digestive System' -> same_concept
+  [UNDERSTAND] Animals > Digestive System (same_concept) acts=explanation hint=key_points lines=2 via groq_main#1 1822 ms
+               Added roles of small intestine, large intestine, and rectum in digestion and waste elimination.
+  [HEARD] 'Hanish' -> 'anus' corrected on the slide (0.5)
+20:52:59 INFO    copilot.presentation.engine: planner: update Animals > Digestive System (same frame)
+20:52:59 INFO    copilot.presentation.engine: concern 1c9a472b5960 (transcription, applied=True): 0 element(s); slide shows 'anus'
+  [SLIDE] update 'Digestive System' [key_points] v4 (1 items)
+  [SLIDE] update 'Digestive System' [key_points] v5 (4 items)
+  [  151.8s] The accessory organs are salivary gland, produce saliva to moisten food and start digestion. Liver, produces by to help digest fats and produce fruited nutrients. (2447 ms)
+  [SLIDE] update 'Digestive System' [key_points] v6 (5 items)
+20:53:16 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.1 (0.73) for the interpretation
+  [  164.0s] Galvanadine stores and concentrates bile until it releases into the small intestine, pancreas, secrets, digestive enzymes, and biocarbonates to break down carbs, fats, and proteins. (2844 ms)
+  [SLIDE] update 'Digestive System' [key_points] v7 (5 items)
+  [  179.4s] That ain't about three. (805 ms)
+  [UNDERSTAND] Animals > Digestive System (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 2892 ms
+               Added accessory organs: salivary gland and liver functions in digestion.
+  [HEARD] 'produces by to help digest fats and produce fruited nutrients' -> 'produces bile to help digest fats and produce nutrients' corrected on the slide (0.5)
+20:53:19 INFO    copilot.presentation.engine: planner: update Animals > Digestive System (same frame)
+20:53:19 INFO    copilot.presentation.engine: concern 5de664bb6d14 (transcription, applied=True): 1 element(s); slide shows 'produces bile to help digest fats and produce nutrients'
+  [SLIDE] update 'Digestive System' [key_points] v8 (7 items)
+  [SLIDE] update 'Digestive System' [key_points] v9 (6 items)
+  [  181.2s] And take the lead. (728 ms)
+  [  182.8s] For the touch, I'll do it. (878 ms)
+20:53:24 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.61) for the interpretation
+  [  184.9s] IIT, Delhi. (907 ms)
+  [  187.3s] Now let's talk about the Cardiovascular System. (963 ms)
+20:53:32 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Digestive System' -> same_concept
+20:53:32 INFO    copilot.understanding.interpreter: dropped 2 revision(s) with unknown refs
+  [UNDERSTAND] Animals > Digestive System (same_concept) acts=explanation hint=none lines=1 via groq_main#1 8213 ms
+               Introduced gallbladder storage of bile and pancreas secretion of enzymes for digestion.
+  [HEARD] 'Galvanadine, secrets' -> 'Gallbladder, secretes' corrected on the slide (0.5)
+20:53:32 INFO    copilot.presentation.engine: planner: update Animals > Digestive System (same frame)
+20:53:32 INFO    copilot.presentation.engine: concern f9f878861ffe (transcription, applied=True): 0 element(s); slide shows 'Gallbladder, secretes'
+  [SLIDE] add    'Digestive System' [key_points] v1 (2 items)
+20:53:32 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.1 (0.66) for the interpretation
+  [UNDERSTAND] Animals > Digestive System (same_concept) acts=- hint=none lines=1 via groq_main#2 2027 ms
+               No new content was added from the recent line.
+20:53:34 INFO    copilot.presentation.engine: planner: noop Animals > Digestive System (nothing to display)
+  [  190.9s] Cardiovascular system is an organ network that circulates blood, delivers oxygen and nutrients to tissues and removes metabolic waste. (1676 ms)
+20:53:40 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.61) for the interpretation
+  [UNDERSTAND] Animals > Digestive System (same_concept) acts=- hint=none lines=2 via groq_main#2 2577 ms
+               No new digestional content was added.
+  [HEARD] 'And take the lead' -> '' corrected on the slide (0.5)
+  [HEARD] "For the touch, I'll do it" -> '' corrected on the slide (0.5)
+20:53:43 INFO    copilot.presentation.engine: planner: noop Animals > Digestive System (nothing to display)
+  [  198.2s] The main components are heart, fist size, muscular pump, divides into 4 chambers. (1668 ms)
+20:53:48 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.1 (0.65) for the interpretation
+  [UNDERSTAND] Animals > Digestive System (new_topic) acts=- hint=none lines=2 via groq_main#1 1306 ms
+               Teacher announced transition to the Cardiovascular System
+20:53:50 INFO    copilot.presentation.engine: planner: noop Animals > Digestive System (nothing to display)
+  [  206.2s] And that drives blood flow. Altruids, thick walled blood vessels that carry oxygen-rich blood away from the heart. (1982 ms)
+  [SLIDE] update 'Digestive System' [key_points] v2 (3 items)
+  [  214.8s] WINS, muscles, (856 ms)
+  [SLIDE] update 'Digestive System' [key_points] v3 (3 items)
+20:53:56 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.75) for the interpretation
+  [UNDERSTAND] Animals > Cardiovascular System (sibling_concept) acts=explanation hint=concept lines=1 via groq_main#2 2316 ms
+               Introduced the cardiovascular system as the organ network that circulates blood, delivers oxygen and nutrients, and removes waste.
+20:53:59 INFO    copilot.presentation.engine: planner: continue Animals > Cardiovascular System (new facet)
+  [SLIDE] add    'Cardiovascular System' [key_points] v1 (3 items)
+20:53:59 INFO    copilot.presentation.engine: image search 'human heart diagram' (diagram) for 'Cardiovascular System'
+20:53:59 INFO    copilot.visuals.service: reference figure byjus.com p.5 f2 for 'human heart diagram': label 0.586, clip 0.325 margin +0.089 -> used
+  [IMAGE] 'human heart diagram' -> byjus.com p.5 (0.3 s)
+20:53:59 INFO    copilot.presentation.engine: image 'human heart diagram' on 'Cardiovascular System': byjus.com p.5
+  [SLIDE] update 'Cardiovascular System' [key_points] v2 (4 items)
+20:54:04 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.69) for the interpretation
+  [UNDERSTAND] Animals > Cardiovascular System (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 4508 ms
+               The cardiovascular system includes a heart, a fist-sized muscular pump, and four chambers.
+20:54:09 INFO    copilot.presentation.engine: planner: update Animals > Cardiovascular System (same frame)
+20:54:09 INFO    copilot.presentation.engine: no image for 'Cardiovascular System': has an image
+  [SLIDE] update 'Cardiovascular System' [key_points] v3 (7 items)
+  [  216.9s] That return decar oxygenated blood back to the heart via the superior inferior vena cava, capillaries, microscopic thin world vessels that connect arteries and veins to all. (2583 ms)
+  [SLIDE] update 'Digestive System' [key_points] v4 (2 items)
+  [SLIDE] update 'Cardiovascular System' [key_points] v4 (8 items)
+  [  230.9s] Allow the oxygen. (2640 ms)
+  [SLIDE] update 'Cardiovascular System' [key_points] v5 (8 items)
+20:54:12 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.67) for the interpretation
+20:54:15 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Cardiovascular System' -> same_concept
+  [UNDERSTAND] Animals > Cardiovascular System (same_concept) acts=definition hint=definition lines=2 via groq_main#2 2476 ms
+               Arteries are thick‑walled vessels that transport oxygen‑rich blood from the heart
+  [HEARD] 'Altruids' -> 'Arteries' corrected on the slide (0.5)
+  [HEARD] 'WINS' -> 'Veins' corrected on the slide (0.5)
+20:54:15 INFO    copilot.presentation.engine: planner: update Animals > Cardiovascular System (same frame)
+20:54:15 INFO    copilot.presentation.engine: concern 09eaa028d5f9 (transcription, applied=True): 1 element(s); slide shows 'Arteries'
+20:54:15 INFO    copilot.presentation.engine: concern 4007d5405795 (transcription, applied=True): 0 element(s); slide shows 'Veins'
+  [SLIDE] update 'Cardiovascular System' [key_points] v6 (8 items)
+  [SLIDE] add    'Cardiovascular System' [members] v1 (1 items)
+20:54:15 INFO    copilot.presentation.engine: image search 'arteries diagram' (diagram) for 'Cardiovascular System'
+  [  232.4s] And allow the extent of oxygen, nutrients and waste products with blood tissues. (1342 ms)
+  [SLIDE] update 'Cardiovascular System' [key_points] v7 (7 items)
+  [SLIDE] update 'Cardiovascular System' [members] v2 (1 items)
+20:54:19 INFO    copilot.visuals.finder: image search 'arteries diagram': 2 slow download(s) dropped
+20:54:20 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.62) for the interpretation
+20:54:21 INFO    copilot.visuals.finder: image search 'arteries diagram' (diagram, labels preferred): 1 candidate(s), 1 accepted (1 labelled), 5.88 s {'search_s': 3.12, 'download_s': 1.36, 'clip_s': 0.26, 'full_s': 1.09, 'total_s': 5.88}
+  [IMAGE] 'arteries diagram' -> File:Artery.svg (5.9 s)
+20:54:21 INFO    copilot.presentation.engine: image 'arteries diagram' on 'Cardiovascular System': File:Artery.svg
+  [SLIDE] update 'Cardiovascular System' [members] v3 (2 items)
+  [  238.0s] Circulation loop, pulmonary circulation and systematic circulation. (1082 ms)
+  [UNDERSTAND] Animals > Veins (sibling_concept) acts=definition,explanation hint=concept lines=3 via groq_main#1 5700 ms
+               Veins return deoxygenated blood to the heart and enable transport of oxygen, nutrients, and waste.
+20:54:26 INFO    copilot.presentation.engine: planner: continue Animals > Veins (new facet)
+20:54:26 INFO    copilot.presentation.engine: slide 'Veins' waits for the min dwell time
+  [SLIDE] update 'Cardiovascular System' [members] v4 (2 items)
+20:54:26 INFO    copilot.presentation.engine: image search 'veins diagram' (diagram) for 'Veins'
+20:54:26 INFO    copilot.visuals.service: reference figure byjus.com p.5 f2 for 'veins diagram': label 0.524, clip 0.271 margin +0.032 -> used
+  [IMAGE] 'veins diagram' -> byjus.com p.5 (0.3 s)
+20:54:26 INFO    copilot.presentation.engine: image 'veins diagram' on 'Veins': byjus.com p.5
+20:54:28 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.58) for the interpretation
+  [  249.8s] Check the link below. (988 ms)
+  [SLIDE] add    'Veins' [definition] v1 (3 items)
+  [UNDERSTAND] Animals > Circulation Types (sibling_concept) acts=classification hint=hierarchy lines=1 via groq_main#2 2320 ms
+               Introduced pulmonary and systemic circulation loops as parts of the circulatory system.
+20:54:31 INFO    copilot.presentation.engine: planner: continue Animals > Circulation Types (new facet)
+20:54:31 INFO    copilot.presentation.engine: slide 'Circulation Types' waits for the min dwell time
+20:54:31 INFO    copilot.presentation.engine: image search 'circulation loop diagram' (diagram) for 'Circulation Types'
+  [  251.7s] Great. (690 ms)
+  [  254.6s] (dropped: filler_hallucination) Thank you.
+  [SLIDE] add    'Circulation Types' [hierarchy] v1 (1 items)
+20:54:37 INFO    copilot.visuals.finder: image search 'circulation loop diagram' (diagram, labels preferred): 1 candidate(s), 1 accepted (0 labelled), 6.32 s {'search_s': 2.59, 'download_s': 1.06, 'clip_s': 0.25, 'full_s': 2.39, 'total_s': 6.32}
+  [IMAGE] 'circulation loop diagram' -> File:General circulation-vorticity diagram.svg (6.3 s)
+20:54:37 INFO    copilot.presentation.engine: image 'circulation loop diagram' on 'Circulation Types': File:General circulation-vorticity diagram.svg
+  [SLIDE] update 'Circulation Types' [hierarchy] v2 (2 items)
+  [  258.1s] Vignesh neighborhood of the planet. (7990 ms)
+  [  260.3s] Let's go interview a patient. (6798 ms)
+  [UNDERSTAND] Animals > Circulation Types (same_concept) acts=- hint=none lines=3 via groq_main#1 2119 ms
+20:54:48 INFO    copilot.presentation.engine: planner: noop Animals > Circulation Types (nothing to display)
+  [  263.3s] My name is Sundamh at DIGONOMEDICINE. I am a PhD at DIGONOMEDICINE. (11125 ms)
+  [  268.0s] Anyways, I'll leave you with a few key points and then we'll move on. (7632 ms)
+20:54:58 INFO    copilot.materials.service: material ready: Animals - Summary - 13 Oct 2026 (summary, 1 LLM calls, 1190 tokens)
+[MATERIAL] Animals - Summary - 13 Oct 2026 ready, 1 LLM call, 1,190 tokens
+  [SLIDE] add    'Summary' [key_points] v1 (4 items)
+  [  273.2s] Otherwise, we will have a summary slide. (5970 ms)
+20:55:00 INFO    copilot.materials.service: material ready: Animals - Key concepts - 13 Oct 2026 (concepts, 1 LLM calls, 1047 tokens)
+[MATERIAL] Animals - Key concepts - 13 Oct 2026 ready, 1 LLM call, 1,047 tokens
+  [SLIDE] add    'Key concepts' [facts] v1 (1 items)
+  [SLIDE] add    'Key concepts' [facts] v1 (1 items)
+  [UNDERSTAND] Animals > Circulation Types (digression) acts=transition hint=none lines=2 via groq_main#2 2030 ms
+               Introduce a patient interview scenario
+20:55:00 INFO    copilot.presentation.engine: planner: noop Animals > Circulation Types (digression)
+  [  276.2s] Any key points that are there? (8605 ms)
+  [  278.5s] Read it without. (7989 ms)
+20:55:06 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.57) for the interpretation
+  [UNDERSTAND] Animals > Circulation Types (same_concept) acts=- hint=none lines=3 via groq_main#2 2781 ms
+20:55:09 INFO    copilot.presentation.engine: planner: noop Animals > Circulation Types (nothing to display)
+20:55:14 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.58) for the interpretation
+  [UNDERSTAND] Animals > Circulation Types (same_concept) acts=- hint=none lines=1 via groq_main#1 1771 ms
+               No new content added
+20:55:16 INFO    copilot.presentation.engine: planner: noop Animals > Circulation Types (nothing to display)
+  [  282.6s] The summary is related. The key concept is summary. The other two are notes. (7101 ms)
+20:55:18 INFO    copilot.assess.service: quiz questions: 5 written (1 LLM calls, 1316 tokens)
+[QUIZ] 5 questions ready, 1 LLM call, 1,316 tokens
+[PAUSE] paused: what is said now is not put on slides (Resume to continue)
+20:55:24 WARNING copilot.stt.pipeline: STT backlog: 4 utterances pending
+20:55:27 WARNING copilot.stt.pipeline: STT backlog: 5 utterances pending
+20:55:29 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.54) for the interpretation
+  [UNDERSTAND] Animals > Circulation Types (same_concept) acts=- hint=none lines=1 via groq_main#1 4534 ms
+               No new content added; teacher discussed summary relevance.
+20:55:33 INFO    copilot.presentation.engine: planner: noop Animals > Circulation Types (nothing to display)
+20:55:40 WARNING copilot.stt.pipeline: STT backlog: 6 utterances pending
+  [  292.2s] (paused, not used) North India survey. This is North India survey. Please come up with it. (27668 ms)
+20:55:41 INFO    copilot.understanding.service: paused: not interpreted: North India survey. This is North India survey. Please come up with it.
+  [  297.2s] (paused, not used) That's question two. (26286 ms)
+20:55:42 INFO    copilot.understanding.service: paused: not interpreted: That's question two.
+  [  299.1s] (paused, not used) This is me. (25113 ms)
+20:55:43 INFO    copilot.understanding.service: paused: not interpreted: This is me.
+  [  303.0s] (dropped: filler_hallucination) Thank you.
+  [  304.5s] (paused, not used) That's all for now. (20366 ms)
+20:55:44 INFO    copilot.understanding.service: paused: not interpreted: That's all for now.
+  [  308.4s] (paused, not used) Maybe there's enough. (18160 ms)
+20:55:45 INFO    copilot.understanding.service: paused: not interpreted: Maybe there's enough.
+  [  321.7s] (paused, not used) But 21 is gonna be? (5341 ms)
+20:55:46 INFO    copilot.understanding.service: paused: not interpreted: But 21 is gonna be?
+  [  324.5s] (paused, not used) Super magic magic, 20 minutes, character, written down too. (6306 ms)
+20:55:52 INFO    copilot.understanding.service: paused: not interpreted: Super magic magic, 20 minutes, character, written down too.
+  [  329.1s] (paused, not used) I-21, I try. (4927 ms)
+20:55:53 INFO    copilot.understanding.service: paused: not interpreted: I-21, I try.
+  [  331.4s] (paused, not used) I can even have a video of the honest. (3790 ms)
+20:55:54 INFO    copilot.understanding.service: paused: not interpreted: I can even have a video of the honest.
+  [  333.6s] (paused, not used) Mother, roll number 21. Mother, what did 21? Mother, 21, 21, 26. (1457 ms)
+20:55:59 INFO    copilot.understanding.service: paused: not interpreted: Mother, roll number 21. Mother, what did 21? Mother, 21, 21, 26.
+  [  344.7s] (paused, not used) Buddy. (727 ms)
+20:56:04 INFO    copilot.understanding.service: paused: not interpreted: Buddy.
+  [  347.8s] (paused, not used) Seventh. (673 ms)
+20:56:07 INFO    copilot.understanding.service: paused: not interpreted: Seventh.
+  [  350.1s] (paused, not used) I have been doing it and it's... (1080 ms)
+20:56:10 INFO    copilot.understanding.service: paused: not interpreted: I have been doing it and it's...
+  [  352.0s] (paused, not used) And it's stuck. That's what a grin of the gun does in the video. (2550 ms)
+20:56:16 INFO    copilot.understanding.service: paused: not interpreted: And it's stuck. That's what a grin of the gun does in the video.
+  [  359.6s] (paused, not used) Zolocal, that's the point. What's that? Mark, do you have any clothes? No. Do you have any digestion photos? I have to go to the beginning of the mouth. (5752 ms)
+20:56:33 INFO    copilot.understanding.service: paused: not interpreted: Zolocal, that's the point. What's that? Mark, do you have any clothes? No. Do you have any digestion photos? I have to go to the beginning of the mouth.
+  [  370.5s] (paused, not used) Viral perturbations. (5040 ms)
+20:56:34 INFO    copilot.understanding.service: paused: not interpreted: Viral perturbations.
+  [  377.4s] (paused, not used) Nitroplatin. (1320 ms)
+20:56:37 INFO    copilot.understanding.service: paused: not interpreted: Nitroplatin.
+20:56:57 WARNING copilot.stt.pipeline: STT backlog: 4 utterances pending
+20:57:10 WARNING copilot.stt.pipeline: STT backlog: 5 utterances pending
+20:57:13 WARNING copilot.stt.pipeline: STT backlog: 6 utterances pending
+20:57:16 WARNING copilot.stt.pipeline: STT backlog: 7 utterances pending
+  [  379.8s] (paused, not used) Mmm, buh-duh-buh-duh-buh-buh-buh-buh, Eeeeh, buh-buh-buh-buh-buh-buh-buh-buh (37007 ms)
+20:57:17 INFO    copilot.understanding.service: paused: not interpreted: Mmm, buh-duh-buh-duh-buh-buh-buh-buh, Eeeeh, buh-buh-buh-buh-buh-buh-buh-buh
+20:57:19 WARNING copilot.stt.pipeline: STT backlog: 7 utterances pending
+  [  383.3s] (paused, not used) Sheeps, 0.3. Witch vessel carries a brittle spoon. (33846 ms)
+20:57:19 INFO    copilot.understanding.service: paused: not interpreted: Sheeps, 0.3. Witch vessel carries a brittle spoon.
+  [  393.0s] (paused, not used) Thank you for watching! (27554 ms)
+20:57:20 INFO    copilot.understanding.service: paused: not interpreted: Thank you for watching!
+  [  395.3s] (dropped: filler_hallucination) Thank you.
+  [  397.3s] (paused, not used) What is the right side of the book? (23886 ms)
+20:57:21 INFO    copilot.understanding.service: paused: not interpreted: What is the right side of the book?
+20:57:22 WARNING copilot.stt.pipeline: STT backlog: 4 utterances pending
+20:57:25 WARNING copilot.stt.pipeline: STT backlog: 5 utterances pending
+  [  402.7s] (paused, not used) Wait, what is the name of the intestine? It's called a large intestine. Yeah, a small intestine. It's called a small-celled protein. Exactly. Which part of the intestine is in between here and there? (15983 ms)
+20:57:26 INFO    copilot.understanding.service: paused: not interpreted: Wait, what is the name of the intestine? It's called a large intestine. Yeah, a small intestine. It's called a small-celled protein. Exactly. Which part of the intestine is in between here and there?
+  [  414.9s] (paused, not used) Mmm. (13791 ms)
+20:57:27 INFO    copilot.understanding.service: paused: not interpreted: Mmm.
+  [  416.3s] (paused, not used) What do we do with it? The imaging fluid. (12331 ms)
+20:57:28 INFO    copilot.understanding.service: paused: not interpreted: What do we do with it? The imaging fluid.
+  [  418.6s] (paused, not used) Yes. (9807 ms)
+20:57:29 INFO    copilot.understanding.service: paused: not interpreted: Yes.
+  [  423.5s] (paused, not used) Looked at the new six. (7491 ms)
+20:57:30 INFO    copilot.understanding.service: paused: not interpreted: Looked at the new six.
+  [  425.7s] (paused, not used) Shit! (5580 ms)
+20:57:30 INFO    copilot.understanding.service: paused: not interpreted: Shit!
+  [  428.0s] (paused, not used) The last thing I want to say is that I don't know what to say. (7715 ms)
+20:57:37 INFO    copilot.understanding.service: paused: not interpreted: The last thing I want to say is that I don't know what to say.
+  [  432.9s] (paused, not used) Eukaryotic, digestive, cytoplasm, prokaryotes, (6932 ms)
+20:57:40 INFO    copilot.understanding.service: paused: not interpreted: Eukaryotic, digestive, cytoplasm, prokaryotes,
+  [  438.8s] (dropped: empty) 
+  [  449.1s] (paused, not used) It's so weird. Why does it seem to be very stressful? (1236 ms)
+20:57:52 INFO    copilot.understanding.service: paused: not interpreted: It's so weird. Why does it seem to be very stressful?
+  [  454.4s] (paused, not used) Have a nice day. (678 ms)
+20:57:54 INFO    copilot.understanding.service: paused: not interpreted: Have a nice day.
+20:58:18 INFO    copilot.materials.service: material ready: Animals - Notes - 13 Oct 2026.pdf (notes, 2 LLM calls, 2891 tokens)
+[MATERIAL] Animals - Notes - 13 Oct 2026.pdf ready, 2 LLM calls, 2,891 tokens
+20:58:24 INFO    copilot.materials.service: material ready: Animals - Assignment - 13 Oct 2026.pdf (assignment, 1 LLM calls, 1038 tokens)
+[MATERIAL] Animals - Assignment - 13 Oct 2026.pdf ready, 1 LLM call, 1,038 tokens
+20:58:37 WARNING copilot.stt.pipeline: STT backlog: 4 utterances pending
+  [  460.1s] (paused, not used) Trachin, trachin, trachin, North Spine... (35008 ms)
+20:58:40 INFO    copilot.understanding.service: paused: not interpreted: Trachin, trachin, trachin, North Spine...
+  [  484.9s] (paused, not used) Yes. (17344 ms)
+20:58:40 INFO    copilot.understanding.service: paused: not interpreted: Yes.
+  [  486.0s] (paused, not used) Thank you. (14566 ms)
+20:58:41 INFO    copilot.understanding.service: paused: not interpreted: Thank you.
+20:58:45 INFO    copilot.materials.service: material ready: Animals - Assignment - 13 Oct 2026.pdf (assignment, 1 LLM calls, 1029 tokens)
+[MATERIAL] Animals - Assignment - 13 Oct 2026.pdf ready, 1 LLM call, 1,029 tokens
+  [  494.9s] (paused, not used) And that's it. (11364 ms)
+20:58:45 INFO    copilot.understanding.service: paused: not interpreted: And that's it.
+  [  499.1s] (paused, not used) Send them over. (8774 ms)
+20:58:46 INFO    copilot.understanding.service: paused: not interpreted: Send them over.
+  [  503.2s] (paused, not used) And that's it. I'll see you in the next video. (5429 ms)
+20:58:49 INFO    copilot.understanding.service: paused: not interpreted: And that's it. I'll see you in the next video.
+  [  507.9s] (paused, not used) That's all for today. See you next time. (1816 ms)
+20:58:50 INFO    copilot.understanding.service: paused: not interpreted: That's all for today. See you next time.
+  [  513.5s] (paused, not used) This elevates the movement. (815 ms)
+20:58:53 INFO    copilot.understanding.service: paused: not interpreted: This elevates the movement.
+20:59:02 INFO    copilot.materials.service: material ready: Animals - Assignment - 13 Oct 2026.pdf (assignment, 1 LLM calls, 962 tokens)
+[MATERIAL] Animals - Assignment - 13 Oct 2026.pdf ready, 1 LLM call, 962 tokens
+  [  525.0s] (paused, not used) I'm not going to tell you what I'm talking about. (6298 ms)
+20:59:11 INFO    copilot.understanding.service: paused: not interpreted: I'm not going to tell you what I'm talking about.
+  [  527.5s] (dropped: filler_hallucination) Thank you.
+  [  529.3s] (paused, not used) Sanna must be able to see it. Sanna must be able to see it. (7128 ms)
+20:59:21 INFO    copilot.understanding.service: paused: not interpreted: Sanna must be able to see it. Sanna must be able to see it.
+  [  539.9s] (paused, not used) I've been at the next place you've responded, you know. (2964 ms)
+20:59:23 INFO    copilot.understanding.service: paused: not interpreted: I've been at the next place you've responded, you know.
+  [  552.2s] (paused, not used) You'll see a minute there. (963 ms)
+20:59:32 INFO    copilot.understanding.service: paused: not interpreted: You'll see a minute there.
+  [  555.6s] (paused, not used) And if you know, live on the road of digestive system, first step in making a new A-1000. (1666 ms)
+20:59:40 INFO    copilot.understanding.service: paused: not interpreted: And if you know, live on the road of digestive system, first step in making a new A-1000.
+  [  564.7s] (paused, not used) What's that? (762 ms)
+20:59:44 INFO    copilot.understanding.service: paused: not interpreted: What's that?
+  [  566.0s] (paused, not used) And that's it. (727 ms)
+20:59:45 INFO    copilot.understanding.service: paused: not interpreted: And that's it.
+[END]   finishing lecture understanding (0 buffered lines) ...
+[SHARE] stopped
+[ENDED] session 20261013-204941-61c1: 85 segments, 736 words, state v130, 501 events logged
+        CommandReceived=37, ConceptSignal=39, ConcernRaised=7, DeckState=26, ImageChoices=5, ImageReady=7, ImageRequested=7, InterpretRequested=24, InterpretationReady=24, LifecycleChanged=6, ShareChanged=4, SlideContextChanged=14, SlideOverflow=2, SlidePatch=36, StateChanged=130, ThemeChanged=2, TranscriptFinal=85, UtteranceClassified=39, UtteranceDropped=7
+        stt: 85 published, 7 dropped, latency p50=2640 ms p95=27553 ms max=37007 ms
+        understanding: 24 interpretations (24 by LLM, 0 fallbacks, 1 repaired), max 8 calls/min, prompt tokens max=2136 avg=1974, latency p50=2577 ms max=8213 ms
+        presentation: 7 slides; planner ops {'new': 1, 'noop': 12, 'teacher_delete_item': 1, 'retitle': 1, 'update': 7, 'continue': 3}; revisions 0, corrections shown 2, shown as said 0
+        images: {'requests': 7, 'found': 5, 'none': 2, 'reference': 3}; slides with an image 5/10
+          1. [key_points] Digestive System [part 1]  (v6, ['points', 'image'])
+          2. [key_points] Digestive System [part 2]  (v9, ['points'])
+          3. [key_points] Digestive System [part 3]  (v4, ['points'])
+          4. [key_points] Cardiovascular System [part 1]  (v7, ['points', 'image'])
+          5. [members] Cardiovascular System [part 2]  (v4, ['definition', 'image'])
+          6. [definition] Veins  (v1, ['definition', 'points', 'image'])
+          7. [hierarchy] Circulation Types  (v2, ['hierarchy', 'image'])
+          8. [key_points] Summary  (v1, ['points'])
+          9. [facts] Key concepts [part 1]  (v1, ['facts'])
+          10. [facts] Key concepts [part 2]  (v1, ['facts'])
+        providers: {'groq_main#1': 16, 'groq_main#2': 8}; triggers: {'pause': 4, 'max_wait': 5, 'words': 2, 'boundary': 13}; outline: ['Animals > Brahman, Digestive System, Cardiovascular System, Veins, Circulation Types']; concerns: 7
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261013-204941-61c1\session.sqlite

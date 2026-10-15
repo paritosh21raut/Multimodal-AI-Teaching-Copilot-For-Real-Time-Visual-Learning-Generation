@@ -10,6 +10,7 @@ the teacher said; the teacher can switch either way from the control view.
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import re
 import time
@@ -29,6 +30,7 @@ from copilot.core.events import (
     ImageReady,
     ImageRequested,
     InterpretationReady,
+    LiveCue,
     Lifecycle,
     LifecycleChanged,
     SlideContextChanged,
@@ -37,13 +39,15 @@ from copilot.core.events import (
 )
 from copilot.core.state import Concern, LectureStateStore
 from copilot.presentation.composer import (
-    BODY_BUDGET_PX, TERM_SUFFIX, add_point, body_height, clear_provisional, continue_numbering, describe, edit_text,
+    BODY_BUDGET_PX, TERM_SUFFIX, add_point, body_height, clear_cue_list, clear_provisional, continue_numbering,
+    describe, edit_text, set_cue_list, set_live_definition, clear_block, LIVE_DEF_PREFIX,
     element_texts, fits,
     fits_unshrunk, frame_slide, image_of, is_about, is_duplicate, is_small, member_of, merge, rejoin, remove_elements,
     revise_item, set_provisional, split_to_fit, substitute, teacher_items, title_slide, with_image, without_image,
 )
 from copilot.presentation.content import Piece, clean, pieces_and_chain
 from copilot.presentation.deck import Deck
+from copilot.core.memory import titles_match
 from copilot.presentation.planner import Decision, Frame, Signal, Working, decide
 from copilot.presentation.spec import ImageBlock, SlideSpec
 from copilot.visuals.policy import FrameVisual, blocked, names_a_thing, norm_query, sibling_hint
@@ -55,6 +59,7 @@ TICK_S = 0.25
 APPLY_WAIT_S = 5.0
 MAX_SIGNALS = 300
 MAX_CORRECTIONS = 100
+CUE_TIME_SLACK_S = 0.6  # a final line's start vs the cue sentence's start from the live pass (word timings, splits)
 IMAGE_RETRY_S = 60.0  # lecture seconds before a failed image search (network, timeout) is tried again
 # An automatic image must be about the slide it goes on: query vs slide text (MiniLM cosine). Live test 2026-10-06
 # put "human digestive system diagram" on the quadratic-equation slide (0.07); the weakest right pairing recorded
@@ -69,6 +74,10 @@ class PresentationSettings:
     part_dwell_s: float = 6.0   # the next part of the same frame (the slide is full): a short wait is enough
     provisional: bool = True
     provisional_ttl_s: float = 20.0
+    cues: bool = True            # F-013: an announced topic / a named list shows at once, before the interpretation
+    cue_ttl_s: float = 30.0      # an announced slide nothing confirmed (no content) is taken down after this
+    cue_list_ttl_s: float = 40.0
+    live_def_ttl_s: float = 20.0  # S1b: a definition being said, not interpreted after this, is taken down
     shift_threshold: float = 0.75
     title_slide: bool = True
 
@@ -111,6 +120,46 @@ class Tentative:
 
 
 @dataclass
+class CueSlide:
+    """F-013: the slide opened from a spoken announcement, before any interpretation of it."""
+    slide_id: str
+    segment_id: str
+    name: str
+    previous: Optional[str]   # the working slide before it (restored if the announcement comes to nothing)
+    expires: float
+    adopted: bool = False     # an interpretation of the announcement (or later lines) reached it
+    utterance: int = 0        # S1b: the utterance that announced it (the title grows while it is said)
+    start: float = -1.0       # lecture time the announcing sentence started (-1 = unknown)
+    mark: int = 0             # final lines received when it opened (order fallback without times)
+
+
+@dataclass
+class CueList:
+    """F-013: list members named by the teacher, shown as a provisional tree until the interpretation of their lines."""
+    slide_id: str
+    head: str
+    items: list[str]
+    count: int
+    segments: set[str]
+    expires: float
+    utterances: set[int] = field(default_factory=set)
+    start: float = -1.0
+    mark: int = 0
+
+
+@dataclass
+class LiveDef:
+    """F-013 S1b: a definition shown as it is being said, until the interpretation of its line."""
+    slide_id: str
+    term: str
+    utterance: int
+    segments: set[str]
+    expires: float
+    start: float = -1.0
+    mark: int = 0
+
+
+@dataclass
 class EngineStats:
     ops: Counter = field(default_factory=Counter)
     slides: int = 0
@@ -135,6 +184,16 @@ def provisional_text(keyphrases: list[str], max_phrases: int = 3) -> str:
         if len(chosen) == max_phrases:
             break
     return " · ".join(chosen)
+
+
+def mentions(it, name: str) -> bool:
+    """The interpretation's content talks about the announced name (every longer word of it appears): a misheard
+    announcement ("momentum" for matter) does not, so its slide takes the model's title instead."""
+    words = [w[:5] for w in re.findall(r"[a-z0-9]{4,}", name.lower())]
+    if not words:
+        return False
+    text = json.dumps(it.model_dump(include={"acts", "subtopic", "topic"}), ensure_ascii=False).lower()
+    return all(w in text for w in words)
 
 
 def contains_words(text: str, words: str) -> bool:
@@ -167,6 +226,14 @@ class PresentationEngine:
         self._tentative: Optional[Tentative] = None
         self._placements: Optional[list[tuple[Piece, set[tuple[str, str]]]]] = None  # collected by _place
         self._prov: Optional[tuple[str, str, float]] = None  # (slide id, segment id, expires at)
+        self._cue: Optional[CueSlide] = None
+        self._cue_list: Optional[CueList] = None
+        self._live_def: Optional[LiveDef] = None
+        self._seg_order: OrderedDict[str, int] = OrderedDict()  # segment id -> arrival number (bounded)
+        self._seg_start: OrderedDict[str, float] = OrderedDict()  # segment id -> lecture time it starts (bounded)
+        self._seg_n = 0
+        self._hold_screen = False  # an earlier unit is placed while an announced slide is on screen
+        self._cue_keep = ""  # the announced name, kept as the title of the slide that holds its content
         self._boundary_seg: Optional[str] = None  # a concept boundary not yet interpreted: the slide may change
         self._live_id: Optional[str] = None
         self._live_since = 0.0
@@ -186,7 +253,7 @@ class PresentationEngine:
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
         self.bus.subscribe("presentation", self._on_event, [
-            InterpretationReady, ConceptSignal, CommandReceived, ConcernResolved, SlideOverflow,
+            InterpretationReady, ConceptSignal, LiveCue, CommandReceived, ConcernResolved, SlideOverflow,
             LifecycleChanged, DeckState, ImageReady,
         ])
         self._tasks = [asyncio.create_task(self._ticker(), name="presentation:ticker")]
@@ -199,10 +266,19 @@ class PresentationEngine:
         self._tasks = []
 
     async def flush_pending(self) -> None:
-        """Lecture ending: put slides still waiting for the dwell time into the deck."""
+        """Lecture ending: put slides still waiting for the dwell time into the deck; nothing provisional stays."""
         async with self._lock:
             while self._pending:
                 await self._add_to_deck(self._pending.pop(0))
+            ld, self._live_def = self._live_def, None
+            spec = self._spec(ld.slide_id) if ld is not None else None
+            if spec is not None:
+                await self._commit(clear_block(spec, LIVE_DEF_PREFIX + spec.id))
+            await self._drop_cue()
+            cl, self._cue_list = self._cue_list, None
+            spec = self._spec(cl.slide_id) if cl is not None else None
+            if spec is not None:
+                await self._commit(clear_cue_list(spec))
 
     def now(self) -> float:
         return (self.clock() - self._t0) * self.speed
@@ -213,6 +289,8 @@ class PresentationEngine:
                 await self._on_interpretation(event)
             elif isinstance(event, ConceptSignal):
                 await self._on_signal(event)
+            elif isinstance(event, LiveCue):
+                await self._on_live_cue(event)
             elif isinstance(event, ConcernResolved):
                 await self._on_resolved(event)
             elif isinstance(event, CommandReceived):
@@ -249,6 +327,7 @@ class PresentationEngine:
                         await self._publish_context()
                     if self._prov and self.now() >= self._prov[2]:
                         await self._clear_provisional()
+                    await self._expire_cues()
             except asyncio.CancelledError:
                 raise
             except Exception:
@@ -265,6 +344,13 @@ class PresentationEngine:
             return self.deck.get(slide_id)
         except KeyError:
             return None
+
+    def _in_deck(self, slide_id: str) -> bool:
+        try:
+            self.deck.get(slide_id)
+            return True
+        except KeyError:
+            return False
 
     def _all_specs(self) -> list[SlideSpec]:
         return self.deck.slides + list(self._pending)
@@ -299,8 +385,11 @@ class PresentationEngine:
 
     async def _open(self, spec: SlideSpec, meta: SlideMeta, exempt: bool = False, adopt: bool = True) -> None:
         self._meta[spec.id] = meta
-        if not adopt:  # content for an earlier frame: into the deck without taking the screen
-            await self.deck.add(spec, activate=False)
+        if self._hold_screen:  # an earlier unit's slide never replaces the announced one on screen (F-013)
+            adopt = False
+        if not adopt:  # content for an earlier frame: into the deck without taking the screen, behind its part
+            prev = spec.continuation_of if spec.continuation_of and self._in_deck(spec.continuation_of) else None
+            await self.deck.add(spec, activate=False, after=prev)
             self.stats.slides += 1
             return
         if not self._pending and (exempt or self._dwell_ok()):
@@ -435,6 +524,25 @@ class PresentationEngine:
         self._signals[ev.segment_id] = Signal(ev.shift_score, ev.boundary)
         while len(self._signals) > MAX_SIGNALS:
             self._signals.popitem(last=False)
+        self._seg_n += 1
+        self._seg_order[ev.segment_id] = self._seg_n
+        self._seg_start[ev.segment_id] = ev.start
+        while len(self._seg_order) > MAX_SIGNALS:
+            self._seg_order.popitem(last=False)
+        while len(self._seg_start) > MAX_SIGNALS:
+            self._seg_start.popitem(last=False)
+        if ev.utterance:  # the final line of an utterance whose partials already showed something (S1b)
+            if self._cue is not None and self._cue.utterance == ev.utterance:
+                self._cue.segment_id = ev.segment_id
+            if self._cue_list is not None and ev.utterance in self._cue_list.utterances:
+                self._cue_list.segments.add(ev.segment_id)
+            if self._live_def is not None and self._live_def.utterance == ev.utterance:
+                self._live_def.segments.add(ev.segment_id)
+        if self.s.cues:
+            if ev.announce:
+                await self._on_announce(ev)
+            if ev.list_items or ev.list_count or ev.item:
+                await self._on_list_cue(ev)
         if ev.boundary:
             self._boundary_seg = ev.segment_id
             if self._prov:
@@ -465,6 +573,246 @@ class PresentationEngine:
         if spec is not None:
             await self._commit(clear_provisional(spec))
 
+    # ---- spoken cues (F-013) --------------------------------------------------------------------
+    def _open_cue_slide(self) -> Optional[str]:
+        return self._cue.slide_id if self._cue is not None else None
+
+    async def _on_live_cue(self, ev: LiveCue) -> None:
+        """F-013 S1b: structure heard while the teacher is still speaking (partial transcript)."""
+        if not self.s.cues:
+            return
+        if ev.announce:
+            await self._on_announce(ev)
+        if ev.list_items or ev.list_count or ev.item:
+            await self._on_list_cue(ev)
+        if ev.term and ev.definition:
+            await self._on_live_definition(ev)
+
+    async def _on_live_definition(self, ev: LiveCue) -> None:
+        live = self.deck.live
+        meta = self._meta.get(live.id) if live is not None else None
+        if live is None or meta is None or meta.is_title or not self.deck.following:
+            return
+        announced = self._cue is not None and self._cue.slide_id == live.id and not self._cue.adopted
+        if not (announced or titles_match(ev.term, live.title) or titles_match(ev.term, meta.frame.facet)
+                or titles_match(ev.term, meta.frame.topic)):
+            return  # only the subject of the slide on screen (precision: no card for a passing "X is ...")
+        if any(b.type == "definition" and not getattr(b, "provisional", False) and titles_match(b.term, ev.term)
+               for b in live.blocks):
+            return  # already defined: the teacher is elaborating
+        new = set_live_definition(live, ev.term, ev.definition)
+        if new is None:
+            return
+        await self._commit(new)
+        ld = self._live_def
+        if ld is None or ld.slide_id != live.id or ld.utterance != ev.utterance:
+            self._live_def = LiveDef(live.id, ev.term, ev.utterance, set(), self.now() + self.s.live_def_ttl_s,
+                                     start=ev.start, mark=self._mark(ev))
+        else:
+            ld.expires = self.now() + self.s.live_def_ttl_s
+
+    async def _on_announce(self, ev) -> None:
+        """The teacher announced a topic: its slide opens now, titled by the announcement and marked pending; the
+        interpretation of that unit fills, renames or (when nothing comes of it) removes it. `ev` is the final line's
+        ConceptSignal or, while the teacher is still speaking, a LiveCue (S1b: the title grows as it is said)."""
+        name = ev.announce
+        seg = getattr(ev, "segment_id", "")
+        if not self.deck.following:
+            return  # the teacher is looking at another slide: nothing jumps
+        cue = self._cue
+        if cue is not None and not cue.adopted:
+            spec = self._spec(cue.slide_id)
+            if spec is not None and teacher_items(spec) == 0:  # a second announcement before any content
+                same_line = bool(ev.utterance) and cue.utterance == ev.utterance  # heard further: the newest wins
+                if spec.title != name and (same_line or not titles_match(spec.title, name)):
+                    await self._commit(spec.model_copy(update={"title": name}))
+                    self._meta[spec.id].frame = Frame(self._meta[spec.id].frame.topic, name)
+                cue.segment_id = seg or (cue.segment_id if cue.utterance == ev.utterance else "")
+                cue.name, cue.expires, cue.utterance = name, self.now() + self.s.cue_ttl_s, ev.utterance
+                if not same_line:  # a newer announcement: what belongs to the slide starts from it
+                    cue.start, cue.mark = ev.start, self._mark(ev)
+                log.info("cue: announced slide renamed %r", name)
+                return
+        meta = self._meta.get(self._working_id or "")
+        if meta is not None and not meta.is_title and (titles_match(name, meta.frame.facet)
+                                                      or titles_match(name, meta.frame.topic)):
+            return  # the slide on screen already is about it
+        while self._pending:  # the teacher has moved on: waiting slides go into the deck behind the new one
+            await self.deck.add(self._pending.pop(0), activate=False)
+            self.stats.slides += 1
+        if meta is not None and not meta.is_title:
+            topic = meta.frame.topic
+        else:
+            topic = self.store.snapshot().setup.expected_topic or name
+        if self._cue is not None:
+            await self._drop_cue(keep_working=True)
+        spec = frame_slide(topic, name).model_copy(update={"pending": True})
+        if titles_match(topic, name):
+            spec = spec.model_copy(update={"title": name})
+        await self._open(spec, SlideMeta(Frame(topic, name)), exempt=True)
+        self._cue = CueSlide(spec.id, seg, name, self._working_id, self.now() + self.s.cue_ttl_s,
+                             utterance=ev.utterance, start=ev.start, mark=self._mark(ev))
+        self.stats.ops["cue_slide"] += 1
+        log.info("cue: %r shown at once (pending)", name)
+
+    async def _on_list_cue(self, ev) -> None:
+        """Members of a list as the teacher names them: a provisional tree on the slide on screen."""
+        live = self.deck.live
+        if live is None or not self.deck.following or live.id not in self._meta or self._meta[live.id].is_title:
+            return
+        cl = self._cue_list
+        seg = getattr(ev, "segment_id", "")
+        utts = {ev.utterance} if ev.utterance else set()
+        if ev.list_items or ev.list_count:
+            head = ev.list_head or live.title
+            if cl is not None and cl.slide_id == live.id and ev.utterance and ev.utterance in cl.utterances:
+                # the same sentence heard further (partials, then the final line): the list grows in place
+                items = list(ev.list_items) if len(ev.list_items) >= len(cl.items) else cl.items
+                cl.head, cl.items, cl.count = head, items, max(cl.count, ev.list_count)
+                cl.expires = self.now() + self.s.cue_list_ttl_s
+                if seg:
+                    cl.segments.add(seg)
+            else:
+                cl = CueList(live.id, head, list(ev.list_items), ev.list_count, {seg} if seg else set(),
+                             self.now() + self.s.cue_list_ttl_s, utts, start=ev.start, mark=self._mark(ev))
+        elif cl is not None and cl.slide_id == live.id and ev.item and len(cl.items) < max(cl.count, 2) \
+                and not any(titles_match(ev.item, x) for x in cl.items):
+            cl.items.append(ev.item)
+            if seg:
+                cl.segments.add(seg)
+            cl.utterances |= utts
+            cl.expires = self.now() + self.s.cue_list_ttl_s
+        else:
+            return
+        self._cue_list = cl
+        if len(cl.items) < 1:
+            return  # "three types of X": nothing to show until the first one is named
+        new = set_cue_list(live, cl.head, cl.items)
+        if new is not None:
+            await self._commit(new)
+            log.info("cue: list %r %s", cl.head, cl.items)
+
+    def _mark(self, ev) -> int:
+        """Arrival-order mark of a cue: its own final line, or the next final line for a cue heard live."""
+        return self._seg_n if isinstance(ev, ConceptSignal) else self._seg_n + 1
+
+    def _covers(self, segments: list[str], start: float, mark: int) -> bool:
+        """Does a unit hold speech from the cue's sentence on? By lecture time when both are known (a live cue and the
+        final lines are linked by when they were said; utterance numbers shift with sentence cuts), else by order."""
+        times = [self._seg_start.get(s, -1.0) for s in segments]
+        if start >= 0 and any(t >= 0 for t in times):
+            return any(t >= start - CUE_TIME_SLACK_S for t in times)
+        return any(self._seg_order.get(s, -1) >= mark for s in segments)
+
+    async def _settle_cues(self, ev: InterpretationReady) -> None:
+        """Before planning: does this unit belong to the announced slide (it holds the announcement or later lines)?
+        Its provisional list goes; the interpretation's own content replaces it."""
+        self._cue_keep = ""
+        cue = self._cue
+        if cue is not None:
+            later = self._covers(ev.segment_ids, cue.start, cue.mark)
+            frame = Frame.of(ev.interpretation)
+            # a unit just before the announcement that is already about it belongs there too (test28: two
+            # "Transpiration" slides)
+            about = titles_match(frame.facet, cue.name) or titles_match(frame.topic, cue.name)
+            prev = self._meta.get(cue.previous or "")
+            if later and not about and prev is not None and not prev.is_title and prev.frame.same(frame):
+                # the unit also holds the announcement, but the model says it is still the previous subject (the
+                # end of transpiration + "The third topic is condensation"): it stays on the previous slide
+                later = False
+            self._cue_keep = cue.name if (later or about) and mentions(ev.interpretation, cue.name) else ""
+            if later or about:
+                if not cue.adopted and self._spec(cue.slide_id) is not None:
+                    cue.adopted = True
+                    self._working_id = cue.slide_id
+            else:
+                self._hold_screen = True
+        ld = self._live_def
+        if ld is not None and self._covers(ev.segment_ids, ld.start, ld.mark):
+            self._live_def = None
+            spec = self._spec(ld.slide_id)
+            if spec is not None:
+                await self._commit(clear_block(spec, LIVE_DEF_PREFIX + spec.id))
+        cl = self._cue_list
+        if cl is not None and self._covers(ev.segment_ids, cl.start, cl.mark):
+            spec = self._spec(cl.slide_id)
+            if spec is not None:
+                await self._commit(clear_cue_list(spec))
+            if cl.count <= len(cl.items):
+                self._cue_list = None
+            else:  # more members announced than named so far: later ones still show
+                cl.items, cl.segments, cl.mark = [], set(), self._seg_n + 1
+                cl.start = -1.0 if cl.start < 0 else max(cl.start, max(
+                    (self._seg_start.get(s, -1.0) for s in ev.segment_ids), default=cl.start) + CUE_TIME_SLACK_S)
+
+    async def _superseded(self, it) -> None:
+        """Real content of the same kind replaces what was shown live on the slide receiving it, whatever lines it came
+        from (a provisional tree beside the real one made the slide overflow into a second part, audio run
+        20261016-032558-f162)."""
+        spec = self._spec(self._working_id)
+        if spec is None:
+            return
+        kinds = {a.act for a in it.acts}
+        new = spec
+        if kinds & {"classification", "groups"} or any(a.items.groups for a in it.acts):
+            new = clear_cue_list(new)
+            if self._cue_list is not None and self._cue_list.slide_id == spec.id:
+                self._cue_list = None
+        if "definition" in kinds:
+            new = clear_block(new, LIVE_DEF_PREFIX + spec.id)
+            if self._live_def is not None and self._live_def.slide_id == spec.id:
+                self._live_def = None
+        if new is not spec and new != spec:
+            await self._commit(new)
+
+    async def _confirm_cue(self) -> None:
+        """After placing an adopted unit: the announced slide is a normal slide once it holds content."""
+        cue = self._cue
+        if cue is None or not cue.adopted:
+            return
+        spec = self._spec(cue.slide_id)
+        if spec is None:
+            self._cue = None
+        elif teacher_items(spec) > 0:
+            if spec.pending:
+                await self._commit(spec.model_copy(update={"pending": False}))
+            self._cue = None
+            log.info("cue: %r confirmed as %r", cue.name, spec.title)
+
+    async def _expire_cues(self) -> None:
+        ld = self._live_def
+        if ld is not None and self.now() >= ld.expires:
+            self._live_def = None
+            spec = self._spec(ld.slide_id)
+            if spec is not None:
+                await self._commit(clear_block(spec, LIVE_DEF_PREFIX + spec.id))
+        if self._cue is not None and self.now() >= self._cue.expires:
+            await self._drop_cue()
+        cl = self._cue_list
+        if cl is not None and self.now() >= cl.expires:
+            self._cue_list = None
+            spec = self._spec(cl.slide_id)
+            if spec is not None:
+                await self._commit(clear_cue_list(spec))
+
+    async def _drop_cue(self, keep_working: bool = False) -> None:
+        """An announced slide nothing came of: removed while it is still empty (else it simply stays)."""
+        cue, self._cue = self._cue, None
+        if cue is None:
+            return
+        spec = self._spec(cue.slide_id)
+        if spec is None:
+            return
+        if teacher_items(spec) > 0:
+            if spec.pending:
+                await self._commit(spec.model_copy(update={"pending": False}))
+            return
+        await self.deck.remove(spec.id)
+        self._meta.pop(spec.id, None)
+        if self._working_id == spec.id and not keep_working:
+            self._working_id = cue.previous if self._spec(cue.previous) is not None else None
+        log.info("cue: %r came to nothing; its slide was removed", cue.name)
+
     # ---- refined path -------------------------------------------------------------------------
     async def _on_interpretation(self, ev: InterpretationReady) -> None:
         if not await self.store.wait_applied(ev.request_id, APPLY_WAIT_S):
@@ -475,6 +823,8 @@ class PresentationEngine:
             await self._clear_provisional()
         if self._boundary_seg in ev.segment_ids:
             self._boundary_seg = None
+        await self._settle_cues(ev)
+        await self._superseded(it)
         revised = await self._apply_revisions(ev)
         frame = Frame.of(it)
         carry = self._about_chain[1] if self._about_chain[0] == frame else ""
@@ -528,6 +878,8 @@ class PresentationEngine:
             self._fv(Frame.of(it)).hint = it.visual
         if nav is None and self._working_id and (placements or it.visual is not None):
             await self._consider_image(self._working_id)
+        self._hold_screen = False
+        await self._confirm_cue()
 
     async def _take_back(self, t: Tentative) -> tuple[list[Piece], set[tuple[str, str]]]:
         """Remove a confirmed topic's early items from the slides they were shown on; the caller places them on the
@@ -653,6 +1005,9 @@ class PresentationEngine:
                      relation: str = "") -> Optional[str]:
         """Carry out a decision; returns the id of the slide the content went to."""
         frame = d.frame
+        if d.op == "new" and self._open_cue_slide() == self._working_id and working is not None \
+                and not working.has_content:
+            d = Decision("retitle", frame, d.candidate, d.reason + "; on the announced slide")
         # a narrower concept with a name of its own (the female reproductive system) is no supporting content: it
         # gets its own slide like its siblings (live test 2026-10-06: female stayed on the definition, male did not)
         own = relation == "sub_concept" and names_a_thing(frame.facet)
@@ -673,6 +1028,10 @@ class PresentationEngine:
             assert spec is not None
             fresh = frame_slide(frame.topic, frame.facet)
             title = spec.title if spec.id in self._teacher_titles else fresh.title  # the teacher's title stays
+            if spec.id == self._open_cue_slide() and self._cue_keep and spec.id not in self._teacher_titles:
+                # the teacher named it ("The third topic is Mercury") and the content is about it: the model's
+                # broader label ("Planets") is the frame, the announced name stays the title (test21)
+                title = self._cue_keep
             spec = spec.model_copy(update={"title": title, "subtitle": fresh.subtitle, "facet": fresh.facet})
             self._meta[spec.id].frame = frame
             return await self._place(spec, False, frame, pieces)

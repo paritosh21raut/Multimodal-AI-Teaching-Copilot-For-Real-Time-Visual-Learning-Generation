@@ -1,0 +1,545 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (11.8 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_1         openai/gpt-oss-120b            58k of 200k tokens IN USE
+        GROQ_API_KEY_2         openai/gpt-oss-120b           165k of 200k tokens ok
+        GROQ_API_KEY_3         openai/gpt-oss-120b           178k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           128k of 200k tokens ok
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 266 lecture minutes
+
+[READY] session 20261014-130607-e07e
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+13:06:22 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (organelles, eukaryotic, digestive, cytoplasm, prokaryotic, mitochondria ...)
+13:13:32 INFO    copilot.notes.library: notes added 'byjus.com' -> 1c9e90f14d4c53ec (21 pages, text: True)
+13:13:34 INFO    copilot.notes.reference: reference index 'byjus.com': 67 chunks, 6 figures
+  [  405.9s] Hello everyone, let us learn about the human brain. The human brain controls nearly every aspect of the human body, ranging from psychological functions to cognitive abilities. It functions by receiving and sending signals via neurons to different parts of the body. The human brain just like the... (1204 ms)
+13:13:59 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.89) for the interpretation
+  [  420.9s] Most other mammals (494 ms)
+  [UNDERSTAND] Human Brain > Overview (new_topic) acts=definition,explanation hint=definition lines=1 via groq_main#1 2519 ms
+               Introduced the human brain and its role in controlling body functions through neuronal signaling.
+13:14:01 INFO    copilot.presentation.engine: planner: new Human Brain > Overview (first content slide)
+  [SLIDE] add    'Human Brain' [definition] v1 (2 items)
+13:14:01 INFO    copilot.presentation.engine: image search 'human brain' (photo) for 'Human Brain'
+13:14:02 INFO    copilot.visuals.service: reference figure byjus.com p.9 f6 for 'human brain': label 0.620, clip 0.232 margin -0.013 -> no
+13:14:02 INFO    copilot.visuals.service: reference figure byjus.com p.5 f4 for 'human brain': label 0.569, clip 0.321 margin +0.080 -> used
+13:14:02 INFO    copilot.visuals.service: reference figure byjus.com p.2 f2 for 'human brain': label 0.564, clip 0.228 margin +0.010 -> used
+13:14:02 INFO    copilot.visuals.service: reference figure byjus.com p.8 f5 for 'human brain': label 0.551, clip 0.183 margin -0.037 -> no
+  [IMAGE] 'human brain' -> byjus.com p.5 (0.3 s)
+13:14:02 INFO    copilot.presentation.engine: image 'human brain' on 'Human Brain': byjus.com p.5
+  [SLIDE] update 'Human Brain' [definition] v2 (3 items)
+  [  425.2s] Has the same basic structure but it is (571 ms)
+  [  427.9s] Better developed than any other mammalian. (517 ms)
+  [  431.2s] Brain. (287 ms)
+13:14:10 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.80) for the interpretation
+  [UNDERSTAND] Human Brain > Overview (same_concept) acts=- hint=definition lines=4 via groq_main#1 2074 ms
+               Added that the human brain shares basic structure with other mammals yet is more developed.
+13:14:12 INFO    copilot.presentation.engine: revised S1: Human brain has the same basic structure as most mammals but is better developed than any other mammalian brain
+13:14:12 INFO    copilot.presentation.engine: planner: noop Human Brain > Overview (nothing to display)
+  [SLIDE] update 'Human Brain' [definition] v3 (3 items)
+  [  446.8s] The human brain, on average, an adult brain weighs 1 kilo to 1.5 kilograms. It is mainly composed of neurons, the fundamental unit of brain and nervous system. (834 ms)
+  [SLIDE] update 'Human Brain' [definition] v4 (4 items)
+13:14:47 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.89) for the interpretation
+  [UNDERSTAND] Human Brain > Overview (elaboration) acts=other hint=key_points lines=1 via groq_main#1 1637 ms
+               The brain weighs 1–1.5 kg and is mainly made of neurons.
+13:14:49 INFO    copilot.presentation.engine: planner: update Human Brain > Overview (same frame)
+13:14:49 INFO    copilot.presentation.engine: no image for 'Human Brain': has an image
+  [SLIDE] update 'Human Brain' [definition] v5 (3 items)
+  [SLIDE] update 'Human Brain' [definition] v6 (4 items)
+  [  457.8s] Recent estimates have suggested that the brain contains anywhere between 86 billion to 100 billion neurons. The brain, along with the spinal cord, constitutes a central nervous system. It is responsible for thoughts, (816 ms)
+  [SLIDE] update 'Human Brain' [definition] v7 (5 items)
+  [  471.3s] interpretation and the origin of control of body movements. (360 ms)
+  [SLIDE] update 'Human Brain' [definition] v8 (4 items)
+13:14:55 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.89) for the interpretation
+13:14:57 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Interpretation and the origin of control of body movements']
+  [UNDERSTAND] Human Brain > Overview (elaboration) acts=other,explanation hint=key_points lines=2 via groq_main#1 1938 ms
+               Added that the brain contains 86‑100 billion neurons and, with the spinal cord, forms the central nervous system responsible for thoughts and movement control.
+13:14:57 INFO    copilot.presentation.engine: planner: update Human Brain > Overview (same frame)
+  [SLIDE] update 'Human Brain' [definition] v9 (4 items)
+  [SLIDE] add    'Human Brain' [key_points] v1 (1 items)
+13:14:57 INFO    copilot.presentation.engine: image search 'human brain diagram' (diagram) for 'Human Brain'
+13:14:57 INFO    copilot.visuals.service: reference figure byjus.com p.8 f5 for 'human brain diagram': label 0.561, clip 0.179 margin -0.041 -> no
+13:14:57 INFO    copilot.visuals.service: reference figure byjus.com p.9 f6 for 'human brain diagram': label 0.542, clip 0.237 margin -0.008 -> no
+13:14:57 INFO    copilot.visuals.service: reference figure byjus.com p.2 f2 for 'human brain diagram': label 0.523, clip 0.213 margin -0.006 -> no
+13:15:02 INFO    copilot.visuals.finder: image search 'human brain diagram': 8 slow download(s) dropped
+13:15:02 INFO    copilot.presentation.engine: image 'human brain diagram': none (downloads failed)
+  [IMAGE] 'human brain diagram' -> none (downloads failed) (4.6 s)
+  [  481.6s] So, where is this brain located? The brain is enclosed within the skull which provides frontal, lateral and dorsal protection. The skull consists of 22 bones, 14 of which from the facial bones. (812 ms)
+  [SLIDE] update 'Human Brain' [key_points] v2 (2 items)
+  [  494.9s] And the remaining 8 from the (629 ms)
+  [SLIDE] update 'Human Brain' [key_points] v3 (1 items)
+13:15:14 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.89) for the interpretation
+  [UNDERSTAND] Human Brain > Overview (elaboration) acts=explanation hint=concept lines=1 via groq_main#1 2351 ms
+               The brain is located inside the skull, which has 22 bones including 14 facial bones.
+13:15:17 INFO    copilot.presentation.engine: planner: update Human Brain > Overview (same frame)
+  [SLIDE] update 'Human Brain' [key_points] v4 (4 items)
+  [  497.5s] Cranial bones. Automatically, the brain is constantly contained within the cranium and surrounded by the cerebrospial fluids. The cerebrospial fluids or CSF (752 ms)
+13:15:35 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.88) for the interpretation
+  [UNDERSTAND] Human Brain > Overview (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 2210 ms
+               Added that the skull’s remaining eight bones are cranial and the brain is constantly within the cranium surrounded by CSF.
+13:15:37 INFO    copilot.presentation.engine: revised S4: Skull has 22 bones: 14 facial, 8 cranial
+13:15:37 INFO    copilot.presentation.engine: planner: update Human Brain > Overview (same frame)
+  [SLIDE] update 'Human Brain' [key_points] v5 (4 items)
+  [SLIDE] update 'Human Brain' [key_points] v6 (6 items)
+  [  509.8s] is a fluid that circulates within the skull and spinal cord, filling up hollow space and the surface of the brain. Every day, the specialized epididymal cells produce around 500 ml of (844 ms)
+  [SLIDE] update 'Human Brain' [key_points] v7 (7 items)
+  [  523.4s] Cerebral fluid. (615 ms)
+  [SLIDE] update 'Human Brain' [key_points] v8 (7 items)
+  [  525.2s] Flute. (295 ms)
+  [SLIDE] update 'Human Brain' [key_points] v9 (6 items)
+13:15:43 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.77) for the interpretation
+  [UNDERSTAND] Human Brain > Overview (elaboration) acts=definition hint=definition lines=2 via groq_main#1 1995 ms
+               Defined cerebrospinal fluid and its production rate
+  [HEARD] 'Cerebral fluid' -> 'Cerebrospinal fluid (CSF)' corrected on the slide (0.5)
+13:15:45 INFO    copilot.presentation.engine: planner: update Human Brain > Overview (same frame)
+13:15:45 INFO    copilot.presentation.engine: concern 0357881345c0 (transcription, applied=True): 1 element(s); slide shows 'Cerebrospinal fluid (CSF)'
+  [SLIDE] update 'Human Brain' [key_points] v10 (7 items)
+  [  528.2s] The primary function of this CSF is to act as a buffer for brain. (785 ms)
+13:15:56 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.76) for the interpretation
+  [UNDERSTAND] Human Brain > Overview (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 3367 ms
+               Added that cerebrospinal fluid primarily buffers the brain.
+13:15:59 INFO    copilot.presentation.engine: planner: update Human Brain > Overview (same frame)
+  [SLIDE] update 'Human Brain' [key_points] v11 (8 items)
+  [  533.7s] Cushioning, mechanical shocks and damping minor jolts. It also provides basic immunological protection to the brain. Furthermore, CSF provides buoyancy for the brain. That is, the brain is suspended in the layer of CSF. (963 ms)
+  [  547.4s] The weight of the brain is nearly negated. (408 ms)
+13:16:09 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.81) for the interpretation
+  [UNDERSTAND] Human Brain > Overview (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 2214 ms
+               CSF cushions shocks, offers immune protection, provides buoyancy and nearly negates brain weight.
+13:16:11 INFO    copilot.presentation.engine: planner: update Human Brain > Overview (same frame)
+  [SLIDE] add    'Human Brain' [key_points] v1 (4 items)
+13:16:11 INFO    copilot.presentation.engine: image search 'brain CSF diagram' (diagram) for 'Human Brain'
+13:16:15 INFO    copilot.visuals.finder: image search 'brain CSF diagram': 1 slow download(s) dropped
+13:16:15 INFO    copilot.presentation.engine: image 'brain CSF diagram': none (downloads failed)
+  [IMAGE] 'brain CSF diagram' -> none (downloads failed) (4.5 s)
+  [  553.2s] Suspended in CSF, it would be impeded by its weight. Consequently, cutting of the blood supply is the lower half of the brain. It would lead to the death of neurons in the affected area. (786 ms)
+  [SLIDE] update 'Human Brain' [key_points] v2 (5 items)
+13:16:23 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.89) for the interpretation
+  [UNDERSTAND] Human Brain > Overview (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 2984 ms
+               Teacher warned that full suspension in CSF would block blood flow and kill neurons, which is inaccurate.
+  [CONCERN] (factual) Suspended in CSF, it would be impeded by its weight. Consequently, cutting of the blood supply is the lower half of the brain. It would lead to the death of neurons in the affected area. -> The brain is supported by CSF, which provides buoyancy but does not fully suspend it; thus its weight does not impede blood supply to the lower half. (0.95, slide shows the correction)
+13:16:26 INFO    copilot.presentation.engine: planner: update Human Brain > Overview (same frame)
+13:16:26 INFO    copilot.presentation.engine: concern 6213f3af5f31 (factual, applied=True): 0 element(s); slide shows 'supported, does not impede'
+  [SLIDE] update 'Human Brain' [key_points] v3 (4 items)
+  [SLIDE] update 'Human Brain' [key_points] v4 (5 items)
+  [  567.4s] Now let's study the parts of the human brain. (535 ms)
+13:16:28 INFO    copilot.presentation.engine: concern 6213f3af5f31 dismissed: slide shows 'supported, does not impede'
+  [  570.2s] First is the foreground. (315 ms)
+13:16:31 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.75) for the interpretation
+  [UNDERSTAND] Human Brain > Parts of the Human Brain (sibling_concept) acts=transition hint=none lines=1 via groq_main#2 1636 ms
+               Teacher announced moving to study the parts of the human brain.
+13:16:33 INFO    copilot.presentation.engine: planner: noop Human Brain > Parts of the Human Brain (nothing to display)
+13:16:39 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.73) for the interpretation
+13:16:42 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Parts of the Human Brain' -> same_concept
+  [UNDERSTAND] Human Brain > Parts of the Human Brain (same_concept) acts=other hint=hierarchy lines=1 via groq_main#1 3363 ms
+               Introduced the forebrain as the first brain region
+  [HEARD] 'foreground' -> 'forebrain' corrected on the slide (0.5)
+13:16:42 INFO    copilot.presentation.engine: planner: noop Human Brain > Parts of the Human Brain (nothing to display)
+13:16:42 INFO    copilot.presentation.engine: concern bfbbe842cfb2 (transcription, applied=True): 0 element(s); slide shows 'forebrain'
+  [  583.6s] The largest part of the brain, it is the anterior part of the brain. Forebrain provides parts include cerebrum, hip, thalamus, thalamus. The forebrain functions (911 ms)
+  [SLIDE] update 'Human Brain' [key_points] v5 (6 items)
+  [  596.3s] Controls the productive functions, body parts and emotions, hunger and sleep. (497 ms)
+  [SLIDE] update 'Human Brain' [key_points] v6 (6 items)
+13:17:06 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.89) for the interpretation
+  [  601.6s] The fact is, it is the largest among the four brain parts is the cerebrum. It is also the largest part of all vertebrate brains. (737 ms)
+  [SLIDE] update 'Human Brain' [key_points] v7 (6 items)
+  [UNDERSTAND] Human Brain > Forebrain (sibling_concept) acts=explanation hint=concept lines=2 via groq_main#1 2750 ms
+               Introduced the forebrain as the largest anterior brain region and listed its parts and functions.
+  [HEARD] 'hip, thalamus, thalamus' -> 'hypothalamus, thalamus' corrected on the slide (0.5)
+  [HEARD] 'productive, body parts' -> 'reproductive, body temperature' corrected on the slide (0.5)
+13:17:09 INFO    copilot.presentation.engine: planner: continue Human Brain > Forebrain (new facet)
+13:17:09 INFO    copilot.presentation.engine: concern ac25a5ddaf52 (transcription, applied=True): 1 element(s); slide shows 'hypothalamus, thalamus'
+13:17:09 INFO    copilot.presentation.engine: concern fdd290c3d545 (transcription, applied=True): 0 element(s); slide shows 'reproductive, body temperature'
+  [SLIDE] add    'Forebrain' [key_points] v1 (2 items)
+13:17:09 INFO    copilot.presentation.engine: image search 'forebrain diagram' (diagram) for 'Forebrain'
+13:17:16 INFO    copilot.visuals.finder: image search 'forebrain diagram' (diagram, labels preferred): 3 candidate(s), 3 accepted (1 labelled), 7.05 s {'search_s': 2.53, 'download_s': 1.46, 'clip_s': 0.07, 'full_s': 2.96, 'total_s': 7.05}
+  [IMAGE] 'forebrain diagram' -> File:Labeled cichlid forebrain diagram with shh expression.jpg (7.1 s)
+13:17:16 INFO    copilot.presentation.engine: image 'forebrain diagram' on 'Forebrain': File:Labeled cichlid forebrain diagram with shh expression.jpg
+  [SLIDE] update 'Forebrain' [key_points] v2 (3 items)
+  [  610.5s] The midbrain is the smallest and central part of the brain. The midbrain consists of pectum and tegmentum. (726 ms)
+  [SLIDE] update 'Human Brain' [key_points] v8 (5 items)
+  [SLIDE] update 'Forebrain' [key_points] v3 (4 items)
+13:17:16 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.92) for the interpretation
+13:17:19 WARNING copilot.understanding.interpreter: interpretation from groq_main#2 invalid (schema: [{'type': 'model_type', 'loc': ('acts', 1), 'msg': 'Input should be a valid dictionary or instance of DiscourseAct', 'input': '', 'ctx': {'class_name': 'DiscourseAct'}}]); one repair attempt
+  [  619.4s] The hidden brain, the lower part of the brain, the hindbrain is composed of cerebellum, medulla, pons. (682 ms)
+  [SLIDE] update 'Forebrain' [key_points] v4 (4 items)
+13:17:25 WARNING copilot.understanding.interpreter: interpretation fallback: invalid output after repair: schema: [{'type': 'model_type', 'loc': ('acts', 1), 'msg': 'Input should be a valid dictionary or instance of DiscourseAct', 'input': '', 'ctx': {'class_name': 'DiscourseAct'}}, {'type': 'model_type', 'loc': ('acts', 3), 'msg': 'Input should be a valid dictionary or instance of DiscourseAct', 'input': ']', 'ctx': {'class_name': 'DiscourseAct'}}, {'type': 'model_type', 'loc': ('acts', 4), 'msg': 'Input should be a valid dictionary or instance of DiscourseAct', 'input': 'revisions', 'ctx': {'class_name': 'DiscourseAct'}}]
+  [UNDERSTAND] Human Brain > Forebrain (same_concept) acts=definition,explanation hint=definition lines=2 via FALLBACK invalid output after repair: schema: [{'type': 'model_type', 'loc': ('acts', 1), 9356 ms
+13:17:25 INFO    copilot.presentation.engine: planner: update Human Brain > Forebrain (same frame)
+13:17:25 INFO    copilot.presentation.engine: no image for 'Forebrain': has an image
+  [SLIDE] update 'Forebrain' [key_points] v5 (8 items)
+13:17:36 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.86) for the interpretation
+  [  626.9s] Hindbrain functions, the three regions of the hindbrain coordinates, all processes necessary for survival. These induce breathing, heartbreak, heartbeat, sleep, wakefulness, and motor learning. (784 ms)
+  [SLIDE] update 'Forebrain' [key_points] v6 (8 items)
+  [UNDERSTAND] Human Brain > Hindbrain (sibling_concept) acts=explanation hint=hierarchy lines=1 via groq_main#2 2037 ms
+               Introduced the hindbrain as the lower brain region and listed its parts: cerebellum, medulla, and pons.
+13:17:38 INFO    copilot.presentation.engine: planner: continue Human Brain > Hindbrain (new facet)
+  [SLIDE] add    'Hindbrain' [key_points] v1 (2 items)
+13:17:38 INFO    copilot.presentation.engine: image search 'hindbrain diagram' (diagram) for 'Hindbrain'
+13:17:44 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.92) for the interpretation
+13:17:45 INFO    copilot.visuals.finder: image search 'hindbrain diagram' (diagram, labels preferred): 1 candidate(s), 1 accepted (0 labelled), 6.31 s {'search_s': 2.27, 'download_s': 1.65, 'clip_s': 0.04, 'full_s': 2.34, 'total_s': 6.31}
+  [IMAGE] 'hindbrain diagram' -> File:Christian F. Ludwig, diagrams of hind-brain, Wellcome L0014096.jpg (6.3 s)
+13:17:45 INFO    copilot.presentation.engine: image 'hindbrain diagram' on 'Hindbrain': File:Christian F. Ludwig, diagrams of hind-brain, Wellcome L0014096.jpg
+  [SLIDE] update 'Hindbrain' [key_points] v2 (3 items)
+  [UNDERSTAND] Human Brain > Hindbrain (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 2013 ms
+               Added hindbrain functions that coordinate survival processes like breathing and heartbeat
+  [CONCERN] (factual) These induce breathing, heartbreak, heartbeat, sleep, wakefulness, and motor learning -> Remove "heartbreak"; list only breathing, heartbeat, sleep, wakefulness, motor learning (0.9, slide shows the correction)
+13:17:46 INFO    copilot.presentation.engine: planner: update Human Brain > Hindbrain (same frame)
+13:17:46 INFO    copilot.presentation.engine: no image for 'Hindbrain': has an image
+  [SLIDE] update 'Forebrain' [key_points] v7 (7 items)
+  [SLIDE] update 'Hindbrain' [key_points] v3 (9 items)
+13:17:47 INFO    copilot.presentation.engine: slide 4e8f91184033 overflows on the display; further content continues on a new slide
+  [  646.4s] The cerebrum is the largest part of the brain. It consists of the cerebrum context. (702 ms)
+13:17:52 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.84) for the interpretation
+  [UNDERSTAND] Human Brain > Cerebrum (sibling_concept) acts=definition hint=definition lines=1 via groq_main#2 2922 ms
+               Defined the cerebrum as the brain's largest part and noted its composition
+  [HEARD] 'cerebrum context' -> 'cerebral cortex' corrected on the slide (0.5)
+13:17:55 INFO    copilot.presentation.engine: planner: continue Human Brain > Cerebrum (new facet)
+13:17:55 INFO    copilot.presentation.engine: concern 4cb6ad1ab3ee (transcription, applied=True): 1 element(s); slide shows 'cerebral cortex'
+  [SLIDE] add    'Cerebrum' [definition] v1 (1 items)
+  [SLIDE] update 'Cerebrum' [definition] v2 (1 items)
+13:17:55 INFO    copilot.presentation.engine: image search 'cerebrum diagram' (photo) for 'Cerebrum'
+13:17:55 INFO    copilot.visuals.service: reference figure byjus.com p.5 f4 for 'cerebrum diagram': label 0.650, clip 0.269 margin +0.026 -> used
+  [IMAGE] 'cerebrum diagram' -> byjus.com p.5 (0.1 s)
+13:17:55 INFO    copilot.presentation.engine: image 'cerebrum diagram' on 'Cerebrum': byjus.com p.5
+  [SLIDE] update 'Cerebrum' [definition] v3 (2 items)
+  [  655.3s] Other subcortical structures are composed of two cerebrum hemispheres that are joined together by heavy, dense bands of fiber called corpus callosum. The cerebrum is the (834 ms)
+  [  668.3s] Further divided into four sections or lobes. Frontal lobe is associated with the part of speech, planning, reasoning, problem solving and movements. (613 ms)
+13:18:15 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.92) for the interpretation
+13:18:17 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Further divided into four sections or lobes']
+  [UNDERSTAND] Human Brain > Cerebrum (same_concept) acts=definition,explanation,explanation hint=definition lines=2 via groq_main#1 2520 ms
+               Added corpus callosum description and frontal lobe functions
+13:18:17 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebrum (same frame)
+13:18:17 INFO    copilot.presentation.engine: no image for 'Cerebrum': two concepts side by side
+  [SLIDE] update 'Cerebrum' [concept] v4 (4 items)
+  [  678.4s] Parietal flow helps in movements, the perception of stimuli and orientation. (540 ms)
+  [  683.9s] OCP-TIL-LOPE, it is related to the visual processing. (536 ms)
+  [  687.7s] Temporal loop, this region is related to the perception and recognition of memory, authority, stimuli and speech. (705 ms)
+13:18:32 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.72) for the interpretation
+13:18:35 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Cerebrum' -> same_concept
+  [UNDERSTAND] Human Brain > Cerebrum (same_concept) acts=definition,definition,definition hint=definition lines=3 via groq_main#1 2761 ms
+               Added descriptions of the Parietal, Occipital, and Temporal lobes of the cerebrum.
+  [HEARD] 'OCP-TIL-LOPE' -> 'Occipital lobe' corrected on the slide (0.5)
+  [HEARD] 'Temporal loop' -> 'Temporal lobe' corrected on the slide (0.5)
+13:18:35 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebrum (same frame)
+13:18:35 INFO    copilot.presentation.engine: concern beb48262af9c (transcription, applied=True): 1 element(s); slide shows 'Occipital lobe'
+13:18:35 INFO    copilot.presentation.engine: concern 52f1c3ad64cd (transcription, applied=True): 1 element(s); slide shows 'Temporal lobe'
+  [SLIDE] update 'Cerebrum' [concept] v5 (6 items)
+  [SLIDE] add    'Cerebrum' [members] v1 (1 items)
+13:18:35 INFO    copilot.presentation.engine: image search 'brain lobes' (diagram) for 'Cerebrum'
+  [  695.4s] The brain consists of two types of tissues. (532 ms)
+  [SLIDE] update 'Cerebrum' [members] v2 (1 items)
+  [  699.1s] Gray matter and white matter. (486 ms)
+  [SLIDE] update 'Cerebrum' [members] v3 (1 items)
+13:18:39 INFO    copilot.visuals.finder: image search 'brain lobes': 1 slow download(s) dropped
+13:18:40 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.78) for the interpretation
+  [UNDERSTAND] Human Brain > Cerebrum (elaboration) acts=other hint=key_points lines=1 via groq_main#1 2447 ms
+               The brain consists of two types of tissues.
+13:18:42 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebrum (same frame)
+13:18:42 INFO    copilot.presentation.engine: no image for 'Cerebrum': search running
+  [SLIDE] update 'Cerebrum' [members] v4 (2 items)
+13:18:42 INFO    copilot.visuals.finder: image search 'brain lobes': 1 slow download(s) dropped
+13:18:42 INFO    copilot.visuals.finder: image search 'brain lobes' (diagram, labels preferred): 3 candidate(s), 1 accepted (0 labelled), 7.71 s {'search_s': 2.03, 'download_s': 2.46, 'clip_s': 0.08, 'full_s': 3.12, 'total_s': 7.71}
+  [IMAGE] 'brain lobes' -> File:LobesCaptsLateral.png (7.7 s)
+13:18:42 INFO    copilot.presentation.engine: image 'brain lobes' on 'Cerebrum': File:LobesCaptsLateral.png
+  [SLIDE] update 'Cerebrum' [members] v5 (3 items)
+  [  703.1s] Gray matter mainly consists of various types of cells which make up the bulk of the brain. White matter is primarily composed of axons which connect various (832 ms)
+13:18:57 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.91) for the interpretation
+  [SLIDE] update 'Cerebrum' [members] v6 (3 items)
+  [UNDERSTAND] Human Brain > Cerebrum (elaboration) acts=definition,definition hint=definition lines=2 via groq_main#1 3670 ms
+               Defined gray and white matter as the brain's two tissue types
+13:19:01 INFO    copilot.presentation.engine: revised S2: Gray matter and white matter are the two tissue types of the brain
+13:19:01 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebrum (same frame)
+  [SLIDE] update 'Cerebrum' [members] v7 (3 items)
+  [SLIDE] update 'Cerebrum' [concept] v8 (4 items)
+  [SLIDE] add    'Cerebrum' [members] v1 (1 items)
+13:19:01 INFO    copilot.presentation.engine: image 'brain lobes' kept on 'Cerebrum' (same visual as this topic's image)
+  [SLIDE] update 'Cerebrum' [members] v2 (2 items)
+  [  713.9s] The exterior portion of the cerebrum is called the cortex or the cerebral mantle. The cortex is extremely convoluted due to which it has a large surface area. (735 ms)
+  [  728.3s] The cerebrum also includes sensory areas, we receive the messages, association area, these areas integrate (716 ms)
+13:19:24 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.92) for the interpretation
+  [  735.9s] The incoming sensory information, it also forms a connection between sensory and motor areas. This area is responsible for the action of the involuntary muscles. (684 ms)
+  [UNDERSTAND] Human Brain > Cerebrum (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 2518 ms
+               Introduced the cortex as the convoluted outer layer and described sensory and association areas of the cerebrum.
+13:19:27 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebrum (same frame)
+13:19:27 INFO    copilot.presentation.engine: no image for 'Cerebrum': has an image
+  [SLIDE] update 'Cerebrum' [members] v3 (5 items)
+13:19:37 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.84) for the interpretation
+  [UNDERSTAND] Human Brain > Cerebrum (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 2255 ms
+               Association areas also connect sensory to motor regions and control involuntary muscles.
+13:19:39 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebrum (same frame)
+13:19:39 INFO    copilot.presentation.engine: no image for 'Cerebrum': has an image
+  [SLIDE] update 'Cerebrum' [members] v4 (7 items)
+  [  747.2s] Cerebrum function. Cerebrum is responsible for thinking, intelligence and consciousness and memory. It is also responsible for interpreting touch, hearing and vision. Thalamus. The thalamus is a small structure located right? (899 ms)
+13:19:52 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.78) for the interpretation
+13:19:52 WARNING copilot.llm.router: LLM groq_main now uses GROQ_API_KEY_2 (GROQ_API_KEY_1 is spent)
+  [  759.6s] About the brainstem responsible for relaying sensory information from the sense organs. It is also responsible for transmitting motor information and for movement and coordination. Thalamus is found in the limbic strip within the cerebrum. (878 ms)
+  [UNDERSTAND] Human Brain > Cerebrum (elaboration) acts=explanation,definition hint=key_points lines=1 via groq_main#2 3401 ms
+               Cerebrum functions include thinking, intelligence, consciousness, memory, and interpreting touch, hearing, vision; introduced thalamus definition.
+  [HEARD] 'right?' -> 'right above the brain stem' corrected on the slide (0.5)
+13:19:55 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebrum (same frame)
+13:19:55 INFO    copilot.presentation.engine: concern c942f1a4ea37 (transcription, applied=True): 1 element(s); slide shows 'right above the brain stem'
+  [SLIDE] update 'Cerebrum' [members] v5 (9 items)
+  [SLIDE] add    'Cerebrum' [members] v1 (1 items)
+13:19:55 INFO    copilot.presentation.engine: image search 'human brain diagram' (diagram) for 'Cerebrum'
+13:19:55 INFO    copilot.visuals.service: reference figure byjus.com p.8 f5 for 'human brain diagram': label 0.561, clip 0.179 margin -0.041 -> no
+13:19:55 INFO    copilot.visuals.service: reference figure byjus.com p.9 f6 for 'human brain diagram': label 0.542, clip 0.237 margin -0.008 -> no
+13:19:55 INFO    copilot.visuals.service: reference figure byjus.com p.2 f2 for 'human brain diagram': label 0.523, clip 0.213 margin -0.006 -> no
+13:20:00 INFO    copilot.visuals.finder: image search 'human brain diagram': 5 slow download(s) dropped
+13:20:03 INFO    copilot.visuals.finder: image search 'human brain diagram': 2 slow download(s) dropped
+13:20:03 INFO    copilot.visuals.finder: image search 'human brain diagram' (diagram, labels preferred): 3 candidate(s), 1 accepted (1 labelled), 7.71 s {'search_s': 2.69, 'download_s': 1.81, 'clip_s': 0.07, 'full_s': 3.13, 'total_s': 7.71}
+  [IMAGE] 'human brain diagram' -> File:Labeled cichlid forebrain diagram with shh expression.jpg (7.8 s)
+13:20:03 INFO    copilot.presentation.engine: image 'human brain diagram' on 'Cerebrum': File:Labeled cichlid forebrain diagram with shh expression.jpg
+  [SLIDE] update 'Cerebrum' [members] v2 (2 items)
+13:20:04 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.88) for the interpretation
+  [  772.2s] This limbic system is mainly responsible for the formation of new memories and past experiences. Thalamus. The thalamus is a small and existential part of the brain, located precisely below the thalamus. It is considered the primary region of the brain. (1029 ms)
+  [UNDERSTAND] Human Brain > Cerebrum (elaboration) acts=- hint=definition lines=1 via groq_main#2 2414 ms
+               Added motor function details and noted thalamus location as limbic strip (corrected to limbic system).
+  [CONCERN] (factual) Thalamus is found in the limbic strip within the cerebrum. -> Thalamus is found in the limbic system within the cerebrum. (0.95, slide shows the correction)
+13:20:07 INFO    copilot.presentation.engine: revised S1: Thalamus: a small structure located right above the brain stem responsible for relaying sensory information from the sense organs,…
+13:20:07 INFO    copilot.presentation.engine: planner: noop Human Brain > Cerebrum (nothing to display)
+13:20:07 INFO    copilot.presentation.engine: concern 2d4b7497dcaa (factual, applied=True): 0 element(s); slide shows 'limbic system'
+  [SLIDE] update 'Cerebrum' [members] v3 (2 items)
+  [  786.4s] As it is involved in the following functions. (393 ms)
+13:20:10 INFO    copilot.presentation.engine: concern 2d4b7497dcaa dismissed: slide shows 'limbic system'
+13:20:12 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.85) for the interpretation
+  [UNDERSTAND] Human Brain > Cerebrum (elaboration) acts=definition hint=definition lines=2 via groq_main#2 2836 ms
+               Corrected thalamus definition and clarified its location and role in memory formation
+  [CONCERN] (factual) Thalamus is a small and existential part of the brain, located precisely below the thalamus -> Thalamus is a small essential part of the brain, located above the hypothalamus in the limbic system (0.95, slide shows the correction)
+13:20:15 INFO    copilot.presentation.engine: revised S1: Thalamus: A small essential structure in the limbic system, situated above the hypothalamus, serving as the brain’s primary relay region
+13:20:15 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebrum (same frame)
+13:20:15 INFO    copilot.presentation.engine: concern a0d3b0c3bdd9 (factual, applied=True): 0 element(s); slide shows 'essential, located above the hypothalamus'
+13:20:15 INFO    copilot.presentation.engine: no image for 'Cerebrum': has an image
+  [SLIDE] update 'Cerebrum' [members] v4 (2 items)
+13:20:17 INFO    copilot.presentation.engine: concern a0d3b0c3bdd9 dismissed: slide shows 'essential, located above the hypothalamus'
+  [  794.9s] Hypothalamus. The hypothalamus is the small and essential part of the brain located precisely (675 ms)
+  [  801.9s] Below the thalamus, it is considered the primary region of the brain as it involves in the following functions. Receive impulses, regulate blood temperature, control the mood and emotions, control the sense of taste and smell, synthesis the body's essential hormones. (947 ms)
+13:20:34 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.83) for the interpretation
+  [  815.1s] God read the message from the autonomous neuroservice, neurosystem. (450 ms)
+  [UNDERSTAND] Human Brain > Hypothalamus (sibling_concept) acts=definition hint=definition lines=2 via groq_main#2 3686 ms
+               Defined hypothalamus and listed its regulatory functions
+13:20:38 INFO    copilot.presentation.engine: planner: continue Human Brain > Hypothalamus (new facet)
+  [SLIDE] add    'Hypothalamus' [definition] v1 (1 items)
+13:20:38 INFO    copilot.presentation.engine: image search 'hypothalamus location diagram' (diagram) for 'Hypothalamus'
+13:20:42 INFO    copilot.presentation.engine: image 'hypothalamus location diagram': none (no usable candidates)
+  [IMAGE] 'hypothalamus location diagram' -> none (no usable candidates) (3.8 s)
+  [  819.6s] Control appetite, peristals, rate of heartbeat, blood pressure, forms an axis with the (712 ms)
+  [SLIDE] update 'Hypothalamus' [definition] v2 (1 items)
+  [  828.4s] Pretory gland, which is the main link between the neuros and the endosome system. (657 ms)
+  [SLIDE] update 'Hypothalamus' [definition] v3 (1 items)
+13:20:51 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.74) for the interpretation
+  [  834.3s] Detect them. (298 ms)
+  [SLIDE] update 'Hypothalamus' [definition] v4 (1 items)
+  [UNDERSTAND] Human Brain > Hypothalamus (elaboration) acts=explanation hint=key_points lines=3 via groq_main#2 2922 ms
+               Added hypothalamus functions and its axis with the pituitary gland
+  [HEARD] 'God read the message from the autonomous neuroservice, neurosystem' -> 'Hypothalamus receives signals from the autonomous nervous system' corrected on the slide (0.5)
+  [HEARD] 'peristals, neuros, endosome system' -> 'peristalsis, nervous system, endocrine system' corrected on the slide (0.5)
+  [HEARD] 'Pretory gland, neuros, endosome system' -> 'pituitary gland, nervous system, endocrine system' corrected on the slide (0.5)
+13:20:54 INFO    copilot.presentation.engine: planner: update Human Brain > Hypothalamus (same frame)
+13:20:54 INFO    copilot.presentation.engine: concern 504f28120b14 (transcription, applied=True): 0 element(s); slide shows 'Hypothalamus receives signals from the autonomous nervous system'
+13:20:54 INFO    copilot.presentation.engine: concern 119e1fd08b5c (transcription, applied=True): 0 element(s); slide shows 'peristalsis, nervous system, endocrine system'
+13:20:54 INFO    copilot.presentation.engine: concern 7d1eaeedb78b (transcription, applied=True): 0 element(s); slide shows 'pituitary gland, nervous system, endocrine system'
+13:20:54 INFO    copilot.presentation.engine: no image for 'Hypothalamus': nothing relevant found for 'hypothalamus location diagram' before
+  [SLIDE] update 'Hypothalamus' [definition] v5 (3 items)
+  [  836.1s] Detectum is a small portion of brain, especially the dorsal part of the midbrain. It serves as the relay center of sensory information from the ears to the cerebrum. It also controls the reflex movements of the head, eye and neck muscles. It provides a passage for the different neurons. (1029 ms)
+13:21:09 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.66) for the interpretation
+  [UNDERSTAND] Human Brain > Tectum (sibling_concept) acts=definition,explanation hint=definition lines=2 via groq_main#2 2154 ms
+               Introduced the tectum, its location in the dorsal midbrain and its role in relaying ear sensory signals and controlling reflexes.
+13:21:11 INFO    copilot.presentation.engine: planner: continue Human Brain > Tectum (new facet)
+  [SLIDE] add    'Tectum' [definition] v1 (2 items)
+13:21:11 INFO    copilot.presentation.engine: image search 'tectum diagram' (diagram) for 'Tectum'
+13:21:14 INFO    copilot.presentation.engine: image 'tectum diagram': none (no usable candidates)
+  [IMAGE] 'tectum diagram' -> none (no usable candidates) (2.7 s)
+  [  850.8s] Moving in and out of the cerebrum. (457 ms)
+13:21:17 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.85) for the interpretation
+  [  861.8s] Sleep (617 ms)
+  [UNDERSTAND] Human Brain > Tectum (same_concept) acts=- hint=definition lines=1 via groq_main#2 5682 ms
+               Clarified that the tectum provides passage for neurons moving in and out of the cerebrum.
+13:21:23 INFO    copilot.presentation.engine: revised S1: Tectum: small portion of brain, dorsal part of the midbrain, relays sensory information from the ears to the cerebrum, controls reflex…
+13:21:23 INFO    copilot.presentation.engine: planner: noop Human Brain > Tectum (nothing to display)
+  [SLIDE] update 'Tectum' [definition] v2 (2 items)
+  [  865.5s] Eukaryotic, arousal, attention, different reflexes from the platform for the midbrain and connects with the thalamus, cerebral cortex and spinal cord. Cerebellum. (877 ms)
+  [SLIDE] update 'Tectum' [definition] v3 (3 items)
+13:21:38 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.80) for the interpretation
+  [  878.5s] Cerebellum is the second largest part of the brain. (552 ms)
+  [SLIDE] update 'Tectum' [definition] v4 (3 items)
+  [UNDERSTAND] Human Brain > Tectum (elaboration) acts=explanation hint=key_points lines=2 via groq_main#2 5464 ms
+               Added tectum roles in sleep, arousal, attention, reflexes and its connections to other brain regions.
+  [HEARD] 'Eukaryotic, platform for the midbrain' -> 'tectum, involved in' corrected on the slide (0.5)
+13:21:43 INFO    copilot.presentation.engine: planner: update Human Brain > Tectum (same frame)
+13:21:43 INFO    copilot.presentation.engine: concern da13e9c8765a (transcription, applied=True): 0 element(s); slide shows 'tectum, involved in'
+13:21:43 INFO    copilot.presentation.engine: no image for 'Tectum': nothing relevant found for 'tectum diagram' before
+  [SLIDE] update 'Tectum' [definition] v5 (7 items)
+13:21:50 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.83) for the interpretation
+  [  881.5s] Seremum is located in the posterior portion of the cerebula and pons. The cerebellum and cerebrum are separated by cerebular pentum and traverse tissue. (924 ms)
+  [SLIDE] update 'Tectum' [definition] v6 (7 items)
+  [UNDERSTAND] Human Brain > Cerebellum (sibling_concept) acts=other hint=concept lines=1 via groq_main#3 1859 ms
+               Cerebellum is identified as the brain's second largest part.
+13:21:52 INFO    copilot.presentation.engine: planner: continue Human Brain > Cerebellum (new facet)
+  [SLIDE] add    'Cerebellum' [facts] v1 (1 items)
+13:21:52 INFO    copilot.presentation.engine: image search 'cerebellum diagram' (diagram) for 'Cerebellum'
+13:21:52 INFO    copilot.visuals.service: reference figure byjus.com p.5 f4 for 'cerebellum diagram': label 0.694, clip 0.271 margin +0.029 -> used
+  [IMAGE] 'cerebellum diagram' -> byjus.com p.5 (0.1 s)
+13:21:52 INFO    copilot.presentation.engine: image 'cerebellum diagram' on 'Cerebellum': byjus.com p.5
+  [SLIDE] update 'Cerebellum' [facts] v2 (2 items)
+  [  894.1s] Cortex is the outer surface of the cerebrum and the parallel ridge are called the (805 ms)
+  [SLIDE] update 'Tectum' [definition] v7 (6 items)
+  [  899.8s] Foleyia, apart from the cerebrum, cerebular. (985 ms)
+13:22:02 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.80) for the interpretation
+  [UNDERSTAND] Human Brain > Cerebellum (same_concept) acts=other hint=key_points lines=3 via groq_main#2 3034 ms
+               Location, separation structures, and outer cortex of the cerebellum were clarified.
+  [HEARD] 'Seremum, cerebula, cerebular pentum, traverse tissue' -> 'Cerebellum, medulla, cerebellar tentorium, transverse fissure' corrected on the slide (0.5)
+  [HEARD] 'cerebrum, ridge' -> 'cerebellum, ridges (folia)' corrected on the slide (0.5)
+  [HEARD] 'Foleyia, cerebrum, cerebular' -> 'Folia, cerebellum' corrected on the slide (0.5)
+13:22:05 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebellum (same frame)
+13:22:05 INFO    copilot.presentation.engine: concern b07ddcdaa92d (transcription, applied=True): 0 element(s); slide shows 'Cerebellum, medulla, cerebellar tentorium, transverse fissure'
+13:22:05 INFO    copilot.presentation.engine: concern e376f2eb6b69 (transcription, applied=True): 0 element(s); slide shows 'cerebellum, ridges (folia)'
+13:22:05 INFO    copilot.presentation.engine: concern 4948a1a8966d (transcription, applied=True): 0 element(s); slide shows 'Folia, cerebellum'
+13:22:05 INFO    copilot.presentation.engine: no image for 'Cerebellum': has an image
+  [SLIDE] update 'Cerebellum' [facts] v3 (2 items)
+  [  904.7s] Produced since, salubral, uh, uh... (622 ms)
+  [  908.0s] Cerebral Nuclei, anterior and posterior lobes. The cerebrals consist of (711 ms)
+13:22:23 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.77) for the interpretation
+13:22:26 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Cerebellum' -> same_concept
+  [UNDERSTAND] Human Brain > Cerebellum (same_concept) acts=classification hint=none lines=2 via groq_main#2 2394 ms
+               Cerebellar nuclei are divided into anterior and posterior lobes
+  [HEARD] 'Cerebral, cerebrals' -> 'Cerebellar, cerebellum' corrected on the slide (0.5)
+13:22:26 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebellum (same frame)
+13:22:26 INFO    copilot.presentation.engine: concern 41ef550a4a52 (transcription, applied=True): 0 element(s); slide shows 'Cerebellar, cerebellum'
+13:22:26 INFO    copilot.presentation.engine: no image for 'Cerebellum': has an image
+  [SLIDE] update 'Cerebellum' [facts] v4 (3 items)
+  [  917.2s] of two hemispheres, the outer grey cortex and the inner white cortex. It is mainly responsible for coordinating and maintaining the body balance during walking, running, riding, swimming, and precision control of the voluntary movements. The main functions of the cerebellum inside are (825 ms)
+  [  930.7s] In its sense, it's equilibrium. (513 ms)
+13:22:31 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.89) for the interpretation
+  [UNDERSTAND] Human Brain > Cerebellum (elaboration) acts=explanation hint=key_points lines=2 via groq_main#3 1923 ms
+               Added details on cerebellar cortex layers and its role in balance and equilibrium
+13:22:33 INFO    copilot.presentation.engine: revised S4: Cortex: Outer grey cortex and inner white cortex
+13:22:33 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebellum (same frame)
+  [SLIDE] update 'Cerebellum' [facts] v5 (3 items)
+  [SLIDE] update 'Cerebellum' [facts] v6 (3 items)
+  [SLIDE] add    'Cerebellum' [key_points] v1 (2 items)
+13:22:33 INFO    copilot.presentation.engine: image search 'cerebellar nuclei diagram' (diagram) for 'Cerebellum'
+13:22:38 INFO    copilot.visuals.finder: image search 'cerebellar nuclei diagram': 1 slow download(s) dropped
+13:22:39 INFO    copilot.visuals.finder: image search 'cerebellar nuclei diagram' (diagram, labels preferred): 1 candidate(s), 1 accepted (0 labelled), 5.60 s {'search_s': 2.69, 'download_s': 1.8, 'clip_s': 0.05, 'full_s': 1.04, 'total_s': 5.6}
+  [IMAGE] 'cerebellar nuclei diagram' -> File:Diagram of the Microanatomy of Human Cerebellar Cortex.svg (5.6 s)
+13:22:39 INFO    copilot.presentation.engine: image 'cerebellar nuclei diagram' on 'Cerebellum': File:Diagram of the Microanatomy of Human Cerebellar Cortex.svg
+  [SLIDE] update 'Cerebellum' [key_points] v2 (3 items)
+  [  935.3s] Transverse information coordinates eye movement. It enables precision control of the voluntary body movements. Predict the future portion of the body during particular movements. (812 ms)
+  [SLIDE] update 'Cerebellum' [key_points] v3 (4 items)
+13:22:56 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.66) for the interpretation
+  [UNDERSTAND] Human Brain > Cerebellum (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 2028 ms
+               Added eye‑movement coordination and predictive function of the cerebellum.
+13:22:58 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebellum (same frame)
+13:22:58 INFO    copilot.presentation.engine: no image for 'Cerebellum': has an image
+  [SLIDE] update 'Cerebellum' [key_points] v4 (3 items)
+  [SLIDE] update 'Cerebellum' [key_points] v5 (6 items)
+  [  946.2s] Both anterior and posterior lobes are connected with the skeletal movements. The cerebrum is also essential for making fine adjustment to motor actions, coordinates, and maintains (634 ms)
+  [SLIDE] update 'Cerebellum' [key_points] v6 (7 items)
+  [  959.3s] Body balance and posture during walking, running, ridging, swimming. (426 ms)
+  [SLIDE] update 'Cerebellum' [key_points] v7 (7 items)
+13:23:04 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.80) for the interpretation
+  [UNDERSTAND] Human Brain > Cerebellum (elaboration) acts=explanation hint=key_points lines=2 via groq_main#2 2932 ms
+               Added that both cerebellar lobes control skeletal movements and emphasized posture in balance functions.
+13:23:07 INFO    copilot.presentation.engine: revised S1: Coordinates and maintains body balance, posture, and precise voluntary movements during walking, running, riding, and swimming
+13:23:07 INFO    copilot.presentation.engine: planner: update Human Brain > Cerebellum (same frame)
+13:23:07 INFO    copilot.presentation.engine: no image for 'Cerebellum': has an image
+  [SLIDE] update 'Cerebellum' [key_points] v8 (6 items)
+  [SLIDE] update 'Cerebellum' [key_points] v9 (6 items)
+  [SLIDE] update 'Cerebellum' [key_points] v10 (7 items)
+  [  972.3s] Medulla Obligata. The medulla obligata is a small structure present in the lowest region of the brain. It mainly controls the body's atomic functions such as heartbeats, breathing and digestion. It plays a primary role in the connecting of the spinal cord. (1041 ms)
+13:23:25 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.78) for the interpretation
+  [  985.9s] Pons and the cerebral cortex. Also it helps us in the maintaining. (434 ms)
+13:23:27 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['It plays a primary role in the connecting of the spinal cord']
+  [UNDERSTAND] Human Brain > Medulla Oblongata (new_topic) acts=explanation,explanation hint=concept lines=1 via groq_main#2 2364 ms
+               Introduced the medulla oblongata and its basic functions
+  [HEARD] 'atomic' -> 'autonomic' corrected on the slide (0.5)
+13:23:27 INFO    copilot.presentation.engine: planner: continue Human Brain > Medulla Oblongata (new facet)
+13:23:27 INFO    copilot.presentation.engine: concern d9b60fe832b9 (transcription, applied=True): 1 element(s); slide shows 'autonomic'
+  [SLIDE] add    'Medulla Oblongata' [key_points] v1 (4 items)
+13:23:27 INFO    copilot.presentation.engine: image search 'medulla oblongata' (photo) for 'Medulla Oblongata'
+13:23:32 INFO    copilot.visuals.finder: image search 'medulla oblongata': 2 slow download(s) dropped
+13:23:32 INFO    copilot.presentation.engine: image 'medulla oblongata': none (incomplete: 4 of 6 previews)
+  [IMAGE] 'medulla oblongata' -> none (incomplete: 4 of 6 previews) (4.6 s)
+13:23:33 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.87) for the interpretation
+  [  992.4s] of our posture and controlling our reflexes. (605 ms)
+  [SLIDE] update 'Medulla Oblongata' [key_points] v2 (5 items)
+  [  995.9s] Fons. (1016 ms)
+  [SLIDE] update 'Medulla Oblongata' [key_points] v3 (4 items)
+  [UNDERSTAND] Human Brain > Medulla Oblongata (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 2776 ms
+               Medulla also links to pons and cortex and aids posture maintenance
+13:23:36 INFO    copilot.presentation.engine: revised S4: It connects the spinal cord, pons, and cerebral cortex
+13:23:36 INFO    copilot.presentation.engine: planner: update Human Brain > Medulla Oblongata (same frame)
+  [SLIDE] update 'Medulla Oblongata' [key_points] v4 (4 items)
+  [SLIDE] update 'Medulla Oblongata' [key_points] v5 (5 items)
+13:23:41 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.76) for the interpretation
+  [UNDERSTAND] Human Brain > Medulla Oblongata (elaboration) acts=- hint=key_points lines=1 via groq_main#2 2150 ms
+               Added that the medulla controls reflexes along with posture
+13:23:43 INFO    copilot.presentation.engine: revised S5: Helps maintain posture and controls reflexes
+13:23:43 INFO    copilot.presentation.engine: planner: noop Human Brain > Medulla Oblongata (nothing to display)
+  [SLIDE] update 'Medulla Oblongata' [key_points] v6 (5 items)
+13:23:49 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.70) for the interpretation
+  [  997.2s] The pons is the primary structure of the brain stem present between the midbrain and medulla. Obligated, it serves as the relay signal between the lower cerebrum, spinal cords, the midbrain cerebrum and other higher parts of the brain. The main features of the pons include controlling sleep cycles, (1014 ms)
+  [UNDERSTAND] Human Brain > Medulla Oblongata (same_concept) acts=- hint=none lines=1 via groq_main#3 1845 ms
+  [HEARD] 'Fons' -> '(unclear)' corrected on the slide (0.5)
+13:23:51 INFO    copilot.presentation.engine: planner: noop Human Brain > Medulla Oblongata (nothing to display)
+13:23:51 INFO    copilot.presentation.engine: concern e8abda9b1d8e (transcription, applied=True): 0 element(s); slide shows '(unclear)'
+  [ 1012.2s] Regulating the magnitude and frequency of the (464 ms)
+  [SLIDE] update 'Medulla Oblongata' [key_points] v7 (6 items)
+  [ 1015.5s] The process of the reciprocation transfers information between the cerebrum and motor cortex. Pons is also involved in sensations such as sense of taste, hearing and balance. (789 ms)
+  [SLIDE] update 'Medulla Oblongata' [key_points] v8 (6 items)
+13:24:04 INFO    copilot.understanding.service: [REF] byjus.com p.8 (0.91) for the interpretation
+13:24:06 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The process of the reciprocation transfers information between the cerebrum and motor cortex']
+  [UNDERSTAND] Human Brain > Pons (sibling_concept) acts=explanation,explanation hint=concept lines=3 via groq_main#2 2259 ms
+               The teacher explained the pons' location, relay role, and functions in sleep, breathing, taste, hearing, and balance.
+13:24:06 INFO    copilot.presentation.engine: planner: continue Human Brain > Pons (new facet)
+  [SLIDE] update 'Medulla Oblongata' [key_points] v9 (5 items)
+  [SLIDE] add    'Pons' [key_points] v1 (6 items)
+13:24:06 INFO    copilot.presentation.engine: image search 'human brain stem pons' (diagram) for 'Pons'
+13:24:06 INFO    copilot.visuals.service: reference figure byjus.com p.8 f5 for 'human brain stem pons': label 0.680, clip 0.179 margin -0.039 -> no
+13:24:11 INFO    copilot.visuals.finder: image search 'human brain stem pons': 1 slow download(s) dropped
+13:24:14 INFO    copilot.visuals.finder: image search 'human brain stem pons': 1 slow download(s) dropped
+13:24:14 INFO    copilot.visuals.finder: image search 'human brain stem pons' (diagram, labels preferred): 4 candidate(s), 2 accepted (1 labelled), 7.71 s {'search_s': 2.46, 'download_s': 2.04, 'clip_s': 0.1, 'full_s': 3.08, 'total_s': 7.71}
+  [IMAGE] 'human brain stem pons' -> File:Brain stem sagittal section.svg (7.8 s)
+13:24:14 INFO    copilot.presentation.engine: no room for an image on 'Pons'
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261014-130607-e07e: 70 segments, 1272 words, state v161, 755 events logged
+        CommandReceived=48, ConceptSignal=70, ConcernRaised=22, ConcernResolved=4, DeckState=44, ImageChoices=9, ImageReady=14, ImageRequested=14, InterpretRequested=42, InterpretationReady=42, LifecycleChanged=5, SlideContextChanged=41, SlideOverflow=1, SlidePatch=98, StateChanged=161, TranscriptFinal=70, UtteranceClassified=70
+        stt: 70 published, 0 dropped, latency p50=705 ms p95=1029 ms max=1204 ms
+        understanding: 42 interpretations (41 by LLM, 1 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=2196 avg=2081, latency p50=2447 ms max=9356 ms
+        presentation: 15 slides; planner ops {'new': 1, 'noop': 7, 'update': 26, 'continue': 8}; revisions 10, corrections shown 7, shown as said 0
+        images: {'requests': 14, 'found': 9, 'none': 5, 'reference': 3}; slides with an image 8/15
+          1. [definition] Human Brain [part 1]  (v9, ['definition', 'points', 'image', 'facts'])
+          2. [key_points] Human Brain [part 2]  (v11, ['points', 'definition', 'points'])
+          3. [key_points] Human Brain [part 3]  (v8, ['points'])
+          4. [key_points] Forebrain  (v7, ['points', 'image', 'definition', 'points'])
+          5. [key_points] Hindbrain  (v3, ['points', 'image'])
+          6. [concept] Cerebrum [part 1]  (v5, ['definition', 'definition', 'definition', 'definition', 'points'])
+          7. [concept] Cerebrum [part 2]  (v8, ['definition', 'facts', 'image', 'definition'])
+          8. [members] Cerebrum [part 3]  (v5, ['definition', 'image', 'points'])
+          9. [members] Cerebrum [part 4]  (v4, ['definition', 'image'])
+          10. [definition] Hypothalamus  (v5, ['definition', 'points'])
+          11. [definition] Tectum  (v7, ['definition', 'points'])
+          12. [facts] Cerebellum [part 1]  (v6, ['facts', 'image', 'hierarchy'])
+          13. [key_points] Cerebellum [part 2]  (v10, ['points', 'image'])
+          14. [key_points] Medulla Oblongata  (v9, ['points'])
+          15. [key_points] Pons  (v1, ['points'])
+        providers: {'groq_main#1': 19, 'groq_main#2': 18, 'groq_main#3': 4}; triggers: {'words': 13, 'pause': 9, 'max_wait': 14, 'boundary': 6}; outline: ['Human Brain > Forebrain, Hindbrain, Cerebrum, Hypothalamus, Tectum, Cerebellum, Medulla Oblongata, Pons']; concerns: 22
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261014-130607-e07e\session.sqlite

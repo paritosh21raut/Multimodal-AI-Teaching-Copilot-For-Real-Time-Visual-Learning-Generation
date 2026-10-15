@@ -1,0 +1,16 @@
+{
+  "name": "test19",
+  "source": "mic",
+  "note": "speaker A, chemistry",
+  "session_id": "20261015-103553-cb74",
+  "date": "2026-10-15 10:49",
+  "title": "",
+  "minutes": 11.6,
+  "utterances": 74,
+  "slides": 19,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker A",
+  "subject": "chemistry"
+}

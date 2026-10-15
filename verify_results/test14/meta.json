@@ -1,0 +1,16 @@
+{
+  "name": "test14",
+  "source": "mic",
+  "note": "speaker A, AI/ML",
+  "session_id": "20261014-132538-a5aa",
+  "date": "2026-10-14 13:44",
+  "title": "",
+  "minutes": 16.0,
+  "utterances": 53,
+  "slides": 10,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker A",
+  "subject": "AI/ML"
+}

@@ -1,0 +1,447 @@
+> python -m copilot --audio-file artifacts/web_audio/web1.wav --no-wait --no-open --subject Biology
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (5.6 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_5         openai/gpt-oss-120b           153k of 200k tokens IN USE
+        GROQ_API_KEY_6         openai/gpt-oss-120b           193k of 200k tokens ok
+        GROQ_API_KEY_1         openai/gpt-oss-120b           150k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b            45k of 200k tokens ok
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~1.8 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~7.6 h
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 218 lecture minutes
+
+[READY] session 20261015-113231-5333
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        subject=Biology grade=- topic=-
+[LIVE]  lecture started. Type q + Enter to end.
+11:32:38 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[INIT]  speech: 30 terms from your study material (photoelectric, thermodynamics, digestive, photoelectrons, cerebrum, cerebellum ...)
+  [    0.7s] So you can see that here. There's most bacteria. There's about one micron to 10 micron. But our cells span from tens of microns to hundreds of microns, and even larger than that because the (1006 ms)
+  [   14.0s] The human egg is on the order of a millimeter in size. This is not a human egg, but this is a frog egg. You can see often the egg cells are the biggest of all cells. The biggest cell is an ostrich egg. It's about 15 centimeters, I believe. (1110 ms)
+11:33:09 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.50) for the interpretation
+11:33:10 WARNING copilot.understanding.interpreter: interpretation from groq_main#5 invalid (schema: [{'type': 'literal_error', 'loc': ('relation',), 'msg': "Input should be 'same_concept', 'elaboration', 'sub_concept', 'sibling_concept', 'new_topic' or 'digression'", 'input': 'new_concept', 'ctx': {'expected': "'same_concept', 'elaboration', 'sub_concept', 'sibling_concept', 'new_topic' or 'digression'"}}]); one repair attempt
+  [UNDERSTAND] Biology > Cell Size (new_topic) acts=explanation hint=key_points lines=2 via groq_main#5 3393 ms
+               Teacher described the size range of cells and gave examples of the largest cells.
+11:33:12 INFO    copilot.presentation.engine: planner: new Biology > Cell Size (first content slide)
+  [SLIDE] add    'Cell Size' [key_points] v1 (5 items)
+11:33:12 INFO    copilot.presentation.engine: image search 'cell size comparison' (diagram) for 'Cell Size'
+  [IMAGE] 'cell size comparison' -> File:Unit cell for SA to V ratio with tables.png (0.0 s, cached)
+11:33:12 INFO    copilot.presentation.engine: image 'cell size comparison' on 'Cell Size': File:Unit cell for SA to V ratio with tables.png
+  [SLIDE] update 'Cell Size' [key_points] v2 (6 items)
+  [   29.1s] Okay, so cells span a huge wide range of sizes. (688 ms)
+  [SLIDE] update 'Cell Size' [key_points] v3 (7 items)
+11:33:17 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.57) for the interpretation
+11:33:18 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Cells span a huge wide range of sizes']
+  [UNDERSTAND] Biology > Cell Size (same_concept) acts=explanation,explanation hint=key_points lines=1 via groq_main#5 1236 ms
+               Teacher noted that cells vary widely in size.
+11:33:18 INFO    copilot.presentation.engine: planner: update Biology > Cell Size (same frame)
+11:33:18 INFO    copilot.presentation.engine: no image for 'Cell Size': has an image
+  [SLIDE] update 'Cell Size' [key_points] v4 (6 items)
+  [SLIDE] update 'Cell Size' [key_points] v5 (8 items)
+  [   35.1s] I'm going to start with the simplest, which is a bacteria cell. And what I want to point out about this cell is its simplicity. OK? So here you can see this is an electron micrograph of a bacterial cell here. (1058 ms)
+  [SLIDE] update 'Cell Size' [key_points] v6 (9 items)
+11:33:30 INFO    copilot.presentation.engine: slide 7c5c47a47ff3 overflows on the display; further content continues on a new slide
+  [UNDERSTAND] Biology > Cell Size (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1377 ms
+               Teacher highlighted that bacterial cells are the simplest cells
+11:33:31 INFO    copilot.presentation.engine: planner: update Biology > Cell Size (same frame)
+  [SLIDE] update 'Cell Size' [key_points] v7 (8 items)
+  [SLIDE] update 'Cell Size' [key_points] v8 (8 items)
+  [SLIDE] add    'Cell Size' [key_points] v1 (1 items)
+11:33:31 INFO    copilot.presentation.engine: image 'cell size comparison' kept on 'Cell Size' (same visual as this topic's image)
+  [SLIDE] update 'Cell Size' [key_points] v2 (2 items)
+  [   49.0s] And this is a cartoon just illustrating some of the key features. You have a plasma membrane and a cell wall. The cell wall here is in sort of the periplasmic space is in green. (865 ms)
+  [SLIDE] update 'Cell Size' [key_points] v3 (3 items)
+  [   62.3s] And this encapsulates the cytoplasm. And the only other real structure you can see in this case is this nucleoid structure in the middle. And what the nucleoid is is just the chromosome of the bacterium. (1061 ms)
+  [SLIDE] update 'Cell Size' [key_points] v4 (3 items)
+  [UNDERSTAND] Biology > Cell Size (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 3458 ms
+               Added that cells have a plasma membrane and a cell wall located in the periplasmic space.
+11:33:59 INFO    copilot.presentation.engine: planner: update Biology > Cell Size (same frame)
+11:33:59 INFO    copilot.presentation.engine: no image for 'Cell Size': has an image
+  [SLIDE] update 'Cell Size' [key_points] v5 (4 items)
+11:34:10 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The only other real structure you can see in this case is this nucleoid structure in the middle']
+  [UNDERSTAND] Biology > Cell Size (elaboration) acts=definition,explanation hint=definition lines=1 via groq_main#5 1414 ms
+               Introduced the nucleoid as the bacterial chromosome located in the middle of the cell.
+11:34:10 INFO    copilot.presentation.engine: planner: update Biology > Cell Size (same frame)
+11:34:10 INFO    copilot.presentation.engine: no image for 'Cell Size': has an image
+  [SLIDE] update 'Cell Size' [key_points] v6 (3 items)
+  [SLIDE] update 'Cell Size' [key_points] v7 (5 items)
+  [   78.5s] OK? And I want to point out that later on in the course, Professor Imperiali is going to come back and tell you about antibiotics and how bacteria can develop antibiotic resistance. (971 ms)
+  [SLIDE] update 'Cell Size' [key_points] v8 (6 items)
+  [   91.6s] Which is of critical importance for biology and medicine. (401 ms)
+  [SLIDE] update 'Cell Size' [key_points] v9 (6 items)
+  [UNDERSTAND] Biology > Cell Size (digression) acts=transition hint=none lines=2 via groq_main#5 1305 ms
+               Teacher announced that upcoming lessons will cover antibiotics and bacterial resistance, highlighting its importance for biology and medicine.
+11:34:18 INFO    copilot.presentation.engine: planner: noop Biology > Cell Size (digression)
+  [SLIDE] update 'Cell Size' [key_points] v10 (5 items)
+  [   97.8s] So our cells are more complicated than this. And that's because if you look at this EM here, you can see that eukaryotic cells, and we are eukaryotes, have membrane-bound compartments. There's a nucleus here that houses (1013 ms)
+  [SLIDE] update 'Cell Size' [key_points] v11 (6 items)
+  [  112.8s] Our nuclear DNA. And also, there is a series of membrane compartments that span the cytoplasm. (961 ms)
+  [SLIDE] update 'Cell Size' [key_points] v12 (6 items)
+  [UNDERSTAND] Biology > Membrane‑Bound Organelles (sibling_concept) acts=explanation hint=key_points lines=2 via groq_main#5 5302 ms
+               Introduced membrane‑bound compartments, including a nucleus that contains DNA, in eukaryotic cells.
+11:34:46 INFO    copilot.presentation.engine: planner: continue Biology > Membrane‑Bound Organelles (new facet)
+  [SLIDE] update 'Cell Size' [key_points] v13 (5 items)
+  [SLIDE] add    'Membrane‑Bound Organelles' [key_points] v1 (3 items)
+11:34:46 INFO    copilot.presentation.engine: image search 'eukaryotic cell diagram' (diagram) for 'Membrane‑Bound Organelles'
+11:34:51 INFO    copilot.visuals.finder: image search 'eukaryotic cell diagram': 4 slow download(s) dropped
+11:34:51 INFO    copilot.presentation.engine: image 'eukaryotic cell diagram': none (downloads failed)
+  [IMAGE] 'eukaryotic cell diagram' -> none (downloads failed) (4.5 s)
+  [  122.7s] OK? Now, our cells, even in a single organism, such as us, our cells have incredible diversity and specialization. (765 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v2 (4 items)
+  [UNDERSTAND] Biology > Membrane‑Bound Organelles (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1925 ms
+               Cells in a single organism can be highly diverse and specialized.
+11:34:55 INFO    copilot.presentation.engine: planner: update Biology > Membrane‑Bound Organelles (same frame)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v3 (3 items)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v4 (4 items)
+  [  135.5s] So there's diversity within a single organism. There is specialization. (675 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v5 (5 items)
+  [UNDERSTAND] Biology > Membrane‑Bound Organelles (same_concept) acts=- hint=key_points lines=1 via groq_main#5 3850 ms
+               Emphasized that cells in one organism show great diversity and specialization.
+11:35:05 INFO    copilot.presentation.engine: revised S4: Cells within a single organism can be highly diverse and specialized.
+11:35:05 INFO    copilot.presentation.engine: planner: noop Biology > Membrane‑Bound Organelles (nothing to display)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v6 (4 items)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v7 (4 items)
+  [  145.2s] So as we develop from (569 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v8 (5 items)
+  [  147.7s] A single cell. (369 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v9 (5 items)
+  [UNDERSTAND] Biology > Membrane‑Bound Organelles (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 2007 ms
+               Development of multicellular organisms starts from a single cell.
+11:35:21 INFO    copilot.presentation.engine: planner: update Biology > Membrane‑Bound Organelles (same frame)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v10 (4 items)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v11 (5 items)
+  [  149.6s] Our cells acquire properties that allow them to carry out specific functions in our bodies. And an extreme example of this is shown up here. These are pictures or drawings of neurons. (1008 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v12 (6 items)
+  [  164.6s] From Ramon y Cajal. And you can see how this looks nothing like the cartoon picture of a cell I just showed you. These cells have (773 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v13 (6 items)
+11:35:42 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.52) for the interpretation
+11:35:45 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Membrane‑Bound Organelles' -> same_concept
+11:35:45 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Our cells acquire properties that allow them to carry out specific functions in our bodies']
+  [UNDERSTAND] Biology > Membrane‑Bound Organelles (same_concept) acts=example,explanation hint=example lines=2 via groq_main#5 2522 ms
+               Neurons illustrate how cells specialize for specific functions.
+11:35:45 INFO    copilot.presentation.engine: planner: update Biology > Membrane‑Bound Organelles (same frame)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v14 (5 items)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v15 (7 items)
+  [  174.4s] Highly dendritic sort of arrays of protrusions. And these cells have evolved such that they are very good at sort of transmitting information in the body, right? An extreme example of a nerve is a sciatic nerve. (901 ms)
+  [  188.9s] Which extends from the base of your spinal cord all the way down into your foot. So it's about a meter long. That's an extreme specialization for a cell. (832 ms)
+11:35:58 INFO    copilot.understanding.service: [REF] byjus.com p.9 (0.51) for the interpretation
+11:36:00 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Highly dendritic sort of arrays of protrusions']
+  [UNDERSTAND] Biology > Membrane‑Bound Organelles (elaboration) acts=example,explanation hint=example lines=2 via groq_main#5 1786 ms
+               Provided the sciatic nerve as a ~1 m long example of extreme cell specialization
+11:36:00 INFO    copilot.presentation.engine: planner: update Biology > Membrane‑Bound Organelles (same frame)
+  [SLIDE] update 'Membrane‑Bound Organelles' [key_points] v16 (7 items)
+  [SLIDE] add    'Membrane‑Bound Organelles' [example] v1 (2 items)
+11:36:00 INFO    copilot.presentation.engine: image search 'sciatic nerve' (photo) for 'Membrane‑Bound Organelles'
+11:36:04 INFO    copilot.visuals.finder: image search 'sciatic nerve': 6 slow download(s) dropped
+  [  199.1s] OK? So these cells are specialized, but what's important to note is that (739 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v2 (3 items)
+11:36:08 INFO    copilot.visuals.finder: image search 'sciatic nerve' (photo): 1 candidate(s), 1 accepted (0 labelled), 7.52 s {'search_s': 2.05, 'download_s': 2.45, 'clip_s': 0.03, 'full_s': 2.97, 'total_s': 7.52}
+  [IMAGE] 'sciatic nerve' -> File:Sciatic nerve2.jpg (7.5 s)
+11:36:08 INFO    copilot.presentation.engine: image 'sciatic nerve' on 'Membrane‑Bound Organelles': File:Sciatic nerve2.jpg
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v3 (4 items)
+  [  205.7s] Within a single organism, the genomic DNA of a cell is more or less the same. OK, so. (718 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v4 (4 items)
+  [UNDERSTAND] Biology > Membrane‑Bound Organelles (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 1524 ms
+               All cells in one organism share nearly the same genomic DNA despite specialization.
+11:36:15 INFO    copilot.presentation.engine: planner: update Biology > Membrane‑Bound Organelles (same frame)
+11:36:15 INFO    copilot.presentation.engine: no image for 'Membrane‑Bound Organelles': has an image
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v5 (3 items)
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v6 (4 items)
+  [  215.1s] Genomic DNA. (333 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v7 (5 items)
+  [UNDERSTAND] Biology > Membrane‑Bound Organelles (same_concept) acts=explanation hint=key_points lines=1 via groq_main#6 1867 ms
+               Introduced the term Genomic DNA as a key concept.
+11:36:24 INFO    copilot.presentation.engine: planner: update Biology > Membrane‑Bound Organelles (same frame)
+11:36:24 INFO    copilot.presentation.engine: no image for 'Membrane‑Bound Organelles': has an image
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v8 (4 items)
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v9 (5 items)
+  [  219.3s] Is the same with some exceptions, some of which we'll get to in the course. The genomic DNA is the same. What's different is the genes that are being expressed in these cells and the proteins that they encode that. (996 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v10 (6 items)
+  [  232.7s] Give these cells different functions. (323 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v11 (6 items)
+  [UNDERSTAND] Biology > Membrane‑Bound Organelles (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1942 ms
+               Gene expression, not DNA sequence, drives cell specialization despite nearly identical genomic DNA.
+11:36:36 INFO    copilot.presentation.engine: revised S2: Genomic DNA is nearly identical in all cells of an organism, with some exceptions
+11:36:36 INFO    copilot.presentation.engine: planner: update Biology > Membrane‑Bound Organelles (same frame)
+11:36:36 INFO    copilot.presentation.engine: no image for 'Membrane‑Bound Organelles': has an image
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v12 (6 items)
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v13 (7 items)
+  [  237.1s] So what's different... (597 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v14 (6 items)
+  [UNDERSTAND] Biology > Membrane‑Bound Organelles (elaboration) acts=explanation hint=key_points lines=2 via groq_main#6 1953 ms
+               Gene expression provides cells with different functions despite identical DNA
+11:36:44 INFO    copilot.presentation.engine: revised S4: Differences arise because gene expression gives cells different functions
+11:36:44 INFO    copilot.presentation.engine: planner: update Biology > Membrane‑Bound Organelles (same frame)
+11:36:44 INFO    copilot.presentation.engine: no image for 'Membrane‑Bound Organelles': has an image
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v15 (6 items)
+  [  240.0s] And what allows cells to acquire these different functionalities is a different gene expression. (827 ms)
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v16 (7 items)
+  [UNDERSTAND] Biology > Membrane‑Bound Organelles (elaboration) acts=- hint=key_points lines=1 via groq_main#5 2179 ms
+               Clarified that gene expression differences give cells distinct functions
+11:36:52 INFO    copilot.presentation.engine: revised S4: Gene expression differences give cells distinct functions
+11:36:52 INFO    copilot.presentation.engine: planner: noop Biology > Membrane‑Bound Organelles (nothing to display)
+11:36:52 INFO    copilot.presentation.engine: no image for 'Membrane‑Bound Organelles': has an image
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v17 (6 items)
+  [SLIDE] update 'Membrane‑Bound Organelles' [example] v18 (6 items)
+  [  261.1s] OK, so that's the overview. Now I want to talk about compartments. (665 ms)
+  [UNDERSTAND] Biology > Compartments (sibling_concept) acts=transition hint=none lines=1 via groq_main#5 1532 ms
+               Teacher announces shift to discussing cellular compartments
+11:37:07 INFO    copilot.presentation.engine: planner: noop Biology > Compartments (nothing to display)
+  [  269.0s] And if we go back to this cartoon that I showed you from your (670 ms)
+  [  274.5s] I just wanted to point out that right now at MIT and the Broad, there is a project that's ongoing to really define all the cell types that are present in humans. (892 ms)
+11:37:29 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.54) for the interpretation
+  [  288.6s] And this is known as the human cell atlas. (439 ms)
+  [UNDERSTAND] Biology > Cell Types (sibling_concept) acts=explanation hint=concept lines=2 via groq_main#5 2356 ms
+               Teacher mentions an MIT/Broad project to define all human cell types
+11:37:31 INFO    copilot.presentation.engine: planner: continue Biology > Cell Types (new facet)
+11:37:31 INFO    copilot.presentation.engine: image hint 'Cell Types comparison' for 'Cell Types' from its sibling subtopic
+  [SLIDE] add    'Cell Types' [key_points] v1 (1 items)
+11:37:31 INFO    copilot.presentation.engine: image search 'Cell Types comparison' (diagram) for 'Cell Types'
+11:37:37 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.54) for the interpretation
+11:37:39 INFO    copilot.visuals.finder: image search 'Cell Types comparison': 1 slow download(s) dropped
+11:37:39 INFO    copilot.visuals.finder: image search 'Cell Types comparison' (diagram, labels preferred): 4 candidate(s), 2 accepted (1 labelled), 7.72 s {'search_s': 2.19, 'download_s': 1.84, 'clip_s': 0.08, 'full_s': 3.58, 'total_s': 7.72}
+  [IMAGE] 'Cell Types comparison' -> File:Celltypes.svg (7.7 s)
+11:37:39 INFO    copilot.presentation.engine: image 'Cell Types comparison' on 'Cell Types': File:Celltypes.svg
+  [SLIDE] update 'Cell Types' [key_points] v2 (2 items)
+  [UNDERSTAND] Biology > Cell Types (same_concept) acts=- hint=none lines=1 via groq_main#5 3776 ms
+               Added the name "Human Cell Atlas" for the MIT/Broad project defining cell types
+11:37:41 INFO    copilot.presentation.engine: revised S1: MIT and Broad project aims to define all human cell types, known as the Human Cell Atlas
+11:37:41 INFO    copilot.presentation.engine: planner: noop Biology > Cell Types (nothing to display)
+  [SLIDE] update 'Cell Types' [key_points] v3 (2 items)
+  [  292.8s] And I just want you to take a minute to think about, if you wanted to find different cell types, what would you look at to classify these cell types? (940 ms)
+  [  302.9s] Anyone have an idea? (345 ms)
+  [UNDERSTAND] Biology > Cell Types (same_concept) acts=question hint=none lines=1 via groq_main#6 1132 ms
+               Teacher asks what criteria to use for classifying different cell types
+11:37:46 INFO    copilot.presentation.engine: planner: noop Biology > Cell Types (nothing to display)
+  [  305.2s] Yes, what's your name? Rachel. (644 ms)
+11:37:53 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.53) for the interpretation
+  [UNDERSTAND] Biology > Cell Types (same_concept) acts=question hint=none lines=1 via groq_main#5 3801 ms
+               Teacher asks students for ideas about classifying cell types
+11:37:57 INFO    copilot.presentation.engine: planner: noop Biology > Cell Types (nothing to display)
+  [  309.1s] What's that? You could look at function. That might be a little subjective in how to interpret. What defines the function of the cell? (854 ms)
+11:38:01 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.51) for the interpretation
+11:38:04 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['That might be a little subjective in how to interpret']
+  [UNDERSTAND] Biology > Cell Types (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#6 3065 ms
+               Introduced function as a possible criterion for classifying cell types
+11:38:04 INFO    copilot.presentation.engine: planner: update Biology > Cell Types (same frame)
+  [SLIDE] update 'Cell Types' [key_points] v4 (4 items)
+  [  323.3s] But is there something, I guess, within that cell that would define what its function is? (635 ms)
+  [SLIDE] update 'Cell Types' [key_points] v5 (5 items)
+  [  329.1s] Yeah, what's your name? (524 ms)
+  [SLIDE] update 'Cell Types' [key_points] v6 (4 items)
+  [  331.1s] Semantar? Semantar. Semantak? (584 ms)
+  [  334.3s] Alright, yeah. (355 ms)
+  [UNDERSTAND] Biology > Cell Types (elaboration) acts=question hint=none lines=1 via groq_main#5 6489 ms
+               Teacher asks what internal feature defines a cell's function
+11:38:15 INFO    copilot.presentation.engine: planner: noop Biology > Cell Types (nothing to display)
+  [  336.5s] Gene expression, right? What genes are these cells expressing, right? (746 ms)
+  [UNDERSTAND] Biology > Cell Types (digression) acts=- hint=none lines=2 via groq_main#6 1660 ms
+               No new content added to the slide
+11:38:22 INFO    copilot.presentation.engine: planner: noop Biology > Cell Types (digression)
+11:38:35 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Cell Types' -> same_concept
+  [UNDERSTAND] Biology > Cell Types (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 2420 ms
+               Gene expression can be used to classify cell types based on the genes they express.
+11:38:35 INFO    copilot.presentation.engine: planner: update Biology > Cell Types (same frame)
+  [SLIDE] update 'Cell Types' [key_points] v7 (5 items)
+  [  341.4s] So what they're doing is they're isolating single cells from tissues. And then they're looking at gene expression. So which type of molecule here would be the molecule you'd want to look at if you wanted a gene expression? (1084 ms)
+  [SLIDE] update 'Cell Types' [key_points] v8 (6 items)
+  [  355.4s] Want to look at gene expression. (526 ms)
+  [SLIDE] update 'Cell Types' [key_points] v9 (6 items)
+  [  360.9s] So, uh... (1494 ms)
+  [  364.0s] Not miles. (391 ms)
+  [SLIDE] update 'Cell Types' [key_points] v10 (5 items)
+  [  365.5s] Malik. (316 ms)
+  [UNDERSTAND] Biology > Cell Types (elaboration) acts=explanation hint=none lines=2 via groq_main#5 6245 ms
+               Single cells are isolated from tissues and their RNA is examined to determine gene expression profiles for classifying cell types.
+11:38:47 INFO    copilot.presentation.engine: planner: update Biology > Cell Types (same frame)
+  [SLIDE] update 'Cell Types' [key_points] v11 (7 items)
+  [UNDERSTAND] Biology > Cell Types (same_concept) acts=- hint=none lines=2 via groq_main#6 1322 ms
+               No new substantive content added.
+11:38:50 INFO    copilot.presentation.engine: planner: noop Biology > Cell Types (nothing to display)
+  [  369.2s] mRNA, exactly. Malik is exactly right. So you look at the mRNA, right? Because if there's mRNA, that means that gene was expressed and is possibly encoding the translation of a protein. (933 ms)
+  [  384.2s] So that's what they're doing. They're isolating single cells and doing a massive single cell RNA-seq project. And that's helping to identify new cell types in the human body. (961 ms)
+  [UNDERSTAND] Biology > Cell Types (same_concept) acts=explanation,explanation hint=key_points lines=2 via groq_main#5 1714 ms
+               mRNA signals gene expression and massive single‑cell RNA‑seq discovers new cell types
+11:39:16 INFO    copilot.presentation.engine: revised S6: mRNA indicates expressed genes and potential protein coding
+11:39:16 INFO    copilot.presentation.engine: planner: update Biology > Cell Types (same frame)
+  [SLIDE] update 'Cell Types' [key_points] v12 (7 items)
+  [SLIDE] update 'Cell Types' [key_points] v13 (7 items)
+  [SLIDE] add    'Cell Types' [key_points] v1 (2 items)
+11:39:16 INFO    copilot.presentation.engine: image search 'single cell RNA sequencing' (diagram) for 'Cell Types'
+11:39:21 INFO    copilot.visuals.finder: image search 'single cell RNA sequencing': 2 slow download(s) dropped
+11:39:24 INFO    copilot.visuals.finder: image search 'single cell RNA sequencing' (diagram, labels preferred): 4 candidate(s), 2 accepted (0 labelled), 7.50 s {'search_s': 2.73, 'download_s': 1.78, 'clip_s': 0.09, 'full_s': 2.88, 'total_s': 7.5}
+  [IMAGE] 'single cell RNA sequencing' -> File:Summary of RNA-Seq.svg (7.5 s)
+11:39:24 INFO    copilot.presentation.engine: image 'single cell RNA sequencing' on 'Cell Types': File:Summary of RNA-Seq.svg
+  [SLIDE] update 'Cell Types' [key_points] v2 (3 items)
+  [  396.0s] OK, coming back to compartments, so I showed you this picture. You can see there are lots of membrane-bound compartments in the cell. You can see the lines in this cartoon represent lipid bilayers. And so these are compartments. (1165 ms)
+  [UNDERSTAND] Biology > Compartments (sibling_concept) acts=explanation hint=concept lines=1 via groq_main#5 1956 ms
+               Membrane‑bound compartments are shown as lipid‑bilayer enclosed regions in the cell diagram.
+11:39:45 INFO    copilot.presentation.engine: planner: continue Biology > Compartments (new facet)
+  [SLIDE] add    'Compartments' [key_points] v1 (2 items)
+11:39:45 INFO    copilot.presentation.engine: image search 'cell compartments diagram' (diagram) for 'Compartments'
+  [  410.7s] Departments that are completely encapsulated by a lipid bilayer. And I'm going to remind you of something that Professor Imperiali told you about already. And the reason I'm saying it again is because it is so freaking important. (1046 ms)
+  [SLIDE] update 'Compartments' [key_points] v2 (3 items)
+  [  425.4s] OK, so if we consider a lipid bilayer. (667 ms)
+  [SLIDE] update 'Compartments' [key_points] v3 (3 items)
+11:39:52 INFO    copilot.visuals.finder: image search 'cell compartments diagram': 2 slow download(s) dropped
+11:39:52 INFO    copilot.visuals.finder: image search 'cell compartments diagram' (diagram, labels preferred): 3 candidate(s), 1 accepted (1 labelled), 7.76 s {'search_s': 2.1, 'download_s': 2.1, 'clip_s': 0.07, 'full_s': 3.47, 'total_s': 7.76}
+  [IMAGE] 'cell compartments diagram' -> File:Cell-organelles-labeled.png (7.8 s)
+11:39:52 INFO    copilot.presentation.engine: image 'cell compartments diagram' on 'Compartments': File:Cell-organelles-labeled.png
+  [SLIDE] update 'Compartments' [key_points] v4 (4 items)
+  [UNDERSTAND] Biology > Compartments (elaboration) acts=definition hint=definition lines=2 via groq_main#5 2262 ms
+               Defined compartments as structures fully enclosed by a lipid bilayer
+11:39:53 INFO    copilot.presentation.engine: revised S1: Compartments are membrane‑bound regions fully enclosed by a lipid bilayer
+11:39:53 INFO    copilot.presentation.engine: planner: update Biology > Compartments (same frame)
+11:39:53 INFO    copilot.presentation.engine: no image for 'Compartments': has an image
+  [SLIDE] update 'Compartments' [key_points] v5 (3 items)
+  [SLIDE] update 'Compartments' [key_points] v6 (3 items)
+  [SLIDE] update 'Compartments' [key_points] v7 (4 items)
+  [  430.5s] Where the circles are the polar head groups of the lipids and the squiggly lines are the fatty acid chains, I'm not going to draw all the fatty acid chains. (973 ms)
+  [SLIDE] update 'Compartments' [key_points] v8 (5 items)
+  [UNDERSTAND] Biology > Compartments (elaboration) acts=explanation hint=concept lines=1 via groq_main#5 2025 ms
+               Explains diagram symbols: circles = polar heads, squiggly lines = fatty acid chains.
+11:40:02 INFO    copilot.presentation.engine: planner: update Biology > Compartments (same frame)
+11:40:02 INFO    copilot.presentation.engine: no image for 'Compartments': has an image
+  [SLIDE] update 'Compartments' [key_points] v9 (4 items)
+  [SLIDE] update 'Compartments' [key_points] v10 (5 items)
+  [  444.4s] So this is a lipid bilayer. (656 ms)
+  [SLIDE] update 'Compartments' [key_points] v11 (6 items)
+  [UNDERSTAND] Biology > Compartments (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 3270 ms
+               Lipid bilayer encloses the compartments
+11:40:12 INFO    copilot.presentation.engine: planner: update Biology > Compartments (same frame)
+11:40:12 INFO    copilot.presentation.engine: no image for 'Compartments': has an image
+  [SLIDE] update 'Compartments' [key_points] v12 (5 items)
+  [SLIDE] update 'Compartments' [key_points] v13 (6 items)
+  [  451.4s] And these head groups, are they hydrophilic or hydrophobic? (687 ms)
+  [SLIDE] update 'Compartments' [key_points] v14 (7 items)
+  [  457.9s] Yes, what's your name? Stephen. (601 ms)
+  [SLIDE] update 'Compartments' [key_points] v15 (6 items)
+  [UNDERSTAND] Biology > Compartments (same_concept) acts=question hint=none lines=1 via groq_main#6 3782 ms
+               Teacher asks whether lipid‑bilayer head groups are hydrophilic or hydrophobic.
+11:40:20 INFO    copilot.presentation.engine: planner: noop Biology > Compartments (nothing to display)
+  [  460.8s] They're hydrophilic. They like water, right? The water is on sort of the different faces here. These are hydrophilic. (824 ms)
+11:40:29 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The water is on sort of the different faces here']
+  [UNDERSTAND] Biology > Compartments (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#5 1744 ms
+               Head groups of the lipid bilayer are hydrophilic.
+11:40:29 INFO    copilot.presentation.engine: planner: update Biology > Compartments (same frame)
+11:40:29 INFO    copilot.presentation.engine: no image for 'Compartments': has an image
+  [SLIDE] update 'Compartments' [key_points] v16 (8 items)
+  [  472.8s] Okay, how about this central region here? (571 ms)
+  [UNDERSTAND] Biology > Compartments (elaboration) acts=question hint=none lines=1 via groq_main#6 1600 ms
+               Teacher points to the central region of the cell diagram.
+11:40:37 INFO    copilot.presentation.engine: planner: noop Biology > Compartments (nothing to display)
+  [  476.5s] Yes, name? Ori. Ori. Hydrophobic. Hydrophobic. Good. Right? That's excellent. OK. (874 ms)
+  [  485.1s] So these are hydrophobic. (393 ms)
+  [UNDERSTAND] Biology > Compartments (elaboration) acts=explanation hint=concept lines=2 via groq_main#5 2988 ms
+               Teacher notes that the fatty‑acid tails of the lipid bilayer are hydrophobic.
+11:40:49 INFO    copilot.presentation.engine: planner: update Biology > Compartments (same frame)
+11:40:49 INFO    copilot.presentation.engine: no image for 'Compartments': has an image
+  [SLIDE] update 'Compartments' [key_points] v17 (9 items)
+  [  488.8s] Hydrophobic. So what that means is you have this hydrophobic layer that is surrounding each of these compartments, and that's going to serve as a barrier such that water and things dissolved in water cannot pass. (1038 ms)
+  [SLIDE] update 'Compartments' [key_points] v18 (10 items)
+  [  502.0s] So each of these compartments that are membrane bound have a (661 ms)
+  [SLIDE] update 'Compartments' [key_points] v19 (10 items)
+  [UNDERSTAND] Biology > Compartments (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 2902 ms
+               Hydrophobic layer around compartments acts as a water‑impermeable barrier.
+11:41:22 INFO    copilot.presentation.engine: planner: update Biology > Compartments (same frame)
+11:41:22 INFO    copilot.presentation.engine: no image for 'Compartments': has an image
+  [SLIDE] update 'Compartments' [key_points] v20 (9 items)
+  [SLIDE] update 'Compartments' [key_points] v21 (11 items)
+  [  512.0s] Properties in the lumen, that's in the interior of the compartment that's going to be different from that of the cytoplasm. And the cell, the interior of the cytoplasm, is going to be different from that of the extracellular space. (1027 ms)
+  [UNDERSTAND] Biology > Compartments (elaboration) acts=explanation hint=concept lines=1 via groq_main#5 2978 ms
+               Lumen interior has properties distinct from cytoplasm, which in turn differs from extracellular space.
+11:41:31 INFO    copilot.presentation.engine: planner: update Biology > Compartments (same frame)
+  [SLIDE] update 'Compartments' [key_points] v22 (11 items)
+  [SLIDE] add    'Compartments' [key_points] v1 (2 items)
+11:41:31 INFO    copilot.presentation.engine: image search 'cell diagram compartments' (diagram) for 'Compartments'
+  [  527.4s] So let me just give you some examples of how things are different inside and outside the cell and also inside and outside these compartments. (804 ms)
+  [SLIDE] update 'Compartments' [key_points] v2 (3 items)
+  [  537.0s] So if we consider (339 ms)
+  [SLIDE] update 'Compartments' [key_points] v3 (2 items)
+11:41:38 INFO    copilot.visuals.finder: image search 'cell diagram compartments': 1 slow download(s) dropped
+11:41:38 INFO    copilot.visuals.finder: image search 'cell diagram compartments' (diagram, labels preferred): 3 candidate(s), 0 accepted (1 labelled), 7.70 s {'search_s': 2.13, 'download_s': 1.81, 'clip_s': 0.07, 'full_s': 3.68, 'total_s': 7.7}
+11:41:38 INFO    copilot.presentation.engine: image 'cell diagram compartments': none (no relevant image)
+  [IMAGE] 'cell diagram compartments' -> none (no relevant image) (7.7 s)
+  [UNDERSTAND] Biology > Compartments (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1662 ms
+               Teacher gives examples showing distinct interior and exterior properties of cells and compartments.
+11:41:39 INFO    copilot.presentation.engine: planner: update Biology > Compartments (same frame)
+11:41:39 INFO    copilot.presentation.engine: no image for 'Compartments': nothing relevant found for 'cell diagram compartments' before
+  [SLIDE] update 'Compartments' [key_points] v4 (3 items)
+  [  539.3s] The Exoplasm. (539 ms)
+  [  541.2s] Versus the cytoplasm. (342 ms)
+  [UNDERSTAND] Biology > Exoplasm (sibling_concept) acts=comparison hint=comparison lines=3 via groq_main#6 1697 ms
+               Introduced exoplasm and compared it to cytoplasm
+11:41:47 INFO    copilot.presentation.engine: planner: continue Biology > Exoplasm (new facet)
+11:41:47 INFO    copilot.presentation.engine: image hint 'cell diagram Exoplasm' for 'Exoplasm' from its sibling subtopic
+11:41:47 INFO    copilot.presentation.engine: no image for 'Exoplasm': comparison needs the full width
+  [SLIDE] add    'Exoplasm' [comparison] v1 (2 items)
+  [  547.3s] We can consider the concentration of various ions. Now I want to get the concentrations right. Let's consider sodium. (695 ms)
+  [  556.3s] Monovalent cation, potassium. (574 ms)
+11:42:02 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['We can consider the concentration of various ions']
+  [UNDERSTAND] Biology > Exoplasm (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#5 2209 ms
+               The teacher notes that sodium and potassium are monovalent cations considered when comparing ion concentrations in the exoplasm.
+11:42:02 INFO    copilot.presentation.engine: planner: update Biology > Exoplasm (same frame)
+11:42:02 INFO    copilot.presentation.engine: no image for 'Exoplasm': comparison needs the full width
+  [SLIDE] update 'Exoplasm' [comparison] v2 (5 items)
+  [  561.2s] And calcium. I'm just going to use these as illustrations. (637 ms)
+  [SLIDE] update 'Exoplasm' [comparison] v3 (6 items)
+  [  566.1s] So sodium is concentrated outside the cell, about 150 millimolar. (708 ms)
+  [SLIDE] update 'Exoplasm' [comparison] v4 (6 items)
+11:42:14 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Sodium is concentrated outside the cell, about 150 millimolar']
+  [UNDERSTAND] Biology > Exoplasm (elaboration) acts=other,explanation,explanation hint=key_points lines=2 via groq_main#5 2220 ms
+               Provided sodium concentration in the exoplasm (≈150 mM) and noted calcium as another illustrative ion.
+11:42:14 INFO    copilot.presentation.engine: planner: update Biology > Exoplasm (same frame)
+11:42:14 INFO    copilot.presentation.engine: no image for 'Exoplasm': comparison needs the full width
+  [SLIDE] update 'Exoplasm' [comparison] v5 (5 items)
+  [SLIDE] update 'Exoplasm' [comparison] v6 (8 items)
+  [  573.3s] And is less concentrated in the cytoplasm. So there's a huge difference in sodium between the outside and the inside of the cell. (854 ms)
+  [  583.9s] OK, potassium. Now, you might think potassium would be a lot like sodium. It's a monovalent cation. It's a similar size. But it actually shows the flip distribution. So it's 4 millimolar. (984 ms)
+  [UNDERSTAND] Biology > Exoplasm (same_concept) acts=explanation hint=comparison lines=1 via groq_main#5 2611 ms
+               Teacher emphasizes the large sodium concentration difference between outside and inside of the cell.
+11:42:38 INFO    copilot.presentation.engine: planner: update Biology > Exoplasm (same frame)
+11:42:38 INFO    copilot.presentation.engine: no image for 'Exoplasm': comparison needs the full width
+  [SLIDE] update 'Exoplasm' [comparison] v7 (9 items)
+  [  597.9s] In the exoplasm and a hundred (600 ms)
+[END]   finishing lecture understanding (1 buffered lines) ...
+11:42:46 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['But it actually shows the flip distribution']
+  [UNDERSTAND] Biology > Exoplasm (elaboration) acts=other,explanation hint=key_points lines=1 via groq_main#5 2842 ms
+               Potassium concentration in the exoplasm is about 4 mM, contrasting with sodium's 150 mM.
+11:42:46 INFO    copilot.presentation.engine: planner: update Biology > Exoplasm (same frame)
+  [SLIDE] update 'Exoplasm' [comparison] v8 (9 items)
+  [SLIDE] add    'Exoplasm' [key_points] v1 (1 items)
+11:42:46 INFO    copilot.presentation.engine: no image 'cell ion concentrations' on 'Exoplasm': not about the slide (similarity 0.09)
+  [UNDERSTAND] Biology > Exoplasm (elaboration) acts=- hint=none lines=1 via groq_main#6 1920 ms
+               Teacher started an incomplete statement about exoplasm concentration.
+  [HEARD] 'a hundred' -> '150\u202fmM' corrected on the slide (0.5)
+11:42:53 INFO    copilot.presentation.engine: planner: noop Biology > Exoplasm (nothing to display)
+11:42:53 INFO    copilot.presentation.engine: concern 9bd854459856 (transcription, applied=True): 0 element(s); slide shows '150\u202fmM'
+[ENDED] session 20261015-113231-5333: 70 segments, 1233 words, state v164, 645 events logged
+        CommandReceived=1, ConceptSignal=68, DeckState=10, ImageChoices=6, ImageReady=7, ImageRequested=7, InterpretRequested=46, InterpretationReady=45, LifecycleChanged=3, SlideContextChanged=44, SlideOverflow=2, SlidePatch=105, StateChanged=161, TranscriptFinal=70, UtteranceClassified=70
+        stt: 70 published, 0 dropped, latency p50=718 ms p95=1084 ms max=1494 ms
+        understanding: 46 interpretations (46 by LLM, 0 fallbacks, 1 repaired), max 7 calls/min, prompt tokens max=2167 avg=1945, latency p50=2179 ms max=6489 ms
+        presentation: 10 slides; planner ops {'new': 1, 'update': 28, 'noop': 13, 'continue': 4}; revisions 7, corrections shown 0, shown as said 0
+        images: {'requests': 7, 'found': 5, 'none': 2}; slides with an image 6/10
+          1. [key_points] Cell Size [part 1]  (v8, ['points', 'image'])
+          2. [key_points] Cell Size [part 2]  (v13, ['points', 'image', 'definition', 'points'])
+          3. [key_points] Membrane‑Bound Organelles [part 1]  (v16, ['points', 'example'])
+          4. [example] Membrane‑Bound Organelles [part 2]  (v18, ['example', 'points', 'image'])
+          5. [key_points] Cell Types [part 1]  (v13, ['points', 'image'])
+          6. [key_points] Cell Types [part 2]  (v2, ['points', 'image'])
+          7. [key_points] Compartments [part 1]  (v22, ['points', 'image', 'definition', 'points'])
+          8. [key_points] Compartments [part 2]  (v4, ['points'])
+          9. [comparison] Exoplasm [part 1]  (v8, ['comparison', 'points', 'facts'])
+          10. [key_points] Exoplasm [part 2]  (v1, ['points'])
+        providers: {'groq_main#5': 36, 'groq_main#6': 10}; triggers: {'words': 13, 'pause': 22, 'max_wait': 6, 'boundary': 4, 'flush': 1}; outline: ['Biology > Cell Size, Membrane‑Bound Organelles, Compartments, Cell Types, Exoplasm']; concerns: 1
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261015-113231-5333\session.sqlite

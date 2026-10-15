@@ -1,0 +1,122 @@
+[    2.6] Today we are going to learn about trigonometric function.
+[    8.5] their mathematical formulas, their graphs and their applications in engineering.
+[   13.8] Trignometry is a branch of mathematics that studies the relationship between the angles and sides of triangle. It is widely used in physics, engineering, architecture, navigation and signal processing.
+[   28.0] Let us begin with the three basic trigonometric functions.
+[   31.8] sain, cosain and tangent.
+[   35.0] In a right angle triangle, the sine of an angle is the ratio of the opposite side to the hypotenuse.
+[   42.9] The cosine of an angle is the ratio of the adjacent side to the hypotenuse.
+[   49.0] The tangent of an angle is the ratio of opposite side to the adjacent side.
+[   54.5] These relationships are represented by three formulas.
+[   59.0] sine theta equals opposite divided by hypotenuse, cosine theta equals adjacent divided by hypotenuse and tangent theta equals opposite divided by adjacent.
+[   71.7] Now, let us discuss the unit circle. A unit circle is a circle with a radius of one unit and its center at the origin of a coordinate system.
+[   84.1] It helps us understand trigonometric functions for different angles.
+[   89.1] On the unit circle, the horizontal coordinates represent cosine while the vertical coordinates represent sine.
+[   98.0] Next, we will examine the graphs of sine and cosine.
+[  102.5] The sine function is written as y equals sine x.
+[  106.8] and the cosine function is written as y equals cosine x.
+[  111.3] Both functions produce repeating wave-like pattern.
+[  115.4] The standard period is 2 pi radian.
+[  119.0] which is equivalent to
+[  121.1] 360 degree.
+[  123.8] Their amplitude is 1.
+[  126.0] The sine and cosine function are particularly important in electrical engineering because alternating current and voltage can be represented using sinusoidal waveform.
+[  137.1] For example, an alternating voltage can be written as V of t.
+[  142.5] equals b maximum multiplied by sine omega t.
+[  146.8] where V maximum is peak voltage and omega represents
+[  151.2] angular frequency.
+[  153.8] Trigonometric functions also have applications in communication systems.
+[  159.4] Radio waves, sound waves and many other periodic signals can be represented or analyzed using sinusoidal functions. Engineers use these mathematical relationships to study signal.
+[  172.4] behavior and electrical circuit.
+[  175.6] To conclude,
+[  176.7] trigonometric functions provide mathematical foundations for understanding angles, periodic
+[  185.3] They are essential in mathematics, physics, electronics and telecommunications.
+[  212.0] The second topic is Differential Calculus.
+[  215.7] Differential calculus is a branch of mathematics that studies how quantities
+[  221.7] Its central concept is the derivative.
+[  225.2] The derivative measures the instantaneous rate of change of one.
+[  230.2] quantity with respect to another
+[  233.7] Geometrically, it represents the slope of a curve at a particular point.
+[  239.6] For a function y equals to f of x, the derivation is written as.
+[  246.1] dy by dx equals to f dash of x
+[  255.0] The third topic is Integral Calculus.
+[  259.0] Integral Calculus studies accumulation and the calculation of quantities such as areas, volumes and total changes.
+[  267.3] Integration is closely related to differentiation. While differentiation measures instantaneous change, integration can accumulate small quantities over an interval. The integral of a function is written as
+[  281.6] integration of f of x d of x.
+[  301.5] The fourth topic is Matrix and Determinants. A matrix is a rectangular arrangement of numbers organized into two rows and columns.
+[  312.4] are used to represent and solve system of linear equation efficiently.
+[  324.6] Matrix can be added, multiplied, transposed and inverted when the relevant mathematical conditions are satisfied. Applications
+[  333.7] Computer Graphics, Robotics, Circuit Analysis, Image Processing and Machine Learning
+[  339.9] Fifth topic is Probability.
+[  342.3] Probability is the branch of mathematics that measures the likelihood of an event occurring.
+[  349.6] Its value ranged from 0 to 1.
+[  353.0] A probability of 0 represents an impossible event while a probability of 1 represents a certain event.
+[  361.2] for equally like outcome.
+[  363.2] P of E equals to favorable outcome upon total outcome.
+[  391.6] Sixth topic is complex numbers.
+[  394.5] Complex numbers extend the real number system by introducing the imaginary unit I defined by I equals to under root of minus 1.
+[  405.1] i2=-1
+[  407.8] A complex number has the general form.
+[  410.5] z equals to a plus ib.
+[  414.1] You good?
+[  416.2] A is the real part and B is the imaginary part.
+[  422.6] The magnitude of this complex number is
+[  426.7] mod of z equals to
+[  430.3] square root of a square plus b square.
+[  435.1] Complex numbers can also be represented as point in a complex plane, with the real part on the horizontal axis and the imaginary part on the vertical axis.
+[  445.3] applications, AC circuit analysis, electrical impedance, signal processing, control system and communication engineering.
+[  453.8] Seventh topic is coordinate geometry.
+[  457.1] Coordinate Geometry combines Algebra and Geometry by representing points, lines and curves using coordinates.
+[  465.7] equation.
+[  467.2] A point in a two-dimension coordinate system is represented as
+[  472.5] x comma y
+[  474.5] the distance between two points.
+[  477.7] in bracket x1 comma y1 bracket close and in bracket x2 comma y2 bracket close is
+[  485.2] d equals to square root of in bracket x2 minus x1 bracket square plus y2 minus y1 bracket square.
+[  495.3] The straight line can be represented using the equation.
+[  499.2] y equals to mx plus c.
+[  534.1] Next topic is Statics.
+[  538.8] with collecting, organizing, analyzing and interpreting data.
+[  545.0] The three fundamental majors are Mean, Median and Mood.
+[  550.0] Consider the dataset.
+[  552.9] 2 4 4 6 9 mean the sum of the all values divided by the number of values.
+[  562.3] median the middle value after arranging the data in order
+[  569.5] mode, the most frequently occurring value here.
+[  574.7] Statics are includes variance, standard derivation, correlation, regression and probability distribution.
+[  583.5] Applications are scientific research, quality testing, network performance, analysis, economics and artificial intelligence.
+[  594.7] 9th topic is graph theory.
+[  598.7] Graph theory studies relationship between objects using vertex and edge.
+[  604.9] graph can be represented as g equals to in bracket b comma in bracket close.
+[  612.7] Here B is the set of vertex and E is the set of edge connecting them.
+[  621.1] 10th topic is Fourier Seize.
+[  624.3] Curia series is a mathematical method for representing a suitable periodic function as a sum of sinusoidal components.
+[  633.4] A periodic function repeats its pattern after a fixed interval.
+[  638.4] A general Fourier series can be written as f of x equals to
+[  644.1] a0 by 2
+[  645.6] Loz!
+[  649.9] summation of n equals 1 to infinity.
+[  654.0] in bracket an cos of nx plus bn sin of nx bracket close
+[  661.2] the coefficient a n and b n determine the contribution of different cosine and sine components.
+[  674.1] Eleventh topic is Differential Equation. Differential Equation is an equation involving an unknown function and one or more of its derivatives. For example, dy by dx equals to 2x.
+[  687.3] Integrating both sides gives y equals to x square plus c.
+[  691.6] Differential equation describes how system change over time or space.
+[  701.6] 12th topic is Laplace transform.
+[  704.4] A Laplace transform converts a function of
+[  708.4] time into a function of a complex variable.
+[  711.8] usually denoted by x. It is defined as f of x equals to
+[  717.3] 0 to infinity f of t e raise to minus st.
+[  725.5] For example.
+[  729.4] Laplace transform simplifies many differential equations by converting differentiation into algebraic operations.
+[  737.2] while also allowing in
+[  739.5] initial condition to be incorporated into the analysis.
+[  746.0] The applications are control systems, electrical circuit analysis, automation, signal processing and system modeling.
+[  754.2] Number 3
+[  755.5] 13th topic is Number Theory. Number Theory is a branch of Mathematics that studies integers and their properties.
+[  763.6] Important concept includes prime numbers, divisibility factors, multiples and modular arithmetic.
+[  775.4] Prime number is a whole number greater than 1 that has exactly 2 positive divisors, 1 and itself.
+[  785.4] Number 3 has Application means cryptography, digital security, coding theory and computer algorithm.
+[  792.2] Applications are encryption, secure communication, digital signature and cyber security.
+[  799.3] Fourth in topic is vector and vector algebra. A vector is a quantity that has both magnitude and direction.
+[  809.7] The two dimensional vector can be written as
+[  816.1] It's magnitude is
+[  821.1] Mort of A plus B
+[  823.3] square root of a square x plus a square y.

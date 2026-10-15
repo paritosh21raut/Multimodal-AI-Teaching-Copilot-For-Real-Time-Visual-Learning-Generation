@@ -152,6 +152,7 @@ class App:
         self.audio_file = audio_file
         self.setup_overrides = setup_overrides or {}
         self.engine = None
+        self.partial_engine = None  # F-013 S1b
         self.speech = None
         self.wait_for_enter = wait_for_enter
         self.speed = speed
@@ -202,6 +203,16 @@ class App:
         print(f"[INIT]  loading speech model {cfg.model} on {cfg.device} ...", flush=True)
         took = await asyncio.to_thread(self.engine.load)
         print(f"[INIT]  speech model ready ({took:.1f} s)", flush=True)
+        from copilot.stt.factory import make_partial_engine
+        partial = make_partial_engine(self.config)
+        if partial is not None:  # F-013 S1b: live text while the teacher speaks; optional, never blocks the lecture
+            try:
+                took = await asyncio.to_thread(partial.load)
+                self.partial_engine = partial
+                print(f"[INIT]  live speech model {partial.cfg.model} ready ({took:.1f} s)", flush=True)
+            except Exception as e:
+                log.warning("live speech model %s not loaded (%s); slides follow finished sentences only",
+                            partial.cfg.model, e)
 
     async def _load_notes_embedder(self) -> None:
         from copilot.understanding.embedder import MiniLmEmbedder
@@ -591,6 +602,8 @@ class App:
             self.engine,
             segmenter=segmenter_config(self.config),
             prompt=vocabulary_prompt(self.store.snapshot().setup, await self._study_terms()),
+            partial_engine=self.partial_engine,
+            partial_interval_s=float(self.config.get("stt", "partial_interval_s", 0.8)),
         )
         try:
             self.speech.start()

@@ -1,10 +1,44 @@
 # Current State
 
-_Last updated: 2026-10-12 (late night): **F-012 group D (reference materials / study material) done** (8,582 Groq
-tokens). V2 groups A–D are implemented. Next: the user's review of group D, then the truthfulness bug below, then V1c.
+_Last updated: 2026-10-15: **IEEE paper finished (6 pages, validation phase 4 done, 0 tokens)**. Before that, 2026-10-12:
+F-012 group D (reference materials / study material) done (8,582 Groq tokens). V2 groups A–D are implemented. Next: the
+user's review of the paper and of group D, then the truthfulness bug below, then V1c.
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **F-013 S1 done (2026-10-16): responsiveness.** An announced topic is on screen at once (replay 15.0 → 0.64 s
+  median), named list members appear as spoken, units no longer mix two topics, call floor 4 s; live simulated check
+  6.0 s median speech → slide (was 9.5 s on the same speech). Details: `docs/specs/F-013-v1-hardening.md` "S1 result".
+  Next: S2 (structure). User: try it on the real mic.
+- **F-013 S1b done (2026-10-16): live as you speak.** A fast second speech model gives text while the teacher
+  talks; titles appear before the announcing sentence ends, definitions build on screen as said, list names append,
+  every finished sentence goes to the LLM; slide quality unchanged vs S1 settings on the same audio. Details: F-013
+  "S1b result". User: try it with the real mic.
+- **NEXT: F-013 V1 hardening** (`docs/specs/F-013-v1-hardening.md`, 2026-10-16, 0 tokens): evaluation of tests 1–30
+  (latency 11.2 s median, boundary recall 0.54, 70 % "part N" slides, ~100 comparison cues → 5 slides, 39 % definition
+  cards repeat the title, …) + the user's 12 issues → plan S1 (metrics + responsiveness) → S2 (structure) → S3
+  (representation + truthfulness bug) → S4 (images + UI) → S5 (wrap-up). Start with S1.
+- **Paper v5 after a 3rd review round** (2026-10-16, 0 tokens): `paper/..._v5.docx/.pdf`, 6 pages; wording of the
+  extend-only claim, rating range, teacher-edit count (6 accepted corrections), Table V metric definitions, full-page
+  materials figure. Details: docs/paper/VALIDATION.md "Phase 7".
+- **Paper v4 after a 2nd review round** (2026-10-15; 499k free Groq tokens for the baseline, rest 0 tokens):
+  `paper/IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.docx/.pdf`, 6 pages. LLM-controlled baseline re-run on the 18
+  annotated D2 lectures (rewrites 38.2 % vs 2.0 %, lower in 18/18, p < 0.001), coverage-guard ablation (+9.0 pts),
+  WER 7.1 % on web1 vs MIT captions, "never rewrite" made precise, materials figure back. Tools:
+  `paper_baseline_d2.py`, `paper_guards.py`, `paper_wer.py`; `baseline_llm_slides.py` retries outages and reads
+  verify_results tests. Sources: `docs/paper/VALIDATION.md` "Phase 6".
+- **Paper revised after 3 external reviews** (2026-10-15, 0 tokens): `paper/IEEE_Paper_Multimodal_AI_Teaching_Copilot_v3.docx/.pdf`,
+  exactly 6 pages; title now "…: Live Slide Generation from Lecture Speech". New: replay ablation on the 18 annotated
+  lectures (`tools/paper_ablation.py`, Table IV), bootstrap CIs, Gwet AC1, model shares, populations stated per
+  result, new /control screenshot, 3×3 slide grid, Fig. 4 (notes) removed. Sources: `docs/paper/VALIDATION.md` "Phase 5".
+  No result was invented or changed. Authors to confirm: speaker-consent sentence, "data on request" sentence.
+- **Paper finished** (2026-10-15, phase 4 of the validation campaign). `paper/IEEE_Paper_Multimodal_AI_Teaching_Copilot.docx/.pdf`,
+  exactly 6 pages, new title "Multimodal AI Teaching Copilot: Real-Time Slide Generation from Live Lecture Speech",
+  results from 36 held-out lectures (409 min; Recorded = 30 tests by six speakers, merged; Public = web1–6), annotated
+  accuracy, T1–T5 ratings, D2 latency (Fig. 6 now D2), LLM-controlled baseline. Every number and its source:
+  `docs/paper/VALIDATION.md` → "Phase 4 — final numbers". Fast 553, slow 25, browser 39 tests pass.
+  Layout note: full-width figures float to the top of the page their anchor lands on; after text edits, re-render and
+  look for gaps (anchors are placed in `paper/build/src/body.py` to avoid them).
 - **F-012 study material** (spec `docs/specs/F-012-reference-materials.md`). The My Notes files are also the
   lecture's study material, held in a local index (`notes/reference.py`: MiniLM passages, PDF figures, rare terms)
   that is kept apart from the transcript. The LLM part is optional.
@@ -38,7 +72,7 @@ Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 | Simulator / test harness | 55 | text simulator, WAV-as-mic, display harness, screenshot / check tools; no soak runner |
 | Audio / STT | 95 | verified on WAV and real voice; F-012 terms not yet tried on real audio |
 | Lecture understanding + LLM | 88 | verified with real Groq; F-012 passage verified live |
-| Presentation engine | 85 | verified on several lectures with real LLM + screenshots |
+| Presentation engine | 87 | verified on several lectures with real LLM + screenshots; F-013 cue slides verified (replay + simulated live) |
 | Live display + control view | 85 | verified in Edge |
 | Visual system (images/diagrams) | 65 | web images + CLIP, labelled diagrams, the teacher's own figures (F-012); generated diagrams not started |
 | V2 group A (themes, teacher notes, labelled images) | 100 | verified |

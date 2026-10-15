@@ -25,6 +25,16 @@ def make_engine(config: Config) -> WhisperEngine:
     return WhisperEngine(stt_config(config), PROJECT_ROOT)
 
 
+def make_partial_engine(config: Config) -> Optional[WhisperEngine]:
+    """F-013 S1b: the fast model for live partial transcripts ([stt] partial_model; "" = no partials)."""
+    name = str(config.get("stt", "partial_model", "") or "").strip()
+    if not name:
+        return None
+    cfg = stt_config(config)
+    cfg.model = name
+    return WhisperEngine(cfg, PROJECT_ROOT)
+
+
 def make_source(config: Config, audio_file: Optional[Path], speed: float) -> AudioSource:
     if audio_file is not None:
         return WavFileSource(audio_file, speed=speed)

@@ -1,0 +1,642 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (6.3 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.4 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_6         openai/gpt-oss-120b            54k of 200k tokens IN USE
+        GROQ_API_KEY_1         openai/gpt-oss-120b           192k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 281 lecture minutes
+
+[READY] session 20261013-192621-e5d8
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+19:26:30 INFO    copilot.visuals.service: CLIP ready in 0.7 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (organelles, eukaryotic, cytoplasm, digestive, prokaryotic, mitochondria ...)
+19:27:56 INFO    copilot.notes.library: notes added 'byjus.com' -> 9db7cd7a499c38d1 (20 pages, text: True)
+19:28:00 INFO    copilot.notes.reference: reference index 'byjus.com': 88 chunks, 5 figures
+  [   70.5s] Let us study about the human body. (647 ms)
+19:28:05 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.68) for the interpretation
+  [UNDERSTAND] Human Body > Human Body (new_topic) acts=transition hint=none lines=1 via groq_main#6 3900 ms
+               Teacher announces the start of a lesson on the human body
+19:28:08 INFO    copilot.presentation.engine: planner: noop Human Body > Human Body (nothing to display)
+  [   75.2s] If we were to break part of human body at the microscope level, then the cell would constitute its most basic unit. The average adult has somewhere between 32 to 4 trillion cells. (1230 ms)
+  [   88.2s] An estimated 242 billion new cells are produced every day. (661 ms)
+19:28:24 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.91) for the interpretation
+  [UNDERSTAND] Human Body > Cells (same_concept) acts=definition,other hint=none lines=2 via groq_main#6 2733 ms
+               Cell is the basic unit; adults have 32‑4 trillion cells and produce 242 billion new cells each day.
+19:28:27 INFO    copilot.presentation.engine: planner: new Human Body > Cells (first content slide)
+  [SLIDE] add    'Cells' [definition] v1 (2 items)
+19:28:27 INFO    copilot.presentation.engine: image search 'human cell' (photo) for 'Cells'
+19:28:28 INFO    copilot.visuals.service: reference figure Cell (biology) - Wikipedia p.1 f1 for 'human cell': label 0.584, clip 0.280 margin +0.050 -> used
+19:28:28 INFO    copilot.visuals.service: reference figure byjus.com p.2 f2 for 'human cell': label 0.578, clip 0.261 margin +0.026 -> used
+19:28:28 INFO    copilot.visuals.service: reference figure byjus.com p.1 f1 for 'human cell': label 0.556, clip 0.269 margin +0.045 -> used
+19:28:28 INFO    copilot.visuals.service: reference figure Cell (biology) - Wikipedia p.1 f2 for 'human cell': label 0.552, clip 0.291 margin +0.064 -> used
+  [IMAGE] 'human cell' -> Cell (biology) - Wikipedia p.1 (0.5 s)
+19:28:28 INFO    copilot.presentation.engine: image 'human cell' on 'Cells': Cell (biology) - Wikipedia p.1
+  [SLIDE] update 'Cells' [definition] v2 (3 items)
+  [   93.4s] When a select group of cells with similar functions come together, it forms tissue. Tissue. (754 ms)
+19:28:32 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.84) for the interpretation
+  [UNDERSTAND] Human Body > Tissues (sub_concept) acts=definition hint=definition lines=1 via groq_main#6 1642 ms
+               Introduced tissue as a group of similar cells.
+19:28:34 INFO    copilot.presentation.engine: planner: continue Human Body > Tissues (new facet)
+19:28:34 INFO    copilot.presentation.engine: slide 'Tissues' waits for the min dwell time
+  [SLIDE] add    'Tissues' [definition] v1 (1 items)
+  [  100.4s] So, we can accumulate that into group of organs from organ system and eventually a complete organism is formed. (747 ms)
+  [SLIDE] update 'Tissues' [definition] v2 (1 items)
+19:28:44 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.80) for the interpretation
+  [UNDERSTAND] Human Body > Tissues (elaboration) acts=explanation hint=hierarchy lines=1 via groq_main#6 2050 ms
+               Tissues group together to form organs, then organ systems, and finally the complete organism.
+19:28:46 INFO    copilot.presentation.engine: planner: update Human Body > Tissues (same frame)
+  [SLIDE] update 'Tissues' [definition] v3 (1 items)
+  [SLIDE] update 'Tissues' [definition] v4 (2 items)
+  [  117.0s] Humans' anatomy, the skeleton, the human body exhibits a variety of movements from walking and running to crawling, jumping, and climbing. The framework that enables us to do all these activities is the skeleton. (1095 ms)
+  [SLIDE] update 'Tissues' [definition] v5 (3 items)
+  [  130.9s] Humans have as much as 300 bones at birth. However, the bones start to fuse and with age. At adulthood, the total number of bones are reduced to 206. (973 ms)
+  [SLIDE] update 'Tissues' [definition] v6 (3 items)
+19:29:13 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.80) for the interpretation
+19:29:15 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['However, the bones start to fuse and with age']
+  [UNDERSTAND] Human Body > Skeleton (sibling_concept) acts=definition,other,explanation hint=definition lines=2 via groq_main#6 2187 ms
+               Skeleton defined as bone framework for movement; humans have 300 bones at birth, fusing to 206 in adulthood.
+19:29:15 INFO    copilot.presentation.engine: planner: continue Human Body > Skeleton (new facet)
+  [SLIDE] update 'Tissues' [definition] v7 (2 items)
+  [SLIDE] add    'Skeleton' [definition] v1 (3 items)
+19:29:15 INFO    copilot.notes.service: notes follow: slide 'Skeleton' -> page 1
+  [  150.5s] The skeleton also protects several vital organs such as the heart, lungs, and the liver. Bones are attached to other bones through ligaments of fibrous, fibrous connective. (1017 ms)
+  [SLIDE] update 'Skeleton' [definition] v2 (4 items)
+  [  162.5s] Joints are the points at which two or more bones meet. They enable the range of movements like rotation, abduction, adduction, retraction, retraction and more. (1157 ms)
+19:29:49 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.70) for the interpretation
+  [SLIDE] update 'Skeleton' [definition] v3 (4 items)
+  [UNDERSTAND] Human Body > Skeleton (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 1474 ms
+               Skeleton protects vital organs and bones are linked by fibrous ligaments.
+19:29:50 INFO    copilot.presentation.engine: planner: update Human Body > Skeleton (same frame)
+  [SLIDE] update 'Skeleton' [definition] v4 (6 items)
+  [  174.6s] Based on flexibility and mobility, joints can be further classified into movable joints and immovable joints. Movable joints are flexible with immovable joints. (898 ms)
+  [SLIDE] update 'Skeleton' [definition] v5 (6 items)
+19:29:57 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.85) for the interpretation
+19:29:59 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Skeleton' -> same_concept
+  [UNDERSTAND] Human Body > Skeleton (same_concept) acts=definition,explanation,classification hint=definition lines=2 via groq_main#6 1937 ms
+               Defined joints as bone connection points and classified them as movable or immovable
+19:29:59 INFO    copilot.presentation.engine: planner: update Human Body > Skeleton (same frame)
+  [SLIDE] update 'Skeleton' [definition] v6 (5 items)
+  [SLIDE] update 'Skeleton' [definition] v7 (5 items)
+  [SLIDE] add    'Skeleton' [members] v1 (6 items)
+19:29:59 INFO    copilot.presentation.engine: image search 'human joint' (diagram) for 'Skeleton'
+  [  185.8s] and are non-flexible since the bones are fused. (647 ms)
+19:30:04 INFO    copilot.visuals.finder: image search 'human joint' (diagram, labels preferred): 2 candidate(s), 2 accepted (1 labelled), 4.89 s {'search_s': 1.6, 'download_s': 1.07, 'clip_s': 0.18, 'full_s': 2.01, 'total_s': 4.89}
+  [IMAGE] 'human joint' -> File:Temporomandibular joint number.svg (4.9 s)
+19:30:04 INFO    copilot.presentation.engine: image 'human joint' on 'Skeleton': File:Temporomandibular joint number.svg
+  [SLIDE] update 'Skeleton' [members] v2 (7 items)
+19:30:05 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.73) for the interpretation
+  [  191.1s] Muscles, muscles are specialized tissue which assists the bones. (624 ms)
+  [UNDERSTAND] Human Body > Skeleton (elaboration) acts=explanation hint=none lines=1 via groq_main#6 1826 ms
+               Added that immovable joints are non‑flexible due to fused bones
+19:30:07 INFO    copilot.presentation.engine: planner: update Human Body > Skeleton (same frame)
+19:30:07 INFO    copilot.presentation.engine: no image for 'Skeleton': has an image
+  [SLIDE] update 'Skeleton' [members] v3 (8 items)
+19:30:19 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.81) for the interpretation
+  [  196.1s] In locomotion, muscles are attached to the bones through tendons. Movement of limbs happen due to contraction and relaxation of the corresponding muscles present in that region. Joints help in the flexibility of bones. (1115 ms)
+  [UNDERSTAND] Human Body > Muscles (sibling_concept) acts=definition hint=definition lines=1 via groq_main#6 4001 ms
+               Introduced muscles as specialized tissue that assist bones
+19:30:23 INFO    copilot.presentation.engine: planner: continue Human Body > Muscles (new facet)
+  [SLIDE] add    'Muscles' [definition] v1 (1 items)
+19:30:23 INFO    copilot.notes.service: notes follow: slide 'Muscles' -> page 2
+19:30:23 INFO    copilot.presentation.engine: image search 'muscle tissue' (photo) for 'Muscles'
+  [  210.6s] But a boon. (710 ms)
+19:30:27 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.88) for the interpretation
+19:30:29 INFO    copilot.visuals.finder: image search 'muscle tissue' (photo, labels preferred): 8 candidate(s), 3 accepted (2 labelled), 6.13 s {'search_s': 1.98, 'download_s': 1.7, 'clip_s': 0.53, 'full_s': 1.87, 'total_s': 6.13}
+  [IMAGE] 'muscle tissue' -> File:Microscopic anatomy of an artery en.svg (6.1 s)
+19:30:29 INFO    copilot.presentation.engine: image 'muscle tissue' on 'Muscles': File:Microscopic anatomy of an artery en.svg
+  [SLIDE] update 'Muscles' [definition] v2 (2 items)
+  [UNDERSTAND] Human Body > Muscles (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_main#6 4067 ms
+               Muscles connect to bones via tendons and move limbs through contraction and relaxation, while joints provide flexibility.
+19:30:31 INFO    copilot.presentation.engine: planner: update Human Body > Muscles (same frame)
+19:30:31 INFO    copilot.presentation.engine: no image for 'Muscles': has an image
+  [SLIDE] update 'Muscles' [definition] v3 (5 items)
+19:30:41 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.62) for the interpretation
+  [  216.4s] The other words, the muscles attached to that bone pulls it into the direction of movement. Furthermore, most movement involves muscles that (886 ms)
+  [UNDERSTAND] Human Body > Muscles (elaboration) acts=- hint=none lines=1 via groq_main#1 4121 ms
+               No new substantive content was added.
+19:30:45 INFO    copilot.presentation.engine: planner: noop Human Body > Muscles (nothing to display)
+  [  228.4s] Work as a pair. For example, when we bend our arm, muscles in that region contract become shorter and stiffer and push the bone to the direction of the movement for relaxation. (1115 ms)
+  [SLIDE] update 'Muscles' [definition] v4 (6 items)
+19:30:55 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.79) for the interpretation
+  [  241.0s] Muscles in the opposite direction have to pull the bone towards it. (506 ms)
+  [SLIDE] update 'Muscles' [definition] v5 (6 items)
+  [UNDERSTAND] Human Body > Muscles (elaboration) acts=explanation hint=key_points lines=2 via groq_main#6 1912 ms
+               Added that muscles operate in pairs, with one contracting and the other relaxing to move bones.
+19:30:57 INFO    copilot.presentation.engine: revised S3: Limb movement occurs when one muscle contracts and its opposing muscle relaxes
+19:30:57 INFO    copilot.presentation.engine: planner: update Human Body > Muscles (same frame)
+19:30:57 INFO    copilot.presentation.engine: no image for 'Muscles': has an image
+  [SLIDE] update 'Muscles' [definition] v6 (6 items)
+  [SLIDE] update 'Muscles' [definition] v7 (7 items)
+19:31:03 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.71) for the interpretation
+  [UNDERSTAND] Human Body > Muscles (elaboration) acts=- hint=concept lines=1 via groq_main#6 4157 ms
+               Explained that opposing muscles pull the bone in the opposite direction during movement
+19:31:07 INFO    copilot.presentation.engine: revised S3: Limb moves when one muscle contracts and opposite muscle pulls bone
+19:31:07 INFO    copilot.presentation.engine: planner: noop Human Body > Muscles (nothing to display)
+  [SLIDE] update 'Muscles' [definition] v8 (6 items)
+  [SLIDE] update 'Muscles' [definition] v9 (6 items)
+  [  257.0s] Now let us learn about the circulatory system. The circulatory system is also referred to as the cardiovascular system. It comprises the heart, all the blood vessels, arteries, capillaries and veins. There are essentially two components of circulation. (1388 ms)
+  [  271.2s] Namely, systematic circulation and pulmonary circulation. (568 ms)
+19:31:27 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.92) for the interpretation
+  [UNDERSTAND] Human Body > Circulatory System (new_topic) acts=definition,classification hint=definition lines=2 via groq_main#6 4144 ms
+               Introduced the circulatory system, its synonym, main parts, and its two circulation components
+  [HEARD] 'systematic' -> 'systemic' corrected on the slide (0.5)
+19:31:31 INFO    copilot.presentation.engine: planner: continue Human Body > Circulatory System (new facet)
+19:31:31 INFO    copilot.presentation.engine: concern 3d3f558e2187 (transcription, applied=True): 1 element(s); slide shows 'systemic'
+  [SLIDE] add    'Circulatory System' [definition] v1 (2 items)
+19:31:31 INFO    copilot.notes.service: notes follow: slide 'Circulatory System' -> page 4
+19:31:31 INFO    copilot.presentation.engine: image search 'circulatory system diagram' (diagram) for 'Circulatory System'
+19:31:31 INFO    copilot.visuals.service: reference figure byjus.com p.5 f2 for 'circulatory system diagram': label 0.562, clip 0.288 margin +0.051 -> used
+  [IMAGE] 'circulatory system diagram' -> byjus.com p.5 (0.2 s)
+19:31:31 INFO    copilot.presentation.engine: image 'circulatory system diagram' on 'Circulatory System': byjus.com p.5
+  [SLIDE] update 'Circulatory System' [definition] v2 (3 items)
+  [  279.9s] Beside these two, there is a third (554 ms)
+  [  286.8s] Type of circulation called (448 ms)
+  [  289.8s] Coronary circulation. Because blood in the body connective tissue, it helps transport essential nutrients and minerals. (784 ms)
+19:31:49 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.88) for the interpretation
+19:31:50 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Circulatory System' -> same_concept
+  [UNDERSTAND] Human Body > Circulatory System (same_concept) acts=definition hint=definition lines=3 via groq_main#6 1571 ms
+               Introduced coronary circulation as a third type that transports nutrients through connective tissue
+19:31:50 INFO    copilot.presentation.engine: planner: update Human Body > Circulatory System (same frame)
+19:31:50 INFO    copilot.presentation.engine: image removed from 'Circulatory System': two concepts side by side
+  [SLIDE] update 'Circulatory System' [concept] v3 (4 items)
+  [SLIDE] update 'Circulatory System' [concept] v4 (3 items)
+  [  300.8s] The body transport system anatomically the human heart is similar to other vertebrates hearts in the animal kingdom and hence (997 ms)
+  [  314.6s] Ezo, homo. (1135 ms)
+  [  316.2s] Logos organ. (359 ms)
+19:32:09 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.86) for the interpretation
+  [UNDERSTAND] Human Body > Circulatory System (same_concept) acts=- hint=none lines=3 via groq_main#6 3535 ms
+  [HEARD] 'The body transport system anatomically the human heart is similar to other vertebrates hearts in the animal kingdom and hence' -> 'The heart is anatomically similar to other vertebrate hearts' corrected on the slide (0.5)
+  [HEARD] 'Ezo, homo.' -> '[Unclear phrase – likely transcription error]' corrected on the slide (0.5)
+  [HEARD] 'Logos organ.' -> '[Unclear phrase – likely transcription error]' corrected on the slide (0.5)
+19:32:12 INFO    copilot.presentation.engine: planner: noop Human Body > Circulatory System (nothing to display)
+19:32:12 INFO    copilot.presentation.engine: concern 7d21d9091ca5 (transcription, applied=True): 0 element(s); slide shows 'The heart is anatomically similar to other vertebrate hearts'
+19:32:12 INFO    copilot.presentation.engine: concern ec9de305a0f7 (transcription, applied=True): 0 element(s); slide shows '[Unclear phrase – likely transcription error]'
+19:32:12 INFO    copilot.presentation.engine: concern 614f7ae49492 (transcription, applied=True): 0 element(s); slide shows '[Unclear phrase – likely transcription error]'
+  [  319.4s] Now let's start with the digestive system. (612 ms)
+  [  322.8s] The digestive system breaks down food and assimilates nutrients into the body, which the body then uses for growth and cell repair. The major components of the digestive system are mouth, teeth, tongue, esophagus, (1112 ms)
+  [  337.6s] Stomach, liver, pancreas, gastrointestinal tract, small and large intestine, rectum. (841 ms)
+19:32:36 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.77) for the interpretation
+  [UNDERSTAND] Human Body > Digestive System (sibling_concept) acts=classification hint=hierarchy lines=2 via groq_main#6 3167 ms
+               Listed the major components of the digestive system.
+19:32:39 INFO    copilot.presentation.engine: planner: continue Human Body > Digestive System (new facet)
+19:32:39 INFO    copilot.presentation.engine: slide 'Digestive System' waits for the min dwell time
+  [SLIDE] add    'Digestive System' [key_points] v1 (8 items)
+19:32:39 INFO    copilot.notes.service: notes follow: slide 'Digestive System' -> page 5
+19:32:39 INFO    copilot.presentation.engine: image search 'digestive system diagram' (diagram) for 'Digestive System'
+19:32:39 INFO    copilot.visuals.service: reference figure Digestive system | healthdirect p.3 f1 for 'digestive system diagram': label 0.612, clip 0.297 margin +0.071 -> used
+  [IMAGE] 'digestive system diagram' -> Digestive system | healthdirect p.3 (0.2 s)
+19:32:39 INFO    copilot.presentation.engine: image 'digestive system diagram' on 'Digestive System': Digestive system | healthdirect p.3
+  [  344.6s] The process of digestion starts with mastication, that is the chewing food. (713 ms)
+19:32:44 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.74) for the interpretation
+  [SLIDE] add    'Digestive System' [key_points] v1 (4 items)
+19:32:45 INFO    copilot.notes.service: notes follow: slide 'Digestive System' -> page 5
+  [UNDERSTAND] Human Body > Digestive System (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 1549 ms
+               Added that digestion begins with mastication, the chewing of food.
+19:32:45 INFO    copilot.presentation.engine: planner: update Human Body > Digestive System (same frame)
+19:32:45 INFO    copilot.presentation.engine: no image for 'Digestive System': has an image
+  [SLIDE] update 'Digestive System' [key_points] v2 (5 items)
+  [  354.8s] Then (370 ms)
+19:33:05 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.71) for the interpretation
+  [UNDERSTAND] Human Body > Digestive System (same_concept) acts=- hint=none lines=1 via groq_main#6 2109 ms
+               Continuation of the digestion process
+19:33:07 INFO    copilot.presentation.engine: planner: noop Human Body > Digestive System (nothing to display)
+  [  361.9s] Then the saliva mixes with food and forms a bolus, a small rounded mass that can be easily swallowed. Once swallowed, the food travels into the oesophagus and into the stomach. The stomach secrets (1171 ms)
+  [SLIDE] update 'Digestive System' [key_points] v3 (6 items)
+  [  374.5s] Strong acids and powerful enzymes that break the food down into paste. It is then moved into small intestine where the food is broken down even smaller. (958 ms)
+  [SLIDE] update 'Digestive System' [key_points] v4 (6 items)
+19:33:15 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.87) for the interpretation
+  [  383.4s] More because of biosecurity. (426 ms)
+  [SLIDE] update 'Digestive System' [key_points] v5 (5 items)
+  [UNDERSTAND] Human Body > Digestive System (elaboration) acts=definition,explanation hint=key_points lines=2 via groq_main#6 3589 ms
+               Added bolus definition and explained stomach and small intestine digestion steps
+19:33:18 INFO    copilot.presentation.engine: planner: update Human Body > Digestive System (same frame)
+19:33:18 INFO    copilot.presentation.engine: no image for 'Digestive System': has an image
+  [SLIDE] update 'Digestive System' [key_points] v6 (8 items)
+19:33:19 INFO    copilot.presentation.engine: slide 7c4c7c78a1fa overflows on the display; further content continues on a new slide
+  [  386.1s] by the liver and powerful digestive enzymes for the pancreas. This is the stage at which nutrients are absorbed. (774 ms)
+19:33:25 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.78) for the interpretation
+19:33:25 WARNING copilot.llm.router: LLM groq_main now uses GROQ_API_KEY_1 (GROQ_API_KEY_6 is spent)
+  [  394.6s] from the food. (370 ms)
+  [UNDERSTAND] Human Body > Digestive System (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 2583 ms
+               Added that nutrients are absorbed in the small intestine with liver bile and pancreatic enzymes
+19:33:27 INFO    copilot.presentation.engine: planner: update Human Body > Digestive System (same frame)
+  [SLIDE] add    'Digestive System' [key_points] v1 (3 items)
+19:33:28 INFO    copilot.presentation.engine: image search 'digestive tract' (diagram) for 'Digestive System'
+19:33:32 INFO    copilot.visuals.finder: image search 'digestive tract': 1 slow download(s) dropped
+19:33:33 INFO    copilot.visuals.finder: image search 'digestive tract' (diagram, labels preferred): 1 candidate(s), 1 accepted (1 labelled), 5.67 s {'search_s': 2.41, 'download_s': 2.08, 'clip_s': 0.12, 'full_s': 1.05, 'total_s': 5.67}
+  [IMAGE] 'digestive tract' -> File:Digestive system diagram en.svg (5.7 s)
+19:33:33 INFO    copilot.presentation.engine: image 'digestive tract' on 'Digestive System': File:Digestive system diagram en.svg
+  [SLIDE] update 'Digestive System' [key_points] v2 (4 items)
+  [  397.2s] The left-hand side of the stool moves on the intestine where it is transformed from liquid to solid as water is removed. (846 ms)
+  [SLIDE] update 'Digestive System' [key_points] v3 (5 items)
+19:33:39 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.83) for the interpretation
+19:33:41 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Digestive System' -> same_concept
+  [UNDERSTAND] Human Body > Digestive System (same_concept) acts=explanation hint=key_points lines=2 via groq_main#1 1673 ms
+               Large intestine solidifies waste by absorbing water.
+19:33:41 INFO    copilot.presentation.engine: planner: update Human Body > Digestive System (same frame)
+19:33:41 INFO    copilot.presentation.engine: no image for 'Digestive System': has an image
+  [SLIDE] update 'Digestive System' [key_points] v4 (4 items)
+  [SLIDE] update 'Digestive System' [key_points] v5 (5 items)
+  [  405.2s] Finally, it is pushed into the rectum, ready to be eliminated from the body. (756 ms)
+  [SLIDE] update 'Digestive System' [key_points] v6 (6 items)
+19:33:47 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.79) for the interpretation
+19:33:49 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Finally, it is pushed into the rectum, ready to be eliminated from the body']
+  [UNDERSTAND] Human Body > Digestive System (same_concept) acts=explanation,explanation hint=key_points lines=1 via groq_main#1 1928 ms
+               Adds that waste is pushed into the rectum before elimination.
+19:33:49 INFO    copilot.presentation.engine: planner: update Human Body > Digestive System (same frame)
+19:33:49 INFO    copilot.presentation.engine: no image for 'Digestive System': has an image
+  [SLIDE] update 'Digestive System' [key_points] v7 (5 items)
+  [SLIDE] update 'Digestive System' [key_points] v8 (7 items)
+  [  414.0s] Let us learn about the reproductive system. The human reproductive system is also known as the genital system that comprise internal and external organs that helps in reproduction. It varies for both males and females, hormones, fluids and... (1173 ms)
+  [SLIDE] update 'Digestive System' [key_points] v9 (8 items)
+  [  428.1s] Pheromones are all connective accessories for reproductive organs to function. (726 ms)
+  [SLIDE] update 'Digestive System' [key_points] v10 (8 items)
+19:34:05 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.80) for the interpretation
+  [UNDERSTAND] Human Body > Reproductive System (new_topic) acts=transition hint=none lines=1 via groq_main#1 2808 ms
+               Teacher introduced the reproductive system as the genital system with internal and external organs for reproduction
+19:34:08 INFO    copilot.presentation.engine: planner: noop Human Body > Reproductive System (nothing to display)
+19:34:08 INFO    copilot.presentation.engine: no image for 'Digestive System': has an image
+19:34:17 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.56) for the interpretation
+19:34:19 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Reproductive System' -> same_concept
+  [UNDERSTAND] Human Body > Reproductive System (same_concept) acts=definition hint=definition lines=1 via groq_main#1 1419 ms
+               Pheromones are described as connective accessories that enable reproductive organs to function.
+19:34:19 INFO    copilot.presentation.engine: planner: continue Human Body > Reproductive System (new facet)
+  [SLIDE] update 'Digestive System' [key_points] v11 (7 items)
+  [SLIDE] add    'Reproductive System' [members] v1 (1 items)
+19:34:19 INFO    copilot.presentation.engine: image search 'human reproductive system' (diagram) for 'Reproductive System'
+19:34:19 INFO    copilot.visuals.service: reference figure byjus.com p.7 f3 for 'human reproductive system': label 0.597, clip 0.332 margin +0.088 -> used
+19:34:19 INFO    copilot.visuals.service: reference figure byjus.com p.8 f4 for 'human reproductive system': label 0.524, clip 0.336 margin +0.101 -> used
+  [IMAGE] 'human reproductive system' -> byjus.com p.7 (0.3 s)
+19:34:19 INFO    copilot.presentation.engine: image 'human reproductive system' on 'Reproductive System': byjus.com p.7
+  [SLIDE] update 'Reproductive System' [members] v2 (2 items)
+  [  435.7s] The female reproductive system consists of the following. Povaries, they produce povum, these are the female eggs as well as the hormone estrogen. (979 ms)
+19:34:34 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.81) for the interpretation
+  [  448.1s] Oviducts or Philippian tubes are the other names given to the uterus tube. Also known as the womb, the uterus is a pear-shaped organ where the fetus grows. The cervix is the root. (1219 ms)
+19:34:36 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Female Reproductive System' -> same_concept
+  [UNDERSTAND] Human Body > Female Reproductive System (same_concept) acts=definition hint=definition lines=1 via groq_main#1 1872 ms
+               Introduced ovaries as organs that produce eggs and estrogen
+  [HEARD] 'Povaries, povum' -> 'Ovaries, ovum' corrected on the slide (0.5)
+19:34:36 INFO    copilot.presentation.engine: planner: update Human Body > Reproductive System (same frame)
+19:34:36 INFO    copilot.presentation.engine: concern d8307954d7d3 (transcription, applied=True): 0 element(s); slide shows 'Ovaries, ovum'
+19:34:36 INFO    copilot.presentation.engine: no image for 'Reproductive System': two concepts side by side
+  [SLIDE] update 'Reproductive System' [concept] v3 (2 items)
+  [  460.5s] The vagina acts as the route for the penis to enter during intercourse and then exit the fetus during delivery. (792 ms)
+19:34:42 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.90) for the interpretation
+  [UNDERSTAND] Human Body > Uterus and Oviducts (sibling_concept) acts=definition,definition,definition hint=definition lines=1 via groq_main#1 2790 ms
+               Introduced uterus, oviducts, and cervix definitions
+  [CONCERN] (factual) Cervix is the root -> Cervix is the gateway to the vagina for sperm (0.9, slide shows the correction)
+19:34:45 INFO    copilot.presentation.engine: planner: continue Human Body > Uterus and Oviducts (new facet)
+19:34:45 INFO    copilot.presentation.engine: concern ce356eec37aa (factual, applied=True): 1 element(s); slide shows 'gateway to the vagina for sperm'
+19:34:45 INFO    copilot.presentation.engine: no image for 'Uterus and Oviducts': two concepts side by side
+  [SLIDE] add    'Uterus and Oviducts' [concept] v1 (3 items)
+  [SLIDE] update 'Uterus and Oviducts' [concept] v2 (3 items)
+19:34:50 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.84) for the interpretation
+19:34:52 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Uterus and Oviducts' -> same_concept
+  [UNDERSTAND] Human Body > Uterus and Oviducts (same_concept) acts=definition hint=definition lines=1 via groq_main#2 1831 ms
+               Added definition of the vagina as the passage for intercourse and delivery.
+19:34:52 INFO    copilot.presentation.engine: planner: update Human Body > Uterus and Oviducts (same frame)
+19:34:52 INFO    copilot.presentation.engine: no image for 'Uterus and Oviducts': two concepts side by side
+  [SLIDE] update 'Uterus and Oviducts' [concept] v3 (4 items)
+  [  475.8s] Male reproductive system consists of testicles which acts as the storehouse of force pumps. These oval-shaped organs are encased in the (936 ms)
+  [  486.6s] Scrotum (493 ms)
+  [  492.3s] Next to the testicle is the vas difference. (714 ms)
+19:35:09 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.78) for the interpretation
+  [UNDERSTAND] Human Body > Male Reproductive System (sibling_concept) acts=definition,definition,definition hint=definition lines=3 via groq_main#1 2558 ms
+               Introduced male reproductive system parts: testicles, scrotum, and vas deferens
+  [CONCERN] (factual) storehouse of force pumps -> storehouse of sperm (0.95, slide shows the correction)
+  [HEARD] 'vas difference' -> 'vas deferens' corrected on the slide (0.5)
+19:35:12 INFO    copilot.presentation.engine: planner: continue Human Body > Male Reproductive System (new facet)
+19:35:12 INFO    copilot.presentation.engine: concern 2482d96fb62e (factual, applied=True): 1 element(s); slide shows 'sperm'
+19:35:12 INFO    copilot.presentation.engine: concern acb05c324c11 (transcription, applied=True): 1 element(s); slide shows 'vas deferens'
+19:35:12 INFO    copilot.presentation.engine: no image for 'Male Reproductive System': two concepts side by side
+  [SLIDE] add    'Male Reproductive System' [concept] v1 (3 items)
+  [  496.2s] Excessory ducts for male sexual system. When sperm is formed, it is mixed with fluids that are (776 ms)
+19:35:16 INFO    copilot.presentation.engine: concern ce356eec37aa dismissed: slide shows 'gateway to the vagina for sperm'
+19:35:17 INFO    copilot.presentation.engine: concern 2482d96fb62e dismissed: slide shows 'sperm'
+19:35:32 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.70) for the interpretation
+  [  509.9s] The primary purpose of copper gland is to hike the semen volume and lubrication during (713 ms)
+  [UNDERSTAND] Human Body > Reproductive System (elaboration) acts=explanation hint=none lines=1 via groq_main#1 2903 ms
+               Sperm mixes with fluids from seminal, prostate, and Cowper’s glands after formation.
+  [HEARD] 'Excessory' -> 'Accessory' corrected on the slide (0.5)
+19:35:35 INFO    copilot.presentation.engine: planner: update Human Body > Male Reproductive System (same frame)
+19:35:35 INFO    copilot.presentation.engine: concern 6ef00e8f1c7d (transcription, applied=True): 0 element(s); slide shows 'Accessory'
+19:35:35 INFO    copilot.presentation.engine: no image for 'Male Reproductive System': two concepts side by side
+  [SLIDE] update 'Male Reproductive System' [concept] v2 (4 items)
+  [  524.4s] Coitus. (744 ms)
+  [SLIDE] update 'Male Reproductive System' [concept] v3 (5 items)
+19:35:40 INFO    copilot.understanding.service: [REF] byjus.com p.8 (0.66) for the interpretation
+19:35:43 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Reproductive System' -> same_concept
+  [UNDERSTAND] Human Body > Reproductive System (same_concept) acts=definition hint=definition lines=2 via groq_main#1 2261 ms
+               Defined the Cowper gland and its role in semen production.
+  [HEARD] 'copper' -> 'Cowper' corrected on the slide (0.5)
+19:35:43 INFO    copilot.presentation.engine: planner: update Human Body > Male Reproductive System (same frame)
+19:35:43 INFO    copilot.presentation.engine: concern 2d9643075db1 (transcription, applied=True): 1 element(s); slide shows 'Cowper'
+19:35:43 INFO    copilot.presentation.engine: no image for 'Male Reproductive System': two concepts side by side
+  [SLIDE] update 'Male Reproductive System' [concept] v4 (4 items)
+  [SLIDE] update 'Male Reproductive System' [concept] v5 (5 items)
+  [  526.3s] Respiratory system (511 ms)
+  [SLIDE] update 'Male Reproductive System' [concept] v6 (6 items)
+  [  541.0s] Apparatus. Vertebrates like human being passes lungs for respiration. The process of respiration starts with the cycle of inhalation and exhalation. Inhalation results in the oxygen entering into the blood and exhalation. (1230 ms)
+  [SLIDE] update 'Male Reproductive System' [concept] v7 (6 items)
+19:36:07 INFO    copilot.understanding.service: [REF] byjus.com p.8 (0.82) for the interpretation
+  [UNDERSTAND] Respiratory System > Apparatus (new_topic) acts=transition hint=none lines=2 via groq_main#1 2115 ms
+               Teacher introduced the respiratory system and its basic inhalation/exhalation process.
+19:36:10 INFO    copilot.presentation.engine: planner: noop Respiratory System > Apparatus (new topic announced)
+19:36:10 INFO    copilot.presentation.engine: no image for 'Male Reproductive System': two concepts side by side
+  [SLIDE] update 'Male Reproductive System' [concept] v8 (5 items)
+  [  553.7s] Respiratory system comprises the following organs. (722 ms)
+  [SLIDE] update 'Male Reproductive System' [concept] v9 (6 items)
+19:36:15 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.80) for the interpretation
+  [UNDERSTAND] Respiratory System > Organs (sibling_concept) acts=explanation hint=key_points lines=1 via groq_main#1 5028 ms
+               Teacher stated that the respiratory system includes several organs
+19:36:20 INFO    copilot.presentation.engine: planner: new Respiratory System > Organs (new topic confirmed (two interpretations agree))
+  [SLIDE] update 'Male Reproductive System' [concept] v10 (5 items)
+  [SLIDE] add    'Organs' [key_points] v1 (1 items)
+19:36:21 INFO    copilot.presentation.engine: image search 'respiratory system organs' (diagram) for 'Organs'
+  [  566.1s] Craca, bronchi, bronchioles, atlans, and diaphragm. (812 ms)
+  [SLIDE] update 'Organs' [key_points] v2 (2 items)
+19:36:27 INFO    copilot.visuals.finder: image search 'respiratory system organs' (diagram, labels preferred): 6 candidate(s), 3 accepted (1 labelled), 6.19 s {'search_s': 2.0, 'download_s': 1.64, 'clip_s': 0.41, 'full_s': 2.11, 'total_s': 6.19}
+  [IMAGE] 'respiratory system organs' -> File:Respiratory system complete en.svg (6.2 s)
+19:36:27 INFO    copilot.presentation.engine: image 'respiratory system organs' on 'Organs': File:Respiratory system complete en.svg
+  [SLIDE] update 'Organs' [key_points] v3 (3 items)
+  [  570.4s] By diffusion, molecules of carbon dioxide and oxygen are exchanged passively among the blood cells and external movements. (769 ms)
+  [SLIDE] update 'Organs' [key_points] v4 (3 items)
+  [  579.8s] This work is done through (356 ms)
+  [SLIDE] update 'Organs' [key_points] v5 (2 items)
+19:36:33 INFO    copilot.understanding.service: [REF] byjus.com p.9 (0.75) for the interpretation
+  [UNDERSTAND] Respiratory System > Organs (same_concept) acts=classification,explanation hint=hierarchy lines=2 via groq_main#2 2095 ms
+               Listed the main respiratory organs and explained gas exchange by diffusion.
+  [HEARD] 'Craca, atlans' -> 'Trachea, alveoli' corrected on the slide (0.5)
+  [HEARD] 'movements' -> 'environment' corrected on the slide (0.5)
+19:36:35 INFO    copilot.presentation.engine: planner: update Respiratory System > Organs (same frame)
+19:36:35 INFO    copilot.presentation.engine: concern de1d1a615880 (transcription, applied=True): 0 element(s); slide shows 'Trachea, alveoli'
+19:36:35 INFO    copilot.presentation.engine: concern da2d13d38974 (transcription, applied=True): 1 element(s); slide shows 'environment'
+19:36:35 INFO    copilot.presentation.engine: no image for 'Organs': has an image
+  [SLIDE] update 'Organs' [key_points] v6 (4 items)
+  [  582.1s] Alveoli in the lungs. (541 ms)
+19:36:41 INFO    copilot.understanding.service: [REF] byjus.com p.9 (0.80) for the interpretation
+  [UNDERSTAND] Respiratory System > Organs (same_concept) acts=- hint=concept lines=2 via groq_main#1 1426 ms
+               Clarified that gas exchange happens through alveoli in the lungs.
+19:36:42 INFO    copilot.presentation.engine: revised S2: Gas exchange occurs by diffusion through alveoli in the lungs between blood cells and the external environment
+19:36:42 INFO    copilot.presentation.engine: planner: noop Respiratory System > Organs (nothing to display)
+  [SLIDE] update 'Organs' [key_points] v7 (4 items)
+  [  591.0s] The nervous system, the voluntary involuntary sections are maintained and taken care by the central nervous system. It helps the channel (928 ms)
+  [SLIDE] update 'Organs' [key_points] v8 (5 items)
+  [  601.9s] It helps the channel the signals to and fro differs the body. Nervous system is broadly classified into two categories, central nervous system and central nervous system. (948 ms)
+  [SLIDE] update 'Organs' [key_points] v9 (5 items)
+19:37:04 INFO    copilot.understanding.service: [REF] byjus.com p.9 (0.82) for the interpretation
+19:37:07 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['It helps the channel the signals to and fro differs the body']
+  [UNDERSTAND] Nervous System > Classification (new_topic) acts=explanation,classification,explanation hint=hierarchy lines=2 via groq_main#1 2704 ms
+               Introduced nervous system control and corrected its two main categories.
+  [CONCERN] (factual) Nervous system is broadly classified into two categories, central nervous system and central nervous system. -> Nervous system is broadly classified into two categories, central nervous system and peripheral nervous system. (0.95, slide shows the correction)
+19:37:07 INFO    copilot.presentation.engine: planner: update Respiratory System > Organs (new topic not yet confirmed)
+19:37:07 INFO    copilot.presentation.engine: concern c3cc2d2ea7a7 (factual, applied=True): 0 element(s); slide shows 'central nervous system and peripheral nervous system'
+19:37:07 INFO    copilot.presentation.engine: image removed from 'Organs': groups needs the full width
+  [SLIDE] update 'Organs' [key_points] v10 (4 items)
+  [SLIDE] update 'Organs' [key_points] v11 (6 items)
+  [SLIDE] update 'Organs' [key_points] v12 (5 items)
+19:37:09 INFO    copilot.presentation.engine: concern c3cc2d2ea7a7 dismissed: slide shows 'central nervous system and peripheral nervous system'
+  [  612.7s] Peripheral Nervous System. The central nervous system consists the brain and the (879 ms)
+  [  621.7s] The central nervous system consists of the brain and the spinal cord, while the peripheral nervous system includes the nerves and ganglia that are present outside the brain and spinal cord through the axons every part of the body gets connected. (1225 ms)
+19:37:27 INFO    copilot.understanding.service: [REF] byjus.com p.9 (0.77) for the interpretation
+  [  635.7s] The central nervous system consists of four bones. (618 ms)
+  [UNDERSTAND] Nervous System > Classification (elaboration) acts=definition,definition hint=definition lines=2 via groq_main#1 3062 ms
+               Defined the central and peripheral nervous systems and their components
+19:37:30 INFO    copilot.presentation.engine: planner: new Nervous System > Classification (new topic confirmed (two interpretations agree))
+19:37:30 INFO    copilot.presentation.engine: moving 5 item(s) of 'Nervous System' to the new topic's slide
+19:37:30 INFO    copilot.presentation.engine: slide 'Classification' waits for the min dwell time
+  [SLIDE] update 'Organs' [key_points] v13 (3 items)
+  [SLIDE] add    'Classification' [key_points] v1 (4 items)
+19:37:30 INFO    copilot.presentation.engine: image search 'nervous system diagram' (diagram) for 'Classification'
+19:37:35 INFO    copilot.understanding.service: [REF] byjus.com p.9 (0.74) for the interpretation
+  [SLIDE] add    'Classification' [definition] v1 (1 items)
+  [  643.3s] Forebreath. It comprises the cerebrum. (606 ms)
+  [  646.3s] People. (347 ms)
+  [UNDERSTAND] Nervous System > Classification (same_concept) acts=- hint=none lines=1 via groq_main#1 2870 ms
+               Teacher incorrectly stated CNS composition
+  [CONCERN] (factual) The central nervous system consists of four bones. -> The central nervous system consists of the brain and spinal cord, not bones (0.95, slide shows the correction)
+19:37:38 INFO    copilot.presentation.engine: planner: noop Nervous System > Classification (nothing to display)
+19:37:38 INFO    copilot.presentation.engine: concern 20843b2e01bf (factual, applied=True): 0 element(s); slide shows 'brain and spinal cord'
+19:37:38 INFO    copilot.presentation.engine: image search 'central nervous system diagram' (diagram) for 'Classification'
+19:37:38 INFO    copilot.visuals.finder: image search 'nervous system diagram' timed out after 8.0 s: no image
+19:37:38 INFO    copilot.presentation.engine: image 'nervous system diagram': none (timeout)
+  [IMAGE] 'nervous system diagram' -> none (timeout) (8.0 s)
+  [  647.5s] Type 2. (350 ms)
+19:37:41 INFO    copilot.presentation.engine: concern 20843b2e01bf dismissed: slide shows 'brain and spinal cord'
+19:37:43 INFO    copilot.visuals.finder: image search 'central nervous system diagram': 5 slow download(s) dropped
+19:37:43 INFO    copilot.presentation.engine: image 'central nervous system diagram': none (downloads failed)
+  [IMAGE] 'central nervous system diagram' -> none (downloads failed) (4.5 s)
+19:37:43 INFO    copilot.understanding.service: [REF] byjus.com p.9 (0.64) for the interpretation
+19:37:47 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Classification' -> same_concept
+  [UNDERSTAND] Nervous System > Classification (same_concept) acts=definition hint=definition lines=2 via groq_main#2 4150 ms
+               Introduced the forebrain as part of the central nervous system.
+  [HEARD] 'Forebreath' -> 'Forebrain' corrected on the slide (0.5)
+19:37:47 INFO    copilot.presentation.engine: planner: update Nervous System > Classification (same frame)
+19:37:47 INFO    copilot.presentation.engine: concern 9566562f616d (transcription, applied=True): 1 element(s); slide shows 'Forebrain'
+19:37:47 INFO    copilot.presentation.engine: no image for 'Classification': two concepts side by side
+  [SLIDE] update 'Classification' [concept] v2 (2 items)
+19:37:51 INFO    copilot.understanding.service: [REF] byjus.com p.9 (0.65) for the interpretation
+  [UNDERSTAND] Nervous System > Classification (same_concept) acts=explanation hint=key_points lines=1 via groq_main#1 3488 ms
+               Added Type 2 as another classification category in the nervous system.
+19:37:55 INFO    copilot.presentation.engine: planner: update Nervous System > Classification (same frame)
+19:37:55 INFO    copilot.presentation.engine: no image for 'Classification': two concepts side by side
+  [SLIDE] update 'Classification' [concept] v3 (3 items)
+  [  651.6s] Hypotylomas and thymus. The largest part of the brain is the cerebrum. Thinking, perceiving, controlling, motor functioning, receiving and processing information and understanding language are the main functions done by this section of the brain. (1322 ms)
+  [  666.6s] Also sexual development and emotional functions. (415 ms)
+19:38:00 INFO    copilot.understanding.service: [REF] byjus.com p.9 (0.86) for the interpretation
+  [UNDERSTAND] Nervous System > Classification (elaboration) acts=definition hint=definition lines=2 via groq_main#2 5056 ms
+               Provided detailed components and functions of the forebrain within the nervous system classification.
+  [HEARD] 'Hypotylomas and thymus' -> 'hypothalamus and thalamus' corrected on the slide (0.5)
+19:38:05 INFO    copilot.presentation.engine: revised S2: Forebrain: It comprises the cerebrum, hypothalamus, and thalamus; functions include thinking, perceiving, motor control, processing…
+19:38:05 INFO    copilot.presentation.engine: planner: update Nervous System > Classification (same frame)
+19:38:05 INFO    copilot.presentation.engine: concern 00c7268aaff2 (transcription, applied=True): 0 element(s); slide shows 'hypothalamus and thalamus'
+19:38:05 INFO    copilot.presentation.engine: no image for 'Classification': two concepts side by side
+  [SLIDE] update 'Classification' [concept] v4 (3 items)
+  [SLIDE] update 'Classification' [concept] v5 (4 items)
+  [  672.5s] are attached to the forebrain, midbrain. It is situated between the (761 ms)
+  [  677.5s] Hyptoallymous and thalamus. The brainstem is associated with the midbrain or the adority and visual response are controlled by the midbrain. (920 ms)
+19:38:18 INFO    copilot.understanding.service: [REF] byjus.com p.9 (0.81) for the interpretation
+  [  690.8s] End breath. (427 ms)
+19:38:25 WARNING copilot.llm.router: llm groq_main#1 failed: no complete response within 6.5s (retrying)
+  [  692.6s] The medulla pons and (463 ms)
+19:38:28 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+19:38:31 WARNING copilot.llm.router: llm groq_main#2 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Nervous System > Classification (elaboration) acts=definition hint=definition lines=2 via groq_main#3 14810 ms
+               Midbrain is located between hypothalamus and thalamus and handles auditory and visual responses
+19:38:33 INFO    copilot.presentation.engine: planner: update Nervous System > Classification (same frame)
+19:38:33 INFO    copilot.presentation.engine: no image for 'Classification': two concepts side by side
+  [SLIDE] update 'Classification' [concept] v6 (5 items)
+  [  695.3s] Cerebellum are together tied in the hindbrain, interconnection of different parts of the brain surface and helps to accommodate (929 ms)
+  [  703.2s] Neurons and connect them to the spinal columns are done by the hindbrain. (722 ms)
+19:38:38 INFO    copilot.understanding.service: [REF] byjus.com p.9 (0.81) for the interpretation
+19:38:40 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Classification' -> same_concept
+  [UNDERSTAND] Nervous System > Classification (same_concept) acts=definition hint=definition lines=4 via groq_main#3 2138 ms
+               Introduced the hindbrain as a classification category comprising medulla, pons, and cerebellum that connect brain regions and spinal cord
+19:38:40 INFO    copilot.presentation.engine: planner: update Nervous System > Classification (same frame)
+  [SLIDE] add    'Classification' [members] v1 (1 items)
+  [  711.9s] Peripheral nervous system consists of (566 ms)
+  [SLIDE] update 'Classification' [members] v2 (1 items)
+  [  714.5s] Somatic nervous system. The system's primary purpose is to transmit the motor and sensory impulses from CNS and back. It is linked to all sensory organs, limbs, and skeletal system. (1108 ms)
+  [SLIDE] update 'Classification' [members] v3 (1 items)
+19:39:01 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.85) for the interpretation
+19:39:04 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Classification' -> same_concept
+  [UNDERSTAND] Nervous System > Classification (same_concept) acts=definition,definition hint=definition lines=2 via groq_main#3 3341 ms
+               Defined the peripheral and somatic nervous systems and their functions within the nervous system classification.
+19:39:04 INFO    copilot.presentation.engine: planner: update Nervous System > Classification (same frame)
+19:39:04 INFO    copilot.presentation.engine: no image for 'Classification': two concepts side by side
+  [SLIDE] update 'Classification' [members] v4 (1 items)
+  [SLIDE] update 'Classification' [concept] v5 (3 items)
+  [  727.4s] Imagine a scenario where you are riding a bicycle and suddenly you spot an obstacle and on the road. Your ability to immediately surf out of the obstacle's path and avoid the crash is the result of the somatic nervous system taking action. (1237 ms)
+19:39:14 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.69) for the interpretation
+  [  742.5s] Autonomic. (344 ms)
+19:39:17 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Imagine a scenario where you are riding a bicycle and suddenly you spot an obstacle and on the road']
+  [UNDERSTAND] Nervous System > Classification (elaboration) acts=explanation,explanation hint=example lines=1 via groq_main#3 2921 ms
+               Provided a real‑world example of the somatic nervous system in action
+19:39:17 INFO    copilot.presentation.engine: planner: update Nervous System > Classification (same frame)
+  [SLIDE] update 'Classification' [concept] v6 (4 items)
+  [SLIDE] add    'Classification' [key_points] v1 (1 items)
+19:39:17 INFO    copilot.presentation.engine: no image 'midbrain diagram' on 'Classification': not about the slide (similarity 0.11)
+  [  744.1s] There was a system. The system works without the person's effort. The system helps to relapse. (841 ms)
+  [SLIDE] update 'Classification' [key_points] v2 (2 items)
+19:39:27 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.64) for the interpretation
+  [  752.0s] Impulse from the central nervous system to smooth muscles and involuntary organs. (812 ms)
+  [SLIDE] update 'Classification' [key_points] v3 (2 items)
+19:39:31 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Classification' -> same_concept
+  [UNDERSTAND] Nervous System > Classification (same_concept) acts=definition hint=definition lines=2 via groq_main#3 3941 ms
+               Defined the autonomic nervous system as operating without effort and relaying impulses
+  [HEARD] 'relapse' -> 'relay impulses' corrected on the slide (0.5)
+19:39:31 INFO    copilot.presentation.engine: planner: update Nervous System > Classification (same frame)
+19:39:31 INFO    copilot.presentation.engine: concern aacb89bf19bd (transcription, applied=True): 1 element(s); slide shows 'relay impulses'
+  [SLIDE] update 'Classification' [key_points] v4 (3 items)
+19:39:31 INFO    copilot.presentation.engine: image search 'autonomic nervous system diagram' (diagram) for 'Classification'
+  [  757.2s] Such as your heart, lungs, etc. Also it prepares the body. (840 ms)
+19:39:38 INFO    copilot.visuals.finder: image search 'autonomic nervous system diagram': 7 slow download(s) dropped
+19:39:38 INFO    copilot.presentation.engine: image 'autonomic nervous system diagram': none (downloads failed)
+  [IMAGE] 'autonomic nervous system diagram' -> none (downloads failed) (6.6 s)
+19:39:41 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.78) for the interpretation
+  [UNDERSTAND] Nervous System > Classification (same_concept) acts=- hint=definition lines=2 via groq_main#1 3165 ms
+               Added that the autonomic nervous system sends CNS impulses to smooth muscles and organs like heart and lungs, preparing the body.
+19:39:44 INFO    copilot.presentation.engine: revised S2: Autonomic nervous system: Works without effort, relays impulses from the central nervous system to smooth muscles and involuntary organs…
+19:39:44 INFO    copilot.presentation.engine: planner: noop Nervous System > Classification (nothing to display)
+  [SLIDE] update 'Classification' [key_points] v5 (2 items)
+  [SLIDE] update 'Classification' [key_points] v6 (2 items)
+  [  762.0s] (dropped: empty) 
+  [  783.5s] The key points about human body are, every human body, tissue, human body, part and organ system are made up of cells, the fundamental unit of life. Anatomy is the science of understanding the structure and the parts of living organisms. (1474 ms)
+  [SLIDE] update 'Classification' [key_points] v7 (3 items)
+19:40:10 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.82) for the interpretation
+  [  798.0s] Physiology, on the other hand, deals with the (464 ms)
+  [SLIDE] update 'Classification' [key_points] v8 (3 items)
+  [  801.5s] Internal. (327 ms)
+  [SLIDE] update 'Classification' [key_points] v9 (3 items)
+  [UNDERSTAND] Human Body > Cells (new_topic) acts=explanation hint=concept lines=1 via groq_main#1 4056 ms
+               Human body parts and organ systems are composed of cells; anatomy studies their structure.
+19:40:14 INFO    copilot.presentation.engine: planner: update Nervous System > Classification (new topic not yet confirmed)
+  [SLIDE] update 'Classification' [key_points] v10 (5 items)
+19:40:24 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.80) for the interpretation
+19:40:27 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+  [  803.1s] Mechanism and the processes that work towards sustaining life. This can include biochemical and physical interaction between various factors and components in our body. With the progress of evolution, organisms begin to exhibit advanced results. (1162 ms)
+19:40:30 WARNING copilot.llm.router: llm groq_main#2 failed: connect failed: ConnectTimeout
+  [  818.1s] Characteristics and features that enables them. (515 ms)
+  [UNDERSTAND] Human Body > Physiology (sibling_concept) acts=definition hint=definition lines=2 via groq_main#3 8888 ms
+               Defined physiology as the study of internal mechanisms that sustain life
+19:40:33 INFO    copilot.presentation.engine: planner: new Human Body > Physiology (new topic confirmed (two interpretations agree))
+19:40:33 INFO    copilot.presentation.engine: moving 2 item(s) of 'Human Body' to the new topic's slide
+  [SLIDE] update 'Classification' [key_points] v11 (4 items)
+  [SLIDE] update 'Classification' [key_points] v12 (2 items)
+  [SLIDE] add    'Physiology' [key_points] v1 (3 items)
+19:40:33 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.86) for the interpretation
+  [UNDERSTAND] Human Body > Physiology (elaboration) acts=explanation hint=key_points lines=2 via groq_main#3 1796 ms
+               Added details on biochemical/physical interactions and evolutionary advances in physiology
+19:40:35 INFO    copilot.presentation.engine: planner: update Human Body > Physiology (same frame)
+  [SLIDE] update 'Physiology' [key_points] v2 (5 items)
+  [  824.3s] To be more efficient and thrive in their respective environment. (560 ms)
+  [SLIDE] update 'Physiology' [key_points] v3 (6 items)
+19:40:41 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.90) for the interpretation
+  [  828.6s] The human structure can be (520 ms)
+  [SLIDE] update 'Physiology' [key_points] v4 (6 items)
+  [UNDERSTAND] Human Body > Physiology (elaboration) acts=- hint=key_points lines=1 via groq_main#3 5304 ms
+               Added that evolutionary advances aim for efficiency and thriving in environments
+19:40:46 INFO    copilot.presentation.engine: revised S5: Evolution produced advanced characteristics to be more efficient and thrive in their environment
+19:40:46 INFO    copilot.presentation.engine: planner: noop Human Body > Physiology (nothing to display)
+  [SLIDE] update 'Physiology' [key_points] v5 (6 items)
+  [  830.4s] Described as bipedal with hair covering the body, presence of mammary (782 ms)
+  [SLIDE] update 'Physiology' [key_points] v6 (6 items)
+  [  836.2s] Glan and set of externally extremely well developed sense organs. (639 ms)
+  [SLIDE] update 'Physiology' [key_points] v7 (6 items)
+19:40:52 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.82) for the interpretation
+19:40:55 WARNING copilot.llm.router: llm groq_main#4 failed: connect failed: ConnectTimeout
+19:40:58 WARNING copilot.llm.router: llm groq_main#5 failed: connect failed: ConnectTimeout
+19:41:00 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectTimeout
+19:41:07 WARNING copilot.llm.router: llm groq_alt#6 failed: no complete response within 6.5s (retrying)
+19:41:07 WARNING copilot.understanding.interpreter: interpretation fallback: llm: deadline exceeded; groq_main#1: skipped (cooldown 35s); groq_main#2: skipped (cooldown 38s); groq_main#3: skipped (tpm); groq_main#4: Unavailable; groq_main#5: Unavailable; groq_main#6: skipped (daily quota spent); groq_alt#5: Unavailable; groq_alt#6: Transient; groq_alt#6: deadline
+  [UNDERSTAND] Human Body > Physiology (same_concept) acts=explanation hint=key_points lines=3 via FALLBACK llm: deadline exceeded; groq_main#1: skipped (cooldown 35s); groq_main#2: skippe 14552 ms
+19:41:07 INFO    copilot.presentation.engine: planner: update Human Body > Physiology (same frame)
+  [SLIDE] update 'Physiology' [key_points] v8 (5 items)
+  [SLIDE] update 'Physiology' [key_points] v9 (6 items)
+  [  842.7s] With respect to human body anatomy, we have a specialized circulatory system that enables the efficient transport of materials and nutrients within the body. The presence of a well-developed digestive system helps to extract essential nutrients. (1186 ms)
+  [SLIDE] update 'Physiology' [key_points] v10 (7 items)
+  [  856.7s] and minerals required by the body are well developed. (531 ms)
+  [SLIDE] update 'Physiology' [key_points] v11 (7 items)
+19:41:12 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.83) for the interpretation
+19:41:14 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Physiology' -> same_concept
+  [UNDERSTAND] Human Body > Physiology (same_concept) acts=explanation hint=key_points lines=2 via groq_main#3 2473 ms
+               Added that the circulatory system efficiently transports nutrients and the digestive system extracts essential nutrients and minerals.
+19:41:14 INFO    copilot.presentation.engine: planner: update Human Body > Physiology (same frame)
+  [SLIDE] update 'Physiology' [key_points] v12 (6 items)
+  [SLIDE] update 'Physiology' [key_points] v13 (8 items)
+  [  863.3s] A very, a presence of... (480 ms)
+  [  867.3s] A well-developed respiratory system ensures the efficient gas exchange and the nervous system enables coordination and interaction within the body as an external environment. (840 ms)
+19:41:29 INFO    copilot.understanding.service: [REF] byjus.com p.10 (0.81) for the interpretation
+19:41:34 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Physiology' -> same_concept
+  [UNDERSTAND] Human Body > Physiology (same_concept) acts=explanation hint=key_points lines=2 via groq_main#1 5175 ms
+               Added roles of the respiratory and nervous systems in physiology
+19:41:34 INFO    copilot.presentation.engine: planner: update Human Body > Physiology (same frame)
+  [SLIDE] update 'Physiology' [key_points] v14 (8 items)
+  [SLIDE] add    'Physiology' [key_points] v1 (2 items)
+19:42:10 WARNING copilot.materials.service: chapter_rename ignored: {'id': 'c0398fdf931b', 'name': 'Biology'}
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261013-192621-e5d8: 91 segments, 1431 words, state v212, 958 events logged
+        CommandReceived=66, ConceptSignal=90, ConcernRaised=17, ConcernResolved=4, DeckState=55, ImageChoices=8, ImageReady=11, ImageRequested=11, InterpretRequested=54, InterpretationReady=54, LLMCallFailed=9, LifecycleChanged=5, SlideContextChanged=59, SlideOverflow=1, SlidePatch=119, StateChanged=212, TranscriptFinal=91, UtteranceClassified=91, UtteranceDropped=1
+        stt: 91 published, 1 dropped, latency p50=761 ms p95=1230 ms max=1474 ms
+        understanding: 54 interpretations (53 by LLM, 1 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=2238 avg=2093, latency p50=2808 ms max=14810 ms
+        presentation: 19 slides; planner ops {'noop': 11, 'new': 4, 'continue': 8, 'update': 31}; revisions 6, corrections shown 8, shown as said 0
+        images: {'requests': 11, 'found': 8, 'none': 3, 'reference': 4}; slides with an image 5/19
+          1. [definition] Cells  (v2, ['definition', 'facts', 'image'])
+          2. [definition] Tissues  (v7, ['definition', 'points'])
+          3. [definition] Skeleton [part 1]  (v7, ['definition', 'facts', 'points'])
+          4. [members] Skeleton [part 2]  (v3, ['definition', 'points', 'hierarchy', 'image'])
+          5. [definition] Muscles  (v9, ['definition', 'image', 'points'])
+          6. [concept] Circulatory System  (v4, ['definition', 'hierarchy', 'definition'])
+          7. [key_points] Digestive System [part 1]  (v1, ['points'])
+          8. [key_points] Digestive System [part 2]  (v6, ['points', 'image', 'points', 'definition', 'points'])
+          9. [key_points] Digestive System [part 3]  (v11, ['points', 'image'])
+          10. [concept] Reproductive System  (v3, ['definition', 'definition'])
+          11. [concept] Uterus and Oviducts  (v3, ['definition', 'definition', 'definition', 'definition'])
+          12. [concept] Male Reproductive System  (v10, ['definition', 'definition', 'definition', 'points', 'definition'])
+          13. [key_points] Organs  (v13, ['points', 'groups'])
+          14. [key_points] Classification [part 1]  (v1, ['points', 'hierarchy', 'definition'])
+          15. [concept] Classification [part 2]  (v6, ['definition', 'definition', 'points', 'points', 'definition'])
+          16. [concept] Classification [part 3]  (v6, ['definition', 'definition', 'definition', 'points'])
+          17. [key_points] Classification [part 4]  (v12, ['points', 'definition'])
+          18. [key_points] Physiology [part 1]  (v14, ['points', 'definition', 'points'])
+          19. [key_points] Physiology [part 2]  (v1, ['points'])
+        providers: {'groq_main#6': 19, 'groq_main#1': 21, 'groq_main#2': 4, 'groq_main#3': 9}; triggers: {'pause': 21, 'words': 14, 'max_wait': 16, 'boundary': 3}; outline: ['Human Body > Cells, Skeleton, Muscles, Circulatory System, Digestive System, Reproductive System, Uterus and Oviducts, Physiology', 'Respiratory System > Apparatus, Organs', 'Nervous System > Classification']; concerns: 17
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261013-192621-e5d8\session.sqlite

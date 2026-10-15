@@ -1,6 +1,6 @@
 """Paper evaluation from recorded sessions, zero LLM tokens.
 
-    .venv/Scripts/python tools/paper_eval.py latency  <session> [<session> ...]   # end-to-end delay from the live logs
+    .venv/Scripts/python tools/paper_eval.py latency  <session|testN> ... [--out f.json]  # end-to-end delay from the live logs
     .venv/Scripts/python tools/paper_eval.py ablation <session> [<session> ...]   # planner variants on recorded answers
 
 latency: for every content line that reached an interpretation, the time from the end of its speech to the first
@@ -34,8 +34,14 @@ from copilot.presentation.engine import PresentationEngine, PresentationSettings
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def session_db(session: str) -> Path:
+    """A session id under data/sessions, or a validation test name (verify_results/<name>/session, see eval_test.py)."""
+    test = ROOT / "verify_results" / session / "session" / "session.sqlite"
+    return test if test.exists() else ROOT / "data" / "sessions" / session / "session.sqlite"
+
+
 def events(session: str) -> list[tuple[int, float, str, dict]]:
-    db = sqlite3.connect(ROOT / "data" / "sessions" / session / "session.sqlite")
+    db = sqlite3.connect(session_db(session))
     return [(s, t, ty, json.loads(p)) for s, t, ty, p in db.execute("select seq, ts, type, payload from events order by seq")]
 
 
@@ -66,7 +72,7 @@ def latency(session: str) -> dict:
     return dict(session=session, rows=rows)
 
 
-def report_latency(sessions: list[str]) -> None:
+def report_latency(sessions: list[str], out: Path) -> None:
     allrows = []
     for s in sessions:
         r = latency(s)["rows"]
@@ -81,7 +87,8 @@ def report_latency(sessions: list[str]) -> None:
         for k in ("stt", "wait", "llm", "compose", "total"):
             a = [x[k] for x in sel]
             print(f"  {k:8s} median {st.median(a):6.2f}  p95 {pct(a, 95):6.2f}  max {max(a):6.2f}")
-    json.dump(allrows, open(ROOT / "paper" / "build" / "fig" / "e2e_latency.json", "w"))
+    json.dump(allrows, open(out, "w"))
+    print(f"\nrows -> {out}")
 
 
 # ---------------------------------------------------------------------------------------------- planner ablation
@@ -220,6 +227,10 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.ERROR)
     cmd, sessions = sys.argv[1], sys.argv[2:]
     if cmd == "latency":
-        report_latency(sessions)
+        out = ROOT / "paper" / "build" / "fig" / "e2e_latency.json"  # D1, read by sessions_stats.py
+        if "--out" in sessions:
+            i = sessions.index("--out")
+            out, sessions = Path(sessions[i + 1]), sessions[:i] + sessions[i + 2:]
+        report_latency(sessions, out)
     else:
         asyncio.run(report_ablation(sessions))

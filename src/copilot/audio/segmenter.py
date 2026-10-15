@@ -27,6 +27,7 @@ class Utterance:
     start: float  # lecture seconds (sample clock)
     end: float
     forced_split: bool = False
+    number: int = 0  # F-013 S1b: utterance number (a forced split's remainder is the next number)
 
     @property
     def duration(self) -> float:
@@ -59,6 +60,7 @@ class UtteranceSegmenter:
         self.in_speech = False
         self._continuation = False  # current utterance is the remainder of a forced split
         self.dropped_short = 0
+        self.number = 0  # F-013 S1b: number of the utterance in progress (or of the last one)
 
     def push(self, frame: np.ndarray, prob: float) -> list[Utterance]:
         out: list[Utterance] = []
@@ -66,6 +68,7 @@ class UtteranceSegmenter:
         if not self.in_speech:
             if prob >= self.cfg.start_threshold:
                 self.in_speech = True
+                self.number += 1
                 self._frames = list(self._preroll) + [frame]
                 self._probs = [0.0] * len(self._preroll) + [prob]
                 self._start_frame = self._clock_frames - len(self._frames)
@@ -110,6 +113,7 @@ class UtteranceSegmenter:
             # (live chemistry test, session 20261005-230039-f084)
             self._silence_run = min(self._silence_run, len(self._frames))
             self._continuation = True
+            self.number += 1
         return out
 
     def flush(self) -> list[Utterance]:
@@ -120,6 +124,34 @@ class UtteranceSegmenter:
         u = self._emit(keep, forced=False)
         self._reset_after_end()
         return [u] if u else []
+
+    def split_at(self, number: int, offset_s: float, min_s: float = 1.0) -> Optional[Utterance]:
+        """F-013 S1b: end utterance `number` at `offset_s` into it (a sentence end the live transcript found) without
+        waiting for a pause; the rest continues as the next utterance. The cut moves to the quietest frame within
+        0.25 s of the offset. None when the utterance is no longer in progress or a part would be too short."""
+        if not self.in_speech or self.number != number:
+            return None
+        n = round(offset_s / self._frame_s)
+        lo, hi = max(1, n - round(0.25 / self._frame_s)), min(len(self._frames) - 1, n + round(0.25 / self._frame_s))
+        if hi <= lo or lo * self._frame_s < min_s or (len(self._frames) - hi) * self._frame_s < 0.3:
+            return None
+        window = np.asarray(self._probs[lo:hi + 1])
+        cut = lo + int(np.argmin(window)) + 1
+        u = self._emit(cut, forced=True)
+        self._start_frame += cut
+        self._frames = self._frames[cut:]
+        self._probs = self._probs[cut:]
+        self._speech_frames = sum(1 for p in self._probs if p >= self.cfg.end_threshold)
+        self._silence_run = min(self._silence_run, len(self._frames))
+        self._continuation = True
+        self.number += 1
+        return u
+
+    def snapshot(self) -> Optional[tuple[int, float, np.ndarray]]:
+        """F-013 S1b: (number, start, audio so far) of the utterance in progress, None outside speech."""
+        if not self.in_speech or not self._frames:
+            return None
+        return self.number, self._start_frame * self._frame_s, np.concatenate(self._frames)
 
     def clock_s(self) -> float:
         return self._clock_frames * self._frame_s
@@ -140,7 +172,8 @@ class UtteranceSegmenter:
             return None
         audio = np.concatenate(self._frames[:n_frames]) if n_frames else np.zeros(0, np.float32)
         start = self._start_frame * self._frame_s
-        return Utterance(audio=audio, start=start, end=start + n_frames * self._frame_s, forced_split=forced)
+        return Utterance(audio=audio, start=start, end=start + n_frames * self._frame_s, forced_split=forced,
+                         number=self.number)
 
     def _reset_after_end(self) -> None:
         # The trailing silence frames become the pre-roll for the next utterance.

@@ -1,0 +1,86 @@
+Evaluation of your latest paper — Version 4
+I reviewed your new PDF, “Multimodal AI Teaching Copilot: Live Slide Generation from Lecture Speech,” including all six pages, equations, tables, figures and references.
+My verdict
+Close to submission-ready
+
+7.8/10
+My editorial assessment, not an official reviewer score
+
+
+Your latest version makes a significant improvement: the LLM-controlled baseline is now evaluated on the same held-out D2 lecture units, rather than only on development lectures. The manuscript also contains a planner ablation, statistical intervals, and a clearer description of the evaluation populations. IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+
+I would make one more targeted revision before submitting. You do not need to rewrite the entire paper.
+
+What you have fixed successfully
+1. Stronger baseline evaluation
+Table V now compares both systems on the same 18 annotated D2 lectures. The proposed system reports 2.0% rewritten or removed statements, versus 38.2% for the LLM-controlled baseline. The paper also reports a paired per-lecture comparison, with \(p<0.001\). This is substantially stronger evidence than your previous development-set-only comparison. IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+
+
+
+2. Better treatment of the evaluation data
+The paper distinguishes the 36-lecture operational evaluation from the 18-lecture annotated evaluation and the 30-slide teacher-rating sample. The reported median end-to-end delay is 11.2 seconds across the 36 held-out lectures. IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+
+
+
+3. More useful ablation results
+Table IV shows the trade-off between precision and recall when each concept creates a new slide. The full planner has precision of 0.78 and recall of 0.42, while the slide-per-concept variant has precision of 0.37 and recall of 0.86. This illustrates why slide stability matters. IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+
+
+
+4. Cleaner paper structure
+The current PDF is six pages, and the reference list no longer spills onto a mostly blank extra page. The architecture, control interface, generated materials, slide gallery and latency plot give readers useful evidence of the implemented system.
+
+
+
+The final issues I would fix
+1. Resolve the “extend-only” contradiction
+This is the most important remaining issue because it concerns the central contribution.
+The abstract says the planner enforces extend-only operations that cannot rewrite previously displayed content. However, Section III-E explains that shown text can change through composer merges, mishearing corrections and teacher edits. Table V then reports that 91 statements were rewritten or removed in the proposed system. IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+
+You can address this without changing your architecture. Make the distinction explicit:
+- The LLM cannot freely regenerate existing slides.
+- The planner restricts slide-update operations.
+- Limited changes can still arise from composer merges, corrections and teacher edits, and these are measured separately.
+I recommend changing the abstract's strict claim to something like “a constrained slide-update policy that prevents unrestricted LLM rewrites of previously displayed content.” This is more precise than claiming that displayed content can never change.
+2. Align the baseline conclusion with what the experiment proves
+Your new baseline experiment is a meaningful improvement. However, the baseline removes not only the planner but also the guards and composer, while the proposed system uses all of them. The comparison therefore demonstrates that the overall proposed system reduces rewrites relative to the tested baseline; it does not isolate the causal effect of the extend-only policy by itself. The discussion acknowledges that an append-only baseline prompt was not tested. IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+
+For the strongest paper, add a direct append-only baseline or report rewrite rates for the relevant replay ablation. If time does not permit another experiment, retain the results but narrow the claims to the specific baseline you tested.
+Also ensure the denominator for each rewrite percentage is defined consistently. The current reported totals differ between systems, so readers need to understand precisely how each rate is calculated. IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+
+3. Correct the rating range in the abstract
+The abstract says teachers rated the slides from 3.9 to 4.2 out of 5. Table III's overall column reports means between 3.87 and 4.17, while individual subgroup values range from 3.76 to 4.26. IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+
+A precise replacement would be:
+“Across the four rating criteria, overall mean scores ranged from 3.87 to 4.17 out of 5.”
+
+That describes the overall column without implying that every subgroup value lies within those bounds.
+4. Make the results reproducible
+The paper is already more transparent about its dataset, thresholds, model routing, annotation procedure and statistical tests. Before submission, verify that the underlying logs support every reported number, particularly the paired baseline test and planner ablation.
+I also recommend providing direct links to the six public lectures, the annotation guidelines, and the scripts or anonymized evaluation data where permission allows. Keep the single-lecture WER result clearly scoped to the one lecture on which it was measured. IEEE_Paper_Multimodal_AI_Teaching_Copilot_v4.pdf
+
+The model identifier qwen/qwen3.8-27b is listed in Groq's official model documentation, so its spelling is not inherently an error; nevertheless, document the exact model and configuration used for your experiments, as hosted models and versions can change. 
+
+GroqDocs
++1
+
+
+
+Will it be accepted?
+I cannot promise acceptance, but this version gives you a stronger submission to put in front of reviewers.
+Review area	My assessment
+Practical problem	Strong
+Implemented system	Strong
+Held-out evaluation	Improved
+Baseline comparison	Much improved
+Research claims and consistency	Needs final correction
+Reproducibility	Could be stronger
+Overall readiness	Nearly ready
+The remaining issue is not that your paper lacks results. It is that the main contribution must be described exactly as the implementation and experiments support it. A selective IEEE conference could still question novelty, the baseline design, or the lack of classroom learning-outcome evaluation.
+Final submission recommendation
+Make one more focused revision, then consider submitting. Prioritize the extend-only wording, narrow the baseline claim or add a direct append-only comparison, and correct the abstract's rating range. Verify the results against your logs and do a final template check for your target venue.
+After those changes, I would consider the manuscript ready for a serious submission attempt, subject to the specific conference or journal's scope and requirements. Acceptance will still depend on peer review.

@@ -97,6 +97,34 @@ class LifecycleChanged(Event):
 class TranscriptFinal(Event):
     segment: TranscriptSegment
     stt_latency_ms: Optional[float] = None  # utterance end detected -> text ready (mic only)
+    utterance: int = 0  # F-013 S1b: the segmenter's utterance number (mic / WAV); 0 = none (simulator)
+
+
+class TranscriptPartial(Event):
+    """F-013 S1b: what is being said right now (the utterance so far, a fast model), before the utterance ends.
+    `stable` is the part two consecutive passes agree on (Whisper revises its last words); only it is used for the
+    instant display. Superseded by the TranscriptFinal of the same utterance."""
+    utterance: int
+    start: float
+    text: str            # the latest hypothesis
+    stable: str = ""     # the agreed prefix of `text`
+    sentences: list[tuple[str, float]] = Field(default_factory=list)  # sentences of `stable`, lecture time each starts
+    latency_ms: float = 0.0  # snapshot taken -> published
+    infer_ms: float = 0.0    # of which the model pass
+
+
+class LiveCue(Event):
+    """F-013 S1b: structure heard in a partial transcript (understanding.cues), for the instant display only."""
+    utterance: int
+    announce: str = ""
+    compare: list[str] = Field(default_factory=list)
+    list_head: str = ""
+    list_items: list[str] = Field(default_factory=list)
+    list_count: int = 0
+    item: str = ""
+    term: str = ""          # "X" of "X is ..." being said
+    definition: str = ""    # what has been said of its definition so far
+    start: float = -1.0     # lecture time the sentence with the cue starts (-1 = unknown)
 
 
 class AudioLevel(Event):
@@ -160,6 +188,15 @@ class ConceptSignal(Event):
     keyphrases: list[str] = Field(default_factory=list)
     cues: list[str] = Field(default_factory=list)
     boundary: bool = False      # strong cue or shift above threshold at utterance start
+    # F-013 spoken structure cues (understanding.cues), for the instant display; "" / [] = none
+    announce: str = ""          # announced topic / subtopic name ("A vs B" for a comparison)
+    compare: list[str] = Field(default_factory=list)      # members of an announced comparison
+    list_head: str = ""         # "X" of "X is classified into ..."
+    list_items: list[str] = Field(default_factory=list)   # members heard in this line
+    list_count: int = 0         # announced number of members, 0 = not said
+    item: str = ""              # one member said on its own ("The second type is ...")
+    utterance: int = 0          # F-013 S1b: TranscriptFinal.utterance (links the partials' live cues to this line)
+    start: float = -1.0         # lecture time the line starts (-1 = unknown): what came before / after a cue
 
 
 class InterpretRequested(Event):
@@ -313,7 +350,7 @@ class ErrorRaised(Event):
 EVENT_TYPES: dict[str, type[Event]] = {
     cls.__name__: cls
     for cls in (
-        LifecycleChanged, TranscriptFinal, AudioLevel, AudioDeviceLost, UtteranceDropped,
+        LifecycleChanged, TranscriptFinal, TranscriptPartial, LiveCue, AudioLevel, AudioDeviceLost, UtteranceDropped,
         CommandReceived, StateChanged, SlidePatch, DeckState, ErrorRaised,
         UtteranceClassified, ConceptSignal, InterpretRequested, InterpretationReady, LLMCallFailed,
         ConcernRaised, ConcernResolved, SlideContextChanged, SlideOverflow, ImageRequested, ImageReady,

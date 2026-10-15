@@ -23,12 +23,16 @@ from copilot.core.events import (
     InterpretRequested,
     Lifecycle,
     LifecycleChanged,
+    LiveCue,
     TranscriptFinal,
+    TranscriptPartial,
     UtteranceClassified,
     UtteranceDropped,
     new_id,
 )
 from copilot.core.state import LectureStateStore
+from copilot.understanding.cues import detect_all as detect_cues
+from copilot.understanding.cues import live_definition_any
 from copilot.understanding.embedder import Embedder
 from copilot.understanding.filter import UtteranceFilter
 from copilot.understanding.gate import BufferedLine, DiscourseBuffer, Gate, GateConfig
@@ -141,12 +145,13 @@ class UnderstandingService:
         self._last_voice: Optional[float] = None  # wall time of the latest AudioLevel(voice=True)
         self._embed_warned = False
         self._paused = False  # the teacher paused the lecture (a break): new speech is not interpreted
+        self._live_last: Optional[dict] = None  # the last LiveCue sent (F-013 S1b): only changes are published
         self._tasks: list[asyncio.Task] = []
 
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
         self.bus.subscribe("understanding", self._on_event,
-                           [TranscriptFinal, AudioLevel, UtteranceDropped, LifecycleChanged])
+                           [TranscriptFinal, TranscriptPartial, AudioLevel, UtteranceDropped, LifecycleChanged])
         self._tasks = [
             asyncio.create_task(self._worker(), name="understanding:worker"),
             asyncio.create_task(self._ticker(), name="understanding:ticker"),
@@ -204,6 +209,9 @@ class UnderstandingService:
             if event.voice:
                 self._last_voice = self.clock()
             return
+        if isinstance(event, TranscriptPartial):
+            await self._on_partial(event)
+            return
         # Any transcript outcome (also filtered meta lines and dropped utterances) ends the pending-speech grace.
         self._last_transcript = self.clock()
         if isinstance(event, UtteranceDropped):
@@ -229,17 +237,55 @@ class UnderstandingService:
                     log.exception("embedding failed; concept tracking falls back to cue words")
                     await self.bus.publish(ErrorRaised(component="understanding.embedder", error=str(e)))
         sig = self.tracker.update(seg.text, vec)
+        cues = detect_cues(seg.text) if not c.maybe_meta else None
+        topic = cues.of("topic") if cues else None
+        compare = cues.of("compare") if cues else None
+        lst = cues.of("list") if cues else None
+        announce = (compare.name if compare else "") or (topic.name if topic else "")
         await self.bus.publish(ConceptSignal(
             segment_id=seg.id, shift_score=round(sig.shift_score, 4), topic_shift=round(sig.topic_shift, 4),
-            keyphrases=sig.keyphrases, cues=sig.cues, boundary=sig.boundary,
+            keyphrases=sig.keyphrases, cues=sig.cues, boundary=sig.boundary or bool(announce),
+            announce=announce, compare=list(compare.items) if compare else [],
+            list_head=lst.name if lst else "", list_items=list(lst.items) if lst else [],
+            list_count=lst.count if lst else 0, item=cues.item if cues else "", utterance=event.utterance,
+            start=seg.start,
         ))
+        if announce:
+            log.info("[CUE] %s %r", "compare" if compare else topic.rule if topic else "", announce)
         self.buffer.add(
             BufferedLine(seg.id, seg.text, seg.start, seg.end, c.maybe_meta, c.kind == "question_to_class"),
-            boundary=sig.boundary,
+            boundary=sig.boundary or bool(announce), announce=bool(announce),
         )
         self._last_end = max(self._last_end, seg.end)
         self._last_arrival = self.clock()
         self._wake.set()
+
+    async def _on_partial(self, ev: TranscriptPartial) -> None:
+        """F-013 S1b: structure in what is being said (the agreed prefix only) -> LiveCue for the instant display.
+        Nothing here reaches the LLM or the lecture state; the final transcript of the utterance does that."""
+        if self._paused or not ev.stable:
+            return
+        c = self.filter.classify(ev.stable)
+        if c.kind != "content":
+            return
+        cues = detect_cues(ev.stable, latest_first=True)
+        topic, compare, lst = cues.of("topic"), cues.of("compare"), cues.of("list")
+        term, definition = live_definition_any(ev.stable)
+        start = ev.start
+        for sentence, t in reversed(ev.sentences):  # when the sentence holding the (latest) cue started
+            sc = detect_cues(sentence)
+            if sc.cues or sc.item or live_definition_any(sentence)[0]:
+                start = t
+                break
+        cue = LiveCue(utterance=ev.utterance, announce=(compare.name if compare else "") or (topic.name if topic else ""),
+                      compare=list(compare.items) if compare else [], list_head=lst.name if lst else "",
+                      list_items=list(lst.items) if lst else [], list_count=lst.count if lst else 0,
+                      item=cues.item, term=term, definition=definition, start=start)
+        key = cue.model_dump(exclude={"id", "ts", "session_id"})
+        if not any(v for k, v in key.items() if k != "utterance") or key == self._live_last:
+            return
+        self._live_last = key
+        await self.bus.publish(cue)
 
     async def _ticker(self) -> None:
         while True:

@@ -1,0 +1,194 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (14.4 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (1.0 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_3         openai/gpt-oss-120b            60k of 200k tokens IN USE
+        GROQ_API_KEY_4         openai/gpt-oss-120b           178k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b            63k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b            20k of 200k tokens ok
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 240 lecture minutes
+
+[READY] session 20261014-195322-cebd
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+19:53:41 INFO    copilot.visuals.service: CLIP ready in 2.3 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, thermodynamics, digestive, photoelectrons, cerebrum, cerebellum ...)
+  [    2.3s] Let us finish the terms between ANM, CNN and RNN. The artificial neural network has become the backbone of modern AI and deep learning. Among them, ANM. (1222 ms)
+  [   11.8s] The artificial neuromotor, CNN, the convolutional neuromotor, and RNA, the recurrent neuromotor, are the most widely used parts predicted. (1099 ms)
+19:54:17 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.6 (0.61) for the interpretation
+19:54:20 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The artificial neural network has become the backbone of modern AI and deep learning']
+  [UNDERSTAND] Machine Learning > Neural Network Types (sub_concept) acts=definition,definition,definition,explanation hint=definition lines=2 via groq_main#3 3322 ms
+               Defined ANM, CNN, and RNN as artificial, convolutional, and recurrent neuromotor networks.
+  [CONCERN] (factual) RNA, the recurrent neuromotor -> RNN, the recurrent neuromotor (0.9, slide shows the correction)
+19:54:20 INFO    copilot.presentation.engine: planner: new Machine Learning > Neural Network Types (first content slide)
+19:54:20 INFO    copilot.presentation.engine: concern d807758dd17a (factual, applied=True): 1 element(s); slide shows 'RNN'
+19:54:20 INFO    copilot.presentation.engine: no image for 'Neural Network Types': two concepts side by side
+  [SLIDE] add    'Neural Network Types' [concept] v1 (4 items)
+  [   21.1s] Each has a unique structure and strength on application. (760 ms)
+19:54:33 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.6 (0.61) for the interpretation
+  [UNDERSTAND] Machine Learning > Neural Network Types (same_concept) acts=explanation hint=key_points lines=1 via groq_main#3 2615 ms
+               Highlighted that each neural network type has distinct structure and strengths for different applications
+19:54:35 INFO    copilot.presentation.engine: planner: update Machine Learning > Neural Network Types (same frame)
+19:54:35 INFO    copilot.presentation.engine: no image for 'Neural Network Types': two concepts side by side
+  [SLIDE] update 'Neural Network Types' [concept] v2 (5 items)
+  [   24.4s] ENM, an artificial neural network, is a network of interconnected neurons that where data flows forward from input to output. It can have one or more hidden layers, allowing it to learn complex factors from structured data composed of inputs. (1413 ms)
+  [SLIDE] update 'Neural Network Types' [concept] v3 (6 items)
+19:54:41 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.6 (0.56) for the interpretation
+  [   39.0s] Hidden and output plate, worked with tabular or circuit data can capture complex events using hidden layer. (954 ms)
+  [SLIDE] update 'Neural Network Types' [concept] v4 (5 items)
+19:54:43 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Neural Network Types' -> same_concept
+19:54:43 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['It can have one or more hidden layers, allowing it to learn complex factors from structured data composed of inputs']
+  [UNDERSTAND] Machine Learning > Neural Network Types (same_concept) acts=definition,explanation hint=definition lines=1 via groq_main#3 2363 ms
+               Introduced ENM as an artificial neural network with forward flow and hidden layers
+19:54:43 INFO    copilot.presentation.engine: planner: update Machine Learning > Neural Network Types (same frame)
+19:54:43 INFO    copilot.presentation.engine: member 'ENM' explained in depth: its own slide under Machine Learning > Neural Network Types
+  [SLIDE] update 'Neural Network Types' [concept] v5 (6 items)
+  [SLIDE] add    'ENM' [key_points] v1 (1 items)
+19:54:43 INFO    copilot.presentation.engine: image search 'neural network diagram' (diagram) for 'ENM'
+19:54:47 INFO    copilot.visuals.finder: image search 'neural network diagram': 6 slow download(s) dropped
+19:54:48 INFO    copilot.presentation.engine: image 'neural network diagram': none (downloads failed)
+  [IMAGE] 'neural network diagram' -> none (downloads failed) (4.5 s)
+  [UNDERSTAND] Machine Learning > Neural Network Types (elaboration) acts=- hint=key_points lines=1 via groq_main#3 2303 ms
+               Added that ENM uses hidden and output layers and can handle tabular or circuit data to capture complex events.
+19:54:57 INFO    copilot.presentation.engine: revised S1: It can have one or more hidden and output layers, working with tabular or circuit data to capture complex events using the hidden layer
+19:54:57 INFO    copilot.presentation.engine: planner: noop Machine Learning > Neural Network Types (nothing to display)
+  [SLIDE] update 'ENM' [key_points] v2 (1 items)
+  [   47.5s] Foil-sollering and can operate with incomplete information. Advantages? Distributed memory provided within foil-sollering can handle incomplete knowledge. Disadvantages? Hardware dependence and requires clear quality. (1463 ms)
+  [   61.2s] That works out terribly nicely. (492 ms)
+  [   63.2s] The formulation of the neurotransmitters. (568 ms)
+  [UNDERSTAND] Machine Learning > Advantages and Disadvantages (sibling_concept) acts=explanation hint=key_points lines=1 via groq_main#3 2612 ms
+               Described ENM advantages of distributed memory and disadvantages of hardware dependence.
+  [HEARD] 'Foil-sollering' -> '(intended term)' corrected on the slide (0.5)
+19:55:06 INFO    copilot.presentation.engine: planner: continue Machine Learning > Advantages and Disadvantages (new facet)
+19:55:06 INFO    copilot.presentation.engine: concern 0d052682179a (transcription, applied=True): 0 element(s); slide shows '(intended term)'
+  [SLIDE] add    'Advantages and Disadvantages' [key_points] v1 (2 items)
+  [UNDERSTAND] Machine Learning > Advantages and Disadvantages (same_concept) acts=- hint=none lines=1 via groq_main#3 3256 ms
+               No new slide content added
+19:55:14 INFO    copilot.presentation.engine: planner: noop Machine Learning > Advantages and Disadvantages (nothing to display)
+  [   67.4s] A convolutional neural network is a type of ANM designed to process state-like data such as image or videos, produce a convolutional and pooling layer to automatically extract physical dimensionality. (1266 ms)
+  [   80.4s] Specialised for swimming and maneuvering. Automatically detected. (589 ms)
+  [UNDERSTAND] Machine Learning > Advantages and Disadvantages (digression) acts=- hint=none lines=1 via groq_main#3 4284 ms
+               Mentioned neurotransmitter formulation as a digression
+19:55:23 INFO    copilot.presentation.engine: planner: noop Machine Learning > Advantages and Disadvantages (digression)
+19:55:28 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.7 (0.57) for the interpretation
+  [UNDERSTAND] Machine Learning > Convolutional Neural Networks (sibling_concept) acts=definition,explanation hint=none lines=2 via groq_main#4 2678 ms
+               Introduced Convolutional Neural Networks and their image/video processing capability with an example of feature detection.
+  [HEARD] 'state-like data' -> 'spatial-like data' corrected on the slide (0.5)
+  [HEARD] 'swimming' -> 'scaling' corrected on the slide (0.5)
+19:55:31 INFO    copilot.presentation.engine: planner: continue Machine Learning > Convolutional Neural Networks (new facet)
+19:55:31 INFO    copilot.presentation.engine: concern eced9ff0d76c (transcription, applied=True): 0 element(s); slide shows 'spatial-like data'
+19:55:31 INFO    copilot.presentation.engine: concern cdb5005e1019 (transcription, applied=True): 1 element(s); slide shows 'scaling'
+  [SLIDE] add    'Convolutional Neural Networks' [definition] v1 (2 items)
+19:55:31 INFO    copilot.presentation.engine: image search 'Convolutional Neural Network diagram' (photo) for 'Convolutional Neural Networks'
+19:55:36 INFO    copilot.visuals.finder: image search 'Convolutional Neural Network diagram': 2 slow download(s) dropped
+  [   85.1s] Important features of the manual engineering uses for smoothing and weighing weight sharing to reduce parameters. High accuracy for image recognition. (915 ms)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v2 (3 items)
+19:55:39 INFO    copilot.visuals.finder: image search 'Convolutional Neural Network diagram': 1 slow download(s) dropped
+19:55:39 INFO    copilot.visuals.finder: image search 'Convolutional Neural Network diagram' (photo): 3 candidate(s), 2 accepted (0 labelled), 7.76 s {'search_s': 2.78, 'download_s': 1.72, 'clip_s': 0.17, 'full_s': 3.04, 'total_s': 7.76}
+  [IMAGE] 'Convolutional Neural Network diagram' -> File:ResBlock.png (7.8 s)
+19:55:39 INFO    copilot.presentation.engine: image 'Convolutional Neural Network diagram' on 'Convolutional Neural Networks': File:ResBlock.png
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v3 (4 items)
+  [   97.6s] Automatic feature extraction due to spinal cord disadvantages require large amount of training data cannot inherently encode object position or orientation. (931 ms)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v4 (4 items)
+19:55:43 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.7 (0.62) for the interpretation
+  [UNDERSTAND] Machine Learning > Convolutional Neural Networks (elaboration) acts=explanation hint=none lines=1 via groq_main#3 2313 ms
+               Added that weight sharing reduces parameters and yields high image recognition accuracy.
+19:55:46 INFO    copilot.presentation.engine: planner: update Machine Learning > Convolutional Neural Networks (same frame)
+19:55:46 INFO    copilot.presentation.engine: no image for 'Convolutional Neural Networks': has an image
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v5 (6 items)
+19:55:46 INFO    copilot.presentation.engine: slide 726541e73494 overflows on the display; further content continues on a new slide
+  [  108.2s] The recurrent neural network, the RNN, is designed for sequential data which becomes selective that allows information to process across (963 ms)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v6 (6 items)
+  [UNDERSTAND] Machine Learning > Recurrent Neural Networks (sibling_concept) acts=explanation,definition hint=none lines=2 via groq_main#3 1972 ms
+               Added CNN disadvantages and introduced RNN definition
+19:56:03 INFO    copilot.presentation.engine: planner: continue Machine Learning > Recurrent Neural Networks (new facet)
+  [SLIDE] update 'Convolutional Neural Networks' [definition] v7 (5 items)
+  [SLIDE] add    'Recurrent Neural Networks' [key_points] v1 (3 items)
+19:56:04 INFO    copilot.presentation.engine: image search 'RNN diagram' (diagram) for 'Recurrent Neural Networks'
+  [  116.6s] Science test is particularly useful for modeling time-dependent students. Science-series data is used on high-level memory cells, retaining source information. (981 ms)
+19:56:11 INFO    copilot.visuals.finder: image search 'RNN diagram': 1 slow download(s) dropped
+19:56:11 INFO    copilot.visuals.finder: image search 'RNN diagram' (diagram, labels preferred): 2 candidate(s), 1 accepted (0 labelled), 7.72 s {'search_s': 2.46, 'download_s': 1.94, 'clip_s': 0.11, 'full_s': 3.18, 'total_s': 7.72}
+  [IMAGE] 'RNN diagram' -> File:Diagram BRNN RNN Compare.png (7.7 s)
+19:56:11 INFO    copilot.presentation.engine: image 'RNN diagram' on 'Recurrent Neural Networks': File:Diagram BRNN RNN Compare.png
+  [SLIDE] update 'Recurrent Neural Networks' [key_points] v2 (4 items)
+  [  130.0s] We read that LSTM and GRU handles long-term dependencies useful in NLP's teeth recognition and chimes with prediction. Advantages? Remember previous input for sequence modeling. (1355 ms)
+  [UNDERSTAND] Machine Learning > Recurrent Neural Networks (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 4359 ms
+               Added that RNNs model time‑dependent sequences and retain past information via memory cells.
+  [HEARD] 'Science test' -> 'RNN' corrected on the slide (0.5)
+19:56:24 INFO    copilot.presentation.engine: planner: update Machine Learning > Recurrent Neural Networks (same frame)
+19:56:24 INFO    copilot.presentation.engine: concern 28a13f1c0059 (transcription, applied=True): 1 element(s); slide shows 'RNN'
+19:56:24 INFO    copilot.presentation.engine: no image for 'Recurrent Neural Networks': has an image
+  [SLIDE] update 'Recurrent Neural Networks' [key_points] v3 (6 items)
+  [  142.8s] Effective for time's inspiration and beta. Disadvantageous training as can suffer from gradient managing characteristics. Limited capability of very long sequences. (1039 ms)
+  [SLIDE] update 'Recurrent Neural Networks' [key_points] v4 (7 items)
+19:56:35 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ["Effective for time's inspiration and beta"]
+  [UNDERSTAND] Machine Learning > Recurrent Neural Networks (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#3 3166 ms
+               Added LSTM/GRU advantages and training disadvantages for RNNs
+  [HEARD] 'teeth' -> 'text' corrected on the slide (0.5)
+19:56:35 INFO    copilot.presentation.engine: planner: update Machine Learning > Recurrent Neural Networks (same frame)
+19:56:35 INFO    copilot.presentation.engine: concern 885eacef3a28 (transcription, applied=True): 0 element(s); slide shows 'text'
+19:56:35 INFO    copilot.presentation.engine: no image for 'Recurrent Neural Networks': has an image
+  [SLIDE] update 'Recurrent Neural Networks' [key_points] v5 (6 items)
+  [SLIDE] update 'Recurrent Neural Networks' [key_points] v6 (11 items)
+  [  169.5s] Take a look at the difference between all the definition of AN and which feed forward neuron and its work of neurons, so that input to all puts optional immunity than death. (1033 ms)
+  [UNDERSTAND] Machine Learning > Recurrent Neural Networks (digression) acts=- hint=none lines=1 via groq_main#3 1593 ms
+19:57:09 INFO    copilot.presentation.engine: planner: noop Machine Learning > Recurrent Neural Networks (digression)
+  [  179.2s] CNN, convolutional neural network for automatic spatial features like traction in image with orbitals. RNN, neural network with recurrent connections to process sequential data. The type of data in CNN is cellular or structured data. (1525 ms)
+  [  193.5s] In PNS, the immunized videos are spatial data. For RNN, the segmental time period takes all three. (958 ms)
+19:57:19 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['For RNN, the segmental time period takes all three']
+  [UNDERSTAND] Machine Learning > CNN vs RNN Comparison (sibling_concept) acts=comparison,explanation hint=comparison lines=2 via groq_main#3 2226 ms
+               Compared CNN and RNN data types and feature extraction methods.
+19:57:19 INFO    copilot.presentation.engine: planner: continue Machine Learning > CNN vs RNN Comparison (new facet)
+19:57:19 INFO    copilot.presentation.engine: no image for 'CNN vs RNN Comparison': comparison needs the full width
+  [SLIDE] add    'CNN vs RNN Comparison' [comparison] v1 (3 items)
+  [  202.2s] The fixed-life input in TNN, yes it has fixed-life spectrum. For TNN, yes fixed-life image is fixed-life but for RNN, no as it is that it handles variable length decreases. (1392 ms)
+  [  216.1s] The model complexity for ANN is equal to moderate for TNN it is moderate to high and for RNN it is high. (954 ms)
+  [UNDERSTAND] Machine Learning > Temporal Neural Networks (sibling_concept) acts=comparison,comparison hint=comparison lines=2 via groq_main#3 3154 ms
+               Introduced Temporal Neural Networks and compared their input handling and model complexity with ANN and RNN.
+19:57:45 INFO    copilot.presentation.engine: planner: continue Machine Learning > Temporal Neural Networks (new facet)
+  [SLIDE] add    'Temporal Neural Networks' [comparison] v1 (3 items)
+  [  225.4s] Application of PNN is Pattern Recognition Basic of Computer Engine. For PNN image recognition, object detection and digital editing. For CNN, it is text. (1270 ms)
+  [  239.4s] Language modeling and time predictors. (1309 ms)
+19:57:59 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.6 (0.61) for the interpretation
+19:58:02 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Application of PNN is Pattern Recognition Basic of Computer Engine']
+  [UNDERSTAND] Machine Learning > Neural Network Applications (sibling_concept) acts=explanation,explanation hint=example lines=1 via groq_main#3 2724 ms
+               Teacher listed application areas for PNN and CNN.
+19:58:02 INFO    copilot.presentation.engine: planner: continue Machine Learning > Neural Network Applications (new facet)
+  [SLIDE] add    'Neural Network Applications' [key_points] v1 (3 items)
+19:58:07 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.6 (0.63) for the interpretation
+  [UNDERSTAND] Machine Learning > Neural Network Applications (same_concept) acts=explanation hint=key_points lines=1 via groq_main#3 1952 ms
+               Added language modeling and time prediction as neural network applications.
+19:58:09 INFO    copilot.presentation.engine: planner: update Machine Learning > Neural Network Applications (same frame)
+  [SLIDE] update 'Neural Network Applications' [key_points] v2 (4 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261014-195322-cebd: 23 segments, 476 words, state v60, 296 events logged
+        CommandReceived=33, ConceptSignal=23, ConcernRaised=6, DeckState=37, ImageChoices=2, ImageReady=3, ImageRequested=3, InterpretRequested=17, InterpretationReady=17, LifecycleChanged=5, SlideContextChanged=16, SlideOverflow=3, SlidePatch=25, StateChanged=60, TranscriptFinal=23, UtteranceClassified=23
+        stt: 23 published, 0 dropped, latency p50=1033 ms p95=1463 ms max=1525 ms
+        understanding: 17 interpretations (17 by LLM, 0 fallbacks, 0 repaired), max 7 calls/min, prompt tokens max=2105 avg=1993, latency p50=2615 ms max=4359 ms
+        presentation: 8 slides; planner ops {'new': 1, 'update': 6, 'noop': 4, 'continue': 6}; revisions 1, corrections shown 3, shown as said 0
+        images: {'requests': 3, 'found': 2, 'none': 1}; slides with an image 2/8
+          1. [concept] Neural Network Types  (v5, ['definition', 'definition', 'definition', 'points', 'points', 'definition'])
+          2. [key_points] ENM  (v2, ['points'])
+          3. [key_points] Advantages and Disadvantages  (v1, ['points'])
+          4. [definition] Convolutional Neural Networks  (v7, ['definition', 'points', 'image'])
+          5. [key_points] Recurrent Neural Networks  (v6, ['points', 'definition', 'image', 'points'])
+          6. [comparison] CNN vs RNN Comparison  (v1, ['comparison', 'callout'])
+          7. [comparison] Temporal Neural Networks  (v1, ['comparison'])
+          8. [key_points] Neural Network Applications  (v2, ['points'])
+        providers: {'groq_main#3': 16, 'groq_main#4': 1}; triggers: {'words': 6, 'max_wait': 5, 'boundary': 4, 'pause': 2}; outline: ['Machine Learning > Neural Network Types, Advantages and Disadvantages, Convolutional Neural Networks, Recurrent Neural Networks, CNN vs RNN Comparison, Temporal Neural Networks, Neural Network Applications']; concerns: 6
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261014-195322-cebd\session.sqlite

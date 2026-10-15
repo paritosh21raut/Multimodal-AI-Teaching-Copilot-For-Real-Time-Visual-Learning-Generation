@@ -1,0 +1,30 @@
+[    0.0] Well there you went, let us start with our first chapter, Basic concepts of Chemistry.
+[    5.9] Let us understand what chemistry is.
+[    8.6] Chemistry is the branch of science which deals with the composition, structure and properties of metal.
+[   14.7] Anthony Laurent Levisu
+[   16.6] is called the father of chemistry.
+[   19.0] branch of chemistry it can be inorganic, organic, physical or analytical chemistry.
+[   28.7] Let us study about momentum.
+[   30.9] Matter is anything which occupies some space and has some mass.
+[   34.8] it is made up of small particles which have some space between them.
+[   38.8] The matter particles attract each other and are in the state of continuous motion.
+[   43.3] classification of metal
+[   45.3] Metal clay can be classified into two groups.
+[   48.5] Physical Classification, Chemical Classification.
+[   52.3] In physical classification it can be
+[   55.0] further classified into solid, liquid or gas.
+[   58.8] In chemical classification it can be further classified into pure substances or mixtures.
+[   68.5] Let us study about pure substances.
+[   71.2] they have characteristics different from the mixtures
+[   74.3] they have fixed compositions whereas mixtures may contain big opponents in any ratio and their compositions is variable.
+[   83.8] Elements, it is the simplest form of pure substances which can neither be decomposed nor be built from simpler substances from ordinary physical and chemical methods. It cannot contain only one kind of atoms.
+[  100.9] the number of elements known till date is 118
+[  104.7] An element can be a metal, non-metal or a metalloid.
+[  108.5] comports. It is also the form of matter which can be formed by combining two or more elements in a definite ratio by mass.
+[  119.1] it can be decomposed into its constant elements by suitable chemical methods.
+[  123.9] For example, water, H2O, is made up of hydrogen and oxygen in the ratio of 1 to 8 by mass.
+[  134.7] Compounds can be of two types, Inorganic, Organic.
+[  143.1] Now let us study about mixtures.
+[  145.5] These are made up of two or more pure substances. They can possess variable compositions and can be separated.
+[  152.9] into their components by some physical methods.
+[  155.9] Mixtures can be homogeneous or heterogeneous.

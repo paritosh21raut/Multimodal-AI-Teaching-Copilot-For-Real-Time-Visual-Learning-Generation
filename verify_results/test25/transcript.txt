@@ -1,0 +1,69 @@
+[    8.5] Today we will learn about Introduction to Operating System.
+[   12.6] An operating system commonly known as OS is a system software that manages computer hardware and software resources. It acts as an interface between the user, applications, programs, and computer hardware.
+[   27.6] When you turn on a computer, the operating system helps initialize the system and provides the environment in which the application can run. For example, when you open a web browser, listen to music or create a document.
+[   41.2] So operating system manages the resources required by the application.
+[   46.9] Copular operating systems include Microsoft Windows, Linux, macOS, Android and iOS.
+[   53.2] The operating system performs several important functions including processes, management, memory management, file management, device management and security.
+[   64.7] Second topic is Main Function of an Operating System An operating system performs several essential functions.
+[   72.2] Process Management. A process is a program that is currently executing. The operating system creates processes, schedules them for execution and manages their states.
+[   86.5] Second is memory management. Memory management controls how the computer's memory or RAM is allocated to program.
+[   94.8] When an application starts, the operating system allocates the memory it needs. When the application closes, the operating system can reclaim that memory.
+[  105.7] Memory management also helps isolated process and supports virtual memory.
+[  111.8] 3. File Management. The operating system organizes information into files and directories. It provides operations for creating, reading, writing, renaming, and deleting files.
+[  124.8] It also manages file permissions and storage locations.
+[  130.1] Fifth one is device management.
+[  132.3] The operating system coordinates hardware devices such as
+[  138.1] keyboards, mics, printers, displays, and storage drives.
+[  143.5] Device drivers allow the operating system the communication with
+[  147.8] Particular hardware devices.
+[  151.0] 6th is Security and Protection
+[  153.8] operating system helps protect data and resources through user accounts, permissions, authentication, and other security mechanisms.
+[  164.1] Security also involves isolating processes and
+[  168.3] controlling which programs can access particular resources.
+[  173.7] Third topic is types of operating system.
+[  176.9] Operating systems can be classified according to how they manage task users and hardware resources.
+[  182.9] First is Batch operating system. Batch operating system processes group of jobs in batches without requiring continuous user interaction with each job.
+[  195.8] A similar job may be grouped together and executed sequentially.
+[  202.7] or according to a scheduling policy.
+[  205.5] Batch processing is useful for repetitive tasks such as payroll processing and large scale data processing.
+[  214.5] Third one is time sharing operating system. Time sharing operating system allows multiple users or processes to share computing resources. The CPU allocates small time intervals to different tasks allowing
+[  228.3] interactive programs to respond quickly.
+[  231.3] Many general purpose operating systems use time sharing techniques.
+[  237.9] Tasking operating system allow.
+[  243.7] multiple applications to make progress during the same period.
+[  248.7] Multi-processing operating system supports a computer with 2 or more processing unit or CPU cores. Different processes or threads can execute in parallel when suitable processing resources are applied.
+[  263.3] available.
+[  267.5] Fourth topic is Components of an Operating System. An operating system contains several important components that work together.
+[  275.6] First is kernel. The kernel is the central part of the operating system. It manages essential resources including CPU, scheduling memory and hardware access.
+[  286.0] 2. Shell or User Interface
+[  290.5] For users to interact with the operating system, mouse shell may be command line based while a graphical user interface provides windows, Ions, menus and other visual controls.
+[  303.7] for these device drivers. These software components enable the operating system to communicate with specific hardware devices.
+[  312.6] 5. File System- Organize files and directories and manage how data is stored and retrieved.
+[  319.5] 6th is system library and services. This provides commonly used functions and background services that application depends on.
+[  327.4] 7. System Calls System calls allow applications to request services from the operating system, such as creating a process, accessing a file, or communicating with a device.
+[  338.9] Fifth topic is What is a kernel?
+[  341.9] The kernel is the core component of an operating system. It operates with elevated
+[  348.5] privileges and manages access to essential system resources.
+[  353.7] The kernel performs several functions.
+[  356.2] scheduling processes and threats, managing memory, handling interrupts, coordinating hardware access, providing system call interface,
+[  365.5] enforcing important isolation and protection mechanism.
+[  369.6] There are different kernel designs.
+[  371.8] A monolithic kernel places many core operating system services with kernel space. A microkernel keeps the kernel relatively small and moves more services into separate processes.
+[  384.2] A hybrid kernel combines design approaches from different kernel architecture.
+[  398.4] Kernel design affects performance, modularity, isolation and system complexity.
+[  403.6] 6th topic is Processes Management and Process State. Process management is one of the most important responsibilities of an operating system.
+[  413.0] A process is a program in education. Each process has information associated with its execution, including its state resources and scheduling information.
+[  424.9] Common Process State R1 New Processes Being Created 2nd Ready to execute and is waiting for CPU time 3rd Running Processes currently executing on CPU Core 4th Waiting for or Un
+[  439.2] waiting for an event such as completion of an input-output operation.
+[  445.8] Last is terminated. The process has finished execution or has been stopped.
+[  451.9] 7th topic is memory management and virtual memory Memory management controls the allocation and use the RAM
+[  459.0] When several programs are running, the operating system must ensure that they receive suitable memory sources without interfacing improperly with one another.
+[  468.1] One important technique is Virtual Memory Virtual Memory provides this process with a virtual address space The operating system and hardware memory management mechanism translate virtual addresses into physical memory addresses
+[  481.5] Virtual memory allows programs to operate without needing a single contagious block of physical RAM. It also supports isolation and can allow parts of program's addresses space to reside on storage rather than in RAM.
+[  495.2] However, storage is much slower than RAM. If a system repeatedly moves memory pages between RAM and storage because physical memory is insufficient, performance can decrease significantly. This situation is often called
+[  508.5] flashing when X case okay
+[  516.2] I thought I was going to blow up my neck! I thought I was going to blow up my neck!
+[  521.8] I don't know why. I don't know why. I don't know why.
+[  529.7] I hope that there is this last ticket.
+[  532.3] This one's the most fun.
+[  534.5] I will see you in the next video

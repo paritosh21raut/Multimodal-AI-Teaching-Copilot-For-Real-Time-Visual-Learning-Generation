@@ -89,6 +89,7 @@ class DefinitionBlock(_Model):
     definition: str
     notes: list[Item] = Field(default_factory=list)
     math: str = ""  # `definition` with \(latex\) around its equations
+    provisional: bool = False  # F-013 S1b: the definition as it is being said, before the interpretation
 
 
 ListStyle = Literal["bullets", "numbers", "letters"]
@@ -135,6 +136,7 @@ class HierarchyBlock(_Model):
     type: Literal["hierarchy"] = "hierarchy"
     id: str = Field(default_factory=new_id)
     root: TreeNode
+    provisional: bool = False  # F-013: items heard after "X is classified into ..." before the interpretation
 
 
 class CauseEffectBlock(_Model):
@@ -224,6 +226,7 @@ class SlideSpec(_Model):
     blocks: list[Block] = Field(default_factory=list)
     language: str = "en"
     origin: Literal["lecture", "materials"] = "lecture"  # materials: a summary / key-concepts slide (F-010), not taught
+    pending: bool = False  # F-013: opened from a spoken announcement; the interpretation has not confirmed it yet
 
     @model_validator(mode="after")
     def _unique_block_ids(self) -> "SlideSpec":

@@ -1,0 +1,29 @@
+Verdict on v4
+
+v4 is ready to submit to IEEE TALE, EDUCON, ICALT or FIE once you fix the small inconsistencies below, which take about an hour. It's also now a credible paper for stronger venues. The one thing still standing between it and a top-tier acceptance is the append-only baseline.
+
+I read the text from the v4 .docx, which was saved at the same time as the PDF. I couldn't render the PDF pages here, so check the equations visually yourself.
+
+What v4 fixed
+v3 problem	v4
+Headline result came from the development set	✅ The baseline now runs on 850 held-out D2 units. Rewrites are 38.2% vs 2.0%, lower in all 18 lectures, p < 0.001, with a confidence interval on the gap. This is now a strong result.
+Planner framed as the novelty	✅ Reframed as an "extend-only update policy enforced by the planner", consistent with the ablation
+"Never rewrite" vs 3%	✅ Now explains exactly which changes are allowed and breaks down the 91 changes
+Guard untested	✅ The coverage guard adds 9.0 points (77.7% → 86.6%), with an interval and a row in Table III
+No WER	✅ 7.1% against MIT's human captions (one lecture only)
+"The LLM adds structure" unproven	✅ Fallback: 3 layouts and 85% plain points; LLM lectures: 12 layouts and 34% plain points
+Baseline boundary quality	✅ An honest result: the baseline places slide changes about as well (p = 0.34), which makes the rewrite result more credible
+Fix before submitting (quick)
+Teacher edits contradict the setup. Section IV-A says "slides were not edited during a test; only two items were deleted", but IV-D says 7 of the 91 changes "were teacher edits". Reconcile the two: say which lectures had edits, or exclude those edits.
+The slide-change rates don't match. Table V gives the proposed system 1.25 slides/min, but Table IV gives the identical full planner 1.15 changes/min. Either define the two metrics differently in the captions, or use one metric.
+The abstract overstates the guarantee. "Extend-only slide operations that cannot rewrite what students have read" sits next to a 2.0% rewrite rate. Change it to "the LLM cannot rewrite…".
+The model citation doesn't match the model. qwen/qwen3.8-27b is cited to the Qwen3 technical report [26]. Check the exact Groq model ID and cite the right report, or say which family it belongs to.
+Check the equations in the PDF. In the extracted text, the ≥ / ≤ / fraction signs in Eqs. (1), (3) and (4) come through as "st τ" and "13W(u)". They're probably fine in Word, but look at the PDF to be sure.
+Double-blind: if the venue is double-blind, remove the names, emails and affiliation. Also replace "available from the authors on request" with an anonymized repository link.
+Weaknesses reviewers will still raise
+No append-only LLM baseline. It's acknowledged as a limitation, but it's the obvious question: "would just prompting the LLM to never rewrite give the same 2%?" One extra run (about 0.5 M tokens) answers it. This is the most valuable remaining experiment.
+The baseline reports only rewrites, missing statements and boundaries. Add its key-fact coverage and unsupported %. If the LLM-controlled deck also loses taught facts, that strengthens your case further.
+The WER comes from a native-English MIT lecture. Your recorded speakers are likely Indian-accented, which is the case reviewers care about. Hand-correct ~10 minutes of one recorded lecture.
+The annotators are still authors, and the teacher ratings have no comparison condition. A blinded rating of baseline vs proposed slides by the same five teachers would be a cheap, strong addition.
+The gate is not swept, so the 11.2 s latency is justified only in words.
+No per-model breakdown (gpt-oss vs qwen).

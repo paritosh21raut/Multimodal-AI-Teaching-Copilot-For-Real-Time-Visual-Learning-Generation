@@ -1,0 +1,167 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (13.1 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.5 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_6         openai/gpt-oss-120b            80k of 200k tokens IN USE
+        GROQ_API_KEY_1         openai/gpt-oss-120b           195k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 284 lecture minutes
+
+[READY] session 20261013-191652-37ba
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+19:17:09 INFO    copilot.visuals.service: CLIP ready in 0.8 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (organelles, eukaryotic, cytoplasm, prokaryotic, mitochondria, eukaryotes ...)
+19:19:15 INFO    copilot.notes.library: notes added 'Digestive system | healthdirect' -> 8a359bbfcb63f5aa (9 pages, text: True)
+19:19:17 INFO    copilot.notes.reference: reference index 'Digestive system | healthdirect': 48 chunks, 4 figures
+  [  108.4s] Let us learn about the digestive system. The digestive system, also known as the gastrointestinal system, is made up of digestive tract, the gut, and other organs like liver, pancreas, and gallbladder. (1400 ms)
+  [  122.2s] It is where your body breaks down food and absorbs nutrients. (598 ms)
+19:19:45 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.1 (0.92) for the interpretation
+  [UNDERSTAND] Digestive System > Definition (same_concept) acts=definition hint=definition lines=2 via groq_main#6 3998 ms
+               Defined the digestive system, its alternate name, components, and its role in breaking down food and absorbing nutrients.
+19:19:49 INFO    copilot.presentation.engine: planner: new Digestive System > Definition (first content slide)
+  [SLIDE] add    'What is digestive system?' [definition] v1 (1 items)
+19:19:49 INFO    copilot.presentation.engine: image search 'digestive system diagram' (diagram) for 'What is digestive system?'
+19:19:49 INFO    copilot.visuals.service: reference figure Digestive system | healthdirect p.3 f1 for 'digestive system diagram': label 0.612, clip 0.297 margin +0.071 -> used
+  [IMAGE] 'digestive system diagram' -> Digestive system | healthdirect p.3 (0.2 s)
+19:19:49 INFO    copilot.presentation.engine: image 'digestive system diagram' on 'What is digestive system?': Digestive system | healthdirect p.3
+  [SLIDE] update 'What is digestive system?' [definition] v2 (2 items)
+  [  126.8s] The digestive system is a long, twisting tube that starts at the mouth. It goes through the esophagus, stomach, small intestine, large intestine, and ends up at the anus. (1029 ms)
+19:19:58 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.1 (0.87) for the interpretation
+  [UNDERSTAND] Digestive System > Definition (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 3595 ms
+               Described the digestive tract as a long tube from mouth to anus with its main sections.
+19:20:02 INFO    copilot.presentation.engine: planner: update Digestive System > Definition (same frame)
+19:20:02 INFO    copilot.presentation.engine: no image for 'What is digestive system?': has an image
+  [SLIDE] update 'What is digestive system?' [definition] v3 (3 items)
+  [  142.9s] Now let's discuss how this digestive system work. (598 ms)
+  [  146.2s] Each organ of the digestive system has an important role in digestion. (690 ms)
+19:20:18 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.1 (0.83) for the interpretation
+  [UNDERSTAND] Digestive System > How It Works (sibling_concept) acts=transition,explanation hint=concept lines=2 via groq_main#6 4780 ms
+               Each organ of the digestive system plays an important role in digestion.
+19:20:22 INFO    copilot.presentation.engine: planner: continue Digestive System > How It Works (new facet)
+  [SLIDE] add    'How Digestive System works' [key_points] v1 (1 items)
+  [  150.4s] 1. Mouth. When you eat, your teeth and tongue helps to break food into small pieces. Glans in your cheeks and under your tongue make saliva a good food. This makes it easier to chew and swallow. (1261 ms)
+  [SLIDE] update 'How Digestive System works' [key_points] v2 (2 items)
+  [  164.6s] Saliva also contains enzymes that start to digest carbohydrates in food. (694 ms)
+  [SLIDE] update 'How Digestive System works' [key_points] v3 (2 items)
+19:20:29 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.92) for the interpretation
+19:20:34 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['This makes it easier to chew and swallow']
+  [UNDERSTAND] Digestive System > How It Works (same_concept) acts=explanation,explanation hint=key_points lines=2 via groq_main#6 4592 ms
+               The mouth chews food and saliva moistens it while beginning carbohydrate digestion.
+19:20:34 INFO    copilot.presentation.engine: planner: update Digestive System > How It Works (same frame)
+  [SLIDE] update 'How Digestive System works' [key_points] v4 (1 items)
+  [SLIDE] update 'How Digestive System works' [key_points] v5 (4 items)
+19:20:34 INFO    copilot.presentation.engine: image search 'human mouth' (photo) for 'How Digestive System works'
+19:20:39 INFO    copilot.visuals.finder: image search 'human mouth': 8 slow download(s) dropped
+19:20:39 INFO    copilot.presentation.engine: image 'human mouth': none (downloads failed)
+  [IMAGE] 'human mouth' -> none (downloads failed) (4.8 s)
+  [  172.0s] Esophagus, your esophagus is the tube that carries food from the mouth to the stomach. After it swallowed a ring of muscles at the end of the esophagus lets the food into your stomach and stop. (1309 ms)
+  [SLIDE] update 'How Digestive System works' [key_points] v6 (5 items)
+  [  184.9s] Stomach contents from going back to the esophagus. (625 ms)
+  [SLIDE] update 'How Digestive System works' [key_points] v7 (5 items)
+19:20:48 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.86) for the interpretation
+  [UNDERSTAND] Digestive System > How It Works (elaboration) acts=explanation hint=key_points lines=2 via groq_main#6 2085 ms
+               Added the esophagus function and the lower sphincter that prevents backflow.
+19:20:50 INFO    copilot.presentation.engine: planner: update Digestive System > How It Works (same frame)
+  [SLIDE] update 'How Digestive System works' [key_points] v8 (4 items)
+  [SLIDE] update 'How Digestive System works' [key_points] v9 (6 items)
+  [  191.6s] Stomach breaks down food and with liquid (505 ms)
+  [SLIDE] update 'How Digestive System works' [key_points] v10 (7 items)
+  [  196.2s] This helps with digestion and absorption of vitamins and minerals. (602 ms)
+  [SLIDE] update 'How Digestive System works' [key_points] v11 (7 items)
+19:21:00 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.77) for the interpretation
+  [UNDERSTAND] Digestive System > How It Works (elaboration) acts=explanation hint=key_points lines=2 via groq_main#6 3442 ms
+               Added stomach function and its role in nutrient absorption
+19:21:03 INFO    copilot.presentation.engine: planner: update Digestive System > How It Works (same frame)
+  [SLIDE] update 'How Digestive System works' [key_points] v12 (6 items)
+  [SLIDE] update 'How Digestive System works' [key_points] v13 (8 items)
+  [  203.8s] Small intestine. (403 ms)
+  [  206.2s] Food that is not digested in your stomach passes into your small intestine. Small intestine is an adult in around 5 meters long and has many bends and folds. The large surface area helps protein (1108 ms)
+  [  220.4s] fatty acids, sugar, vitamins and minerals. (494 ms)
+19:21:23 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.87) for the interpretation
+  [  223.7s] Pass through its walls into the blood. (550 ms)
+  [UNDERSTAND] Digestive System > Small Intestine (sibling_concept) acts=other hint=key_points lines=3 via groq_main#6 2948 ms
+               The small intestine is about 5 m long, folded, and absorbs nutrients into the blood.
+19:21:26 INFO    copilot.presentation.engine: planner: continue Digestive System > Small Intestine (new facet)
+  [SLIDE] add    'Small Intestine' [facts] v1 (1 items)
+19:21:26 INFO    copilot.presentation.engine: image search 'small intestine' (diagram) for 'Small Intestine'
+  [  228.6s] Most chemical digestion of food. (518 ms)
+19:21:31 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.74) for the interpretation
+19:21:31 INFO    copilot.visuals.finder: image search 'small intestine' (diagram, labels preferred): 4 candidate(s), 1 accepted (0 labelled), 5.16 s {'search_s': 2.92, 'download_s': 1.2, 'clip_s': 0.28, 'full_s': 0.74, 'total_s': 5.16}
+  [IMAGE] 'small intestine' -> File:Tractus intestinalis intestinum tenue.svg (5.2 s)
+19:21:31 INFO    copilot.presentation.engine: image 'small intestine' on 'Small Intestine': File:Tractus intestinalis intestinum tenue.svg
+  [SLIDE] update 'Small Intestine' [facts] v2 (2 items)
+  [UNDERSTAND] Digestive System > Small Intestine (elaboration) acts=- hint=key_points lines=1 via groq_main#6 1987 ms
+               Stated that absorbed nutrients pass through the small intestine walls into the blood.
+19:21:33 INFO    copilot.presentation.engine: revised S3: Function: Absorbs nutrients and passes them into the blood.
+19:21:33 INFO    copilot.presentation.engine: planner: noop Digestive System > Small Intestine (nothing to display)
+  [SLIDE] update 'Small Intestine' [facts] v3 (2 items)
+  [  233.4s] happens in this morning testing. (543 ms)
+19:21:39 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.79) for the interpretation
+  [UNDERSTAND] Digestive System > Small Intestine (elaboration) acts=other hint=key_points lines=2 via groq_main#6 2317 ms
+               Added that most chemical digestion occurs in the small intestine.
+  [HEARD] 'this morning testing' -> 'the small intestine' corrected on the slide (0.5)
+19:21:41 INFO    copilot.presentation.engine: planner: update Digestive System > Small Intestine (same frame)
+19:21:41 INFO    copilot.presentation.engine: concern 094c1e20217a (transcription, applied=True): 1 element(s); slide shows 'the small intestine'
+19:21:41 INFO    copilot.presentation.engine: no image for 'Small Intestine': has an image
+  [SLIDE] update 'Small Intestine' [facts] v4 (2 items)
+  [  237.7s] Large intestine, rectum and anus. Large intestine absorbs water, minerals and some vitamins. (800 ms)
+19:21:56 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.84) for the interpretation
+  [UNDERSTAND] Digestive System > Large Intestine (sibling_concept) acts=other hint=key_points lines=1 via groq_main#6 2234 ms
+               Introduced the large intestine, rectum, and anus and its role absorbing water, minerals, and some vitamins.
+19:21:58 INFO    copilot.presentation.engine: planner: continue Digestive System > Large Intestine (new facet)
+  [SLIDE] add    'Large Intestine' [facts] v1 (1 items)
+19:21:58 INFO    copilot.presentation.engine: image search 'large intestine diagram' (diagram) for 'Large Intestine'
+  [  244.2s] Undigested fiber is mixed up with mucus and bacterium, which helps break down some of the fiber and keeps the large intestine healthy. Solid-bold motions are formed and stored in the cell. (1237 ms)
+  [  257.8s] Last part of the large intestine before leaving the body through the anus. (709 ms)
+  [  262.5s] As a whole movement. (395 ms)
+19:22:04 INFO    copilot.visuals.finder: image search 'large intestine diagram' (diagram, labels preferred): 3 candidate(s), 2 accepted (0 labelled), 5.66 s {'search_s': 2.43, 'download_s': 1.13, 'clip_s': 0.25, 'full_s': 1.82, 'total_s': 5.66}
+  [IMAGE] 'large intestine diagram' -> File:Tractus intestinalis intestinum crassum.svg (5.7 s)
+19:22:04 INFO    copilot.presentation.engine: image 'large intestine diagram' on 'Large Intestine': File:Tractus intestinalis intestinum crassum.svg
+  [SLIDE] update 'Large Intestine' [facts] v2 (2 items)
+19:22:04 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.88) for the interpretation
+  [UNDERSTAND] Digestive System > Large Intestine (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#1 2539 ms
+               Added how fiber is broken down with mucus and bacteria and that solid waste is stored in the rectum
+  [HEARD] 'Solid-bold motions ... cell' -> 'Solid bowel motions ... rectum' corrected on the slide (0.5)
+19:22:06 INFO    copilot.presentation.engine: planner: update Digestive System > Large Intestine (same frame)
+19:22:06 INFO    copilot.presentation.engine: concern 83678eb5bc71 (transcription, applied=True): 0 element(s); slide shows 'Solid bowel motions ... rectum'
+19:22:06 INFO    copilot.presentation.engine: no image for 'Large Intestine': has an image
+  [SLIDE] update 'Large Intestine' [facts] v3 (5 items)
+19:22:12 INFO    copilot.understanding.service: [REF] Digestive system | healthdirect p.2 (0.81) for the interpretation
+  [UNDERSTAND] Digestive System > Large Intestine (same_concept) acts=- hint=none lines=1 via groq_main#6 2646 ms
+               No new factual content added.
+19:22:14 INFO    copilot.presentation.engine: planner: noop Digestive System > Large Intestine (nothing to display)
+19:22:25 INFO    copilot.notes.service: notes follow: slide 'Small Intestine' -> page 2
+19:22:27 INFO    copilot.notes.service: notes follow: slide 'What is digestive system?' -> page 1
+19:22:41 INFO    copilot.notes.service: notes follow: slide 'How Digestive System works' -> page 2
+19:22:48 INFO    copilot.notes.service: notes follow: slide 'What is digestive system?' -> page 1
+19:22:49 INFO    copilot.notes.service: notes follow: slide 'How Digestive System works' -> page 2
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261013-191652-37ba: 21 segments, 323 words, state v50, 265 events logged
+        CommandReceived=43, ConceptSignal=21, ConcernRaised=2, DeckState=31, ImageChoices=3, ImageReady=4, ImageRequested=4, InterpretRequested=12, InterpretationReady=12, LifecycleChanged=5, SlideContextChanged=13, SlidePatch=23, StateChanged=50, TranscriptFinal=21, UtteranceClassified=21
+        stt: 21 published, 0 dropped, latency p50=625 ms p95=1309 ms max=1400 ms
+        understanding: 12 interpretations (12 by LLM, 0 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=2150 avg=2044, latency p50=2948 ms max=4779 ms
+        presentation: 4 slides; planner ops {'new': 1, 'update': 6, 'continue': 3, 'noop': 2}; revisions 1, corrections shown 1, shown as said 0
+        images: {'requests': 4, 'found': 3, 'none': 1, 'reference': 1}; slides with an image 3/4
+          1. [definition] What is digestive system?  (v3, ['definition', 'image', 'points'])
+          2. [key_points] How Digestive System works  (v13, ['points'])
+          3. [facts] Small Intestine  (v4, ['facts', 'image'])
+          4. [facts] Large Intestine  (v3, ['facts', 'image', 'points'])
+        providers: {'groq_main#6': 11, 'groq_main#1': 1}; triggers: {'words': 5, 'pause': 5, 'max_wait': 2}; outline: ['Digestive System > Definition, How It Works, Small Intestine, Large Intestine']; concerns: 2
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261013-191652-37ba\session.sqlite

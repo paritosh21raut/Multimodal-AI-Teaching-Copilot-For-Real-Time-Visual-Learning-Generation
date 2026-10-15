@@ -1,0 +1,401 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (4.2 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~15.6 h
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~14.1 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~14.5 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~14.7 h
+        GROQ_API_KEY_4         qwen/qwen3.8-27b               32k of 200k tokens IN USE
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              152k of 200k tokens ok
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              196k of 200k tokens ok
+        GROQ_API_KEY_3         qwen/qwen3.8-27b                0k of 200k tokens SPENT, free again in ~16.8 h
+        enough for about 47 lecture minutes
+
+[READY] session 20261015-002704-b2ed
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+00:27:09 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+00:27:28 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    8.5s] Today we will learn about Introduction to Operating System. (729 ms)
+  [UNDERSTAND] Operating System > Introduction (new_topic) acts=transition hint=none lines=1 via groq_alt#4 952 ms
+               Teacher announces the start of the Operating System unit.
+00:27:54 INFO    copilot.presentation.engine: planner: noop Operating System > Introduction (nothing to display)
+  [   12.6s] An operating system commonly known as OS is a system software that manages computer hardware and software resources. It acts as an interface between the user, applications, programs, and computer hardware. (969 ms)
+  [UNDERSTAND] Operating System > Introduction (same_concept) acts=definition,explanation hint=definition lines=1 via groq_alt#4 1025 ms
+               Defined the operating system as system software managing resources and acting as a user-hardware interface.
+00:28:10 INFO    copilot.presentation.engine: planner: new Operating System > Introduction (first content slide)
+  [SLIDE] add    'Operating System' [definition] v1 (2 items)
+  [   27.6s] When you turn on a computer, the operating system helps initialize the system and provides the environment in which the application can run. For example, when you open a web browser, listen to music or create a document. (973 ms)
+  [SLIDE] update 'Operating System' [definition] v2 (3 items)
+  [   41.2s] So operating system manages the resources required by the application. (675 ms)
+  [SLIDE] update 'Operating System' [definition] v3 (3 items)
+00:28:18 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['For example, when you open a web browser, listen to music or create a document']
+  [UNDERSTAND] Operating System > Introduction (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_alt#4 1251 ms
+               OS initializes the system at startup and provides the environment for applications to run by managing required resources.
+00:28:18 INFO    copilot.presentation.engine: planner: update Operating System > Introduction (same frame)
+  [SLIDE] update 'Operating System' [definition] v4 (2 items)
+  [SLIDE] update 'Operating System' [definition] v5 (6 items)
+  [   46.9s] Copular operating systems include Microsoft Windows, Linux, macOS, Android and iOS. (717 ms)
+  [SLIDE] update 'Operating System' [definition] v6 (7 items)
+  [   53.2s] The operating system performs several important functions including processes, management, memory management, file management, device management and security. (695 ms)
+  [SLIDE] update 'Operating System' [definition] v7 (7 items)
+  [UNDERSTAND] Operating System > Examples and Functions (sibling_concept) acts=explanation,classification hint=key_points lines=2 via groq_alt#4 1544 ms
+               Listed popular operating systems and identified five core functions including process, memory, and file management.
+  [HEARD] 'Copular' -> 'Popular' corrected on the slide (0.9)
+00:28:34 INFO    copilot.presentation.engine: planner: continue Operating System > Examples and Functions (new facet)
+00:28:34 INFO    copilot.presentation.engine: concern 5276a6adf976 (transcription, applied=True): 0 element(s); slide shows 'Popular'
+  [SLIDE] update 'Operating System' [definition] v8 (6 items)
+  [SLIDE] add    'Examples and Functions' [key_points] v1 (6 items)
+  [   64.7s] Second topic is Main Function of an Operating System An operating system performs several essential functions. (673 ms)
+  [SLIDE] update 'Examples and Functions' [key_points] v2 (7 items)
+  [   72.2s] Process Management. A process is a program that is currently executing. The operating system creates processes, schedules them for execution and manages their states. (822 ms)
+  [SLIDE] update 'Examples and Functions' [key_points] v3 (7 items)
+00:28:53 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Second topic is Main Function of an Operating System An operating system performs several essential functions']
+  [UNDERSTAND] Operating System > Process Management (sub_concept) acts=definition,explanation,explanation hint=key_points lines=2 via groq_alt#4 1023 ms
+               Defined a process as an executing program and listed OS process management tasks: creation, scheduling, and state management.
+00:28:53 INFO    copilot.presentation.engine: planner: continue Operating System > Process Management (new facet)
+  [SLIDE] update 'Examples and Functions' [key_points] v4 (6 items)
+  [SLIDE] add    'Process Management' [definition] v1 (5 items)
+00:28:53 INFO    copilot.presentation.engine: image search 'Process State Diagram' (diagram) for 'Process Management'
+00:28:58 INFO    copilot.visuals.finder: image search 'Process State Diagram' (diagram, labels preferred): 6 candidate(s), 3 accepted (2 labelled), 5.00 s {'search_s': 2.03, 'download_s': 1.19, 'clip_s': 0.13, 'full_s': 1.61, 'total_s': 5.0}
+  [IMAGE] 'Process State Diagram' -> File:Process states.svg (5.0 s)
+00:28:58 INFO    copilot.presentation.engine: image 'Process State Diagram' on 'Process Management': File:Process states.svg
+  [SLIDE] update 'Process Management' [definition] v2 (6 items)
+  [   86.5s] Second is memory management. Memory management controls how the computer's memory or RAM is allocated to program. (873 ms)
+  [SLIDE] update 'Process Management' [definition] v3 (7 items)
+  [   94.8s] When an application starts, the operating system allocates the memory it needs. When the application closes, the operating system can reclaim that memory. (804 ms)
+  [SLIDE] update 'Process Management' [definition] v4 (7 items)
+  [UNDERSTAND] Operating System > Memory Management (sibling_concept) acts=definition,explanation hint=key_points lines=2 via groq_alt#4 1047 ms
+               Defined memory management as controlling RAM allocation and explained that the OS allocates memory at startup and reclaims it at shutdown.
+00:29:16 INFO    copilot.presentation.engine: revised S5: Second core function is Memory Management
+00:29:16 INFO    copilot.presentation.engine: planner: continue Operating System > Memory Management (new facet)
+  [SLIDE] update 'Process Management' [definition] v5 (6 items)
+  [SLIDE] update 'Process Management' [definition] v6 (6 items)
+  [SLIDE] add    'Memory Management' [definition] v1 (3 items)
+  [  105.7s] Memory management also helps isolated process and supports virtual memory. (688 ms)
+  [SLIDE] update 'Memory Management' [definition] v2 (4 items)
+  [UNDERSTAND] Operating System > Memory Management (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1035 ms
+               Explained that memory management isolates processes and supports virtual memory.
+00:29:24 INFO    copilot.presentation.engine: planner: update Operating System > Memory Management (same frame)
+  [SLIDE] update 'Memory Management' [definition] v3 (3 items)
+  [SLIDE] update 'Memory Management' [definition] v4 (5 items)
+00:29:24 INFO    copilot.presentation.engine: image search 'Virtual memory diagram' (diagram) for 'Memory Management'
+00:29:27 INFO    copilot.visuals.finder: image search 'Virtual memory diagram' (diagram, labels preferred): 2 candidate(s), 1 accepted (0 labelled), 3.43 s {'search_s': 1.68, 'download_s': 0.99, 'clip_s': 0.05, 'full_s': 0.7, 'total_s': 3.43}
+  [IMAGE] 'Virtual memory diagram' -> File:HSA-enabled virtual memory with distinct graphics card.svg (3.4 s)
+00:29:27 INFO    copilot.presentation.engine: image 'Virtual memory diagram' on 'Memory Management': File:HSA-enabled virtual memory with distinct graphics card.svg
+  [SLIDE] update 'Memory Management' [definition] v5 (6 items)
+  [  111.8s] 3. File Management. The operating system organizes information into files and directories. It provides operations for creating, reading, writing, renaming, and deleting files. (827 ms)
+  [SLIDE] update 'Memory Management' [definition] v6 (7 items)
+  [  124.8s] It also manages file permissions and storage locations. (342 ms)
+  [SLIDE] update 'Memory Management' [definition] v7 (7 items)
+  [UNDERSTAND] Operating System > File Management (sibling_concept) acts=definition,explanation hint=key_points lines=2 via groq_alt#4 1740 ms
+               Defined file management as organizing data into files and directories, and listed its core operations and permission controls.
+00:29:39 INFO    copilot.presentation.engine: planner: continue Operating System > File Management (new facet)
+  [SLIDE] update 'Memory Management' [definition] v8 (6 items)
+  [SLIDE] add    'File Management' [definition] v1 (3 items)
+  [  130.1s] Fifth one is device management. (597 ms)
+  [SLIDE] update 'File Management' [definition] v2 (4 items)
+  [  132.3s] The operating system coordinates hardware devices such as (626 ms)
+  [SLIDE] update 'File Management' [definition] v3 (4 items)
+  [  138.1s] keyboards, mics, printers, displays, and storage drives. (788 ms)
+  [SLIDE] update 'File Management' [definition] v4 (4 items)
+  [UNDERSTAND] Operating System > Device Management (sibling_concept) acts=definition hint=definition lines=3 via groq_alt#4 922 ms
+               Defined device management as the OS function coordinating hardware devices such as keyboards, printers, and storage drives.
+00:29:55 INFO    copilot.presentation.engine: planner: continue Operating System > Device Management (new facet)
+  [SLIDE] update 'File Management' [definition] v5 (3 items)
+  [SLIDE] add    'Device Management' [definition] v1 (1 items)
+  [  143.5s] Device drivers allow the operating system the communication with (637 ms)
+  [SLIDE] update 'Device Management' [definition] v2 (1 items)
+  [  147.8s] Particular hardware devices. (309 ms)
+  [SLIDE] update 'Device Management' [definition] v3 (1 items)
+  [  151.0s] 6th is Security and Protection (581 ms)
+  [SLIDE] update 'Device Management' [definition] v4 (1 items)
+  [UNDERSTAND] Operating System > Device Management (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#4 861 ms
+               Explained that device drivers allow the operating system to communicate with specific hardware devices.
+00:30:03 INFO    copilot.presentation.engine: planner: update Operating System > Device Management (same frame)
+  [SLIDE] update 'Device Management' [definition] v5 (2 items)
+  [  153.8s] operating system helps protect data and resources through user accounts, permissions, authentication, and other security mechanisms. (707 ms)
+  [UNDERSTAND] Operating System > Security and Protection (sibling_concept) acts=definition hint=key_points lines=2 via groq_alt#4 1088 ms
+               Defined security and protection as the OS function safeguarding data and resources via accounts and permissions.
+00:30:13 INFO    copilot.presentation.engine: planner: continue Operating System > Security and Protection (new facet)
+  [SLIDE] add    'Security and Protection' [definition] v1 (1 items)
+  [  164.1s] Security also involves isolating processes and (520 ms)
+  [SLIDE] update 'Security and Protection' [definition] v2 (1 items)
+  [  168.3s] controlling which programs can access particular resources. (663 ms)
+  [SLIDE] update 'Security and Protection' [definition] v3 (1 items)
+  [  173.7s] Third topic is types of operating system. (607 ms)
+  [SLIDE] update 'Security and Protection' [definition] v4 (1 items)
+00:30:30 WARNING copilot.llm.router: LLM groq_alt now uses GROQ_API_KEY_5 (GROQ_API_KEY_4 is spent)
+  [UNDERSTAND] Operating System > Security and Protection (elaboration) acts=explanation,transition hint=key_points lines=3 via groq_alt#5 1196 ms
+               Elaborated on security mechanisms including process isolation and resource access control, then transitioned to types of operating systems.
+00:30:31 INFO    copilot.presentation.engine: planner: update Operating System > Security and Protection (same frame)
+  [SLIDE] update 'Security and Protection' [definition] v5 (1 items)
+  [SLIDE] update 'Security and Protection' [definition] v6 (3 items)
+  [  176.9s] Operating systems can be classified according to how they manage task users and hardware resources. (706 ms)
+  [SLIDE] update 'Security and Protection' [definition] v7 (4 items)
+  [  182.9s] First is Batch operating system. Batch operating system processes group of jobs in batches without requiring continuous user interaction with each job. (930 ms)
+  [SLIDE] update 'Security and Protection' [definition] v8 (4 items)
+  [UNDERSTAND] Operating System > Types of Operating Systems (new_topic) acts=classification,definition hint=none lines=2 via groq_alt#5 1583 ms
+               Introduced classification of operating systems and defined Batch Operating Systems as processing jobs without continuous user interaction.
+00:30:45 INFO    copilot.presentation.engine: planner: continue Operating System > Types of Operating Systems (new facet)
+  [SLIDE] update 'Security and Protection' [definition] v9 (3 items)
+  [SLIDE] add    'Operating System' [definition] v1 (1 items)
+  [  195.8s] A similar job may be grouped together and executed sequentially. (598 ms)
+  [SLIDE] update 'Operating System' [definition] v2 (1 items)
+  [UNDERSTAND] Operating System > Types of Operating Systems (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1135 ms
+               Elaborated on Batch Operating Systems by noting that similar jobs are grouped and executed sequentially.
+00:30:53 INFO    copilot.presentation.engine: planner: update Operating System > Types of Operating Systems (same frame)
+  [SLIDE] update 'Operating System' [definition] v3 (1 items)
+  [SLIDE] update 'Operating System' [definition] v4 (2 items)
+  [  202.7s] or according to a scheduling policy. (612 ms)
+  [SLIDE] update 'Operating System' [definition] v5 (3 items)
+  [  205.5s] Batch processing is useful for repetitive tasks such as payroll processing and large scale data processing. (710 ms)
+  [SLIDE] update 'Operating System' [definition] v6 (3 items)
+  [UNDERSTAND] Operating System > Types of Operating Systems (elaboration) acts=explanation,example hint=key_points lines=2 via groq_alt#5 4930 ms
+               Clarified that batch jobs follow a scheduling policy and provided payroll and data processing as examples of repetitive tasks.
+00:31:08 INFO    copilot.presentation.engine: planner: update Operating System > Types of Operating Systems (same frame)
+  [SLIDE] update 'Operating System' [definition] v7 (2 items)
+  [SLIDE] update 'Operating System' [definition] v8 (4 items)
+  [  214.5s] Third one is time sharing operating system. Time sharing operating system allows multiple users or processes to share computing resources. The CPU allocates small time intervals to different tasks allowing (850 ms)
+  [SLIDE] update 'Operating System' [definition] v9 (5 items)
+  [  228.3s] interactive programs to respond quickly. (382 ms)
+  [SLIDE] update 'Operating System' [definition] v10 (5 items)
+  [  231.3s] Many general purpose operating systems use time sharing techniques. (653 ms)
+  [SLIDE] update 'Operating System' [definition] v11 (5 items)
+00:31:28 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Types of Operating Systems' -> same_concept
+  [UNDERSTAND] Operating System > Types of Operating Systems (same_concept) acts=definition,explanation hint=key_points lines=3 via groq_alt#5 1413 ms
+               Defined Time Sharing Operating Systems as allowing multiple users to share resources via CPU time allocation.
+00:31:28 INFO    copilot.presentation.engine: planner: update Operating System > Types of Operating Systems (same frame)
+  [SLIDE] update 'Operating System' [definition] v12 (4 items)
+  [SLIDE] update 'Operating System' [definition] v13 (4 items)
+  [SLIDE] add    'Operating System' [definition] v1 (2 items)
+  [  237.9s] Tasking operating system allow. (481 ms)
+  [SLIDE] update 'Operating System' [definition] v2 (3 items)
+00:31:36 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Types of Operating Systems' -> same_concept
+  [UNDERSTAND] Operating System > Types of Operating Systems (same_concept) acts=definition hint=key_points lines=1 via groq_alt#5 1294 ms
+               Introduced Tasking (Multitasking) Operating Systems as a type that allows concurrent task execution.
+  [HEARD] 'Tasking' -> 'Multitasking' corrected on the slide (0.6)
+00:31:36 INFO    copilot.presentation.engine: planner: update Operating System > Types of Operating Systems (same frame)
+00:31:36 INFO    copilot.presentation.engine: concern 5e6757c735aa (transcription, applied=True): 1 element(s); slide shows 'Multitasking'
+  [SLIDE] update 'Operating System' [definition] v3 (2 items)
+  [SLIDE] update 'Operating System' [concept] v4 (3 items)
+  [SLIDE] update 'Operating System' [concept] v5 (3 items)
+  [  243.7s] multiple applications to make progress during the same period. (630 ms)
+  [SLIDE] update 'Operating System' [concept] v6 (4 items)
+  [UNDERSTAND] Operating System > Types of Operating Systems (same_concept) acts=- hint=concept lines=1 via groq_alt#5 1351 ms
+               Refined the definition of Multitasking Operating Systems to specify concurrent application progress.
+00:31:51 INFO    copilot.presentation.engine: revised S3: Allows multiple applications to make progress during the same period.
+00:31:51 INFO    copilot.presentation.engine: planner: noop Operating System > Types of Operating Systems (nothing to display)
+  [SLIDE] update 'Operating System' [concept] v7 (3 items)
+  [SLIDE] update 'Operating System' [concept] v8 (3 items)
+  [  248.7s] Multi-processing operating system supports a computer with 2 or more processing unit or CPU cores. Different processes or threads can execute in parallel when suitable processing resources are applied. (921 ms)
+  [SLIDE] update 'Operating System' [concept] v9 (4 items)
+  [  263.3s] available. (521 ms)
+  [SLIDE] update 'Operating System' [concept] v10 (3 items)
+00:31:59 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Types of Operating Systems' -> same_concept
+  [UNDERSTAND] Operating System > Types of Operating Systems (same_concept) acts=definition,explanation hint=key_points lines=1 via groq_alt#5 1061 ms
+               Defined Multi-processing Operating Systems as supporting multiple CPU cores for parallel execution of processes or threads.
+00:31:59 INFO    copilot.presentation.engine: planner: update Operating System > Types of Operating Systems (same frame)
+  [SLIDE] update 'Operating System' [concept] v11 (5 items)
+  [  267.5s] Fourth topic is Components of an Operating System. An operating system contains several important components that work together. (760 ms)
+  [UNDERSTAND] Operating System > Types of Operating Systems (same_concept) acts=- hint=none lines=1 via groq_alt#5 721 ms
+               No new content provided in the transcript fragment.
+00:32:06 INFO    copilot.presentation.engine: planner: noop Operating System > Types of Operating Systems (nothing to display)
+  [  275.6s] First is kernel. The kernel is the central part of the operating system. It manages essential resources including CPU, scheduling memory and hardware access. (838 ms)
+00:32:17 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['An operating system contains several important components that work together']
+  [UNDERSTAND] Operating System > Components of an Operating System (sibling_concept) acts=definition,explanation hint=hierarchy lines=2 via groq_alt#6 1298 ms
+               Introduced the kernel as the central component of an operating system responsible for resource management.
+00:32:17 INFO    copilot.presentation.engine: planner: continue Operating System > Components of an Operating System (new facet)
+  [SLIDE] add    'Operating System' [definition] v1 (2 items)
+  [  286.0s] 2. Shell or User Interface (564 ms)
+  [SLIDE] update 'Operating System' [definition] v2 (3 items)
+  [  290.5s] For users to interact with the operating system, mouse shell may be command line based while a graphical user interface provides windows, Ions, menus and other visual controls. (928 ms)
+  [SLIDE] update 'Operating System' [definition] v3 (3 items)
+00:32:35 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Components of an Operating System' -> same_concept
+  [UNDERSTAND] Operating System > Components of an Operating System (same_concept) acts=definition,classification hint=none lines=2 via groq_alt#5 2111 ms
+               Defined the Shell as the user interface component and classified it into Command Line and Graphical types.
+  [HEARD] 'mouse shell' -> 'shell' corrected on the slide (0.8)
+  [HEARD] 'Ions' -> 'Icons' corrected on the slide (0.9)
+00:32:35 INFO    copilot.presentation.engine: planner: update Operating System > Components of an Operating System (same frame)
+00:32:35 INFO    copilot.presentation.engine: concern 63ea1f8dd4a7 (transcription, applied=True): 1 element(s); slide shows 'shell'
+00:32:35 INFO    copilot.presentation.engine: concern 1f429d41a6ef (transcription, applied=True): 1 element(s); slide shows 'Icons'
+  [SLIDE] update 'Operating System' [definition] v4 (2 items)
+  [SLIDE] update 'Operating System' [concept] v5 (3 items)
+  [SLIDE] add    'Operating System' [groups] v1 (1 items)
+  [  303.7s] for these device drivers. These software components enable the operating system to communicate with specific hardware devices. (794 ms)
+00:32:43 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Components of an Operating System' -> same_concept
+  [UNDERSTAND] Operating System > Components of an Operating System (same_concept) acts=definition hint=concept lines=1 via groq_alt#5 1616 ms
+               Defined device drivers as software components that allow the operating system to communicate with specific hardware devices.
+00:32:43 INFO    copilot.presentation.engine: planner: update Operating System > Components of an Operating System (same frame)
+  [SLIDE] update 'Operating System' [groups] v2 (2 items)
+  [  312.6s] 5. File System- Organize files and directories and manage how data is stored and retrieved. (739 ms)
+  [  319.5s] 6th is system library and services. This provides commonly used functions and background services that application depends on. (676 ms)
+  [UNDERSTAND] Operating System > Components of an Operating System (same_concept) acts=definition,definition hint=key_points lines=2 via groq_alt#5 1499 ms
+               Defined the File System for data management and System Library for providing common functions and services.
+00:33:02 INFO    copilot.presentation.engine: planner: update Operating System > Components of an Operating System (same frame)
+  [SLIDE] update 'Operating System' [concept] v3 (4 items)
+  [  327.4s] 7. System Calls System calls allow applications to request services from the operating system, such as creating a process, accessing a file, or communicating with a device. (912 ms)
+  [  338.9s] Fifth topic is What is a kernel? (585 ms)
+00:33:13 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Components of an Operating System' -> same_concept
+  [UNDERSTAND] Operating System > Components of an Operating System (same_concept) acts=definition hint=key_points lines=1 via groq_alt#5 4426 ms
+               Defined system calls as the mechanism for applications to request services from the operating system.
+00:33:13 INFO    copilot.presentation.engine: planner: update Operating System > Components of an Operating System (same frame)
+  [SLIDE] update 'Operating System' [concept] v4 (5 items)
+  [  341.9s] The kernel is the core component of an operating system. It operates with elevated (666 ms)
+  [  348.5s] privileges and manages access to essential system resources. (677 ms)
+00:33:23 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Components of an Operating System' -> same_concept
+  [UNDERSTAND] Operating System > Components of an Operating System (same_concept) acts=definition hint=definition lines=3 via groq_alt#6 988 ms
+               Defined the kernel as the core OS component managing system resources with elevated privileges.
+00:33:23 INFO    copilot.presentation.engine: planner: update Operating System > Components of an Operating System (same frame)
+  [SLIDE] add    'Operating System' [definition] v1 (1 items)
+  [  353.7s] The kernel performs several functions. (531 ms)
+  [SLIDE] update 'Operating System' [definition] v2 (1 items)
+  [  356.2s] scheduling processes and threats, managing memory, handling interrupts, coordinating hardware access, providing system call interface, (679 ms)
+  [SLIDE] update 'Operating System' [definition] v3 (1 items)
+  [  365.5s] enforcing important isolation and protection mechanism. (599 ms)
+  [SLIDE] update 'Operating System' [definition] v4 (1 items)
+  [UNDERSTAND] Operating System > Components of an Operating System (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#5 1636 ms
+               Listed the specific functions performed by the kernel, including process scheduling, memory management, and security enforcement.
+  [HEARD] 'threats' -> 'threads' corrected on the slide (0.9)
+00:33:40 INFO    copilot.presentation.engine: planner: update Operating System > Components of an Operating System (same frame)
+00:33:40 INFO    copilot.presentation.engine: concern 26e4dc1c6c27 (transcription, applied=True): 1 element(s); slide shows 'threads'
+  [SLIDE] update 'Operating System' [definition] v5 (1 items)
+  [SLIDE] update 'Operating System' [definition] v6 (7 items)
+  [  369.6s] There are different kernel designs. (449 ms)
+  [SLIDE] update 'Operating System' [definition] v7 (8 items)
+00:33:41 INFO    copilot.presentation.engine: slide d06021a2344c overflows on the display; further content continues on a new slide
+  [  371.8s] A monolithic kernel places many core operating system services with kernel space. A microkernel keeps the kernel relatively small and moves more services into separate processes. (909 ms)
+  [SLIDE] update 'Operating System' [definition] v8 (8 items)
+  [UNDERSTAND] Operating System > Kernel Designs (sibling_concept) acts=classification,definition,definition hint=comparison lines=2 via groq_alt#5 1989 ms
+               Introduced two main kernel designs: monolithic (services in kernel space) and microkernel (services in separate processes).
+00:33:58 INFO    copilot.presentation.engine: planner: continue Operating System > Kernel Designs (new facet)
+  [SLIDE] update 'Operating System' [definition] v9 (7 items)
+  [SLIDE] add    'Kernel Designs' [concept] v1 (3 items)
+  [  384.2s] A hybrid kernel combines design approaches from different kernel architecture. (652 ms)
+  [  398.4s] Kernel design affects performance, modularity, isolation and system complexity. (704 ms)
+00:34:21 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Kernel Designs' -> same_concept
+  [UNDERSTAND] Operating System > Kernel Designs (same_concept) acts=definition,explanation hint=key_points lines=2 via groq_alt#5 1271 ms
+               Defined hybrid kernels as combining architectural approaches and noted that kernel design impacts performance and modularity.
+00:34:21 INFO    copilot.presentation.engine: planner: update Operating System > Kernel Designs (same frame)
+  [SLIDE] update 'Kernel Designs' [concept] v2 (5 items)
+  [  403.6s] 6th topic is Processes Management and Process State. Process management is one of the most important responsibilities of an operating system. (722 ms)
+  [UNDERSTAND] Operating System > Process Management (new_topic) acts=transition hint=none lines=1 via groq_alt#5 937 ms
+               Transitioned from kernel designs to process management, identifying it as a key OS responsibility.
+00:34:28 INFO    copilot.presentation.engine: planner: noop Operating System > Process Management (nothing to display)
+  [  413.0s] A process is a program in education. Each process has information associated with its execution, including its state resources and scheduling information. (768 ms)
+  [UNDERSTAND] Operating System > Process Management (new_topic) acts=definition,explanation hint=definition lines=1 via groq_alt#5 1316 ms
+               Defined a process as a program in execution and listed its associated data: state, resources, and scheduling info.
+  [HEARD] 'education' -> 'execution' corrected on the slide (0.9)
+00:34:37 INFO    copilot.presentation.engine: planner: continue Operating System > Process Management (new facet)
+00:34:37 INFO    copilot.presentation.engine: concern 4c1fac0db1e2 (transcription, applied=True): 2 element(s); slide shows 'execution'
+  [SLIDE] add    'Process Management' [definition] v1 (4 items)
+00:34:37 INFO    copilot.presentation.engine: image 'Process State Diagram' kept on 'Process Management' (same visual as this topic's image)
+  [SLIDE] update 'Process Management' [definition] v2 (5 items)
+  [  424.9s] Common Process State R1 New Processes Being Created 2nd Ready to execute and is waiting for CPU time 3rd Running Processes currently executing on CPU Core 4th Waiting for or Un (961 ms)
+  [SLIDE] update 'Process Management' [definition] v3 (6 items)
+  [  439.2s] waiting for an event such as completion of an input-output operation. (724 ms)
+  [SLIDE] update 'Process Management' [definition] v4 (6 items)
+00:34:56 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Waiting for an event such as completion of an input-output operation']
+  [UNDERSTAND] Operating System > Process Management (elaboration) acts=classification,explanation hint=process_flow lines=2 via groq_alt#5 1039 ms
+               Listed the four common process states: New, Ready, Running, and Waiting.
+00:34:56 INFO    copilot.presentation.engine: planner: update Operating System > Process Management (same frame)
+00:34:56 INFO    copilot.presentation.engine: no image for 'Process Management': has an image
+  [SLIDE] update 'Process Management' [definition] v5 (5 items)
+  [SLIDE] update 'Process Management' [definition] v6 (7 items)
+00:34:57 INFO    copilot.presentation.engine: slide 036a2c04f04a overflows on the display; further content continues on a new slide
+  [  445.8s] Last is terminated. The process has finished execution or has been stopped. (688 ms)
+  [UNDERSTAND] Operating System > Process Management (elaboration) acts=classification hint=key_points lines=1 via groq_alt#6 939 ms
+               Added the Terminated state to the list of common process states.
+00:35:04 INFO    copilot.presentation.engine: planner: update Operating System > Process Management (same frame)
+  [SLIDE] update 'Process Management' [definition] v7 (7 items)
+  [SLIDE] add    'Process Management' [key_points] v1 (1 items)
+00:35:04 INFO    copilot.presentation.engine: image 'Process State Diagram' kept on 'Process Management' (same visual as this topic's image)
+  [SLIDE] update 'Process Management' [key_points] v2 (2 items)
+  [  451.9s] 7th topic is memory management and virtual memory Memory management controls the allocation and use the RAM (718 ms)
+  [SLIDE] update 'Process Management' [key_points] v3 (3 items)
+  [  459.0s] When several programs are running, the operating system must ensure that they receive suitable memory sources without interfacing improperly with one another. (786 ms)
+  [SLIDE] update 'Process Management' [key_points] v4 (3 items)
+  [UNDERSTAND] Operating System > Memory Management (new_topic) acts=definition,explanation hint=key_points lines=2 via groq_alt#5 1317 ms
+               Introduced memory management as the control of RAM allocation and its role in isolating running programs.
+00:35:22 INFO    copilot.presentation.engine: planner: continue Operating System > Memory Management (new facet)
+  [SLIDE] update 'Process Management' [key_points] v5 (2 items)
+  [SLIDE] add    'Memory Management' [definition] v1 (3 items)
+00:35:22 INFO    copilot.presentation.engine: image search 'RAM memory chips' (photo) for 'Memory Management'
+00:35:26 INFO    copilot.visuals.finder: image search 'RAM memory chips' (photo): 7 candidate(s), 3 accepted (0 labelled), 4.62 s {'search_s': 1.47, 'download_s': 1.05, 'clip_s': 0.13, 'full_s': 1.96, 'total_s': 4.62}
+  [IMAGE] 'RAM memory chips' -> File:RAM n.jpg (4.6 s)
+00:35:26 INFO    copilot.presentation.engine: image 'RAM memory chips' on 'Memory Management': File:RAM n.jpg
+  [SLIDE] update 'Memory Management' [definition] v2 (4 items)
+  [  468.1s] One important technique is Virtual Memory Virtual Memory provides this process with a virtual address space The operating system and hardware memory management mechanism translate virtual addresses into physical memory addresses (846 ms)
+  [SLIDE] update 'Memory Management' [definition] v3 (5 items)
+  [  481.5s] Virtual memory allows programs to operate without needing a single contagious block of physical RAM. It also supports isolation and can allow parts of program's addresses space to reside on storage rather than in RAM. (1000 ms)
+  [SLIDE] update 'Memory Management' [definition] v4 (5 items)
+00:35:48 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Memory Management' -> same_concept
+  [UNDERSTAND] Operating System > Memory Management (same_concept) acts=definition,explanation hint=concept lines=2 via groq_alt#5 1664 ms
+               Defined virtual memory as a technique providing virtual address spaces and explained its benefits for non-contiguous memory and isolation.
+00:35:48 INFO    copilot.presentation.engine: planner: update Operating System > Memory Management (same frame)
+00:35:48 INFO    copilot.presentation.engine: image removed from 'Memory Management': two concepts side by side
+  [SLIDE] update 'Memory Management' [definition] v5 (4 items)
+  [SLIDE] update 'Memory Management' [concept] v6 (8 items)
+  [SLIDE] update 'Memory Management' [concept] v7 (7 items)
+  [  495.2s] However, storage is much slower than RAM. If a system repeatedly moves memory pages between RAM and storage because physical memory is insufficient, performance can decrease significantly. This situation is often called (948 ms)
+  [  508.5s] flashing when X case okay (1118 ms)
+  [  516.2s] I thought I was going to blow up my neck! I thought I was going to blow up my neck! (2885 ms)
+  [UNDERSTAND] Operating System > Memory Management (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#5 1176 ms
+               Explained that frequent page swapping due to insufficient RAM causes performance degradation known as thrashing.
+  [HEARD] 'flashing when X case okay' -> 'thrashing' corrected on the slide (0.8)
+00:36:14 INFO    copilot.presentation.engine: planner: update Operating System > Memory Management (same frame)
+00:36:14 INFO    copilot.presentation.engine: concern 0ae63767df10 (transcription, applied=True): 1 element(s); slide shows 'thrashing'
+  [SLIDE] update 'Memory Management' [concept] v8 (7 items)
+  [SLIDE] add    'Memory Management' [key_points] v1 (3 items)
+00:36:14 INFO    copilot.presentation.engine: image search 'Virtual Memory Diagram' (diagram) for 'Memory Management'
+00:36:14 INFO    copilot.presentation.engine: image 'Virtual Memory Diagram': none ()
+  [IMAGE] 'Virtual Memory Diagram' -> none () (0.0 s, cached)
+  [  521.8s] I don't know why. I don't know why. I don't know why. (2286 ms)
+  [  529.7s] I hope that there is this last ticket. (1468 ms)
+  [UNDERSTAND] Operating System > Memory Management (digression) acts=- hint=none lines=1 via groq_alt#5 865 ms
+               Teacher expressed confusion or frustration without providing new technical content.
+00:36:23 INFO    copilot.presentation.engine: planner: noop Operating System > Memory Management (digression)
+  [  532.3s] This one's the most fun. (483 ms)
+  [  534.5s] I will see you in the next video (1609 ms)
+[END]   finishing lecture understanding (2 buffered lines) ...
+  [UNDERSTAND] Operating System > Memory Management (digression) acts=- hint=none lines=2 via groq_alt#5 950 ms
+               Teacher made a brief, non-technical remark about the next topic being fun.
+00:36:31 INFO    copilot.presentation.engine: planner: noop Operating System > Memory Management (digression)
+  [UNDERSTAND] Operating System > Memory Management (same_concept) acts=transition hint=none lines=1 via groq_alt#5 856 ms
+               Teacher concluded the lesson on memory management and thrashing.
+00:36:39 INFO    copilot.presentation.engine: planner: noop Operating System > Memory Management (nothing to display)
+[ENDED] session 20261015-002704-b2ed: 69 segments, 1016 words, state v152, 638 events logged
+        CommandReceived=4, ConceptSignal=69, ConcernRaised=7, DeckState=17, ImageChoices=5, ImageReady=4, ImageRequested=4, InterpretRequested=39, InterpretationReady=39, LifecycleChanged=5, SlideContextChanged=40, SlideOverflow=5, SlidePatch=110, StateChanged=152, TranscriptFinal=69, UtteranceClassified=69
+        stt: 69 published, 0 dropped, latency p50=707 ms p95=1468 ms max=2885 ms
+        understanding: 39 interpretations (39 by LLM, 0 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=2071 avg=1958, latency p50=1196 ms max=4930 ms
+        presentation: 17 slides; planner ops {'noop': 7, 'new': 1, 'update': 20, 'continue': 11}; revisions 2, corrections shown 6, shown as said 0
+        images: {'requests': 4, 'found': 3, 'none': 1}; slides with an image 4/17
+          1. [definition] Operating System  (v8, ['definition', 'points'])
+          2. [key_points] Examples and Functions  (v4, ['points', 'hierarchy'])
+          3. [definition] Process Management  (v6, ['definition', 'points', 'image'])
+          4. [definition] Memory Management  (v8, ['definition', 'points', 'image'])
+          5. [definition] File Management  (v5, ['definition', 'points'])
+          6. [definition] Device Management  (v5, ['definition', 'points'])
+          7. [definition] Security and Protection  (v9, ['definition', 'points'])
+          8. [definition] Operating System [part 1]  (v13, ['definition', 'points', 'example'])
+          9. [concept] Operating System [part 2]  (v11, ['definition', 'points', 'definition', 'definition'])
+          10. [concept] Operating System [part 1]  (v5, ['definition', 'points', 'definition'])
+          11. [concept] Operating System [part 2]  (v4, ['groups', 'definition', 'definition', 'definition', 'definition'])
+          12. [definition] Operating System [part 3]  (v9, ['definition', 'points'])
+          13. [concept] Kernel Designs  (v2, ['hierarchy', 'definition', 'definition', 'definition', 'callout'])
+          14. [definition] Process Management [part 1]  (v7, ['definition', 'points', 'image', 'hierarchy'])
+          15. [key_points] Process Management [part 2]  (v5, ['points', 'image'])
+          16. [concept] Memory Management [part 1]  (v8, ['definition', 'points', 'definition', 'points'])
+          17. [key_points] Memory Management [part 2]  (v1, ['points'])
+        providers: {'groq_alt#4': 11, 'groq_alt#5': 25, 'groq_alt#6': 3}; triggers: {'max_wait': 11, 'words': 8, 'pause': 16, 'boundary': 3, 'flush': 1}; outline: ['Operating System > Process Management, Memory Management, File Management, Device Management, Security and Protection, Types of Operating Systems, Components of an Operating System, Kernel Designs']; concerns: 7
+        log: C:\Users\potda\Multimodal-AI-Teaching-Copilot-For-Real-Time-Visual-Learning-Generation\data\sessions\20261015-002704-b2ed\session.sqlite

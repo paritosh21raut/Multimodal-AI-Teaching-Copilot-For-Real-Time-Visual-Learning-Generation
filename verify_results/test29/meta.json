@@ -1,0 +1,16 @@
+{
+  "name": "test29",
+  "source": "mic",
+  "note": "speaker B, economics",
+  "session_id": "20261014-165332-508b",
+  "date": "2026-10-14 17:09",
+  "title": "",
+  "minutes": 13.6,
+  "utterances": 91,
+  "slides": 13,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker B",
+  "subject": "economics"
+}

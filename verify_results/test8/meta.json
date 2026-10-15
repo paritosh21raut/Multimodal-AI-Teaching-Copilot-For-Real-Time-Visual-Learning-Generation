@@ -1,7 +1,7 @@
 {
   "name": "test8",
   "source": "mic",
-  "note": "self, AI/ML",
+  "note": "speaker A, AI/ML",
   "session_id": "20261012-131824-6883",
   "date": "2026-10-12 13:51",
   "title": "",
@@ -10,5 +10,7 @@
   "slides": 40,
   "theme": "light",
   "simulated": false,
-  "copilot_args": []
+  "copilot_args": [],
+  "speaker": "speaker A",
+  "subject": "AI/ML"
 }

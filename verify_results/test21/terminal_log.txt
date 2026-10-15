@@ -1,0 +1,405 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (4.7 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~22.0 h
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~20.4 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~20.9 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~21.1 h
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              120k of 200k tokens IN USE
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 90 lecture minutes
+
+[READY] session 20261014-180622-ba77
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+18:06:28 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+18:06:37 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    2.5s] the Solar System. (544 ms)
+  [    5.4s] The solar system is a collection of celestial objects gravitationally bound to the sun. (648 ms)
+  [UNDERSTAND] Solar System > Definition (new_topic) acts=definition hint=definition lines=2 via groq_alt#3 769 ms
+               Defined the Solar System as celestial objects bound to the sun.
+18:06:56 INFO    copilot.presentation.engine: planner: new Solar System > Definition (first content slide)
+  [SLIDE] add    'What is Solar System?' [definition] v1 (1 items)
+  [   11.2s] It formed approximately 4.6 billion years ago from a cloud of gas and dust. The SIR is at the center of the solar system and contains most of its mass. (849 ms)
+  [SLIDE] update 'What is Solar System?' [definition] v2 (1 items)
+  [   23.4s] Its gravity keeps planets and many other objects in orbit around it. (565 ms)
+  [SLIDE] update 'What is Solar System?' [definition] v3 (1 items)
+  [UNDERSTAND] Solar System > Formation and Structure (sibling_concept) acts=explanation,explanation hint=key_points lines=2 via groq_alt#3 1371 ms
+               Described the Solar System's formation from a gas cloud 4.6 billion years ago and the Sun's central role in holding planets via gravity.
+  [HEARD] 'SIR' -> 'Sun' corrected on the slide (0.9)
+18:07:10 INFO    copilot.presentation.engine: planner: continue Solar System > Formation and Structure (new facet)
+18:07:10 INFO    copilot.presentation.engine: supporting Formation and Structure content stays on the sparse definition slide 'What is Solar System?'
+18:07:10 INFO    copilot.presentation.engine: concern 4f38d5a778fa (transcription, applied=True): 1 element(s); slide shows 'Sun'
+  [SLIDE] update 'What is Solar System?' [definition] v4 (1 items)
+  [SLIDE] update 'What is Solar System?' [definition] v5 (5 items)
+18:07:10 INFO    copilot.presentation.engine: image search 'Solar System formation' (diagram) for 'What is Solar System?'
+  [   29.9s] The solar system contains one star. (685 ms)
+  [SLIDE] update 'What is Solar System?' [definition] v6 (6 items)
+  [   33.2s] Lisa. (271 ms)
+  [SLIDE] update 'What is Solar System?' [definition] v7 (5 items)
+18:07:14 INFO    copilot.visuals.finder: image search 'Solar System formation' (diagram, labels preferred): 8 candidate(s), 3 accepted (2 labelled), 4.17 s {'search_s': 1.94, 'download_s': 1.42, 'clip_s': 0.15, 'full_s': 0.63, 'total_s': 4.17}
+  [IMAGE] 'Solar System formation' -> File:Solar System True Color EN.png (4.2 s)
+18:07:14 INFO    copilot.presentation.engine: image 'Solar System formation' on 'What is Solar System?': File:Solar System True Color EN.png
+  [SLIDE] update 'What is Solar System?' [definition] v8 (6 items)
+  [UNDERSTAND] Solar System > Formation and Structure (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#3 768 ms
+               Clarified that the Solar System contains exactly one star.
+18:07:17 INFO    copilot.presentation.engine: planner: update Solar System > Formation and Structure (same frame)
+18:07:17 INFO    copilot.presentation.engine: no image for 'What is Solar System?': has an image
+  [SLIDE] update 'What is Solar System?' [definition] v9 (7 items)
+  [   34.5s] 8 planets, natural satellites, commonly called moons. (578 ms)
+  [   38.8s] dwarf planets including Pluto, asteroids and comets. (535 ms)
+  [UNDERSTAND] Solar System > Formation and Structure (digression) acts=- hint=none lines=1 via groq_alt#3 846 ms
+               No new educational content was introduced.
+18:07:25 INFO    copilot.presentation.engine: planner: noop Solar System > Formation and Structure (digression)
+  [   43.8s] meteorites, comatose and other small objects. (624 ms)
+  [SLIDE] update 'What is Solar System?' [definition] v10 (8 items)
+18:07:28 INFO    copilot.presentation.engine: slide 723be6fa490c overflows on the display; further content continues on a new slide
+  [   48.8s] the eight planets in order of their distance from the sun. (630 ms)
+  [SLIDE] update 'What is Solar System?' [definition] v11 (8 items)
+  [UNDERSTAND] Solar System > Formation and Structure (elaboration) acts=classification hint=key_points lines=3 via groq_alt#3 1113 ms
+               Listed the specific celestial bodies in the Solar System, including planets, moons, dwarf planets, asteroids, comets, and meteorites.
+  [HEARD] 'comatose' -> 'comets' corrected on the slide (0.9)
+18:07:33 INFO    copilot.presentation.engine: planner: update Solar System > Formation and Structure (same frame)
+18:07:33 INFO    copilot.presentation.engine: concern 57be7af8f7e6 (transcription, applied=True): 1 element(s); slide shows 'comets'
+  [SLIDE] update 'What is Solar System?' [definition] v12 (8 items)
+  [SLIDE] add    'What is Solar System?' [hierarchy] v1 (1 items)
+18:07:33 INFO    copilot.presentation.engine: image search 'Solar System diagram' (diagram) for 'What is Solar System?'
+18:07:37 INFO    copilot.visuals.finder: image search 'Solar System diagram' (diagram, labels preferred): 8 candidate(s), 2 accepted (1 labelled), 3.19 s {'search_s': 1.4, 'download_s': 1.04, 'clip_s': 0.14, 'full_s': 0.6, 'total_s': 3.19}
+  [IMAGE] 'Solar System diagram' -> File:Moons of solar system v7.jpg (3.2 s)
+18:07:37 INFO    copilot.presentation.engine: image 'Solar System diagram' on 'What is Solar System?': File:Moons of solar system v7.jpg
+  [SLIDE] update 'What is Solar System?' [hierarchy] v2 (2 items)
+  [   53.9s] Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus and Neptune. (763 ms)
+  [SLIDE] update 'What is Solar System?' [definition] v13 (7 items)
+  [UNDERSTAND] Solar System > Formation and Structure (elaboration) acts=classification hint=hierarchy lines=2 via groq_alt#3 982 ms
+               Listed the eight planets in order of their distance from the Sun.
+18:07:41 INFO    copilot.presentation.engine: planner: update Solar System > Formation and Structure (same frame)
+18:07:41 INFO    copilot.presentation.engine: slide 'What is Solar System?' waits for the min dwell time
+18:07:41 INFO    copilot.presentation.engine: image search 'Solar System planets order' (diagram) for 'What is Solar System?'
+18:07:46 INFO    copilot.visuals.finder: image search 'Solar System planets order' (diagram, labels preferred): 8 candidate(s), 1 accepted (1 labelled), 4.29 s {'search_s': 1.83, 'download_s': 1.75, 'clip_s': 0.14, 'full_s': 0.57, 'total_s': 4.29}
+  [IMAGE] 'Solar System planets order' -> File:Hubble Detects Ghostly Glow Surrounding Our Solar System (opo22050a).tiff (4.3 s)
+18:07:46 INFO    copilot.presentation.engine: no room for an image on 'What is Solar System?'
+  [SLIDE] add    'What is Solar System?' [key_points] v1 (8 items)
+  [   67.7s] Second is the Sun, the Sun at center. The Sun is a star made primarily of hydrogen and helium. It produces energy through nuclear fusion in its core. (818 ms)
+  [   81.9s] During fusion, hydrogen nuclei combine to form helium, releasing (675 ms)
+  [   87.5s] enormous amount of energy. (557 ms)
+18:08:10 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Formation and Structure' -> same_concept
+  [UNDERSTAND] Solar System > Formation and Structure (same_concept) acts=definition,process hint=process_flow lines=3 via groq_alt#3 1173 ms
+               Defined the Sun as a star of hydrogen and helium and explained energy production via nuclear fusion.
+18:08:10 INFO    copilot.presentation.engine: planner: update Solar System > Formation and Structure (same frame)
+18:08:10 INFO    copilot.presentation.engine: no image for 'What is Solar System?': process needs the full width
+  [SLIDE] update 'What is Solar System?' [key_points] v2 (9 items)
+  [SLIDE] add    'What is Solar System?' [process_flow] v1 (3 items)
+  [   91.0s] In fact, age approximately 4.6 billion years. (587 ms)
+  [   95.4s] diameter approximately 1.39 million kilometer surface temperature approximately 5 (652 ms)
+  [  102.9s] 400,500 degree Celsius, core temperature approximately 15 million degree Celsius. (708 ms)
+  [UNDERSTAND] Solar System > Formation and Structure (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#3 2491 ms
+               Provided specific physical properties of the Sun, including age, diameter, and surface/core temperatures.
+  [HEARD] '5 400,500' -> '5,500' corrected on the slide (0.9)
+18:08:31 INFO    copilot.presentation.engine: planner: update Solar System > Formation and Structure (same frame)
+18:08:31 INFO    copilot.presentation.engine: concern afd045d9cfda (transcription, applied=True): 1 element(s); slide shows '5,500'
+18:08:31 INFO    copilot.presentation.engine: no image for 'What is Solar System?': process needs the full width
+  [SLIDE] update 'What is Solar System?' [process_flow] v2 (4 items)
+  [  109.5s] Light travel time to earth approximately 8 minutes and 20 seconds. (657 ms)
+  [  115.5s] The sun energy divides. (598 ms)
+  [UNDERSTAND] Solar System > Formation and Structure (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#3 937 ms
+               Stated the time it takes for sunlight to travel from the Sun to Earth.
+18:08:37 INFO    copilot.presentation.engine: planner: update Solar System > Formation and Structure (same frame)
+18:08:37 INFO    copilot.presentation.engine: no image for 'What is Solar System?': process needs the full width
+  [SLIDE] update 'What is Solar System?' [process_flow] v3 (5 items)
+  [  118.0s] The Sun energy drives (303 ms)
+  [  120.1s] Earth's climate system and supports photosynthesis in plants. (617 ms)
+18:08:49 WARNING copilot.llm.router: llm groq_alt#3 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m46tvgp1e23aekwgn76sppwa` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 644,
+  [UNDERSTAND] Solar System > Formation and Structure (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#4 1024 ms
+               Explained that solar energy drives Earth's climate and supports plant photosynthesis.
+18:08:50 INFO    copilot.presentation.engine: planner: update Solar System > Formation and Structure (same frame)
+18:08:50 INFO    copilot.presentation.engine: no image for 'What is Solar System?': process needs the full width
+  [SLIDE] update 'What is Solar System?' [process_flow] v4 (7 items)
+  [  125.1s] Solar activity includes sun ports, solar flares and coronal mass ejection. This phenomena can influence satellites, radio communication and electrical infrastructure. (929 ms)
+  [UNDERSTAND] Solar System > Solar Activity (sibling_concept) acts=classification,explanation hint=key_points lines=1 via groq_alt#4 1436 ms
+               Defined solar activity types (sunspots, flares, CMEs) and their impact on technology.
+  [HEARD] 'sun ports' -> 'Sunspots' corrected on the slide (0.9)
+18:08:59 INFO    copilot.presentation.engine: planner: continue Solar System > Solar Activity (new facet)
+18:08:59 INFO    copilot.presentation.engine: concern 5736e435f875 (transcription, applied=True): 1 element(s); slide shows 'Sunspots'
+  [SLIDE] add    'Solar Activity' [hierarchy] v1 (4 items)
+18:08:59 INFO    copilot.presentation.engine: image search 'solar flare diagram' (diagram) for 'Solar Activity'
+18:09:03 INFO    copilot.visuals.finder: image search 'solar flare diagram' (diagram, labels preferred): 2 candidate(s), 1 accepted (0 labelled), 4.53 s {'search_s': 2.16, 'download_s': 1.31, 'clip_s': 0.06, 'full_s': 1.0, 'total_s': 4.53}
+  [IMAGE] 'solar flare diagram' -> File:X Class Solar Flare Sends ‘Shockwaves’ on The Sun (6819094556).jpg (4.5 s)
+18:09:03 INFO    copilot.presentation.engine: image 'solar flare diagram' on 'Solar Activity': File:X Class Solar Flare Sends ‘Shockwaves’ on The Sun (6819094556).jpg
+  [SLIDE] update 'Solar Activity' [hierarchy] v2 (5 items)
+  [  140.2s] 3. Mercury, the closest planet to the Sun (577 ms)
+  [SLIDE] update 'Solar Activity' [hierarchy] v3 (6 items)
+  [  158.9s] The third topic is Mercury. (669 ms)
+  [SLIDE] update 'Solar Activity' [hierarchy] v4 (6 items)
+  [UNDERSTAND] Solar System > Planets (new_topic) acts=transition hint=none lines=2 via groq_alt#3 1559 ms
+               Transitioned from solar activity to the study of planets, introducing Mercury as the first topic.
+18:09:22 INFO    copilot.presentation.engine: planner: noop Solar System > Planets (nothing to display)
+  [SLIDE] update 'Solar Activity' [hierarchy] v5 (5 items)
+  [  161.6s] Mercury is the closest planet to the Sun. (542 ms)
+  [SLIDE] update 'Solar Activity' [hierarchy] v6 (6 items)
+18:09:29 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Planets' -> same_concept
+  [UNDERSTAND] Solar System > Planets (same_concept) acts=definition hint=definition lines=1 via groq_alt#3 968 ms
+               Introduced Mercury as the closest planet to the Sun.
+18:09:29 INFO    copilot.presentation.engine: planner: continue Solar System > Planets (new facet)
+  [SLIDE] update 'Solar Activity' [hierarchy] v7 (5 items)
+  [SLIDE] add    'Planets' [members] v1 (1 items)
+18:09:29 INFO    copilot.presentation.engine: image search 'Mercury planet' (photo) for 'Planets'
+  [  167.2s] It is a rocky planet with a heavily created (615 ms)
+  [SLIDE] update 'Planets' [members] v2 (1 items)
+18:09:32 INFO    copilot.visuals.finder: image search 'Mercury planet' (photo): 5 candidate(s), 2 accepted (0 labelled), 3.03 s {'search_s': 1.51, 'download_s': 0.98, 'clip_s': 0.1, 'full_s': 0.43, 'total_s': 3.03}
+  [IMAGE] 'Mercury planet' -> File:Mercury in true color.jpg (3.0 s)
+18:09:32 INFO    copilot.presentation.engine: image 'Mercury planet' on 'Planets': File:Mercury in true color.jpg
+  [SLIDE] update 'Planets' [members] v3 (2 items)
+  [  171.7s] Creators of West Mercury has almost (639 ms)
+  [  175.1s] No substional atmosphere, only a very thin atmosphere. (536 ms)
+  [  180.5s] Eggdough spirit. (1003 ms)
+  [SLIDE] update 'Planets' [members] v4 (2 items)
+  [UNDERSTAND] Solar System > Planets (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#3 1157 ms
+               Described Mercury as a rocky planet with a very thin atmosphere.
+  [HEARD] 'heavily created Creators of West' -> 'rocky planet' corrected on the slide (0.6)
+18:09:42 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:09:42 INFO    copilot.presentation.engine: concern b02e2a377314 (transcription, applied=True): 1 element(s); slide shows 'rocky planet'
+18:09:42 INFO    copilot.presentation.engine: no image for 'Planets': has an image
+  [SLIDE] update 'Planets' [members] v5 (4 items)
+  [  183.1s] Average distance from the sun approximately 58 million km. (578 ms)
+  [  188.3s] Diameter approximately 4879 km. (547 ms)
+  [UNDERSTAND] Solar System > Planets (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#3 2450 ms
+               Provided Mercury's average distance from the Sun and its diameter.
+18:09:55 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:09:55 INFO    copilot.presentation.engine: no image for 'Planets': has an image
+  [SLIDE] update 'Planets' [members] v6 (5 items)
+  [  193.3s] One revolution around the sun, 88 or 3 days. (645 ms)
+  [  197.3s] Natural moons, non. (456 ms)
+  [UNDERSTAND] Solar System > Planets (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#4 1892 ms
+               Stated Mercury's orbital period is 88 Earth days and it has no natural moons.
+  [HEARD] 'or 3' -> 'Earth' corrected on the slide (0.9)
+18:10:03 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:10:03 INFO    copilot.presentation.engine: concern 850a877fa7ff (transcription, applied=True): 1 element(s); slide shows 'Earth'
+18:10:03 INFO    copilot.presentation.engine: no image for 'Planets': has an image
+  [SLIDE] update 'Planets' [members] v7 (7 items)
+  [  204.6s] The next topic is Venus, the hottest planet. (637 ms)
+18:10:11 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Planets' -> same_concept
+  [UNDERSTAND] Solar System > Planets (same_concept) acts=transition hint=none lines=1 via groq_alt#3 2679 ms
+               Transitioned from Mercury to Venus, identifying it as the hottest planet.
+18:10:11 INFO    copilot.presentation.engine: planner: noop Solar System > Planets (nothing to display)
+  [  210.0s] Venus is the second planet from the Sun and is similar to Earth in size. (653 ms)
+18:10:18 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Planets' -> same_concept
+  [UNDERSTAND] Solar System > Planets (same_concept) acts=definition hint=key_points lines=1 via groq_alt#4 878 ms
+               Introduced Venus as the second planet from the Sun, noting its size similarity to Earth.
+18:10:18 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+  [SLIDE] update 'Planets' [members] v8 (7 items)
+  [SLIDE] add    'Planets' [members] v1 (1 items)
+18:10:18 INFO    copilot.presentation.engine: image search 'Venus planet' (photo) for 'Planets'
+  [  217.9s] Its atmosphere consists (536 ms)
+  [SLIDE] update 'Planets' [members] v2 (1 items)
+18:10:22 INFO    copilot.visuals.finder: image search 'Venus planet' (photo): 8 candidate(s), 2 accepted (0 labelled), 4.52 s {'search_s': 2.75, 'download_s': 1.15, 'clip_s': 0.14, 'full_s': 0.47, 'total_s': 4.52}
+  [IMAGE] 'Venus planet' -> File:Venus from Mariner 10.jpg (4.5 s)
+18:10:22 INFO    copilot.presentation.engine: image 'Venus planet' on 'Planets': File:Venus from Mariner 10.jpg
+  [SLIDE] update 'Planets' [members] v3 (2 items)
+  [  222.0s] of a carbon dioxide with thick clouds containing (533 ms)
+  [  226.7s] sulfuric acid, the dense atmosphere drip, (643 ms)
+  [  230.6s] It has an intense greenhouse effect. (607 ms)
+  [UNDERSTAND] Solar System > Planets (elaboration) acts=explanation hint=key_points lines=4 via groq_alt#3 1108 ms
+               Described Venus's thick carbon dioxide atmosphere, sulfuric acid clouds, and intense greenhouse effect.
+  [HEARD] 'drip' -> 'dense' corrected on the slide (0.6)
+18:10:34 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:10:34 INFO    copilot.presentation.engine: concern 530baab4908e (transcription, applied=True): 0 element(s); slide shows 'dense'
+18:10:34 INFO    copilot.presentation.engine: no image for 'Planets': has an image
+  [SLIDE] update 'Planets' [members] v4 (2 items)
+  [SLIDE] update 'Planets' [members] v5 (5 items)
+  [  236.1s] Important facts, average distance from the sun approximately 108 million km. (613 ms)
+  [  243.1s] diameter approximately 12104 km, surface temperature approximately 465 degree celsius. (648 ms)
+  [UNDERSTAND] Solar System > Planets (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#3 2270 ms
+               Provided Venus's average distance from the Sun, diameter, and surface temperature.
+18:10:53 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:10:53 INFO    copilot.presentation.engine: no image for 'Planets': has an image
+  [SLIDE] update 'Planets' [members] v6 (6 items)
+  [  259.2s] Our Home Planet (558 ms)
+  [  263.0s] Earth is the third planet from the Sun and the only world currently known to support life. Its surface contains oceans. (741 ms)
+18:11:16 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Planets' -> same_concept
+  [UNDERSTAND] Solar System > Planets (same_concept) acts=definition,explanation hint=key_points lines=2 via groq_alt#3 2136 ms
+               Introduced Earth as the third planet and only known life-supporting world with oceans.
+18:11:16 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+  [SLIDE] add    'Planets' [members] v1 (2 items)
+18:11:16 INFO    copilot.presentation.engine: image search 'Earth planet' (photo) for 'Planets'
+  [  272.1s] continents, mountains, deserts, forests and polar regions. (629 ms)
+18:11:19 INFO    copilot.visuals.finder: image search 'Earth planet' (photo): 3 candidate(s), 1 accepted (0 labelled), 3.88 s {'search_s': 2.41, 'download_s': 0.96, 'clip_s': 0.07, 'full_s': 0.43, 'total_s': 3.88}
+  [IMAGE] 'Earth planet' -> File:North America from low orbiting satellite Suomi NPP.jpg (3.9 s)
+18:11:19 INFO    copilot.presentation.engine: image 'Earth planet' on 'Planets': File:North America from low orbiting satellite Suomi NPP.jpg
+  [SLIDE] update 'Planets' [members] v2 (3 items)
+  [  277.4s] Earth major characteristics include (500 ms)
+  [  281.9s] liquid water on the surface and atmosphere containing nitrogen and oxygen. (720 ms)
+  [UNDERSTAND] Solar System > Planets (elaboration) acts=explanation,explanation hint=key_points lines=3 via groq_alt#3 1033 ms
+               Detailed Earth's surface features and major atmospheric characteristics.
+18:11:29 INFO    copilot.presentation.engine: revised S2: Surface contains oceans, continents, mountains, deserts, forests, and polar regions
+18:11:29 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:11:29 INFO    copilot.presentation.engine: no image for 'Planets': has an image
+  [SLIDE] update 'Planets' [members] v3 (3 items)
+  [SLIDE] update 'Planets' [members] v4 (5 items)
+  [  289.0s] A magnetic field that helps protect the planets from charged particles. A suitable range of environmental conditions for life. One natural satellite is the moon. (818 ms)
+  [UNDERSTAND] Solar System > Planets (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#3 1130 ms
+               Described Earth's magnetic field, life-supporting conditions, and its natural satellite, the Moon.
+18:11:41 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:11:41 INFO    copilot.presentation.engine: no image for 'Planets': has an image
+  [SLIDE] update 'Planets' [members] v5 (8 items)
+  [  305.2s] 6th topic is Mars, the Red Planet. (651 ms)
+18:11:51 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Planets' -> same_concept
+  [UNDERSTAND] Solar System > Planets (same_concept) acts=transition hint=none lines=1 via groq_alt#3 3502 ms
+               Introduced Mars as the next planet to be discussed, noting its nickname 'the Red Planet'.
+18:11:51 INFO    copilot.presentation.engine: planner: noop Solar System > Planets (nothing to display)
+  [  309.9s] Mars is the fourth planet from the Sun. Its reddish appearance comes largely from iron minerals that have oxidized in its surface material. (689 ms)
+  [  320.9s] Mass as a thin atmosphere composed mainly of carbon dioxide. (548 ms)
+18:12:08 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Planets' -> same_concept
+  [UNDERSTAND] Solar System > Planets (same_concept) acts=definition,explanation hint=key_points lines=2 via groq_alt#3 3982 ms
+               Defined Mars as the fourth planet with a reddish surface due to oxidized iron. Described its thin carbon dioxide atmosphere.
+18:12:08 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+  [SLIDE] add    'Planets' [members] v1 (2 items)
+18:12:08 INFO    copilot.presentation.engine: image search 'Mars surface' (photo) for 'Planets'
+18:12:13 INFO    copilot.visuals.finder: image search 'Mars surface' (photo): 4 candidate(s), 3 accepted (0 labelled), 4.52 s {'search_s': 1.42, 'download_s': 0.93, 'clip_s': 0.1, 'full_s': 2.06, 'total_s': 4.52}
+  [IMAGE] 'Mars surface' -> File:A Candidate Landing Site over Potential Chloride Salt Deposits - Flickr - UAHiRISE (NASA).jpg (4.5 s)
+18:12:13 INFO    copilot.presentation.engine: image 'Mars surface' on 'Planets': File:A Candidate Landing Site over Potential Chloride Salt Deposits - Flickr - UAHiRISE (NASA).jpg
+  [SLIDE] update 'Planets' [members] v2 (3 items)
+  [  343.8s] 7th topic is Jupiter, the largest planet. (704 ms)
+  [  347.5s] Jupiter is the fifth planet from the Sun. (532 ms)
+  [  350.6s] and the largest planet in the solar system. It is a gas giant composed mainly of hydrogen and helium. (736 ms)
+18:12:39 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Planets' -> same_concept
+  [UNDERSTAND] Solar System > Planets (same_concept) acts=definition hint=definition lines=3 via groq_alt#3 1140 ms
+               Introduced Jupiter as the fifth and largest planet, a gas giant composed mainly of hydrogen and helium.
+18:12:39 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:12:39 INFO    copilot.presentation.engine: no image for 'Planets': two concepts side by side
+  [SLIDE] update 'Planets' [concept] v3 (3 items)
+  [  358.1s] unlike Earth, former Jupiter does not have a solid surface that we could stand on. (676 ms)
+  [  364.4s] Its most recognizable feature is the Great Red Spot, a giant storm that has existed for centuries. (720 ms)
+  [UNDERSTAND] Solar System > Planets (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#3 1044 ms
+               Explained that Jupiter lacks a solid surface and described its Great Red Spot as a long-lasting giant storm.
+18:12:56 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:12:56 INFO    copilot.presentation.engine: no image for 'Planets': two concepts side by side
+  [SLIDE] update 'Planets' [concept] v4 (6 items)
+  [  372.8s] Jupiter has many known moons, including four large moons discovered by Galileo Galilei. (609 ms)
+  [UNDERSTAND] Solar System > Planets (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#3 1129 ms
+               Mentioned that Jupiter has many moons, including four large ones discovered by Galileo.
+18:13:04 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:13:04 INFO    copilot.presentation.engine: no image for 'Planets': two concepts side by side
+  [SLIDE] update 'Planets' [concept] v5 (8 items)
+  [  383.3s] The 8th topic is Saturn, the planet with (536 ms)
+  [  387.3s] spectacular rings (294 ms)
+  [  389.5s] Saturn is the sixth planet from the sun and the second largest planet in the solar system. (817 ms)
+18:13:19 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Planets' -> same_concept
+  [UNDERSTAND] Solar System > Planets (same_concept) acts=definition hint=concept lines=3 via groq_alt#3 821 ms
+               Introduced Saturn as the sixth planet, second largest, and famous for its rings.
+18:13:19 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:13:19 INFO    copilot.presentation.engine: no image for 'Planets': two concepts side by side
+  [SLIDE] update 'Planets' [concept] v6 (9 items)
+  [  395.1s] It is a gas giant composed primarily of hydrogen and helium. (689 ms)
+  [  400.7s] Saturn is famous. (474 ms)
+  [UNDERSTAND] Solar System > Planets (same_concept) acts=definition hint=concept lines=1 via groq_alt#4 899 ms
+               Identified Saturn as a gas giant composed primarily of hydrogen and helium.
+18:13:27 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+18:13:27 INFO    copilot.presentation.engine: no image for 'Planets': two concepts side by side
+  [SLIDE] update 'Planets' [concept] v7 (10 items)
+  [  402.9s] for its extensive ring system which consists mainly of particles of water ice. (668 ms)
+  [  409.8s] along with rocky material and dust. (584 ms)
+  [UNDERSTAND] Solar System > Planets (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#3 1399 ms
+               Described the composition of Saturn's rings as primarily water ice, rocky material, and dust.
+18:13:35 INFO    copilot.presentation.engine: planner: update Solar System > Planets (same frame)
+  [SLIDE] update 'Planets' [concept] v8 (11 items)
+  [SLIDE] add    'Planets' [key_points] v1 (1 items)
+18:13:35 INFO    copilot.presentation.engine: image search 'Saturn rings composition' (diagram) for 'Planets'
+18:13:38 INFO    copilot.visuals.finder: image search 'Saturn rings composition' (diagram, labels preferred): 6 candidate(s), 3 accepted (1 labelled), 3.08 s {'search_s': 1.53, 'download_s': 0.79, 'clip_s': 0.12, 'full_s': 0.62, 'total_s': 3.08}
+  [IMAGE] 'Saturn rings composition' -> File:Saturn diagram.svg (3.1 s)
+18:13:38 INFO    copilot.presentation.engine: image 'Saturn rings composition' on 'Planets': File:Saturn diagram.svg
+  [SLIDE] update 'Planets' [key_points] v2 (2 items)
+  [  417.0s] 9th topic is Uranus and Neptune, the ice giants. (652 ms)
+  [SLIDE] update 'Planets' [key_points] v3 (3 items)
+  [UNDERSTAND] Solar System > Uranus and Neptune (sibling_concept) acts=classification hint=key_points lines=1 via groq_alt#4 978 ms
+               Introduced Uranus and Neptune as the ice giants of the solar system.
+18:13:43 INFO    copilot.presentation.engine: planner: continue Solar System > Uranus and Neptune (new facet)
+18:13:43 INFO    copilot.presentation.engine: slide 'Uranus and Neptune' waits for the min dwell time
+  [SLIDE] update 'Planets' [key_points] v4 (2 items)
+18:13:43 INFO    copilot.presentation.engine: image search 'Uranus and Neptune' (photo) for 'Uranus and Neptune'
+18:13:49 INFO    copilot.visuals.finder: image search 'Uranus and Neptune' (photo): 6 candidate(s), 3 accepted (0 labelled), 6.42 s {'search_s': 1.83, 'download_s': 1.61, 'clip_s': 0.11, 'full_s': 2.86, 'total_s': 6.42}
+  [IMAGE] 'Uranus and Neptune' -> File:Diagram of the Atmospheres of Uranus and Neptune (noirlab2211b).jpg (6.4 s)
+18:13:49 INFO    copilot.presentation.engine: image 'Uranus and Neptune' on 'Uranus and Neptune': File:Diagram of the Atmospheres of Uranus and Neptune (noirlab2211b).jpg
+  [SLIDE] add    'Uranus and Neptune' [hierarchy] v1 (2 items)
+  [  430.9s] Uranus and Neptune are the seventh and eighth planets from the Sun. They are classified as Ice and (756 ms)
+  [  438.8s] because their interior contains a substantial amount of water, omenia and methane related materials alongside hydrogen and helium. Uranus has a blue-green appearance called Part T. (929 ms)
+  [UNDERSTAND] Solar System > Uranus and Neptune (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#3 2665 ms
+               Identified Uranus and Neptune as the 7th and 8th planets, classified as Ice Giants with interiors of water, ammonia, methane, hydrogen, and helium.
+  [HEARD] 'omenia' -> 'ammonia' corrected on the slide (0.9)
+  [HEARD] 'Part T' -> 'blue-green appearance' corrected on the slide (0.8)
+18:14:15 INFO    copilot.presentation.engine: planner: update Solar System > Uranus and Neptune (same frame)
+18:14:15 INFO    copilot.presentation.engine: concern 82365277428c (transcription, applied=True): 1 element(s); slide shows 'ammonia'
+18:14:15 INFO    copilot.presentation.engine: concern 0d5f63d06226 (transcription, applied=True): 1 element(s); slide shows 'blue-green appearance'
+18:14:15 INFO    copilot.presentation.engine: no image for 'Uranus and Neptune': has an image
+  [SLIDE] update 'Uranus and Neptune' [hierarchy] v2 (7 items)
+  [  453.0s] by atmospheric methane, rotates with an extreme axial tilt of approximately 98 degrees, experience unusual seasonal pattern. (732 ms)
+  [SLIDE] update 'Uranus and Neptune' [hierarchy] v3 (8 items)
+18:14:23 INFO    copilot.presentation.engine: slide 13405f079669 overflows on the display; further content continues on a new slide
+  [  463.5s] Neptune (266 ms)
+  [SLIDE] update 'Uranus and Neptune' [hierarchy] v4 (8 items)
+  [  464.6s] is the farthest recognized plant from the sun. Has a blue appearance influenced by atmospheric properties, experiences very strong wind and dynamic atmospheric zones. Has a large moon called Trion. (889 ms)
+  [SLIDE] update 'Uranus and Neptune' [hierarchy] v5 (8 items)
+  [UNDERSTAND] Solar System > Uranus and Neptune (same_concept) acts=explanation,explanation hint=key_points lines=3 via groq_alt#3 2590 ms
+               Described Uranus's extreme axial tilt and seasonal patterns, and identified Neptune as the farthest planet with strong winds and the moon Triton.
+  [HEARD] 'plant' -> 'planet' corrected on the slide (0.9)
+  [HEARD] 'Trion' -> 'Triton' corrected on the slide (0.9)
+18:14:41 INFO    copilot.presentation.engine: revised S5: Uranus has a blue-green appearance due to atmospheric methane
+18:14:41 INFO    copilot.presentation.engine: planner: update Solar System > Uranus and Neptune (same frame)
+18:14:41 INFO    copilot.presentation.engine: concern 8e4285a260bd (transcription, applied=True): 1 element(s); slide shows 'planet'
+18:14:41 INFO    copilot.presentation.engine: concern 0b8705e74566 (transcription, applied=True): 1 element(s); slide shows 'Triton'
+  [SLIDE] update 'Uranus and Neptune' [hierarchy] v6 (7 items)
+  [SLIDE] update 'Uranus and Neptune' [hierarchy] v7 (7 items)
+  [SLIDE] update 'Uranus and Neptune' [hierarchy] v8 (7 items)
+  [SLIDE] add    'Uranus and Neptune' [key_points] v1 (6 items)
+18:14:41 INFO    copilot.presentation.engine: image search 'Uranus axial tilt' (diagram) for 'Uranus and Neptune'
+  [  479.7s] which orbits in a retrograde direction. (558 ms)
+  [SLIDE] update 'Uranus and Neptune' [key_points] v2 (7 items)
+18:14:44 INFO    copilot.visuals.finder: image search 'Uranus axial tilt' (diagram, labels preferred): 1 candidate(s), 0 accepted (0 labelled), 2.79 s {'search_s': 1.61, 'download_s': 1.14, 'clip_s': 0.04, 'full_s': 0.0, 'total_s': 2.79}
+18:14:44 INFO    copilot.presentation.engine: image 'Uranus axial tilt': none (no relevant image)
+  [IMAGE] 'Uranus axial tilt' -> none (no relevant image) (2.8 s)
+18:14:47 WARNING copilot.llm.router: llm groq_alt#3 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m46tvgp1e23aekwgn76sppwa` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 513,
+  [UNDERSTAND] Solar System > Uranus and Neptune (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#4 1345 ms
+               Noted that Triton orbits Neptune in a retrograde direction.
+18:14:48 INFO    copilot.presentation.engine: revised S6: Neptune has a large moon called Triton, which orbits retrograde
+18:14:48 INFO    copilot.presentation.engine: planner: update Solar System > Uranus and Neptune (same frame)
+18:14:48 INFO    copilot.presentation.engine: no image for 'Uranus and Neptune': nothing relevant found for 'Uranus axial tilt' before
+  [SLIDE] update 'Uranus and Neptune' [key_points] v3 (6 items)
+  [SLIDE] update 'Uranus and Neptune' [key_points] v4 (6 items)
+  [SLIDE] update 'Uranus and Neptune' [key_points] v5 (7 items)
+  [  500.9s] (dropped: empty) 
+  [  506.0s] I don't understand. (618 ms)
+  [UNDERSTAND] Solar System > Uranus and Neptune (digression) acts=- hint=none lines=1 via groq_alt#3 959 ms
+               Student expressed confusion regarding the current topic.
+18:15:09 INFO    copilot.presentation.engine: planner: noop Solar System > Uranus and Neptune (digression)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261014-180622-ba77: 71 segments, 719 words, state v145, 653 events logged
+        CommandReceived=26, ConceptSignal=71, ConcernRaised=11, DeckState=34, ImageChoices=9, ImageReady=11, ImageRequested=11, InterpretRequested=36, InterpretationReady=36, LLMCallFailed=2, LifecycleChanged=5, SlideContextChanged=34, SlideOverflow=7, SlidePatch=72, StateChanged=145, TranscriptFinal=71, UtteranceClassified=71, UtteranceDropped=1
+        stt: 71 published, 1 dropped, latency p50=630 ms p95=889 ms max=1003 ms
+        understanding: 36 interpretations (36 by LLM, 0 fallbacks, 0 repaired), max 7 calls/min, prompt tokens max=2008 avg=1917, latency p50=1141 ms max=3982 ms
+        presentation: 12 slides; planner ops {'new': 1, 'continue': 4, 'update': 26, 'noop': 5}; revisions 3, corrections shown 10, shown as said 0
+        images: {'requests': 11, 'found': 10, 'none': 1}; slides with an image 8/12
+          1. [definition] What is Solar System? [part 1]  (v13, ['definition', 'points', 'image'])
+          2. [hierarchy] What is Solar System? [part 2]  (v2, ['hierarchy', 'image'])
+          3. [key_points] What is Solar System? [part 3]  (v2, ['points', 'definition'])
+          4. [process_flow] What is Solar System? [part 4]  (v4, ['process', 'facts', 'callout', 'points'])
+          5. [hierarchy] Solar Activity  (v7, ['hierarchy', 'points', 'image'])
+          6. [members] Planets [part 1]  (v8, ['definition', 'image', 'points', 'facts'])
+          7. [members] Planets [part 2]  (v6, ['definition', 'image', 'points', 'facts'])
+          8. [members] Planets [part 3]  (v5, ['definition', 'points', 'image', 'points'])
+          9. [concept] Planets [part 4]  (v8, ['definition', 'definition', 'definition', 'points', 'points', 'points'])
+          10. [key_points] Planets [part 5]  (v4, ['points', 'image'])
+          11. [hierarchy] Uranus and Neptune [part 1]  (v8, ['hierarchy', 'image', 'points'])
+          12. [key_points] Uranus and Neptune [part 2]  (v5, ['points'])
+        providers: {'groq_alt#3': 29, 'groq_alt#4': 7}; triggers: {'max_wait': 12, 'words': 4, 'boundary': 2, 'pause': 18}; outline: ['Solar System > Definition, Formation and Structure, Solar Activity, Planets, Uranus and Neptune']; concerns: 11
+        log: C:\Users\potda\Multimodal-AI-Teaching-Copilot-For-Real-Time-Visual-Learning-Generation\data\sessions\20261014-180622-ba77\session.sqlite

@@ -1,0 +1,16 @@
+{
+  "name": "test23",
+  "source": "mic",
+  "note": "speaker B, maths",
+  "session_id": "20261014-230244-3508",
+  "date": "2026-10-14 23:18",
+  "title": "",
+  "minutes": 13.8,
+  "utterances": 122,
+  "slides": 31,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker B",
+  "subject": "maths"
+}

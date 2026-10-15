@@ -573,8 +573,10 @@ def is_small(piece: Piece) -> bool:
 
 # ---- slide inspection -----------------------------------------------------------------------------------
 def _find(spec: SlideSpec, block_type: str):
-    """The slide-wide block of a type (blocks inside a concept column belong to that concept only)."""
-    return next((b for b in spec.blocks if b.type == block_type and not getattr(b, "about", "")), None)
+    """The slide-wide block of a type (blocks inside a concept column belong to that concept only; a provisional list
+    heard from a cue (F-013) is never merged into)."""
+    return next((b for b in spec.blocks if b.type == block_type and not getattr(b, "about", "")
+                 and not getattr(b, "provisional", False)), None)
 
 
 def _replace_block(spec: SlideSpec, old, new) -> SlideSpec:
@@ -617,6 +619,8 @@ def teacher_items(spec: SlideSpec) -> int:
     """Displayed content units that are not provisional (0 → the slide can still be retitled/reshaped)."""
     n = 0
     for b in spec.blocks:
+        if getattr(b, "provisional", False):
+            continue
         if b.type == "points":
             n += sum(1 for i in b.items if not i.provisional)
         elif b.type == "definition":
@@ -681,6 +685,8 @@ def describe(spec: SlideSpec, max_items: int = 8) -> tuple[str, dict[str, str]]:
             parts.append(f"[{key}] {text}")
 
     for b in spec.blocks:
+        if getattr(b, "provisional", False):  # heard from a cue, not yet interpreted (F-013): not on the slide yet
+            continue
         if b.type == "points":
             for i in b.items:
                 if not i.provisional:
@@ -1407,6 +1413,8 @@ def element_texts(spec: SlideSpec) -> dict[str, str]:
             walk(c)
 
     for b in spec.blocks:
+        if getattr(b, "provisional", False):
+            continue
         if b.type == "points":
             out.update({i.id: i.text for i in b.items})
         elif b.type == "definition":
@@ -1560,6 +1568,48 @@ def substitute(spec: SlideSpec, ids: set[str], old: str, new: str) -> SlideSpec:
 
 
 # ---- provisional fast path ------------------------------------------------------------------------------
+CUE_LIST_PREFIX = "cue-list-"
+
+
+def set_cue_list(spec: SlideSpec, head: str, items: list[str]) -> Optional[SlideSpec]:
+    """F-013: the members of a list as the teacher names them ("X is classified into A, B and C"), a provisional tree
+    replaced by the interpretation's content. None when it does not fit."""
+    bid = CUE_LIST_PREFIX + spec.id
+    block = HierarchyBlock(id=bid, provisional=True,
+                           root=TreeNode(id=bid + "-root", label=head,
+                                         children=[TreeNode(id=f"{bid}-{n}", label=i) for n, i in enumerate(items)]))
+    rest = [b for b in spec.blocks if b.id != bid]
+    cand = _with_layout(spec.model_copy(update={"blocks": [*rest, block]}))
+    return cand if fits(cand) else None
+
+
+LIVE_DEF_PREFIX = "live-def-"
+
+
+def set_live_definition(spec: SlideSpec, term: str, text: str) -> Optional[SlideSpec]:
+    """F-013 S1b: the definition as the teacher is saying it (faded), replaced by the interpretation's."""
+    bid = LIVE_DEF_PREFIX + spec.id
+    block = DefinitionBlock(id=bid, term=term, definition=text, provisional=True)
+    rest = [b for b in spec.blocks if b.id != bid]
+    cand = _with_layout(spec.model_copy(update={"blocks": [block, *rest]}))
+    return cand if fits(cand) else None
+
+
+def clear_block(spec: SlideSpec, block_id: str) -> SlideSpec:
+    if not any(b.id == block_id for b in spec.blocks):
+        return spec
+    blocks = [b for b in spec.blocks if b.id != block_id]
+    return _with_layout(spec.model_copy(update={"blocks": blocks})) if blocks else \
+        spec.model_copy(update={"blocks": [], "layout": "concept"})
+
+
+def clear_cue_list(spec: SlideSpec) -> SlideSpec:
+    if not any(b.id == CUE_LIST_PREFIX + spec.id for b in spec.blocks):
+        return spec
+    blocks = [b for b in spec.blocks if b.id != CUE_LIST_PREFIX + spec.id]
+    return _with_layout(spec.model_copy(update={"blocks": blocks})) if blocks else         spec.model_copy(update={"blocks": [], "layout": "concept"})
+
+
 def set_provisional(spec: SlideSpec, text: str) -> Optional[SlideSpec]:
     """Show (or update in place) one provisional item on a list-like slide. None if the slide has no place."""
     pid = PROVISIONAL_PREFIX + spec.id

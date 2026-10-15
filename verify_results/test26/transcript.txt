@@ -1,0 +1,102 @@
+[    4.4] So today's topic is VLSI.
+[    8.3] First topic is what is VLSI? VLSI stands for Very Large Scale Integration. It refers to integrating a very large number of electronic components, especially transistors onto a single integrated circuit.
+[   23.3] In early electronics systems, engineers used individual electronic components to build circuits. Later, integrated circuit technology allowed multiple components to be fabricated on a single semiconductor chip.
+[   37.4] As fabrication technology advanced, the number of transistors that could be integrated onto a chip increased significantly. More than BLSR technology enables the development of impact, high performance.
+[   51.5] and energy efficient electronic system. For example, a smartphone processor contains billions of transistors that work together to execute instructions, process images, manage memory, and perform calculations.
+[   65.6] application of VLSI.
+[   67.7] microprocessor and microcontrollers, smartphones and computers, artificial intelligence accelerators, digital signal processors, memory devices, automotive electronics,
+[   81.5] wireless communication systems.
+[   84.3] Stop it
+[   85.4] Second topic is what is an integrated circuit? An integrated circuit or IC is an electronic circuit fabricated on a semiconductor material usually silicon.
+[   99.1] and IC may contain transistors resistors
+[  104.0] capacitors and interconnections, although the exact components depend on its design and manufacturing technology. Instead of connecting individual components externally,
+[  116.8] and I see integrates many circuits.
+[  121.2] include smaller externally and IC integrates many circuit element into a compact chip. The main advantage of integrated circuits include smaller size reduced
+[  135.8] power consumption in many applications, high reliability, and the ability to manufacture complex circuits economically at scale. For example, a microcontroller IC may contain a processor core,
+[  149.5] memory, timers, communication interfaces, and other peripherals. Integrated circuits are commonly classified into digital ICs, analog ICs, and mixed signal ICs.
+[  163.5] Digital ICs process binary information, analog ICs process continuously varying signals, mixed signal ICs combine analog and digital circuitry such as communication, trans receivers and
+[  177.8] data converters.
+[  180.0] Third topic is Transistors the building block of VLSI. A transistor is a semiconductor device that can control electrical current. Transistors are fundamental building blocks of modern integrated circuits.
+[  194.8] One of the most important transistor type used in modern digital VLSI is MOSFET, which stands for Metal Oxide Semiconductor Field Effect.
+[  207.4] A MOSFET has three primary terminals, gate, source, and drain. A body or substrate terminal is also present, although its connection depends on the device structure.
+[  220.0] the voltage applied to the gate controls the conduction between the source and drain.
+[  227.5] Two important MOSFET types are nMOS use an n-type channel when turned on pMOS use a p-type channel when turned on
+[  240.0] These transistors are commonly combined to build CMOS circuits.
+[  246.0] Transistors act as electronics switches in digital circuits, enabling the representation and processing of binary values.
+[  255.3] Topic 4 CMOS Technology. CMOS stands for Complementary Metal Oxide Semiconductor. It is a technology that uses complementary NMOS and PMOS
+[  268.0] transistors to implement electronic circuits. CMOS is widely used in modern digital ICs because properly designed CMOS logic circuits can have very low static power consumption.
+[  282.4] under steady state conditions. Consider a CMOS inverter. A CMOS inverter consists of a PMOS transistor connected towards the positive supply and an
+[  295.5] NMOS transistor connected to word ground.
+[  298.7] when the input is low the pMOS transistor is on and the nMOS transistor is off so the output is high when the input is high the pMOS transistor is off and the nMOS transistor is on
+[  313.1] so the output is low therefore the circuit performs the NOT operation CMOS technology is used in processor, memory devices, digital logic, image sensors
+[  325.9] and many other integrated circuits.
+[  328.7] So big sigh
+[  330.4] Digital Logic Design is an essential foundation for VLSI engineering. Digital circuits operate on discrete logical values commonly represented as 0 and 1.
+[  345.4] The basic logic gates are AND, OR, AND, NOT. Other important gates include AN AND,
+[  354.2] and not
+[  355.8] Egg sauce.
+[  357.7] and X0.
+[  359.8] For example, an AND gate produces an output of 1 only when both inputs are 1.
+[  368.7] the boolean expression for a two input AND gate is y equals to a dot b and OR gate produces an output of 1 when at least one input is
+[  383.7] 1 by equal to a plus b. A nord gate reverses the input.
+[  390.0] by equals to a bar
+[  393.2] Logic gates can be combined to build complex digital systems such as adders, multiplexers, counters, registers and processors.
+[  404.5] Understanding Boolean Algebra and logic gates is important before studying advanced VLSI design.
+[  411.3] 6. Combinational and sequential circuits. Digital circuits are broadly divided into combinational and sequential circuits. Combinational circuits. The output of combinational circuit.
+[  425.2] depends on its current input. Example includes adders and subtractors, multiplexers, encoders and decoders, comparators. For example,
+[  437.5] A half adder adds two binary input bits and produces a sum and a carry. Its equations are
+[  457.9] I don't know how to do it.
+[  459.9] What do you want?
+[  461.3] She's not.
+[  462.8] and plus
+[  464.8] Orgust.
+[  466.4] There are 9 of them.
+[  469.8] so the equation is going to be equal to nand
+[  476.5] I got my T-8A9
+[  481.0] S equals to a NAND b, C equals to a dot b. Here, S represents the sum and C represents the carry. Sequential circuits, the output of sequence.
+[  494.3] Sequential circuit depends on its current inputs and stored state. Sequential circuits use memory elements such as latches and flip-flops. Example includes registers, counters,
+[  517.8] There is an error in the book. It was N and V. N is the number. It is the number.
+[  526.7] I don't know why you are so quiet. I don't know why you are so quiet.
+[  540.2] finite state machines, digital controllers, sequential circuits often use a clock signal to coordinate state changes. They are essential for implementing processors.
+[  552.4] control units and digital communication systems.
+[  566.7] been registered under the control of Digital Logic.
+[  581.2] may define a counter that increments its value on every active clock edge. A simplified Verilog example is
+[  594.9] Hold up and move Luca
+[  599.6] I will see you in the next video.
+[  605.7] module counter round bracket open input wire clock comma input wire reset comma output reg
+[  615.9] square bracket 3 is 2 0 square bracket close count
+[  623.1] round bracket closed semicolon
+[  626.3] Always add the red.
+[  629.9] Down bad bracket
+[  634.2] post edge clock or post edge reset round bracket close begin
+[  641.5] If round bracket open, reset round bracket close count less than equal to 4
+[  657.5] single inverted comma
+[  660.3] B0000
+[  664.5] else count less than equal to count plus one.
+[  676.8] DASH, dash, nay, pag, ril at the sun, de plu dee, dee, complement.
+[  684.3] Invert.
+[  685.8] single inverted comma b1 semicolon end end module. This module describes a 4 bit counter with an asynchronous active high reset. When reset is asserted, the counter becomes
+[  700.2] becomes zero, otherwise it increments on each rising clock edge. RTL is important because it allows engineers to describe digital hardware before the design is converted into physical.
+[  713.6] so good
+[  715.3] Topic 8, The VLSI Design Flow. VLSI design follows a series of steps that transforms a design idea into a manufacturable, integrated circuit.
+[  728.3] Engineers define the circuit's required functionality, performance, power consumption, and temperature.
+[  738.4] and area constraints. Step 2, Architecture design. The system is divided into functional blocks and engineers decide how those blocks interact. Step 3, Artial design. The digital logic is described as a function of the system.
+[  752.2] using a hardware description language such as Verilog or VHDL. Step 4. Functional verification. Simulation and other verification methods are used to check whether the designs behave
+[  765.0] according to its specifications. Step 5, Logic Synthesis. Synthesis tools translate RTL into a network of logic cells based on a target technology library. Step 6,
+[  779.4] Physical Design The design undergoes floor planning, placement, Block 3 tree synthesis, routing and timing analysis. Step 7 Sign of Verification.
+[  792.3] perform checks such as static timing analysis, design rule checks, and layout vs schematic verification as appropriate to the process. Step 8. Fabrication and Testing. The verified physical design is
+[  806.8] prepared for semiconductor manufacturing. The fabricated chips are then tested to evaluate their functionality and performance. The precise sequence and terminology vary by design, type and manufacturing processes.
+[  821.6] Topic 9 FPGA vs ASIC
+[  827.2] FPGA and ASIC are two important approaches to implementing digital hardware. FPGA stands for Field Programmable Gate Array and FPGA
+[  839.5] contains configurable logic blocks, programmable interconnections and other resources.
+[  846.1] Engineering can configure the device after manufacturing to implement different digital circuits. FPGAs are useful for prototyping hardware, experimentation and
+[  858.9] applications requiring configurable logic.
+[  862.0] ASIC stands for Application Specific Integrated Circuit. An ASIC is designed for particular application or set of applications. Its hardware structure is fixed during the manufacturing.
+[  876.3] ASIC can provide excellent performance or power efficiency and area efficiency.
+[  883.6] for suitable designs but their development and manufacturing costs can be high. For example, engineers may implement a communication algorithm on an FPGA to evaluate its performance.
+[  897.3] for developing a dedicated ASIC.
+[  905.2] 10th topic is Physical Design, Floor Planning and Routing. Physical Design transforms a synthesized logic circuit into a physical layout. Floor planning determines the approximate location and dimensions of major functional blocks.
+[  920.2] Placement determines the location of standard cells and other components.
+[  928.0] distribution network to deliver the clock signal to sequential elements. Routing creates the metal interconnections between cells and other circuit elements. Engineers must consider timing, power, conjunction.
+[  942.0] signal integrity and physical manufacturing constraints. The physical design process is important because a logical correct circuit may still fail to meet its performance or power requirement.
+[  954.7] if its physical implementation is poor.

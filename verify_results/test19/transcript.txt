@@ -1,0 +1,74 @@
+[    0.3] Hello everyone, let us learn about coordination compounds. Coordination compounds are those molecular compounds that which retain their identity in solid state as well as in dissolved state. In these compounds, the central metal atom or ion is linked with
+[   13.6] By ions or molecules with coordinate bonds, eg. potassium ferrocynidle.
+[   22.1] Double salts, these are the addition molecular compounds which are stable in solid but dissociate into constituent ion in the solution. Example, Morse salt.
+[   36.3] Get dissociated into Fe2+, NH4+, and SO42- ions.
+[   46.8] Terms related to coordination compounds, the complex ion or coordination entity. It is an electrically charged species in which central metal atoms or ions is surrounded by number of ions or neutral molecules.
+[   63.0] Cationic complex entity. It is the complex ion which carries charge, positive charge.
+[   72.2] Anionic complex entity. It is the complex ion which carries a negative charge, example FeCN6 4-1.
+[   79.7] Central atom or ion, the atom or ion to which a fixed number of ions or groups are born is called central atom or ion. It is also referred as Leavis Acid. Example in
+[   92.5] NiCl2H2O4, Ni is central metal atom, it is generally transition.
+[  100.9] Element or inner transition element. These central atoms or ions are also referred to as Lebesse acid.
+[  107.4] Ligands.
+[  108.5] Ligand is electron donating species, born to the central atom in the coordination entity.
+[  114.7] These may be charged or neutral. Ligands are of the following types.
+[  119.2] Unindentent, that is, it is a ligand which has one donor cell, that is the ligand bond to the metal ion.
+[  127.2] Through a single donor site, example H2O, NH3, etc.
+[  134.5] Dindenet, it is the ligand which has two donor sites.
+[  140.5] Polydenden, it is the ligand which has several donor sites.
+[  145.6] Ambient ligands, these are monodendron ligands which can ligand through two different sites. Example NO2-SCN-.
+[  158.9] Chilating ligands die or polydendron ligands causing stylization around the metal atoms which are known as chilates. Such ligands use two or more donor atoms.
+[  172.6] To bind a single metal ion or moon as cheating ligands.
+[  181.7] The stabilization of coordination compounds due to chelation is known as
+[  187.1] Chelate effect.
+[  193.3] Coordination number, it is defined as the number of coordinate bonds formed by central metal atom with the ligands. In case of monodendron ligands, coordination number equals to number of ligands. In polydendron ligands, coordination number equals to
+[  208.0] Number of ligands into density.
+[  217.3] Coordination sphere, the central metal ion and the ligands attached to it are enclosed in square brackets which is known as coordination sphere. The ionos-sable group written outside the bracket is known as counter-ions.
+[  232.2] Polycoordination polyhedra, the spatial arrangement of the ligands which are directly attached to the central metal ion is called coordination polyhedra and the central atom or ion, example CuNH3 63 plus.
+[  246.9] It's Octahedral, and I see you.
+[  250.8] Tcl-4 is tetrahedral and Tcl-4,2- is square planar.
+[  261.0] Coordination number of central atom. The charge of the complex is all the ligands are removed along with the electron pair that are shared with the central atom. It is called oxidation number of central atom.
+[  273.7] Types of complexes
+[  279.9] Homoleptic Complexes Complexes in which the metal atom or ion is linked to only one kind of donor atom is called homoleptic complexes. For example, CONH3-6-3+.
+[  292.9] Heteroleptic complexes, complexes in which the metal atoms or ions is linked to more than
+[  299.2] One kind of donor atom is called heteroelectric complexes, example, CONH3, 4Cl2+.
+[  309.1] Labels and inert complexes. Complexes in which the ligand substitution is fast are known as labels. Complexes in which the ligand substitution is low are known as inert complexes.
+[  324.4] Effective atomic number EAN. This concept was proposed by Sidwick. In a complex, the EAN of metal atom is equal to the total number of electrons present in it.
+[  338.4] PAn equals Z minus ON of metal plus 2 times CN, where Z is the atomic number of metals atom, ON is the oxidation number of metals, CN is the coordination number of complex.
+[  352.4] An iron with central metal atom having EN equals to the next inert gas will be more stable.
+[  361.1] Isomerism in coordination compounds.
+[  364.0] Coordination compounds exhibit the following types of isomerism. Structural isomerism. In this isomerism, isomers have different bonding patterns, different types of structural isomers are linkage isomerism, coordination isomerism,
+[  378.6] Ionization isomerism, solvent isomerism.
+[  383.5] Stereoisomerism. Stereoisomerism have chemical formula.
+[  392.9] A chemical bond but they are different species aren't they?
+[  396.5] Geometrical isomerism,
+[  400.7] Optical isomerism.
+[  404.9] Burning in scaldination compounds, the Vanners theory. Metal exhibit two types of valences in the formation of complexes. These are primary valences and secondary valences. Primary valences correspond to oxidation number O-F.
+[  418.3] of the metal and are satisfied by anence. These are ineszable and non-directional.
+[  426.7] Secondary valences correspond to coordination number CN of the metal atom and are satisfied by ligands. These are non-ionizable and directional. Hence, geometry is decided by these valences.
+[  438.9] Metal ions should satisfy both primary and secondary balances. Limitations Werner theory was usable to account for the following. Definite geometry of coordination compounds. Presence of magnetic and optical properties of coordination compounds.
+[  452.6] To overcome the limitations of Werner's theory,
+[  455.9] Various theories were put forward such as the violence bond theory, crystal field theory.
+[  460.9] The Wannesbord theory. This theory was proposed by L. Pauling in 1930s. According to this theory, when a complex is formed, the metal ion's atoms provide empty orbitals to the surrounding liquids.
+[  473.4] Coordination number shows the number of such empty orbitals, that is, number of empty orbitals is equal to the coordination number. These empty orbitals hybridize.
+[  483.3] Before participation in bonding and the nature of hybridization depends on the nature of metal and on the nature of approaching ligands.
+[  492.5] The inner and orbital complexes and outer orbital complexes. When outer d orbital and d shell are used in bonding, the complexes are called outer orbital complexes.
+[  505.5] They are formed due to weak orbital ligands or high-spin ligands and hybridizations in sp3d d2.
+[  511.6] They have octahedral geometry. When d-orbitals of n-1 shells are used, these are known as Tinner orbital complexes. These are formed due to strong field ligands or low spin ligands and
+[  525.6] Hybrid digestion is D2SP3.
+[  532.3] They have also octahedral geometry, 6 ligands.
+[  537.2] Unit and end of the Hetal entity.
+[  544.6] Limitations of VBT This theory could not explain the quantization of the magnetic data, existence of inner orbital and outer orbital complex, change of magnetic moment with temperature and color of complexes.
+[  562.3] The crystal field theory, CFD, this theory was proposed by H. Bethwick in 1929.
+[  569.7] Van Vleck, Orgel, 1935, applied this theory to coordination compounds. In this theory, ligands are treated on point charges in case of anions and dipoles in the case of
+[  582.0] Neutral molecules. The five d orbitals are classified as d orbitals, that is dx, dy and dz are oriented in between
+[  599.4] The other two orbitals, d orbitals, that is
+[  605.1] d x square minus y square and d z square oriented along the axis is called the CG orbitals. Due to the approach of ligands, five degenerate d orbitals split. Splitting of d orbitals depends on the nature of the crystal field.
+[  619.8] The energy difference between T2g and Eg level is designated
+[  624.1] By delta and is called crystal field splitting energy.
+[  640.2] Organometallic compounds, they contain one or more metal-carbon bonds in their molecules. They are of the following text.
+[  649.5] Sigma-bonded compounds, metal-carbon bonds is sigma bond that is C2H5, 4PbZn.
+[  657.1] C2H5-2
+[  660.7] R, MGX, etc. Bye, Bondit!
+[  664.5] or compounds in which molecule ions containing pi bonds acting as ligands. For example, Ferrons, Dibensin Chlorine, Chromium and Caesars salt.
+[  678.4] Sigma and Pi bonded compounds, metal carbonyls are their examples. Metal carbon bond of metal carbonyls have both sigma and pi bond characters. They have CO molecules as ligand example.
+[  693.3] NSU Food and FECU Food, fine.

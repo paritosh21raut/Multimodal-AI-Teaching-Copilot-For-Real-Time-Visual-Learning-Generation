@@ -1,0 +1,66 @@
+[    1.3] Now, the first question is what is a computer network?
+[    6.5] So, a computer network is a number of computers also known as nodes.
+[   12.3] Connected by some communication lines. So, we have these computers which are connected by some communication lines.
+[   21.7] So, two computers connected to the network can communicate with each other through other nodes if they are not directly connected, which means that computer does not have to be computer
+[   34.6] Connected to all the other computers in the network in order to communicate with any of them. It may be an indirect communication via some other computer.
+[   46.1] And the other point is that
+[   49.2] These nodes, they are computers, but some of them are not computers. Some of them are sort of network devices. Now, there are various kinds of network devices like switches, routers, etcetera.
+[   63.0] So, they could also, so they facilitate the communication and running of this entire network. So, they are also taking as nodes in the network. So, finally, we have some of the nodes.
+[   76.6] Some nodes which may be either computers or there may be network devices like switches and routers and there is a communication between them.
+[   87.1] This communication of course.
+[   90.1] Uh...
+[   91.7] Can be of various types, we will come to that presently.
+[   97.8] So, the computers can communicate with each other. Now, what do they communicate?
+[  103.5] They exchange information between different computers. Now, this information could be of any kind of information. They could be data used by a program or they could be
+[  116.9] Some program itself or it could be any kind of information really. So, that is one of the basic and major use of computer network.
+[  129.3] Of course, there are other specialized uses of computer networks. For example, interconnected small computers.
+[  136.6] So, this can replace a large computer. For example, you have a very large computation to perform and so for that either you need a very powerful and very large computer which may be costly.
+[  149.3] The other option could be that you break up this work into very small pieces and assign them to the small computers. So, the small computers sort of do the computation.
+[  161.7] On that small chunk of the problem and then they communicate with each other to form the final solution.
+[  172.2] Then the other use of computer networks which is coming into vogue very much these days is that the it is you can use this network as a communication tool. We know the very basic say for example,
+[  186.4] You send emails to, I mean you can send emails to almost anybody these days and that is really a very cheap and very fast mode of communication.
+[  197.4] Secondly, the computer network could also be used for direct communication.
+[  201.2] Communication like say you could have communicate through voice over a computer network, you can communicate through video over a computer network. So, all these different communication
+[  215.9] Is converging into this computer network and as a matter of fact, now a days when we talk about the network, we do not look upon it just as a computer network.
+[  229.2] Bedrock on which say all this computing, communication, all these are converging.
+[  237.4] And then of course, you have some applications which are necessarily of distributed nature, all right. For example, let us say railway reservation system.
+[  250.0] Now obviously even if you had a large computer to handle all the railway reservations in the world in one place, but you would not want all the people to go to one place and
+[  263.6] So, these are sort of
+[  275.8] Examples of distributed systems, so this is a distributed reservation system. Similarly, there could be other kinds of distributed systems, there could be distributed databases and all kinds of applications. So, that is the other.
+[  288.6] Application of networks.
+[  292.5] Now, a quick look at the history of this.
+[  301.1] Computers first and then we will sort of focus on.
+[  306.4] Computer networks.
+[  309.1] Well, in 1948 we have the first commercial computer installed. It was an UNIVAC that was a big company once upon a time.
+[  319.3] And then in 1958, the first US communication satellite became operational.
+[  327.3] So, you see the network always has these two components. One is that you have to have these computers and then you have to have these communication channels and satellite communication is of course, one of an important.
+[  341.4] Medium of communication,
+[  344.0] Then in 1964, we have an airline reservation system which uses some kind of a packet switching network. It was proposed by the Rand Corporation.
+[  356.1] And in 1969 ARPANET, the first packet switching network began its operation. This was actually a watershed event as we will see.
+[  370.0] On the way computer networks developed.
+[  375.0] Then in 1971, we have the first computer chip. Previous computers were made through very low level gates and all, but the first 4 bit small computer chip with 2300 transistors.
+[  389.4] And they became available in 1971.
+[  393.2] In 1972,
+[  395.8] Ethernet specifications was formulated.
+[  402.6] So, we will talk about protocols and different kinds of protocols and Ethernet remains one of the most important network protocols that we use.
+[  416.3] Formulated in 1972.
+[  419.4] In 1974 IBM introduced its own version of network in SNA.
+[  426.1] Then in 1975, Altair 8800, first commercial microcomputer that was sold as a kit. So, we are actually looking at the very brief.
+[  437.5] History of computers in general. So, in 1975, we had the Paul Allen and Bill Gates getting together, which eventually formed, they formed Microsoft. We all know about Microsoft.
+[  451.4] 1976, Osnay and Jobs built Apple I. So, Apple also had a lot of contribution to make in to computers in various aspects and the
+[  464.1] Windows system that we see today almost everywhere it was basically it started from apple computers.
+[  472.8] In 1979, we had the VC Calc as the first commercial spreadsheet. So, that is a very popular application of computers these days.
+[  483.6] In 1981, IBM introduced IBM PC with one floppy drive. Later on, they changed it with a drive and a hard drive also.
+[  495.0] And in 1983, TCP IP. So, this TCP IP is another network protocol that we are using. Actually, we use both Ethernet and Ethernet.
+[  507.2] So, we actually we have different protocols which are running on the network we require and how these different protocols are arranged and how they are used that I will cover today in the second part of the lecture.
+[  520.4] So, this TCP IP is another important protocol that is still very much present today that became the official protocol of ARPANET. Remember ARPANET we talked about that is a network which was set up in USA.
+[  533.2] Under DRDO and which had a very far reaching impact on the way network developed.
+[  539.9] In 1984, Apple introduced GUI with Apple Macintosh and 1986, we see the first laptop PCs.
+[  549.7] So, IBM gives a multitasking OS for the PCs.
+[  556.1] 1989, Microsoft releases Windows, which is another multitasking system.
+[  561.5] That is the Microsoft version.
+[  565.7] 1989 NSF, that is the National Sounds Foundation of USA, it replaces ARPANET as internet backbone.
+[  574.7] And then WWW was invented by CERN physicist Tim Berners-Lee.
+[  580.9] In 1991.
+[  582.9] So, this advent of WWW that means the world wide web.
+[  589.3] So, this really made the network very very popular. So, there was this kind of positive feedback going on as it became more popular more and more.

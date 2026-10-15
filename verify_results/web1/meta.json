@@ -1,0 +1,21 @@
+{
+  "name": "web1",
+  "source": "web",
+  "note": "web, biology; MIT OCW 7.016 Introductory Biology F18, lec 11 'Cells, the Simplest Functional Units'; https://archive.org/download/MIT7.016F18/MIT7_016F18_lec11_300k.mp4; CC BY-NC-SA 4.0; clip 3:00-13:00",
+  "session_id": "20261015-113231-5333",
+  "date": "2026-10-15 11:43",
+  "title": "",
+  "minutes": 10.0,
+  "utterances": 70,
+  "slides": 10,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [
+    "--audio-file",
+    "artifacts/web_audio/web1.wav",
+    "--no-wait",
+    "--no-open",
+    "--subject",
+    "Biology"
+  ]
+}

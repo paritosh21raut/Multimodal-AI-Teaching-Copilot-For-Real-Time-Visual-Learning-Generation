@@ -1,0 +1,16 @@
+{
+  "name": "test24",
+  "source": "mic",
+  "note": "speaker B, networking",
+  "session_id": "20261014-175249-401a",
+  "date": "2026-10-14 18:05",
+  "title": "",
+  "minutes": 11.5,
+  "utterances": 84,
+  "slides": 16,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker B",
+  "subject": "networking"
+}

@@ -1,7 +1,7 @@
 {
   "name": "test1",
   "source": "mic",
-  "note": "self, physics",
+  "note": "speaker A, physics",
   "session_id": "20261011-234016-10a9",
   "date": "2026-10-11 23:48",
   "title": "",
@@ -10,5 +10,7 @@
   "slides": 6,
   "theme": "dark",
   "simulated": false,
-  "copilot_args": []
+  "copilot_args": [],
+  "speaker": "speaker A",
+  "subject": "physics"
 }

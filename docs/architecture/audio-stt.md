@@ -22,7 +22,16 @@
   and that are seen at least twice (`notes.reference.rare_terms`: GPIO, sinoatrial, thylakoid), fixed when speech
   starts. Not yet measured on real audio with study material.
 - Emits `TranscriptFinal` (text, start/end time, avg logprob, no_speech_prob, language="en").
-- Optional partials (`TranscriptPartial`) for long utterances, used only by the Control View.
+- **Live partials (F-013 S1b).** A second, fast model (`[stt] partial_model = "distil-small.en"`, own thread, own
+  CTranslate2 instance) transcribes the utterance in progress every `partial_interval_s` (0.8 s; latest snapshot only,
+  never queued) → `TranscriptPartial(utterance, text, stable)`. `stable` = the words two consecutive passes agree on
+  (local agreement); only it is used. It runs **without** the vocabulary prompt: the 30 study-material terms made
+  distil-small.en ~10x slower (1.4 s instead of 0.15 s per pass, RTX 3050). Benchmark (RTX 3050 4 GB): 0.13–0.2 s per
+  pass alone, 0.2–0.36 s while medium.en is busy. The final text stays medium.en with the prompt.
+- **Sentence cuts.** When the agreed live text has a finished sentence followed by ≥ 2 more agreed words, the
+  segmenter ends the utterance there (`split_at`: quietest frame within 0.25 s of the word end), so medium.en
+  transcribes sentence by sentence even when the speaker does not pause (tests 1–30: 25 % of lines held several
+  sentences, p90 line 13.5 s). Every `TranscriptFinal` carries its `utterance` number, linking it to its partials.
 - Hallucination guard: drop segments with high no_speech_prob or known filler hallucinations ("Thank you.", repeats).
 
 ## Budgets

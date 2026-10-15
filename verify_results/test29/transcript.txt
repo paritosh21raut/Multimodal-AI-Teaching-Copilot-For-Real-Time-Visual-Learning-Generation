@@ -1,0 +1,91 @@
+[   13.6] Economics is an important subject that helps us understand money, businesses, jobs, prices, markets, government.
+[   23.9] policies and how countries develop. I will explain economics from the basics using simple English and real life example so you can understand the subject even if you are starting from zero.
+[   36.2] What is Economics? Economics is the study of how individuals, businesses, and governments use limited resources to satisfy
+[   46.1] unlimited human wants. In simple words, economics helps us understand how people earn and spend money.
+[   53.8] Why the prices of product increase or decrease? How businesses make profits? Why some countries are rich and others are poor? How governments collect taxes and spend money?
+[   65.9] why unemployment and inflation occurs. Example, imagine you have Rs 100,
+[   73.6] you want to buy a book for Rs 300.
+[   77.2] Clothes for Rs.500 Headphones for Rs.600
+[   81.6] Your total wants cost Rs. 400 but you have only Rs. 1000. You must decide what to buy and what to postpone. This is an example of my equation.
+[   93.6] economic problem because your resources are limited but your wants exceed your available resources.
+[  103.3] The two main dances of economics. Economics is broadly divided into two major branches. 1. Microeconomics. Microeconomics studies the economic decisions of individuals.
+[  116.1] households, and businesses. It focuses on small economic units. Topic includes demand and supply, consumer behavior, product pricing, production cost, business profits,
+[  128.8] completion between companies.
+[  132.0] Example, suppose the price of a smartphone decreases from 20,000 to 15,000. More people may decide to purchase it. Microeconomics studies how consumers respond to change in prices.
+[  145.8] and how businesses make.
+[  147.5] pricing decisions.
+[  149.7] 2. Macroeconomics. Macroeconomics studies the economy of an entire country of the world. The focus is on large-scale economic activities. Topic includes
+[  162.5] Gross Domestic Product GDP.
+[  166.4] inflation and employment, national income, incoming growth.
+[  172.3] government budgets, interest rates and monetary policy, international trades.
+[  180.9] So remember, micro equals to small economic units, macro equals to the economy as a whole.
+[  189.4] basic concept of economics. They are the foundational concept you should understand first.
+[  197.2] First is, Sky City.
+[  199.6] Sacity means that resources are limited compared with people's wants. Resources include money, time, land, labor, raw materials, and energy.
+[  211.8] For example, you have 2 hours to study but you need to prepare 5 subjects. Because your time is limited, you must decide how to use it.
+[  222.8] Scarcity is one of the fundamental reasons economic decision making exists.
+[  229.1] 2. Opportunity Cost. Opportunity Cost is the value of the next best alternative you give when making a choice.
+[  242.3] and can choose between buying a book and moving to a movie.
+[  246.5] If you buy the book, the movie is your next best alternative that you give up. Therefore, the opportunity cost of buying the book is the value you would have received from going to the movie.
+[  258.7] Opportunity cost can involve time and opportunity is not just money. Demand.
+[  264.8] Demand refers to the quality of a product consumers are willing and able to purchase at different prices during a given period.
+[  273.5] Generally, when the price decreases, the quantity demanded increases, assuming all the factors remain unchanged.
+[  283.6] 4th one is Supply. Supply refers to the quantity of a product
+[  288.6] that produce are willing and able to sell at different prices during a given period.
+[  297.4] Generally, when the sealing price increases, producers are willing to supply more assuming all the factors remain unchanged.
+[  308.1] 5th one is Market Equilibrium Market Equilibrium occurs when the quantity demanded equals the quantity supplied at particular price.
+[  319.5] 6. Production. Production means creating goods or providing services to satisfy human wants.
+[  328.7] So, Money, Banking and Finance. Economics also explains how money moves through an economy.
+[  337.4] Money is anything generally accepted as payment for goods and services. It means functions are medium of exchange, used to buy and sell products.
+[  349.9] Unit of account used to express prices Store of value used to transfer purchasing power into the future Standard of deferred payment used to express future payments and debits
+[  366.6] So inflation is a sustained increase in the general price level of goods and services over time.
+[  375.2] So inflation rate equals to new price minus old price upon old price.
+[  384.9] Common causes of inflation include increased demand for goods and services.
+[  393.5] 2. Higher production and transportation cost 3. Supply distribution 4. Changes in money and credit condition
+[  404.3] Interest rate is the cost of borrowing money or their return on lending or dis-
+[  412.9] depositing money for example
+[  417.8] After one year the interest is I equals to P into R into T divided by 100.
+[  424.4] P equals to principal, R equals to annual interest rate, and T equals to time.
+[  431.2] Banking. Banks provide services such as accepting deposits, providing loans, processing payments, supporting businesses, transactions, facilitating savings and investment.
+[  481.6] JDP and Economic Growth. What is JDP? JDP stands for Gross Domestic Product. Means the value of final goods and services produced within a country border during a specified period.
+[  495.7] GDP is one of the most widely used indicators of economic activity. For example, India's GDP includes the value of eligible final goods and services produced within India including production by
+[  510.7] for an owned company operating there.
+[  513.7] GDP formula, the expenditure approach to GDP is expressed as
+[  519.9] GDP equals to C plus I plus G plus
+[  525.2] in bracket x minus m bracket close
+[  529.0] where C equals to consumption expenditure, I equals to investment expenditure, G equals to government expenditure on final goods and services, X equals to exports, M equals to imports.
+[  547.7] unemployment and poverty. Unemployment occurs when people who are available for and seeking work cannot find
+[  557.1] Common categories include
+[  560.8] Frictional unemployment. People are temporarily between jobs. Structural unemployment. Workers' skills do not match the job available or the economy changes in ways that reduce demand for their occupations.
+[  574.8] cyclical unemployment, unemployment associated with economic downturns, seasonal unemployment, employment varies with seasons or recurring periods of activity.
+[  589.3] Poverty refers to a situation in which people lack sufficient resources to meet essential needs or participate adequately in society.
+[  600.1] It can involve limited access to food, housing, healthcare, education.
+[  607.7] clean water
+[  609.5] Employment opportunity
+[  616.1] The three major economic sectors. First is primary sector.
+[  620.4] extract or produce natural resources, e.g. agriculture, fishing, mining and forestry.
+[  626.8] Second one is secondary sector.
+[  629.2] produces raw materials and manufacture products. Example, electronics manufacturing, automobile production and construction.
+[  638.2] Third one is territory sector produces zombies.
+[  642.1] example banking, education, software, development and telecommunication.
+[  647.9] this sector had interconnected for example electronics manufacturing depends on raw materials, factors
+[  656.0] transport from banking and software devices.
+[  684.6] different types of economic systems.
+[  689.4] The economic system describes how a society organizes the production and distribution of goods and services.
+[  699.2] 1. Capitalistic Economy
+[  703.2] Private, individuals and businesses play a major role in oving resources and making production decisions. Example, the United States is commonly described as having a market-oriented capitalistic
+[  718.2] although its government also plays a sustained role.
+[  723.6] economic role.
+[  725.8] Second one is Socialistic Economy.
+[  728.8] The socialist economy system emphasizes social or public ownership and control of important productive resources, though the agreements vary widely.
+[  741.8] 3. Mixed Economy
+[  745.1] A mixed economy combines private economic activity with government participation and regulations.
+[  752.2] India is generally described as a mixed economy because private businesses operate alongside public enterprises, government services and economic regulation.
+[  766.4] Economics in everyday life.
+[  769.4] You do not need to be an economist to see economics in action.
+[  779.3] economics and technology.
+[  782.3] in economics and technology is particularly relevant to technology and engineering.
+[  788.9] For example, consider an electronics company deciding whether to manufacture a new circuit board. The company must consider component cost, manufacturing expenses, labor cost, equipment investment, product demand, selling price.
+[  803.6] combination expected profit.
+[  807.8] So the profit before all are unaccounted expenses.
+[  811.7] Profit equals to revenue minus total cost.

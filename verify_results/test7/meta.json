@@ -1,7 +1,7 @@
 {
   "name": "test7",
   "source": "mic",
-  "note": "self, histrory",
+  "note": "speaker A, history",
   "session_id": "20261012-130329-fff7",
   "date": "2026-10-12 13:11",
   "title": "",
@@ -10,5 +10,7 @@
   "slides": 6,
   "theme": "light",
   "simulated": false,
-  "copilot_args": []
+  "copilot_args": [],
+  "speaker": "speaker A",
+  "subject": "history"
 }

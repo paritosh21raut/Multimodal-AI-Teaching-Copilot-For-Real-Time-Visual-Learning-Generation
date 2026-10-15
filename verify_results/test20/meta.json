@@ -1,0 +1,16 @@
+{
+  "name": "test20",
+  "source": "mic",
+  "note": "speaker A, history",
+  "session_id": "20261015-105146-025e",
+  "date": "2026-10-15 10:59",
+  "title": "",
+  "minutes": 6.9,
+  "utterances": 53,
+  "slides": 10,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker A",
+  "subject": "history"
+}

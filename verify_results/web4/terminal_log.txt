@@ -1,0 +1,540 @@
+> python -m copilot --audio-file artifacts/web_audio/web4.wav --no-wait --no-open --subject Physics
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (6.1 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.2 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_6         openai/gpt-oss-120b            41k of 200k tokens IN USE
+        GROQ_API_KEY_1         openai/gpt-oss-120b           105k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b            43k of 200k tokens ok
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~1.3 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~7.1 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~22.6 h
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 174 lecture minutes
+
+[READY] session 20261015-120423-be5e
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        subject=Physics grade=- topic=-
+[LIVE]  lecture started. Type q + Enter to end.
+12:04:31 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[INIT]  speech: 30 terms from your study material (photoelectric, thermodynamics, digestive, photoelectrons, cerebrum, cerebellum ...)
+  [    0.0s] Length. (331 ms)
+  [    1.0s] All important in our course is acceleration. (520 ms)
+  [    6.5s] We will deal a lot with acceleration. Acceleration, as you will see, is length per time squared. The unit is meters per second squared. (722 ms)
+  [UNDERSTAND] Physics > Length and Acceleration (new_topic) acts=explanation,explanation hint=key_points lines=2 via groq_main#6 3872 ms
+               Introduced length and emphasized acceleration’s importance.
+12:04:48 INFO    copilot.presentation.engine: planner: new Physics > Length and Acceleration (first content slide)
+  [SLIDE] add    'Length and Acceleration' [key_points] v1 (2 items)
+  [   16.2s] So you get length... (359 ms)
+  [SLIDE] update 'Length and Acceleration' [key_points] v2 (3 items)
+  [   18.4s] divided by (299 ms)
+  [SLIDE] update 'Length and Acceleration' [key_points] v3 (2 items)
+  [   19.9s] Time. (318 ms)
+  [UNDERSTAND] Physics > Length and Acceleration (elaboration) acts=definition hint=definition lines=2 via groq_main#6 3468 ms
+               Acceleration defined as length per time squared with unit m/s²
+12:04:56 INFO    copilot.presentation.engine: planner: update Physics > Length and Acceleration (same frame)
+  [SLIDE] update 'Length and Acceleration' [key_points] v4 (3 items)
+  [   24.7s] So all other quantities can be derived from these three fundamentals. (670 ms)
+  [UNDERSTAND] Physics > Length and Acceleration (same_concept) acts=definition hint=definition lines=1 via groq_main#6 1872 ms
+               Clarified acceleration as length divided by time squared.
+12:05:02 INFO    copilot.presentation.engine: revised S3: Acceleration: length divided by time squared; unit meters per second squared
+12:05:02 INFO    copilot.presentation.engine: planner: update Physics > Length and Acceleration (same frame)
+  [SLIDE] update 'Length and Acceleration' [key_points] v5 (3 items)
+  [   29.7s] So now that we have agreed on the... (522 ms)
+12:05:10 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Length and Acceleration' -> same_concept
+  [UNDERSTAND] Physics > Length and Acceleration (same_concept) acts=explanation hint=concept lines=1 via groq_main#6 2047 ms
+               Introduced time as a fundamental quantity related to length and acceleration.
+12:05:10 INFO    copilot.presentation.engine: planner: update Physics > Length and Acceleration (same frame)
+  [SLIDE] update 'Length and Acceleration' [key_points] v6 (4 items)
+  [UNDERSTAND] Physics > Length and Acceleration (same_concept) acts=explanation hint=concept lines=1 via groq_main#6 1516 ms
+               All other quantities are derived from length, time, and acceleration.
+12:05:18 INFO    copilot.presentation.engine: planner: update Physics > Length and Acceleration (same frame)
+  [SLIDE] update 'Length and Acceleration' [key_points] v7 (5 items)
+  [   32.5s] We have the meter, the second and the kilogram. We can start making measurements. Now, all important in making measurements which is always ignored in every college book is the uncertainty in your measurement. (850 ms)
+  [   48.2s] Any measurement that you make. (516 ms)
+  [   50.5s] Without any knowledge of the uncertainty is meaningless. (574 ms)
+  [   55.1s] I will repeat this. (344 ms)
+  [UNDERSTAND] Physics > Length and Acceleration (same_concept) acts=- hint=none lines=1 via groq_main#6 4714 ms
+               No new content added
+12:05:29 INFO    copilot.presentation.engine: planner: noop Physics > Length and Acceleration (nothing to display)
+  [   57.0s] I want you to hear it tonight at 3 o'clock when you wait up. (717 ms)
+  [   60.3s] Any measurement that you make. (348 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (sibling_concept) acts=definition,explanation hint=concept lines=3 via groq_main#1 1793 ms
+               Introduced measurement uncertainty and stressed that measurements are meaningless without it
+12:05:34 INFO    copilot.presentation.engine: planner: continue Physics > Measurement Uncertainty (new facet)
+  [SLIDE] add    'Measurement Uncertainty' [definition] v1 (3 items)
+  [   62.4s] Without a knowledge of its uncertainty is completely... (597 ms)
+  [   66.3s] Meaningless. (330 ms)
+  [   68.5s] My grandmother used to tell me... (680 ms)
+  [   72.2s] That, at least she believed it. (577 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=transition hint=none lines=1 via groq_main#6 5870 ms
+               Teacher repeats the previous point about measurement uncertainty.
+12:05:46 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=1 via groq_main#1 1061 ms
+               No new content added
+12:05:50 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [   75.0s] That someone who is lying in bed is longer than someone who stands up. (706 ms)
+  [   80.3s] And in honor of my grandmother, I'm going to bring this today. (660 ms)
+  [   84.3s] To attest. (337 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=definition,explanation hint=key_points lines=1 via groq_main#6 5307 ms
+               Clarified that every measurement you make includes uncertainty.
+12:06:02 INFO    copilot.presentation.engine: revised S2: Any measurement that you make has uncertainty
+12:06:02 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [definition] v2 (3 items)
+  [   86.6s] I have here a setup where I can measure a person standing up. (736 ms)
+  [   91.1s] And a person lying down. (575 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=concept lines=4 via groq_main#1 1502 ms
+               Clarified that a measurement lacking knowledge of its uncertainty is completely meaningless.
+12:06:06 INFO    copilot.presentation.engine: revised S3: A measurement without knowledge of its uncertainty is completely meaningless
+12:06:06 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [SLIDE] update 'Measurement Uncertainty' [definition] v3 (3 items)
+  [   93.8s] It's not the greatest bad, but lying down. (672 ms)
+  [   96.7s] I have to convince you about the uncertainty in my measurements because a measurement without knowledge of the uncertainty is meaningless. (764 ms)
+12:06:17 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectTimeout
+  [  104.1s] And therefore what I will do is the following. (572 ms)
+12:06:19 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+  [  107.0s] I have here an aluminum bar. (554 ms)
+12:06:21 WARNING copilot.llm.router: llm groq_main#2 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation hint=example lines=1 via groq_alt#5 11711 ms
+               Illustrated measurement uncertainty with the example of a person's length changing based on posture.
+12:06:24 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [definition] v4 (4 items)
+12:06:24 INFO    copilot.presentation.engine: image search 'person lying standing height' (diagram) for 'Measurement Uncertainty'
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=other hint=none lines=1 via groq_alt#5 970 ms
+               Teacher made a personal aside about their grandmother, unrelated to the physics content.
+12:06:25 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+12:06:28 INFO    copilot.presentation.engine: image 'person lying standing height': none (no usable candidates)
+  [IMAGE] 'person lying standing height' -> none (no usable candidates) (3.5 s)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=1 via groq_alt#5 1304 ms
+               No new content added.
+12:06:34 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  109.2s] And I make the reasonable, plausible assumption that when this aluminum bar is sleeping, when it is horizontal, that it is not longer than when it is standing up. If you accept that, we can compare the length... (994 ms)
+  [  122.8s] of this aluminum bar with this setup. (347 ms)
+  [  125.6s] And with this setup, at least we have some kind of calibration to start with. (630 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation hint=example lines=2 via groq_alt#5 1502 ms
+               Teacher introduces a physical setup to demonstrate measuring a person in standing and lying positions.
+12:06:42 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+12:06:42 INFO    copilot.presentation.engine: no image for 'Measurement Uncertainty': nothing relevant found for 'person lying standing height' before
+  [SLIDE] update 'Measurement Uncertainty' [definition] v5 (6 items)
+  [  130.5s] I will measure it, you have to trust me. (575 ms)
+  [  132.9s] During these three months, we have to trust each other. (657 ms)
+  [  136.1s] So... (302 ms)
+  [  137.2s] I measure here. (335 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=explanation hint=key_points lines=2 via groq_alt#5 1841 ms
+               Reiterated that measurements are meaningless without known uncertainty.
+12:06:50 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+12:06:50 INFO    copilot.presentation.engine: no image for 'Measurement Uncertainty': nothing relevant found for 'person lying standing height' before
+  [  139.0s] 149.9. (508 ms)
+  [  142.5s] Centimeters. (313 ms)
+  [  144.1s] However... (319 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=transition hint=none lines=1 via groq_alt#6 1476 ms
+               Teacher announces the next step in the demonstration.
+12:06:58 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  145.3s] I would think that the... so this is the aluminum bar. (674 ms)
+  [  149.2s] This is in vertical position. (345 ms)
+  [  151.6s] 149... (518 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=other hint=none lines=1 via groq_alt#5 1980 ms
+               Teacher introduces an aluminum bar for the next demonstration.
+12:07:06 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [definition] v6 (7 items)
+12:07:06 INFO    copilot.presentation.engine: no image 'aluminum bar' on 'Measurement Uncertainty': not about the slide (similarity 0.13)
+  [  153.8s] But I would think that the uncertainty of my measurement is probably one millimeter. (659 ms)
+12:07:14 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['With this setup, at least we have some kind of calibration to start with']
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation,explanation hint=key_points lines=3 via groq_alt#6 1830 ms
+               Teacher assumes the aluminum bar's length is constant regardless of orientation to use it as a calibration reference.
+12:07:14 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [definition] v7 (7 items)
+  [SLIDE] add    'Measurement Uncertainty' [key_points] v1 (3 items)
+12:07:14 INFO    copilot.presentation.engine: image search 'aluminum bar' (photo) for 'Measurement Uncertainty'
+  [  159.6s] I can't really guarantee you that I did it accurately any better. (714 ms)
+  [  163.5s] So that's the vertical one. (392 ms)
+12:07:19 INFO    copilot.visuals.finder: image search 'aluminum bar': 7 slow download(s) dropped
+12:07:19 INFO    copilot.presentation.engine: image 'aluminum bar': none (downloads failed)
+  [IMAGE] 'aluminum bar' -> none (downloads failed) (4.5 s)
+  [  165.6s] Now we're going to measure the bar. (596 ms)
+  [  168.3s] Horizontally, for which we have a set-up here. Ooh, the scale is on your side. (784 ms)
+12:07:27 WARNING copilot.llm.router: llm groq_main#6 failed: no complete response within 6.5s (retrying)
+  [  174.0s] So now I measure the length of this part. (566 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=1 via groq_main#6 10322 ms
+               Teacher tells students to trust his measurement
+12:07:31 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  177.0s] 150.0 (573 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=2 via groq_main#6 1926 ms
+               Teacher made a brief comment about trust and pointed to where he would measure.
+12:07:33 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  180.6s] Horizontally. (545 ms)
+  [  183.8s] 150.0, again, plus or minus 0.1 centimeter. (793 ms)
+12:07:45 WARNING copilot.llm.router: llm groq_main#6 failed: no complete response within 6.5s (retrying)
+  [  188.8s] So you would agree with me that I am capable of measuring plus or minus one millimeter. That's the uncertainty of my measurement. (778 ms)
+12:07:49 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectTimeout
+  [  197.6s] Now if (462 ms)
+12:07:51 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+12:07:53 WARNING copilot.llm.router: llm groq_main#2 failed: connect failed: ConnectTimeout
+12:07:54 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectTimeout
+12:07:54 WARNING copilot.understanding.interpreter: interpretation fallback: llm: deadline exceeded; groq_main#6: Transient; groq_main#6: Unavailable; groq_main#1: Unavailable; groq_main#2: Unavailable; groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#5: Unavailable; groq_alt#6: deadline
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=key_points lines=3 via FALLBACK llm: deadline exceeded; groq_main#6: Transient; groq_main#6: Unavailable; groq_m 15007 ms
+12:07:54 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+12:07:57 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectTimeout
+  [  200.3s] The difference in length between lying down and standing up if that were one foot. (636 ms)
+12:08:00 WARNING copilot.llm.router: llm groq_alt#1 failed: connect failed: ConnectTimeout
+12:08:03 WARNING copilot.llm.router: llm groq_alt#2 failed: connect failed: ConnectTimeout
+12:08:05 WARNING copilot.llm.router: llm groq_alt#3 failed: connect failed: ConnectTimeout
+  [  205.9s] We would all know it, wouldn't we? You get out of bed in the morning, you lie down, you get up and you go clunk and you're one foot shorter. And we know that that's not the case. (906 ms)
+12:08:07 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectTimeout
+12:08:07 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 55s); groq_main#1: skipped (cooldown 57s); groq_main#2: skipped (cooldown 59s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#5: skipped (cooldown 60s); groq_alt#6: Unavailable; groq_alt#1: Unavailable; groq_alt#2: Unavailable; groq_alt#3: Unavailable; groq_alt#4: Unavailable
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 55s); groq_main#1: skipped (cooldown 57s); g 13269 ms
+12:08:07 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v2 (4 items)
+12:08:07 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 42s); groq_main#1: skipped (cooldown 44s); groq_main#2: skipped (cooldown 46s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#5: skipped (cooldown 47s); groq_alt#6: skipped (cooldown 50s); groq_alt#1: skipped (cooldown 53s); groq_alt#2: skipped (cooldown 56s); groq_alt#3: skipped (cooldown 58s); groq_alt#4: skipped (cooldown 60s)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 42s); groq_main#1: skipped (cooldown 44s); g 0 ms
+12:08:07 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  214.3s] If the difference were only one millimeter... (623 ms)
+  [  217.2s] We would never know. (346 ms)
+12:08:15 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 34s); groq_main#1: skipped (cooldown 36s); groq_main#2: skipped (cooldown 38s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#5: skipped (cooldown 39s); groq_alt#6: skipped (cooldown 42s); groq_alt#1: skipped (cooldown 45s); groq_alt#2: skipped (cooldown 48s); groq_alt#3: skipped (cooldown 50s); groq_alt#4: skipped (cooldown 52s)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#6: skipped (cooldown 34s); groq_main#1: skipped (cooldown 36s); g 0 ms
+12:08:15 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  219.2s] Therefore, I suspect that if my grandmother was right that it's probably only a few centimeters, maybe an inch. (816 ms)
+12:08:23 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 26s); groq_main#1: skipped (cooldown 28s); groq_main#2: skipped (cooldown 30s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#5: skipped (cooldown 31s); groq_alt#6: skipped (cooldown 34s); groq_alt#1: skipped (cooldown 37s); groq_alt#2: skipped (cooldown 40s); groq_alt#3: skipped (cooldown 42s); groq_alt#4: skipped (cooldown 44s)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=explanation hint=key_points lines=6 via FALLBACK llm: groq_main#6: skipped (cooldown 26s); groq_main#1: skipped (cooldown 28s); g 0 ms
+12:08:23 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v3 (8 items)
+12:08:23 INFO    copilot.presentation.engine: image search 'aluminum bar' (photo) for 'Measurement Uncertainty'
+  [  226.6s] And so I would argue that if I can measure the length of a student to one-millimeter accuracy that should settle the issue. (785 ms)
+  [  234.9s] So I need a volunteer. (358 ms)
+12:08:28 INFO    copilot.visuals.finder: image search 'aluminum bar' (photo): 7 candidate(s), 3 accepted (0 labelled), 5.14 s {'search_s': 1.62, 'download_s': 1.01, 'clip_s': 0.14, 'full_s': 2.36, 'total_s': 5.14}
+  [IMAGE] 'aluminum bar' -> File:Machining Process of a fly reel spool.png (5.2 s)
+12:08:28 INFO    copilot.presentation.engine: no room for an image on 'Measurement Uncertainty'
+12:08:31 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 18s); groq_main#1: skipped (cooldown 20s); groq_main#2: skipped (cooldown 22s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#5: skipped (cooldown 23s); groq_alt#6: skipped (cooldown 26s); groq_alt#1: skipped (cooldown 29s); groq_alt#2: skipped (cooldown 32s); groq_alt#3: skipped (cooldown 34s); groq_alt#4: skipped (cooldown 36s)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=key_points lines=3 via FALLBACK llm: groq_main#6: skipped (cooldown 18s); groq_main#1: skipped (cooldown 20s); g 0 ms
+12:08:31 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  238.6s] You want to volunteer. Looks like you're very tall, I hope that... yeah. (762 ms)
+  [  242.4s] I hope we can... I hope that we don't run out of... (675 ms)
+12:08:39 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 10s); groq_main#1: skipped (cooldown 12s); groq_main#2: skipped (cooldown 14s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#5: skipped (cooldown 15s); groq_alt#6: skipped (cooldown 18s); groq_alt#1: skipped (cooldown 21s); groq_alt#2: skipped (cooldown 24s); groq_alt#3: skipped (cooldown 26s); groq_alt#4: skipped (cooldown 28s)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=explanation hint=key_points lines=3 via FALLBACK llm: groq_main#6: skipped (cooldown 10s); groq_main#1: skipped (cooldown 12s); g 0 ms
+12:08:39 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] add    'Measurement Uncertainty' [key_points] v1 (2 items)
+12:08:39 INFO    copilot.presentation.engine: no image 'aluminum bar' on 'Measurement Uncertainty': not about the slide (similarity 0.01)
+  [  246.3s] You're not taller than 178 or so. (577 ms)
+  [  249.7s] What is your name? (330 ms)
+  [  251.3s] Rick, Rick Ryder. (317 ms)
+  [  253.0s] You're not nervous, right? (334 ms)
+12:08:47 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#6: skipped (cooldown 2s); groq_main#1: skipped (cooldown 4s); groq_main#2: skipped (cooldown 6s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_alt#5: skipped (cooldown 7s); groq_alt#6: skipped (cooldown 10s); groq_alt#1: skipped (cooldown 13s); groq_alt#2: skipped (cooldown 16s); groq_alt#3: skipped (cooldown 18s); groq_alt#4: skipped (cooldown 20s)
+12:08:47 INFO    copilot.understanding.interpreter: fallback: short remark not shown: 'We would never know'
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=explanation hint=key_points lines=2 via FALLBACK llm: groq_main#6: skipped (cooldown 2s); groq_main#1: skipped (cooldown 4s); gro 0 ms
+12:08:47 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v2 (3 items)
+12:08:47 INFO    copilot.presentation.engine: no image 'aluminum bar' on 'Measurement Uncertainty': not about the slide (similarity 0.00)
+  [  255.6s] Man. (426 ms)
+  [  259.2s] Sit down. (538 ms)
+  [  262.9s] I can't have tall guys here, come on. (567 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 2322 ms
+               Teacher estimates the possible size of the measurement error.
+12:08:57 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v3 (4 items)
+12:08:57 INFO    copilot.presentation.engine: no image 'aluminum bar' on 'Measurement Uncertainty': not about the slide (similarity -0.01)
+  [  265.1s] We need someone more modest in size. (509 ms)
+  [  268.8s] Don't take it personal, Rick. (543 ms)
+  [  272.0s] (dropped: filler_hallucination) Okay.
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 1894 ms
+               Teacher proposes that 1 mm measurement accuracy would resolve the uncertainty issue
+12:09:05 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v4 (5 items)
+12:09:05 INFO    copilot.presentation.engine: no image 'aluminum bar' on 'Measurement Uncertainty': not about the slide (similarity 0.01)
+  [  273.8s] What is your name? (346 ms)
+  [  275.2s] Zach. (293 ms)
+  [  277.5s] Nice day today, Zach. (498 ms)
+  [  280.3s] You feel alright? (544 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=transition hint=none lines=1 via groq_main#6 2242 ms
+               Teacher asks for a volunteer to demonstrate measurement
+12:09:13 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  281.6s] First lecture at MIT. (337 ms)
+  [  283.7s] I don't. (337 ms)
+  [  286.4s] Okay, man. (488 ms)
+  [  288.0s] Stent there, yeah. (354 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=transition hint=none lines=1 via groq_main#6 2349 ms
+               Teacher invites a tall student to volunteer for the measurement demonstration
+12:09:21 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  291.9s] Okay, 183.5 (546 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=1 via groq_main#6 2413 ms
+               Teacher expressed hope about not running out of time
+12:09:29 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  296.4s] Stay there, stay there, don't move. (558 ms)
+  [  298.9s] Zeg. (327 ms)
+12:09:35 WARNING copilot.llm.router: LLM groq_main now uses GROQ_API_KEY_1 (GROQ_API_KEY_6 is spent)
+  [  302.8s] This is vertical. (572 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=explanation hint=key_points lines=1 via groq_main#1 2871 ms
+               Teacher gives an approximate height limit as another example of measurement uncertainty.
+12:09:38 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v5 (6 items)
+12:09:38 INFO    copilot.presentation.engine: no image 'aluminum bar' on 'Measurement Uncertainty': not about the slide (similarity -0.00)
+  [  305.2s] What did I say? A hundred, 80? (596 ms)
+  [  308.4s] Only one person. (318 ms)
+  [  310.9s] Three. (303 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=2 via groq_main#1 2439 ms
+               No new content added
+12:09:45 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  316.8s] Point two, okay. (585 ms)
+  [  318.9s] 183.2. (595 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=question hint=none lines=1 via groq_main#1 2089 ms
+               Teacher asks a rhetorical question, no new content added
+12:09:53 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  321.8s] And an uncertainty... (423 ms)
+  [  324.4s] All about. (457 ms)
+  [  326.8s] One... oh, this is centimeters. 0.1 centimeters. (766 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=2 via groq_main#1 4359 ms
+               No new content added; teacher made a brief comment.
+12:10:03 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  331.5s] And now we're going to measure him. (552 ms)
+  [  334.0s] Horizontal. (347 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=2 via groq_main#1 5657 ms
+12:10:13 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  336.9s] Zeg, I don't want you to break your bones so we have a little step for you here. (764 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=4 via groq_main#2 1592 ms
+               No new content added
+12:10:17 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  343.1s] Put your feet there. Oh, let me remove the aluminum part. Don't watch out for this scale headache. You don't break that, because then it's all over. (979 ms)
+  [  351.6s] Okay, I'll come on your side. I have to do that. (692 ms)
+  [  354.8s] Yeah, yeah, relax. (555 ms)
+12:10:30 WARNING copilot.llm.router: llm groq_main#1 failed: no complete response within 6.5s (retrying)
+12:10:32 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+  [  358.4s] Think of this as a small sacrifice for the sake of science, right? (691 ms)
+12:10:34 WARNING copilot.llm.router: llm groq_main#2 failed: connect failed: ConnectTimeout
+  [  362.5s] Not. (307 ms)
+  [  363.5s] Okay, you good? (391 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=3 via groq_alt#5 14086 ms
+               Teacher made brief conversational remarks unrelated to the lesson content.
+12:10:37 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  365.7s] You comfortable? (516 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=1 via groq_alt#5 3181 ms
+               Teacher made a brief conversational remark unrelated to the lesson content.
+12:10:40 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  368.5s] You're really comfortable, right? (498 ms)
+  [  370.7s] (dropped: filler_hallucination) Okay.
+  [  373.1s] You ready? (468 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=1 via groq_alt#5 1184 ms
+               Teacher instructed a student to remain still, likely for a measurement demonstration.
+12:10:46 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  381.2s] 185.7. Stay where you are, 185.7. (705 ms)
+12:11:00 WARNING copilot.llm.router: llm groq_alt#5 failed: no complete response within 6.5s (retrying)
+12:11:03 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectTimeout
+  [  386.3s] I'm sure I want to first make the subtraction, right? 185.7... (622 ms)
+  [  392.2s] Plus or minus 0.1 centimeter. (616 ms)
+12:11:09 WARNING copilot.llm.router: llm groq_alt#6 failed: no complete response within 6.0s (retrying)
+12:11:09 WARNING copilot.understanding.interpreter: interpretation fallback: llm: deadline exceeded; groq_main#1: skipped (cooldown 38s); groq_main#2: skipped (cooldown 41s); groq_main#3: skipped (daily quota spent); groq_main#4: skipped (daily quota spent); groq_main#5: skipped (daily quota spent); groq_main#6: skipped (daily quota spent); groq_alt#5: Transient; groq_alt#5: Unavailable; groq_alt#6: Transient; groq_alt#6: deadline
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=key_points lines=2 via FALLBACK llm: deadline exceeded; groq_main#1: skipped (cooldown 38s); groq_main#2: skippe 15485 ms
+12:11:09 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=1 via groq_alt#6 3052 ms
+               Teacher made a brief conversational remark or self-correction regarding a number.
+12:11:12 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  396.4s] Oh, that is five, that is 2.5 plus or minus 0.2 centimeters. (760 ms)
+  [  402.4s] You're about one inch taller when you sleep than when you stand up. My grandmother was right. She's always right. Can you get off here? (871 ms)
+12:11:23 WARNING copilot.llm.router: llm groq_alt#6 failed: timeout after 6.0s (ReadTimeout) (retrying)
+  [  410.3s] I want you to appreciate that the accuracy... Thank you very much, Zach. (734 ms)
+12:11:29 WARNING copilot.llm.router: llm groq_alt#6 failed: no complete response within 6.5s
+  [  414.2s] that the accuracy of one millimeter was more than sufficient to make the case. (706 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=2 via groq_alt#1 15342 ms
+               Teacher made brief conversational remarks unrelated to the lesson content.
+12:11:32 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  418.8s] If the accuracy in my measurement would have been much less this measurement would not have been convincing. (699 ms)
+  [  425.0s] At all. (306 ms)
+12:11:38 WARNING copilot.llm.router: llm groq_main#1 failed: timeout after 6.0s (ReadTimeout) (retrying)
+  [  426.4s] So whenever you make a measurement you must know the uncertainty otherwise. (727 ms)
+  [  430.2s] It is meaningless. (311 ms)
+12:11:45 WARNING copilot.llm.router: llm groq_main#1 failed: no complete response within 6.5s
+  [  432.8s] Golly lay or golly lay? (516 ms)
+12:11:48 WARNING copilot.llm.router: llm groq_main#2 failed: no complete response within 3.0s (retrying)
+12:11:48 WARNING copilot.understanding.interpreter: interpretation fallback: llm: deadline exceeded; groq_main#1: Transient; groq_main#1: Transient; groq_main#2: Transient; groq_main#2: deadline
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=key_points lines=2 via FALLBACK llm: deadline exceeded; groq_main#1: Transient; groq_main#1: Transient; groq_mai 15490 ms
+12:11:48 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  435.3s] Ask himself the question. (557 ms)
+  [  437.4s] Why? (305 ms)
+12:11:54 WARNING copilot.llm.router: llm groq_main#1 failed: no complete response within 6.5s (retrying)
+  [  438.7s] Are mammals as large as they are and not much larger? (710 ms)
+12:11:56 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation hint=key_points lines=3 via groq_main#2 12105 ms
+               Uncertainty may be as low as 0.1 cm
+12:12:00 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v6 (7 items)
+12:12:00 INFO    copilot.presentation.engine: no image 'aluminum bar' on 'Measurement Uncertainty': not about the slide (similarity -0.00)
+  [  444.8s] He had a very clever reasoning which I've never seen in print. (769 ms)
+  [  448.2s] But it comes down to the fact that he argued that if the mammal becomes... (620 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation hint=key_points lines=2 via groq_main#2 4795 ms
+               Teacher indicates they will measure the student horizontally.
+12:12:04 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] add    'Measurement Uncertainty' [key_points] v1 (1 items)
+12:12:04 INFO    copilot.presentation.engine: no image 'aluminum bar' on 'Measurement Uncertainty': not about the slide (similarity 0.08)
+  [  452.7s] Tchoo! (315 ms)
+  [  453.7s] Massive that the bones will break. (574 ms)
+  [  456.4s] And he thought that that was a limiting factor. (570 ms)
+12:12:13 WARNING copilot.understanding.interpreter: interpretation from groq_main#2 invalid (schema: [{'type': 'int_parsing', 'loc': ('meta_lines', 0), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': "Zeg, I don't want you to break your bones so we have a little step for you here."}]); one repair attempt
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=1 via groq_alt#5 10485 ms
+               Teacher reminded the student to be careful to avoid injury.
+12:12:18 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  459.8s] Even though I've never seen his reasoning in print, I will try to reconstruct it, what could have gone through his head. Here! (811 ms)
+  [  468.0s] Is a mammal. (337 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=7 via groq_main#2 4463 ms
+               No new content added to the slide
+12:12:23 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  471.3s] And this is the... (484 ms)
+  [  472.9s] One of the four legs of the mammal. (353 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=2 via groq_alt#5 1590 ms
+               Teacher checks student readiness before starting the measurement.
+12:12:28 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  476.2s] And this metal... (465 ms)
+  [  478.1s] As a science. (328 ms)
+  [  479.9s] S. (335 ms)
+  [  482.5s] And what I mean by that is... (584 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation hint=key_points lines=3 via groq_main#2 3564 ms
+               Introduced a measurement result with its uncertainty of ±0.1 cm.
+12:12:38 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v2 (2 items)
+12:12:38 INFO    copilot.presentation.engine: no image 'aluminum bar' on 'Measurement Uncertainty': not about the slide (similarity 0.08)
+  [  485.0s] A mouse, JBIC. (501 ms)
+  [  486.9s] And a cat is J big. That's what I mean by size. (699 ms)
+12:12:43 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Oh, that is five, that is 2.5 plus or minus 0.2 centimeters']
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation,explanation hint=key_points lines=5 via groq_alt#5 1035 ms
+               Teacher explains that 1 mm accuracy was sufficient for the measurement to be convincing.
+12:12:43 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v3 (5 items)
+12:12:43 INFO    copilot.presentation.engine: no image 'aluminum bar' on 'Measurement Uncertainty': not about the slide (similarity 0.07)
+  [  490.7s] Very crudely defined. (317 ms)
+  [  493.8s] The mass of the mammal is m. (593 ms)
+  [  497.0s] And this mammal... (324 ms)
+  [  499.0s] Has a thigh bone, which we call the femur, which is here. (735 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation hint=concept lines=3 via groq_main#2 5605 ms
+               Emphasized that every measurement must state its uncertainty, otherwise it is meaningless.
+12:12:56 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v4 (7 items)
+12:12:56 INFO    copilot.presentation.engine: no image 'aluminum bar' on 'Measurement Uncertainty': not about the slide (similarity 0.06)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=2 via groq_main#1 1412 ms
+               No new slide content was added.
+12:13:00 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  505.3s] And the femur, of course, carries the body to a large extent. (632 ms)
+  [  509.4s] And let's assume that the femur has a length l. (534 ms)
+  [  512.6s] And has a thickness deep. (359 ms)
+  [  515.0s] Here is a few more. (324 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=2 via groq_main#1 4398 ms
+               No new slide content added; teacher asked questions unrelated to measurement uncertainty.
+12:13:11 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  522.3s] This is what a femur approximately looks like. (724 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=2 via groq_main#1 2394 ms
+               No new measurement uncertainty content added; teacher digressed with unrelated remarks.
+12:13:17 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  525.4s] So this will be the length of the femur. (641 ms)
+  [  533.0s] And this would be the thickness, d. (570 ms)
+12:13:29 WARNING copilot.llm.router: llm groq_main#1 failed: no complete response within 6.5s (retrying)
+  [  536.9s] And this would be the cross-sectional area A. (670 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=5 via groq_main#1 9107 ms
+               Teacher digressed with unrelated remarks unrelated to measurement uncertainty
+12:13:31 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=2 via groq_main#1 1369 ms
+               No new measurement uncertainty content; teacher digressed.
+12:13:33 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  544.5s] I'm now going to (511 ms)
+  [  546.5s] Take you through what we call in physics a scaling argument. (691 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=4 via groq_main#1 4393 ms
+               No new measurement uncertainty content was added.
+12:13:44 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=2 via groq_main#2 2731 ms
+               No new measurement uncertainty content; teacher digressed with unrelated remarks.
+12:13:50 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  552.3s] I would argue that the length of the femur must be proportional to the size of the animal. That's completely plausible. (855 ms)
+  [  559.2s] If an animal is four times larger than another, you would need four times longer legs. And that's all this is saying. (717 ms)
+  [  565.3s] It's very reasonable. (343 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (digression) acts=- hint=none lines=4 via groq_main#1 6445 ms
+               Teacher digressed, no new measurement uncertainty content added.
+12:14:02 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (digression)
+  [  568.7s] It is also very reasonable that the mass of an animal is proportional... (701 ms)
+12:14:05 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The femur, of course, carries the body to a large extent']
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation,explanation hint=example lines=3 via groq_main#2 1863 ms
+               Introduced the femur as an example, defining its length l and thickness deep.
+12:14:05 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v5 (8 items)
+  [SLIDE] add    'Measurement Uncertainty' [key_points] v1 (2 items)
+12:14:05 INFO    copilot.presentation.engine: image search 'femur diagram' (photo) for 'Measurement Uncertainty'
+  [  573.7s] To the third power. (328 ms)
+  [  575.3s] of the size, because that's related to its volume. (689 ms)
+12:14:11 INFO    copilot.visuals.finder: image search 'femur diagram' (photo): 8 candidate(s), 3 accepted (0 labelled), 6.22 s {'search_s': 2.01, 'download_s': 1.57, 'clip_s': 0.15, 'full_s': 2.48, 'total_s': 6.22}
+  [IMAGE] 'femur diagram' -> File:Femur - anterior view2.png (6.2 s)
+12:14:11 INFO    copilot.presentation.engine: image 'femur diagram' on 'Measurement Uncertainty': File:Femur - anterior view2.png
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v2 (3 items)
+  [UNDERSTAND] Physics > Measurement Uncertainty (same_concept) acts=- hint=none lines=1 via groq_main#1 4254 ms
+               No new measurement uncertainty content was added
+12:14:16 INFO    copilot.presentation.engine: planner: noop Physics > Measurement Uncertainty (nothing to display)
+  [  579.1s] And so if it's related to the third power of the size it must also be proportional to the third power of the length of the femur because of this... (870 ms)
+  [  588.0s] Relationship. (330 ms)
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=example hint=example lines=1 via groq_main#2 1958 ms
+               Teacher displayed an illustration of a femur to show its approximate shape.
+12:14:21 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+12:14:21 INFO    copilot.presentation.engine: no image for 'Measurement Uncertainty': has an image
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v3 (4 items)
+  [  590.2s] Okay, that's one. (568 ms)
+  [  592.7s] Now comes the argument. (552 ms)
+  [  596.1s] Pressure. (474 ms)
+  [  598.3s] On the femur. (542 ms)
+[END]   finishing lecture understanding (14 buffered lines) ...
+  [UNDERSTAND] Physics > Measurement Uncertainty (elaboration) acts=explanation hint=concept lines=3 via groq_main#1 5121 ms
+               Introduced symbols l, d, and A for femur length, thickness, and cross‑sectional area.
+12:14:32 INFO    copilot.presentation.engine: planner: update Physics > Measurement Uncertainty (same frame)
+12:14:32 INFO    copilot.presentation.engine: no image for 'Measurement Uncertainty': has an image
+  [SLIDE] update 'Measurement Uncertainty' [key_points] v4 (7 items)
+  [UNDERSTAND] Physics > Scaling Argument (sibling_concept) acts=transition hint=none lines=2 via groq_main#2 1836 ms
+               Teacher introduced the concept of a scaling argument
+12:14:37 INFO    copilot.presentation.engine: planner: noop Physics > Scaling Argument (nothing to display)
+  [UNDERSTAND] Physics > Scaling Argument (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 6194 ms
+               Femur length is proportional to the size of the animal; larger animals have proportionally longer legs.
+12:14:50 INFO    copilot.presentation.engine: planner: continue Physics > Scaling Argument (new facet)
+  [SLIDE] add    'Scaling Argument' [key_points] v1 (2 items)
+  [UNDERSTAND] Physics > Scaling Argument (same_concept) acts=- hint=none lines=1 via groq_main#2 1602 ms
+               Teacher affirmed the scaling argument as reasonable.
+12:14:53 INFO    copilot.presentation.engine: planner: noop Physics > Scaling Argument (nothing to display)
+  [UNDERSTAND] Physics > Scaling Argument (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 2170 ms
+               Added that animal mass scales with overall size.
+12:15:02 INFO    copilot.presentation.engine: planner: update Physics > Scaling Argument (same frame)
+  [SLIDE] update 'Scaling Argument' [key_points] v2 (3 items)
+12:15:11 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+12:15:13 WARNING copilot.llm.router: llm groq_main#2 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Physics > Scaling Argument (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#5 9555 ms
+               Teacher clarified that animal mass scales with the cube of size, linking mass to volume.
+12:15:17 INFO    copilot.presentation.engine: revised S3: Animal mass is proportional to size cubed
+12:15:17 INFO    copilot.presentation.engine: planner: update Physics > Scaling Argument (same frame)
+  [SLIDE] update 'Scaling Argument' [key_points] v3 (3 items)
+  [SLIDE] update 'Scaling Argument' [key_points] v4 (4 items)
+  [UNDERSTAND] Physics > Scaling Argument (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1058 ms
+               Teacher linked animal mass to the cube of femur length.
+12:15:18 INFO    copilot.presentation.engine: planner: update Physics > Scaling Argument (same frame)
+  [SLIDE] update 'Scaling Argument' [key_points] v5 (5 items)
+12:15:28 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Physics > Scaling Argument (same_concept) acts=- hint=key_points lines=1 via groq_alt#6 5291 ms
+               Teacher mentioned the relationship between mass and femur length.
+12:15:30 INFO    copilot.presentation.engine: planner: noop Physics > Scaling Argument (nothing to display)
+12:15:36 WARNING copilot.llm.router: llm groq_alt#6 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m47xjbhhevysb56eb0nn7z1f` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 888,
+  [UNDERSTAND] Physics > Scaling Argument (elaboration) acts=explanation hint=key_points lines=4 via groq_alt#1 4560 ms
+               Teacher introduced pressure on the femur as the next part of the scaling argument.
+12:15:38 INFO    copilot.presentation.engine: planner: update Physics > Scaling Argument (same frame)
+  [SLIDE] update 'Scaling Argument' [key_points] v6 (6 items)
+[ENDED] session 20261015-120423-be5e: 157 segments, 1239 words, state v268, 1012 events logged
+        CommandReceived=1, ConceptSignal=154, DeckState=7, ImageChoices=1, ImageReady=4, ImageRequested=4, InterpretRequested=75, InterpretationReady=75, LLMCallFailed=32, LifecycleChanged=5, SlideContextChanged=32, SlidePatch=38, StateChanged=268, TranscriptFinal=157, UtteranceClassified=157, UtteranceDropped=2
+        stt: 157 published, 2 dropped, latency p50=557 ms p95=816 ms max=994 ms
+        understanding: 75 interpretations (65 by LLM, 10 fallbacks, 1 repaired), max 8 calls/min, prompt tokens max=2017 avg=1920, latency p50=2394 ms max=15490 ms
+        presentation: 7 slides; planner ops {'new': 1, 'update': 29, 'noop': 43, 'continue': 2}; revisions 4, corrections shown 0, shown as said 0
+        images: {'requests': 4, 'found': 2, 'none': 2}; slides with an image 1/7
+          1. [key_points] Length and Acceleration  (v7, ['points', 'definition', 'points'])
+          2. [definition] Measurement Uncertainty [part 1]  (v7, ['definition', 'points'])
+          3. [key_points] Measurement Uncertainty [part 2]  (v3, ['points'])
+          4. [key_points] Measurement Uncertainty [part 3]  (v6, ['points'])
+          5. [key_points] Measurement Uncertainty [part 4]  (v5, ['points'])
+          6. [key_points] Measurement Uncertainty [part 5]  (v4, ['points', 'image', 'example'])
+          7. [key_points] Scaling Argument  (v6, ['points'])
+        providers: {'groq_main#6': 15, 'groq_main#1': 18, 'groq_alt#5': 14, 'groq_alt#6': 4, 'groq_main#2': 12, 'groq_alt#1': 2}; triggers: {'max_wait': 1, 'boundary': 74}; outline: ['Physics > Length and Acceleration, Measurement Uncertainty, Scaling Argument']; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261015-120423-be5e\session.sqlite

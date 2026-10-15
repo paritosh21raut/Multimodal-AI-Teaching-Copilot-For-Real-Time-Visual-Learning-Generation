@@ -1,0 +1,471 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (6.9 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.4 s)
+[INIT]  LLM providers: groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_6         openai/gpt-oss-120b            46k of 200k tokens IN USE
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~20.7 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~21.1 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~21.3 h
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              177k of 200k tokens IN USE
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 103 lecture minutes
+
+[READY] session 20261014-175249-401a
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+17:52:57 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+17:53:19 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    5.8s] The topic is Networking. (570 ms)
+  [    9.3s] and information for your AI teaching. (660 ms)
+  [UNDERSTAND] Networking > Introduction (new_topic) acts=- hint=none lines=2 via groq_main#6 1373 ms
+               Introduced the topic of Networking
+17:53:34 INFO    copilot.presentation.engine: planner: noop Networking > Introduction (nothing to display)
+  [   13.7s] Computer networking fundamentals (495 ms)
+  [   16.8s] Computer networking is the process of connecting two or more computing devices to exchange information and share resources. A network can connect computers, smartphones, servers, (768 ms)
+  [   30.0s] printers and other devices. (318 ms)
+  [UNDERSTAND] Networking > Introduction (same_concept) acts=definition,explanation hint=definition lines=3 via groq_main#6 1192 ms
+               Defined computer networking and listed the types of devices it can connect
+17:53:53 INFO    copilot.presentation.engine: planner: new Networking > Introduction (first content slide)
+  [SLIDE] add    'Networking' [definition] v1 (2 items)
+17:53:53 INFO    copilot.presentation.engine: image search 'network diagram with devices' (diagram) for 'Networking'
+  [   32.8s] main components sender the device that sends information (632 ms)
+  [SLIDE] update 'Networking' [definition] v2 (3 items)
+17:53:59 INFO    copilot.visuals.finder: image search 'network diagram with devices' (diagram, labels preferred): 4 candidate(s), 3 accepted (0 labelled), 5.16 s {'search_s': 1.36, 'download_s': 1.39, 'clip_s': 0.1, 'full_s': 2.27, 'total_s': 5.16}
+  [IMAGE] 'network diagram with devices' -> File:Devices.png (5.2 s)
+17:53:59 INFO    copilot.presentation.engine: image 'network diagram with devices' on 'Networking': File:Devices.png
+  [SLIDE] update 'Networking' [definition] v3 (4 items)
+  [   37.7s] receiver the device that received information. (619 ms)
+  [SLIDE] update 'Networking' [definition] v4 (4 items)
+  [UNDERSTAND] Networking > Introduction (same_concept) acts=definition,definition hint=definition lines=2 via groq_main#6 2795 ms
+               Introduced sender and receiver as main networking components
+17:54:04 INFO    copilot.presentation.engine: planner: update Networking > Introduction (same frame)
+17:54:04 INFO    copilot.presentation.engine: image removed from 'Networking': two concepts side by side
+  [SLIDE] update 'Networking' [definition] v5 (3 items)
+  [SLIDE] update 'Networking' [concept] v6 (5 items)
+  [SLIDE] update 'Networking' [concept] v7 (4 items)
+  [   42.4s] Transmission medium, the wired or wireless path to which data travel. (742 ms)
+  [SLIDE] update 'Networking' [concept] v8 (5 items)
+  [   48.5s] Network Devices, Routers, Switches, Access Points and Modems (681 ms)
+  [SLIDE] update 'Networking' [concept] v9 (5 items)
+  [   57.0s] protocols, rules that allow devices to communicate. (518 ms)
+  [SLIDE] update 'Networking' [concept] v10 (5 items)
+17:54:23 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Introduction' -> same_concept
+  [UNDERSTAND] Networking > Introduction (same_concept) acts=definition,definition,definition hint=concept lines=3 via groq_main#6 1501 ms
+               Defined transmission medium, network devices, and protocols as key networking components
+17:54:23 INFO    copilot.presentation.engine: planner: update Networking > Introduction (same frame)
+17:54:23 INFO    copilot.presentation.engine: no image for 'Networking': two concepts side by side
+  [SLIDE] update 'Networking' [concept] v11 (4 items)
+  [SLIDE] update 'Networking' [concept] v12 (5 items)
+  [SLIDE] add    'Networking' [concept] v1 (2 items)
+  [   64.1s] Second one is OSM model. (513 ms)
+  [   67.2s] the 7 layers of networking. (351 ms)
+  [UNDERSTAND] Networking > OSI Model (sibling_concept) acts=explanation hint=hierarchy lines=2 via groq_main#6 1823 ms
+               Introduced the OSI model and its seven layers
+  [HEARD] 'OSM' -> 'OSI' corrected on the slide (0.5)
+17:54:32 INFO    copilot.presentation.engine: planner: continue Networking > OSI Model (new facet)
+17:54:32 INFO    copilot.presentation.engine: slide 'OSI Model' waits for the min dwell time
+17:54:32 INFO    copilot.presentation.engine: concern 2a35bc1337aa (transcription, applied=True): 1 element(s); slide shows 'OSI'
+17:54:32 INFO    copilot.presentation.engine: image search 'OSI model layers' (diagram) for 'OSI Model'
+17:54:37 INFO    copilot.visuals.finder: image search 'OSI model layers' (diagram, labels preferred): 7 candidate(s), 3 accepted (3 labelled), 4.24 s {'search_s': 1.7, 'download_s': 1.24, 'clip_s': 0.12, 'full_s': 1.16, 'total_s': 4.24}
+  [IMAGE] 'OSI model layers' -> File:OSI Application Layer.svg (4.2 s)
+17:54:37 INFO    copilot.presentation.engine: image 'OSI model layers' on 'OSI Model': File:OSI Application Layer.svg
+  [SLIDE] add    'OSI Model' [key_points] v1 (2 items)
+  [   83.4s] is a 7 layer reference model used to understand network communication. The first layer is physical layer which deals with transmitting bits through cables or wireless signals. (713 ms)
+  [SLIDE] update 'OSI Model' [key_points] v2 (3 items)
+  [   96.1s] The second layer is data link layer which handles communication across local network links. Ethernet is an example of a technology used at this layer. (848 ms)
+  [SLIDE] update 'OSI Model' [key_points] v3 (3 items)
+  [UNDERSTAND] Networking > OSI Model (same_concept) acts=explanation,explanation hint=key_points lines=2 via groq_main#6 1196 ms
+               Described the Physical and Data Link layers of the OSI model.
+17:55:08 INFO    copilot.presentation.engine: planner: update Networking > OSI Model (same frame)
+17:55:08 INFO    copilot.presentation.engine: no image for 'OSI Model': has an image
+  [SLIDE] update 'OSI Model' [key_points] v4 (2 items)
+  [SLIDE] update 'OSI Model' [key_points] v5 (4 items)
+  [  106.9s] The third layer is the network layer which handles logical addressing and routing. (731 ms)
+  [SLIDE] update 'OSI Model' [key_points] v6 (5 items)
+17:55:26 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'OSI Model' -> same_concept
+  [UNDERSTAND] Networking > OSI Model (same_concept) acts=explanation hint=key_points lines=1 via groq_main#6 1504 ms
+               The network layer (layer 3) handles logical addressing and routing.
+17:55:26 INFO    copilot.presentation.engine: planner: update Networking > OSI Model (same frame)
+17:55:26 INFO    copilot.presentation.engine: no image for 'OSI Model': has an image
+  [SLIDE] update 'OSI Model' [key_points] v7 (4 items)
+  [SLIDE] update 'OSI Model' [key_points] v8 (5 items)
+  [  112.8s] Internet Protocol operates at this layer. The fourth layer is the transport layer which provides transport services. TCP supports reliable order delivery while UDP provides a count. (895 ms)
+  [SLIDE] update 'OSI Model' [key_points] v9 (6 items)
+  [  125.7s] Connectionless Transport Service. (754 ms)
+  [SLIDE] update 'OSI Model' [key_points] v10 (6 items)
+  [  128.4s] The fifth layer is the season layer which represents functions related to managing communication seasons. (703 ms)
+  [SLIDE] update 'OSI Model' [key_points] v11 (6 items)
+17:55:37 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Internet Protocol operates at this layer']
+  [UNDERSTAND] Networking > OSI Model (elaboration) acts=explanation,explanation hint=key_points lines=3 via groq_main#6 1804 ms
+               Added transport and session layers with their functions to the OSI model slide.
+  [HEARD] 'season' -> 'session' corrected on the slide (0.5)
+17:55:37 INFO    copilot.presentation.engine: planner: update Networking > OSI Model (same frame)
+17:55:37 INFO    copilot.presentation.engine: concern 3916e826f329 (transcription, applied=True): 1 element(s); slide shows 'session'
+  [SLIDE] update 'OSI Model' [key_points] v12 (5 items)
+  [SLIDE] update 'OSI Model' [key_points] v13 (5 items)
+  [SLIDE] add    'OSI Model' [key_points] v1 (5 items)
+17:55:37 INFO    copilot.presentation.engine: image search 'OSI layers diagram' (diagram) for 'OSI Model'
+  [  137.0s] The sixth layer is the presentation layer which (530 ms)
+  [SLIDE] update 'OSI Model' [key_points] v2 (6 items)
+17:55:41 INFO    copilot.visuals.finder: image search 'OSI layers diagram' (diagram, labels preferred): 4 candidate(s), 2 accepted (3 labelled), 4.50 s {'search_s': 2.94, 'download_s': 0.54, 'clip_s': 0.1, 'full_s': 0.9, 'total_s': 4.5}
+  [IMAGE] 'OSI layers diagram' -> File:OSI-model-Communication.svg (4.5 s)
+17:55:41 INFO    copilot.presentation.engine: image 'OSI layers diagram' on 'OSI Model': File:OSI-model-Communication.svg
+  [SLIDE] update 'OSI Model' [key_points] v3 (7 items)
+  [  140.5s] represent functions such as data formatting and encoding. (631 ms)
+  [SLIDE] update 'OSI Model' [key_points] v4 (6 items)
+17:55:47 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'OSI Model' -> same_concept
+  [UNDERSTAND] Networking > OSI Model (same_concept) acts=explanation hint=key_points lines=2 via groq_main#6 2321 ms
+               Added the presentation layer and its role in formatting and encoding data.
+17:55:47 INFO    copilot.presentation.engine: planner: update Networking > OSI Model (same frame)
+17:55:47 INFO    copilot.presentation.engine: no image for 'OSI Model': has an image
+  [SLIDE] update 'OSI Model' [key_points] v5 (7 items)
+  [  145.4s] The seventh layer is Application layer. (633 ms)
+  [SLIDE] update 'OSI Model' [key_points] v6 (8 items)
+  [  148.7s] which provides network services used by applications such as web browsing and domain name resolution. (686 ms)
+  [SLIDE] update 'OSI Model' [key_points] v7 (8 items)
+17:56:02 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'OSI Model' -> same_concept
+  [UNDERSTAND] Networking > OSI Model (same_concept) acts=definition hint=concept lines=2 via groq_main#6 1490 ms
+               Introduced the Application layer and its role in providing services for applications.
+17:56:02 INFO    copilot.presentation.engine: planner: update Networking > OSI Model (same frame)
+  [SLIDE] update 'OSI Model' [key_points] v8 (7 items)
+  [SLIDE] add    'OSI Model' [members] v1 (1 items)
+17:56:02 INFO    copilot.presentation.engine: image 'OSI layers diagram' kept on 'OSI Model' (same visual as this topic's image)
+  [SLIDE] update 'OSI Model' [members] v2 (2 items)
+  [  156.4s] The OSI model helps network engineers understand communication processes and troubleshoot network problems systematically. (628 ms)
+  [  167.8s] The third topic is TCP. (542 ms)
+  [UNDERSTAND] Networking > OSI Model (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 3327 ms
+               Explains why the OSI model is useful for engineers
+17:56:12 INFO    copilot.presentation.engine: planner: update Networking > OSI Model (same frame)
+17:56:12 INFO    copilot.presentation.engine: no image for 'OSI Model': has an image
+  [SLIDE] update 'OSI Model' [members] v3 (4 items)
+  [  170.8s] IP model and Internet communication. (604 ms)
+  [UNDERSTAND] Networking > TCP/IP Model (sibling_concept) acts=transition,explanation hint=none lines=2 via groq_main#6 2190 ms
+               Introduced the TCP/IP model and noted its role in Internet communication
+17:56:19 INFO    copilot.presentation.engine: planner: continue Networking > TCP/IP Model (new facet)
+  [SLIDE] add    'TCP/IP Model' [key_points] v1 (1 items)
+17:56:19 INFO    copilot.presentation.engine: image search 'TCP/IP model diagram' (diagram) for 'TCP/IP Model'
+  [  174.9s] The TCP IP protocol suite is the foundation of communication across the internet. (676 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v2 (2 items)
+17:56:24 INFO    copilot.visuals.finder: image search 'TCP/IP model diagram' (diagram, labels preferred): 4 candidate(s), 3 accepted (2 labelled), 4.67 s {'search_s': 1.43, 'download_s': 1.42, 'clip_s': 0.09, 'full_s': 1.71, 'total_s': 4.67}
+  [IMAGE] 'TCP/IP model diagram' -> File:Basic TCP-IP node-en.svg (4.7 s)
+17:56:24 INFO    copilot.presentation.engine: image 'TCP/IP model diagram' on 'TCP/IP Model': File:Basic TCP-IP node-en.svg
+  [SLIDE] update 'TCP/IP Model' [key_points] v3 (3 items)
+  [  181.7s] A common 4-layer TCP IP model includes (574 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v4 (3 items)
+  [  185.9s] Application layer protocols such as sjtp, dns and smdp (632 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v5 (3 items)
+  [  192.4s] Second is transport layer TCP and UDP. (676 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v6 (3 items)
+  [UNDERSTAND] Networking > TCP/IP Model (same_concept) acts=definition,explanation hint=hierarchy lines=4 via groq_main#6 1526 ms
+               Introduced the TCP/IP suite as the Internet foundation and listed its four layers, highlighting application protocols and the transport layer.
+17:56:38 INFO    copilot.presentation.engine: planner: update Networking > TCP/IP Model (same frame)
+17:56:38 INFO    copilot.presentation.engine: no image for 'TCP/IP Model': has an image
+  [SLIDE] update 'TCP/IP Model' [key_points] v7 (2 items)
+  [SLIDE] update 'TCP/IP Model' [key_points] v8 (5 items)
+  [  196.1s] Third is Internet Layer, IP addressing and packet forwarding. (658 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v9 (6 items)
+  [  200.8s] Fourth one is Network Access Layer. (516 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v10 (6 items)
+17:56:54 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'TCP/IP Model' -> same_concept
+  [UNDERSTAND] Networking > TCP/IP Model (same_concept) acts=explanation hint=key_points lines=2 via groq_main#6 1623 ms
+               Added Internet Layer and Network Access Layer to the TCP/IP model slide.
+17:56:54 INFO    copilot.presentation.engine: planner: update Networking > TCP/IP Model (same frame)
+17:56:54 INFO    copilot.presentation.engine: no image for 'TCP/IP Model': has an image
+  [SLIDE] update 'TCP/IP Model' [key_points] v11 (5 items)
+  [SLIDE] update 'TCP/IP Model' [key_points] v12 (7 items)
+  [  203.5s] Communication over technologies such as Ethernet and Wi-Fi, TCP and UDP serve different purposes. TCP provides reliable, ordered byte stream delivery. (822 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v13 (8 items)
+  [  216.8s] UDP provides (273 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v14 (8 items)
+  [  218.7s] Datagram delivery without TCP is built in reliability and ordering guarantees. (714 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v15 (8 items)
+17:57:08 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Datagram delivery without TCP is built in reliability and ordering guarantees']
+  [UNDERSTAND] Networking > TCP/IP Model (elaboration) acts=explanation hint=key_points lines=3 via groq_main#6 2373 ms
+               Added details on TCP reliability, UDP datagram delivery, and Network Access Layer technologies.
+17:57:08 INFO    copilot.presentation.engine: revised S4: Transport layer: TCP provides reliable ordered delivery; UDP provides unreliable datagram delivery
+17:57:08 INFO    copilot.presentation.engine: revised S6: Network Access Layer uses Ethernet and Wi-Fi technologies
+17:57:08 INFO    copilot.presentation.engine: planner: update Networking > TCP/IP Model (same frame)
+17:57:08 INFO    copilot.presentation.engine: no image for 'TCP/IP Model': has an image
+  [SLIDE] update 'TCP/IP Model' [key_points] v16 (7 items)
+  [SLIDE] update 'TCP/IP Model' [key_points] v17 (7 items)
+  [SLIDE] update 'TCP/IP Model' [key_points] v18 (7 items)
+  [SLIDE] update 'TCP/IP Model' [key_points] v19 (8 items)
+  [  229.8s] Fourth topic is IP addressing and subnetting. (578 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v20 (9 items)
+  [UNDERSTAND] Networking > IP Addressing and Subnetting (new_topic) acts=transition hint=none lines=1 via groq_alt#3 1020 ms
+               Announced the transition to the next topic: IP addressing and subnetting.
+17:57:14 INFO    copilot.presentation.engine: planner: noop Networking > IP Addressing and Subnetting (nothing to display)
+  [SLIDE] update 'TCP/IP Model' [key_points] v21 (8 items)
+  [  234.3s] An IP address is a logical address used to identify or network (767 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v22 (9 items)
+  [  240.5s] interface for communication using the Internet protocol. (498 ms)
+  [SLIDE] update 'TCP/IP Model' [key_points] v23 (9 items)
+17:57:35 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'IP Addressing and Subnetting' -> same_concept
+  [UNDERSTAND] Networking > IP Addressing and Subnetting (same_concept) acts=definition hint=definition lines=2 via groq_main#6 2348 ms
+               Defined an IP address as a logical identifier for a network interface in Internet communication
+17:57:35 INFO    copilot.presentation.engine: planner: continue Networking > IP Addressing and Subnetting (new facet)
+17:57:35 INFO    copilot.presentation.engine: image hint 'IP Addressing and Subnetting layers' for 'IP Addressing and Subnetting' from its sibling subtopic
+  [SLIDE] update 'TCP/IP Model' [key_points] v24 (8 items)
+  [SLIDE] add    'IP Addressing and Subnetting' [members] v1 (1 items)
+17:57:35 INFO    copilot.presentation.engine: image search 'IP Addressing and Subnetting layers' (diagram) for 'IP Addressing and Subnetting'
+  [  245.2s] The two important versions are IPv4 and IPv6. IPv4 uses 32-bit addresses, commonly written in dotted decimal notation. (736 ms)
+  [SLIDE] update 'IP Addressing and Subnetting' [members] v2 (1 items)
+17:57:37 INFO    copilot.visuals.finder: image search 'IP Addressing and Subnetting layers' (diagram, labels preferred): 1 candidate(s), 1 accepted (0 labelled), 2.84 s {'search_s': 1.52, 'download_s': 1.1, 'clip_s': 0.05, 'full_s': 0.17, 'total_s': 2.84}
+  [IMAGE] 'IP Addressing and Subnetting layers' -> File:Ipv4 address.svg (2.9 s)
+17:57:37 INFO    copilot.presentation.engine: image 'IP Addressing and Subnetting layers' on 'IP Addressing and Subnetting': File:Ipv4 address.svg
+  [SLIDE] update 'IP Addressing and Subnetting' [members] v3 (2 items)
+  [  256.5s] example 192.168.1.10 (644 ms)
+  [  262.3s] IPV6 used 128 bit addresses written using hexadecimal groups separated by column. (742 ms)
+  [  271.5s] Example. (278 ms)
+  [SLIDE] update 'IP Addressing and Subnetting' [members] v4 (2 items)
+17:57:53 WARNING copilot.llm.router: llm groq_main#6 failed: 400 json_validate_failed
+  [UNDERSTAND] Networking > IP Addressing and Subnetting (elaboration) acts=classification,other,example hint=key_points lines=3 via groq_alt#3 3661 ms
+               Introduced IPv4 and IPv6 versions, detailing their bit lengths and notation formats with an IPv4 example.
+  [HEARD] 'column' -> 'colons' corrected on the slide (0.9)
+17:57:55 INFO    copilot.presentation.engine: planner: update Networking > IP Addressing and Subnetting (same frame)
+17:57:55 INFO    copilot.presentation.engine: concern 17a8096dc860 (transcription, applied=True): 0 element(s); slide shows 'colons'
+  [SLIDE] update 'IP Addressing and Subnetting' [members] v5 (4 items)
+  [SLIDE] add    'IP Addressing and Subnetting' [example] v1 (1 items)
+17:57:55 INFO    copilot.presentation.engine: image 'IP Addressing and Subnetting layers' kept on 'IP Addressing and Subnetting' (next part of a topic with an image)
+  [SLIDE] update 'IP Addressing and Subnetting' [example] v2 (2 items)
+  [  273.0s] 2001 colon db8 colon (632 ms)
+  [  278.3s] double colon 10. (493 ms)
+  [UNDERSTAND] Networking > IP Addressing and Subnetting (same_concept) acts=example hint=example lines=3 via groq_main#6 1130 ms
+               Introduced an IPv6 address example 2001:db8::10.
+17:58:06 INFO    copilot.presentation.engine: planner: update Networking > IP Addressing and Subnetting (same frame)
+  [SLIDE] update 'IP Addressing and Subnetting' [example] v3 (2 items)
+  [  280.4s] A subnet mask or IPv4 prefix identifies the network portion of an address. (721 ms)
+17:58:20 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'IP Addressing and Subnetting' -> same_concept
+  [UNDERSTAND] Networking > IP Addressing and Subnetting (same_concept) acts=definition hint=definition lines=1 via groq_alt#3 1062 ms
+               Defined the subnet mask as the component identifying the network portion of an IPv4 address.
+17:58:20 INFO    copilot.presentation.engine: planner: update Networking > IP Addressing and Subnetting (same frame)
+17:58:20 INFO    copilot.presentation.engine: no image for 'IP Addressing and Subnetting': has an image
+  [SLIDE] update 'IP Addressing and Subnetting' [example] v4 (3 items)
+  [  287.2s] For example, the prefix 192.168.1.0.24 represent an IPv4 subnet containing 256 total addresses from (876 ms)
+  [  300.8s] 192.168.1.10 (484 ms)
+  [  305.1s] through 192.168.1.225. (530 ms)
+  [UNDERSTAND] Networking > IP Addressing and Subnetting (elaboration) acts=example hint=example lines=3 via groq_alt#3 1591 ms
+               Provided an example of an IPv4 subnet (192.168.1.0/24) containing 256 addresses.
+  [CONCERN] (factual) 192.168.1.0.24 represent an IPv4 subnet containing 256 total addresses from 192.168.1.10 through 192.168.1.225 -> 192.168.1.0/24 contains 256 addresses from 192.168.1.0 to 192.168.1.255 (0.95, slide shows the correction)
+17:58:34 INFO    copilot.presentation.engine: planner: update Networking > IP Addressing and Subnetting (same frame)
+17:58:34 INFO    copilot.presentation.engine: concern e3aecfc56d0c (factual, applied=True): 0 element(s); slide shows '192.168.1.0 to 192.168.1.255'
+17:58:34 INFO    copilot.presentation.engine: no image for 'IP Addressing and Subnetting': has an image
+  [SLIDE] update 'IP Addressing and Subnetting' [example] v5 (4 items)
+  [  309.8s] In an conventional IPv4 slash 24 subnet comma 254 addresses are available for ordinary host assignments because network and broadcast addresses are reserved. (807 ms)
+  [  323.6s] Subnetting helps network administrators organize devices, manage addresses, space, and separate networks. (745 ms)
+  [UNDERSTAND] Networking > IP Addressing and Subnetting (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_alt#3 1706 ms
+               Explained that a /24 subnet has 254 usable host addresses and listed benefits of subnetting.
+17:58:53 INFO    copilot.presentation.engine: planner: update Networking > IP Addressing and Subnetting (same frame)
+17:58:53 INFO    copilot.presentation.engine: no image for 'IP Addressing and Subnetting': has an image
+  [SLIDE] update 'IP Addressing and Subnetting' [example] v6 (9 items)
+  [  350.3s] The fifth topic is Networking devices, routers, switches, hub and access point. (707 ms)
+  [UNDERSTAND] Networking > Networking Devices (new_topic) acts=transition hint=none lines=1 via groq_alt#3 837 ms
+               Introduced the next topic: Networking devices, including routers, switches, hubs, and access points.
+17:59:18 INFO    copilot.presentation.engine: planner: noop Networking > Networking Devices (nothing to display)
+  [  361.4s] A router connects different IP networks and forward packets towards their destinations. A network switch connects devices within a local network and forwards Ethernet frames using MAC address information. (967 ms)
+  [  375.6s] A hub is a simpler device that repeats incoming signals to its other ports instead of intelligently forwarding frames to a specific destination. (847 ms)
+17:59:47 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Networking Devices' -> same_concept
+  [UNDERSTAND] Networking > Networking Devices (same_concept) acts=definition,definition,definition hint=key_points lines=2 via groq_alt#3 1242 ms
+               Defined routers, network switches, and hubs, highlighting their distinct roles in packet forwarding, MAC-based switching, and signal repetition.
+17:59:47 INFO    copilot.presentation.engine: planner: continue Networking > Networking Devices (new facet)
+17:59:47 INFO    copilot.presentation.engine: image hint 'Networking Devices layers' for 'Networking' from its sibling subtopic
+17:59:47 INFO    copilot.presentation.engine: no image for 'Networking': two concepts side by side
+  [SLIDE] add    'Networking' [concept] v1 (3 items)
+  [  386.0s] A wireless access point allows laptops, smartphones and other wireless devices to connect to a network using Wi-Fi. (729 ms)
+  [  394.5s] A modem performs a signal conversion or modulation function needed for a particular communication technology. (744 ms)
+  [UNDERSTAND] Networking > Networking Devices (same_concept) acts=definition,definition hint=key_points lines=2 via groq_alt#3 1121 ms
+               Defined wireless access points and modems, explaining their roles in Wi-Fi connectivity and signal conversion.
+18:00:08 INFO    copilot.presentation.engine: planner: update Networking > Networking Devices (same frame)
+18:00:08 INFO    copilot.presentation.engine: no image for 'Networking': two concepts side by side
+  [SLIDE] update 'Networking' [concept] v2 (5 items)
+  [  402.4s] A firewall filters network traffic according to configured security policies. These devices work together to provide connectivity, enable communication, and protect network infrastructure. (829 ms)
+18:00:16 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Networking Devices' -> same_concept
+  [UNDERSTAND] Networking > Networking Devices (same_concept) acts=definition,explanation hint=key_points lines=1 via groq_alt#3 1172 ms
+               Defined firewalls as traffic filters based on security policies and summarized the collective role of networking devices in connectivity and protection.
+18:00:16 INFO    copilot.presentation.engine: planner: update Networking > Networking Devices (same frame)
+18:00:16 INFO    copilot.presentation.engine: no image for 'Networking': two concepts side by side
+  [SLIDE] update 'Networking' [concept] v3 (9 items)
+  [  415.6s] 6th topic is Network Topology. (580 ms)
+  [  419.3s] A network topology describes how devices and network links are arranged. A major type includes (647 ms)
+  [  426.4s] Start topology devices connect to a central switch or hub. 2nd one is burst topology devices share a common communication backbone. (872 ms)
+  [UNDERSTAND] Networking > Network Topology (new_topic) acts=definition hint=definition lines=2 via groq_alt#3 860 ms
+               Introduced network topology as the arrangement of devices and links, identifying it as the next topic.
+18:00:37 INFO    copilot.presentation.engine: planner: continue Networking > Network Topology (new facet)
+18:00:37 INFO    copilot.presentation.engine: image hint 'Network Topology layers' for 'Network Topology' from its sibling subtopic
+  [SLIDE] add    'Network Topology' [definition] v1 (1 items)
+18:00:37 INFO    copilot.presentation.engine: image search 'Network Topology layers' (diagram) for 'Network Topology'
+  [  436.3s] Third one is Ring Topology. (321 ms)
+  [SLIDE] update 'Network Topology' [definition] v2 (1 items)
+18:00:42 INFO    copilot.visuals.finder: image search 'Network Topology layers' (diagram, labels preferred): 8 candidate(s), 3 accepted (1 labelled), 4.45 s {'search_s': 1.53, 'download_s': 1.33, 'clip_s': 0.17, 'full_s': 1.41, 'total_s': 4.45}
+  [IMAGE] 'Network Topology layers' -> File:Basic Topology -en.png (4.5 s)
+18:00:42 INFO    copilot.presentation.engine: image 'Network Topology layers' on 'Network Topology': File:Basic Topology -en.png
+  [SLIDE] update 'Network Topology' [definition] v3 (2 items)
+  [  439.1s] devices connect in a logical or physical ring. Fourth one is mesh topology. Devices have multiple interconnections. (748 ms)
+  [UNDERSTAND] Networking > Network Topology (elaboration) acts=classification hint=key_points lines=3 via groq_alt#3 1236 ms
+               Listed four common network topologies: Star, Bus, Ring, and Mesh, with brief descriptions of their device arrangements.
+  [HEARD] 'burst' -> 'Bus' corrected on the slide (0.9)
+18:00:49 INFO    copilot.presentation.engine: planner: update Networking > Network Topology (same frame)
+18:00:49 INFO    copilot.presentation.engine: concern c4afa676e3ed (transcription, applied=True): 1 element(s); slide shows 'Bus'
+  [SLIDE] update 'Network Topology' [definition] v4 (2 items)
+  [SLIDE] update 'Network Topology' [definition] v5 (6 items)
+  [  447.9s] Fifth is trade apology. Devices are arranged in odd hierarchy. (716 ms)
+  [  454.1s] hybrid topology. (628 ms)
+18:01:01 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Network Topology' -> same_concept
+  [UNDERSTAND] Networking > Network Topology (same_concept) acts=definition hint=key_points lines=2 via groq_alt#3 1016 ms
+               Introduced hybrid topology as the fifth type, characterized by devices arranged in an odd hierarchy.
+  [HEARD] 'trade apology' -> 'hybrid topology' corrected on the slide (0.9)
+18:01:01 INFO    copilot.presentation.engine: planner: update Networking > Network Topology (same frame)
+18:01:01 INFO    copilot.presentation.engine: concern 8bc0b7b5fef3 (transcription, applied=True): 1 element(s); slide shows 'hybrid topology'
+  [SLIDE] update 'Network Topology' [definition] v6 (6 items)
+  [SLIDE] add    'Network Topology' [members] v1 (1 items)
+18:01:01 INFO    copilot.presentation.engine: image 'Network Topology layers' kept on 'Network Topology' (next part of a topic with an image)
+  [SLIDE] update 'Network Topology' [members] v2 (2 items)
+  [  461.5s] 7th topic is DNS- How Domain Names Work. (714 ms)
+  [UNDERSTAND] DNS > How Domain Names Work (new_topic) acts=transition hint=none lines=1 via groq_alt#3 899 ms
+               Introduced DNS as the next topic, focusing on how domain names work.
+18:01:08 INFO    copilot.presentation.engine: planner: noop DNS > How Domain Names Work (new topic announced)
+  [  466.6s] The Domain Name System, DNS, translates domain names into information related to localities (699 ms)
+  [  474.7s] Internet Services, most commonly IP addresses. (600 ms)
+18:01:20 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Internet Services, most commonly IP addresses']
+  [UNDERSTAND] DNS > How Domain Names Work (new_topic) acts=definition,explanation hint=definition lines=2 via groq_alt#3 1548 ms
+               Defined DNS as the system that translates domain names into IP addresses.
+18:01:20 INFO    copilot.presentation.engine: planner: new DNS > How Domain Names Work (new topic confirmed (two interpretations agree))
+  [SLIDE] add    'How Domain Names Work' [definition] v1 (2 items)
+  [  479.5s] A simplified DNS resolution process is, 1. The user enters a domain name. 2. The device seeks available local information such as its DNS cache. 3. If necessary, a DNS query is sent to a resolver. (1008 ms)
+  [SLIDE] update 'How Domain Names Work' [definition] v2 (3 items)
+  [  494.4s] 4. Resolver obtained the required DNS record potentially (582 ms)
+  [SLIDE] update 'How Domain Names Work' [definition] v3 (3 items)
+  [  499.0s] creating other DNA serbs. (605 ms)
+  [SLIDE] update 'How Domain Names Work' [definition] v4 (2 items)
+  [UNDERSTAND] DNS > How Domain Names Work (elaboration) acts=process hint=process_flow lines=3 via groq_alt#3 1414 ms
+               Described the four-step DNS resolution process from user input to resolver record retrieval.
+  [HEARD] 'DNA serbs' -> 'DNS queries' corrected on the slide (0.6)
+18:01:43 INFO    copilot.presentation.engine: planner: update DNS > How Domain Names Work (same frame)
+18:01:43 INFO    copilot.presentation.engine: concern f888c95770e6 (transcription, applied=True): 0 element(s); slide shows 'DNS queries'
+  [SLIDE] update 'How Domain Names Work' [definition] v5 (2 items)
+  [SLIDE] add    'How Domain Names Work' [process_flow] v1 (4 items)
+  [  502.1s] 50 is the browser uses the resulting address to connect to the destination service. (677 ms)
+  [  507.8s] DNS also supports other record types including MX records for mail routing. (559 ms)
+  [UNDERSTAND] DNS > How Domain Names Work (same_concept) acts=process,explanation hint=process_flow lines=2 via groq_alt#3 1052 ms
+               Completed the DNS resolution process with the browser connecting to the service and noted that DNS supports other record types like MX for mail.
+18:01:54 INFO    copilot.presentation.engine: planner: update DNS > How Domain Names Work (same frame)
+  [SLIDE] update 'How Domain Names Work' [process_flow] v2 (7 items)
+  [  520.0s] So, 8th topic is how Wi-Fi works. (759 ms)
+  [UNDERSTAND] Networking > Introduction (new_topic) acts=transition hint=none lines=1 via groq_alt#3 814 ms
+               Teacher announced the next topic: how Wi-Fi works.
+18:02:04 INFO    copilot.presentation.engine: planner: noop Networking > Introduction (new topic announced)
+  [  524.7s] Wi-Fi is a family of wireless networking technologies based on IEEE 802.111 standards. (676 ms)
+  [SLIDE] update 'How Domain Names Work' [process_flow] v3 (8 items)
+  [UNDERSTAND] Networking > Wi-Fi (new_topic) acts=definition hint=definition lines=1 via groq_alt#3 2918 ms
+               Defined Wi-Fi as a family of wireless networking technologies based on IEEE 802.11 standards.
+  [HEARD] '802.111' -> '802.11' corrected on the slide (0.9)
+18:02:27 INFO    copilot.presentation.engine: planner: new Networking > Wi-Fi (new topic confirmed (two interpretations agree))
+18:02:27 INFO    copilot.presentation.engine: concern 1a7b1e82bc2e (transcription, applied=True): 1 element(s); slide shows '802.11'
+18:02:27 INFO    copilot.presentation.engine: image hint 'Wi-Fi layers' for 'Wi-Fi' from its sibling subtopic
+  [SLIDE] update 'How Domain Names Work' [process_flow] v4 (7 items)
+  [SLIDE] add    'Wi-Fi' [definition] v1 (1 items)
+18:02:27 INFO    copilot.presentation.engine: image search 'Wi-Fi layers' (diagram) for 'Wi-Fi'
+  [  532.2s] It allows compatible devices to communicate other radio waves rather than requiring a physical Ethernet cable. A typical home's Wi-Fi network includes a wireless router or access point and connected devices. Important concepts include (918 ms)
+  [SLIDE] update 'Wi-Fi' [definition] v2 (1 items)
+18:02:29 INFO    copilot.presentation.engine: image 'Wi-Fi layers': none (no usable candidates)
+  [IMAGE] 'Wi-Fi layers' -> none (no usable candidates) (1.5 s)
+  [  547.2s] SSID, the network name, Access point, the device providing wireless network access, Frequency band, Wi-Fi can operate in bands including 2.4 GHz, 5 GHz and well supported and permitted 6 GHz. (896 ms)
+  [SLIDE] update 'Wi-Fi' [definition] v3 (1 items)
+  [UNDERSTAND] Networking > Wi-Fi (elaboration) acts=explanation,classification,definition,definition hint=key_points lines=2 via groq_alt#3 3001 ms
+               Explained Wi-Fi uses radio waves and home routers. Defined SSID and Access Point. Listed 2.4, 5, and 6 GHz frequency bands.
+18:02:45 INFO    copilot.presentation.engine: planner: update Networking > Wi-Fi (same frame)
+18:02:45 INFO    copilot.presentation.engine: image hint 'Wi-Fi layers' for 'Wi-Fi' from its sibling subtopic
+18:02:45 INFO    copilot.presentation.engine: no image for 'Wi-Fi': two concepts side by side
+  [SLIDE] update 'Wi-Fi' [definition] v4 (1 items)
+  [SLIDE] update 'Wi-Fi' [definition] v5 (4 items)
+  [SLIDE] add    'Wi-Fi' [concept] v1 (2 items)
+  [  562.2s] Authentication and encryption helps control access and protect wireless communications. Indifference other wireless devices walls and computing networks can affect performance. (850 ms)
+  [UNDERSTAND] Networking > Wi-Fi (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#3 1114 ms
+               Explained that authentication and encryption secure Wi-Fi, while interference from walls and other devices impacts performance.
+  [HEARD] 'Indifference other wireless devices walls and computing networks' -> 'Interference from other wireless devices, walls, and computing networks' corrected on the slide (0.6)
+18:02:56 INFO    copilot.presentation.engine: planner: update Networking > Wi-Fi (same frame)
+18:02:56 INFO    copilot.presentation.engine: concern 76ab4bb190a1 (transcription, applied=True): 0 element(s); slide shows 'Interference from other wireless devices, walls, and computing networks'
+18:02:56 INFO    copilot.presentation.engine: image hint 'Wi-Fi layers' for 'Wi-Fi' from its sibling subtopic
+18:02:56 INFO    copilot.presentation.engine: no image for 'Wi-Fi': two concepts side by side
+  [SLIDE] update 'Wi-Fi' [concept] v2 (4 items)
+  [  579.0s] 9th topic is Network Security and Firewalls. (730 ms)
+  [SLIDE] update 'Wi-Fi' [concept] v3 (5 items)
+  [  584.8s] network infrastructure connected devices and transmit information from unauthorized access and other traits. (667 ms)
+  [SLIDE] update 'Wi-Fi' [concept] v4 (5 items)
+  [UNDERSTAND] Networking > Network Security and Firewalls (new_topic) acts=transition hint=none lines=2 via groq_alt#3 944 ms
+               Teacher announced the next topic: Network Security and Firewalls.
+18:03:18 INFO    copilot.presentation.engine: planner: noop Networking > Network Security and Firewalls (nothing to display)
+  [SLIDE] update 'Wi-Fi' [concept] v5 (4 items)
+  [  592.2s] Important Security Mechanism includes Firewalls. Firewalls filters traffic based on configured rules. Encryption protects information by making it unreadable to (737 ms)
+  [SLIDE] update 'Wi-Fi' [concept] v6 (5 items)
+  [  603.1s] Parties without the required keys. Authentications. Verifies the identity of a user or device. (621 ms)
+  [SLIDE] update 'Wi-Fi' [concept] v7 (5 items)
+  [UNDERSTAND] Networking > Network Security and Firewalls (new_topic) acts=definition,definition,definition hint=key_points lines=2 via groq_alt#3 1284 ms
+               Defined firewalls, encryption, and authentication as key network security mechanisms.
+18:03:36 INFO    copilot.presentation.engine: planner: continue Networking > Network Security and Firewalls (new facet)
+18:03:36 INFO    copilot.presentation.engine: image hint 'Network Security and Firewalls layers' for 'Network Security and Firewalls' from its sibling subtopic
+18:03:36 INFO    copilot.presentation.engine: no image for 'Network Security and Firewalls': two concepts side by side
+  [SLIDE] update 'Wi-Fi' [concept] v8 (4 items)
+  [SLIDE] add    'Network Security and Firewalls' [concept] v1 (3 items)
+  [  610.1s] Instruction detection system Monitor activity identifies a species pattern network segmentation. Separates the network into sections to help testing. (890 ms)
+  [  621.0s] access and limit the spread of incidents. Common threats include phishing, malware, denial of service attacks, unauthorized access, and misconfigured network services. (766 ms)
+18:03:54 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Network Security and Firewalls' -> same_concept
+  [UNDERSTAND] Networking > Network Security and Firewalls (same_concept) acts=definition hint=concept lines=1 via groq_alt#3 1361 ms
+               Defined network segmentation as separating networks into sections to aid testing.
+  [HEARD] 'Instruction detection system Monitor activity identifies a species pattern' -> 'Intrusion Detection System monitors activity to identify suspicious patterns' corrected on the slide (0.6)
+18:03:54 INFO    copilot.presentation.engine: planner: update Networking > Network Security and Firewalls (same frame)
+18:03:54 INFO    copilot.presentation.engine: concern 7b4cd0044f4b (transcription, applied=True): 0 element(s); slide shows 'Intrusion Detection System monitors activity to identify suspicious patterns'
+18:03:54 INFO    copilot.presentation.engine: image hint 'Network Security and Firewalls layers' for 'Network Security and Firewalls' from its sibling subtopic
+18:03:54 INFO    copilot.presentation.engine: no image for 'Network Security and Firewalls': two concepts side by side
+  [SLIDE] update 'Network Security and Firewalls' [concept] v2 (4 items)
+  [  634.3s] Security requires multiple layers of protection rather than relying on one device or topology. (626 ms)
+  [UNDERSTAND] Networking > Network Security and Firewalls (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_alt#3 2316 ms
+               Listed common network threats and emphasized that security requires multiple layers of protection.
+18:04:04 INFO    copilot.presentation.engine: revised S4: Separates the network into sections to limit incident spread
+18:04:04 INFO    copilot.presentation.engine: planner: update Networking > Network Security and Firewalls (same frame)
+18:04:04 INFO    copilot.presentation.engine: image hint 'Network Security and Firewalls layers' for 'Network Security and Firewalls' from its sibling subtopic
+18:04:04 INFO    copilot.presentation.engine: no image for 'Network Security and Firewalls': two concepts side by side
+  [SLIDE] update 'Network Security and Firewalls' [concept] v3 (4 items)
+  [SLIDE] update 'Network Security and Firewalls' [concept] v4 (7 items)
+  [  685.7s] I don't know how to do this, I don't know (2323 ms)
+  [  689.2s] (dropped: empty) 
+  [  690.7s] Go for it all. (297 ms)
+  [UNDERSTAND] Networking > Network Security and Firewalls (digression) acts=- hint=none lines=2 via groq_alt#3 870 ms
+               Teacher expressed uncertainty about the presentation tool, resulting in no new instructional content.
+18:04:53 INFO    copilot.presentation.engine: planner: noop Networking > Network Security and Firewalls (digression)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261014-175249-401a: 84 segments, 1004 words, state v173, 741 events logged
+        CommandReceived=14, ConceptSignal=84, ConcernRaised=10, DeckState=26, ImageChoices=9, ImageReady=7, ImageRequested=7, InterpretRequested=42, InterpretationReady=42, LLMCallFailed=1, LifecycleChanged=5, SlideContextChanged=43, SlidePatch=109, StateChanged=173, TranscriptFinal=84, UtteranceClassified=84, UtteranceDropped=1
+        stt: 84 published, 1 dropped, latency p50=676 ms p95=897 ms max=2323 ms
+        understanding: 42 interpretations (42 by LLM, 0 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=2032 avg=1930, latency p50=1414 ms max=3661 ms
+        presentation: 16 slides; planner ops {'noop': 7, 'new': 3, 'update': 26, 'continue': 6}; revisions 3, corrections shown 5, shown as said 0
+        images: {'requests': 7, 'found': 6, 'none': 1}; slides with an image 8/16
+          1. [concept] Networking [part 1]  (v12, ['definition', 'points', 'definition', 'definition', 'definition'])
+          2. [concept] Networking [part 2]  (v1, ['definition', 'definition'])
+          3. [key_points] OSI Model [part 1]  (v13, ['points', 'image'])
+          4. [key_points] OSI Model [part 2]  (v8, ['points', 'image'])
+          5. [members] OSI Model [part 3]  (v3, ['definition', 'image', 'points'])
+          6. [key_points] TCP/IP Model  (v24, ['points', 'image', 'definition', 'points'])
+          7. [members] IP Addressing and Subnetting [part 1]  (v5, ['definition', 'image', 'hierarchy', 'facts'])
+          8. [example] IP Addressing and Subnetting [part 2]  (v6, ['example', 'image', 'definition', 'example', 'points'])
+          9. [concept] Networking  (v3, ['definition', 'definition', 'definition', 'definition', 'definition', 'definition', 'points'])
+          10. [definition] Network Topology [part 1]  (v6, ['definition', 'image', 'points'])
+          11. [members] Network Topology [part 2]  (v2, ['definition', 'image'])
+          12. [definition] How Domain Names Work [part 1]  (v5, ['definition', 'points'])
+          13. [process_flow] How Domain Names Work [part 2]  (v4, ['process', 'points'])
+          14. [definition] Wi-Fi [part 1]  (v5, ['definition', 'points', 'hierarchy'])
+          15. [concept] Wi-Fi [part 2]  (v8, ['definition', 'definition', 'points'])
+          16. [concept] Network Security and Firewalls  (v4, ['definition', 'definition', 'definition', 'definition', 'points', 'points'])
+        providers: {'groq_main#6': 17, 'groq_alt#3': 25}; triggers: {'pause': 19, 'max_wait': 17, 'words': 6}; outline: ['Networking > Introduction, OSI Model, TCP/IP Model, IP Addressing and Subnetting, Networking Devices, Network Topology, Wi-Fi, Network Security and Firewalls', 'DNS > How Domain Names Work']; concerns: 10
+        log: C:\Users\potda\Multimodal-AI-Teaching-Copilot-For-Real-Time-Visual-Learning-Generation\data\sessions\20261014-175249-401a\session.sqlite

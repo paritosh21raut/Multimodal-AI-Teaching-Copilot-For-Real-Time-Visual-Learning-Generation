@@ -1,0 +1,530 @@
+> python -m copilot --audio-file artifacts/web_audio/web6.wav --no-wait --no-open --subject Economics
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (6.1 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_1         openai/gpt-oss-120b            15k of 200k tokens IN USE
+        GROQ_API_KEY_2         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~50 min
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~55 min
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~6.7 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~22.3 h
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~23.1 h
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              162k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              192k of 200k tokens ok
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              196k of 200k tokens ok
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              191k of 200k tokens ok
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              198k of 200k tokens ok
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 144 lecture minutes
+
+[READY] session 20261015-122640-1896
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        subject=Economics grade=- topic=-
+[LIVE]  lecture started. Type q + Enter to end.
+12:26:48 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[INIT]  speech: 30 terms from your study material (photoelectric, thermodynamics, digestive, photoelectrons, cerebrum, cerebellum ...)
+  [    0.0s] Long before the subject became what it is today. (715 ms)
+  [    3.7s] And what is that central problem? (578 ms)
+12:26:57 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Long before the subject became what it is today']
+  [UNDERSTAND] Economics > Introduction (new_topic) acts=other,explanation hint=none lines=1 via groq_main#1 2449 ms
+               Teacher introduced the historical background of economics.
+12:26:57 INFO    copilot.presentation.engine: planner: new Economics > Introduction (first content slide)
+  [SLIDE] add    'Economics' [key_points] v1 (1 items)
+  [    9.4s] Come again. (608 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=question hint=none lines=1 via groq_main#1 2642 ms
+               Teacher asked what the central problem of economics is.
+12:27:05 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [   15.0s] You have given me a definition. (666 ms)
+  [   17.2s] My God! (374 ms)
+  [   19.6s] It's immense. (544 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=- hint=none lines=2 via groq_main#1 2424 ms
+               Teacher responded to a request for clarification
+12:27:13 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [   23.8s] So what? (538 ms)
+  [   25.2s] What is the economic problem? (552 ms)
+  [   32.2s] Your PhD. (486 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=- hint=none lines=1 via groq_alt#5 4016 ms
+               Teacher expressed surprise or frustration.
+12:27:23 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=- hint=none lines=1 via groq_alt#5 754 ms
+               Teacher emphasized the immense scale of the economic problem.
+12:27:27 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [   34.8s] Incredible, no I mean absolutely right, but you know. (601 ms)
+  [   40.1s] I am in the first class with you guys and I am rather illiterate, so efficiency, equity. (764 ms)
+  [   46.4s] They above my head. (309 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=none lines=3 via groq_alt#5 2202 ms
+               Teacher asked the class to define the central economic problem.
+12:27:37 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [   50.7s] Much closer, much closer to the simple levels of my thinking. (579 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#5 2473 ms
+               Teacher introduced efficiency and equity as key economic concepts.
+12:27:45 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v2 (2 items)
+  [   54.9s] But, why are you worried about who should produce, how much should be produced etcetera, etcetera, why do these questions come up anyway. (747 ms)
+  [UNDERSTAND] Economics > Introduction (digression) acts=- hint=none lines=1 via groq_alt#5 2264 ms
+               Teacher made a non-instructional remark.
+12:27:53 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (digression)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=- hint=none lines=1 via groq_alt#5 1060 ms
+               Teacher made a non-instructional remark about their thinking level.
+12:28:00 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [   66.8s] There are many foods which for which you might need a distributor or provider because there is no one person who can stay clean to that resource. (1212 ms)
+12:28:09 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['But, why are you worried about who should produce, how much should be produced etcetera, etcetera, why do these questions come up anyway']
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_alt#6 2363 ms
+               Teacher asked why basic economic questions about production arise.
+12:28:09 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v3 (4 items)
+  [   76.6s] I, no no, hang on, I think I, I… (5247 ms)
+  [   80.4s] Misstated the question, the fault is mine. (2626 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1840 ms
+               Teacher explained that some resources require distributors because no single person can control all of them.
+  [HEARD] 'stay clean' -> 'claim or access' corrected on the slide (0.6)
+12:28:16 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+12:28:16 INFO    copilot.presentation.engine: concern 7fe8dc9fb8d9 (transcription, applied=True): 0 element(s); slide shows 'claim or access'
+  [SLIDE] update 'Economics' [key_points] v4 (6 items)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=- hint=none lines=2 via groq_alt#6 1919 ms
+               Teacher acknowledged a misstatement of the previous question.
+12:28:25 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [   85.3s] Why are you thinking that this problem about who should produce what, how it should be produced and so on and so forth, because there is yet another problem right at the back of it all. (886 ms)
+  [   99.1s] Which is not faced by human beings alone. (542 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1719 ms
+               Teacher explained that production questions arise from a deeper underlying problem.
+12:28:32 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v5 (7 items)
+  [  102.1s] But, which is faced by the entire planet. (713 ms)
+  [  107.8s] Beautiful. (518 ms)
+  [  109.0s] Beautiful, all life. (322 ms)
+  [  111.2s] Not just (315 ms)
+12:28:41 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Which is not faced by human beings alone']
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_alt#6 2746 ms
+               Teacher clarified that the underlying economic problem is faced by the entire planet, not just humans.
+12:28:41 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v6 (7 items)
+  [SLIDE] add    'Economics' [key_points] v1 (2 items)
+  [  112.7s] Not just human beings. (382 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=explanation hint=key_points lines=4 via groq_alt#5 2097 ms
+               Teacher clarified that the economic problem affects all life, not just human beings.
+12:28:49 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v2 (3 items)
+  [  115.2s] So, what is the basic issue you find for instance in the life of a street car which wonders around the streets of Madras. (716 ms)
+12:28:56 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['What is the basic issue you find for instance in the life of a street car which wonders around the streets of Madras']
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=example,explanation hint=example lines=1 via groq_alt#6 1376 ms
+               Teacher introduced a street car in Madras as an example to illustrate the basic economic issue.
+12:28:56 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v3 (5 items)
+  [  127.6s] And say a bird. (599 ms)
+  [  129.6s] A crow that has its nest and breeds in a tree. (672 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=example lines=2 via groq_alt#5 1473 ms
+               Teacher introduced a crow nesting in a tree as another example of the economic problem affecting non-human life.
+12:29:04 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v4 (6 items)
+  [  134.6s] And a man or a woman nearby who lives in an apartment goes to work in an office. (766 ms)
+  [  140.9s] What is common between these three things? The street curve. (578 ms)
+12:29:14 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['A man or a woman nearby who lives in an apartment goes to work in an office']
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_alt#6 1183 ms
+               Teacher added an example of an office worker commuting to work to illustrate the economic problem.
+12:29:14 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v5 (7 items)
+  [SLIDE] add    'Economics' [key_points] v1 (1 items)
+  [  145.1s] The crew and this office worker. (573 ms)
+  [  150.3s] Paniindranath. (604 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=key_points lines=2 via groq_alt#5 1665 ms
+               Teacher asked students to identify the commonality between the street car, crow, and office worker examples.
+  [HEARD] 'curve' -> 'car' corrected on the slide (0.9)
+  [HEARD] 'crew' -> 'crow' corrected on the slide (0.9)
+12:29:22 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+12:29:22 INFO    copilot.presentation.engine: concern 95e3eacd1be7 (transcription, applied=True): 0 element(s); slide shows 'car'
+12:29:22 INFO    copilot.presentation.engine: concern 7e8e2e8abee2 (transcription, applied=True): 0 element(s); slide shows 'crow'
+  [  156.6s] It still is stunning. (576 ms)
+  [  158.2s] To make a living, to live. (392 ms)
+  [UNDERSTAND] Economics > Introduction (digression) acts=- hint=none lines=1 via groq_alt#6 1164 ms
+               Teacher mentioned a name, likely a student or reference, without adding new economic content.
+12:29:30 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (digression)
+  [  160.4s] To live, is not it? (358 ms)
+  [  162.2s] They are all trying to live. (342 ms)
+  [  164.9s] And what is the bird doing all the time trying to live every day? (610 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=4 via groq_alt#5 1153 ms
+               Teacher emphasized that all previous examples share the goal of making a living.
+12:29:38 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v2 (2 items)
+  [  171.7s] Flying around looking for food. (626 ms)
+  [SLIDE] update 'Economics' [key_points] v3 (3 items)
+  [  173.8s] What does the street mongrel do? (487 ms)
+  [SLIDE] update 'Economics' [key_points] v4 (2 items)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=none lines=1 via groq_alt#6 1620 ms
+               Teacher asked students to identify the bird's daily activity in the context of making a living.
+12:29:46 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  179.2s] Krishna. (556 ms)
+  [  182.2s] Again. (578 ms)
+  [  183.4s] Looks around for food all the time. (362 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=explanation,question hint=key_points lines=2 via groq_alt#5 1585 ms
+               Teacher clarified the bird's activity as flying for food and asked what the street mongrel does.
+12:29:54 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v5 (3 items)
+  [  186.1s] And what is the one who goes to work do? (656 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#6 1273 ms
+               Teacher provided the example of a street mongrel looking for food to illustrate making a living.
+12:30:02 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v6 (4 items)
+  [  191.1s] So, the most central issue (627 ms)
+  [  195.2s] Is the problem of living? (401 ms)
+  [  198.9s] Is not that right? (600 ms)
+  [  200.3s] Question? (284 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=none lines=1 via groq_alt#5 1336 ms
+               Teacher asked students to identify the activity of the person who goes to work.
+12:30:10 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  203.5s] And the problem of living even more centrally. (666 ms)
+  [  206.8s] Is a problem which is… (381 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#6 1057 ms
+               Teacher identified the central issue of economics as the problem of living.
+12:30:18 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v7 (5 items)
+  [  208.8s] Dealing with something common to all these three, can the bird find food wherever it goes? (662 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=none lines=2 via groq_alt#5 1152 ms
+               Teacher asked for confirmation of the previous point.
+12:30:26 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  215.6s] Can the car find food at every street corner? (576 ms)
+  [  220.4s] Or the person who goes to work, can this person… (670 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#6 3295 ms
+               Teacher emphasized that the problem of living is the central issue in economics.
+12:30:36 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v8 (6 items)
+  [  224.3s] Find a job at will which would provide him or her with everything that he or she needs. (698 ms)
+  [  231.5s] So, all three are actually facing something. (658 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=none lines=1 via groq_alt#5 2962 ms
+               Teacher asked if a bird can find food anywhere to illustrate the universality of the problem of living.
+12:30:44 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  235.6s] All three. (538 ms)
+  [  237.5s] What they need is not always. (579 ms)
+  [  240.1s] Available? (281 ms)
+  [  242.8s] Isn't it? (571 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=none lines=2 via groq_alt#6 3945 ms
+               Teacher asked rhetorical questions about cars and workers finding food to illustrate the universality of the problem of living.
+12:30:53 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  245.2s] Am I right? (528 ms)
+  [  246.8s] Is there a word for it in economics? (610 ms)
+12:30:58 WARNING copilot.llm.router: llm groq_alt#5 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m4800crme1rsrmqcnrkr6mwq` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 5064,
+12:30:59 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Find a job at will which would provide him or her with everything that he or she needs']
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_alt#6 2135 ms
+               Teacher explained that finding a job provides the resources needed for living.
+12:30:59 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v9 (8 items)
+  [  250.6s] Absolutely. (505 ms)
+  [  252.9s] This is what I was getting it from the beginning. (578 ms)
+  [  255.7s] Long before economics was born. (494 ms)
+12:31:07 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['All three are actually facing something']
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_alt#6 1752 ms
+               Teacher summarized that humans, birds, and dogs all face the central problem of living.
+12:31:07 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] add    'Economics' [key_points] v1 (2 items)
+  [  259.0s] A lot of people were concerned (585 ms)
+  [  263.2s] Through human history (501 ms)
+  [  265.8s] On the problem of scarcity. (536 ms)
+  [  269.8s] End. (493 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#5 6239 ms
+               Teacher clarified that the core issue is that needs are not always met.
+12:31:19 INFO    copilot.presentation.engine: revised S2: All three face the problem of unmet needs
+12:31:19 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v2 (2 items)
+  [SLIDE] update 'Economics' [key_points] v3 (3 items)
+  [  270.8s] What should be done? (329 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=- hint=key_points lines=2 via groq_alt#6 3045 ms
+               Teacher confirmed the unavailability of needs with a rhetorical question.
+12:31:24 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  272.8s] By human beings at the time when they were faced with scarcity. (640 ms)
+  [  279.2s] A lot of the thing which we call economic thought. (562 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=none lines=2 via groq_alt#5 5354 ms
+               Teacher asked the class to identify the economic term for the problem of unmet needs.
+12:31:34 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  282.8s] Deals with people at different times, different epochs. (682 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#6 1213 ms
+               Teacher noted that the problem of unmet needs existed long before economics was formally established.
+12:31:38 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v4 (4 items)
+  [  288.6s] Who are looking at this problem in this perspective? (588 ms)
+  [  294.9s] No. (589 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#5 6308 ms
+               Teacher noted that scarcity has concerned people throughout human history.
+12:31:51 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v5 (5 items)
+  [  302.1s] What is the most interesting thing about scarcity? (652 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=transition hint=none lines=1 via groq_alt#6 1264 ms
+               Teacher concluded the segment on the problem of unmet needs.
+12:31:54 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  312.3s] The same thing for another. (659 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=none lines=1 via groq_alt#5 4624 ms
+               Teacher posed a question about the solution to the problem of unmet needs.
+12:32:06 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  315.4s] Right, absolutely. (551 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#6 1310 ms
+               Teacher explained that scarcity was the primary driver for the development of early economic thought.
+12:32:10 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v6 (6 items)
+  [  318.0s] You do not just have enough resources to satisfy all the wants. (647 ms)
+  [  322.2s] Am I right? (338 ms)
+  [  323.6s] So, that is where somebody started talking about allocation of resources Aditi you did that know. (795 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 4202 ms
+               Teacher explained that economics deals with human behavior across different historical epochs.
+12:32:21 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v7 (7 items)
+  [  329.1s] You are firing on all cylinders as the class began and I was getting a bit worried about it. (630 ms)
+  [  334.8s] That you will out fund me. (497 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=none lines=1 via groq_alt#6 1219 ms
+               Teacher asked who examines the problem of unmet needs from this perspective.
+12:32:26 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  337.2s] Very nice, thank you. (562 ms)
+  [  341.3s] Scarcity was discussed by everybody at all times. (614 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=none lines=1 via groq_alt#5 3910 ms
+               Teacher asked a question about the most interesting aspect of scarcity.
+12:32:37 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  346.0s] But, scarcity was discussed by a number of people from a different. (713 ms)
+  [  350.0s] Cultural milieus. (330 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=- hint=none lines=1 via groq_alt#6 660 ms
+               Teacher continued the discussion on the problem of unmet needs.
+12:32:42 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  352.1s] Different historical times. (556 ms)
+  [  355.2s] Different values. (549 ms)
+  [  357.4s] Different beliefs. (313 ms)
+  [  359.5s] Different lifestyles, (540 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=- hint=none lines=1 via groq_alt#5 3038 ms
+               Teacher acknowledged the previous point.
+12:32:52 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  361.7s] And so forth, which is why the history of all this makes a very interesting study. (722 ms)
+  [  368.6s] Right? (514 ms)
+12:33:03 WARNING copilot.llm.router: llm groq_alt#6 failed: timeout after 6.0s (ReadTimeout) (retrying)
+12:33:04 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['That is where somebody started talking about allocation of resources Aditi you did that know']
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation,explanation hint=key_points lines=3 via groq_alt#6 7162 ms
+               Teacher explained that scarcity of resources necessitates the allocation of resources to satisfy wants.
+12:33:04 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v8 (8 items)
+  [SLIDE] add    'Economics' [key_points] v1 (2 items)
+  [  370.1s] So, what we will do now is to try and relate the way people look at scarcity. (777 ms)
+  [UNDERSTAND] Economics > Introduction (digression) acts=other hint=none lines=1 via groq_alt#5 1832 ms
+               Teacher commented on the class's high energy level at the start of the lesson.
+12:33:07 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (digression)
+  [  377.1s] And the problems allied with it. (530 ms)
+  [  381.8s] We will look at the way people looked at scarcity. (585 ms)
+  [UNDERSTAND] Economics > Introduction (digression) acts=- hint=none lines=1 via groq_alt#6 855 ms
+               Teacher made a brief off-topic remark about funding.
+12:33:14 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (digression)
+  [  385.3s] And? (314 ms)
+  [  387.1s] The belief systems to which people belong because they influenced a lot of what people thought about things. (658 ms)
+12:33:28 WARNING copilot.llm.router: llm groq_alt#5 failed: no complete response within 6.5s (retrying)
+  [  395.9s] And we will also look at the way the belief systems were also connected in some measure. (699 ms)
+12:33:31 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Scarcity was discussed by everybody at all times']
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=explanation,explanation hint=key_points lines=2 via groq_alt#5 9817 ms
+               Teacher emphasized that scarcity is a persistent issue discussed by everyone.
+12:33:31 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v2 (4 items)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#6 1305 ms
+               Teacher noted that scarcity has been discussed by many economists.
+12:33:32 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v3 (5 items)
+  [  402.0s] With the lifestyles of people. (552 ms)
+  [  406.0s] So, what you need to do? (554 ms)
+12:33:40 WARNING copilot.llm.router: llm groq_alt#5 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m4800crme1rsrmqcnrkr6mwq` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 5268,
+  [  409.0s] Is to first have an idea of history. (645 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#6 1574 ms
+               Teacher introduced cultural milieus as a factor in economics.
+12:33:40 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v4 (6 items)
+  [  411.7s] (dropped: empty) 
+  [  414.0s] And then how people thought what were the world views. (589 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=4 via groq_alt#6 1569 ms
+               Teacher listed historical times, values, beliefs, and lifestyles as varying factors influencing economic behavior.
+12:33:48 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] add    'Economics' [key_points] v1 (4 items)
+  [  418.5s] What were the belief systems? (322 ms)
+  [  420.5s] In different points of time in history. (654 ms)
+  [  423.9s] And then how? (342 ms)
+  [  425.8s] This (323 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 2448 ms
+               Teacher noted that the history of varying economic factors is an interesting study.
+12:33:57 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v2 (5 items)
+  [  426.9s] Scarcity was a subset of it all. (544 ms)
+  [  432.0s] So, this is the perspective. (538 ms)
+  [  433.8s] So, I threw (328 ms)
+  [UNDERSTAND] Economics > Scarcity (sibling_concept) acts=transition hint=none lines=1 via groq_alt#6 1822 ms
+               Teacher announced the next topic: how people perceive scarcity.
+12:34:05 INFO    copilot.presentation.engine: planner: noop Economics > Scarcity (nothing to display)
+  [  435.4s] Two books at you as I came in. (643 ms)
+  [  437.8s] Both of them were dealing with history. (380 ms)
+12:34:14 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Perception of Scarcity' -> same_concept
+  [UNDERSTAND] Economics > Perception of Scarcity (same_concept) acts=transition hint=none lines=2 via groq_alt#5 2861 ms
+               Teacher transitioned to discussing how people perceive scarcity and its associated problems.
+12:34:14 INFO    copilot.presentation.engine: planner: noop Economics > Perception of Scarcity (nothing to display)
+  [  441.0s] I have not yet, there is a bit of world views and belief systems also in these books. (753 ms)
+  [  447.5s] There is also plenty of more things which you will be doing. (665 ms)
+  [UNDERSTAND] Economics > Scarcity (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#6 1875 ms
+               Teacher explained that belief systems influence human thought and are interconnected.
+12:34:21 INFO    copilot.presentation.engine: planner: continue Economics > Scarcity (new facet)
+  [SLIDE] add    'Scarcity' [key_points] v1 (2 items)
+  [  452.1s] Doing Google searches and so forth for that as and how I recommend. (711 ms)
+  [  456.0s] These things to you. (350 ms)
+  [UNDERSTAND] Economics > Scarcity (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#5 1934 ms
+               Teacher emphasized that understanding history is a prerequisite for analyzing how people perceive scarcity.
+12:34:29 INFO    copilot.presentation.engine: planner: update Economics > Scarcity (same frame)
+  [SLIDE] update 'Scarcity' [key_points] v2 (3 items)
+  [  457.8s] But the idea is to understand by the time you are through with these. (722 ms)
+  [  463.6s] What? 12, 16 weeks of learning with me. (647 ms)
+  [UNDERSTAND] Economics > Scarcity (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#6 1312 ms
+               Teacher explained that world views influence how people think about scarcity.
+12:34:36 INFO    copilot.presentation.engine: planner: update Economics > Scarcity (same frame)
+  [SLIDE] update 'Scarcity' [key_points] v3 (4 items)
+  [  467.8s] To understand that (528 ms)
+  [  471.0s] Economic thought. (538 ms)
+  [UNDERSTAND] Economics > Scarcity (same_concept) acts=question hint=none lines=3 via groq_alt#5 1875 ms
+               Teacher asked students to identify historical belief systems and their evolution.
+12:34:45 INFO    copilot.presentation.engine: planner: noop Economics > Scarcity (nothing to display)
+  [  473.4s] Economic ideas did not jump from the sky. (619 ms)
+  [  477.7s] They evolved. (505 ms)
+  [UNDERSTAND] Economics > Scarcity (same_concept) acts=- hint=none lines=1 via groq_alt#6 1414 ms
+               Teacher began a new point about scarcity.
+12:34:52 INFO    copilot.presentation.engine: planner: noop Economics > Scarcity (nothing to display)
+  [  479.8s] They grew out of a soil which was a set of belief systems, which was a set of lifestyles, which was social and historical and economic institutions. (884 ms)
+  [UNDERSTAND] Economics > Scarcity (same_concept) acts=- hint=none lines=3 via groq_alt#5 797 ms
+               Teacher positioned scarcity as a subset of broader belief systems and world views.
+12:35:00 INFO    copilot.presentation.engine: planner: noop Economics > Scarcity (nothing to display)
+  [  491.5s] And if you understand (566 ms)
+  [  493.4s] Economic ideas and their history in this fashion I guess. (609 ms)
+  [UNDERSTAND] Economics > Scarcity (digression) acts=- hint=none lines=2 via groq_alt#6 1111 ms
+               Teacher mentioned two history books brought to class.
+12:35:08 INFO    copilot.presentation.engine: planner: noop Economics > Scarcity (digression)
+  [  497.5s] You are understanding something which is organic. (615 ms)
+  [  500.4s] Which is alive, which is being and becoming. (671 ms)
+  [UNDERSTAND] Economics > Scarcity (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 902 ms
+               Teacher noted that the history books contain world views and belief systems.
+12:35:16 INFO    copilot.presentation.engine: planner: update Economics > Scarcity (same frame)
+  [SLIDE] update 'Scarcity' [key_points] v4 (5 items)
+  [  505.1s] Any questions up to this point? (598 ms)
+  [  512.7s] I have stupefied you all. (688 ms)
+  [UNDERSTAND] Economics > Scarcity (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#6 938 ms
+               Teacher indicated that additional activities related to scarcity will be covered.
+12:35:24 INFO    copilot.presentation.engine: planner: update Economics > Scarcity (same frame)
+  [SLIDE] update 'Scarcity' [key_points] v5 (6 items)
+  [  514.8s] No, it is just that I have not yet got going. (615 ms)
+  [  518.2s] Ok, so (312 ms)
+  [  520.2s] Let us look at the earliest. (563 ms)
+  [UNDERSTAND] Economics > Scarcity (elaboration) acts=application hint=none lines=2 via groq_alt#5 1572 ms
+               Teacher recommended using Google searches to research scarcity.
+12:35:32 INFO    copilot.presentation.engine: planner: update Economics > Scarcity (same frame)
+  [SLIDE] update 'Scarcity' [key_points] v6 (7 items)
+  [  524.3s] Lifestyles (518 ms)
+  [UNDERSTAND] Economics > Scarcity (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#6 1224 ms
+               Teacher stated the course duration is 12 to 16 weeks.
+12:35:40 INFO    copilot.presentation.engine: planner: update Economics > Scarcity (same frame)
+  [SLIDE] update 'Scarcity' [key_points] v7 (8 items)
+  [  527.6s] The earliest lifestyles which human civilization used to… (682 ms)
+  [  532.7s] Deal with. (342 ms)
+  [UNDERSTAND] Economics > Scarcity (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#5 2784 ms
+               Teacher linked economic thought to the understanding of scarcity.
+12:35:50 INFO    copilot.presentation.engine: planner: update Economics > Scarcity (same frame)
+  [SLIDE] update 'Scarcity' [key_points] v8 (8 items)
+  [SLIDE] add    'Scarcity' [key_points] v1 (1 items)
+  [  534.3s] And there are still parts of the world still dealing with that kind of lifestyle is what is called hunting and gathering. (842 ms)
+  [UNDERSTAND] Economics > Introduction (sibling_concept) acts=explanation hint=key_points lines=2 via groq_alt#6 1010 ms
+               Teacher explained that economic ideas evolved over time rather than appearing suddenly.
+12:35:56 INFO    copilot.presentation.engine: planner: continue Economics > Introduction (new facet)
+12:35:56 INFO    copilot.presentation.engine: slide 'Economics' waits for the min dwell time
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1198 ms
+               Teacher explained that economic ideas evolved from specific belief systems, lifestyles, and social institutions.
+12:36:04 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] add    'Economics' [key_points] v1 (4 items)
+  [  558.7s] What is this mean? (564 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=transition hint=none lines=2 via groq_alt#6 1021 ms
+               Teacher emphasized the importance of understanding the history of economic ideas.
+12:36:12 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  563.9s] Hunting and gathering. (566 ms)
+  [  565.6s] As a lifestyle. (299 ms)
+  [  569.1s] Avantika. (541 ms)
+  [UNDERSTAND] Economics > Introduction (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#5 1198 ms
+               Teacher described economic understanding as an organic, living process that is constantly evolving.
+12:36:20 INFO    copilot.presentation.engine: planner: update Economics > Introduction (same frame)
+  [SLIDE] update 'Economics' [key_points] v2 (6 items)
+  [  571.7s] Living on subsistence of... (534 ms)
+  [  575.1s] (dropped: empty) 
+12:36:27 WARNING copilot.llm.router: llm groq_alt#6 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m47xjbhhevysb56eb0nn7z1f` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 5141,
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=question hint=none lines=1 via groq_alt#1 1175 ms
+               Teacher paused to ask students if they had any questions about the introduction to economic ideas.
+12:36:28 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  577.5s] You could have a pretty good going as hunting gathering people, you do not necessarily have to success know. (708 ms)
+  [  584.1s] You don't produce your own. (544 ms)
+  [UNDERSTAND] Economics > Introduction (digression) acts=other hint=none lines=1 via groq_alt#5 1975 ms
+               Teacher made a self-deprecating comment about confusing the students.
+12:36:37 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (digression)
+  [  587.4s] Go out in search of. (2006 ms)
+  [  590.9s] I don't know. (934 ms)
+  [  592.0s] You gather. (344 ms)
+  [UNDERSTAND] Economics > Introduction (same_concept) acts=- hint=none lines=1 via groq_alt#1 2064 ms
+               Teacher clarified that the pause was due to not having started the next section yet.
+12:36:45 INFO    copilot.presentation.engine: planner: noop Economics > Introduction (nothing to display)
+  [  595.0s] In other words, you are not ploughing up a piece of land, sowing some seeds into it and (773 ms)
+[END]   finishing lecture understanding (15 buffered lines) ...
+  [UNDERSTAND] Economics > Earliest Economic Ideas (new_topic) acts=transition hint=none lines=1 via groq_alt#5 1622 ms
+               Teacher announced the transition to discussing the earliest economic ideas.
+12:36:53 INFO    copilot.presentation.engine: planner: noop Economics > Earliest Economic Ideas (nothing to display)
+  [UNDERSTAND] Economics > Earliest Economic Ideas (same_concept) acts=- hint=key_points lines=1 via groq_alt#6 1115 ms
+               Teacher began listing factors influencing earliest economic ideas, starting with lifestyles.
+12:37:00 INFO    copilot.presentation.engine: planner: noop Economics > Earliest Economic Ideas (nothing to display)
+  [UNDERSTAND] Economics > Earliest Economic Ideas (elaboration) acts=explanation hint=key_points lines=2 via groq_alt#5 1335 ms
+               Teacher explained that earliest economic ideas originated from the lifestyles of early human civilizations.
+12:37:08 INFO    copilot.presentation.engine: planner: continue Economics > Earliest Economic Ideas (new facet)
+  [SLIDE] add    'Earliest Economic Ideas' [key_points] v1 (1 items)
+  [UNDERSTAND] Economics > Earliest Economic Ideas (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#6 1826 ms
+               Teacher cited hunting and gathering as a modern example of the earliest economic lifestyle.
+12:37:17 INFO    copilot.presentation.engine: planner: update Economics > Earliest Economic Ideas (same frame)
+  [SLIDE] update 'Earliest Economic Ideas' [key_points] v2 (2 items)
+12:37:24 WARNING copilot.llm.router: llm groq_alt#5 failed: 429 daily token quota: used 198745/200000
+  [UNDERSTAND] Economics > Earliest Economic Ideas (same_concept) acts=question hint=none lines=1 via groq_alt#6 2278 ms
+               Teacher asked a clarifying question about the meaning of the previous statement.
+12:37:25 INFO    copilot.presentation.engine: planner: noop Economics > Earliest Economic Ideas (nothing to display)
+12:37:31 WARNING copilot.llm.router: LLM groq_alt now uses GROQ_API_KEY_6 (GROQ_API_KEY_5 is spent)
+  [UNDERSTAND] Economics > Earliest Economic Ideas (same_concept) acts=explanation hint=key_points lines=2 via groq_alt#6 1310 ms
+               Teacher clarified that hunting and gathering is a lifestyle.
+12:37:32 INFO    copilot.presentation.engine: planner: update Economics > Earliest Economic Ideas (same frame)
+  [SLIDE] update 'Earliest Economic Ideas' [key_points] v3 (3 items)
+  [UNDERSTAND] Economics > Earliest Economic Ideas (same_concept) acts=- hint=none lines=1 via groq_alt#1 4713 ms
+               Teacher addressed a student by name.
+12:37:44 INFO    copilot.presentation.engine: planner: noop Economics > Earliest Economic Ideas (nothing to display)
+  [UNDERSTAND] Economics > Earliest Economic Ideas (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#6 2509 ms
+               Teacher explained that hunting and gathering communities lived on subsistence.
+12:37:49 INFO    copilot.presentation.engine: planner: update Economics > Earliest Economic Ideas (same frame)
+  [SLIDE] update 'Earliest Economic Ideas' [key_points] v4 (4 items)
+  [UNDERSTAND] Economics > Earliest Economic Ideas (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#1 2253 ms
+               Teacher clarified that hunting and gathering is a viable, sustainable lifestyle for early communities.
+  [HEARD] 'success know' -> 'sustainable' corrected on the slide (0.6)
+12:37:57 INFO    copilot.presentation.engine: planner: update Economics > Earliest Economic Ideas (same frame)
+12:37:57 INFO    copilot.presentation.engine: concern b26e39500bdc (transcription, applied=True): 1 element(s); slide shows 'sustainable'
+  [SLIDE] update 'Earliest Economic Ideas' [key_points] v5 (5 items)
+  [UNDERSTAND] Economics > Earliest Economic Ideas (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#6 1680 ms
+               Teacher clarified that hunting and gathering communities do not produce their own food.
+12:38:05 INFO    copilot.presentation.engine: planner: update Economics > Earliest Economic Ideas (same frame)
+  [UNDERSTAND] Economics > Earliest Economic Ideas (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#1 1470 ms
+               Teacher clarified that gathering involves going out to search for food.
+12:38:12 INFO    copilot.presentation.engine: planner: update Economics > Earliest Economic Ideas (same frame)
+  [SLIDE] update 'Earliest Economic Ideas' [key_points] v6 (6 items)
+12:38:19 WARNING copilot.understanding.service: understanding flush timed out with 1 buffered lines
+[END]   understanding did not finish in 90 s; remaining lines stay in the event log
+[ENDED] session 20261015-122640-1896: 144 segments, 1066 words, state v278, 1000 events logged
+        CommandReceived=1, ConceptSignal=140, ConcernRaised=4, DeckState=10, InterpretRequested=85, InterpretationReady=85, LLMCallFailed=6, LifecycleChanged=5, SlideContextChanged=45, SlidePatch=51, StateChanged=278, TranscriptFinal=144, UtteranceClassified=144, UtteranceDropped=2
+        stt: 144 published, 2 dropped, latency p50=578 ms p95=842 ms max=5247 ms
+        understanding: 86 interpretations (85 by LLM, 0 fallbacks, 0 repaired), max 8 calls/min, prompt tokens max=1985 avg=1888, latency p50=1719 ms max=9817 ms
+        presentation: 10 slides; planner ops {'new': 1, 'noop': 39, 'update': 42, 'continue': 3}; revisions 1, corrections shown 1, shown as said 0
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/10
+          1. [key_points] Economics [part 1]  (v6, ['points'])
+          2. [key_points] Economics [part 2]  (v5, ['points', 'example'])
+          3. [key_points] Economics [part 3]  (v9, ['points'])
+          4. [key_points] Economics [part 4]  (v8, ['points'])
+          5. [key_points] Economics [part 5]  (v4, ['points'])
+          6. [key_points] Economics [part 6]  (v2, ['points'])
+          7. [key_points] Scarcity [part 1]  (v8, ['points', 'example'])
+          8. [key_points] Scarcity [part 2]  (v1, ['points'])
+          9. [key_points] Economics  (v2, ['points'])
+          10. [key_points] Earliest Economic Ideas  (v6, ['points'])
+        providers: {'groq_main#1': 3, 'groq_alt#5': 38, 'groq_alt#6': 39, 'groq_alt#1': 5}; triggers: {'boundary': 73, 'pause': 12, 'max_wait': 1}; outline: ['Economics > Introduction, Scarcity, Earliest Economic Ideas']; concerns: 4
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261015-122640-1896\session.sqlite

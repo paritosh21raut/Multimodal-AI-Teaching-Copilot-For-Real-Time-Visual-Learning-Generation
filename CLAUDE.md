@@ -62,7 +62,11 @@ Original requirements: `docs/brief/master-prompt.md` (read only when requirement
 .venv/Scripts/python tools/paper_eval.py latency <session...>   # paper: end-to-end latency from live logs (0 tokens)
 .venv/Scripts/python tools/baseline_llm_slides.py <session> [--metrics]   # paper: LLM-controlled baseline (~700 tok/unit); --metrics 0 tokens
 .venv/Scripts/python tools/eval_test.py run --note "..." [-- <copilot args>]   # paper validation test -> verify_results/testN; see docs/paper/VALIDATION.md
+.venv/Scripts/python tools/eval_sheets.py sheets|score   # paper: annotation workbooks + T1-T3 rating form / scores -> verify_results/_eval
 PYTHONPATH=paper/build/lib .venv/Scripts/python paper/build/src/build_docx.py <out.docx>   # paper; render.ps1 <docx> <pdf> prints pages
+.venv/Scripts/python tools/v1_eval.py [--out f.json] [--compare verify_results/_eval/v1_baseline.json]   # F-013 metrics from event logs (0 tokens)
+.venv/Scripts/python tools/v1_eval.py --replay | --gate   # F-013: engine replay (cues off/on) / gate replay (call floors), 0 tokens
+.venv/Scripts/python tools/screenshot_cues.py      # announced slide / heard list / interpreted, both themes -> artifacts/display
 .venv/Scripts/python -m pytest                      # fast tests
 .venv/Scripts/python -m pytest -m slow              # + GPU/model tests
 .venv/Scripts/python -m pytest -m browser           # real Edge via Playwright (display)

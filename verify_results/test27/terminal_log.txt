@@ -1,0 +1,752 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (4.4 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_5         openai/gpt-oss-120b           128k of 200k tokens IN USE
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~22.8 h
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~23.2 h
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 141 lecture minutes
+
+[READY] session 20261014-154721-2030
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+15:47:27 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+15:47:41 WARNING copilot.materials.service: lecture_move ignored: {'id': '', 'chapter': '', 'start': True}
+[LIVE]  lecture started. Type q + Enter to end.
+  [    5.2s] Introduction to Ethical Hacking Ethical hacking is an important branch of cybersecurity that focuses on protecting computers, networks, applications, and digital information from cyber attacks. (897 ms)
+  [   18.4s] In today's world, technology plays a major role in our daily lives. We use the internet for online banking, shopping, education, communication, and storing personal information. (975 ms)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (new_topic) acts=definition hint=definition lines=1 via groq_main#5 1642 ms
+               Defined ethical hacking as a cybersecurity branch protecting systems from attacks
+15:48:16 INFO    copilot.presentation.engine: planner: new Cybersecurity > Ethical Hacking (first content slide)
+  [SLIDE] add    'Ethical Hacking' [definition] v1 (1 items)
+15:48:27 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ["In today's world, technology plays a major role in our daily lives"]
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_main#5 1239 ms
+               Technology underpins many daily activities, highlighting why ethical hacking is essential.
+15:48:27 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] update 'Ethical Hacking' [definition] v2 (3 items)
+  [   31.4s] As our dependence on technology increases, the risk of cybercrime also increases. Cybercriminals may attempt to steal confidential information, access private accounts, (776 ms)
+  [SLIDE] update 'Ethical Hacking' [definition] v3 (4 items)
+  [   43.9s] damage computer systems or misuse personal data. To prevent these activities, organizations need professionals who understand how cyber attacks happen and how to protect systems against them. (818 ms)
+  [SLIDE] update 'Ethical Hacking' [definition] v4 (4 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 1336 ms
+               Explained rising cybercrime risks and the need for skilled professionals to prevent attacks.
+15:48:42 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] update 'Ethical Hacking' [definition] v5 (3 items)
+  [SLIDE] update 'Ethical Hacking' [definition] v6 (6 items)
+  [   57.7s] Ethical hacking helps fulfil this need by identifying security weaknesses before malicious attackers can exploit them. (698 ms)
+  [   66.8s] Understanding Hacking. (294 ms)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 1399 ms
+               Ethical hacking identifies weaknesses before attackers and emphasizes understanding hacking concepts.
+15:49:02 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] update 'Ethical Hacking' [definition] v7 (6 items)
+  [SLIDE] add    'Ethical Hacking' [key_points] v1 (2 items)
+  [   68.7s] Hacking refers to identifying and exploiting weaknesses in computer systems, networks, software or digital devices. A person who performs hacking activities is called a hacker. (833 ms)
+  [SLIDE] update 'Ethical Hacking' [key_points] v2 (3 items)
+15:49:19 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['A person who performs hacking activities is called a hacker']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=definition,explanation hint=definition lines=1 via groq_main#5 1133 ms
+               Introduced the term hacking and its definition
+15:49:19 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] update 'Ethical Hacking' [key_points] v3 (2 items)
+  [SLIDE] update 'Ethical Hacking' [key_points] v4 (4 items)
+  [   82.8s] To understand hacking, consider the example of a house with a weak lock. A person may try to identify that weakness and use it to enter the house. Similarly, a hacker examines a (940 ms)
+  [SLIDE] update 'Ethical Hacking' [key_points] v5 (5 items)
+  [   96.1s] computer system to discover weaknesses that could allow unauthorized access. Hacking can be performed for different purposes. Some hackers attempt to steal information, commit fraud, (963 ms)
+  [SLIDE] update 'Ethical Hacking' [key_points] v6 (5 items)
+  [  108.7s] or damage systems where others use their technical knowledge to improve security. (644 ms)
+  [SLIDE] update 'Ethical Hacking' [key_points] v7 (5 items)
+15:49:38 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Hacking can be performed for different purposes']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (same_concept) acts=example,explanation,explanation hint=example lines=3 via groq_main#5 1495 ms
+               Used a house‑lock analogy and listed various hacker motivations, including malicious and defensive purposes.
+15:49:38 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] update 'Ethical Hacking' [key_points] v8 (4 items)
+  [SLIDE] update 'Ethical Hacking' [key_points] v9 (10 items)
+15:49:39 INFO    copilot.presentation.engine: slide 96aabb8cea78 overflows on the display; further content continues on a new slide
+  [  113.7s] Therefore, hacking is not always malicious. Its legality and ethical nature depends on authorization, the methods used, and the purpose of the activity. (886 ms)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 2251 ms
+               Clarifies that hacking is not always malicious; it is legal and ethical only when authorized and purpose‑driven.
+15:50:03 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] add    'Ethical Hacking' [key_points] v1 (2 items)
+  [  126.2s] ethical hacking is authorized process of examining computer systems, networks and applications to identify security vulnerabilities and help correct them. (716 ms)
+  [SLIDE] update 'Ethical Hacking' [key_points] v2 (3 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (same_concept) acts=definition hint=definition lines=1 via groq_main#5 2012 ms
+               Ethical hacking is an authorized process to examine systems, find vulnerabilities, and help fix them.
+15:50:18 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] update 'Ethical Hacking' [key_points] v3 (2 items)
+  [SLIDE] update 'Ethical Hacking' [key_points] v4 (3 items)
+  [  140.9s] It is performed by trained professionals who have permission from the system owner and follow clearly defined rules. Ethical hackers are commonly known as white hat hackers. (574 ms)
+  [SLIDE] update 'Ethical Hacking' [key_points] v5 (4 items)
+  [  153.2s] They use their knowledge of hacking techniques to protect digital systems rather than harm them. For example, a college may have an online portal containing student records. (825 ms)
+  [SLIDE] update 'Ethical Hacking' [key_points] v6 (4 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1673 ms
+               Ethical hacking is done by trained professionals with permission and they are called white‑hat hackers
+15:50:32 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] update 'Ethical Hacking' [key_points] v7 (6 items)
+  [  165.5s] attendance details and examination results. If an unauthorized person breaks into the portal to steal information, it is a cyber attack. However, if the college appoints a cybersecurity professional, (853 ms)
+  [SLIDE] update 'Ethical Hacking' [key_points] v8 (6 items)
+15:50:44 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['They use their knowledge of hacking techniques to protect digital systems rather than harm them']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=example,explanation hint=key_points lines=1 via groq_main#5 1652 ms
+               Ethical hackers use their skills to protect systems, e.g., securing a college portal with student records.
+15:50:44 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] update 'Ethical Hacking' [key_points] v9 (7 items)
+  [SLIDE] add    'Ethical Hacking' [key_points] v1 (1 items)
+15:50:45 INFO    copilot.presentation.engine: slide d4bea245cf2a overflows on the display; further content continues on a new slide
+  [  179.7s] to test the portal, discover weaknesses and recommend security improvements. It is ethical hacking. (693 ms)
+  [SLIDE] update 'Ethical Hacking' [key_points] v10 (6 items)
+  [SLIDE] update 'Ethical Hacking' [key_points] v2 (2 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=definition hint=definition lines=2 via groq_main#5 1736 ms
+               Ethical hacking is authorized testing to discover and fix system weaknesses.
+15:50:53 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] update 'Ethical Hacking' [key_points] v3 (1 items)
+  [SLIDE] update 'Ethical Hacking' [key_points] v4 (2 items)
+  [  186.4s] The main objective of Ethical Hacking is to identify vulnerabilities, reduce security risks, protect sensitive information, and improve the overall security of digital systems. (863 ms)
+  [SLIDE] update 'Ethical Hacking' [key_points] v5 (3 items)
+  [  198.8s] type of hackers. (286 ms)
+  [SLIDE] update 'Ethical Hacking' [key_points] v6 (3 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#5 1848 ms
+               Teacher listed the main objectives of ethical hacking and introduced the concept of hacker types.
+15:51:15 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] update 'Ethical Hacking' [key_points] v7 (2 items)
+  [SLIDE] update 'Ethical Hacking' [key_points] v8 (7 items)
+  [  201.1s] Hackers are commonly classified into three categories based on their intentions and activities. White hat hackers are ethical hackers who work with proper authorization. (869 ms)
+  [  213.7s] They help organization identify vulnerabilities, evaluate security measures and protect system from cyber attacks. They may work for companies, governments, organization or cybersecurity firms. (904 ms)
+15:51:32 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Ethical Hacking' -> same_concept
+15:51:32 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Hackers are commonly classified into three categories based on their intentions and activities']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (same_concept) acts=classification,explanation hint=none lines=1 via groq_main#5 1386 ms
+               Introduced classification of hackers, defining white‑hat hackers as ethical, authorized professionals.
+15:51:32 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] update 'Ethical Hacking' [key_points] v9 (8 items)
+15:51:32 INFO    copilot.presentation.engine: image search 'hacker types diagram' (diagram) for 'Ethical Hacking'
+15:51:35 INFO    copilot.presentation.engine: image 'hacker types diagram': none (no usable candidates)
+  [IMAGE] 'hacker types diagram' -> none (no usable candidates) (2.6 s)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=- hint=key_points lines=1 via groq_main#5 1613 ms
+               Expanded objectives of ethical hackers and listed typical employers.
+15:51:45 INFO    copilot.presentation.engine: revised S1: They help organizations identify vulnerabilities, evaluate security measures, and protect systems from cyber attacks; they may work for…
+15:51:45 INFO    copilot.presentation.engine: planner: noop Cybersecurity > Ethical Hacking (nothing to display)
+  [SLIDE] update 'Ethical Hacking' [key_points] v10 (8 items)
+15:51:45 INFO    copilot.presentation.engine: image search 'ethical hacker workplace' (photo) for 'Ethical Hacking'
+  [  227.7s] Black Hat Hackers Black Hat Hackers access system without authorization for malicious purposes. Their activities may include stealing confidential information, spreading malware, (861 ms)
+15:51:49 INFO    copilot.visuals.finder: image search 'ethical hacker workplace': 1 slow download(s) dropped
+15:51:49 INFO    copilot.presentation.engine: image 'ethical hacker workplace': none (downloads failed)
+  [IMAGE] 'ethical hacker workplace' -> none (downloads failed) (4.5 s)
+  [  240.9s] committing financial fraud or damaging computer networks. These activities are illegal. (570 ms)
+15:51:57 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Ethical Hacking' -> same_concept
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (same_concept) acts=definition hint=definition lines=2 via groq_main#5 1012 ms
+               Introduced Black Hat hackers as malicious, unauthorized attackers and described their illegal activities.
+15:51:57 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking (same frame)
+  [SLIDE] add    'Ethical Hacking' [members] v1 (1 items)
+  [  247.8s] Gray hat hackers. Gray hat hackers operate between the white hat and black hat categories. They may discover viral neighborhoods without obtaining permission even if they do not intend to cause harm. (787 ms)
+  [SLIDE] update 'Ethical Hacking' [members] v2 (1 items)
+  [  261.1s] However, good intentions do not automatically make unauthorized access legal or ethical. (588 ms)
+  [SLIDE] update 'Ethical Hacking' [members] v3 (1 items)
+  [UNDERSTAND] Cybersecurity > Hacker Types (sibling_concept) acts=definition,explanation hint=none lines=2 via groq_main#5 1622 ms
+               Introduced gray hat hackers and clarified that good intentions don’t legalize unauthorized access.
+15:52:12 INFO    copilot.presentation.engine: planner: continue Cybersecurity > Hacker Types (new facet)
+  [SLIDE] update 'Ethical Hacking' [members] v4 (1 items)
+  [SLIDE] add    'Hacker Types' [members] v1 (2 items)
+  [  268.8s] The major difference between these categories is how hackers obtain access, what they do with the information they discover, and whether they have permission to perform their activities. (887 ms)
+  [UNDERSTAND] Cybersecurity > Hacker Types (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 2261 ms
+               Teacher explained the major differences among hacker categories: access method, use of information, and permission status.
+15:52:38 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+  [SLIDE] update 'Hacker Types' [members] v2 (5 items)
+  [  281.2s] That's how ethical hacking works. Ethical hacking follows a systematic process to ensure that security testing is conducted safely and effectively. The first stage is planning and authorization. (975 ms)
+  [  294.7s] Before testing begins, the ethical hacker obtains permission from the system owner. The scope of testing, permitted methods and limitations are established to prevent unnecessary risk. (882 ms)
+15:52:52 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Hacker Types' -> same_concept
+15:52:52 WARNING copilot.understanding.interpreter: model left out 2 spoken sentence(s); shown as said: ['Ethical hacking follows a systematic process to ensure that security testing is conducted safely and effectively', 'The scope of testing, permitted methods and limitations are established to prevent unnecessary risk']
+  [UNDERSTAND] Cybersecurity > Hacker Types (same_concept) acts=process,explanation hint=none lines=2 via groq_main#5 1707 ms
+               Introduced the first stage of ethical hacking: planning and authorization with permission and scope definition.
+15:52:52 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+  [SLIDE] update 'Hacker Types' [members] v3 (5 items)
+  [SLIDE] add    'Hacker Types' [process_flow] v1 (3 items)
+  [  307.9s] The second stage is recoil nimpsils (632 ms)
+  [  312.3s] which involves gathering information about the targeted system. This may include identifying the technologies used, understanding the system structure and collecting information. (739 ms)
+15:53:11 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Hacker Types' -> same_concept
+  [UNDERSTAND] Cybersecurity > Hacker Types (same_concept) acts=process hint=process_flow lines=2 via groq_main#5 1713 ms
+               Introduced the reconnaissance stage of ethical hacking, focusing on information gathering about the target system.
+  [HEARD] 'recoil nimpsils' -> 'reconnaissance' corrected on the slide (0.5)
+15:53:11 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+15:53:11 INFO    copilot.presentation.engine: concern 5677b81c102b (transcription, applied=True): 1 element(s); slide shows 'reconnaissance'
+15:53:11 INFO    copilot.presentation.engine: no image for 'Hacker Types': process needs the full width
+  [SLIDE] update 'Hacker Types' [process_flow] v2 (4 items)
+  [  324.6s] publicly available information relevant to the assessment. The third stage is Scanning and Vulnerability Identification. The ethical hacker examines the system for potential weaknesses. (878 ms)
+  [SLIDE] update 'Hacker Types' [process_flow] v3 (5 items)
+  [  337.8s] such as outdated software in secure configuration or weak access control. (669 ms)
+  [SLIDE] update 'Hacker Types' [process_flow] v4 (5 items)
+15:53:34 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Hacker Types' -> same_concept
+15:53:34 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Publicly available information relevant to the assessment']
+  [UNDERSTAND] Cybersecurity > Hacker Types (same_concept) acts=process,explanation hint=process_flow lines=2 via groq_main#5 1858 ms
+               Introduced the third stage—Scanning and Vulnerability Identification—detailing how ethical hackers find weaknesses.
+15:53:34 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+15:53:34 INFO    copilot.presentation.engine: no image for 'Hacker Types': process needs the full width
+  [SLIDE] update 'Hacker Types' [process_flow] v5 (4 items)
+  [SLIDE] update 'Hacker Types' [process_flow] v6 (6 items)
+  [  343.5s] The fourth stage is controlled testing. The hacker verifies whether the identified vulnerabilities can actually be exploited within the approved scope. Testing (781 ms)
+  [  355.7s] must be performed carefully to avoid damaging systems, disrupting services, or exposing confidential information. The final stage is Reporting and Remediation. The ethical hack (835 ms)
+15:54:01 WARNING copilot.understanding.interpreter: model left out 2 spoken sentence(s); shown as said: ['The hacker verifies whether the identified vulnerabilities can actually be exploited within the approved scope', 'Must be performed carefully to avoid damaging systems, disrupting services, or exposing confidential information']
+  [UNDERSTAND] Cybersecurity > Hacker Types (same_concept) acts=process,explanation hint=process_flow lines=2 via groq_main#5 1792 ms
+               Added controlled testing and reporting/remediation stages to the ethical hacking process.
+15:54:01 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+15:54:01 INFO    copilot.presentation.engine: no image for 'Hacker Types': process needs the full width
+  [SLIDE] add    'Hacker Types' [process_flow] v1 (4 items)
+  [  368.0s] The organization then fixes the weaknesses and may arrange another assessment to confirm the problems have been resolved. (651 ms)
+  [SLIDE] update 'Hacker Types' [process_flow] v2 (5 items)
+  [  380.8s] This systematic approach enables the organization to strengthen their security and reduce the possibility of successful cyber attacks. (633 ms)
+  [SLIDE] update 'Hacker Types' [process_flow] v3 (5 items)
+15:54:15 INFO    copilot.understanding.interpreter: dropped 1 revision(s) with unknown refs
+  [UNDERSTAND] Cybersecurity > Hacker Types (same_concept) acts=process,explanation hint=process_flow lines=2 via groq_main#5 1816 ms
+               Added remediation/re‑assessment step and explained its security benefits.
+15:54:15 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+15:54:15 INFO    copilot.presentation.engine: no image for 'Hacker Types': process needs the full width
+  [SLIDE] update 'Hacker Types' [process_flow] v4 (4 items)
+  [SLIDE] update 'Hacker Types' [process_flow] v5 (6 items)
+  [  391.5s] type of ethical hackers. (514 ms)
+  [  395.1s] type of ethical hackings (466 ms)
+  [  397.7s] Ethical hacking can be performed on different types of digital systems. (675 ms)
+15:54:31 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Types of Ethical Hackers' -> same_concept
+  [UNDERSTAND] Cybersecurity > Types of Ethical Hackers (same_concept) acts=explanation hint=key_points lines=3 via groq_main#5 2134 ms
+               Introduced categories of ethical hackers, categories of ethical hacking, and that hacking applies to many digital systems.
+15:54:31 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+  [SLIDE] add    'Hacker Types' [key_points] v1 (3 items)
+15:54:31 INFO    copilot.presentation.engine: no image 'Scanning process diagram' on 'Hacker Types': not about the slide (similarity 0.05)
+  [  403.0s] Web application hacking focuses on identifying security weaknesses in websites and web applications. (704 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v2 (4 items)
+  [  410.2s] Examples include insecure login systems, improper access controls, and vulnerabilities that could expose user information. (688 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v3 (4 items)
+  [UNDERSTAND] Cybersecurity > Hacker Types (elaboration) acts=explanation hint=concept lines=1 via groq_main#5 1601 ms
+               Introduced web application hacking as a type of ethical hacking focusing on website and web app vulnerabilities.
+15:54:45 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+  [SLIDE] update 'Hacker Types' [key_points] v4 (5 items)
+15:54:45 INFO    copilot.presentation.engine: no image 'website security diagram' on 'Hacker Types': not about the slide (similarity 0.22)
+  [UNDERSTAND] Cybersecurity > Hacker Types (elaboration) acts=explanation hint=example lines=1 via groq_main#5 2012 ms
+               Provided concrete examples of web application vulnerabilities targeted by ethical hackers.
+15:54:57 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+  [SLIDE] update 'Hacker Types' [key_points] v5 (4 items)
+  [SLIDE] update 'Hacker Types' [key_points] v6 (7 items)
+15:54:57 INFO    copilot.presentation.engine: image search 'web application vulnerabilities' (diagram) for 'Hacker Types'
+  [  421.9s] Network hacking involves examining computer networks, routers, servers, and connected devices to identify weaknesses that could allow unauthorized access. Wireless network (730 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v7 (8 items)
+[PAUSE] paused: what is said now is not put on slides (Resume to continue)
+  [  436.2s] (paused, not used) this stage (268 ms)
+15:55:00 INFO    copilot.understanding.service: paused: not interpreted: this stage
+15:55:02 INFO    copilot.visuals.finder: image search 'web application vulnerabilities' (diagram, labels preferred): 1 candidate(s), 1 accepted (1 labelled), 4.62 s {'search_s': 3.21, 'download_s': 1.06, 'clip_s': 0.04, 'full_s': 0.3, 'total_s': 4.62}
+  [IMAGE] 'web application vulnerabilities' -> File:Overview of a three-tier application vectorVersion.svg (4.6 s)
+15:55:02 INFO    copilot.presentation.engine: no room for an image on 'Hacker Types'
+  [SLIDE] update 'Hacker Types' [key_points] v8 (7 items)
+15:55:19 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Hacker Types' -> same_concept
+  [UNDERSTAND] Cybersecurity > Hacker Types (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 1912 ms
+               Network hacking focuses on finding weaknesses in computer networks and connected devices.
+15:55:19 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+  [SLIDE] add    'Hacker Types' [key_points] v1 (1 items)
+15:55:19 INFO    copilot.presentation.engine: image 'web application vulnerabilities' kept on 'Hacker Types' (same visual as this topic's image)
+  [SLIDE] update 'Hacker Types' [key_points] v2 (2 items)
+[LIVE]  resumed
+  [  488.1s] Wireless network testing focuses on evaluating the security of Wi-Fi networks and wireless communication systems. It helps identify weak passwords in secure configurations and other potential risk systems. (766 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v3 (3 items)
+15:56:19 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Hacker Types' -> same_concept
+  [UNDERSTAND] Cybersecurity > Hacker Types (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 1400 ms
+               Wireless network testing checks Wi‑Fi security and finds weak passwords and other risks.
+15:56:19 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+15:56:19 INFO    copilot.presentation.engine: no image for 'Hacker Types': has an image
+  [SLIDE] update 'Hacker Types' [key_points] v4 (2 items)
+  [SLIDE] update 'Hacker Types' [key_points] v5 (4 items)
+  [  502.7s] hacking involves testing the security of computer operating systems and servers to discover vulnerabilities and weaknesses in access control. Social engineering assessment examined (727 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v6 (5 items)
+  [  515.7s] how human behaviour can affect security. For example, an unauthorized assessment may test whether employees can recognize suspicious emails or fraudulent messages. Each type of ethical hacking addresses (771 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v7 (5 items)
+15:56:39 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Hacker Types' -> same_concept
+  [UNDERSTAND] Cybersecurity > Hacker Types (same_concept) acts=explanation hint=key_points lines=2 via groq_main#5 1666 ms
+               Introduced operating system/server hacking and social engineering assessment as additional hacker types.
+15:56:39 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+15:56:39 INFO    copilot.presentation.engine: no image for 'Hacker Types': has an image
+  [SLIDE] update 'Hacker Types' [key_points] v8 (4 items)
+  [SLIDE] update 'Hacker Types' [key_points] v9 (6 items)
+  [  529.2s] different aspects of cybersecurity and organization may use several types together to develop stronger protection. (623 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v10 (7 items)
+  [  538.7s] common tools used in ethical hacking. (633 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v11 (7 items)
+  [UNDERSTAND] Cybersecurity > Hacker Types (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1747 ms
+               Combining several hacker types enhances cybersecurity protection.
+15:56:47 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+  [SLIDE] add    'Hacker Types' [key_points] v1 (1 items)
+15:56:47 INFO    copilot.presentation.engine: image 'web application vulnerabilities' kept on 'Hacker Types' (same visual as this topic's image)
+  [SLIDE] update 'Hacker Types' [key_points] v2 (2 items)
+  [  542.3s] Ethical hackers use specialized tools to examine, system detect vulnerabilities and evaluate security. Nmap is a network scanning tool used to discover devices on network and identify available network services. (886 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v12 (6 items)
+  [SLIDE] update 'Hacker Types' [key_points] v3 (3 items)
+15:57:01 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Common tools used in ethical hacking']
+  [UNDERSTAND] Cybersecurity > Hacker Types (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_main#5 3842 ms
+               Introduced common ethical‑hacking tools used for network, web, and password testing.
+15:57:01 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+15:57:01 INFO    copilot.presentation.engine: slide 'Hacker Types' waits for the min dwell time
+  [SLIDE] update 'Hacker Types' [key_points] v4 (8 items)
+15:57:01 INFO    copilot.presentation.engine: image 'web application vulnerabilities' kept on 'Hacker Types' (same visual as this topic's image)
+  [SLIDE] add    'Hacker Types' [key_points] v1 (2 items)
+15:57:14 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Ethical hackers use specialized tools to examine, system detect vulnerabilities and evaluate security']
+  [UNDERSTAND] Cybersecurity > Hacker Types (same_concept) acts=definition,explanation hint=definition lines=1 via groq_main#5 1752 ms
+               Introduced Nmap as a network‑scanning tool for ethical hackers to detect devices and services.
+15:57:14 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+15:57:14 INFO    copilot.presentation.engine: no image for 'Hacker Types': has an image
+  [SLIDE] update 'Hacker Types' [key_points] v5 (7 items)
+  [SLIDE] update 'Hacker Types' [key_points] v2 (4 items)
+  [  557.2s] Byershark is a network protocol analyzer that allows professionals to examine new network traffic and investigate communication-related programs. Bob should (810 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v3 (5 items)
+  [  570.2s] is a tool commonly used for testing the security of web applications. It helps professionals inspect HTTP requests and responses and identify possible applications where there are queries. (880 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v4 (5 items)
+  [  582.7s] Metasploit framework is used for (325 ms)
+  [SLIDE] update 'Hacker Types' [key_points] v5 (5 items)
+15:57:32 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Hacker Types' -> same_concept
+  [UNDERSTAND] Cybersecurity > Hacker Types (same_concept) acts=definition,definition hint=definition lines=2 via groq_main#5 3790 ms
+               Introduced Wireshark network analyzer and Burp Suite web‑app testing tool as ethical‑hacking utilities.
+  [HEARD] 'Byershark' -> 'Wireshark' corrected on the slide (0.5)
+  [HEARD] '(missing name)' -> 'Burp Suite' corrected on the slide (0.5)
+15:57:32 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+15:57:32 INFO    copilot.presentation.engine: concern f97f498f6b95 (transcription, applied=True): 1 element(s); slide shows 'Wireshark'
+15:57:32 INFO    copilot.presentation.engine: concern a3d3d01aebde (transcription, applied=True): 1 element(s); slide shows 'Burp Suite'
+  [SLIDE] update 'Hacker Types' [concept] v6 (6 items)
+  [SLIDE] add    'Hacker Types' [members] v1 (1 items)
+15:57:32 INFO    copilot.presentation.engine: no image 'Wireshark interface' on 'Hacker Types': not about the slide (similarity 0.19)
+  [  587.0s] control security testing and vulnerability validation in authorized environments Kali Linux is a Linux distribution that includes many tools used for penetration testing, digital forensics and (822 ms)
+  [SLIDE] update 'Hacker Types' [concept] v7 (5 items)
+  [SLIDE] update 'Hacker Types' [members] v2 (1 items)
+  [UNDERSTAND] Cybersecurity > Hacker Types (elaboration) acts=definition,definition hint=definition lines=2 via groq_main#5 2328 ms
+               Introduced Metasploit framework and Kali Linux as ethical‑hacking tools for testing and forensics.
+15:57:51 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+15:57:51 INFO    copilot.presentation.engine: no image for 'Hacker Types': two concepts side by side
+  [SLIDE] update 'Hacker Types' [members] v3 (1 items)
+  [SLIDE] update 'Hacker Types' [concept] v4 (3 items)
+  [  600.4s] security research. These tools are useful for cybersecurity professionals but using a tool does not automatically make an activity ethical. Proper authorization, technical knowledge and (816 ms)
+  [  613.3s] once they will use our ascension. (478 ms)
+  [UNDERSTAND] Cybersecurity > Hacker Types (same_concept) acts=explanation hint=concept lines=2 via groq_main#5 3159 ms
+               Emphasized that tool use requires authorization and knowledge to be ethical.
+15:58:11 INFO    copilot.presentation.engine: planner: update Cybersecurity > Hacker Types (same frame)
+15:58:11 INFO    copilot.presentation.engine: no image for 'Hacker Types': two concepts side by side
+  [SLIDE] update 'Hacker Types' [concept] v5 (5 items)
+  [  616.6s] Advantages and importance of ethical hacking Ethical hacking offers several benefits to individuals, businesses and other organizations First, it helps identify vulnerabilities before malicious attackers discover them (800 ms)
+  [SLIDE] update 'Hacker Types' [concept] v6 (6 items)
+  [  631.3s] are weak. Identification allows organizations to address security problems and reduce the risk of cyber attacks. Second, ethical hacking helps protect sensitive information including customer reports, financial details, (1107 ms)
+  [SLIDE] update 'Hacker Types' [concept] v7 (6 items)
+  [UNDERSTAND] Cybersecurity > Advantages of Ethical Hacking (sibling_concept) acts=explanation hint=key_points lines=2 via groq_main#5 1991 ms
+               Ethical hacking helps find flaws early, reduces attack risk, and safeguards sensitive data.
+15:58:36 INFO    copilot.presentation.engine: planner: continue Cybersecurity > Advantages of Ethical Hacking (new facet)
+  [SLIDE] update 'Hacker Types' [concept] v8 (5 items)
+  [SLIDE] add    'Advantages of Ethical Hacking' [key_points] v1 (3 items)
+15:58:36 INFO    copilot.presentation.engine: image search 'ethical hacker workplace' (photo) for 'Advantages of Ethical Hacking'
+15:58:38 INFO    copilot.visuals.finder: image search 'ethical hacker workplace' (photo): 1 candidate(s), 0 accepted (0 labelled), 2.29 s {'search_s': 1.87, 'download_s': 0.38, 'clip_s': 0.04, 'full_s': 0.0, 'total_s': 2.29}
+15:58:38 INFO    copilot.presentation.engine: image 'ethical hacker workplace': none (no relevant image)
+  [IMAGE] 'ethical hacker workplace' -> none (no relevant image) (2.3 s)
+  [  644.9s] password and confidential business data. Third, it improves network and application security by helping organizations evaluate their existing security measures and identifying areas that require improvement. (716 ms)
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v2 (4 items)
+  [  659.9s] (dropped: empty) 
+15:58:45 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Ethical Hacking' -> same_concept
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (same_concept) acts=explanation,explanation hint=key_points lines=1 via groq_main#5 2780 ms
+               Added password and business data to data protection point and introduced security evaluation advantage.
+15:58:45 INFO    copilot.presentation.engine: revised S3: Protect sensitive information such as customer reports, financial details, passwords, and confidential business data
+15:58:45 INFO    copilot.presentation.engine: planner: update Cybersecurity > Advantages of Ethical Hacking (same frame)
+15:58:45 INFO    copilot.presentation.engine: no image for 'Advantages of Ethical Hacking': nothing relevant found for 'ethical hacker workplace' before
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v3 (3 items)
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v4 (3 items)
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v5 (4 items)
+  [  660.4s] Finally, Ethical Hacking supports security awareness. It encourages organizations to adopt safer practices, improve employee training, and adapt update software regularly and develop better incident response. (809 ms)
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v6 (5 items)
+  [  675.3s] procedures. Thus, Ethical Hacking is not limited to finding vulnerabilities. It also contributes to building a safer and more reliable digital environment, ethical hacking and cyber security. (757 ms)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 2711 ms
+               Added security awareness as an advantage of ethical hacking, highlighting training and incident response improvements.
+15:59:13 INFO    copilot.presentation.engine: planner: update Cybersecurity > Advantages of Ethical Hacking (same frame)
+15:59:13 INFO    copilot.presentation.engine: no image for 'Advantages of Ethical Hacking': nothing relevant found for 'ethical hacker workplace' before
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v7 (5 items)
+  [SLIDE] add    'Advantages of Ethical Hacking' [key_points] v1 (1 items)
+15:59:26 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Thus, Ethical Hacking is not limited to finding vulnerabilities']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_main#5 1054 ms
+               Ethical hacking also helps create a safer, more reliable digital environment.
+15:59:26 INFO    copilot.presentation.engine: planner: update Cybersecurity > Advantages of Ethical Hacking (same frame)
+15:59:26 INFO    copilot.presentation.engine: no image for 'Advantages of Ethical Hacking': nothing relevant found for 'ethical hacker workplace' before
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v8 (4 items)
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v2 (3 items)
+  [  689.5s] ethical hacking and cyber security are closely related but they are not exactly the same. Cyber security is the broader field concerned with protecting computer system networks, applications and data from digital threats. (924 ms)
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v3 (4 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation hint=concept lines=1 via groq_main#5 1906 ms
+               Clarified that ethical hacking is part of, but not identical to, the broader field of cyber security.
+15:59:41 INFO    copilot.presentation.engine: planner: update Cybersecurity > Advantages of Ethical Hacking (same frame)
+15:59:41 INFO    copilot.presentation.engine: no image for 'Advantages of Ethical Hacking': nothing relevant found for 'ethical hacker workplace' before
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v4 (3 items)
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v5 (4 items)
+  [  703.9s] It includes areas such as access control, encryption, network security, incident response, risk management, and data protection. Ethical hacking is one part of cybersecurity. (984 ms)
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v6 (5 items)
+  [  716.7s] It focuses particularly on testing systems to identify weaknesses and verify whether security measures are effective. (616 ms)
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v7 (5 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 1428 ms
+               Ethical hacking covers specific security areas and focuses on testing systems for weaknesses.
+15:59:49 INFO    copilot.presentation.engine: planner: update Cybersecurity > Advantages of Ethical Hacking (same frame)
+15:59:49 INFO    copilot.presentation.engine: no image for 'Advantages of Ethical Hacking': nothing relevant found for 'ethical hacker workplace' before
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v8 (4 items)
+  [SLIDE] update 'Advantages of Ethical Hacking' [key_points] v9 (6 items)
+  [  725.3s] For example, installing anti-virus software using strong password and enabling multi-factor authentication and cyber security practices. Hiring an authorized professional to test whether a system can be accessed by exploiting (936 ms)
+  [  739.8s] A vulnerability is an example of ethical hacking. Those are important because effective cybersecurity requires not only preventive measures but also regular evaluation of whether those measures work as intended. (754 ms)
+16:00:21 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Those are important because effective cybersecurity requires not only preventive measures but also regular evaluation of whether those measures work as intended']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=example,definition,explanation hint=example lines=2 via groq_main#5 3329 ms
+               Provided concrete examples of security practices and defined vulnerability as a weakness ethical hacking targets.
+  [CONCERN] (factual) A vulnerability is an example of ethical hacking. -> A vulnerability is a weakness that can be exploited, which ethical hacking seeks to discover (0.95, slide shows the correction)
+16:00:21 INFO    copilot.presentation.engine: planner: update Cybersecurity > Advantages of Ethical Hacking (same frame)
+16:00:21 INFO    copilot.presentation.engine: concern 04afef327fff (factual, applied=True): 1 element(s); slide shows 'weakness that can be exploited'
+  [SLIDE] add    'Advantages of Ethical Hacking' [example] v1 (3 items)
+16:00:21 INFO    copilot.presentation.engine: image search 'security practices diagram' (diagram) for 'Advantages of Ethical Hacking'
+16:00:24 INFO    copilot.presentation.engine: image 'security practices diagram': none (no usable candidates)
+  [IMAGE] 'security practices diagram' -> none (no usable candidates) (3.0 s)
+  [  754.3s] Ethical hacking has become a promising career area as organizations increasingly depend on digital (658 ms)
+[PAUSE] paused: what is said now is not put on slides (Resume to continue)
+  [  766.3s] (paused, not used) technologists and faces growing cybersecurity risks. (575 ms)
+16:00:33 INFO    copilot.understanding.service: paused: not interpreted: technologists and faces growing cybersecurity risks.
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1764 ms
+               Ethical hacking is presented as a growing career field due to rising digital reliance.
+16:00:47 INFO    copilot.presentation.engine: planner: update Cybersecurity > Advantages of Ethical Hacking (same frame)
+16:00:47 INFO    copilot.presentation.engine: no image for 'Advantages of Ethical Hacking': nothing relevant found for 'security practices diagram' before
+  [SLIDE] update 'Advantages of Ethical Hacking' [example] v2 (4 items)
+16:00:50 INFO    copilot.presentation.engine: concern 04afef327fff dismissed: slide shows 'weakness that can be exploited'
+[LIVE]  resumed
+  [  810.8s] People interested in this field can explore roles such as ethical hacker, penetration tester, security analyst, vulnerability assessment specialist, and application security engineer to begin learning ethical hacking. (905 ms)
+  [  825.2s] first understand computer networks, operating system and basic programming, web technologies and common security concepts. They can then study networking tools, web applications, security vulnerability, assessment and penetration testing techniques. (917 ms)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=classification hint=hierarchy lines=1 via groq_main#5 1390 ms
+               Lists common career roles within ethical hacking.
+16:01:42 INFO    copilot.presentation.engine: planner: update Cybersecurity > Advantages of Ethical Hacking (same frame)
+16:01:42 INFO    copilot.presentation.engine: no image for 'Advantages of Ethical Hacking': nothing relevant found for 'security practices diagram' before
+  [SLIDE] add    'Advantages of Ethical Hacking' [hierarchy] v1 (1 items)
+16:01:55 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Foundations for Ethical Hacking' -> same_concept
+  [UNDERSTAND] Cybersecurity > Foundations for Ethical Hacking (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 1486 ms
+               Lists core technical areas students should learn before practicing ethical hacking.
+16:01:55 INFO    copilot.presentation.engine: planner: continue Cybersecurity > Foundations for Ethical Hacking (new facet)
+16:01:55 INFO    copilot.presentation.engine: slide 'Foundations for Ethical Hacking' waits for the min dwell time
+16:01:55 INFO    copilot.presentation.engine: no image for 'Foundations for Ethical Hacking': nothing relevant found for 'security practices diagram' before
+  [  838.6s] Practical experience is also important. Beginners can practice it intentionally by using applications and the security training platforms and virtual laboratories where testing is permitted. (806 ms)
+  [SLIDE] add    'Foundations for Ethical Hacking' [key_points] v1 (5 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1307 ms
+               Emphasized the need for practical experience using training platforms and virtual labs.
+16:02:09 INFO    copilot.presentation.engine: planner: update Cybersecurity > Foundations for Ethical Hacking (same frame)
+16:02:09 INFO    copilot.presentation.engine: no image for 'Foundations for Ethical Hacking': nothing relevant found for 'security practices diagram' before
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v2 (6 items)
+  [  851.9s] Ethical hackers must also develop problem solving skills, attention to details, communication skills and a strong understanding of legal and professional responsibilities. Certification and hands-on projects can further support career development. (894 ms)
+  [  866.9s] (dropped: empty) 
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 1519 ms
+               Added essential soft skills, legal responsibilities, and certification importance for ethical hackers.
+16:02:23 INFO    copilot.presentation.engine: planner: update Cybersecurity > Foundations for Ethical Hacking (same frame)
+16:02:23 INFO    copilot.presentation.engine: no image for 'Foundations for Ethical Hacking': nothing relevant found for 'security practices diagram' before
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v3 (6 items)
+  [SLIDE] add    'Foundations for Ethical Hacking' [key_points] v1 (5 items)
+  [  867.4s] ethical and ethical responsibilities. Ethical hacking must always be performed responsibly. A person should never assume that discovering a vulnerability gives them permission to access or else the system. (796 ms)
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v2 (6 items)
+  [  880.6s] Before beginning any assessment, the hacker must obtain appropriate authorization and follow the accurate scope. They must protect confidential information, avoid unnecessary disruption, document their findings accurately. (727 ms)
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v3 (6 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1155 ms
+               Emphasized that ethical hacking must be performed responsibly and never assume permission from finding a vulnerability.
+16:02:38 INFO    copilot.presentation.engine: planner: update Cybersecurity > Foundations for Ethical Hacking (same frame)
+16:02:38 INFO    copilot.presentation.engine: no image for 'Foundations for Ethical Hacking': nothing relevant found for 'security practices diagram' before
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v4 (7 items)
+  [  894.3s] and report vulnerability to the appropriate people. Unauthorized access to data theft and damage to computer systems can have serious legal consequences in India's cyber world. (794 ms)
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v5 (7 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 2042 ms
+               Added guidance on obtaining authorization, protecting data, avoiding disruption, and documenting findings before assessments.
+16:02:52 INFO    copilot.presentation.engine: planner: update Cybersecurity > Foundations for Ethical Hacking (same frame)
+16:02:52 INFO    copilot.presentation.engine: no image for 'Foundations for Ethical Hacking': nothing relevant found for 'security practices diagram' before
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v6 (8 items)
+  [  908.1s] Offenses are addressed under applicable laws including the Information Technology Act 2000 as amended. Responsible ethical hacking therefore requires both technical expertise and (795 ms)
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v7 (8 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=other hint=key_points lines=1 via groq_main#5 2073 ms
+               Added reporting requirement and legal consequences of unauthorized access.
+16:03:06 INFO    copilot.presentation.engine: revised S7: Obtain authorization, follow scope, protect data, avoid disruption, document findings, and report vulnerability to appropriate people
+16:03:06 INFO    copilot.presentation.engine: planner: update Cybersecurity > Foundations for Ethical Hacking (same frame)
+16:03:06 INFO    copilot.presentation.engine: no image for 'Foundations for Ethical Hacking': nothing relevant found for 'security practices diagram' before
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v8 (8 items)
+  [SLIDE] add    'Foundations for Ethical Hacking' [key_points] v1 (1 items)
+  [  921.0s] and respect for privacy, security and the law. (385 ms)
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v9 (7 items)
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v2 (2 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 2146 ms
+               Introduced the IT Act 2000 as the legal basis and emphasized respect for privacy, security, and law in ethical hacking.
+16:03:14 INFO    copilot.presentation.engine: planner: update Cybersecurity > Foundations for Ethical Hacking (same frame)
+16:03:14 INFO    copilot.presentation.engine: no image for 'Foundations for Ethical Hacking': nothing relevant found for 'security practices diagram' before
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v3 (1 items)
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v4 (3 items)
+  [  925.8s] common cyber security threats. Ethical hackers study different types of cyber threats to understand how attackers target computer systems and how these attacks can be prevented. One common threat is phishing. (846 ms)
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v5 (4 items)
+  [UNDERSTAND] Cybersecurity > Common Cyber Security Threats (sibling_concept) acts=explanation hint=key_points lines=1 via groq_main#5 1490 ms
+               Introduced phishing as a common threat ethical hackers study to understand and prevent attacks.
+16:03:37 INFO    copilot.presentation.engine: planner: continue Cybersecurity > Common Cyber Security Threats (new facet)
+  [SLIDE] update 'Foundations for Ethical Hacking' [key_points] v6 (3 items)
+  [SLIDE] add    'Common Cyber Security Threats' [key_points] v1 (1 items)
+16:03:37 INFO    copilot.presentation.engine: image search 'phishing email example' (photo) for 'Common Cyber Security Threats'
+  [  940.1s] in which attackers send fake emails, messages, or websites to trick people into sharing password, banking information, or other sensitive data. Other threat is malware, which refers to malicious op- (876 ms)
+  [SLIDE] update 'Common Cyber Security Threats' [key_points] v2 (2 items)
+16:03:42 INFO    copilot.visuals.finder: image search 'phishing email example' (photo): 5 candidate(s), 3 accepted (0 labelled), 5.43 s {'search_s': 2.45, 'download_s': 0.77, 'clip_s': 0.1, 'full_s': 2.08, 'total_s': 5.43}
+  [IMAGE] 'phishing email example' -> File:Email-FunnyPictureMessage.png (5.4 s)
+16:03:42 INFO    copilot.presentation.engine: image 'phishing email example' on 'Common Cyber Security Threats': File:Email-FunnyPictureMessage.png
+  [SLIDE] update 'Common Cyber Security Threats' [key_points] v3 (3 items)
+  [  953.7s] designed to harm systems, steal information, or gain unauthorized access. Viruses, worms, ransomware, and spyware are examples of malware. Password attacks involve (801 ms)
+  [SLIDE] update 'Common Cyber Security Threats' [key_points] v4 (3 items)
+  [UNDERSTAND] Cybersecurity > Common Cyber Security Threats (same_concept) acts=explanation,definition,explanation hint=key_points lines=2 via groq_main#5 2679 ms
+               Added definitions for phishing, malware, and password attacks as common cyber security threats.
+16:03:59 INFO    copilot.presentation.engine: revised S1: Phishing: attackers send fake emails, messages, or websites to trick people into sharing passwords, banking info, or other sensitive data
+16:03:59 INFO    copilot.presentation.engine: planner: update Cybersecurity > Common Cyber Security Threats (same frame)
+16:03:59 INFO    copilot.presentation.engine: no image for 'Common Cyber Security Threats': has an image
+  [SLIDE] update 'Common Cyber Security Threats' [key_points] v5 (2 items)
+  [SLIDE] update 'Common Cyber Security Threats' [key_points] v6 (2 items)
+  [SLIDE] update 'Common Cyber Security Threats' [key_points] v7 (5 items)
+  [  967.0s] attempts to obtain or guess passwords to access accounts. Weak and reused passwords make it easier for attackers to compromise multiple accounts. (710 ms)
+  [SLIDE] update 'Common Cyber Security Threats' [key_points] v8 (6 items)
+  [  977.8s] denial of service attacks also known as PEWS (719 ms)
+  [SLIDE] update 'Common Cyber Security Threats' [key_points] v9 (6 items)
+  [  983.1s] I think. (292 ms)
+  [SLIDE] update 'Common Cyber Security Threats' [key_points] v10 (5 items)
+16:04:12 WARNING copilot.llm.router: LLM groq_main now uses GROQ_API_KEY_6 (GROQ_API_KEY_5 is spent)
+  [UNDERSTAND] Cybersecurity > Common Cyber Security Threats (elaboration) acts=definition hint=definition lines=3 via groq_main#6 3090 ms
+               Expanded password attacks description and added definition of denial of service attacks.
+  [HEARD] 'PEWS' -> 'DDoS' corrected on the slide (0.5)
+16:04:15 INFO    copilot.presentation.engine: revised S4: Attempts to obtain or guess passwords to access accounts; weak and reused passwords make it easier for attackers to compromise multiple…
+16:04:15 INFO    copilot.presentation.engine: planner: update Cybersecurity > Common Cyber Security Threats (same frame)
+16:04:15 INFO    copilot.presentation.engine: concern ef940e7e641d (transcription, applied=True): 1 element(s); slide shows 'DDoS'
+16:04:15 INFO    copilot.presentation.engine: image removed from 'Common Cyber Security Threats': two concepts side by side
+  [SLIDE] update 'Common Cyber Security Threats' [key_points] v11 (5 items)
+  [SLIDE] update 'Common Cyber Security Threats' [concept] v12 (6 items)
+  [SLIDE] update 'Common Cyber Security Threats' [concept] v13 (6 items)
+  [SLIDE] update 'Common Cyber Security Threats' [concept] v14 (5 items)
+  [  984.7s] attempt to make a website or online service unavailable by overwhelming it with requests or traffic ethical hackers help organization (750 ms)
+  [  996.7s] Understand these threats, test their defenses and unauthor. (547 ms)
+  [ 1001.0s] in authorized environments and determine suitable protective measures. (530 ms)
+  [UNDERSTAND] Cybersecurity > Common Cyber Security Threats (elaboration) acts=definition hint=definition lines=3 via groq_main#6 1973 ms
+               Expanded the DoS definition and added the role of ethical hackers in testing defenses.
+16:04:33 INFO    copilot.presentation.engine: revised S5: Denial of Service attacks: Attempts to make a website or online service unavailable by overwhelming it with requests or traffic; ethical…
+16:04:33 INFO    copilot.presentation.engine: planner: update Cybersecurity > Common Cyber Security Threats (same frame)
+16:04:33 INFO    copilot.presentation.engine: no image for 'Common Cyber Security Threats': two concepts side by side
+  [SLIDE] update 'Common Cyber Security Threats' [concept] v15 (5 items)
+  [ 1006.8s] Difference between ethical hacking and penetration testing. Ethical hacking and penetration testing are closely related concept but they are not identical. Ethical hacking is a broad term that includes authorized activities (891 ms)
+  [ 1019.4s] to identify and improve security weaknesses. It can involve reviewing, configuration, examining, systems testing, applications and evaluating security practices. (766 ms)
+16:04:56 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['It can involve reviewing, configuration, examining, systems testing, applications and evaluating security practices']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (sibling_concept) acts=explanation,explanation hint=concept lines=2 via groq_main#6 1762 ms
+               Explained how ethical hacking differs from penetration testing
+16:04:56 INFO    copilot.presentation.engine: planner: continue Cybersecurity > Ethical Hacking vs Penetration Testing (new facet)
+  [SLIDE] add    'Ethical Hacking vs Penetration Testing' [key_points] v1 (3 items)
+  [ 1032.0s] Penetration testing is a more specific activity in which professionals simulate selected real-world attacks against an animal. (790 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v2 (4 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (elaboration) acts=definition hint=key_points lines=1 via groq_main#6 1960 ms
+               Clarified penetration testing as simulating real-world attacks against an organization.
+  [HEARD] 'animal' -> 'organization' corrected on the slide (0.5)
+16:05:18 INFO    copilot.presentation.engine: revised S2: Penetration testing: specific method where professionals simulate selected real-world attacks against an organization
+16:05:18 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+16:05:18 INFO    copilot.presentation.engine: concern b40bdc827ff2 (transcription, applied=True): 2 element(s); slide shows 'organization'
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v3 (3 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v4 (3 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v5 (4 items)
+  [ 1041.5s] and authorized system to determine whether vulnerabilities can be exploited and what impact they could have. For example, a new people hacker may review for companies network configuration. (759 ms)
+  [ 1053.6s] and security policies. A penetration tester may conduct a controlled test to determine whether a particular witness allows unauthorized access. (668 ms)
+16:05:27 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['For example, a new people hacker may review for companies network configuration']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (elaboration) acts=explanation hint=key_points lines=2 via groq_main#6 1639 ms
+               Added details on how ethical hacking tests vulnerabilities and how penetration testing checks system access permissions.
+16:05:27 INFO    copilot.presentation.engine: revised S1: Ethical hacking: authorized activities to find and fix security weaknesses, testing systems to see if vulnerabilities can be exploited and…
+16:05:27 INFO    copilot.presentation.engine: revised S2: Penetration testing: professionals simulate selected real-world attacks, conducting controlled tests to determine if systems or policies…
+16:05:27 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v6 (4 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v7 (4 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v8 (5 items)
+  [ 1064.1s] therefore penetration (545 ms)
+  [ 1066.9s] Testing is one of the important techniques (646 ms)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (same_concept) acts=- hint=key_points lines=2 via groq_main#6 2198 ms
+               Added that testing is a key technique in penetration testing
+16:05:49 INFO    copilot.presentation.engine: revised S2: Penetration testing: professionals simulate selected real‑world attacks, conducting controlled tests to determine if systems or policies…
+16:05:49 INFO    copilot.presentation.engine: planner: noop Cybersecurity > Ethical Hacking vs Penetration Testing (nothing to display)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v9 (5 items)
+  [ 1075.9s] used in ethical hacking and cybersecurity assessments. Preventing majors against cyber attacks. Although ethical hacking helps identify vulnerabilities, everyone has a role to play in maintaining digital security. (783 ms)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 1693 ms
+               Added that ethical hacking is part of assessments and that all individuals share responsibility for digital security.
+16:06:07 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v10 (5 items)
+  [SLIDE] add    'Ethical Hacking vs Penetration Testing' [key_points] v1 (2 items)
+  [ 1090.9s] Some important preventive measures include using strong uni-passwords for different accounts and enabling multi-factor authentication whenever possible. (764 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v2 (3 items)
+  [ 1102.9s] Keep operating system application and antivirus software updated. (379 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v3 (3 items)
+  [ 1108.0s] a wording, suspicious links attachment and unknown downloads. (654 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v4 (3 items)
+16:06:19 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Ethical Hacking vs Penetration Testing' -> same_concept
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (same_concept) acts=explanation hint=key_points lines=3 via groq_main#6 1553 ms
+               Added preventive security measures: strong passwords, MFA, updates, and cautious handling of suspicious content.
+16:06:19 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v5 (2 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v6 (5 items)
+  [ 1113.1s] Using secure networks and protecting welfare connection with strong passwords, packing up important information regularly, limiting access to confidential information to authorized users. (787 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v7 (6 items)
+  [ 1126.1s] providing cybersecurity awareness training to MQS and students. Organizations should also conduct regular security assessment and establish procedures corresponding to security incidents. (877 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v8 (6 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 1948 ms
+               Added network security, data backup, and access‑control recommendations to the ethical hacking vs penetration testing slide.
+16:06:45 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] add    'Ethical Hacking vs Penetration Testing' [key_points] v1 (4 items)
+  [ 1138.5s] practices reduce the risk of cyber attacks and help protect personal and organizational information. (636 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v9 (5 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v2 (5 items)
+16:06:52 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Practices reduce the risk of cyber attacks and help protect personal and organizational information']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (same_concept) acts=explanation,explanation hint=key_points lines=2 via groq_main#6 1606 ms
+               Added awareness training and regular security assessments as preventive practices in ethical hacking vs penetration testing.
+16:06:52 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+16:06:52 INFO    copilot.presentation.engine: slide 'Ethical Hacking vs Penetration Testing' waits for the min dwell time
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v3 (4 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v4 (6 items)
+  [SLIDE] add    'Ethical Hacking vs Penetration Testing' [key_points] v1 (1 items)
+  [ 1146.4s] Future scope of ethical hacking. The future of ethical hacking is closely connected to the increasing use of digital technology, businesses, educational institutions, hospitals, banks and government organizations all depend on computer systems and networks. (958 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v2 (2 items)
+  [ 1161.2s] Protecting these systems has therefore become increasingly important. Emerging technologies such as artificial intelligence, cloud computing, the internet of things and connected smart devices create new security challenges. Ethical hackers. (927 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v3 (2 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 3601 ms
+               Introduced future scope of ethical hacking tied to growing digital reliance across sectors
+16:07:20 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v4 (3 items)
+  [ 1176.2s] We need to understand these technologies and identify the weaknesses that may arise from their issues. (653 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v5 (3 items)
+16:07:26 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['We need to understand these technologies and identify the weaknesses that may arise from their issues']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#6 1611 ms
+               Highlighted the growing importance of protecting systems and the need to understand emerging technologies to find security weaknesses.
+16:07:26 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v6 (2 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v7 (5 items)
+  [SLIDE] add    'Ethical Hacking vs Penetration Testing' [key_points] v1 (1 items)
+  [ 1182.1s] Artificial intelligence can also assist cybersecurity professionals by helping analyze large amounts of security data and identify unusual activities. (753 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v2 (2 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 2222 ms
+               AI can assist cybersecurity professionals by analyzing data and spotting anomalies.
+16:07:37 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v3 (1 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v4 (2 items)
+  [ 1192.8s] At the same time, attackers may misuse AI to create more convincing phishing messages or automate certain malicious activities. As a result, organizations need to create cyber security. (883 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v5 (3 items)
+  [ 1205.3s] professionals who can adapt to changing threats, evaluate new technologies and develop effective security strategies. Ethical hacking is therefore an important area for students interested in technology problem solving and digital security. (808 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v6 (3 items)
+16:08:04 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['As a result, organizations need to create cyber security']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (elaboration) acts=explanation,explanation hint=key_points lines=1 via groq_main#6 1750 ms
+               AI can be weaponized by attackers for phishing and automation, requiring strong cybersecurity measures.
+16:08:04 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v7 (6 items)
+  [ 1221.7s] Conclusion, a secure digital world is not created by technology alone. It also requires responsible people who know how to protect it. (795 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v8 (6 items)
+16:08:16 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Ethical hacking is therefore an important area for students interested in technology problem solving and digital security']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (elaboration) acts=explanation,explanation,explanation hint=key_points lines=2 via groq_main#6 1504 ms
+               Highlights the need for adaptable professionals and responsible people to create a secure digital world.
+16:08:16 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v9 (5 items)
+  [SLIDE] add    'Ethical Hacking vs Penetration Testing' [key_points] v1 (3 items)
+[PAUSE] paused: what is said now is not put on slides (Resume to continue)
+  [ 1313.3s] (paused, not used) I don't want to see you again. (1888 ms)
+16:09:40 INFO    copilot.understanding.service: paused: not interpreted: I don't want to see you again.
+  [ 1322.6s] (paused, not used) No, no, no, no, no. Manjim, important point sir. Thank you. (6150 ms)
+16:09:56 INFO    copilot.understanding.service: paused: not interpreted: No, no, no, no, no. Manjim, important point sir. Thank you.
+  [ 1328.4s] (paused, not used) I will make a future scoop of ethical hacking, so you can see what I mean. (2661 ms)
+16:09:58 INFO    copilot.understanding.service: paused: not interpreted: I will make a future scoop of ethical hacking, so you can see what I mean.
+  [ 1334.6s] (paused, not used) what's wrong with you? no, I'm positive (1394 ms)
+16:10:00 INFO    copilot.understanding.service: paused: not interpreted: what's wrong with you? no, I'm positive
+  [ 1340.1s] (paused, not used) Then you have to have books, have books, have books. Have books! (1867 ms)
+16:10:07 INFO    copilot.understanding.service: paused: not interpreted: Then you have to have books, have books, have books. Have books!
+  [ 1343.2s] (paused, not used) That's the topic. (295 ms)
+16:10:08 INFO    copilot.understanding.service: paused: not interpreted: That's the topic.
+  [ 1346.2s] (paused, not used) the difference between ethical hacking and penetration hacking. Testing is different than preventing you from majoring in cyber attacks. Future scope of ethical hacking is different. (959 ms)
+16:10:20 INFO    copilot.understanding.service: paused: not interpreted: the difference between ethical hacking and penetration hacking. Testing is different than preventing you from majoring in cyber attacks. Future scope of ethical hacking is different.
+  [ 1357.0s] (paused, not used) I'm going to pull it out (1185 ms)
+16:10:22 INFO    copilot.understanding.service: paused: not interpreted: I'm going to pull it out
+[LIVE]  resumed
+  [ 1364.3s] future scope of ethical hacking. The future of ethical hacking is closely connected to the increasing use of digital technology, businesses, educational institutions, hospitals, banks and government organizations. (1059 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v2 (4 items)
+  [ 1377.8s] all depend on computer systems and networks. Protecting these systems has therefore become increasingly important. Emerging technologies such as artificial intelligence, cloud computing, the internet of things, (847 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v3 (4 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (same_concept) acts=explanation hint=key_points lines=1 via groq_main#6 1350 ms
+               Added future scope of ethical hacking across various sectors
+16:10:55 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v4 (5 items)
+  [ 1391.5s] and connected smart devices create new security challenges. Ethical hackers need to understand these technologies to identify the weaknesses that may arise from their use. Artificial intelligence can also assist cyber security. (940 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v5 (5 items)
+16:11:11 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['All depend on computer systems and networks']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (same_concept) acts=explanation,explanation hint=key_points lines=2 via groq_main#6 1932 ms
+               Added how emerging tech creates new security challenges and AI can aid ethical hackers.
+16:11:11 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v6 (4 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v7 (5 items)
+  [SLIDE] add    'Ethical Hacking vs Penetration Testing' [key_points] v1 (3 items)
+16:11:11 INFO    copilot.presentation.engine: no image 'smart devices network' on 'Ethical Hacking vs Penetration Testing': not about the slide (similarity 0.21)
+  [ 1406.5s] security professional by helping analyze large amount of security data and identify unusual activities. At the same time, attackers may misuse AI to create more convincing phishing messages. (920 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v2 (4 items)
+  [ 1419.6s] or automate certain malicious activities. As a result, organizations need state cybersecurity professionals who can adapt to changing threats, evaluate new technologies, and develop effective security strategies. (802 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v3 (4 items)
+16:11:38 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['At the same time, attackers may misuse AI to create more convincing phishing messages']
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (elaboration) acts=other,other,explanation hint=key_points lines=1 via groq_main#6 2152 ms
+               AI assists professionals in data analysis and attackers can use AI for phishing
+16:11:38 INFO    copilot.presentation.engine: revised S2: Artificial intelligence helps analyze large security data and spot unusual activities
+16:11:38 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v4 (4 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v5 (5 items)
+16:11:38 INFO    copilot.presentation.engine: no image 'smart devices network' on 'Ethical Hacking vs Penetration Testing': not about the slide (similarity 0.19)
+  [ 1433.4s] Ethical Hacking is there for an important area for students interested in technology, problem solving and digital security. (758 ms)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v6 (5 items)
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (elaboration) acts=definition,explanation hint=concept lines=2 via groq_main#6 1932 ms
+               Emphasizes need for adaptable cybersecurity professionals and defines ethical hacking as a key field for tech‑interested students.
+16:11:46 INFO    copilot.presentation.engine: planner: update Cybersecurity > Ethical Hacking vs Penetration Testing (same frame)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v7 (4 items)
+  [SLIDE] update 'Ethical Hacking vs Penetration Testing' [key_points] v8 (5 items)
+  [SLIDE] add    'Ethical Hacking vs Penetration Testing' [key_points] v1 (1 items)
+16:11:46 INFO    copilot.presentation.engine: no image 'smart devices network' on 'Ethical Hacking vs Penetration Testing': not about the slide (similarity 0.12)
+  [ 1458.0s] (dropped: empty) 
+  [ 1459.7s] Amen. (271 ms)
+  [ 1461.2s] (dropped: empty) 
+[PAUSE] paused: what is said now is not put on slides (Resume to continue)
+  [ 1463.8s] (paused, not used) I'm not sure if I'll be able to do it again (1726 ms)
+16:12:10 INFO    copilot.understanding.service: paused: not interpreted: I'm not sure if I'll be able to do it again
+  [ 1467.6s] (paused, not used) I'll buzz at them. (1128 ms)
+16:12:12 INFO    copilot.understanding.service: paused: not interpreted: I'll buzz at them.
+  [UNDERSTAND] Cybersecurity > Ethical Hacking vs Penetration Testing (same_concept) acts=- hint=none lines=1 via groq_main#6 1325 ms
+               No new slide content added
+16:12:15 INFO    copilot.presentation.engine: planner: noop Cybersecurity > Ethical Hacking vs Penetration Testing (nothing to display)
+  [ 1548.6s] (paused, not used) End lecture. (504 ms)
+16:13:33 INFO    copilot.understanding.service: paused: not interpreted: End lecture.
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261014-154721-2030: 123 segments, 2399 words, state v287, 1239 events logged
+        CommandReceived=64, ConceptSignal=110, ConcernRaised=6, ConcernResolved=1, DeckState=82, ImageChoices=4, ImageReady=6, ImageRequested=6, InterpretRequested=72, InterpretationReady=72, LifecycleChanged=10, SlideContextChanged=80, SlideOverflow=2, SlidePatch=202, StateChanged=285, TranscriptFinal=123, UtteranceClassified=110, UtteranceDropped=4
+        stt: 123 published, 4 dropped, latency p50=787 ms p95=1185 ms max=6150 ms
+        understanding: 72 interpretations (72 by LLM, 0 fallbacks, 0 repaired), max 5 calls/min, prompt tokens max=2080 avg=1969, latency p50=1752 ms max=3842 ms
+        presentation: 29 slides; planner ops {'new': 1, 'update': 63, 'noop': 3, 'continue': 5}; revisions 11, corrections shown 6, shown as said 0
+        images: {'requests': 6, 'found': 2, 'none': 4}; slides with an image 3/29
+          1. [definition] Ethical Hacking [part 1]  (v7, ['definition', 'points'])
+          2. [key_points] Ethical Hacking [part 2]  (v9, ['points', 'definition', 'points', 'example'])
+          3. [key_points] Ethical Hacking [part 3]  (v10, ['points', 'definition', 'points', 'example'])
+          4. [key_points] Ethical Hacking [part 4]  (v10, ['points', 'definition', 'points'])
+          5. [members] Ethical Hacking [part 5]  (v4, ['definition'])
+          6. [members] Hacker Types [part 1]  (v3, ['definition', 'points'])
+          7. [process_flow] Hacker Types [part 2]  (v6, ['process', 'points'])
+          8. [process_flow] Hacker Types [part 3]  (v5, ['process', 'points'])
+          9. [key_points] Hacker Types [part 4]  (v8, ['points'])
+          10. [key_points] Hacker Types [part 5]  (v12, ['points', 'image'])
+          11. [key_points] Hacker Types [part 6]  (v5, ['points', 'image'])
+          12. [concept] Hacker Types [part 7]  (v7, ['points', 'image', 'definition', 'points', 'definition'])
+          13. [concept] Hacker Types [part 8]  (v8, ['definition', 'definition', 'definition', 'points'])
+          14. [key_points] Advantages of Ethical Hacking [part 1]  (v8, ['points'])
+          15. [key_points] Advantages of Ethical Hacking [part 2]  (v9, ['points'])
+          16. [example] Advantages of Ethical Hacking [part 3]  (v2, ['example', 'definition', 'points'])
+          17. [hierarchy] Advantages of Ethical Hacking [part 4]  (v1, ['hierarchy'])
+          18. [key_points] Foundations for Ethical Hacking [part 1]  (v3, ['points'])
+          19. [key_points] Foundations for Ethical Hacking [part 2]  (v9, ['points'])
+          20. [key_points] Foundations for Ethical Hacking [part 3]  (v6, ['points'])
+          21. [concept] Common Cyber Security Threats  (v15, ['points', 'definition', 'points', 'definition'])
+          22. [key_points] Ethical Hacking vs Penetration Testing [part 1]  (v10, ['points', 'definition', 'points'])
+          23. [key_points] Ethical Hacking vs Penetration Testing [part 2]  (v9, ['points'])
+          24. [key_points] Ethical Hacking vs Penetration Testing [part 3]  (v4, ['points'])
+          25. [key_points] Ethical Hacking vs Penetration Testing [part 4]  (v7, ['points'])
+          26. [key_points] Ethical Hacking vs Penetration Testing [part 5]  (v9, ['points'])
+          27. [key_points] Ethical Hacking vs Penetration Testing [part 6]  (v7, ['points'])
+          28. [key_points] Ethical Hacking vs Penetration Testing [part 7]  (v8, ['points', 'definition'])
+          29. [key_points] Ethical Hacking vs Penetration Testing [part 8]  (v1, ['points'])
+        providers: {'groq_main#5': 52, 'groq_main#6': 20}; triggers: {'boundary': 1, 'max_wait': 45, 'words': 18, 'pause': 8}; outline: ['Cybersecurity > Ethical Hacking, Hacker Types, Common Cyber Security Threats, Ethical Hacking vs Penetration Testing']; concerns: 6
+        log: C:\Users\potda\Multimodal-AI-Teaching-Copilot-For-Real-Time-Visual-Learning-Generation\data\sessions\20261014-154721-2030\session.sqlite

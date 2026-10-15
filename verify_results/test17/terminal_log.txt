@@ -1,0 +1,305 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (7.6 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.4 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_3         openai/gpt-oss-120b           112k of 200k tokens IN USE
+        GROQ_API_KEY_4         openai/gpt-oss-120b           185k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b            63k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b            20k of 200k tokens ok
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 247 lecture minutes
+
+[READY] session 20261014-194054-4246
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+19:41:04 INFO    copilot.visuals.service: CLIP ready in 0.7 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, digestive, photoelectrons, cerebrum, cerebellum, intestine ...)
+19:43:19 INFO    copilot.notes.library: notes added 'byjus.com' -> 91b17fa5008d1835 (9 pages, text: True)
+19:43:22 INFO    copilot.notes.reference: reference index 'byjus.com': 39 chunks, 9 figures
+  [   49.1s] Let us learn about the product. (773 ms)
+  [UNDERSTAND] Product > - (new_topic) acts=- hint=none lines=1 via groq_main#3 2329 ms
+               Teacher announces upcoming lesson on product
+19:43:40 INFO    copilot.presentation.engine: planner: noop Product > Product (nothing to display)
+  [   51.1s] The trance which deals with the movement of energy from one clock to the other is the regulation between heat and temperature with energy and work that is called thermodynamics. In other terms we can define thermodynamics as the trance dream that deals with steady (1528 ms)
+  [   66.0s] Combined, you can do both, each and both. (1472 ms)
+19:43:46 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.59) for the interpretation
+  [UNDERSTAND] Thermodynamics > Definition (new_topic) acts=definition hint=definition lines=2 via groq_main#3 3010 ms
+               Provided the correct definition of thermodynamics.
+  [HEARD] 'trance, clock, regulation, trance dream, steady' -> 'Thermodynamics, form, relation, ...' corrected on the slide (0.5)
+19:43:49 INFO    copilot.presentation.engine: planner: new Thermodynamics > Definition (first content slide)
+19:43:49 INFO    copilot.presentation.engine: concern 8e1db724fd1e (transcription, applied=True): 0 element(s); slide shows 'Thermodynamics, form, relation, ...'
+  [SLIDE] add    'What is thermodynamics?' [definition] v1 (1 items)
+19:43:49 INFO    copilot.presentation.engine: image search 'Thermodynamics concept diagram' (diagram) for 'What is thermodynamics?'
+19:43:49 INFO    copilot.visuals.service: reference figure byjus.com p.8 f9 for 'Thermodynamics concept diagram': label 0.558, clip 0.231 margin -0.015 -> no
+19:43:49 INFO    copilot.visuals.service: reference figure byjus.com p.5 f8 for 'Thermodynamics concept diagram': label 0.555, clip 0.265 margin +0.045 -> used
+19:43:49 INFO    copilot.visuals.service: reference figure byjus.com p.5 f6 for 'Thermodynamics concept diagram': label 0.509, clip 0.279 margin +0.042 -> used
+19:43:49 INFO    copilot.visuals.service: reference figure byjus.com p.5 f7 for 'Thermodynamics concept diagram': label 0.509, clip 0.272 margin +0.020 -> used
+  [IMAGE] 'Thermodynamics concept diagram' -> byjus.com p.5 (0.3 s)
+19:43:49 INFO    copilot.presentation.engine: image 'Thermodynamics concept diagram' on 'What is thermodynamics?': byjus.com p.5
+  [SLIDE] update 'What is thermodynamics?' [definition] v2 (2 items)
+  [   70.7s] on the changes of state of matter combined, confined by the laws of thermodynamics. (722 ms)
+19:43:54 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.82) for the interpretation
+  [UNDERSTAND] Thermodynamics > Definition (elaboration) acts=- hint=definition lines=1 via groq_main#3 2874 ms
+               Added that thermodynamics also covers changes of state of matter within its laws.
+19:43:57 INFO    copilot.presentation.engine: revised S1: Thermodynamics: Thermodynamics is the branch which deals with the movement of energy from one form to the other and the relation between…
+19:43:57 INFO    copilot.presentation.engine: planner: noop Thermodynamics > Definition (nothing to display)
+  [SLIDE] update 'What is thermodynamics?' [definition] v3 (2 items)
+  [   78.2s] Chemical reactions that really which really the genealogy have stated with it are converted into different usable forms based on the form laws of the node and the fact that the energy can only be dropped from (1281 ms)
+  [   93.2s] From one form to another form and it is used in different industries on the basis of brain and transformation. (968 ms)
+19:44:16 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.75) for the interpretation
+  [UNDERSTAND] Thermodynamics > Definition (elaboration) acts=explanation hint=key_points lines=2 via groq_main#3 2905 ms
+               Thermodynamics involves energy conversion between forms and its industrial applications.
+  [HEARD] '...the genealogy have stated with it...the form laws of the node...energy can only be dropped from' -> '...are converted into usable forms according to thermodynamic laws...energy can only be transferred from one form to another' corrected on the slide (0.5)
+  [HEARD] '...on the basis of brain and transformation' -> '...for transformation processes' corrected on the slide (0.5)
+19:44:19 INFO    copilot.presentation.engine: planner: update Thermodynamics > Definition (same frame)
+19:44:19 INFO    copilot.presentation.engine: concern ac03cc3bd1dc (transcription, applied=True): 0 element(s); slide shows '...are converted into usable forms according to thermodynamic laws...energy can only be transferred from one form to another'
+19:44:19 INFO    copilot.presentation.engine: concern 5bc7fb4c207a (transcription, applied=True): 0 element(s); slide shows '...for transformation processes'
+19:44:19 INFO    copilot.presentation.engine: no image for 'What is thermodynamics?': has an image
+  [SLIDE] update 'What is thermodynamics?' [definition] v4 (4 items)
+  [  101.6s] We are aware that chemical reactions have ordinarily oscillated with the laws of thermodynamics which reduce energy changes during the reactions and are not also at the rate at which the energy is proceeding. (1053 ms)
+  [SLIDE] update 'What is thermodynamics?' [definition] v5 (5 items)
+19:44:31 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.78) for the interpretation
+  [UNDERSTAND] Thermodynamics > Chemical Thermodynamics (sub_concept) acts=definition hint=definition lines=1 via groq_main#3 1927 ms
+               Introduced definition of chemical thermodynamics as study of work, heat and chemical or physical state changes.
+  [HEARD] 'ordinarily oscillated with the laws of thermodynamics which reduce energy changes during the reactions and are not also at the rate which the energy is proceeding' -> 'have energy associated with it. The laws of thermodynamics deal with energy changes during the reactions and are not concerned with the rate at which the reaction is proceeding' corrected on the slide (0.5)
+19:44:33 INFO    copilot.presentation.engine: planner: continue Thermodynamics > Chemical Thermodynamics (new facet)
+19:44:33 INFO    copilot.presentation.engine: concern 8206373922fc (transcription, applied=True): 0 element(s); slide shows 'have energy associated with it. The laws of thermodynamics deal with energy changes during the reactions and are not concerned with the rate at which the reaction is proceeding'
+  [SLIDE] update 'What is thermodynamics?' [definition] v6 (4 items)
+  [SLIDE] add    'Thermodynamics' [definition] v1 (1 items)
+  [  119.5s] Chemical thermodynamics in the studio. (745 ms)
+  [SLIDE] update 'Thermodynamics' [definition] v2 (1 items)
+19:44:39 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.78) for the interpretation
+19:44:41 WARNING copilot.understanding.interpreter: interpretation from groq_main#3 invalid (schema: [{'type': 'int_parsing', 'loc': ('meta_lines', 0), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'Chemical thermodynamics in the studio.'}]); one repair attempt
+  [UNDERSTAND] Thermodynamics > Chemical Thermodynamics (same_concept) acts=- hint=none lines=1 via groq_main#4 2748 ms
+               No new content added.
+19:44:42 INFO    copilot.presentation.engine: planner: noop Thermodynamics > Chemical Thermodynamics (nothing to display)
+  [SLIDE] update 'Thermodynamics' [definition] v3 (1 items)
+  [  126.9s] Study between work, heat and physical reaction or with physical changes of the state which are (810 ms)
+  [SLIDE] update 'Thermodynamics' [definition] v4 (1 items)
+  [  134.0s] Confined the laws of thermodynamics. (529 ms)
+  [SLIDE] update 'Thermodynamics' [definition] v5 (1 items)
+  [  137.3s] Some general thoughts like heat energy and what what or the (778 ms)
+  [SLIDE] update 'Thermodynamics' [definition] v6 (1 items)
+  [  143.5s] And often used in order management. (583 ms)
+  [SLIDE] update 'Thermodynamics' [definition] v7 (1 items)
+19:45:01 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.80) for the interpretation
+19:45:04 INFO    copilot.understanding.interpreter: dropped 1 revision(s) with unknown refs
+  [UNDERSTAND] Thermodynamics > Chemical Thermodynamics (elaboration) acts=definition hint=definition lines=4 via groq_main#3 3319 ms
+               Refined the definition of chemical thermodynamics to emphasize work, heat, and state changes within thermodynamic laws.
+19:45:04 INFO    copilot.presentation.engine: planner: update Thermodynamics > Chemical Thermodynamics (same frame)
+  [SLIDE] update 'Thermodynamics' [definition] v8 (2 items)
+19:45:04 INFO    copilot.presentation.engine: image search 'Thermodynamics diagram' (diagram) for 'Thermodynamics'
+19:45:04 INFO    copilot.visuals.service: reference figure byjus.com p.3 f4 for 'Thermodynamics diagram': label 0.547, clip 0.223 margin +0.022 -> used
+19:45:04 INFO    copilot.visuals.service: reference figure byjus.com p.3 f3 for 'Thermodynamics diagram': label 0.542, clip 0.218 margin -0.013 -> no
+19:45:04 INFO    copilot.visuals.service: reference figure byjus.com p.5 f8 for 'Thermodynamics diagram': label 0.539, clip 0.268 margin +0.036 -> used
+19:45:04 INFO    copilot.visuals.service: reference figure byjus.com p.8 f9 for 'Thermodynamics diagram': label 0.528, clip 0.233 margin -0.014 -> no
+  [IMAGE] 'Thermodynamics diagram' -> byjus.com p.3 (0.3 s)
+19:45:04 INFO    copilot.presentation.engine: image 'Thermodynamics diagram' on 'Thermodynamics': byjus.com p.3
+  [SLIDE] update 'Thermodynamics' [definition] v9 (3 items)
+  [  146.2s] Let us learn a bit about the basics of thermodynamics and understand the stuffs. The answer may then end too. (746 ms)
+19:45:09 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.78) for the interpretation
+  [UNDERSTAND] Thermodynamics > Basics of Thermodynamics (sibling_concept) acts=transition hint=none lines=1 via groq_main#3 1916 ms
+               Teacher announced a shift to the basics of thermodynamics.
+19:45:11 INFO    copilot.presentation.engine: planner: noop Thermodynamics > Basics of Thermodynamics (nothing to display)
+  [  156.2s] It refers to the energy contained within the system. The energy represents the overall energy of the system and many good, many false energies such as potential energy, time-recon, and selected processes. See now. (1349 ms)
+  [SLIDE] update 'Thermodynamics' [definition] v10 (4 items)
+  [  169.0s] In chemical reactions, we know that the energy-based transformation and basic thermodynamics produce or provide translate the formation regarding energy change of state and... (1068 ms)
+  [SLIDE] update 'Thermodynamics' [definition] v11 (4 items)
+19:45:35 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.77) for the interpretation
+  [  179.7s] (dropped: empty) 
+  [UNDERSTAND] Thermodynamics > Internal Energy (sub_concept) acts=definition,definition hint=definition lines=2 via groq_main#3 3428 ms
+               Introduced internal energy and energy change of state in reactions
+  [HEARD] 'many good, many false energies such as potential energy, time-recon, and selected processes' -> 'potential energy and other forms' corrected on the slide (0.5)
+  [HEARD] 'energy-based transformation and basic thermodynamics produce or provide translate the formation regarding energy change of state and...' -> 'energy transformation that reflects the change in state during the reaction' corrected on the slide (0.5)
+19:45:38 INFO    copilot.presentation.engine: planner: continue Thermodynamics > Internal Energy (new facet)
+19:45:38 INFO    copilot.presentation.engine: concern 4d03b74a6d21 (transcription, applied=True): 1 element(s); slide shows 'potential energy and other forms'
+19:45:38 INFO    copilot.presentation.engine: concern 2607a0838c90 (transcription, applied=True): 0 element(s); slide shows 'energy transformation that reflects the change in state during the reaction'
+19:45:38 INFO    copilot.presentation.engine: no image for 'Internal Energy': two concepts side by side
+  [SLIDE] update 'Thermodynamics' [definition] v12 (3 items)
+  [SLIDE] add    'Internal Energy' [concept] v1 (2 items)
+  [  192.6s] Factors of eating the internal energy of the system may change when heat passes in or out of the system. Work is done on or by the system or matter enters the lip of the system. (1326 ms)
+19:46:14 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.81) for the interpretation
+  [  206.9s] Work done by a patient is defined as the quantity of energy in the cell or system and its ceramic. Work is completely governed by external factors such as external food, pressure, oil, or change in temperature, etc. (1217 ms)
+  [UNDERSTAND] Thermodynamics > Internal Energy (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 4327 ms
+               Teacher listed three factors that change a system's internal energy.
+  [HEARD] 'of eating, lip' -> 'affecting, system' corrected on the slide (0.5)
+19:46:18 INFO    copilot.presentation.engine: planner: update Thermodynamics > Internal Energy (same frame)
+19:46:18 INFO    copilot.presentation.engine: concern 92664272b8a5 (transcription, applied=True): 0 element(s); slide shows 'affecting, system'
+19:46:18 INFO    copilot.presentation.engine: no image for 'Internal Energy': two concepts side by side
+  [SLIDE] update 'Internal Energy' [concept] v2 (5 items)
+  [  220.5s] Thermodynamics, which is defined as the paradigms of the molecule that is called the substance. (1465 ms)
+  [SLIDE] update 'Internal Energy' [concept] v3 (6 items)
+19:46:22 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.80) for the interpretation
+  [UNDERSTAND] Thermodynamics > Internal Energy (elaboration) acts=- hint=none lines=2 via groq_main#3 2723 ms
+  [HEARD] 'patient, ceramic, external food, oil' -> 'system, external factors' corrected on the slide (0.5)
+  [HEARD] 'paradigms of the molecule, called the substance' -> 'study of energy, work, and heat' corrected on the slide (0.5)
+19:46:25 INFO    copilot.presentation.engine: planner: noop Thermodynamics > Internal Energy (nothing to display)
+19:46:25 INFO    copilot.presentation.engine: concern ac311f2fdd02 (transcription, applied=True): 0 element(s); slide shows 'system, external factors'
+19:46:25 INFO    copilot.presentation.engine: concern 0eb57a3d9742 (transcription, applied=True): 0 element(s); slide shows 'study of energy, work, and heat'
+  [SLIDE] update 'Internal Energy' [concept] v4 (5 items)
+  [  226.7s] And these are all together for basis that which has higher personality than at any point to optimize their processes of heart and energy of fluid and get good reaction economically. (8258 ms)
+  [SLIDE] update 'Internal Energy' [concept] v5 (6 items)
+19:46:44 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.79) for the interpretation
+  [  240.3s] Teton and T-flows from higher temperature to lower temperature. (6801 ms)
+  [SLIDE] update 'Internal Energy' [concept] v6 (5 items)
+  [UNDERSTAND] Thermodynamics > Internal Energy (same_concept) acts=- hint=none lines=1 via groq_main#3 3181 ms
+               No clear new content extracted from the transcription.
+  [HEARD] 'And these are all together for basis that which has higher personality than at any point to optimize their processes of heart and energy of fluid and get good reaction economically' -> '' corrected on the slide (0.5)
+19:46:47 INFO    copilot.presentation.engine: planner: noop Thermodynamics > Internal Energy (nothing to display)
+19:46:56 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.60) for the interpretation
+  [  249.7s] Thermodynamic system and thermodynamics. Thermodynamic defines the system as the part of universe in the study that is the part where the observations are made surrounding the universe that is stable and effort. (1228 ms)
+  [UNDERSTAND] Thermodynamics > Internal Energy (elaboration) acts=explanation hint=key_points lines=1 via groq_main#3 4132 ms
+               Heat flows from higher to lower temperature
+  [HEARD] 'Teton and T-flows' -> 'Heat flows' corrected on the slide (0.5)
+19:47:00 INFO    copilot.presentation.engine: planner: update Thermodynamics > Internal Energy (same frame)
+19:47:00 INFO    copilot.presentation.engine: concern 57021796c3fb (transcription, applied=True): 1 element(s); slide shows 'Heat flows'
+19:47:00 INFO    copilot.presentation.engine: no image for 'Internal Energy': two concepts side by side
+  [SLIDE] update 'Internal Energy' [concept] v7 (6 items)
+19:47:12 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.79) for the interpretation
+  [  262.2s] Type of the system, machines, what might have an enemy to look at, to the same class of the brain that may depend on the movement of an enemy. One might have been out of the system. There are two types of systems. Open system. (1464 ms)
+  [UNDERSTAND] Thermodynamics > Thermodynamic System (sibling_concept) acts=definition hint=definition lines=1 via groq_main#3 2240 ms
+               Defined a thermodynamic system as the part of the universe being studied
+19:47:14 INFO    copilot.presentation.engine: planner: continue Thermodynamics > Thermodynamic System (new facet)
+  [SLIDE] add    'Thermodynamics' [definition] v1 (1 items)
+19:47:14 INFO    copilot.presentation.engine: image search 'system boundary diagram' (diagram) for 'Thermodynamics'
+19:47:18 INFO    copilot.visuals.finder: image search 'system boundary diagram': 4 slow download(s) dropped
+19:47:18 INFO    copilot.presentation.engine: image 'system boundary diagram': none (downloads failed)
+  [IMAGE] 'system boundary diagram' -> none (downloads failed) (4.5 s)
+19:47:20 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.63) for the interpretation
+  [  274.5s] We go to a system where the activity has been as not to take place and are treated as an opposite system. For example, water is going on the stove without it being turned to a soviet. (1295 ms)
+  [SLIDE] update 'Thermodynamics' [definition] v2 (1 items)
+19:47:24 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Thermodynamic System' -> same_concept
+  [UNDERSTAND] Thermodynamics > Thermodynamic System (same_concept) acts=definition hint=definition lines=1 via groq_main#3 4313 ms
+               Introduced the concept of an open thermodynamic system
+  [HEARD] 'garbled text' -> 'There are two types of systems; an open system exchanges matter and energy with the surroundings' corrected on the slide (0.5)
+19:47:24 INFO    copilot.presentation.engine: planner: update Thermodynamics > Thermodynamic System (same frame)
+19:47:24 INFO    copilot.presentation.engine: concern aa08f04cc96b (transcription, applied=True): 0 element(s); slide shows 'There are two types of systems; an open system exchanges matter and energy with the surroundings'
+19:47:24 INFO    copilot.presentation.engine: no image for 'Thermodynamics': two concepts side by side
+  [SLIDE] update 'Thermodynamics' [concept] v3 (2 items)
+19:47:33 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.79) for the interpretation
+  [UNDERSTAND] Thermodynamics > Isolated System (sibling_concept) acts=definition hint=definition lines=1 via groq_main#4 2654 ms
+               Introduced isolated system as a thermodynamic system that exchanges neither matter nor energy.
+  [HEARD] 'system where the activity has been as not to take place... turned to a soviet' -> 'isolated system' corrected on the slide (0.5)
+19:47:36 INFO    copilot.presentation.engine: planner: continue Thermodynamics > Isolated System (new facet)
+19:47:36 INFO    copilot.presentation.engine: concern b54c49024ad8 (transcription, applied=True): 1 element(s); slide shows 'isolated system'
+  [SLIDE] add    'Isolated System' [definition] v1 (1 items)
+19:47:36 INFO    copilot.presentation.engine: image search 'isolated system diagram' (diagram) for 'Isolated System'
+  [  286.8s] In the container we have all gyro system because it will be here and there to keep from an exponential and working matters being released and water may be closed system or closed system in the control of the system where (1416 ms)
+  [SLIDE] update 'Isolated System' [definition] v2 (1 items)
+  [  299.4s] All the energy can be exchanged in the surrounding and not the metaphor. It can also be (673 ms)
+  [SLIDE] update 'Isolated System' [definition] v3 (1 items)
+19:47:41 INFO    copilot.visuals.finder: image search 'isolated system diagram': 2 slow download(s) dropped
+19:47:41 INFO    copilot.visuals.finder: image search 'isolated system diagram' (diagram, labels preferred): 1 candidate(s), 1 accepted (0 labelled), 5.15 s {'search_s': 3.19, 'download_s': 1.29, 'clip_s': 0.08, 'full_s': 0.57, 'total_s': 5.15}
+  [IMAGE] 'isolated system diagram' -> File:Diagram Systems Text.svg (5.2 s)
+19:47:41 INFO    copilot.presentation.engine: image 'isolated system diagram' on 'Isolated System': File:Diagram Systems Text.svg
+  [SLIDE] update 'Isolated System' [definition] v4 (2 items)
+  [  305.5s] The same thing happens in the same amount of methods and won't be the energy of the system. (814 ms)
+19:47:49 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.68) for the interpretation
+  [  314.5s] Can we see from (506 ms)
+  [SLIDE] update 'Isolated System' [definition] v5 (2 items)
+  [UNDERSTAND] Thermodynamics > Closed System (sibling_concept) acts=definition hint=definition lines=3 via groq_main#3 3163 ms
+               Introduced the definition of a closed system, which exchanges energy but not matter with its surroundings.
+  [HEARD] 'gyro system, exponential and working matters being released' -> 'closed system' corrected on the slide (0.5)
+  [HEARD] 'metaphor' -> 'matter' corrected on the slide (0.5)
+  [HEARD] "methods and won't be the energy" -> 'energy exchange' corrected on the slide (0.5)
+19:47:52 INFO    copilot.presentation.engine: planner: continue Thermodynamics > Closed System (new facet)
+19:47:52 INFO    copilot.presentation.engine: concern 767cf914a553 (transcription, applied=True): 1 element(s); slide shows 'closed system'
+19:47:52 INFO    copilot.presentation.engine: concern 5a93a74eba1e (transcription, applied=True): 1 element(s); slide shows 'matter'
+19:47:52 INFO    copilot.presentation.engine: concern 545df8479f23 (transcription, applied=True): 0 element(s); slide shows 'energy exchange'
+19:47:52 INFO    copilot.presentation.engine: image hint 'Closed System diagram' for 'Closed System' from its sibling subtopic
+  [SLIDE] add    'Closed System' [definition] v1 (1 items)
+19:47:52 INFO    copilot.presentation.engine: image search 'Closed System diagram' (diagram) for 'Closed System'
+  [  316.8s] For instance, might be a period on (593 ms)
+19:47:56 INFO    copilot.presentation.engine: image 'Closed System diagram': none (no usable candidates)
+  [IMAGE] 'Closed System diagram' -> none (no usable candidates) (3.6 s)
+  [  322.2s] The end of the bottle of water is the bridge. The loss of energy is due to the wrong magnitude. The body is fixed. That's the central drop. (1103 ms)
+19:48:05 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.65) for the interpretation
+  [UNDERSTAND] Thermodynamics > Closed System (same_concept) acts=- hint=none lines=3 via groq_main#3 2672 ms
+               No new clear content was provided in the transcription.
+  [HEARD] 'Can we see from' -> '' corrected on the slide (0.5)
+  [HEARD] 'For instance, might be a period on' -> '' corrected on the slide (0.5)
+  [HEARD] "The end of the bottle of water is the bridge. The loss of energy is due to the wrong magnitude. The body is fixed. That's the central drop." -> '' corrected on the slide (0.5)
+19:48:08 INFO    copilot.presentation.engine: planner: noop Thermodynamics > Closed System (nothing to display)
+  [  330.9s] The water cycle going down even, no quantity of water, the water will stay. (876 ms)
+  [SLIDE] update 'Closed System' [definition] v2 (1 items)
+  [  338.9s] SARS-CoV-2, (2846 ms)
+  [SLIDE] update 'Closed System' [definition] v3 (1 items)
+19:48:17 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.75) for the interpretation
+19:48:20 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The water cycle going down even, no quantity of water, the water will stay']
+  [UNDERSTAND] Thermodynamics > Closed System (same_concept) acts=explanation hint=definition lines=1 via groq_main#3 3266 ms
+               Closed systems keep matter amount constant even as processes like the water cycle occur
+19:48:20 INFO    copilot.presentation.engine: revised S1: Closed system: A system that can exchange energy but not matter with its surroundings, keeping its amount of matter constant
+19:48:20 INFO    copilot.presentation.engine: planner: update Thermodynamics > Closed System (same frame)
+19:48:20 INFO    copilot.presentation.engine: image hint 'Closed System diagram' for 'Closed System' from its sibling subtopic
+19:48:20 INFO    copilot.presentation.engine: no image for 'Closed System': nothing relevant found for 'Closed System diagram' before
+  [SLIDE] update 'Closed System' [definition] v4 (1 items)
+  [SLIDE] update 'Closed System' [definition] v5 (2 items)
+  [  340.5s] In the case of Isolated systems, Myelomatous and Genomatous can be the difference between the two scales and the ground makeup. An example of Isolated is the Perval Sclaus. (1262 ms)
+19:48:26 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.54) for the interpretation
+  [UNDERSTAND] Thermodynamics > Closed System (digression) acts=- hint=none lines=2 via groq_main#4 2525 ms
+               No new valid content for closed system was provided
+  [HEARD] 'SARS-CoV-2,' -> '' corrected on the slide (0.5)
+  [HEARD] 'Myelomatous and Genomatous ... Perval Sclaus' -> '' corrected on the slide (0.5)
+19:48:29 INFO    copilot.presentation.engine: planner: noop Thermodynamics > Closed System (digression)
+  [  354.7s] The Laws of Thermodynamics (657 ms)
+  [  367.4s] The state of the entropy of the entire universe as litigates in the state. (844 ms)
+19:48:54 INFO    copilot.understanding.service: [REF] byjus.com p.6 (0.67) for the interpretation
+  [UNDERSTAND] Thermodynamics > Laws of Thermodynamics (sibling_concept) acts=transition,explanation hint=none lines=2 via groq_main#3 2877 ms
+               Introduced the Laws of Thermodynamics and noted that universal entropy increases.
+  [HEARD] 'litigates' -> 'increases' corrected on the slide (0.5)
+19:48:57 INFO    copilot.presentation.engine: planner: continue Thermodynamics > Laws of Thermodynamics (new facet)
+19:48:57 INFO    copilot.presentation.engine: concern 070f9b073f10 (transcription, applied=True): 1 element(s); slide shows 'increases'
+19:48:57 INFO    copilot.presentation.engine: image hint 'Laws of Thermodynamics diagram' for 'Thermodynamics' from its sibling subtopic
+  [SLIDE] add    'Thermodynamics' [key_points] v1 (1 items)
+19:48:57 INFO    copilot.presentation.engine: image search 'Laws of Thermodynamics diagram' (diagram) for 'Thermodynamics'
+19:48:57 INFO    copilot.visuals.service: reference figure byjus.com p.3 f3 for 'Laws of Thermodynamics diagram': label 0.587, clip 0.204 margin -0.021 -> no
+19:48:57 INFO    copilot.visuals.service: reference figure byjus.com p.3 f4 for 'Laws of Thermodynamics diagram': label 0.569, clip 0.241 margin +0.036 -> used
+19:48:57 INFO    copilot.visuals.service: reference figure byjus.com p.5 f8 for 'Laws of Thermodynamics diagram': label 0.506, clip 0.264 margin +0.037 -> used
+  [IMAGE] 'Laws of Thermodynamics diagram' -> byjus.com p.3 (0.2 s)
+19:48:57 INFO    copilot.presentation.engine: image 'Laws of Thermodynamics diagram' on 'Thermodynamics': byjus.com p.3
+  [SLIDE] update 'Thermodynamics' [key_points] v2 (2 items)
+  [  374.6s] Over time, third law of thermodynamics, trophy of the perfect crystal as adaption is zero with zero. The laws of thermodynamics were the most important lessons for people in understanding this mechanism. Be right. (1055 ms)
+  [SLIDE] update 'Thermodynamics' [key_points] v3 (3 items)
+19:49:04 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.74) for the interpretation
+  [  388.0s] Space change augmented. (2675 ms)
+  [SLIDE] update 'Thermodynamics' [key_points] v4 (2 items)
+  [UNDERSTAND] Thermodynamics > Laws of Thermodynamics (elaboration) acts=definition,explanation hint=definition lines=1 via groq_main#3 2972 ms
+               Introduced the third law stating entropy of a perfect crystal at absolute zero is zero and noted the laws' importance.
+  [HEARD] 'trophy of the perfect crystal as adaption is zero with zero' -> 'entropy of a perfect crystal at absolute zero is zero' corrected on the slide (0.5)
+19:49:07 INFO    copilot.presentation.engine: planner: update Thermodynamics > Laws of Thermodynamics (same frame)
+19:49:07 INFO    copilot.presentation.engine: concern 6dd040388345 (transcription, applied=True): 1 element(s); slide shows 'entropy of a perfect crystal at absolute zero is zero'
+  [SLIDE] update 'Thermodynamics' [key_points] v5 (4 items)
+19:49:12 INFO    copilot.understanding.service: [REF] byjus.com p.7 (0.69) for the interpretation
+  [UNDERSTAND] Thermodynamics > Laws of Thermodynamics (same_concept) acts=- hint=none lines=1 via groq_main#3 3153 ms
+               No new content was provided in the transcription.
+19:49:15 INFO    copilot.presentation.engine: planner: noop Thermodynamics > Laws of Thermodynamics (nothing to display)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261014-194054-4246: 36 segments, 743 words, state v81, 415 events logged
+        CommandReceived=40, ConceptSignal=36, ConcernRaised=23, DeckState=34, ImageChoices=4, ImageReady=6, ImageRequested=6, InterpretRequested=23, InterpretationReady=23, LifecycleChanged=5, SlideContextChanged=18, SlidePatch=43, StateChanged=81, TranscriptFinal=36, UtteranceClassified=36, UtteranceDropped=1
+        stt: 36 published, 1 dropped, latency p50=1068 ms p95=6801 ms max=8258 ms
+        understanding: 23 interpretations (23 by LLM, 0 fallbacks, 1 repaired), max 5 calls/min, prompt tokens max=2172 avg=2057, latency p50=2905 ms max=4327 ms
+        presentation: 7 slides; planner ops {'noop': 9, 'new': 1, 'update': 7, 'continue': 6}; revisions 2, corrections shown 7, shown as said 0
+        images: {'requests': 6, 'found': 4, 'none': 2, 'reference': 3}; slides with an image 4/7
+          1. [definition] What is thermodynamics?  (v6, ['definition', 'image', 'points'])
+          2. [definition] Thermodynamics  (v12, ['definition', 'points', 'image'])
+          3. [concept] Internal Energy  (v7, ['definition', 'definition', 'points'])
+          4. [concept] Thermodynamics  (v3, ['definition', 'definition'])
+          5. [definition] Isolated System  (v5, ['definition', 'image'])
+          6. [definition] Closed System  (v5, ['definition', 'points'])
+          7. [key_points] Thermodynamics  (v5, ['points', 'image', 'definition', 'points'])
+        providers: {'groq_main#3': 20, 'groq_main#4': 3}; triggers: {'max_wait': 8, 'words': 6, 'pause': 8, 'boundary': 1}; outline: ['Product > ', 'Thermodynamics > Definition, Chemical Thermodynamics, Basics of Thermodynamics, Internal Energy, Thermodynamic System, Isolated System, Closed System, Laws of Thermodynamics']; concerns: 23
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261014-194054-4246\session.sqlite

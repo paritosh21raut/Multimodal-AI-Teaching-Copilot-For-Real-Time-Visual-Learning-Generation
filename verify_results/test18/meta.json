@@ -1,0 +1,16 @@
+{
+  "name": "test18",
+  "source": "mic",
+  "note": "speaker A, AI/ML",
+  "session_id": "20261014-195322-cebd",
+  "date": "2026-10-14 19:58",
+  "title": "",
+  "minutes": 4.0,
+  "utterances": 23,
+  "slides": 8,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker A",
+  "subject": "AI/ML"
+}

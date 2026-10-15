@@ -1,0 +1,16 @@
+{
+  "name": "test26",
+  "source": "mic",
+  "note": "speaker B, VLSI",
+  "session_id": "20261015-003814-8faf",
+  "date": "2026-10-15 00:56",
+  "title": "",
+  "minutes": 16.0,
+  "utterances": 102,
+  "slides": 20,
+  "theme": "dark",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker B",
+  "subject": "VLSI"
+}

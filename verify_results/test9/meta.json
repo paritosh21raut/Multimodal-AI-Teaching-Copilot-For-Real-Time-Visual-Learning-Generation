@@ -1,0 +1,16 @@
+{
+  "name": "test9",
+  "source": "mic",
+  "note": "speaker A, biology",
+  "session_id": "20261013-191652-37ba",
+  "date": "2026-10-13 19:23",
+  "title": "",
+  "minutes": 4.4,
+  "utterances": 21,
+  "slides": 4,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker A",
+  "subject": "biology"
+}

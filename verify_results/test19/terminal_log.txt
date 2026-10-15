@@ -1,0 +1,477 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (12.7 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_3         openai/gpt-oss-120b            23k of 200k tokens IN USE
+        GROQ_API_KEY_4         openai/gpt-oss-120b           175k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           150k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b            45k of 200k tokens ok
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 249 lecture minutes
+
+[READY] session 20261015-103553-cb74
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+10:36:09 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, thermodynamics, digestive, photoelectrons, cerebrum, cerebellum ...)
+  [    0.3s] Hello everyone, let us learn about coordination compounds. Coordination compounds are those molecular compounds that which retain their identity in solid state as well as in dissolved state. In these compounds, the central metal atom or ion is linked with (953 ms)
+  [   13.6s] By ions or molecules with coordinate bonds, eg. potassium ferrocynidle. (703 ms)
+  [UNDERSTAND] Chemistry > Coordination Compounds (new_topic) acts=definition,example hint=definition lines=2 via groq_main#3 4571 ms
+               Defined coordination compounds and gave potassium ferrocyanide as an example
+  [HEARD] 'ferrocynidle' -> 'ferrocyanide' corrected on the slide (0.5)
+10:36:47 INFO    copilot.presentation.engine: planner: new Chemistry > Coordination Compounds (first content slide)
+10:36:47 INFO    copilot.presentation.engine: concern d6117f00250b (transcription, applied=True): 1 element(s); slide shows 'ferrocyanide'
+  [SLIDE] add    'Coordination Compounds' [definition] v1 (2 items)
+10:36:47 INFO    copilot.presentation.engine: image search 'coordination compound structure' (diagram) for 'Coordination Compounds'
+10:36:54 INFO    copilot.presentation.engine: image 'coordination compound structure': none (no usable candidates)
+  [IMAGE] 'coordination compound structure' -> none (no usable candidates) (6.7 s)
+  [   22.1s] Double salts, these are the addition molecular compounds which are stable in solid but dissociate into constituent ion in the solution. Example, Morse salt. (751 ms)
+10:37:00 WARNING copilot.llm.router: llm groq_main#3 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Chemistry > Double Salts (sibling_concept) acts=definition,example hint=definition lines=1 via groq_main#4 5909 ms
+               Introduced double salts as solid compounds that dissociate into ions in solution, with Morse salt as example
+10:37:04 INFO    copilot.presentation.engine: planner: continue Chemistry > Double Salts (new facet)
+  [SLIDE] add    'Double Salts' [definition] v1 (2 items)
+10:37:04 INFO    copilot.presentation.engine: image search 'double salt crystal' (photo) for 'Double Salts'
+  [   36.3s] Get dissociated into Fe2+, NH4+, and SO42- ions. (578 ms)
+  [UNDERSTAND] Chemistry > Double Salts (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1221 ms
+               Morse salt breaks into Fe2+, NH4+, and sulfate ions when dissolved
+10:37:08 INFO    copilot.presentation.engine: revised S1: Double salts: addition molecular compounds that are stable in solid but dissociate into Fe2+, NH4+, and SO4²⁻ ions in solution
+10:37:08 INFO    copilot.presentation.engine: planner: update Chemistry > Double Salts (same frame)
+10:37:08 INFO    copilot.presentation.engine: no image for 'Double Salts': search running
+  [SLIDE] update 'Double Salts' [definition] v2 (2 items)
+  [SLIDE] update 'Double Salts' [definition] v3 (3 items)
+10:37:10 INFO    copilot.visuals.finder: image search 'double salt crystal': 4 slow download(s) dropped
+10:37:10 INFO    copilot.presentation.engine: image 'double salt crystal': none (downloads failed)
+  [IMAGE] 'double salt crystal' -> none (downloads failed) (6.1 s)
+  [   46.8s] Terms related to coordination compounds, the complex ion or coordination entity. It is an electrically charged species in which central metal atoms or ions is surrounded by number of ions or neutral molecules. (928 ms)
+  [SLIDE] update 'Double Salts' [definition] v4 (4 items)
+10:37:27 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Terms related to coordination compounds, the complex ion or coordination entity']
+  [UNDERSTAND] Chemistry > Complex Ions (sibling_concept) acts=definition,explanation hint=definition lines=1 via groq_main#4 1478 ms
+               Defined a complex ion as a charged species with a central metal surrounded by ligands
+10:37:27 INFO    copilot.presentation.engine: planner: continue Chemistry > Complex Ions (new facet)
+  [SLIDE] update 'Double Salts' [definition] v5 (3 items)
+  [SLIDE] add    'Complex Ions' [definition] v1 (2 items)
+  [   63.0s] Cationic complex entity. It is the complex ion which carries charge, positive charge. (612 ms)
+  [SLIDE] update 'Complex Ions' [definition] v2 (3 items)
+  [UNDERSTAND] Chemistry > Complex Ions (elaboration) acts=definition hint=definition lines=1 via groq_main#4 1187 ms
+               A cationic complex entity is a positively charged complex ion.
+10:37:34 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+  [SLIDE] update 'Complex Ions' [definition] v3 (2 items)
+  [SLIDE] update 'Complex Ions' [concept] v4 (3 items)
+  [   72.2s] Anionic complex entity. It is the complex ion which carries a negative charge, example FeCN6 4-1. (754 ms)
+  [SLIDE] update 'Complex Ions' [concept] v5 (4 items)
+10:37:57 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Complex Ions' -> same_concept
+  [UNDERSTAND] Chemistry > Complex Ions (same_concept) acts=definition hint=definition lines=1 via groq_main#4 2117 ms
+               Introduced anionic complex entity as a negatively charged complex ion with example FeCN₆⁴⁻
+10:37:57 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:37:57 INFO    copilot.presentation.engine: no image for 'Complex Ions': two concepts side by side
+  [SLIDE] update 'Complex Ions' [concept] v6 (3 items)
+  [SLIDE] update 'Complex Ions' [concept] v7 (4 items)
+  [   79.7s] Central atom or ion, the atom or ion to which a fixed number of ions or groups are born is called central atom or ion. It is also referred as Leavis Acid. Example in (719 ms)
+  [SLIDE] update 'Complex Ions' [concept] v8 (5 items)
+  [   92.5s] NiCl2H2O4, Ni is central metal atom, it is generally transition. (770 ms)
+  [SLIDE] update 'Complex Ions' [concept] v9 (5 items)
+  [UNDERSTAND] Chemistry > Complex Ions (elaboration) acts=definition,explanation hint=none lines=2 via groq_main#3 1716 ms
+               Defined the central atom/ion as a Lewis acid and illustrated with NiCl2·H2O4 where Ni is the central transition metal atom.
+10:38:06 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:38:06 INFO    copilot.presentation.engine: no image for 'Complex Ions': two concepts side by side
+  [SLIDE] update 'Complex Ions' [concept] v10 (4 items)
+  [SLIDE] update 'Complex Ions' [concept] v11 (6 items)
+10:38:06 INFO    copilot.presentation.engine: slide 9020adc15769 overflows on the display; further content continues on a new slide
+  [  100.9s] Element or inner transition element. These central atoms or ions are also referred to as Lebesse acid. (769 ms)
+  [  107.4s] Ligands. (306 ms)
+  [  108.5s] Ligand is electron donating species, born to the central atom in the coordination entity. (701 ms)
+  [  114.7s] These may be charged or neutral. Ligands are of the following types. (732 ms)
+  [UNDERSTAND] Chemistry > Complex Ions (elaboration) acts=definition,explanation hint=none lines=4 via groq_main#3 2553 ms
+               Introduced ligands as electron‑donating species that can be charged or neutral
+  [HEARD] 'Lebesse' -> 'Lewis' corrected on the slide (0.5)
+10:38:25 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:38:25 INFO    copilot.presentation.engine: concern 2df92ebb7c1e (transcription, applied=True): 0 element(s); slide shows 'Lewis'
+  [SLIDE] update 'Complex Ions' [concept] v12 (6 items)
+  [SLIDE] add    'Complex Ions' [members] v1 (2 items)
+10:38:25 INFO    copilot.presentation.engine: image search 'coordination complex diagram' (diagram) for 'Complex Ions'
+10:38:27 INFO    copilot.presentation.engine: image 'coordination complex diagram': none (no usable candidates)
+  [IMAGE] 'coordination complex diagram' -> none (no usable candidates) (2.3 s)
+  [  119.2s] Unindentent, that is, it is a ligand which has one donor cell, that is the ligand bond to the metal ion. (741 ms)
+  [  127.2s] Through a single donor site, example H2O, NH3, etc. (585 ms)
+10:38:38 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Complex Ions' -> same_concept
+  [UNDERSTAND] Chemistry > Complex Ions (same_concept) acts=definition,example hint=none lines=2 via groq_main#3 2660 ms
+               Introduced monodentate ligands—ligands with a single donor site—and gave H₂O and NH₃ as examples.
+10:38:38 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:38:38 INFO    copilot.presentation.engine: no image for 'Complex Ions': two concepts side by side
+  [SLIDE] update 'Complex Ions' [concept] v2 (4 items)
+  [  134.5s] Dindenet, it is the ligand which has two donor sites. (611 ms)
+  [  140.5s] Polydenden, it is the ligand which has several donor sites. (719 ms)
+10:38:59 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Complex Ions' -> same_concept
+  [UNDERSTAND] Chemistry > Complex Ions (same_concept) acts=definition,definition hint=definition lines=2 via groq_main#3 3045 ms
+               Introduced bidentate and polydentate ligands as ligands with two and multiple donor sites respectively.
+  [HEARD] 'Dindenet' -> 'Bidentate' corrected on the slide (0.5)
+  [HEARD] 'Polydenden' -> 'Polydentate' corrected on the slide (0.5)
+10:38:59 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:38:59 INFO    copilot.presentation.engine: concern 8e3d9d15beb8 (transcription, applied=True): 1 element(s); slide shows 'Bidentate'
+10:38:59 INFO    copilot.presentation.engine: concern 3d0b7c662839 (transcription, applied=True): 1 element(s); slide shows 'Polydentate'
+10:38:59 INFO    copilot.presentation.engine: no image for 'Complex Ions': two concepts side by side
+  [SLIDE] update 'Complex Ions' [concept] v3 (6 items)
+  [  145.6s] Ambient ligands, these are monodendron ligands which can ligand through two different sites. Example NO2-SCN-. (741 ms)
+10:39:07 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Complex Ions' -> same_concept
+  [UNDERSTAND] Chemistry > Complex Ions (same_concept) acts=definition hint=definition lines=1 via groq_main#3 3446 ms
+               Introduced ambidentate ligands that can bind via two different donor atoms, e.g., NO2⁻, SCN⁻.
+  [HEARD] 'Ambient, monodendron' -> 'Ambidentate' corrected on the slide (0.5)
+10:39:07 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:39:07 INFO    copilot.presentation.engine: concern dfdbdb74b209 (transcription, applied=True): 1 element(s); slide shows 'Ambidentate'
+  [SLIDE] add    'Complex Ions' [members] v1 (1 items)
+10:39:07 INFO    copilot.presentation.engine: image search 'monodentate ligand' (diagram) for 'Complex Ions'
+10:39:08 INFO    copilot.presentation.engine: image 'monodentate ligand': none (no usable candidates)
+  [IMAGE] 'monodentate ligand' -> none (no usable candidates) (1.5 s)
+  [  158.9s] Chilating ligands die or polydendron ligands causing stylization around the metal atoms which are known as chilates. Such ligands use two or more donor atoms. (923 ms)
+  [SLIDE] update 'Complex Ions' [members] v2 (1 items)
+  [  172.6s] To bind a single metal ion or moon as cheating ligands. (544 ms)
+  [SLIDE] update 'Complex Ions' [members] v3 (1 items)
+10:39:20 WARNING copilot.llm.router: LLM groq_main now uses GROQ_API_KEY_4 (GROQ_API_KEY_3 is spent)
+10:39:22 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Complex Ions' -> same_concept
+  [UNDERSTAND] Chemistry > Complex Ions (same_concept) acts=definition hint=definition lines=2 via groq_main#4 2204 ms
+               Defined chelating (polydentate) ligands that bind metal ions through multiple donor atoms.
+  [HEARD] 'Chilating, die, polydendron, stylization, chilates' -> 'Chelating, are, polydentate, stabilize, chelates' corrected on the slide (0.5)
+10:39:22 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:39:22 INFO    copilot.presentation.engine: concern 5ff47f0024d6 (transcription, applied=True): 0 element(s); slide shows 'Chelating, are, polydentate, stabilize, chelates'
+10:39:22 INFO    copilot.presentation.engine: no image for 'Complex Ions': two concepts side by side
+  [SLIDE] update 'Complex Ions' [members] v4 (1 items)
+  [SLIDE] update 'Complex Ions' [concept] v5 (2 items)
+  [  181.7s] The stabilization of coordination compounds due to chelation is known as (619 ms)
+  [  187.1s] Chelate effect. (306 ms)
+  [UNDERSTAND] Chemistry > Complex Ions (elaboration) acts=definition hint=definition lines=2 via groq_main#4 1482 ms
+               Introduced the chelate effect as the stabilization of coordination compounds caused by chelation.
+10:39:34 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:39:34 INFO    copilot.presentation.engine: no image for 'Complex Ions': two concepts side by side
+  [SLIDE] update 'Complex Ions' [concept] v6 (3 items)
+  [  193.3s] Coordination number, it is defined as the number of coordinate bonds formed by central metal atom with the ligands. In case of monodendron ligands, coordination number equals to number of ligands. In polydendron ligands, coordination number equals to (1082 ms)
+  [  208.0s] Number of ligands into density. (404 ms)
+10:39:56 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Complex Ions' -> same_concept
+  [UNDERSTAND] Chemistry > Complex Ions (same_concept) acts=definition hint=definition lines=2 via groq_main#4 1960 ms
+               Defined coordination number as the count of coordinate bonds between a metal centre and its ligands.
+10:39:56 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:39:56 INFO    copilot.presentation.engine: no image for 'Complex Ions': two concepts side by side
+  [SLIDE] update 'Complex Ions' [concept] v7 (4 items)
+  [  217.3s] Coordination sphere, the central metal ion and the ligands attached to it are enclosed in square brackets which is known as coordination sphere. The ionos-sable group written outside the bracket is known as counter-ions. (906 ms)
+  [  232.2s] Polycoordination polyhedra, the spatial arrangement of the ligands which are directly attached to the central metal ion is called coordination polyhedra and the central atom or ion, example CuNH3 63 plus. (840 ms)
+10:40:32 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Complex Ions' -> same_concept
+10:40:32 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The ionos-sable group written outside the bracket is known as counter-ions']
+  [UNDERSTAND] Chemistry > Complex Ions (same_concept) acts=definition,explanation hint=definition lines=1 via groq_main#4 3833 ms
+               Defined the coordination sphere as the metal ion plus ligands inside brackets, with counter‑ions outside.
+10:40:32 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:40:32 INFO    copilot.presentation.engine: no image for 'Complex Ions': two concepts side by side
+  [SLIDE] update 'Complex Ions' [concept] v8 (6 items)
+  [  246.9s] It's Octahedral, and I see you. (1007 ms)
+10:40:37 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Complex Ions' -> same_concept
+  [UNDERSTAND] Chemistry > Complex Ions (same_concept) acts=definition hint=definition lines=1 via groq_main#4 1440 ms
+               Introduced the term coordination polyhedra as the spatial arrangement of ligands around the central metal ion.
+10:40:37 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+  [SLIDE] add    'Complex Ions' [members] v1 (1 items)
+10:40:37 INFO    copilot.presentation.engine: image search 'coordination polyhedra diagram' (diagram) for 'Complex Ions'
+10:40:40 INFO    copilot.presentation.engine: image 'coordination polyhedra diagram': none (no usable candidates)
+  [IMAGE] 'coordination polyhedra diagram' -> none (no usable candidates) (2.5 s)
+  [  250.8s] Tcl-4 is tetrahedral and Tcl-4,2- is square planar. (686 ms)
+  [UNDERSTAND] Chemistry > Complex Ions (elaboration) acts=explanation hint=concept lines=1 via groq_main#4 2312 ms
+               Octahedral geometry of the complex ion noted
+10:40:46 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:40:46 INFO    copilot.presentation.engine: no image for 'Complex Ions': nothing relevant found for 'coordination polyhedra diagram' before
+  [SLIDE] update 'Complex Ions' [members] v2 (2 items)
+10:40:54 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Complex Ions' -> same_concept
+  [UNDERSTAND] Chemistry > Complex Ions (same_concept) acts=other hint=key_points lines=1 via groq_main#4 1331 ms
+               Examples of tetrahedral and square planar complex ions are given.
+10:40:54 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:40:54 INFO    copilot.presentation.engine: no image for 'Complex Ions': nothing relevant found for 'coordination polyhedra diagram' before
+  [SLIDE] update 'Complex Ions' [members] v3 (3 items)
+  [  261.0s] Coordination number of central atom. The charge of the complex is all the ligands are removed along with the electron pair that are shared with the central atom. It is called oxidation number of central atom. (944 ms)
+  [  273.7s] Types of complexes (484 ms)
+10:41:03 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Complex Ions' -> same_concept
+  [UNDERSTAND] Chemistry > Complex Ions (same_concept) acts=definition hint=definition lines=1 via groq_main#4 2578 ms
+               Defined oxidation number of the central atom as the complex’s charge after removing ligands and the shared electron pair.
+10:41:03 INFO    copilot.presentation.engine: planner: update Chemistry > Complex Ions (same frame)
+10:41:03 INFO    copilot.presentation.engine: no image for 'Complex Ions': two concepts side by side
+  [SLIDE] update 'Complex Ions' [concept] v4 (4 items)
+  [  279.9s] Homoleptic Complexes Complexes in which the metal atom or ion is linked to only one kind of donor atom is called homoleptic complexes. For example, CONH3-6-3+. (921 ms)
+  [UNDERSTAND] Chemistry > Homoleptic Complexes (sibling_concept) acts=definition,example hint=definition lines=2 via groq_main#4 4263 ms
+               Introduced homoleptic complexes as those with only one donor atom type and gave [Co(NH3)6]3+ as example.
+10:41:20 INFO    copilot.presentation.engine: planner: continue Chemistry > Homoleptic Complexes (new facet)
+  [SLIDE] add    'Homoleptic Complexes' [definition] v1 (2 items)
+  [  292.9s] Heteroleptic complexes, complexes in which the metal atoms or ions is linked to more than (736 ms)
+  [  299.2s] One kind of donor atom is called heteroelectric complexes, example, CONH3, 4Cl2+. (788 ms)
+  [UNDERSTAND] Chemistry > Heteroleptic Complexes (sibling_concept) acts=definition,example hint=definition lines=2 via groq_main#5 3852 ms
+               Introduced heteroleptic complexes: metal linked to multiple donor types, e.g., Co(NH3)4Cl2+.
+  [HEARD] 'CONH3, 4Cl2+' -> 'Co(NH3)4Cl2+' corrected on the slide (0.5)
+10:41:35 INFO    copilot.presentation.engine: planner: continue Chemistry > Heteroleptic Complexes (new facet)
+10:41:35 INFO    copilot.presentation.engine: slide 'Heteroleptic Complexes' waits for the min dwell time
+10:41:35 INFO    copilot.presentation.engine: concern 629d357f70c0 (transcription, applied=True): 1 element(s); slide shows 'Co(NH3)4Cl2+'
+  [SLIDE] add    'Heteroleptic Complexes' [definition] v1 (2 items)
+  [  309.1s] Labels and inert complexes. Complexes in which the ligand substitution is fast are known as labels. Complexes in which the ligand substitution is low are known as inert complexes. (869 ms)
+  [UNDERSTAND] Chemistry > Labels and Inert Complexes (sibling_concept) acts=definition,definition hint=definition lines=1 via groq_main#4 2711 ms
+               Defined labile (fast‑substituting) and inert (slow‑substituting) complexes
+10:41:48 INFO    copilot.presentation.engine: planner: continue Chemistry > Labels and Inert Complexes (new facet)
+10:41:48 INFO    copilot.presentation.engine: slide 'Labels and Inert Complexes' waits for the min dwell time
+  [SLIDE] add    'Labels and Inert Complexes' [concept] v1 (2 items)
+  [  324.4s] Effective atomic number EAN. This concept was proposed by Sidwick. In a complex, the EAN of metal atom is equal to the total number of electrons present in it. (914 ms)
+10:42:17 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Labels and Inert Complexes' -> same_concept
+  [UNDERSTAND] Chemistry > Labels and Inert Complexes (same_concept) acts=definition hint=definition lines=1 via groq_main#4 1592 ms
+               Introduced the Effective Atomic Number (EAN) concept, defining it as the total electrons on the metal in a complex.
+10:42:17 INFO    copilot.presentation.engine: planner: update Chemistry > Labels and Inert Complexes (same frame)
+  [SLIDE] update 'Labels and Inert Complexes' [concept] v2 (3 items)
+  [  338.4s] PAn equals Z minus ON of metal plus 2 times CN, where Z is the atomic number of metals atom, ON is the oxidation number of metals, CN is the coordination number of complex. (915 ms)
+  [  352.4s] An iron with central metal atom having EN equals to the next inert gas will be more stable. (692 ms)
+  [UNDERSTAND] Chemistry > Labels and Inert Complexes (elaboration) acts=formula,explanation hint=formula lines=2 via groq_main#4 2895 ms
+               Added the EAN calculation formula and noted that matching the next noble‑gas electron count gives greater stability
+  [HEARD] 'PAn' -> 'EAN' corrected on the slide (0.5)
+10:42:26 INFO    copilot.presentation.engine: planner: update Chemistry > Labels and Inert Complexes (same frame)
+10:42:26 INFO    copilot.presentation.engine: member 'Effective atomic number (EAN)' explained in depth: its own slide under Chemistry > Labels and Inert Complexes
+10:42:26 INFO    copilot.presentation.engine: concern 50cbd8c7c20f (transcription, applied=True): 1 element(s); slide shows 'EAN'
+  [SLIDE] update 'Labels and Inert Complexes' [concept] v3 (4 items)
+  [SLIDE] add    'Effective atomic number (EAN)' [key_points] v1 (1 items)
+  [  361.1s] Isomerism in coordination compounds. (487 ms)
+  [SLIDE] update 'Effective atomic number (EAN)' [key_points] v2 (2 items)
+  [  364.0s] Coordination compounds exhibit the following types of isomerism. Structural isomerism. In this isomerism, isomers have different bonding patterns, different types of structural isomers are linkage isomerism, coordination isomerism, (1032 ms)
+  [SLIDE] update 'Effective atomic number (EAN)' [key_points] v3 (2 items)
+  [  378.6s] Ionization isomerism, solvent isomerism. (544 ms)
+  [SLIDE] update 'Effective atomic number (EAN)' [key_points] v4 (2 items)
+  [UNDERSTAND] Chemistry > Isomerism (sibling_concept) acts=classification hint=none lines=3 via groq_main#4 1798 ms
+               Introduced coordination compound isomerism and listed its five main types.
+10:42:47 INFO    copilot.presentation.engine: planner: continue Chemistry > Isomerism (new facet)
+  [SLIDE] update 'Effective atomic number (EAN)' [key_points] v5 (1 items)
+  [SLIDE] add    'Isomerism' [hierarchy] v1 (1 items)
+10:42:47 INFO    copilot.presentation.engine: image search 'coordination isomerism diagram' (diagram) for 'Isomerism'
+10:42:49 INFO    copilot.presentation.engine: image 'coordination isomerism diagram': none (no usable candidates)
+  [IMAGE] 'coordination isomerism diagram' -> none (no usable candidates) (1.6 s)
+  [  383.5s] Stereoisomerism. Stereoisomerism have chemical formula. (737 ms)
+10:42:55 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Isomerism' -> same_concept
+  [UNDERSTAND] Chemistry > Isomerism (same_concept) acts=explanation hint=hierarchy lines=1 via groq_main#4 1403 ms
+               Added stereoisomerism as another type of isomerism, noting it has its own chemical formula.
+10:42:55 INFO    copilot.presentation.engine: planner: update Chemistry > Isomerism (same frame)
+10:42:55 INFO    copilot.presentation.engine: no image for 'Isomerism': nothing relevant found for 'coordination isomerism diagram' before
+  [SLIDE] update 'Isomerism' [hierarchy] v2 (2 items)
+  [  392.9s] A chemical bond but they are different species aren't they? (606 ms)
+  [  396.5s] Geometrical isomerism, (610 ms)
+  [  400.7s] Optical isomerism. (307 ms)
+  [UNDERSTAND] Chemistry > Stereoisomerism (sibling_concept) acts=explanation hint=hierarchy lines=3 via groq_main#4 2273 ms
+               Added geometrical and optical isomerism as subtypes of stereoisomerism
+10:43:08 INFO    copilot.presentation.engine: planner: continue Chemistry > Stereoisomerism (new facet)
+  [SLIDE] add    'Stereoisomerism' [key_points] v1 (2 items)
+10:43:08 INFO    copilot.presentation.engine: image search 'geometrical vs optical isomers' (diagram) for 'Stereoisomerism'
+10:43:10 INFO    copilot.presentation.engine: image 'geometrical vs optical isomers': none (no usable candidates)
+  [IMAGE] 'geometrical vs optical isomers' -> none (no usable candidates) (1.5 s)
+  [  404.9s] Burning in scaldination compounds, the Vanners theory. Metal exhibit two types of valences in the formation of complexes. These are primary valences and secondary valences. Primary valences correspond to oxidation number O-F. (980 ms)
+  [SLIDE] update 'Stereoisomerism' [key_points] v2 (3 items)
+  [  418.3s] of the metal and are satisfied by anence. These are ineszable and non-directional. (749 ms)
+  [SLIDE] update 'Stereoisomerism' [key_points] v3 (3 items)
+10:43:32 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Metal exhibit two types of valences in the formation of complexes']
+  [UNDERSTAND] Chemistry > Valence Types (sibling_concept) acts=definition,definition,explanation hint=concept lines=2 via groq_main#4 2263 ms
+               Introduced primary and secondary valences as two types of metal valence in complexes
+  [HEARD] 'Burning in scaldination compounds, the Vanners theory' -> 'Bonding in coordination compounds, the VSEPR theory' corrected on the slide (0.5)
+  [HEARD] 'ineszable' -> 'inseparable' corrected on the slide (0.5)
+10:43:32 INFO    copilot.presentation.engine: planner: continue Chemistry > Valence Types (new facet)
+10:43:32 INFO    copilot.presentation.engine: concern de988880b7c8 (transcription, applied=True): 0 element(s); slide shows 'Bonding in coordination compounds, the VSEPR theory'
+10:43:32 INFO    copilot.presentation.engine: concern fb27da324aa6 (transcription, applied=True): 1 element(s); slide shows 'inseparable'
+10:43:32 INFO    copilot.presentation.engine: no image for 'Valence Types': two concepts side by side
+  [SLIDE] update 'Stereoisomerism' [key_points] v4 (2 items)
+  [SLIDE] add    'Valence Types' [concept] v1 (3 items)
+  [  426.7s] Secondary valences correspond to coordination number CN of the metal atom and are satisfied by ligands. These are non-ionizable and directional. Hence, geometry is decided by these valences. (826 ms)
+  [  438.9s] Metal ions should satisfy both primary and secondary balances. Limitations Werner theory was usable to account for the following. Definite geometry of coordination compounds. Presence of magnetic and optical properties of coordination compounds. (801 ms)
+  [UNDERSTAND] Chemistry > Valence Types (elaboration) acts=- hint=definition lines=1 via groq_main#4 1537 ms
+               Secondary valence ties to coordination number, is directional, non‑ionizable, and sets geometry.
+10:43:59 INFO    copilot.presentation.engine: revised S2: Secondary valence corresponds to the metal’s coordination number, is satisfied by ligands, is non‑ionizable and directional, and determines…
+10:43:59 INFO    copilot.presentation.engine: planner: noop Chemistry > Valence Types (nothing to display)
+  [SLIDE] update 'Valence Types' [concept] v2 (3 items)
+  [  452.6s] To overcome the limitations of Werner's theory, (358 ms)
+  [  455.9s] Various theories were put forward such as the violence bond theory, crystal field theory. (688 ms)
+10:44:08 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Limitations Werner theory was usable to account for the following']
+  [UNDERSTAND] Chemistry > Theories of Coordination Compounds (sibling_concept) acts=explanation,explanation,classification,explanation hint=concept lines=3 via groq_main#4 2403 ms
+               Introduced limitations of Werner theory and new theories (valence bond and crystal field) to address them
+  [HEARD] 'violence' -> 'valence' corrected on the slide (0.5)
+10:44:08 INFO    copilot.presentation.engine: planner: continue Chemistry > Theories of Coordination Compounds (new facet)
+10:44:08 INFO    copilot.presentation.engine: concern 43cc6d39f287 (transcription, applied=True): 1 element(s); slide shows 'valence'
+10:44:08 INFO    copilot.presentation.engine: no image for 'Theories of Coordination Compounds': nothing relevant found for 'coordination compound structure' before
+  [SLIDE] add    'Theories of Coordination Compounds' [key_points] v1 (4 items)
+  [  460.9s] The Wannesbord theory. This theory was proposed by L. Pauling in 1930s. According to this theory, when a complex is formed, the metal ion's atoms provide empty orbitals to the surrounding liquids. (895 ms)
+  [  473.4s] Coordination number shows the number of such empty orbitals, that is, number of empty orbitals is equal to the coordination number. These empty orbitals hybridize. (940 ms)
+10:44:30 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Theories of Coordination Compounds' -> same_concept
+  [UNDERSTAND] Chemistry > Theories of Coordination Compounds (same_concept) acts=definition,explanation hint=none lines=2 via groq_main#4 3608 ms
+               Introduced Wannesbord theory and linked coordination number to the count of hybridizing empty orbitals
+10:44:30 INFO    copilot.presentation.engine: planner: update Chemistry > Theories of Coordination Compounds (same frame)
+  [SLIDE] update 'Theories of Coordination Compounds' [key_points] v2 (4 items)
+  [SLIDE] add    'Theories of Coordination Compounds' [members] v1 (3 items)
+10:44:30 INFO    copilot.presentation.engine: no image 'orbital hybridization diagram' on 'Theories of Coordination Compounds': not about the slide (similarity 0.22)
+  [  483.3s] Before participation in bonding and the nature of hybridization depends on the nature of metal and on the nature of approaching ligands. (758 ms)
+  [UNDERSTAND] Chemistry > Theories of Coordination Compounds (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 2976 ms
+               Hybridization is influenced by both metal and ligand nature
+10:44:38 INFO    copilot.presentation.engine: planner: update Chemistry > Theories of Coordination Compounds (same frame)
+  [SLIDE] update 'Theories of Coordination Compounds' [members] v2 (4 items)
+10:44:38 INFO    copilot.presentation.engine: image search 'orbital hybridization diagram' (diagram) for 'Theories of Coordination Compounds'
+10:44:43 INFO    copilot.visuals.finder: image search 'orbital hybridization diagram' (diagram, labels preferred): 2 candidate(s), 2 accepted (0 labelled), 5.46 s {'search_s': 1.69, 'download_s': 1.11, 'clip_s': 0.07, 'full_s': 2.57, 'total_s': 5.46}
+  [IMAGE] 'orbital hybridization diagram' -> File:Quintuple bond orbital diagram2.png (5.5 s)
+10:44:43 INFO    copilot.presentation.engine: image 'orbital hybridization diagram' on 'Theories of Coordination Compounds': File:Quintuple bond orbital diagram2.png
+  [SLIDE] update 'Theories of Coordination Compounds' [members] v3 (5 items)
+  [  492.5s] The inner and orbital complexes and outer orbital complexes. When outer d orbital and d shell are used in bonding, the complexes are called outer orbital complexes. (644 ms)
+  [  505.5s] They are formed due to weak orbital ligands or high-spin ligands and hybridizations in sp3d d2. (712 ms)
+  [UNDERSTAND] Chemistry > Inner and Outer Orbital Complexes (sibling_concept) acts=definition,explanation hint=concept lines=2 via groq_main#4 1766 ms
+               Introduced inner vs outer orbital complexes and explained that outer orbital complexes form with weak/high‑spin ligands using sp³d² hybridization.
+10:44:57 INFO    copilot.presentation.engine: planner: continue Chemistry > Inner and Outer Orbital Complexes (new facet)
+  [SLIDE] add    'Inner and Outer Orbital Complexes' [members] v1 (3 items)
+10:44:57 INFO    copilot.presentation.engine: image search 'outer orbital complex diagram' (diagram) for 'Inner and Outer Orbital Complexes'
+10:45:04 INFO    copilot.visuals.finder: image search 'outer orbital complex diagram' (diagram, labels preferred): 8 candidate(s), 3 accepted (3 labelled), 7.02 s {'search_s': 1.61, 'download_s': 1.47, 'clip_s': 0.15, 'full_s': 3.77, 'total_s': 7.02}
+  [IMAGE] 'outer orbital complex diagram' -> File:TOI-1853 b orbit diagram Earth POV black.png (7.0 s)
+10:45:04 INFO    copilot.presentation.engine: image 'outer orbital complex diagram' on 'Inner and Outer Orbital Complexes': File:TOI-1853 b orbit diagram Earth POV black.png
+  [SLIDE] update 'Inner and Outer Orbital Complexes' [members] v2 (4 items)
+  [  511.6s] They have octahedral geometry. When d-orbitals of n-1 shells are used, these are known as Tinner orbital complexes. These are formed due to strong field ligands or low spin ligands and (962 ms)
+  [  525.6s] Hybrid digestion is D2SP3. (506 ms)
+  [UNDERSTAND] Chemistry > Inner and Outer Orbital Complexes (elaboration) acts=definition,explanation,explanation hint=none lines=2 via groq_main#4 3729 ms
+               Inner orbital complexes use inner d orbitals, have octahedral geometry, and hybridize as d²sp³.
+10:45:17 INFO    copilot.presentation.engine: planner: update Chemistry > Inner and Outer Orbital Complexes (same frame)
+10:45:17 INFO    copilot.presentation.engine: no image for 'Inner and Outer Orbital Complexes': two concepts side by side
+  [SLIDE] update 'Inner and Outer Orbital Complexes' [concept] v3 (5 items)
+  [  532.3s] They have also octahedral geometry, 6 ligands. (613 ms)
+  [  537.2s] Unit and end of the Hetal entity. (537 ms)
+  [UNDERSTAND] Chemistry > Inner and Outer Orbital Complexes (same_concept) acts=- hint=concept lines=1 via groq_main#4 1573 ms
+               Octahedral complexes have six ligands arranged octahedrally.
+10:45:25 INFO    copilot.presentation.engine: revised S5: Octahedral geometry with six ligands
+10:45:25 INFO    copilot.presentation.engine: planner: noop Chemistry > Inner and Outer Orbital Complexes (nothing to display)
+10:45:25 INFO    copilot.presentation.engine: no image for 'Inner and Outer Orbital Complexes': two concepts side by side
+  [SLIDE] update 'Inner and Outer Orbital Complexes' [concept] v4 (5 items)
+  [UNDERSTAND] Chemistry > Inner and Outer Orbital Complexes (same_concept) acts=- hint=none lines=1 via groq_main#4 4215 ms
+               No clear new content was identified from the transcription.
+  [HEARD] 'Hetal' -> 'metal' corrected on the slide (0.5)
+10:45:35 INFO    copilot.presentation.engine: planner: noop Chemistry > Inner and Outer Orbital Complexes (nothing to display)
+10:45:35 INFO    copilot.presentation.engine: concern e17d45d944fe (transcription, applied=True): 0 element(s); slide shows 'metal'
+  [  544.6s] Limitations of VBT This theory could not explain the quantization of the magnetic data, existence of inner orbital and outer orbital complex, change of magnetic moment with temperature and color of complexes. (790 ms)
+  [UNDERSTAND] Chemistry > Inner and Outer Orbital Complexes (elaboration) acts=explanation hint=none lines=1 via groq_main#5 1429 ms
+               VBT fails to account for magnetic quantization, inner/outer orbital complexes, temperature effects, and colors of complexes.
+10:45:42 INFO    copilot.presentation.engine: planner: update Chemistry > Inner and Outer Orbital Complexes (same frame)
+10:45:42 INFO    copilot.presentation.engine: no image for 'Inner and Outer Orbital Complexes': two concepts side by side
+  [SLIDE] update 'Inner and Outer Orbital Complexes' [concept] v5 (9 items)
+  [  562.3s] The crystal field theory, CFD, this theory was proposed by H. Bethwick in 1929. (700 ms)
+  [  569.7s] Van Vleck, Orgel, 1935, applied this theory to coordination compounds. In this theory, ligands are treated on point charges in case of anions and dipoles in the case of (902 ms)
+  [UNDERSTAND] Chemistry > Crystal Field Theory (sibling_concept) acts=definition hint=definition lines=1 via groq_main#4 3390 ms
+               Introduced crystal field theory, proposed by H. Bethwick in 1929, as a theory for coordination compounds
+10:46:09 INFO    copilot.presentation.engine: planner: continue Chemistry > Crystal Field Theory (new facet)
+  [SLIDE] add    'Crystal Field Theory' [definition] v1 (1 items)
+10:46:09 INFO    copilot.presentation.engine: image search 'crystal field diagram' (diagram) for 'Crystal Field Theory'
+10:46:10 INFO    copilot.presentation.engine: image 'crystal field diagram': none (no usable candidates)
+  [IMAGE] 'crystal field diagram' -> none (no usable candidates) (1.4 s)
+  [  582.0s] Neutral molecules. The five d orbitals are classified as d orbitals, that is dx, dy and dz are oriented in between (935 ms)
+  [SLIDE] update 'Crystal Field Theory' [definition] v2 (1 items)
+  [  595.7s] (dropped: empty) 
+  [UNDERSTAND] Chemistry > Crystal Field Theory (elaboration) acts=explanation hint=concept lines=2 via groq_main#4 2024 ms
+               Teacher explained ligand charge modeling in CFT and classified the five d orbitals by orientation
+10:46:26 INFO    copilot.presentation.engine: planner: update Chemistry > Crystal Field Theory (same frame)
+  [SLIDE] update 'Crystal Field Theory' [definition] v3 (1 items)
+  [SLIDE] update 'Crystal Field Theory' [definition] v4 (4 items)
+10:46:26 INFO    copilot.presentation.engine: image search 'd orbital orientation' (diagram) for 'Crystal Field Theory'
+10:46:27 INFO    copilot.presentation.engine: image 'd orbital orientation': none (no usable candidates)
+  [IMAGE] 'd orbital orientation' -> none (no usable candidates) (1.4 s)
+  [  599.4s] The other two orbitals, d orbitals, that is (573 ms)
+  [SLIDE] update 'Crystal Field Theory' [definition] v5 (5 items)
+  [  605.1s] d x square minus y square and d z square oriented along the axis is called the CG orbitals. Due to the approach of ligands, five degenerate d orbitals split. Splitting of d orbitals depends on the nature of the crystal field. (1068 ms)
+  [SLIDE] update 'Crystal Field Theory' [definition] v6 (5 items)
+10:46:45 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['D x square minus y square and d z square oriented along the axis is called the CG orbitals']
+  [UNDERSTAND] Chemistry > Crystal Field Theory (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#4 1487 ms
+               Added the e_g orbitals and explained that ligand approach splits d orbitals, with splitting dependent on crystal field
+10:46:45 INFO    copilot.presentation.engine: planner: update Chemistry > Crystal Field Theory (same frame)
+  [SLIDE] update 'Crystal Field Theory' [definition] v7 (4 items)
+  [SLIDE] update 'Crystal Field Theory' [definition] v8 (5 items)
+  [SLIDE] add    'Crystal Field Theory' [key_points] v1 (2 items)
+10:46:45 INFO    copilot.presentation.engine: image search 'd orbital splitting diagram' (diagram) for 'Crystal Field Theory'
+  [  619.8s] The energy difference between T2g and Eg level is designated (547 ms)
+10:46:49 INFO    copilot.visuals.finder: image search 'd orbital splitting diagram' (diagram, labels preferred): 7 candidate(s), 3 accepted (0 labelled), 3.82 s {'search_s': 1.81, 'download_s': 1.07, 'clip_s': 0.13, 'full_s': 0.78, 'total_s': 3.82}
+  [IMAGE] 'd orbital splitting diagram' -> File:Square planar splitting diagram.svg (3.8 s)
+10:46:49 INFO    copilot.presentation.engine: image 'd orbital splitting diagram' on 'Crystal Field Theory': File:Square planar splitting diagram.svg
+  [SLIDE] update 'Crystal Field Theory' [key_points] v2 (3 items)
+  [  624.1s] By delta and is called crystal field splitting energy. (575 ms)
+  [UNDERSTAND] Chemistry > Crystal Field Theory (elaboration) acts=definition hint=definition lines=2 via groq_main#4 1630 ms
+               Introduced crystal field splitting energy (Δ) as the gap between T₂g and E_g levels.
+10:46:57 INFO    copilot.presentation.engine: planner: update Chemistry > Crystal Field Theory (same frame)
+10:46:57 INFO    copilot.presentation.engine: no image for 'Crystal Field Theory': has an image
+  [SLIDE] update 'Crystal Field Theory' [key_points] v3 (4 items)
+  [  640.2s] Organometallic compounds, they contain one or more metal-carbon bonds in their molecules. They are of the following text. (784 ms)
+  [SLIDE] update 'Crystal Field Theory' [key_points] v4 (5 items)
+  [  649.5s] Sigma-bonded compounds, metal-carbon bonds is sigma bond that is C2H5, 4PbZn. (815 ms)
+  [SLIDE] update 'Crystal Field Theory' [key_points] v5 (5 items)
+  [  657.1s] C2H5-2 (318 ms)
+  [SLIDE] update 'Crystal Field Theory' [key_points] v6 (5 items)
+  [  660.7s] R, MGX, etc. Bye, Bondit! (593 ms)
+  [SLIDE] update 'Crystal Field Theory' [key_points] v7 (5 items)
+  [UNDERSTAND] Chemistry > Organometallic Compounds (new_topic) acts=definition,explanation hint=definition lines=4 via groq_main#4 2035 ms
+               Defined organometallic compounds and gave sigma‑bonded examples
+  [HEARD] '4PbZn' -> 'R‑MGX' corrected on the slide (0.5)
+  [HEARD] '-2' -> '(example of ethyl ligand)' corrected on the slide (0.5)
+10:47:30 INFO    copilot.presentation.engine: planner: continue Chemistry > Organometallic Compounds (new facet)
+10:47:30 INFO    copilot.presentation.engine: concern 83f81e819ab5 (transcription, applied=True): 1 element(s); slide shows 'R‑MGX'
+10:47:30 INFO    copilot.presentation.engine: concern 14644022304b (transcription, applied=True): 0 element(s); slide shows '(example of ethyl ligand)'
+  [SLIDE] update 'Crystal Field Theory' [key_points] v8 (4 items)
+  [SLIDE] add    'Organometallic Compounds' [definition] v1 (3 items)
+10:47:30 INFO    copilot.presentation.engine: image search 'organometallic molecule' (diagram) for 'Organometallic Compounds'
+10:47:31 INFO    copilot.presentation.engine: image 'organometallic molecule': none (no usable candidates)
+  [IMAGE] 'organometallic molecule' -> none (no usable candidates) (1.4 s)
+  [  664.5s] or compounds in which molecule ions containing pi bonds acting as ligands. For example, Ferrons, Dibensin Chlorine, Chromium and Caesars salt. (878 ms)
+  [SLIDE] update 'Organometallic Compounds' [definition] v2 (4 items)
+  [UNDERSTAND] Chemistry > Organometallic Compounds (elaboration) acts=definition,example hint=definition lines=1 via groq_main#4 2066 ms
+               Organometallic compounds can have π‑bonded ligands; examples given.
+  [HEARD] 'Ferrons, Dibensin Chlorine, Chromium and Caesars salt' -> 'Ferrocene, Dibenzene, Chromium carbonyl, Caesium salt' corrected on the slide (0.5)
+10:47:41 INFO    copilot.presentation.engine: revised S1: Organometallic compounds contain metal‑carbon bonds and may include ligands with π bonds
+10:47:41 INFO    copilot.presentation.engine: planner: update Chemistry > Organometallic Compounds (same frame)
+10:47:41 INFO    copilot.presentation.engine: concern 8a17fedbda5c (transcription, applied=True): 0 element(s); slide shows 'Ferrocene, Dibenzene, Chromium carbonyl, Caesium salt'
+10:47:41 INFO    copilot.presentation.engine: no image for 'Organometallic Compounds': nothing relevant found for 'organometallic molecule' before
+  [SLIDE] update 'Organometallic Compounds' [definition] v3 (3 items)
+  [SLIDE] update 'Organometallic Compounds' [definition] v4 (3 items)
+  [SLIDE] update 'Organometallic Compounds' [definition] v5 (4 items)
+  [  678.4s] Sigma and Pi bonded compounds, metal carbonyls are their examples. Metal carbon bond of metal carbonyls have both sigma and pi bond characters. They have CO molecules as ligand example. (907 ms)
+  [SLIDE] update 'Organometallic Compounds' [definition] v6 (5 items)
+  [UNDERSTAND] Chemistry > Organometallic Compounds (elaboration) acts=example hint=example lines=1 via groq_main#4 1787 ms
+               Metal carbonyls illustrate sigma‑ and pi‑bonded organometallic compounds.
+10:47:57 INFO    copilot.presentation.engine: planner: update Chemistry > Organometallic Compounds (same frame)
+10:47:57 INFO    copilot.presentation.engine: no image for 'Organometallic Compounds': nothing relevant found for 'organometallic molecule' before
+  [SLIDE] update 'Organometallic Compounds' [definition] v7 (4 items)
+  [SLIDE] update 'Organometallic Compounds' [definition] v8 (4 items)
+  [  693.3s] NSU Food and FECU Food, fine. (599 ms)
+  [UNDERSTAND] Chemistry > Organometallic Compounds (same_concept) acts=- hint=none lines=1 via groq_main#4 1287 ms
+10:48:05 INFO    copilot.presentation.engine: planner: noop Chemistry > Organometallic Compounds (nothing to display)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261015-103553-cb74: 74 segments, 1280 words, state v170, 746 events logged
+        CommandReceived=32, ConceptSignal=74, ConcernRaised=15, DeckState=47, ImageChoices=3, ImageReady=13, ImageRequested=13, InterpretRequested=45, InterpretationReady=45, LLMCallFailed=1, LifecycleChanged=5, SlideContextChanged=47, SlideOverflow=2, SlidePatch=85, StateChanged=170, TranscriptFinal=74, UtteranceClassified=74, UtteranceDropped=1
+        stt: 74 published, 1 dropped, latency p50=737 ms p95=1007 ms max=1082 ms
+        understanding: 45 interpretations (45 by LLM, 0 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=2056 avg=1952, latency p50=2117 ms max=5909 ms
+        presentation: 19 slides; planner ops {'new': 1, 'continue': 12, 'update': 28, 'noop': 4}; revisions 4, corrections shown 9, shown as said 0
+        images: {'requests': 13, 'found': 3, 'none': 10}; slides with an image 2/19
+          1. [definition] Coordination Compounds  (v1, ['definition', 'example'])
+          2. [definition] Double Salts  (v5, ['definition', 'example', 'points'])
+          3. [concept] Complex Ions [part 1]  (v12, ['definition', 'points', 'definition', 'definition', 'definition'])
+          4. [concept] Complex Ions [part 2]  (v3, ['definition', 'definition', 'definition', 'definition', 'points', 'example'])
+          5. [concept] Complex Ions [part 3]  (v8, ['definition', 'definition', 'definition', 'definition', 'definition', 'points'])
+          6. [concept] Complex Ions [part 4]  (v4, ['definition', 'points', 'facts', 'definition'])
+          7. [definition] Homoleptic Complexes  (v1, ['definition', 'example'])
+          8. [definition] Heteroleptic Complexes  (v1, ['definition', 'example'])
+          9. [concept] Labels and Inert Complexes  (v3, ['definition', 'definition', 'definition', 'formula'])
+          10. [key_points] Effective atomic number (EAN)  (v5, ['points'])
+          11. [hierarchy] Isomerism  (v2, ['hierarchy', 'callout'])
+          12. [key_points] Stereoisomerism  (v4, ['points'])
+          13. [concept] Valence Types  (v2, ['definition', 'definition', 'points'])
+          14. [key_points] Theories of Coordination Compounds [part 1]  (v2, ['points', 'hierarchy'])
+          15. [members] Theories of Coordination Compounds [part 2]  (v3, ['definition', 'points', 'image'])
+          16. [concept] Inner and Outer Orbital Complexes  (v5, ['definition', 'definition', 'points', 'points', 'points'])
+          17. [definition] Crystal Field Theory [part 1]  (v8, ['definition', 'points'])
+          18. [key_points] Crystal Field Theory [part 2]  (v8, ['points', 'image', 'definition'])
+          19. [definition] Organometallic Compounds  (v8, ['definition', 'points', 'example'])
+        providers: {'groq_main#3': 6, 'groq_main#4': 36, 'groq_main#5': 3}; triggers: {'words': 11, 'pause': 21, 'max_wait': 10, 'boundary': 3}; outline: ['Chemistry > Labels and Inert Complexes, Isomerism, Stereoisomerism, Valence Types, Theories of Coordination Compounds, Inner and Outer Orbital Complexes, Crystal Field Theory, Organometallic Compounds']; concerns: 15
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261015-103553-cb74\session.sqlite

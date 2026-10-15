@@ -1,0 +1,21 @@
+{
+  "name": "web3",
+  "source": "web",
+  "note": "web, mathematics; MIT OCW 18.01 Single Variable Calculus F07, lec 1 'Derivatives, slope, velocity, rate of change'; https://archive.org/download/MIT18.01JF07_LEC01-07/ocw-18.01-f07-lec01_300k.mp4; CC BY-NC-SA 3.0; clip 3:00-13:00",
+  "session_id": "20261015-115348-c3ec",
+  "date": "2026-10-15 12:04",
+  "title": "",
+  "minutes": 10.0,
+  "utterances": 126,
+  "slides": 7,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [
+    "--audio-file",
+    "artifacts/web_audio/web3.wav",
+    "--no-wait",
+    "--no-open",
+    "--subject",
+    "Mathematics"
+  ]
+}

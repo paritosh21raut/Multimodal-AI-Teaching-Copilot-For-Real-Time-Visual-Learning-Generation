@@ -1,0 +1,75 @@
+[    3.8] The topic is Satellites and their Applications. Introduction to Satellites. A satellite is an object that revolves around a large object in space.
+[   16.2] Satellites are classified into two main types, natural satellite and artificial satellites. The moon is a natural satellite of the earth while artificial satellites are machines.
+[   30.4] design and launch into space by humans.
+[   35.1] Artificial satellites play an important role in modern life. They are used for communication, whether forecasting, common navigation, scientific research, research.
+[   49.6] Was it?
+[   54.8] disaster management and earth observation.
+[   58.4] Satellites help us communication across long distances, predict storms and find locating using GPS.
+[   67.7] How does a satellite works?
+[   71.2] A satellite works by moving around the Earth along a path called an orbit.
+[   76.7] the gravitational force of the Earth keeps the satellite in orbit while its forward velocity prevents it from falling directly towards the Earth.
+[   86.9] Before launching a satellite, scientists and engineers determine its purpose, orbit power, requirements and communication systems. A launch vehicle carries the satellite into space and places.
+[  101.7] it into its intended orbit.
+[  105.3] Once in orbit, the satellite uses onboard instruments, antenna sensors and electronic systems to perform its assigned tasks. Solar panels usually generate electricity from sunlight.
+[  118.9] while batteries provide power when sunlight is unavailable.
+[  124.4] 3. Types of Artificial Satellites
+[  129.0] Artificial satellites can be classified according to their purpose. Communication satellites transmit television signals, telephone calls, internet data and other information over long distances.
+[  141.9] connect people in different countries and remote areas, whether satellite observe clouds,
+[  151.9] sideburns.
+[  153.6] Metrologists use their observation to prepare weather forecasts and issue warnings about sober weather. Navigation satellites provide signals that help
+[  166.5] determines their position, speed and time. The global positioning system, commonly known as GPS, is one example of satellite navigation system. Earth observation satellites
+[  179.2] capture images and collect information about the earth's surface. This helps monitor agriculture, forests, water, resources, urban development and natural disasters.
+[  191.2] Scientific satellites carry instruments that help researchers study the sun, distant galaxies, planets, and other phenomena in space.
+[  201.5] India also operates satellites for communication, navigation, weather forecasting and remote sensing.
+[  208.6] It's space program.
+[  210.9] Fourth is Types of Satellite Orbits
+[  215.1] The orbit of a satellite depends on its mission.
+[  218.9] Low Earth Orbit
+[  221.0] LEO is relatively close to Earth, typically between about 160 and 2000 km above the surface. Satellites in this orbit are useful for Earth observation.
+[  234.9] scientific research and many satellite internet systems.
+[  238.7] Medium Earth Orbit, MEO, lies between
+[  243.1] low earth orbit and geostationary orbit.
+[  246.3] navigation system such as GPS used satellites in medium earth orbit.
+[  253.0] Geostationary orbit GEO is approximately 35,786 km above Earth's equator.
+[  265.2] orbit takes about 24 hours to complete one revolution and appears stationary over the same point on the earth equator.
+[  274.4] This makes it useful for communication and weather observation.
+[  280.3] 5. How do satellites communicate with Earth?
+[  285.3] Satellite communication uses electromagnetic waves to transfer information between Earth and satellite.
+[  292.0] First, the transmitting ground station sends information to the satellite through an antenna.
+[  298.5] This transmission is called the uplink.
+[  302.8] The satellite receives the signal using its communication equipment depending on the satellite's design. A transponder may amplify the signal.
+[  314.1] change its frequency and re-transmit it towards another location on earth.
+[  320.6] The transmission form of satellite back to the earth is called the downlink.
+[  325.7] Receiving ground station captures the signal and processes it into usable information.
+[  331.6] For example, when satellite communication is used to deliver a television broadcast, a signal can travel from a broadcast station to a satellite and then back down to receiving antennas in different locations.
+[  345.1] Satellite communication is especially useful when connecting distant regions.
+[  350.0] ships, aircrafts and areas where terrestrial communication infrastructure is limited.
+[  357.1] Sixth topic is important components of a satellite.
+[  362.0] and artificial satellite contains several systems that work together.
+[  367.8] Power system, solar panel and batteries provide electrical energy.
+[  372.9] communication system, antenna when radio frequency equipment transpits and receives signal.
+[  380.1] Playload instrument that performs satellite main mission such as cameras, communications transponder or scientific sensors.
+[  390.2] onboard computer, processes command and minus satellite operations.
+[  396.4] Altitude Control System helps maintain the satellite orientation.
+[  402.6] Thermal control system helps keep equipment within its required operating temperature range.
+[  411.9] 7th one is Application of Satellites in daily life
+[  417.1] Satellites are used in many activities that affect our daily lives. Communication
+[  423.4] First one is Communication. They support television broadcasting, satellite telephone services and internet connectivity.
+[  431.6] 2. Navigation
+[  435.8] Jai Voss
+[  438.2] and mobile devices, pilots and users determine their location and location.
+[  445.0] Plain roots
+[  446.5] weather forecasting, satellite images helps metrologists track clouds, sight clones and other atmospheric developments. Agriculture
+[  456.4] Earth observation data helps monitor crop health, estimate agricultural condition and
+[  465.7] Disaster Management
+[  468.1] satellites provide information about floods.
+[  471.4] wildfire, cyclones and other disasters helping authorities access damaged and planned emergency responses.
+[  480.9] scientific research, space-based instruments help scientists investigate the universe and understand Earth and its environment.
+[  502.7] 8th Topic is India's Satellite Program
+[  507.0] India has developed a range of satellites for communication, navigation, remote sensing and scientific research.
+[  513.9] The Indian Space Research Organisation known as ISRO is responsible for many of India's space missions.
+[  522.8] The INSAT and GSAT satellite system support services such as telecommunication, broadcasting and metrological applications.
+[  534.0] the Indian Regional Levication Satellite System also known as
+[  538.6] NavIC provides regional navigation services.
+[  543.3] The Indian Remote Sensing Satellite Program supports applications including agriculture, natural resources management, mapping and disaster monitoring.
+[  554.7] India's space program demonstrates how satellite technology can support national development, scientific research and essential services.

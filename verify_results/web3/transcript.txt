@@ -1,0 +1,126 @@
+[    1.4] And that's kind of a tall order, but let me just give you an example. If you want to take the derivative, this we'll see today is the notation for the derivative of something, of some messy function like e to the x arctan.
+[   16.9] X.
+[   19.6] We'll work this out.
+[   21.7] By the
+[   23.1] End of this unit.
+[   25.6] So anything you can think of, anything you can write down, we can differentiate it.
+[   32.0] All right, so that's what we're going to do.
+[   34.5] And...
+[   35.6] Today, as I said,
+[   37.7] We're going to spend most of our time on this geometric interpretation.
+[   44.6] So let's begin with that.
+[   50.0] So here we go with the geometric.
+[   53.3] Interpretation.
+[   57.9] Alpha.
+[   59.7] Derivatives.
+[   61.5] And...
+[   66.0] What we're going to do
+[   68.8] Is just ask the geometric problem of finding
+[   73.1] The tangent line.
+[   82.1] Two.
+[   83.4] Some.
+[   85.2] Graph of some function.
+[   87.3] At some point.
+[   91.5] Say X0Y0.
+[   93.3] So that's the problem.
+[   95.1] That we're addressing here.
+[   97.3] I guess I should probably...
+[  100.4] Turn this off.
+[  102.4] Alright.
+[  103.9] So here's our problem, and now let me show you the solution.
+[  109.3] So...
+[  112.2] Well, let's graph the function.
+[  117.7] So let's say here's its graph.
+[  120.4] And here's some point.
+[  122.3] All right.
+[  123.7] Maybe I should draw it just a bit lower so that I don't...
+[  129.2] All right, so here's a point P. Maybe it's
+[  133.1] Above the point X0.
+[  135.8] X0, by the way, this was supposed to be an X0. That was some fixed place.
+[  141.8] On the X-axis.
+[  146.8] And now, in order to perform this mighty feat.
+[  152.1] I will...
+[  154.7] Use another color of chalk. How about red? Okay.
+[  158.8] So...
+[  160.2] So here it is.
+[  162.0] There's the tangent line. Well, not quite straight, close enough.
+[  165.7] Alright?
+[  166.7] I did it!
+[  168.2] All right, that's the end. That's the geometric problem.
+[  172.2] What I wanted to do
+[  173.9] And it's kind of an interesting question, which unfortunately I can't solve for you in this class, which is how did I do that? That is, how physically did I manage to know what to do?
+[  186.7] To draw this tangent line, but that's what geometric problems are like. We visualize it, we can figure it out, somewhere in our brains it happens. And the task that we have now is to figure out how to do it analytically.
+[  201.6] To do it in a way that
+[  206.2] A machine could do just as well as I did in drawing this tangent line.
+[  212.2] So...
+[  215.6] So what did we learn in high school about?
+[  219.0] What a tangent line is. Well, a tangent line has an equation. Any line through point has the equation y-y0 is equal to.
+[  228.6] And the slope times x minus x0.
+[  232.1] So here's the.
+[  233.8] B.
+[  235.9] Equation for that line.
+[  238.8] And now there are two pieces of information that we're going to need to work out.
+[  245.4] What the line is.
+[  250.8] That's that point P there. And to specify P, given x, we need to know the level of y, which is, of course, just f of x 0. Now that's ...
+[  263.1] That's not a calculus problem, but anyway, that's a very important part of the process. So that's the first thing we need to know.
+[  271.7] And the second thing we need to know.
+[  274.6] Slope.
+[  279.4] And that's this number M.
+[  282.0] And in calculus, we have another name for it. We call it f' x 0, namely the derivative.
+[  290.7] So that's the calculus part. That's the tricky part. And that's the part that we have to discuss now.
+[  297.7] So just to make that explicit here, I'm going to make a definition.
+[  303.3] Which is that f' x 0.
+[  306.6] Which is known as the derivative.
+[  312.7] Of F.
+[  314.8] At X 0.
+[  318.8] Is...
+[  320.4] The slope.
+[  323.4] Of...
+[  325.9] The tangent line.
+[  331.9] Two.
+[  333.9] Y equals f of x.
+[  336.4] At the point.
+[  338.8] Uh...
+[  340.6] Let's just call it P.
+[  352.7] So that's what it is, but still I haven't made any progress in figuring out any better how I drew that line. So I have to say something that's more concrete.
+[  364.9] Because I want to be able to cook up what these numbers are. I have to figure out what this number m is. And one way of thinking about that, let me just try it, is, so I certainly.
+[  377.8] I'm taking for granted the sort of non-calculus part, that I know what a line through a point is. So I know this equation. But another possibility might be this line here. How do I know? Well, unfortunately I didn't draw it quite straight. But there it is.
+[  391.8] How do I know that this orange line is not?
+[  396.0] A tangent line.
+[  397.7] But this other line.
+[  399.9] Is a tangent line.
+[  405.0] Well,
+[  409.2] It's actually not so obvious.
+[  412.9] But I'm going to...
+[  415.2] Describe it a little bit. It's not really the fact, this thing crosses at some other place, which is this point Q. But it's not really the fact that the thing crosses at two places. Because the line could be wiggly, the curve could be wiggly.
+[  429.4] And it could cross back and forth a number of times. That's not what distinguishes the tangent line.
+[  437.1] So I'm going to have to somehow grasp this, and I'll first do it in language.
+[  443.5] And it's the following idea.
+[  445.9] It's that if you take this orange line, which is called a secant line, and you think of the point Q as getting closer and closer to P.
+[  460.8] Then the slope of that line will get closer and closer to the slope of the red line.
+[  467.8] And...
+[  469.4] If we draw it close enough.
+[  472.0] Then that's going to be the correct line. So that's really what I did, sort of, in my brain when I drew that first line. And so that's the way I'm going to articulate it first now. So the tangent line.
+[  487.8] Is equal to the limit.
+[  493.0] What's so-called secant lines.
+[  499.1] PQ.
+[  500.9] As...
+[  502.1] Q tends to p. And here we're thinking of p as being fixed.
+[  507.7] And Q is very.
+[  511.6] All right, so that's the...
+[  514.7] Again, this is still a geometric discussion. But now we're going to be able to put symbols and formulas to this computation. And we'll be able to...
+[  525.8] To work out formulas in any example.
+[  534.2] So...
+[  536.2] So let's do that.
+[  538.6] So first of all,
+[  541.2] I'm going to write out these points, p and q, again.
+[  548.1] And cue here.
+[  551.2] And I'm thinking of this line through them.
+[  555.4] That's orange.
+[  557.9] All right.
+[  559.5] And now I want to compute its slope.
+[  563.6] And so this gradually, we'll do this in two steps. And these steps will introduce us to the basic notations which are used throughout calculus, including multivariable calculus across the board. So the first notation that's used
+[  578.0] Is you imagine here's the x-axis underneath, and here's the x0, the location directly below the point P. And we're traveling here a horizontal distance.
+[  591.0] Which is denoted by delta x.
+[  596.1] Delta X, so called.
+[  598.9] And we could also

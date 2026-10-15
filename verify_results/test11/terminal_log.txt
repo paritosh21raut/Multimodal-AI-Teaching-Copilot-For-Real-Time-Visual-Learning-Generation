@@ -1,0 +1,259 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (13.8 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.8 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_1         openai/gpt-oss-120b           140k of 200k tokens IN USE
+        GROQ_API_KEY_2         openai/gpt-oss-120b           190k of 200k tokens ok
+        GROQ_API_KEY_3         openai/gpt-oss-120b           178k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~2.9 h
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 263 lecture minutes
+
+[READY] session 20261013-200757-5bb8
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+20:08:15 INFO    copilot.visuals.service: CLIP ready in 1.4 s (CPU)
+20:08:56 INFO    copilot.notes.library: notes added 'byjus.com' -> d4c62fe624ac8f80 (12 pages, text: True)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (organelles, eukaryotic, digestive, cytoplasm, prokaryotic, mitochondria ...)
+  [    5.6s] Let us learn about reproduction. The process of producing new individuals from their parents is called reproduction. Plant reproduction is the process by which plants produce new individuals for offspring. (1990 ms)
+  [   18.2s] It is an inherent characteristic of all living organisms. To continue, (1158 ms)
+  [   23.3s] or maintain their races by the mechanism of reproduction. (1079 ms)
+20:09:29 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.98) for the interpretation
+  [UNDERSTAND] Reproduction > Definition (new_topic) acts=definition,definition,explanation hint=definition lines=3 via groq_main#1 2093 ms
+               Defined reproduction and plant reproduction and noted it is an inherent trait of all organisms
+20:09:32 INFO    copilot.presentation.engine: planner: new Reproduction > Definition (first content slide)
+20:09:32 INFO    copilot.presentation.engine: slide 'What is plant reproduction?' waits for the min dwell time
+  [SLIDE] add    'What is reproduction?' [definition] v1 (1 items)
+20:09:32 INFO    copilot.presentation.engine: image search 'plant reproduction diagram' (diagram) for 'What is plant reproduction?'
+20:09:32 INFO    copilot.visuals.service: reference figure byjus.com p.1 f1 for 'plant reproduction diagram': label 0.607, clip 0.288 margin +0.054 -> used
+20:09:32 INFO    copilot.visuals.service: reference figure byjus.com p.4 f5 for 'plant reproduction diagram': label 0.569, clip 0.341 margin +0.123 -> used
+20:09:32 INFO    copilot.visuals.service: reference figure byjus.com p.3 f3 for 'plant reproduction diagram': label 0.547, clip 0.314 margin +0.068 -> used
+20:09:33 INFO    copilot.visuals.service: reference figure byjus.com p.2 f2 for 'plant reproduction diagram': label 0.506, clip 0.327 margin +0.090 -> used
+  [IMAGE] 'plant reproduction diagram' -> byjus.com p.1 (0.8 s)
+20:09:33 INFO    copilot.presentation.engine: image 'plant reproduction diagram' on 'What is plant reproduction?': byjus.com p.1
+  [   30.2s] The modes of reproduction in plants. (918 ms)
+20:09:37 INFO    copilot.understanding.service: [REF] byjus.com p.1 (0.79) for the interpretation
+  [SLIDE] add    'What is plant reproduction?' [definition] v1 (3 items)
+20:09:38 INFO    copilot.notes.service: notes follow: slide 'What is plant reproduction?' -> page 1
+  [UNDERSTAND] Reproduction > Modes of Reproduction (sibling_concept) acts=transition hint=none lines=1 via groq_main#1 1990 ms
+               Introduced the modes of reproduction in plants.
+20:09:39 INFO    copilot.presentation.engine: planner: noop Reproduction > Modes of Reproduction (nothing to display)
+  [   36.5s] The mode of reproduction determines (816 ms)
+  [SLIDE] update 'What is plant reproduction?' [definition] v2 (4 items)
+  [   43.7s] The mode of reproduction determines the genetic constituents of a plant and helps to understand its characteristics. If we look at a plant, we notice that it consists of different parts, the part of the plant. (2247 ms)
+20:09:58 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.79) for the interpretation
+  [UNDERSTAND] Reproduction > Modes of Reproduction (same_concept) acts=definition hint=definition lines=2 via groq_main#1 4036 ms
+               Defined mode of reproduction as determining genetic constitution and plant characteristics
+  [HEARD] 'the part of the plant' -> 'vegetative and reproductive parts' corrected on the slide (0.5)
+20:10:02 INFO    copilot.presentation.engine: planner: continue Reproduction > Modes of Reproduction (new facet)
+20:10:02 INFO    copilot.presentation.engine: concern a17d78066e6c (transcription, applied=True): 0 element(s); slide shows 'vegetative and reproductive parts'
+  [SLIDE] update 'What is plant reproduction?' [definition] v3 (3 items)
+  [SLIDE] add    'Reproduction' [definition] v1 (1 items)
+20:10:02 INFO    copilot.presentation.engine: image search 'plant parts diagram' (diagram) for 'Reproduction'
+20:10:09 INFO    copilot.visuals.finder: image search 'plant parts diagram' (diagram, labels preferred): 8 candidate(s), 3 accepted (3 labelled), 7.01 s {'search_s': 2.36, 'download_s': 1.46, 'clip_s': 1.11, 'full_s': 2.02, 'total_s': 7.01}
+  [IMAGE] 'plant parts diagram' -> File:Plant cell structure-en.svg (7.0 s)
+20:10:10 INFO    copilot.presentation.engine: image 'plant parts diagram' on 'Reproduction': File:Plant cell structure-en.svg
+  [SLIDE] update 'Reproduction' [definition] v2 (2 items)
+  [   55.0s] A flower may either possess male part or female part or both. (1036 ms)
+  [   69.2s] Male and female part. (638 ms)
+20:10:23 INFO    copilot.understanding.service: [REF] byjus.com p.2 (0.78) for the interpretation
+  [UNDERSTAND] Reproduction > Modes of Reproduction (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 2052 ms
+               Flowers can have male, female, or both reproductive parts
+20:10:25 INFO    copilot.presentation.engine: planner: update Reproduction > Modes of Reproduction (same frame)
+20:10:25 INFO    copilot.presentation.engine: no image for 'Reproduction': has an image
+  [SLIDE] update 'Reproduction' [definition] v3 (5 items)
+  [   71.4s] Flowers perform reproductive functions in plants. When the male part or the female part are brought in contact, the gametes fuse to produce fruits that bear seeds, the seeds inside the fruits. (2043 ms)
+  [SLIDE] update 'Reproduction' [definition] v4 (6 items)
+20:10:29 INFO    copilot.presentation.engine: slide 38489d39ba11 overflows on the display; further content continues on a new slide
+  [   84.1s] Gametes to produce new plant. However, the vegetative part of the plant are also capable of giving rise to new plant. (1698 ms)
+  [SLIDE] update 'Reproduction' [definition] v5 (6 items)
+20:10:34 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.88) for the interpretation
+20:10:36 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Modes of Reproduction' -> same_concept
+  [UNDERSTAND] Reproduction > Modes of Reproduction (same_concept) acts=explanation hint=none lines=2 via groq_main#1 2385 ms
+               Added that flowers enable gamete fusion producing seed‑bearing fruits and that vegetative parts can also reproduce plants
+20:10:36 INFO    copilot.presentation.engine: planner: update Reproduction > Modes of Reproduction (same frame)
+  [SLIDE] update 'Reproduction' [definition] v6 (5 items)
+  [SLIDE] update 'Reproduction' [definition] v7 (5 items)
+  [SLIDE] add    'Reproduction' [key_points] v1 (3 items)
+20:10:36 INFO    copilot.presentation.engine: image search 'flower diagram' (photo) for 'Reproduction'
+  [   92.9s] The modes of reproduction can be majorly classified into two parts, How sexual and sexual. (1254 ms)
+  [SLIDE] update 'Reproduction' [key_points] v2 (4 items)
+20:10:41 INFO    copilot.visuals.finder: image search 'flower diagram': 1 slow download(s) dropped
+20:10:42 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.80) for the interpretation
+  [  100.4s] Asexual reproduction. (618 ms)
+  [SLIDE] update 'Reproduction' [key_points] v3 (4 items)
+20:10:44 INFO    copilot.visuals.finder: image search 'flower diagram': 1 slow download(s) dropped
+  [UNDERSTAND] Reproduction > Modes of Reproduction (elaboration) acts=classification hint=none lines=1 via groq_main#1 2287 ms
+               Modes of reproduction are classified into sexual and asexual types
+  [HEARD] 'How sexual and sexual' -> 'Sexual and asexual' corrected on the slide (0.5)
+20:10:44 INFO    copilot.presentation.engine: planner: update Reproduction > Modes of Reproduction (same frame)
+20:10:44 INFO    copilot.presentation.engine: concern 8bd412fa5d87 (transcription, applied=True): 0 element(s); slide shows 'Sexual and asexual'
+20:10:44 INFO    copilot.presentation.engine: no image for 'Reproduction': search running
+  [SLIDE] update 'Reproduction' [key_points] v4 (5 items)
+20:10:44 INFO    copilot.visuals.finder: image search 'flower diagram' (photo, labels preferred): 7 candidate(s), 2 accepted (1 labelled), 7.82 s {'search_s': 2.52, 'download_s': 1.98, 'clip_s': 1.08, 'full_s': 2.13, 'total_s': 7.82}
+  [IMAGE] 'flower diagram' -> File:Diagram of a Flower.svg (7.8 s)
+20:10:44 INFO    copilot.presentation.engine: no room for an image on 'Reproduction'
+  [  103.2s] In this mode the reproduction (728 ms)
+  [SLIDE] update 'Reproduction' [key_points] v5 (5 items)
+20:11:02 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.84) for the interpretation
+  [  105.6s] Plants can give rise to new plants without the involvement of male and female reproductive parts. In this mode, plants do not produce fruits or seeds. Asexual reproduction is (2216 ms)
+  [SLIDE] update 'Reproduction' [key_points] v6 (5 items)
+  [UNDERSTAND] Reproduction > Modes of Reproduction (elaboration) acts=definition hint=definition lines=2 via groq_main#1 2420 ms
+               Defined asexual reproduction as occurring without gamete fusion
+20:11:04 INFO    copilot.presentation.engine: planner: update Reproduction > Modes of Reproduction (same frame)
+  [SLIDE] add    'Reproduction' [definition] v1 (1 items)
+  [  118.4s] Plants can occur in variety of forms. (2853 ms)
+20:11:04 INFO    copilot.presentation.engine: image search 'asexual reproduction plant' (diagram) for 'Reproduction'
+  [SLIDE] update 'Reproduction' [key_points] v7 (4 items)
+  [SLIDE] update 'Reproduction' [definition] v2 (1 items)
+20:11:05 INFO    copilot.visuals.service: reference figure byjus.com p.3 f3 for 'asexual reproduction plant': label 0.664, clip 0.356 margin +0.108 -> used
+20:11:05 INFO    copilot.visuals.service: reference figure byjus.com p.4 f5 for 'asexual reproduction plant': label 0.625, clip 0.352 margin +0.131 -> used
+20:11:05 INFO    copilot.visuals.service: reference figure byjus.com p.1 f1 for 'asexual reproduction plant': label 0.602, clip 0.284 margin +0.048 -> used
+20:11:05 INFO    copilot.visuals.service: reference figure byjus.com p.3 f4 for 'asexual reproduction plant': label 0.547, clip 0.338 margin +0.107 -> used
+  [IMAGE] 'asexual reproduction plant' -> byjus.com p.3 (0.8 s)
+20:11:05 INFO    copilot.presentation.engine: image 'asexual reproduction plant' on 'Reproduction': byjus.com p.3
+  [SLIDE] update 'Reproduction' [definition] v3 (2 items)
+20:11:15 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.90) for the interpretation
+  [  120.7s] Vegetative propagation. New plant can be developed from the portion of the main plant's body. It can be produced both manually as well as artificially. (1813 ms)
+  [UNDERSTAND] Reproduction > Modes of Reproduction (elaboration) acts=definition hint=definition lines=2 via groq_main#1 6357 ms
+               Asexual reproduction occurs without male/female parts and yields no fruits or seeds.
+20:11:21 INFO    copilot.presentation.engine: revised S1: Asexual reproduction: Plants give rise to new plants without male or female reproductive parts and do not produce fruits or seeds
+20:11:21 INFO    copilot.presentation.engine: planner: update Reproduction > Modes of Reproduction (same frame)
+20:11:21 INFO    copilot.presentation.engine: no image for 'Reproduction': has an image
+  [SLIDE] update 'Reproduction' [definition] v4 (2 items)
+  [SLIDE] update 'Reproduction' [definition] v5 (2 items)
+  [  133.7s] Propagation (759 ms)
+  [  145.2s] But in this mode of Asexual reproduction, new plants grow from (1174 ms)
+  [  150.8s] Outgrown or (585 ms)
+20:11:34 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.87) for the interpretation
+  [  152.5s] Build in the plant body. (745 ms)
+20:11:37 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Modes of Reproduction' -> same_concept
+  [UNDERSTAND] Reproduction > Modes of Reproduction (same_concept) acts=definition hint=definition lines=4 via groq_main#1 2870 ms
+               Introduced vegetative propagation as a type of asexual reproduction in plants
+20:11:37 INFO    copilot.presentation.engine: planner: update Reproduction > Modes of Reproduction (same frame)
+20:11:37 INFO    copilot.presentation.engine: no image for 'Reproduction': two concepts side by side
+  [SLIDE] update 'Reproduction' [concept] v6 (2 items)
+  [  154.8s] Fragmentation New plants are developed from fragments. (903 ms)
+  [  158.5s] in the parent (608 ms)
+  [  159.9s] Slut. (540 ms)
+20:11:43 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.80) for the interpretation
+20:11:46 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Modes of Reproduction' -> same_concept
+  [UNDERSTAND] Reproduction > Modes of Reproduction (same_concept) acts=definition hint=definition lines=4 via groq_main#1 3178 ms
+               Added fragmentation as a vegetative propagation method where plants grow from fragments
+  [HEARD] 'Slut' -> '' corrected on the slide (0.5)
+20:11:46 INFO    copilot.presentation.engine: planner: update Reproduction > Modes of Reproduction (same frame)
+20:11:46 INFO    copilot.presentation.engine: no image for 'Reproduction': two concepts side by side
+  [SLIDE] update 'Reproduction' [concept] v7 (3 items)
+  [  161.7s] Apomics is the type of sexual reproduction in which seeds are formed and embryo is developed without the fusion of male or female gametes. (1714 ms)
+  [  171.3s] Citrus (965 ms)
+20:11:54 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.75) for the interpretation
+20:11:57 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Modes of Reproduction' -> same_concept
+  [UNDERSTAND] Reproduction > Modes of Reproduction (same_concept) acts=definition hint=definition lines=1 via groq_main#1 2737 ms
+               Defined apomixis as asexual seed-based reproduction without fertilization.
+  [CONCERN] (factual) Apomics is the type of sexual reproduction in which seeds are formed and embryo is developed without the fusion of male or female gametes. -> Apomixis is the type of asexual reproduction in which seeds are formed and the embryo develops without fusion of male and female gametes. (0.95, slide shows the correction)
+  [HEARD] 'Apomics' -> 'Apomixis' corrected on the slide (0.5)
+20:11:57 INFO    copilot.presentation.engine: planner: update Reproduction > Modes of Reproduction (same frame)
+20:11:57 INFO    copilot.presentation.engine: concern bce041c1c244 (factual, applied=True): 1 element(s); slide shows 'asexual'
+20:11:57 INFO    copilot.presentation.engine: concern 39bc1b67f198 (transcription, applied=True): 1 element(s); slide shows 'Apomixis'
+20:11:57 INFO    copilot.presentation.engine: no image for 'Reproduction': two concepts side by side
+  [SLIDE] update 'Reproduction' [concept] v8 (4 items)
+  [  172.7s] This method commonly uses this method of asexual reproduction by using seeds. (1095 ms)
+20:12:02 INFO    copilot.presentation.engine: concern bce041c1c244 dismissed: slide shows 'asexual'
+20:12:03 INFO    copilot.understanding.service: [REF] byjus.com p.3 (0.78) for the interpretation
+  [UNDERSTAND] Reproduction > Modes of Reproduction (elaboration) acts=explanation hint=example lines=2 via groq_main#2 1770 ms
+               Added citrus trees as an example of apomixis using seeds
+20:12:04 INFO    copilot.presentation.engine: planner: update Reproduction > Modes of Reproduction (same frame)
+20:12:04 INFO    copilot.presentation.engine: no image for 'Reproduction': two concepts side by side
+  [SLIDE] update 'Reproduction' [concept] v9 (5 items)
+  [  185.6s] Sexual reproduction. This mode of reproduction involves the production of new plants through embryos produced by the fusion of male and female gametes. In sexual reproduction, a fusion of male and female gametes (2145 ms)
+  [  198.0s] Gametes produces fruits that contain seeds. The seeds will give rise to new plants. A flower is the reproductive part of the plant which can either be unisexual or sexual. (2316 ms)
+20:12:34 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.93) for the interpretation
+  [UNDERSTAND] Reproduction > Sexual Reproduction (sibling_concept) acts=definition,definition hint=definition lines=2 via groq_main#1 1790 ms
+               Introduced sexual reproduction and defined the flower as the plant's reproductive organ.
+20:12:36 INFO    copilot.presentation.engine: planner: continue Reproduction > Sexual Reproduction (new facet)
+20:12:36 INFO    copilot.presentation.engine: no image for 'Reproduction': two concepts side by side
+  [SLIDE] add    'Reproduction' [concept] v1 (2 items)
+  [  211.2s] Stamen is the mal-prolative part and the pistil is the familial-prolative part of the flower. (1616 ms)
+  [  217.5s] Sexual reproduction is divided into three categories. (898 ms)
+  [  221.2s] Polynesian. (934 ms)
+20:12:44 INFO    copilot.understanding.service: [REF] byjus.com p.4 (0.71) for the interpretation
+  [UNDERSTAND] Reproduction > Sexual Reproduction (elaboration) acts=definition,definition,explanation hint=definition lines=2 via groq_main#1 2718 ms
+               Defined stamen and pistil as male and female flower parts and noted three categories of sexual reproduction.
+  [HEARD] 'mal-prolative, familial-prolative' -> 'male reproductive, female reproductive' corrected on the slide (0.5)
+20:12:47 INFO    copilot.presentation.engine: planner: update Reproduction > Sexual Reproduction (same frame)
+20:12:47 INFO    copilot.presentation.engine: concern 85377675595a (transcription, applied=True): 0 element(s); slide shows 'male reproductive, female reproductive'
+20:12:47 INFO    copilot.presentation.engine: no image for 'Reproduction': two concepts side by side
+  [SLIDE] update 'Reproduction' [concept] v2 (5 items)
+  [  223.3s] The pollination process is which the pollen grains are transferred across another to the stigma of some flowers or flowers of different plants. (1617 ms)
+20:12:57 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.71) for the interpretation
+20:12:59 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Sexual Reproduction' -> same_concept
+  [UNDERSTAND] Reproduction > Sexual Reproduction (same_concept) acts=definition hint=definition lines=2 via groq_main#1 2202 ms
+               Defined pollination as the transfer of pollen to the stigma of same or different flowers.
+  [HEARD] 'Polynesian' -> 'Pollination' corrected on the slide (0.5)
+20:12:59 INFO    copilot.presentation.engine: planner: update Reproduction > Sexual Reproduction (same frame)
+20:12:59 INFO    copilot.presentation.engine: concern 70c30d6b1622 (transcription, applied=True): 1 element(s); slide shows 'Pollination'
+  [SLIDE] update 'Reproduction' [concept] v3 (5 items)
+  [SLIDE] add    'Reproduction' [definition] v1 (1 items)
+20:13:00 INFO    copilot.presentation.engine: image search 'pollination process' (diagram) for 'Reproduction'
+20:13:00 INFO    copilot.visuals.service: reference figure byjus.com p.5 f6 for 'pollination process': label 0.753, clip 0.301 margin +0.082 -> used
+  [IMAGE] 'pollination process' -> byjus.com p.5 (0.3 s)
+20:13:00 INFO    copilot.presentation.engine: image 'pollination process' on 'Reproduction': byjus.com p.5
+  [SLIDE] update 'Reproduction' [definition] v2 (2 items)
+  [  233.4s] There are two types of pollination, safe glaua pollination and cross-pollination. (1542 ms)
+  [  239.7s] Zygote formation. (732 ms)
+20:13:05 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.72) for the interpretation
+  [UNDERSTAND] Reproduction > Sexual Reproduction (elaboration) acts=classification hint=hierarchy lines=1 via groq_main#2 2196 ms
+               Introduced the two pollination types: self‑pollination and cross‑pollination.
+  [HEARD] 'safe glaua pollination' -> 'self-pollination' corrected on the slide (0.5)
+20:13:07 INFO    copilot.presentation.engine: planner: update Reproduction > Sexual Reproduction (same frame)
+20:13:07 INFO    copilot.presentation.engine: concern d3e2daca8a32 (transcription, applied=True): 1 element(s); slide shows 'self-pollination'
+20:13:07 INFO    copilot.presentation.engine: no image for 'Reproduction': has an image
+  [SLIDE] update 'Reproduction' [definition] v3 (3 items)
+20:13:13 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.75) for the interpretation
+20:13:15 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Sexual Reproduction' -> same_concept
+  [UNDERSTAND] Reproduction > Sexual Reproduction (same_concept) acts=explanation hint=definition lines=1 via groq_main#1 1908 ms
+               Students learned that zygote formation occurs when male and female gametes fuse in the ovary after pollination.
+20:13:15 INFO    copilot.presentation.engine: planner: update Reproduction > Sexual Reproduction (same frame)
+20:13:15 INFO    copilot.presentation.engine: no image for 'Reproduction': has an image
+  [SLIDE] update 'Reproduction' [definition] v4 (4 items)
+  [  241.5s] After the transfer of pollen veins, the male gametes is transferred down through the stalk of the pistil to the ovary where the male gametes is fused with the female gametes to form a zygote. (2841 ms)
+  [  254.4s] Fruit and seed formation. After fertilization, a formed zygote is developed into the embryo. The ovary develops into fruit and ovules into seeds. (2126 ms)
+20:13:28 INFO    copilot.understanding.service: [REF] byjus.com p.5 (0.91) for the interpretation
+  [UNDERSTAND] Reproduction > Fertilization and Fruit Development (sub_concept) acts=process hint=process_flow lines=2 via groq_main#1 5063 ms
+               Described fertilization steps and how the ovary forms fruit and ovules become seeds
+  [HEARD] 'veins' -> 'grains' corrected on the slide (0.5)
+20:13:33 INFO    copilot.presentation.engine: planner: continue Reproduction > Fertilization and Fruit Development (new facet)
+20:13:33 INFO    copilot.presentation.engine: concern 852fc73636ba (transcription, applied=True): 0 element(s); slide shows 'grains'
+20:13:33 INFO    copilot.presentation.engine: no image for 'Fertilization and Fruit Development': process needs the full width
+  [SLIDE] add    'Fertilization and Fruit Development' [process_flow] v1 (5 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261013-200757-5bb8: 36 segments, 496 words, state v76, 366 events logged
+        CommandReceived=40, ConceptSignal=36, ConcernRaised=9, ConcernResolved=1, DeckState=22, ImageChoices=4, ImageReady=5, ImageRequested=5, InterpretRequested=18, InterpretationReady=18, LifecycleChanged=5, SlideContextChanged=17, SlideOverflow=3, SlidePatch=35, StateChanged=76, TranscriptFinal=36, UtteranceClassified=36
+        stt: 36 published, 0 dropped, latency p50=1158 ms p95=2841 ms max=2853 ms
+        understanding: 18 interpretations (18 by LLM, 0 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=2212 avg=2054, latency p50=2385 ms max=6357 ms
+        presentation: 8 slides; planner ops {'new': 1, 'noop': 1, 'continue': 3, 'update': 13}; revisions 1, corrections shown 4, shown as said 0
+        images: {'requests': 5, 'found': 5, 'none': 0, 'reference': 3}; slides with an image 3/8
+          1. [definition] What is reproduction? [part 1]  (v1, ['definition'])
+          2. [definition] What is plant reproduction? [part 2]  (v3, ['definition', 'points', 'image'])
+          3. [definition] Reproduction [part 1]  (v7, ['definition', 'image', 'points'])
+          4. [key_points] Reproduction [part 2]  (v7, ['points', 'hierarchy'])
+          5. [concept] Reproduction [part 3]  (v9, ['definition', 'definition', 'definition', 'definition', 'points'])
+          6. [concept] Reproduction [part 1]  (v3, ['definition', 'definition', 'definition', 'definition', 'points'])
+          7. [definition] Reproduction [part 2]  (v4, ['definition', 'image', 'hierarchy', 'callout'])
+          8. [process_flow] Fertilization and Fruit Development  (v1, ['process'])
+        providers: {'groq_main#1': 16, 'groq_main#2': 2}; triggers: {'words': 5, 'pause': 4, 'max_wait': 5, 'boundary': 4}; outline: ['Reproduction > Definition, Modes of Reproduction, Sexual Reproduction, Fertilization and Fruit Development']; concerns: 9
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261013-200757-5bb8\session.sqlite

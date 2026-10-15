@@ -32,6 +32,10 @@ and how*, while calling the LLM rarely.
    fewer than 6 words (a scrap: "burning", "I am FIPS.") joins the next one (`DiscourseBuffer(min_unit_words,
    whole_sentences)`). Before, every boundary was its own request 8 s apart and lines queued: 11 s median from speech
    to request live (simulated 9.5 s, worst 44 s, 107 requests) → simulated 5.3 s median, worst 18 s, 83 requests.
+   **F-013 S1 (2026-10-16):** a line that announces a topic (`understanding.cues`) cuts the unit even after an
+   unfinished sentence (only a < 3-word scrap joins the new unit), so the end of one topic is not sent with the next
+   (replay of tests 1–30: 7 mixed units → 0). Floor 8 → 4 s, max_wait 12 → 8 s, hold 6 → 4 s, max_words 40 → 32:
+   replayed line wait 6.65 → 4.05 s median, p90 14.8 → 11.5 s, 3.8 → 4.4 calls/min (`tools/v1_eval.py --gate`).
 5. **Interpreter** (LLM, JSON-schema output). Input (bounded, ≈ 1.2k tokens max):
    - header: subject, grade level (given or inferred), lecture title, outline (topic → subtopics, ≤ 150 tokens)
    - current slide summary (title, representation, items, remaining capacity): `LectureState.slide_context`,
@@ -160,5 +164,7 @@ assignment) do not use the study material: nothing there can be checked against 
   judged one by one (a fragment before a sentence on the same line no longer costs it) and a sentence split over
   transcript lines is joined; "X is/are the …" and "… is called X" become definitions; "let's learn about X" moves to
   subtopic X only when the unit's other words mention X ("MATLAB" for "matter" did not); thanks, first-person asides
-  and short off-subject remarks about "it/that" ("It's a waste of time") are not shown.
+  and short off-subject remarks about "it/that" ("It's a waste of time") are not shown. F-013: announcements are read
+  with `understanding.cues` ("The fifth topic is X", "What is X?"), and with no topic yet the first term the unit
+  defines names it (test29, Groq unreachable for a whole lecture: 12 slides titled "Lecture").
 - Prompt budget enforced in code (approximate tokenizer) before sending.

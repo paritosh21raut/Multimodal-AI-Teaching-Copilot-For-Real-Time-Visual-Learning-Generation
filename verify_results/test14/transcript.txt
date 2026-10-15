@@ -1,0 +1,53 @@
+[   83.2] Hello everyone, let us learn about Machine Learning. Machine learning has become a household term in recent years as the concept moved from science fiction to a key driver of how businesses and organizations process information.
+[   95.3] With the pace of data creation continuing to grow exponentially, machine learning tools are pivotal for organizations looking for discovery patterns. These are trends and chart the most profitable path forward.
+[  109.4] How commonplace is machine learning? If you clicked a recommendation of e-commerce website or streaming platform, be notified of potential
+[  120.9] Misuses of credit cards or used transaction software have benefited from machine learning. It's used in finance, healthcare, marketing, retail and many other industries to exact valuable insights from data and automata.
+[  135.9] processes.
+[  137.1] Now, what is Machine Learning? Machine Learning is a subset of Artificial Intelligence that focuses on building systems that learn and improve and other consumes more data. Artificial Intelligence is the broader term that refers to systems or machines that are
+[  152.0] That mimics human intelligence, machine learning.
+[  155.6] The term is machine learning and AI are often discussed together and the term are sometimes used interchangeably but don't mean the same thing.
+[  176.6] In short, all machine learning is AI but not all AI is machine learning. The key takeaways are, machine learning is a subset of AI.
+[  187.1] Off you go.
+[  239.2] Home.
+[  248.8] I don't care. I mean, I thought you were 51. No, it's not happening.
+[  259.6] Eukaryotic, cerebrum.
+[  278.4] Happy Thursday! Kumbh, taiyay! Arre, tu VS Code, var 3, hai chal, aajha naab!
+[  284.4] And, I'm gonna play on GitHub, I don't know how to play on GitHub, I'm gonna play on the main branch, but I'm gonna play on the main branch, so I'm gonna play on the main branch.
+[  293.2] This is the end of the video, thank you for watching, see you in the next video.
+[  306.5] Let us know in the comments section.
+[  311.0] So, let's see how it looks from the beginning.
+[  314.7] Something like that.
+[  323.1] I will not be able to answer the same question. I will not be able to answer the same question.
+[  332.7] Hello.
+[  334.3] This is the chat, you can watch it, and this is the chat, you can watch it, and this is the prom.
+[  378.8] The red carpet was rolled down all 20...
+[  409.8] A great common sample. Power on!
+[  413.8] Traditional clothing. We arrived late last night at Melbourne Airport wearing some cultural attire in the traditional black puffer jacket.
+[  423.8] There's a national costume.
+[  515.0] In this case, the feathers fell to the ground at a slower rate than the bowling ball because of air resistance.
+[  697.5] There are three subcategories of machine learning.
+[  700.4] Supervised learning. Supervised machine learning models are trained with labeled data sets which allow the model to run and grow more accurately over time. For example, an algorithm would be trained with pictures of dogs and other things, all labeled by humans, and the machine would
+[  714.9] and avebe, avebe, where to identify
+[  719.0] Features of dog on its own. Supervised learning is most common type of use today.
+[  724.8] Unsupervised Machine Learning In unsupervised machine learning, a program looks for patterns in unlabeled data. Unsupervised machine learning can find patterns or trends that people aren't explicitly looking for. For example, an unsupervised machine learning program
+[  739.4] Good look.
+[  740.4] Through online sales data and identify different parts or different types of clients making purchases. Reinforcement. Reinforcements machine learning trains machines through trial and error too.
+[  752.9] Take the best action by establishing a reward system. Reinforcement learning can train models to play games or train autonomous vehicles to drive by telling the machine.
+[  763.6] When it made the right decision, which helps us to learn over time what actions it should take.
+[  772.4] Natural language processing Natural language processing is the field of machine learning in which machines learn to understand natural language as spoken and written by humans. Instead of the data and numbers normally used to program computers, this allows
+[  785.8] Machines to recognize language, understand it and respond it as
+[  793.1] Well, as create new text and translate between languages, natural language processing.
+[  798.5] Enables familiar technologies like chatbots and digital assistants like Siri and Alexa. Neural networks are commonly used specific classes of machine learning algorithms. The artificial neural networks are modeled on the brain of human brains.
+[  812.0] in which thousands or millions of forcing nodes are
+[  816.7] Interconnected and organized into layer. In an artificial neural network, cells or nodes are connected with each other processing inputs and producing an output that is sent to other neurons. Labeled data moves through the nodes or cells with
+[  830.6] Each cell performs a different function in a neural network.
+[  835.3] Oh...
+[  837.9] Trained to identify whether a picture contains a cat or not, the different nodes would access the information and arise at an output that indicates
+[  848.6] The picture feature a cat.
+[  870.0] How businesses are using machine learning? Machine learning is the core of some companies' business model, like the case of Netflix's suggestion algorithm or Google search engine. Other companies are engaging deeply with machine learning.
+[  882.8] So it's not their main business positions.
+[  887.3] Other machine learning, others are trying to determine how to use machine learning in the beneficial way. In my opinion, one of the hardest problems in machine learning is figuring out what problem I can solve with machine learning.
+[  900.2] Shulman said there's still a gap in understanding.
+[  917.5] Project detection, machines can analyze
+[  923.0] How someone normally spends or when they normally shop, to identify potentially fraud-length, credit and transaction, log is attempted or spam image, authentic health lines or chat boxes. Many companies are developing
+[  949.2] Come up with appropriate responses. Self-driving cars. Much of the technology behind self-driving car is based on the machine learning, deep learning, particular.

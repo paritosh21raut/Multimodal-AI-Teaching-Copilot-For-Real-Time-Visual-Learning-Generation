@@ -1,0 +1,16 @@
+{
+  "name": "test25",
+  "source": "mic",
+  "note": "speaker B, operating system",
+  "session_id": "20261015-002704-b2ed",
+  "date": "2026-10-15 00:37",
+  "title": "",
+  "minutes": 8.9,
+  "utterances": 69,
+  "slides": 17,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [],
+  "speaker": "speaker B",
+  "subject": "operating system"
+}
