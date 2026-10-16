@@ -17,7 +17,7 @@ from copilot.core.interpretation import (
     Interpretation,
     Representation,
 )
-from copilot.core.memory import titles_match
+from copilot.core.memory import same_title, titles_match
 from copilot.core.state import LectureState
 from copilot.core.textutil import approx_tokens, ends_sentence
 from copilot.llm.router import AllProvidersFailed, LLMRouter
@@ -207,6 +207,29 @@ def parse_interpretation(text: str) -> Interpretation:
         raise InvalidInterpretation(f"schema: {e.errors(include_url=False)[:3]}") from e
 
 
+def _revisit_name(it: Interpretation, state: LectureState) -> str:
+    """F-013 S2 (B4): a new concept labelled with an EARLIER subtopic of the topic while it names another one: the
+    named one is the subtopic (test30: photodiode content came as sibling_concept "Reverse Bias", an outline title
+    from minutes before, with an act about "Photodiode"; the slide said "Reverse Bias")."""
+    topic = state.topic(state.current_topic_id)
+    sub = state.subtopic()
+    if not it.subtopic or topic is None or not titles_match(it.topic, topic.title):
+        return it.subtopic
+    earlier = next((s for s in topic.subtopics if same_title(s.title, it.subtopic)), None)
+    if earlier is None or (sub is not None and earlier.id == sub.id):
+        return it.subtopic
+    for a in it.acts:
+        term = " ".join(a.items.term.split())
+        if a.act in ("transition", "question") or not term or len(term.split()) > 4:
+            continue
+        if not same_title(term, it.subtopic) and not same_title(term, it.topic):
+            log.info("subtopic %r is an earlier outline title; the unit is about %r: subtopic %r", it.subtopic,
+                     term, term)
+            return term
+        return it.subtopic
+    return it.subtopic
+
+
 def _sanitise(it: Interpretation, n_lines: int, min_conf: float, state: LectureState,
               min_transcription_conf: float = 0.3) -> Interpretation:
     """Deterministic post-processing: drop out-of-range line numbers and low-confidence concerns, and make
@@ -220,6 +243,7 @@ def _sanitise(it: Interpretation, n_lines: int, min_conf: float, state: LectureS
             and titles_match(it.subtopic or topic.title, sub.title if sub else topic.title)):
         log.info("relation %s with unchanged subtopic %r -> same_concept", relation, it.subtopic)
         relation = "same_concept"
+    subtopic = _revisit_name(it, state) if relation in ("sibling_concept", "sub_concept") else it.subtopic
     concerns = []
     for c in it.concerns:
         if c.confidence < (min_transcription_conf if c.kind == "transcription" else min_conf):
@@ -235,6 +259,7 @@ def _sanitise(it: Interpretation, n_lines: int, min_conf: float, state: LectureS
         log.info("dropped %d revision(s) with unknown refs", len(it.revisions) - len(revisions))
     return it.model_copy(update={
         "relation": relation,
+        "subtopic": subtopic,
         "acts": [a.model_copy(update={"lines": ok(a.lines)}) for a in it.acts],
         "meta_lines": ok(it.meta_lines),
         "concerns": concerns,

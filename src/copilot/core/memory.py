@@ -29,6 +29,52 @@ def titles_match(a: str, b: str) -> bool:
     return (ka <= kb or kb <= ka) and abs(len(ka) - len(kb)) == 1
 
 
+def is_child_facet(facet: str, of: str) -> bool:
+    """F-013 S2: a qualified kind of a subtopic is its child: "Intellectual Causes" of "Causes", "Sexual Reproduction"
+    of "Reproduction", "Inner Planets" of "Planets". Not "Respiration in Plants" (a facet of respiration) or "Types
+    of Bonds" (the same set named in full): the qualifier comes before the head noun. A parent named with its subject
+    counts by its head: "Political Causes" of "Causes of French Revolution" (live S2 check, 2026-10-16)."""
+    o = f" {of.lower()} "
+    head = o.split(" of ")[0].strip() if " of " in o else of.lower()
+    a, b = facet.lower().split(), head.split()
+    if not b or len(a) <= len(b) or len(a) > len(b) + 2 or " of " in f" {facet.lower()} ":
+        return False
+    fold = lambda w: w[:-1] if len(w) > 3 and w.endswith("s") and not w.endswith("ss") else w  # noqa: E731
+    return [fold(w) for w in a[-len(b):]] == [fold(w) for w in b] and not set(a[:-len(b)]) & {"and", "&", "or", "vs"}
+
+
+def same_title(a: str, b: str) -> bool:
+    """titles_match without its one-extra-word leniency for a narrower kind: "Intellectual Causes" is not "Causes",
+    "Causes of French Revolution" is not "French Revolution" (F-013 S2: a child is not its parent)."""
+    if not titles_match(a, b):
+        return False
+    ka, kb = title_key(a), title_key(b)
+    if ka == kb or not ka or not kb:
+        return True
+    return not (is_child_facet(a, b) or is_child_facet(b, a) or (ka < kb or kb < ka))
+
+
+def short_name(name: str, topic: str) -> str:
+    """A subtopic name without the topic the crumb already shows: "Causes of French Revolution" -> "Causes",
+    "French Revolution Stages" -> "Stages" (unchanged when nothing else would be left)."""
+    t = " ".join(topic.split())
+    s = re.sub(rf"\s+(?:of|in|for|during)\s+(?:the\s+)?{re.escape(t)}$", "", " ".join(name.split()),
+               flags=re.IGNORECASE) if t else name
+    if t and s.lower().startswith(t.lower() + " "):
+        s = s[len(t) + 1:]
+    s = s.strip(" ,:-") or name
+    return s[:1].upper() + s[1:]
+
+
+def same_subject(a: str, b: str, topic: str) -> bool:
+    """same_title, also when one names the topic too ("Causes of French Revolution" / "Causes")."""
+    if same_title(a, b):
+        return True
+    kt = title_key(topic)
+    ka, kb = title_key(a) - kt, title_key(b) - kt
+    return bool(ka) and ka == kb
+
+
 def find_title(nodes: Sequence, title: str) -> Optional[int]:
     """Index of the node whose title matches, preferring an exact (case-insensitive) match."""
     low = title.strip().lower()

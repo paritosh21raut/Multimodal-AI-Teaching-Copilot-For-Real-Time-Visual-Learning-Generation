@@ -36,6 +36,13 @@ and how*, while calling the LLM rarely.
    unfinished sentence (only a < 3-word scrap joins the new unit), so the end of one topic is not sent with the next
    (replay of tests 1–30: 7 mixed units → 0). Floor 8 → 4 s, max_wait 12 → 8 s, hold 6 → 4 s, max_words 40 → 32:
    replayed line wait 6.65 → 4.05 s median, p90 14.8 → 11.5 s, 3.8 → 4.4 calls/min (`tools/v1_eval.py --gate`).
+   **F-013 S2 (2026-10-16):** `cues.section` finds numbered section headings ("1. Social.", "Stage 2 …"). Their
+   cue rule (`announce_rule` on `ConceptSignal`: `section` / `ordinal`) tells the presentation engine that the
+   heading is one of a series. The interpreter's `_revisit_name` handles a sibling/sub_concept that reuses an earlier,
+   non-current outline title while its acts name another term: the subtopic becomes that term (test30: photodiode
+   content came back as "Reverse Bias"). The prompt's `parent` rule (`system_prompt(parent=True)`) is **off**. Its A/B
+   on gpt-oss-120b (test3 + test20, 12 units, 27,988 tokens) was worse: it gave no useful parent (only the topic or
+   the subtopic itself), lost "Intellectual Causes", and invented a subtopic ("Diodes at Atomic Theory").
 5. **Interpreter** (LLM, JSON-schema output). Input (bounded, ≈ 1.2k tokens max):
    - header: subject, grade level (given or inferred), lecture title, outline (topic → subtopics, ≤ 150 tokens)
    - current slide summary (title, representation, items, remaining capacity): `LectureState.slide_context`,

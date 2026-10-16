@@ -17,7 +17,7 @@ Topic and continuity:
 - topic = the main subject (e.g. "Photosynthesis"). subtopic = the concept or facet now being taught: a facet
   ("Definition", "Process", "Importance") or a concept name ("Matter", "Planets"). Two concepts introduced
   together get one subtopic naming both ("Elements and Compounds"); a newly introduced term or concept
-  ("natural satellites") gets its own subtopic.{hierarchy_rule} Reuse the exact outline title while the
+  ("natural satellites") gets its own subtopic.{hierarchy_rule}{parent_rule} Reuse the exact outline title while the
   teacher stays on it. Titles: 1-4 words, Title Case.
 - A line tagged (announces: X) names what the teacher moves to next: use X as the new topic (new_topic) when it is
   not part of the CURRENT topic (e.g. galaxies after the solar system), else as the new subtopic.
@@ -79,7 +79,7 @@ JSON shape:
 "causes": [{"cause": "", "effect": ""}], "examples": [""]}, "added": false}], "revisions": [{"ref": "S1",
 "text": ""}], "representation_hint": "", "meta_lines": [], "concerns": [{"kind": "factual", "claim": "",
 "issue": "", "suggested_correction": "", "wrong": "", "right": "", "confidence": 0.9, "lines": [1]}],
-"level_estimate": "", "subject_estimate": "", "summary_delta": ""{visual_shape}}}
+"level_estimate": "", "subject_estimate": "", "summary_delta": ""{parent_shape}{visual_shape}}}
 Omit empty fields; revisions and concerns are [] when there are none."""
 
 # F-007b: the image hint. Kept apart so the A/B tool can rebuild the previous prompt exactly (tools/prompt_ab.py).
@@ -112,10 +112,24 @@ NAMED_RULE = """
   continue keeps that heading as its label."""
 
 
-def system_prompt(visual: bool = True, hierarchy: bool = True, named: bool = True) -> str:
-    return _SYSTEM_TEMPLATE.replace("{visual_rule}", VISUAL_RULE if visual else "").replace(
-        "{visual_shape}}}", (VISUAL_SHAPE if visual else "") + "}").replace(
-        "{hierarchy_rule}", HIERARCHY_RULE if hierarchy else "").replace("{named_rule}", NAMED_RULE if named else "")
+# F-013 S2 (B2): the outline as a tree. The model names the outline subtopic a narrower subtopic belongs to; code
+# places it (state: topic > subtopic > child; slides: crumb Topic - Parent, Lecture Structure nests it).
+# OFF: the A/B on gpt-oss-120b (2026-10-16, test3 + test20, 12 units, 27,988 tokens) was worse - no useful parent (the
+# topic or the subtopic itself), "Intellectual Causes" became "Causes", and an invented "Diodes at Atomic Theory"
+# subtopic in a chemistry lecture. The tree is built by code instead (cues, registry, is_child_facet).
+PARENT_RULE = """ parent = the OUTLINE
+  subtopic the subtopic is a member or narrower part of ("Venus" in "Planets", "Social Causes" in "Causes",
+  "Elements" in "Pure Substances"); "" when it is directly under the topic."""
+PARENT_SHAPE = ', "parent": ""'
+
+
+def system_prompt(visual: bool = True, hierarchy: bool = True, named: bool = True, parent: bool = False) -> str:
+    return (_SYSTEM_TEMPLATE.replace("{visual_rule}", VISUAL_RULE if visual else "")
+            .replace("{visual_shape}}}", (VISUAL_SHAPE if visual else "") + "}")
+            .replace("{hierarchy_rule}", HIERARCHY_RULE if hierarchy else "")
+            .replace("{named_rule}", NAMED_RULE if named else "")
+            .replace("{parent_rule}", PARENT_RULE if parent else "")
+            .replace("{parent_shape}", PARENT_SHAPE if parent else ""))
 
 
 # The visual rule is live since the old-vs-new A/B on gpt-oss-120b passed (F-007b step 4, 2026-10-06: 11/11 valid,
@@ -181,12 +195,18 @@ def _clip_tokens(text: str, max_tokens: int) -> str:
     return " ".join(words)
 
 
+def _children(node) -> str:
+    """A subtopic's children (F-013 S2), "" when it has none: "Causes (Social, Economic)"."""
+    kids = sorted(node.subtopics, key=lambda s: s.first_seen)
+    return f" ({', '.join(_clip(c.title, 30) for c in kids)})" if kids else ""
+
+
 def outline_lines(state: LectureState) -> list[str]:
     """Current topic first, then the others by recency. One line per topic: title: subtopic; subtopic."""
     topics = sorted(state.outline, key=lambda t: (t.id != state.current_topic_id, -t.last_seen))
     out = []
     for t in topics:
-        subs = "; ".join(_clip(s.title, 40) for s in sorted(t.subtopics, key=lambda s: s.first_seen))
+        subs = "; ".join(_clip(s.title, 40) + _children(s) for s in sorted(t.subtopics, key=lambda s: s.first_seen))
         out.append(f"- {_clip(t.title, 50)}" + (f": {subs}" if subs else ""))
     return out
 
@@ -216,8 +236,9 @@ def build_prompt(state: LectureState, lines: Sequence[BufferedLine], *, dynamic_
     header = "LECTURE: " + ("; ".join(fields) or "(no setup given)")
     topic = state.topic(state.current_topic_id)
     sub = state.subtopic()
+    parent = state.subtopic_parent()
     current = (f"CURRENT: topic={_clip(topic.title)}; subtopic={_clip(sub.title) if sub else '-'}"
-               if topic else "CURRENT: (none yet)")
+               + (f" (in {_clip(parent.title, 40)})" if parent else "") if topic else "CURRENT: (none yet)")
     numbered = "\n".join(
         f"[{i}]{' (maybe-meta)' if l.maybe_meta else ''}{' (question)' if l.question else ''}"
         f"{f' (announces: {a})' if (a := announced_subject(l.text)) else ''} {' '.join(l.text.split())}"

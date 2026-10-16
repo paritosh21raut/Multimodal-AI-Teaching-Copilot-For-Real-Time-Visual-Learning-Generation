@@ -135,6 +135,7 @@ class VisualHint(_Lenient):
 class Interpretation(_Lenient):
     topic: str
     subtopic: str = ""
+    parent: str = ""  # F-013 S2: the OUTLINE subtopic this subtopic is a narrower part / member of ("" = the topic)
     relation: Relation
     acts: list[DiscourseAct] = Field(default_factory=list)
     representation_hint: Representation = "none"
@@ -163,7 +164,7 @@ class Interpretation(_Lenient):
             raise ValueError("topic must not be blank")
         return v.strip()
 
-    @field_validator("subtopic", "summary_delta", "level_estimate", "subject_estimate")
+    @field_validator("subtopic", "parent", "summary_delta", "level_estimate", "subject_estimate")
     @classmethod
     def _strip(cls, v: str) -> str:
         return v.strip()

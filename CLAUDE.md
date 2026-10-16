@@ -66,6 +66,8 @@ Original requirements: `docs/brief/master-prompt.md` (read only when requirement
 PYTHONPATH=paper/build/lib .venv/Scripts/python paper/build/src/build_docx.py <out.docx>   # paper; render.ps1 <docx> <pdf> prints pages
 .venv/Scripts/python tools/v1_eval.py [--out f.json] [--compare verify_results/_eval/v1_baseline.json]   # F-013 metrics from event logs (0 tokens)
 .venv/Scripts/python tools/v1_eval.py --replay | --gate   # F-013: engine replay (cues off/on) / gate replay (call floors), 0 tokens
+.venv/Scripts/python tools/v1_eval.py --structure [names] [--out f.json]   # F-013 S2: boundaries vs annotators, part rate, child slides (0 tokens)
+.venv/Scripts/python tools/screenshot_structure.py   # S2: nested Lecture Structure + child crumb, both themes -> artifacts/display
 .venv/Scripts/python tools/screenshot_cues.py      # announced slide / heard list / interpreted, both themes -> artifacts/display
 .venv/Scripts/python -m pytest                      # fast tests
 .venv/Scripts/python -m pytest -m slow              # + GPU/model tests

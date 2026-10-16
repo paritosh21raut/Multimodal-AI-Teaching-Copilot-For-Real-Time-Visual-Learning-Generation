@@ -28,7 +28,8 @@ _NUM = {"two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight
 _COUNT = r"(?:two|three|four|five|six|seven|eight|[2-8]|several|many|different|various)"
 _ORDINALS = ("first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|twelfth|thirteenth|"
              "fourteenth|fifteenth|next|last|\\d+(?:st|nd|rd|th)")
-_GROUP = r"(?:types?|kinds?|categories|category|classes|groups?|forms?|parts?|branches|modes|stages|layers|sectors)"
+_GROUP = (r"(?:types?|kinds?|sub-?categories|categories|category|sub-?types|classes|groups?|forms?|parts?|branches|"
+          r"modes|stages|layers|sectors)")
 
 # a name must not run into a clause: stop at these words
 _STOP_AT = re.compile(
@@ -56,6 +57,7 @@ _ANNOUNCE = [
     re.compile(rf"^(?:so\s+|now\s+|and\s+)*(?:the\s+)?(?:{_ORDINALS})\s+(?:topic|chapter|unit|section|concept)\s+"
                r"(?:is|will be|we will study is)?\s*(?P<n>[^.?!;:]{2,80})", re.IGNORECASE),
 ]
+_ORDINAL_TOPIC = _ANNOUNCE[2]  # "The 7th topic is Jupiter": one of a numbered series (rule "ordinal", F-013 S2)
 # "What is economics?" / "What are semiconductors?" / "What do you mean by inertia?": short, opens the line
 _WHAT_IS = re.compile(r"^(?:so\s+|now\s+|and\s+)*(?:what is meant by|what do (?:you|we) mean by|what\s+(?:is|are)|"
                       r"define)\s+(?P<n>[^.?!;:,]{2,60})\s*[?.]?$", re.IGNORECASE)
@@ -192,7 +194,7 @@ def detect(text: str) -> LineCues:
         if m:
             topic = tidy_name(m.group("n"))
             if topic:
-                cues.append(Cue("topic", topic, rule="announce"))
+                cues.append(Cue("topic", topic, rule="ordinal" if rx is _ORDINAL_TOPIC else "announce"))
                 break
     if not topic:
         first = re.split(r"(?<=\?)\s+", t, maxsplit=1)[0]  # "What is Economics? Economics is the study of ..."
@@ -220,7 +222,7 @@ def detect(text: str) -> LineCues:
             cues.append(Cue("list", head, items, count, rule))
             break
     else:
-        m = None if re.search(r"(?:classified|divided|categori[sz]ed)", body, re.IGNORECASE) else _CAN_BE.match(body)
+        m = None if re.search(r"\b(?:classified|divided|categori[sz]ed)\b", body, re.IGNORECASE) else _CAN_BE.match(body)
         if m:
             items = _items(m.group("items"))
             head = tidy_name(m.group("head"))
@@ -261,6 +263,42 @@ def live_definition(text: str) -> tuple[str, str]:
     return term[:1].upper() + term[1:], body[:1].upper() + body[1:]
 
 
+# ---- an enumerated section heading (F-013 S2): "1. Social. The social conditions ...", "Stage 2, ...",
+# "3. Mixed Economy" -------------------------------------------------------------------------------------------
+_SECTION_NUM = re.compile(r"^(?:so\s+|and\s+|now\s+)?(?P<num>\d{1,2})\s*[.)]\s+(?P<n>[^.?!;:,]{2,60}?)\s*"
+                          r"(?:[.?!;:,]\s*(?P<rest>.*))?$", re.IGNORECASE)
+_SECTION_GROUP = re.compile(r"^(?:so\s+|and\s+|now\s+)?(?P<g>stage|step|phase|level|layer|law|rule|principle|part|"
+                            r"type|unit|chapter|section)\s+(?P<num>\d{1,2}|one|two|three|four|five|six|seven|eight|"
+                            r"nine|ten)\b\s*[.,:)\-]?\s*(?P<rest>.*)$", re.IGNORECASE)
+SECTION_MAX_WORDS = 4
+
+
+def section(text: str) -> str:
+    """The heading a line opens with when it is one of a numbered series: a short noun phrase after "N." that is the
+    whole line or is taken up by the next sentence ("2. Opportunity Cost. Opportunity cost is ..."), or "Stage N" /
+    "Step N" (titled "Stage N"). A numbered step said as a sentence ("1. The user enters a domain name.") is no
+    heading: its words are not repeated after it. "" when the line opens no section."""
+    t = _plain(text)
+    m = _SECTION_GROUP.match(t)
+    if m and len((m.group("rest") or "").split()) >= 3:  # "Type 2." alone is a fragment (test10), not a section
+        num = m.group("num")
+        num = str(_NUM.get(num.lower(), num)) if not num.isdigit() else num
+        return f"{m.group('g').capitalize()} {num}"
+    m = _SECTION_NUM.match(t)
+    if not m:
+        return ""
+    name = tidy_name(m.group("n"))
+    if not name or len(name.split()) > SECTION_MAX_WORDS:
+        return ""
+    rest = (m.group("rest") or "").strip()
+    if rest:
+        words = {w[:5] for w in re.findall(r"[a-z]{4,}", name.lower())}
+        head = {w[:5] for w in re.findall(r"[a-z]{4,}", " ".join(rest.split()[:12]).lower())}
+        if not words or not words & head:
+            return ""
+    return name
+
+
 _SENTENCE_END = re.compile(r"(?<=[.?!])\s+(?=[A-Za-z0-9])")
 
 
@@ -274,6 +312,9 @@ def detect_all(text: str, latest_first: bool = False) -> LineCues:
     end); an item said on its own is taken from the last sentence that has one."""
     found: dict[str, Cue] = {}
     item = ""
+    head = section(text)  # the whole line: sentence splitting would cut "1." from its heading
+    if head:
+        found["topic"] = Cue("topic", head, rule="section")
     parts = sentences(text) or [text]
     for s in (reversed(parts) if latest_first else parts):
         lc = detect(s)

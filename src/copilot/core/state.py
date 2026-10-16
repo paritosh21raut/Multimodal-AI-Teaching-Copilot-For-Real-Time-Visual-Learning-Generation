@@ -23,12 +23,13 @@ from copilot.core.events import (
     TranscriptFinal,
     new_id,
 )
-from copilot.core.memory import evict_oldest, find_title, rebuild_summary, title_key
+from copilot.core.memory import evict_oldest, find_title, rebuild_summary, same_title, title_key
 
 log = logging.getLogger(__name__)
 
 MAX_TOPICS = 20
 MAX_SUBTOPICS = 8
+MAX_CHILDREN = 6  # per subtopic (F-013 S2: outline of at most 3 levels, topic > subtopic > child)
 SUMMARY_MAX_TOKENS = 120
 MAX_CONCERNS = 50
 NODE_SUMMARY_MAX_WORDS = 25
@@ -98,8 +99,26 @@ class LectureState(BaseModel):
         return next((t for t in self.outline if t.id == topic_id), None)
 
     def subtopic(self) -> Optional[TopicNode]:
+        """The current subtopic, also when it is a child of another subtopic (F-013 S2)."""
+        hit = self._sub_and_parent()
+        return hit[0] if hit else None
+
+    def subtopic_parent(self) -> Optional[TopicNode]:
+        """The subtopic the current subtopic is a child of, or None."""
+        hit = self._sub_and_parent()
+        return hit[1] if hit else None
+
+    def _sub_and_parent(self) -> Optional[tuple[TopicNode, Optional[TopicNode]]]:
         t = self.topic(self.current_topic_id)
-        return next((s for s in t.subtopics if s.id == self.current_subtopic_id), None) if t else None
+        if t is None or self.current_subtopic_id is None:
+            return None
+        for s in t.subtopics:
+            if s.id == self.current_subtopic_id:
+                return s, None
+            for c in s.subtopics:
+                if c.id == self.current_subtopic_id:
+                    return c, s
+        return None
 
 
 # Truthful projector: a correction is shown by default when the model is confident enough; otherwise the
@@ -243,7 +262,7 @@ class LectureStateStore:
             sub: Optional[TopicNode] = None
             # A subtopic equal to its topic's title is not a separate node.
             if it.subtopic and title_key(it.subtopic) != title_key(topic.title):
-                sub = self._touch_node(topic.subtopics, it.subtopic, MAX_SUBTOPICS, now)
+                sub = self._touch_subtopic(topic, it.subtopic, it.parent, now)
             if it.summary_delta:
                 node = sub or topic
                 if not node.summary:
@@ -281,6 +300,23 @@ class LectureStateStore:
             self._prune_concerns()
             changes.append("concerns")
         return changes
+
+    def _touch_subtopic(self, topic: TopicNode, title: str, parent: str, now: float) -> TopicNode:
+        """A subtopic node, under the subtopic the model names as its parent when that is in the outline (F-013 S2);
+        a child named again without its parent stays where it is."""
+        if parent and not same_title(parent, title) and not same_title(parent, topic.title):
+            idx = find_title(topic.subtopics, parent)
+            if idx is not None and not same_title(topic.subtopics[idx].title, title):
+                node = topic.subtopics[idx]
+                node.last_seen = now
+                return self._touch_node(node.subtopics, title, MAX_CHILDREN, now)
+        if find_title(topic.subtopics, title) is None:
+            for s in topic.subtopics:
+                idx = find_title(s.subtopics, title)
+                if idx is not None and same_title(s.subtopics[idx].title, title):
+                    s.last_seen = s.subtopics[idx].last_seen = now
+                    return s.subtopics[idx]
+        return self._touch_node(topic.subtopics, title, MAX_SUBTOPICS, now)
 
     @staticmethod
     def _touch_node(nodes: list[TopicNode], title: str, cap: int, now: float) -> TopicNode:

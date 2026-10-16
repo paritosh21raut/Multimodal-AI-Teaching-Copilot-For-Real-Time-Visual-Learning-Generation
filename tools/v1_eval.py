@@ -3,6 +3,8 @@
     .venv/Scripts/python tools/v1_eval.py [test1 test2 ... | <session id> ...] [--out f.json] [--compare base.json]
     .venv/Scripts/python tools/v1_eval.py --replay [test1 ...]   # engine only: recorded answers, cues off vs on
     .venv/Scripts/python tools/v1_eval.py --gate [test1 ...]     # gate only: recorded speech timing, call floors
+    .venv/Scripts/python tools/v1_eval.py --structure [names] [--out f.json]   # S2: replay (cues on), boundary P/R
+                                                                 # vs the annotators, part rate, reused titles
 
 With no names: every verify_results/test<N>. A name is a validation test folder (verify_results/<name>) or a session id
 under data/sessions. Everything comes from the session's event log (the slides as they ended, the transcript, the
@@ -37,7 +39,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from copilot.core.memory import titles_match  # noqa: E402
+from copilot.core.memory import same_title, titles_match  # noqa: E402
 from copilot.understanding.cues import detect_all as detect  # noqa: E402
 
 ANNOUNCE_WINDOW_S = 60.0
@@ -220,7 +222,7 @@ def total(rows: list[dict]) -> dict:
 
 
 # ---------------------------------------------------------------------------------------------- engine replay
-async def replay(name: str, cues: bool) -> dict:
+async def replay(name: str, cues: bool, setup=None) -> dict:
     """The recorded transcript cues + interpretations, on their recorded clock, through the current presentation
     engine (0 tokens). Measures what the engine alone changes; the gate / LLM timing stays as recorded."""
     from copilot.core.bus import EventBus
@@ -237,7 +239,7 @@ async def replay(name: str, cues: bool) -> dict:
 
     ev = events(name)
     bus = EventBus()
-    store = LectureStateStore(bus, "eval", LectureSetup())
+    store = LectureStateStore(bus, "eval", setup or LectureSetup())
     store.attach()
     deck = Deck(bus)
     deck.attach()
@@ -248,8 +250,15 @@ async def replay(name: str, cues: bool) -> dict:
     patches: list[tuple[int, float, str, dict]] = []
     t0 = next(t for _, t, ty, _ in ev if ty in ("ConceptSignal", "InterpretationReady"))
 
+    utt = {p["segment"]["id"]: i for i, p in enumerate((p for _, _, ty, p in ev if ty == "TranscriptFinal"), 1)}
+    opened: dict[str, int] = {}  # slide id -> utterance number of the line that opened it (boundary scoring)
+    cause: list[str] = []         # segments of the event being published (a cue line, or a unit's lines)
+
     async def tap(e):
         patches.append((0, t0 + clock.t, "SlidePatch", {"spec": e.spec if isinstance(e.spec, dict) or e.spec is None else e.spec.model_dump()}))
+        lines = sorted(utt[x] for x in cause if x in utt)
+        if e.op == "add" and lines:
+            opened.setdefault(e.slide_id, lines[0])
     bus.subscribe("eval", tap, [SlidePatch])
     text = {p["segment"]["id"]: p["segment"]["text"] for _, _, ty, p in ev if ty == "TranscriptFinal"}
 
@@ -266,10 +275,12 @@ async def replay(name: str, cues: bool) -> dict:
         clock.t = t - t0
         await release()
         p = {k: v for k, v in p.items() if k not in ("id", "ts", "session_id")}
+        cause[:] = [p["segment_id"]] if ty == "ConceptSignal" else p.get("segment_ids", [])
         if ty == "ConceptSignal":
             c = detect(text.get(p["segment_id"], ""))
             topic, compare, lst = c.of("topic"), c.of("compare"), c.of("list")
             p.update(announce=(compare.name if compare else "") or (topic.name if topic else ""),
+                     announce_rule="compare" if compare else topic.rule if topic else "",
                      compare=list(compare.items) if compare else [], list_head=lst.name if lst else "",
                      list_items=list(lst.items) if lst else [], list_count=lst.count if lst else 0, item=c.item)
             p["boundary"] = p.get("boundary") or bool(p["announce"])
@@ -277,6 +288,10 @@ async def replay(name: str, cues: bool) -> dict:
         else:
             await bus.publish(InterpretationReady.model_validate(p))
         await bus.drain()
+        lines = sorted(utt[x] for x in cause if x in utt)
+        for sp in eng._pending:  # a slide waiting for the dwell time was opened by this event's lines
+            if lines:
+                opened.setdefault(sp.id, lines[0])
     for _ in range(90):
         clock.t += 1.0
         await release()
@@ -290,7 +305,7 @@ async def replay(name: str, cues: bool) -> dict:
     return dict(name=name, slides=len(slides), part_rate=round(parts / max(1, len(slides)), 3),
                 announcements=len(ann), announce_median=pct(shown, 50), announce_p90=pct(shown, 90),
                 announce_missed=sum(1 for x in ann if x is None), cue_slides=eng.stats.ops.get("cue_slide", 0),
-                _ann=ann)
+                _ann=ann, _deck=slides, _opened=opened, _outline=store.snapshot().outline)
 
 
 def report_replay(names: list[str]) -> None:
@@ -313,6 +328,67 @@ def report_replay(names: list[str]) -> None:
         sl = sum(r["slides"] for r in rows)
         print(f"{'cues on ' if k else 'cues off'}: slides {sl}, announcements {len(ann)}, title shown median "
               f"{pct(shown, 50)} s, p90 {pct(shown, 90)} s, never {sum(1 for x in ann if x is None)}")
+
+
+# ---------------------------------------------------------------------------------------------- structure (S2)
+def structure_row(name: str, r: dict, anns: dict | None) -> dict:
+    """Boundaries of a replayed deck scored like eval_sheets.score (overflow parts are not boundaries), plus the
+    structure measures of F-013 S2: part rate, a title reused for a later, separate run of slides, outline depth."""
+    from eval_sheets import ANNOTATORS, boundary_prf
+
+    bounds, prev, runs = set(), None, []
+    for s in r["_deck"]:
+        if s.origin != "lecture" or s.layout == "title":
+            continue
+        overflow = (s.part or 1) > 1 and prev is not None and s.facet == prev.facet
+        if not overflow and s.id in r["_opened"]:
+            bounds.add(r["_opened"][s.id])
+        if prev is None or s.title != prev.title:
+            runs.append(s.title)
+        prev = s
+    reused = sum(1 for i, t in enumerate(runs) if any(same_title(t, u) for u in runs[:i]))
+    children = sum(1 for s in r["_deck"] if s.parent)  # slides placed under a parent subtopic
+    row = dict(name=name, slides=r["slides"], part_rate=r["part_rate"], bounds=len(bounds), reused_titles=reused,
+               child_slides=children)
+    if anns:
+        vals = np.array([boundary_prf(anns[w], sorted(bounds)) for w in ANNOTATORS if anns.get(w)])
+        row.update(P=round(float(vals[:, 0].mean()), 3), R=round(float(vals[:, 1].mean()), 3),
+                   F1=round(float(vals[:, 2].mean()), 3))
+    return row
+
+
+def report_structure(names: list[str], out: Path | None = None) -> None:
+    """S2 structure check on recorded answers (0 tokens): the annotated lectures (eval_sheets.ANNOTATE) by default."""
+    import asyncio
+    import logging
+
+    sys.path.insert(0, str(ROOT / "tools"))
+    from eval_sheets import ANNOTATE, ANNOTATORS, EVAL, read_workbook
+
+    logging.basicConfig(level=logging.ERROR)
+    rows = []
+    for n in names or ANNOTATE:
+        if not (session_dir(n) / "session").exists() and not (session_dir(n) / "session.sqlite").exists():
+            continue
+        a = {w: (read_workbook(EVAL / "annotation" / w / f"{n}_{w}.xlsx") or {}).get("bounds") for w in ANNOTATORS}
+        rows.append(structure_row(n, asyncio.run(replay(n, True)), a if any(a.values()) else None))
+    cols = ["slides", "bounds", "P", "R", "F1", "part_rate", "reused_titles", "child_slides"]
+    print("name    " + " ".join(f"{c[:9]:>9}" for c in cols))
+    for r in rows:
+        print(f"{r['name'][:7]:7s} " + " ".join(f"{str(r.get(c, '')):>9}" for c in cols))
+    scored = [r for r in rows if "P" in r]
+    tot = dict(lectures=len(rows), scored=len(scored),
+               P=round(float(np.mean([r["P"] for r in scored])), 3) if scored else None,
+               R=round(float(np.mean([r["R"] for r in scored])), 3) if scored else None,
+               F1=round(float(np.mean([r["F1"] for r in scored])), 3) if scored else None,
+               slides=sum(r["slides"] for r in rows),
+               part_rate=round(sum(r["part_rate"] * r["slides"] for r in rows) / max(1, sum(r["slides"] for r in rows)), 3),
+               reused_titles=sum(r["reused_titles"] for r in rows),
+               child_slides=sum(r["child_slides"] for r in rows))
+    print("total:", tot)
+    if out is not None:
+        out.write_text(json.dumps(dict(total=tot, lectures=rows), indent=1), encoding="utf-8")
+        print(f"-> {out}")
 
 
 # ---------------------------------------------------------------------------------------------- gate replay
@@ -407,6 +483,14 @@ def main(argv: list[str]) -> None:
         argv.remove("--gate")
         report_gate(argv or sorted((p.name for p in (ROOT / "verify_results").glob("test*") if p.is_dir()),
                                    key=lambda n: int(re.sub(r"\D", "", n) or 0)))
+        return
+    if "--structure" in argv:
+        argv.remove("--structure")
+        if "--out" in argv:
+            i = argv.index("--out")
+            out = Path(argv[i + 1])
+            del argv[i:i + 2]
+        report_structure(argv, out)
         return
     if "--replay" in argv:
         argv.remove("--replay")

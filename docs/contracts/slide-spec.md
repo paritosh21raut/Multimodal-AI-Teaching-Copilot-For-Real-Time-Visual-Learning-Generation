@@ -6,6 +6,7 @@ Source of truth: `src/copilot/presentation/spec.py` (created in M2). The display
 SlideSpec
   id, version, topic_id, subtopic_id?, facet?        # facet e.g. "Process", "Factors"
   title, subtitle?, continuation_of?                 # continuity link to the previous slide of the same concept
+  parent?                                            # F-013 S2: the subtopic this facet is a child of (crumb Topic — Parent)
   part?                                              # 1, 2, 3 … when a frame spans slides (badge I / II / III)
   layout: concept | definition | key_points | process_flow | comparison | timeline |
           hierarchy | cause_effect | formula | example | application | narrative | facts | groups | members | title

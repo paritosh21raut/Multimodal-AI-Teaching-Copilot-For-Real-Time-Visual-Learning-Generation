@@ -117,6 +117,7 @@ class LiveCue(Event):
     """F-013 S1b: structure heard in a partial transcript (understanding.cues), for the instant display only."""
     utterance: int
     announce: str = ""
+    announce_rule: str = ""
     compare: list[str] = Field(default_factory=list)
     list_head: str = ""
     list_items: list[str] = Field(default_factory=list)
@@ -190,6 +191,7 @@ class ConceptSignal(Event):
     boundary: bool = False      # strong cue or shift above threshold at utterance start
     # F-013 spoken structure cues (understanding.cues), for the instant display; "" / [] = none
     announce: str = ""          # announced topic / subtopic name ("A vs B" for a comparison)
+    announce_rule: str = ""     # how it was announced (cues.Cue.rule): "section" / "ordinal" = one of a numbered series
     compare: list[str] = Field(default_factory=list)      # members of an announced comparison
     list_head: str = ""         # "X" of "X is classified into ..."
     list_items: list[str] = Field(default_factory=list)   # members heard in this line

@@ -10,6 +10,7 @@ the teacher said; the teacher can switch either way from the control view.
 from __future__ import annotations
 
 import asyncio
+import difflib
 import json
 import logging
 import re
@@ -42,12 +43,13 @@ from copilot.presentation.composer import (
     BODY_BUDGET_PX, TERM_SUFFIX, add_point, body_height, clear_cue_list, clear_provisional, continue_numbering,
     describe, edit_text, set_cue_list, set_live_definition, clear_block, LIVE_DEF_PREFIX,
     element_texts, fits,
-    fits_unshrunk, frame_slide, image_of, is_about, is_duplicate, is_small, member_of, merge, rejoin, remove_elements,
+    fits_unshrunk, frame_slide, image_of, is_about, is_duplicate, is_set_label, is_small, member_of, merge, rejoin,
+    remove_elements, can_parent,
     revise_item, set_provisional, split_to_fit, substitute, teacher_items, title_slide, with_image, without_image,
 )
 from copilot.presentation.content import Piece, clean, pieces_and_chain
 from copilot.presentation.deck import Deck
-from copilot.core.memory import titles_match
+from copilot.core.memory import is_child_facet, same_subject, same_title, short_name, title_key, titles_match
 from copilot.presentation.planner import Decision, Frame, Signal, Working, decide
 from copilot.presentation.spec import ImageBlock, SlideSpec
 from copilot.visuals.policy import FrameVisual, blocked, names_a_thing, norm_query, sibling_hint
@@ -66,6 +68,7 @@ IMAGE_RETRY_S = 60.0  # lecture seconds before a failed image search (network, t
 # so far is 0.33 (stomata diagram / photosynthesis process slide). Only clearly unrelated images are stopped.
 IMAGE_MIN_RELEVANCE = 0.25
 MAX_EDIT_CHARS = 300  # one edited / added element (F-008)
+MAX_CHILDREN = 60     # registered members of announced sets (F-013 S2)
 
 
 @dataclass
@@ -74,7 +77,8 @@ class PresentationSettings:
     part_dwell_s: float = 6.0   # the next part of the same frame (the slide is full): a short wait is enough
     provisional: bool = True
     provisional_ttl_s: float = 20.0
-    cues: bool = True            # F-013: an announced topic / a named list shows at once, before the interpretation
+    cues: bool = True \
+            # F-013: an announced topic / a named list shows at once, before the interpretation
     cue_ttl_s: float = 30.0      # an announced slide nothing confirmed (no content) is taken down after this
     cue_list_ttl_s: float = 40.0
     live_def_ttl_s: float = 20.0  # S1b: a definition being said, not interpreted after this, is taken down
@@ -105,8 +109,10 @@ class Correction:
     """Where a concern's words appear on the slides, and which version is shown."""
     concern_id: str
     targets: list[tuple[str, str]]  # (slide id, element id)
-    wrong: str                      # as the teacher said it
-    right: str                      # the correction
+    wrong: str \
+            # as the teacher said it
+    right: str \
+            # the correction
     showing_right: bool = True
 
 
@@ -128,9 +134,18 @@ class CueSlide:
     previous: Optional[str]   # the working slide before it (restored if the announcement comes to nothing)
     expires: float
     adopted: bool = False     # an interpretation of the announcement (or later lines) reached it
-    utterance: int = 0        # S1b: the utterance that announced it (the title grows while it is said)
+    utterance: int = 0 \
+            # S1b: the utterance that announced it (the title grows while it is said)
     start: float = -1.0       # lecture time the announcing sentence started (-1 = unknown)
-    mark: int = 0             # final lines received when it opened (order fallback without times)
+    mark: int = 0 \
+            # final lines received when it opened (order fallback without times)
+    rule: str = "" \
+            # cues rule: "section" / "ordinal" = one of a numbered series (F-013 S2)
+    parent: str = "" \
+            # the subtopic it is a member of ("" = none known)
+
+
+SERIES_RULES = ("section", "ordinal")  # a numbered series: its name stays the title (no misheard topic name)
 
 
 @dataclass
@@ -234,6 +249,10 @@ class PresentationEngine:
         self._seg_n = 0
         self._hold_screen = False  # an earlier unit is placed while an announced slide is on screen
         self._cue_keep = ""  # the announced name, kept as the title of the slide that holds its content
+        self._early: set[int] = set()  # lines of the unit being placed said before the announcement (F-013 S2)
+        # F-013 S2: members the teacher announced or the lecture classified, by name -> (topic, the subtopic they are
+        # members of); a member's slide is that subtopic's child (crumb Topic — Set, Lecture Structure nests it)
+        self._children: OrderedDict[str, tuple[str, str]] = OrderedDict()
         self._boundary_seg: Optional[str] = None  # a concept boundary not yet interpreted: the slide may change
         self._live_id: Optional[str] = None
         self._live_since = 0.0
@@ -503,7 +522,7 @@ class PresentationEngine:
                 return
             sub = state.subtopic()
             frame = Frame(topic.title, sub.title if sub else topic.title)
-            spec = frame_slide(frame.topic, frame.facet, continuation_of=self._working_id)
+            spec = frame_slide(frame.topic, frame.facet, continuation_of=self._working_id, parent=frame.parent)
         else:
             frame = meta.frame
             spec = await self._next_part(prev, frame)
@@ -516,7 +535,7 @@ class PresentationEngine:
         if prev.part is None:
             numbered = prev.model_copy(update={"part": 1})
             await self._commit(numbered)
-        nxt = frame_slide(frame.topic, frame.facet, continuation_of=prev.id)
+        nxt = frame_slide(frame.topic, frame.facet, continuation_of=prev.id, parent=frame.parent)
         return nxt.model_copy(update={"title": prev.title, "part": part + 1})
 
     # ---- fast path ----------------------------------------------------------------------------
@@ -616,17 +635,26 @@ class PresentationEngine:
         interpretation of that unit fills, renames or (when nothing comes of it) removes it. `ev` is the final line's
         ConceptSignal or, while the teacher is still speaking, a LiveCue (S1b: the title grows as it is said)."""
         name = ev.announce
+        rule = getattr(ev, "announce_rule", "")
         seg = getattr(ev, "segment_id", "")
         if not self.deck.following:
             return  # the teacher is looking at another slide: nothing jumps
         cue = self._cue
-        if cue is not None and not cue.adopted:
+        if cue is not None:  # adopted by a unit with nothing to show ("Let us discuss the causes.") is empty too
             spec = self._spec(cue.slide_id)
             if spec is not None and teacher_items(spec) == 0:  # a second announcement before any content
                 same_line = bool(ev.utterance) and cue.utterance == ev.utterance  # heard further: the newest wins
+                if not same_line and rule in SERIES_RULES and cue.rule not in SERIES_RULES \
+                        and not titles_match(spec.title, name):
+                    # "Now let us discuss the causes." then "1. Social. ...": the first section of what was announced
+                    cue.parent = short_name(spec.title, self._meta[spec.id].frame.topic)
                 if spec.title != name and (same_line or not titles_match(spec.title, name)):
-                    await self._commit(spec.model_copy(update={"title": name}))
-                    self._meta[spec.id].frame = Frame(self._meta[spec.id].frame.topic, name)
+                    frame = Frame(self._meta[spec.id].frame.topic, name, parent=cue.parent)
+                    fresh = frame_slide(frame.topic, frame.facet, parent=frame.parent)
+                    await self._commit(spec.model_copy(update={"title": name, "facet": fresh.facet,
+                                                               "parent": fresh.parent}))
+                    self._meta[spec.id].frame = frame
+                cue.rule = rule
                 cue.segment_id = seg or (cue.segment_id if cue.utterance == ev.utterance else "")
                 cue.name, cue.expires, cue.utterance = name, self.now() + self.s.cue_ttl_s, ev.utterance
                 if not same_line:  # a newer announcement: what belongs to the slide starts from it
@@ -634,9 +662,9 @@ class PresentationEngine:
                 log.info("cue: announced slide renamed %r", name)
                 return
         meta = self._meta.get(self._working_id or "")
-        if meta is not None and not meta.is_title and (titles_match(name, meta.frame.facet)
-                                                      or titles_match(name, meta.frame.topic)):
-            return  # the slide on screen already is about it
+        if meta is not None and not meta.is_title and (same_title(name, meta.frame.facet)
+                                                      or same_title(name, meta.frame.topic)):
+            return  # the slide on screen already is about it ("Causes of X" is not X: F-013 S2)
         while self._pending:  # the teacher has moved on: waiting slides go into the deck behind the new one
             await self.deck.add(self._pending.pop(0), activate=False)
             self.stats.slides += 1
@@ -646,12 +674,13 @@ class PresentationEngine:
             topic = self.store.snapshot().setup.expected_topic or name
         if self._cue is not None:
             await self._drop_cue(keep_working=True)
-        spec = frame_slide(topic, name).model_copy(update={"pending": True})
+        parent = self._announced_parent(name, topic, rule, meta)
+        spec = frame_slide(topic, name, parent=parent).model_copy(update={"pending": True})
         if titles_match(topic, name):
             spec = spec.model_copy(update={"title": name})
-        await self._open(spec, SlideMeta(Frame(topic, name)), exempt=True)
+        await self._open(spec, SlideMeta(Frame(topic, name, parent=parent)), exempt=True)
         self._cue = CueSlide(spec.id, seg, name, self._working_id, self.now() + self.s.cue_ttl_s,
-                             utterance=ev.utterance, start=ev.start, mark=self._mark(ev))
+                             utterance=ev.utterance, start=ev.start, mark=self._mark(ev), rule=rule, parent=parent)
         self.stats.ops["cue_slide"] += 1
         log.info("cue: %r shown at once (pending)", name)
 
@@ -685,12 +714,29 @@ class PresentationEngine:
         else:
             return
         self._cue_list = cl
+        lm = self._meta.get(live.id)
+        if lm is not None and cl.items:
+            facet = cl.head if cl.head and not same_title(cl.head, live.title) \
+                    and not same_title(cl.head, lm.frame.topic) else lm.frame.facet
+            self._register(lm.frame.topic, facet, cl.items)
         if len(cl.items) < 1:
             return  # "three types of X": nothing to show until the first one is named
         new = set_cue_list(live, cl.head, cl.items)
         if new is not None:
             await self._commit(new)
             log.info("cue: list %r %s", cl.head, cl.items)
+
+    def _announced_parent(self, name: str, topic: str, rule: str, meta: Optional[SlideMeta]) -> str:
+        """F-013 S2: where an announced slide sits — a member the teacher announced earlier ("three types: ..."), or
+        the next of a numbered series whose previous member is on screen ("The 7th topic is Jupiter" after Mars,
+        under Planets)."""
+        reg = self._registered(name, topic)
+        if reg is not None:
+            return reg
+        if rule in SERIES_RULES and meta is not None and not meta.is_title and meta.frame.parent \
+                and titles_match(meta.frame.topic, topic):
+            return meta.frame.parent
+        return ""
 
     def _mark(self, ev) -> int:
         """Arrival-order mark of a cue: its own final line, or the next final line for a cue heard live."""
@@ -704,6 +750,35 @@ class PresentationEngine:
             return any(t >= start - CUE_TIME_SLACK_S for t in times)
         return any(self._seg_order.get(s, -1) >= mark for s in segments)
 
+    def _lines_before(self, segments: list[str], start: float, mark: int) -> set[int]:
+        """Line numbers (1-based) of a unit said before a cue's sentence (same linkage as _covers)."""
+        out = set()
+        for n, sid in enumerate(segments, start=1):
+            t = self._seg_start.get(sid, -1.0)
+            if start >= 0 and t >= 0:
+                if t < start - CUE_TIME_SLACK_S:
+                    out.add(n)
+            elif self._seg_order.get(sid, mark) < mark:
+                out.add(n)
+        return out
+
+    async def _place_early(self, pieces: list[Piece]) -> list[Piece]:
+        """F-013 S2: a unit that holds the end of the previous subject and the announcement of the next one (the gate
+        could not cut it, e.g. one long line): what was said before the announcement stays on the previous slide."""
+        early, self._early = self._early, set()
+        cue = self._cue
+        prev = self._spec(cue.previous) if cue is not None else None
+        meta = self._meta.get(prev.id) if prev is not None else None
+        if not early or prev is None or meta is None or meta.is_title:
+            return pieces
+        before = [p for p in pieces if p.lines and set(p.lines) <= early]
+        if not before:
+            return pieces
+        log.info("cue: %d piece(s) said before %r stay on %r", len(before), cue.name, prev.title)
+        self.stats.ops["early"] += 1
+        await self._place(prev, False, meta.frame, before, adopt=False)
+        return [p for p in pieces if not any(p is b for b in before)]
+
     async def _settle_cues(self, ev: InterpretationReady) -> None:
         """Before planning: does this unit belong to the announced slide (it holds the announcement or later lines)?
         Its provisional list goes; the interpretation's own content replaces it."""
@@ -715,12 +790,18 @@ class PresentationEngine:
             # a unit just before the announcement that is already about it belongs there too (test28: two
             # "Transpiration" slides)
             about = titles_match(frame.facet, cue.name) or titles_match(frame.topic, cue.name)
+            named = mentions(ev.interpretation, cue.name)
             prev = self._meta.get(cue.previous or "")
-            if later and not about and prev is not None and not prev.is_title and prev.frame.same(frame):
-                # the unit also holds the announcement, but the model says it is still the previous subject (the
-                # end of transpiration + "The third topic is condensation"): it stays on the previous slide
+            if later and not about and not named and prev is not None and not prev.is_title \
+                    and prev.frame.same(frame):
+                # the unit also holds the announcement, but the model says it is still the previous subject and its
+                # content never names the announced one (the end of transpiration + "The third topic is
+                # condensation"): it stays on the previous slide. Content that names it ("Venus ..." while the model
+                # still says "Planets", test21) goes to the announced slide (F-013 S2)
                 later = False
-            self._cue_keep = cue.name if (later or about) and mentions(ev.interpretation, cue.name) else ""
+            self._cue_keep = cue.name if (later or about) and (named or cue.rule in SERIES_RULES) else ""
+            if later and not about:
+                self._early = self._lines_before(ev.segment_ids, cue.start, cue.mark)
             if later or about:
                 if not cue.adopted and self._spec(cue.slide_id) is not None:
                     cue.adopted = True
@@ -765,8 +846,9 @@ class PresentationEngine:
         if new is not spec and new != spec:
             await self._commit(new)
 
-    async def _confirm_cue(self) -> None:
-        """After placing an adopted unit: the announced slide is a normal slide once it holds content."""
+    async def _confirm_cue(self, it=None) -> None:
+        """After placing an adopted unit: the announced slide is a normal slide once it holds content. F-013 S2: when
+        the model names a set for it ("Stages" for the announced "Stage 3"), the set is its parent."""
         cue = self._cue
         if cue is None or not cue.adopted:
             return
@@ -774,7 +856,14 @@ class PresentationEngine:
         if spec is None:
             self._cue = None
         elif teacher_items(spec) > 0:
-            if spec.pending:
+            meta = self._meta.get(spec.id)
+            if it is not None and meta is not None and not meta.frame.parent and it.subtopic \
+                    and is_set_label(it.subtopic) and titles_match(it.topic, meta.frame.topic) \
+                    and not same_subject(it.subtopic, meta.frame.facet, it.topic) and not same_title(it.subtopic, it.topic):
+                meta.frame = Frame(meta.frame.topic, meta.frame.facet, parent=it.subtopic)
+                spec = spec.model_copy(update={"parent": frame_slide(meta.frame.topic, meta.frame.facet,
+                                                                     parent=it.subtopic).parent})
+            if spec.pending or spec != self._spec(cue.slide_id):
                 await self._commit(spec.model_copy(update={"pending": False}))
             self._cue = None
             log.info("cue: %r confirmed as %r", cue.name, spec.title)
@@ -836,6 +925,8 @@ class PresentationEngine:
         removed: set[tuple[str, str]] = set()
         nav: Optional[str] = None
         try:
+            if self._early:
+                pieces = await self._place_early(pieces)
             nav = self._navigated_back_to(Frame.of(it))
             if nav is not None:  # the teacher went back to the slide this content belongs to: update it there
                 meta = self._meta[nav]
@@ -847,6 +938,7 @@ class PresentationEngine:
                 working = self._working()
                 d = decide(working, it, signals, self._candidate, has_pieces=bool(pieces),
                            shift_threshold=self.s.shift_threshold)
+                d = self._with_parent(self._next_member(d, working, pieces), working)
                 self._candidate = d.candidate
                 self.stats.ops[d.op] += 1
                 log.info("planner: %s %s > %s (%s)", d.op, d.frame.topic, d.frame.facet, d.reason)
@@ -874,12 +966,15 @@ class PresentationEngine:
         line_of = {sid: n for n, sid in enumerate(ev.segment_ids, start=1)}
         await self._track_corrections([c for c in snap.concerns if c.request_id == ev.request_id], line_of,
                                       [(p, ks) for p, ks in placements if not any(p is m for m in moved)], revised)
+        wm = self._meta.get(self._working_id or "")
+        if wm is not None and not wm.is_title:
+            self._register_sets(it, wm.frame)
         if it.visual is not None:  # remembered per frame: a new topic's first unit may still wait on the old slide
             self._fv(Frame.of(it)).hint = it.visual
         if nav is None and self._working_id and (placements or it.visual is not None):
             await self._consider_image(self._working_id)
         self._hold_screen = False
-        await self._confirm_cue()
+        await self._confirm_cue(it)
 
     async def _take_back(self, t: Tentative) -> tuple[list[Piece], set[tuple[str, str]]]:
         """Remove a confirmed topic's early items from the slides they were shown on; the caller places them on the
@@ -1008,6 +1103,11 @@ class PresentationEngine:
         if d.op == "new" and self._open_cue_slide() == self._working_id and working is not None \
                 and not working.has_content:
             d = Decision("retitle", frame, d.candidate, d.reason + "; on the announced slide")
+        elif d.op == "new" and working is not None and not working.is_title and self._titled_by(frame.topic):
+            # F-013 S2: the announced slide already carries the confirmed topic's name (test23: "Integral Calculus"
+            # was filed under Differential Calculus until two interpretations agreed): it becomes that topic's
+            # slide instead of a second "Integral Calculus" right after it
+            d = Decision("retitle", frame, d.candidate, d.reason + "; the slide on screen is titled by it")
         # a narrower concept with a name of its own (the female reproductive system) is no supporting content: it
         # gets its own slide like its siblings (live test 2026-10-06: female stayed on the definition, male did not)
         own = relation == "sub_concept" and names_a_thing(frame.facet)
@@ -1021,23 +1121,54 @@ class PresentationEngine:
             return await self._place(spec, False, frame, pieces)
         if d.op in ("new", "continue"):
             cont = self._working_id if d.op == "continue" else None
-            spec = frame_slide(frame.topic, frame.facet, continuation_of=cont)
+            spec = frame_slide(frame.topic, frame.facet, continuation_of=cont, parent=frame.parent)
             return await self._place(spec, True, frame, pieces, exempt=working is None or working.is_title)
         if d.op == "retitle":
             spec = self._spec(self._working_id)
             assert spec is not None
-            fresh = frame_slide(frame.topic, frame.facet)
+            fresh = frame_slide(frame.topic, frame.facet, parent=frame.parent)
             title = spec.title if spec.id in self._teacher_titles else fresh.title  # the teacher's title stays
             if spec.id == self._open_cue_slide() and self._cue_keep and spec.id not in self._teacher_titles:
-                # the teacher named it ("The third topic is Mercury") and the content is about it: the model's
-                # broader label ("Planets") is the frame, the announced name stays the title (test21)
+                # the teacher named it ("The third topic is Mercury") and the content is about it: the announced
+                # name stays the title (test21). F-013 S2: when the model's label is a set ("Planets"), the announced
+                # name is one of its members: its own facet, the set is its parent (the next member, "Venus", is a
+                # sibling, not a part of the Mercury slide)
                 title = self._cue_keep
-            spec = spec.model_copy(update={"title": title, "subtitle": fresh.subtitle, "facet": fresh.facet})
+                cue = self._cue
+                assert cue is not None
+                # (a generic facet, "Introduction", is never a parent; "Important Components" is the same subtopic
+                # as the announced "Important components of a satellite", not its parent)
+                # (test23: "Statics" - Statistics misheard - announced a new topic whose first unit the model labelled
+                # "Measures of Central Tendency": the name is the topic, not a member of that set)
+                names_topic = same_title(title, frame.topic) or difflib.SequenceMatcher(
+                    None, title.lower(), frame.topic.lower()).ratio() >= 0.8
+                if names_topic and not same_title(title, frame.topic):
+                    title = frame.topic  # the model's spelling of the misheard name ("Fourier Seize": Fourier Series)
+                model_set = is_set_label(frame.facet) and not same_subject(title, frame.facet, frame.topic) \
+                    and not names_topic and working is not None and working.frame.same_topic(frame)
+                if model_set:  # the model's own set label for this unit ("Planets") is the newest judgement
+                    frame = Frame(frame.topic, title, parent=frame.facet)
+                elif cue.parent and not same_subject(title, cue.parent, frame.topic):
+                    frame = Frame(frame.topic, title, parent=cue.parent)  # the member of a set announced earlier
+                elif cue.rule in SERIES_RULES and not names_topic:
+                    # one of a numbered series: a subtopic of its own, never a part (when it names the model's topic,
+                    # "The third topic is Integral Calculus", the model's frame is already its own)
+                    frame = Frame(frame.topic, title)
+                fresh = frame_slide(frame.topic, frame.facet, parent=frame.parent)
+            spec = spec.model_copy(update={"title": title, "subtitle": fresh.subtitle, "facet": fresh.facet,
+                                           "parent": fresh.parent})
             self._meta[spec.id].frame = frame
             return await self._place(spec, False, frame, pieces)
         spec = self._spec(self._working_id)
         assert spec is not None
         return await self._place(spec, False, self._meta[spec.id].frame, pieces)
+
+    def _titled_by(self, topic: str) -> bool:
+        """The working slide is titled by `topic` while filed under another topic (its frame was not yet confirmed)."""
+        spec = self._spec(self._working_id)
+        meta = self._meta.get(self._working_id or "")
+        return spec is not None and meta is not None and same_title(spec.title, topic) \
+            and not titles_match(meta.frame.topic, topic)
 
     ABSORB_KINDS = ("tree", "groups", "facts", "points", "example")
     ABSORB_MAX_FILL = 0.45
@@ -1101,16 +1232,23 @@ class PresentationEngine:
                 # own slide, titled by it, under the same crumb (Topic — Types); the set continues afterwards
                 member = member_of(cur, left) if not cur_member else None
                 nxt_member = cur_member or (member.term if member is not None else "")
-                nxt = frame_slide(frame.topic, frame.facet, continuation_of=cur.id)
-                nxt = nxt.model_copy(update={"title": member.term if member is not None else cur.title})
+                # F-013 S2: what overflows belongs to the facet the model moved to while the content stayed on a
+                # sparse definition slide (absorb): a slide titled by that facet, not "part N" of the definition
+                subject = self._new_subject(cur, frame) if member is None and not cur_member else None
+                nxt_frame = subject or frame
+                nxt = frame_slide(nxt_frame.topic, nxt_frame.facet, continuation_of=cur.id, parent=nxt_frame.parent)
+                if member is not None:
+                    nxt = nxt.model_copy(update={"title": member.term})
+                elif subject is None:
+                    nxt = nxt.model_copy(update={"title": cur.title})
                 nxt, rest = merge(nxt, left)
-                nxt = continue_numbering(cur, nxt)
+                nxt = continue_numbering(cur, nxt) if subject is None else nxt
                 if not nxt.blocks or rest == left:
                     log.error("piece does not fit an empty slide; dropped: %s", left.all_text()[:3])
                     break
                 # a member's slides are not parts of the set; the set's parts are numbered once the next has content
-                part = None if nxt_member else self._last_part(frame, cur) + 1
-                if cur.part is None and not nxt_member:
+                part = None if nxt_member or subject is not None else self._last_part(frame, cur) + 1
+                if cur.part is None and part is not None:
                     cur = cur.model_copy(update={"part": 1})
                 await self._finish(cur, cur_new, frame, exempt, adopt, cur_member)
                 finished.append(cur)
@@ -1118,6 +1256,9 @@ class PresentationEngine:
                 if member is not None:
                     log.info("member %r explained in depth: its own slide under %s > %s", member.term, frame.topic,
                              frame.facet)
+                if subject is not None:
+                    log.info("%r continues on its own slide, not as a next part of %r", subject.facet, cur.title)
+                    self.stats.ops["facet_slide"] += 1
                 cur, cur_new, cur_member = nxt.model_copy(update={"part": part}), True, nxt_member
                 left = rest
             if self._placements is not None:
@@ -1126,11 +1267,82 @@ class PresentationEngine:
         await self._finish(cur, cur_new, frame, exempt, adopt, cur_member)
         return cur.id
 
+    def _new_subject(self, cur: SlideSpec, frame: Frame) -> Optional[Frame]:
+        """The frame for overflowing content when the slide was titled by another facet (F-013 S2): a sparse
+        definition slide took the next facet's content (absorb) and then filled up — the rest opens a slide titled by
+        that facet, not a "part II" of the definition's title (test21: "What is Solar System?" II held "Formation and
+        Structure"). A newly defined term alone is not enough: the replay of the 18 annotated lectures showed most are
+        supporting terms ("Bolus", "SSID", "Downlink"), so naming subtopics stays the interpretation's job."""
+        if cur.facet and frame.facet and not titles_match(cur.facet, frame.facet) \
+                and not same_title(frame.facet, frame.topic):
+            return frame
+        return None
+
+    # ---- structure (F-013 S2) -----------------------------------------------------------------------
+    def _register(self, topic: str, parent: str, names) -> None:
+        """Members of a set (announced list, classification) under the subtopic that holds the set."""
+        if not parent or same_title(parent, topic) or not can_parent(parent):
+            parent = ""
+        for n in names:
+            key = " ".join(sorted(title_key(n)))
+            if key and len(n.split()) <= 6 and not same_title(n, parent or topic):
+                self._children[key] = (topic, parent)
+                self._children.move_to_end(key)
+        while len(self._children) > MAX_CHILDREN:
+            self._children.popitem(last=False)
+
+    def _registered(self, name: str, topic: str) -> Optional[str]:
+        """The subtopic a name was announced as a member of (None: not announced; "" = directly under the topic)."""
+        hit = self._children.get(" ".join(sorted(title_key(name))))
+        if hit is None or not titles_match(hit[0], topic):
+            return None
+        return hit[1]
+
+    def _register_sets(self, it, frame: Frame) -> None:
+        """The kinds a classification names ("Types of reproduction": sexual, asexual) become expected children of
+        the subtopic it was taught under."""
+        for a in it.acts:
+            if a.act != "classification":
+                continue
+            names = [x for x in a.items.points if len(x.split()) <= 4] + [g.label for g in a.items.groups]
+            if names:
+                self._register(frame.topic, frame.facet, names)
+
+    def _next_member(self, d: Decision, working: Optional[Working], pieces: list[Piece]) -> Decision:
+        """The teacher leaves a member's slide ("Venus") for content the model files under the set ("Planets") that
+        starts by defining another thing: the next member of the set ("Earth is the third planet ...", whose
+        announcement was not heard), not a slide titled by the set."""
+        if d.op != "continue" or working is None or not working.frame.parent or not working.frame.within(d.frame):
+            return d
+        first = pieces[0] if pieces else None
+        if first is None or first.kind != "definition":
+            return d
+        term = clean(first.term)
+        if not term or len(term.split()) > 4 or same_title(term, working.frame.parent) \
+                or same_title(term, working.frame.facet) or same_title(term, d.frame.topic):
+            return d
+        return Decision("continue", Frame(d.frame.topic, term, parent=working.frame.parent), None,
+                        d.reason + f"; the next member {term!r}")
+
+    def _with_parent(self, d: Decision, working: Optional[Working]) -> Decision:
+        """A new facet's place in the outline: an announced member of a set, or a sibling of the member on screen
+        ("Political Causes" after "Social Causes" under "Causes")."""
+        f = d.frame
+        if d.op not in ("new", "continue", "retitle") or f.parent or same_title(f.facet, f.topic):
+            return d
+        parent = self._registered(f.facet, f.topic)
+        if parent is None and working is not None and working.frame.parent and working.frame.same_topic(f) \
+                and is_child_facet(f.facet, working.frame.parent):
+            parent = working.frame.parent
+        if not parent or same_title(parent, f.facet):
+            return d
+        return Decision(d.op, Frame(f.topic, f.facet, parent=parent), d.candidate, d.reason + f"; under {parent!r}")
+
     async def _set_part(self, frame: Frame, cur: SlideSpec) -> SlideSpec:
         """An empty next part of a frame's set (after a member's own slide): the set's title, the next part number."""
         first = self._first_part(frame, cur)
         await self._number_first_part(frame, cur)
-        nxt = frame_slide(frame.topic, frame.facet, continuation_of=cur.id)
+        nxt = frame_slide(frame.topic, frame.facet, continuation_of=cur.id, parent=frame.parent)
         return nxt.model_copy(update={"title": first.title if first is not None else nxt.title,
                                       "part": self._last_part(frame, cur) + 1})
 
@@ -1171,7 +1383,8 @@ class PresentationEngine:
     def _last_part(self, frame: Frame, cur: SlideSpec) -> int:
         """Highest part number in the frame's current run (a navigated-back part I must not create a second II)."""
         parts = [s.part or 1 for s in self._run(frame, cur) if not self._meta[s.id].member]  # a member's own slide
-        return max(parts + [cur.part or 1])                                                  # is no part of the set
+        return max(parts + [cur.part or 1]) \
+                # is no part of the set
 
     async def _finish(self, spec: SlideSpec, is_new: bool, frame: Frame, exempt: bool, adopt: bool = True,
                       member: str = "") -> None:
@@ -1300,7 +1513,7 @@ class PresentationEngine:
         if head.part is None:
             head = head.model_copy(update={"part": 1})
             await self._commit(head)
-        tail = frame_slide(meta.frame.topic, meta.frame.facet, continuation_of=head.id)
+        tail = frame_slide(meta.frame.topic, meta.frame.facet, continuation_of=head.id, parent=meta.frame.parent)
         tail = tail.model_copy(update={"title": head.title, "part": part, "blocks": blocks, "layout": head.layout})
         self._meta[tail.id] = SlideMeta(meta.frame)
         await self.deck.add(tail, activate=False, after=head.id)

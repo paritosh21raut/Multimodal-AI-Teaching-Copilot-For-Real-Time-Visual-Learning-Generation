@@ -19,10 +19,15 @@ NO_CONTENT_ACTS = {"question", "transition"}
 # An item that only announces what comes next is not content ("Now let's learn about matter").
 _ANNOUNCE = re.compile(r"^(?:so\s+|now\s*,?\s+|okay\s*,?\s+)*(?:let'?s|let us|we will|we'll|we are going to|"
                        r"today we|next we)\b", re.IGNORECASE)
+# "The third topic is Integral Calculus" (test23 showed it as a bullet): the series form, short
+_ANNOUNCE_ORDINAL = re.compile(r"^(?:so\s+|now\s*,?\s+|and\s+)*(?:the\s+|our\s+)?(?:first|second|third|fourth|fifth|"
+                               r"sixth|seventh|eighth|ninth|tenth|next|last|final|\d+(?:st|nd|rd|th))\s+(?:topic|"
+                               r"chapter|unit|section|concept|subtopic)\s+(?:is|will be|for today is)\b", re.IGNORECASE)
 
 
 def is_announcement(text: str) -> bool:
-    return bool(_ANNOUNCE.match(text.strip()))
+    t = text.strip()
+    return bool(_ANNOUNCE.match(t)) or (bool(_ANNOUNCE_ORDINAL.match(t)) and len(t.split()) <= 10)
 
 
 @dataclass(frozen=True)

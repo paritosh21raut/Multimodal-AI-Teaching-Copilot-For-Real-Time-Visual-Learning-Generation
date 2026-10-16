@@ -424,7 +424,8 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
     <header class="slide-head">
       ${(spec.facet || spec.continuation_of) && html`<div class="crumb">
         ${spec.subtitle && html`<span>${spec.subtitle}</span>`}
-        ${spec.facet && html`<span class="sep"></span><span class="facet">${spec.facet}</span>`}
+        ${spec.parent && html`<span class="sep"></span><span class="parent">${spec.parent}</span>`}
+        ${spec.facet && !(spec.parent && sameWords(spec.facet, title)) && html`<span class="sep"></span><span class="facet">${spec.facet}</span>`}
         ${spec.continuation_of && !spec.facet && html`<span class="cont">continued</span>`}
       </div>`}
       <h1 class="slide-title"><span data-edit="title">${rich(title)}</span>${spec.part && html`<span class="part" title=${`Part ${spec.part}`}>${partLabel(spec.part)}</span>`}</h1>
@@ -500,6 +501,10 @@ export function Glass({ leaving }) {
 export function shownTitle(spec) {
   return spec ? spec.title : "";
 }
+
+// "Social causes" / "social causes": the crumb of a child slide (F-013 S2) leaves out a facet its title already says
+const sameWords = (a, b) => (a || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim() ===
+  (b || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 
 // The text the teacher edits for an element marked data-edit (live editing in /control, round 4 step D): the same
 // ids the server's composer.edit_text uses. null = no such element on this slide.

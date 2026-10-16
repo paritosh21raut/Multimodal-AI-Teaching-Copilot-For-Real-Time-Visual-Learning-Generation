@@ -245,7 +245,8 @@ class UnderstandingService:
         await self.bus.publish(ConceptSignal(
             segment_id=seg.id, shift_score=round(sig.shift_score, 4), topic_shift=round(sig.topic_shift, 4),
             keyphrases=sig.keyphrases, cues=sig.cues, boundary=sig.boundary or bool(announce),
-            announce=announce, compare=list(compare.items) if compare else [],
+            announce=announce, announce_rule=("compare" if compare else topic.rule if topic else "") if announce else "",
+            compare=list(compare.items) if compare else [],
             list_head=lst.name if lst else "", list_items=list(lst.items) if lst else [],
             list_count=lst.count if lst else 0, item=cues.item if cues else "", utterance=event.utterance,
             start=seg.start,
@@ -277,7 +278,9 @@ class UnderstandingService:
             if sc.cues or sc.item or live_definition_any(sentence)[0]:
                 start = t
                 break
-        cue = LiveCue(utterance=ev.utterance, announce=(compare.name if compare else "") or (topic.name if topic else ""),
+        announce = (compare.name if compare else "") or (topic.name if topic else "")
+        cue = LiveCue(utterance=ev.utterance, announce=announce,
+                      announce_rule=("compare" if compare else topic.rule if topic else "") if announce else "",
                       compare=list(compare.items) if compare else [], list_head=lst.name if lst else "",
                       list_items=list(lst.items) if lst else [], list_count=lst.count if lst else 0,
                       item=cues.item, term=term, definition=definition, start=start)

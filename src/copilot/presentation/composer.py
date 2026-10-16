@@ -19,7 +19,7 @@ from difflib import SequenceMatcher
 from typing import Callable, Optional
 
 from copilot.core.events import new_id
-from copilot.core.memory import title_key, titles_match
+from copilot.core.memory import is_child_facet, same_title, title_key, titles_match
 from copilot.presentation.content import Piece, drop_self_alias
 from copilot.presentation.mathtext import has_fraction, to_latex, visible_length
 from copilot.presentation.spec import (
@@ -72,6 +72,27 @@ def is_plural(phrase: str) -> bool:
     words = re.split(r"\s+of\s+", phrase.strip(), maxsplit=1, flags=re.IGNORECASE)[0].split()
     last = words[-1].lower() if words else ""
     return len(last) > 3 and last.endswith("s") and not last.endswith(_SINGULAR_ENDINGS)
+
+
+_SET_WORDS = re.compile(r"\b(?:types?|kinds?|classes|classification|categories|groups?|forms?|parts?|branches|"
+                        r"members|components|elements|stages|phases|steps|layers|sectors|levels|examples|causes|"
+                        r"effects|factors|properties|features|characteristics|functions|applications|uses|methods|"
+                        r"techniques|laws|rules|principles)\b", re.IGNORECASE)
+
+
+_NOT_PARENT = {"definition", "meaning", "introduction", "overview", "basics", "concept", "process", "importance",
+               "summary", "recap", "conclusion", "history", "example", "examples"}
+
+
+def can_parent(facet: str) -> bool:
+    """A facet that can hold child subtopics: not a side of the topic like "Introduction" or "Definition"."""
+    return bool(facet.strip()) and facet.strip().lower() not in _NOT_PARENT
+
+
+def is_set_label(facet: str, plural: bool = True) -> bool:
+    """A subtopic that names a set of things ("Types of Satellites", "Causes"; with plural also "Planets"), whose
+    members can be subtopics of their own (F-013 S2)."""
+    return bool(facet) and ((plural and is_plural(facet)) or _SET_WORDS.search(facet) is not None)
 
 
 def what_is(term: str) -> str:
@@ -183,7 +204,7 @@ def _is_part_term(term: str, of: str) -> bool:
 
 
 def slide_title(topic: str, facet: str) -> str:
-    if not facet or titles_match(facet, topic):
+    if not facet or (titles_match(facet, topic) and not is_child_facet(facet, topic)):
         return topic
     tpl = TITLE_TEMPLATES.get(facet.strip().lower())
     if tpl:
@@ -193,11 +214,15 @@ def slide_title(topic: str, facet: str) -> str:
     return facet  # the crumb already shows the topic ("CHEMISTRY — MATTER"); "Matter of Chemistry" reads badly
 
 
-def frame_slide(topic: str, facet: str, *, continuation_of: Optional[str] = None) -> SlideSpec:
-    """An empty content slide for a frame (layout set by the first piece)."""
-    has_facet = bool(facet) and not titles_match(facet, topic)
+def frame_slide(topic: str, facet: str, *, continuation_of: Optional[str] = None, parent: str = "") -> SlideSpec:
+    """An empty content slide for a frame (layout set by the first piece). parent: the subtopic the facet is part of
+    (F-013 S2), shown in the crumb between the topic and the facet."""
+    # "Unsupervised Machine Learning" under "Machine Learning" is a kind of the topic, not the topic (F-013 S2)
+    has_facet = bool(facet) and (not titles_match(facet, topic) or is_child_facet(facet, topic))
+    has_parent = has_facet and bool(parent) and not same_title(parent, topic) and not same_title(parent, facet)
     return SlideSpec(title=slide_title(topic, facet), subtitle=topic, facet=facet if has_facet else None,
-                     continuation_of=continuation_of, layout="concept", blocks=[])
+                     parent=parent if has_parent else None, continuation_of=continuation_of, layout="concept",
+                     blocks=[])
 
 
 def title_slide(topic: str, subtitle: str = "") -> SlideSpec:

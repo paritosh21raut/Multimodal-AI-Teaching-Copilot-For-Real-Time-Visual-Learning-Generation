@@ -46,6 +46,38 @@ Input: the `Interpretation` + current slide + `ConceptSignal` + teacher commands
 - Replay of tests 1–30 (recorded answers, `tools/v1_eval.py --replay`): announcement → titled slide 15.0 s → 0.64 s
   median (p90 29.3 → 1.9 s); never titled 38 → 4 of 95.
 
+## Structure (F-013 S2)
+Slides form a tree of at most three levels: topic → subtopic → child (`Frame.parent`, `SlideSpec.parent`). The crumb
+shows "Topic — Parent" and the Lecture Structure in /control nests a child under its parent, in deck order. The tree
+is built by code. The model's `parent` field was A/B-tested and rejected (see understanding.md).
+- **Numbered sections** (`cues.section`, rule `section`): "1. Social. The social conditions …" (the name taken up by
+  the next sentence, or the whole line), "Stage 2 …" (≥ 3 words after). A section announced after a non-series
+  announcement makes the old title the parent ("Causes" → Social, Economic). A numbered step said as a sentence
+  ("1. The user enters a domain name.") is no section. "The 7th topic is Jupiter" has the rule `ordinal`. A series
+  member is a subtopic of its own, never a "part N".
+- **Announced member of a set**: when the model still labels the unit with a set ("Planets") while the announced
+  name is a member ("Mercury"), the member is the facet and the set is the parent. This does not apply when the
+  announced name is the new topic, also when misheard ("Statics" for Statistics), in which case the model's spelling
+  becomes the title.
+- **Registry of expected children** (`_children`, ≤ 60): members of a named list or of a classification, under the
+  subtopic that held it. When one of them starts later, its parent is already known.
+- **Qualifier child** (`memory.is_child_facet`): "Intellectual Causes" under "Causes", "Political Causes" under
+  "Causes of French Revolution" (the parent's head before "of"), "Inner Planets" under "Planets". Not "Respiration in
+  Plants" or "Types of Bonds". `same_title` is `titles_match` without the one-extra-word leniency (a child is not its
+  parent).
+- **Member stays on its slide**: content the model files under the set stays on the member's slide only when it
+  names the member, in its items or in the one-sentence summary (`planner.names`). Without that rule test20 put
+  "Economic strain from wars" on the Social slide. A new definition after a member's slide is the next member
+  ("Earth").
+- **Lines before an announcement** stay on the previous slide (`_place_early`).
+- **Confirmed new topic on the slide titled by it**: when the slide on screen already carries the confirmed topic's
+  name (filed under the old topic until two interpretations agreed), it becomes that topic's slide. Before this,
+  test23 showed two "Integral Calculus" slides in a row.
+- Tried and dropped: a newly defined term opening a new subtopic. The replay showed that most such terms are
+  supporting terms ("Bolus", "SSID", "Downlink"), and precision fell.
+- Replay of the 18 annotated lectures (`tools/v1_eval.py --structure`, recorded answers, 0 tokens): boundary P 0.80 →
+  0.78, R 0.44 → 0.51, F1 0.51 → 0.56, part rate 0.73 → 0.62, 34 child slides.
+
 ## Progressive update
 1. **Fast path (≤ 3–5 s):** after the gate's fast trigger, the Composer may place a deterministic provisional item
    (key term or short sentence) marked `provisional`.

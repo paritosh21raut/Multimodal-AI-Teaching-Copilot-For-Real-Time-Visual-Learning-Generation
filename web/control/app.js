@@ -590,9 +590,17 @@ function outline(ids, slides) {
     let t = topics[topics.length - 1];
     if (!t || t.name.toLowerCase() !== topic.toLowerCase()) topics.push((t = { name: topic, facets: [] }));
     const facet = s.layout === "title" ? "" : s.facet || "";
+    // F-013 S2: a child subtopic (s.parent) nests under its parent's entry (the parent's own slides or a heading);
+    // a facet's entries keep the deck order: its slides and child facets interleaved
+    const parent = s.layout === "title" ? "" : s.parent || "";
+    const slide = { id, n: i + 1, title: shownTitle(s), part: s.part };
+    const same = (f, name) => f && f.name.toLowerCase() === name.toLowerCase();
     let f = t.facets[t.facets.length - 1];
-    if (!f || f.name.toLowerCase() !== facet.toLowerCase()) t.facets.push((f = { name: facet, slides: [] }));
-    f.slides.push({ id, n: i + 1, title: shownTitle(s), part: s.part });
+    if (!same(f, parent || facet)) t.facets.push((f = { name: parent || facet, items: [] }));
+    if (!parent) { f.items.push({ slide }); return; }
+    let k = f.items.length ? f.items[f.items.length - 1].facet : null;
+    if (!same(k, facet)) f.items.push({ facet: (k = { name: facet, items: [] }) });
+    k.items.push({ slide });
   });
   return topics;
 }
@@ -607,19 +615,28 @@ function Structure({ deck, slides, send }) {
       title=${`Show slide ${s.n} on the display`}>
     <span class="n">${s.n}</span><span class="t">${label || s.title}</span>${s.part && html`<span class="part">${partLabel(s.part)}</span>`}
   </li>`;
+  const facetItem = (f, fi) => {
+    // a facet with one slide of the same name is one row; otherwise the facet heads its slides and child facets
+    const only = f.items.length === 1 && f.items[0].slide;
+    if (only && (!f.name || only.title.toLowerCase() === f.name.toLowerCase())) return row(only);
+    const runs = [];  // consecutive slides in one list, each child facet nested
+    f.items.forEach((it) => {
+      const last = runs[runs.length - 1];
+      if (it.slide && last && last.slides) last.slides.push(it.slide);
+      else runs.push(it.slide ? { slides: [it.slide] } : { facet: it.facet });
+    });
+    return html`<li key=${fi} class="facet">
+      ${f.name && html`<div class="facet-name">${f.name}</div>`}
+      ${runs.map((r, ri) => r.slides ? html`<ol key=${ri} class="slides">${r.slides.map((s) => row(s))}</ol>`
+        : html`<ol key=${ri} class="facets children">${facetItem(r.facet, ri)}</ol>`)}
+    </li>`;
+  };
   return html`<section class="structure">
     <h2>Lecture Structure ${ids.length > 0 && html`<span class="muted">${ids.length} slide${ids.length > 1 ? "s" : ""}</span>`}</h2>
     ${!ids.length ? html`<p class="empty">The slides appear here as the lecture goes on.</p>` : html`<ol class="topics">
       ${outline(ids, slides).map((t, ti) => html`<li key=${ti} class="topic">
         <div class="topic-name">${t.name}</div>
-        <ol class="facets">${t.facets.map((f, fi) => {
-          // a facet with one slide of the same name is one row; otherwise the facet heads its slides
-          const single = f.slides.length === 1 && (!f.name || f.slides[0].title.toLowerCase() === f.name.toLowerCase());
-          return single ? row(f.slides[0]) : html`<li key=${fi} class="facet">
-            ${f.name && html`<div class="facet-name">${f.name}</div>`}
-            <ol class="slides">${f.slides.map((s) => row(s))}</ol>
-          </li>`;
-        })}</ol>
+        <ol class="facets">${t.facets.map((f, fi) => facetItem(f, fi))}</ol>
       </li>`)}
     </ol>`}
   </section>`;

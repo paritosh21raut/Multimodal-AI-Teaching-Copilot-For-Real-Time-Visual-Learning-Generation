@@ -1,0 +1,213 @@
+{
+ "total": {
+  "lectures": 18,
+  "scored": 18,
+  "P": 0.796,
+  "R": 0.442,
+  "F1": 0.507,
+  "slides": 232,
+  "part_rate": 0.733,
+  "reused_titles": 13,
+  "outline_children": 0
+ },
+ "lectures": [
+  {
+   "name": "test3",
+   "slides": 18,
+   "part_rate": 0.444,
+   "bounds": 14,
+   "reused_titles": 0,
+   "outline_children": 0,
+   "P": 1.0,
+   "R": 0.875,
+   "F1": 0.933
+  },
+  {
+   "name": "test10",
+   "slides": 19,
+   "part_rate": 0.579,
+   "bounds": 12,
+   "reused_titles": 1,
+   "outline_children": 0,
+   "P": 0.708,
+   "R": 0.683,
+   "F1": 0.678
+  },
+  {
+   "name": "test14",
+   "slides": 10,
+   "part_rate": 0.7,
+   "bounds": 6,
+   "reused_titles": 1,
+   "outline_children": 0,
+   "P": 0.833,
+   "R": 0.556,
+   "F1": 0.667
+  },
+  {
+   "name": "test15",
+   "slides": 16,
+   "part_rate": 1.0,
+   "bounds": 4,
+   "reused_titles": 0,
+   "outline_children": 0,
+   "P": 1.0,
+   "R": 0.321,
+   "F1": 0.485
+  },
+  {
+   "name": "test17",
+   "slides": 7,
+   "part_rate": 0.0,
+   "bounds": 7,
+   "reused_titles": 3,
+   "outline_children": 0,
+   "P": 0.786,
+   "R": 0.571,
+   "F1": 0.643
+  },
+  {
+   "name": "test20",
+   "slides": 9,
+   "part_rate": 1.0,
+   "bounds": 4,
+   "reused_titles": 0,
+   "outline_children": 0,
+   "P": 1.0,
+   "R": 0.348,
+   "F1": 0.517
+  },
+  {
+   "name": "test21",
+   "slides": 12,
+   "part_rate": 0.833,
+   "bounds": 6,
+   "reused_titles": 0,
+   "outline_children": 0,
+   "P": 0.583,
+   "R": 0.318,
+   "F1": 0.412
+  },
+  {
+   "name": "test22",
+   "slides": 16,
+   "part_rate": 0.875,
+   "bounds": 9,
+   "reused_titles": 3,
+   "outline_children": 0,
+   "P": 0.778,
+   "R": 0.875,
+   "F1": 0.824
+  },
+  {
+   "name": "test23",
+   "slides": 30,
+   "part_rate": 0.567,
+   "bounds": 21,
+   "reused_titles": 0,
+   "outline_children": 0,
+   "P": 0.667,
+   "R": 0.78,
+   "F1": 0.718
+  },
+  {
+   "name": "test24",
+   "slides": 16,
+   "part_rate": 0.875,
+   "bounds": 9,
+   "reused_titles": 1,
+   "outline_children": 0,
+   "P": 0.889,
+   "R": 0.764,
+   "F1": 0.821
+  },
+  {
+   "name": "test25",
+   "slides": 17,
+   "part_rate": 0.529,
+   "bounds": 12,
+   "reused_titles": 2,
+   "outline_children": 0,
+   "P": 0.708,
+   "R": 0.658,
+   "F1": 0.621
+  },
+  {
+   "name": "test29",
+   "slides": 13,
+   "part_rate": 1.0,
+   "bounds": 1,
+   "reused_titles": 0,
+   "outline_children": 0,
+   "P": 1.0,
+   "R": 0.038,
+   "F1": 0.073
+  },
+  {
+   "name": "web1",
+   "slides": 9,
+   "part_rate": 0.889,
+   "bounds": 5,
+   "reused_titles": 0,
+   "outline_children": 0,
+   "P": 1.0,
+   "R": 0.528,
+   "F1": 0.69
+  },
+  {
+   "name": "web2",
+   "slides": 8,
+   "part_rate": 1.0,
+   "bounds": 2,
+   "reused_titles": 0,
+   "outline_children": 0,
+   "P": 0.5,
+   "R": 0.079,
+   "F1": 0.136
+  },
+  {
+   "name": "web3",
+   "slides": 7,
+   "part_rate": 0.714,
+   "bounds": 4,
+   "reused_titles": 1,
+   "outline_children": 0,
+   "P": 0.625,
+   "R": 0.208,
+   "F1": 0.312
+  },
+  {
+   "name": "web4",
+   "slides": 7,
+   "part_rate": 0.714,
+   "bounds": 3,
+   "reused_titles": 0,
+   "outline_children": 0,
+   "P": 1.0,
+   "R": 0.188,
+   "F1": 0.316
+  },
+  {
+   "name": "web5",
+   "slides": 8,
+   "part_rate": 1.0,
+   "bounds": 2,
+   "reused_titles": 0,
+   "outline_children": 0,
+   "P": 1.0,
+   "R": 0.092,
+   "F1": 0.168
+  },
+  {
+   "name": "web6",
+   "slides": 10,
+   "part_rate": 0.8,
+   "bounds": 4,
+   "reused_titles": 1,
+   "outline_children": 0,
+   "P": 0.25,
+   "R": 0.066,
+   "F1": 0.104
+  }
+ ]
+}

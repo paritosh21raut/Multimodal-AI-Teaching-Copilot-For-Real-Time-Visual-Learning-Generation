@@ -3,6 +3,8 @@
     .venv/Scripts/python tools/prompt_ab.py --dry SESSION[:i,j] ...    # rebuild prompts, 0 tokens
     .venv/Scripts/python tools/prompt_ab.py SESSION[:i,j] ...          # new prompt on gpt-oss-120b (real Groq)
     .venv/Scripts/python tools/prompt_ab.py --old SESSION[:i,j] ...    # the old prompt again (sampling variance)
+    .venv/Scripts/python tools/prompt_ab.py --named ...                # NEW = the named-subtopic rule (default: the
+                                                                       # F-013 S2 parent rule); SESSION may be testN
     .venv/Scripts/python tools/prompt_ab.py --both SESSION[:i,j] ...   # old AND new prompt on gpt-oss-120b (sessions
                                                                        # whose live answers came from another model)
 
@@ -56,7 +58,8 @@ class Unit:
 
 
 async def rebuild(session: str) -> list[Unit]:
-    db = sqlite3.connect(ROOT / "data" / "sessions" / session / "session.sqlite")
+    test = ROOT / "verify_results" / session / "session" / "session.sqlite"  # a validation test folder (F-013)
+    db = sqlite3.connect(test if test.exists() else ROOT / "data" / "sessions" / session / "session.sqlite")
     rows = db.execute("select type, payload from events order by seq").fetchall()
     store = LectureStateStore(EventBus(), session, LectureSetup())
     segs, kinds, pending, units = {}, {}, {}, []
@@ -83,11 +86,16 @@ async def rebuild(session: str) -> list[Unit]:
     return units
 
 
+RULE = "parent"  # the rule the NEW arm adds: "parent" (F-013 S2, default) or "named" (--named)
+
+
 def build(u: Unit, new: bool, settings: InterpreterSettings) -> P.BuiltPrompt:
-    """OLD = the live prompt of the recorded sessions (visual rule on, hierarchy and named rules off); NEW = with the
-    named-subtopic rule (V1 long test, 2026-10-06). Round 4 step B compared the hierarchy rule the same way."""
+    """OLD = the live prompt of the recorded sessions (visual rule on, hierarchy / named / parent rules off); NEW = with
+    RULE: the parent field (F-013 S2, the outline as a tree) or the named-subtopic rule (V1 long test, 2026-10-06).
+    Round 4 step B compared the hierarchy rule the same way."""
     saved = P.SYSTEM_PROMPT
-    P.SYSTEM_PROMPT = P.system_prompt(visual=True, hierarchy=False, named=new)  # build_prompt reads the constant
+    P.SYSTEM_PROMPT = P.system_prompt(visual=True, hierarchy=False, named=new and RULE == "named",
+                                      parent=new and RULE == "parent")  # build_prompt reads the constant
     try:
         return P.build_prompt(u.state, u.lines, dynamic_budget=settings.dynamic_budget_tokens,
                               total_budget=settings.prompt_budget_tokens)
@@ -109,7 +117,7 @@ def items(it: Interpretation) -> list[str]:
 
 
 def summary(it: Interpretation) -> dict:
-    return {"topic": it.topic, "subtopic": it.subtopic, "relation": it.relation,
+    return {"topic": it.topic, "subtopic": it.subtopic, "parent": it.parent, "relation": it.relation,
             "kinds": sorted({a.act for a in it.acts}), "items": items(it), "concerns": len(it.concerns),
             "visual": it.visual.model_dump() if it.visual else None}
 
@@ -127,6 +135,8 @@ async def main(args: list[str]) -> None:
     # send BOTH prompts to gpt-oss-120b: for sessions whose live answers came from another model or the fallback
     # (live test 2026-10-06 ran on qwen only), so both arms are the same model
     both = "--both" in args
+    global RULE
+    RULE = "named" if "--named" in args else "parent"
     specs = [a for a in args if not a.startswith("--")]
     cfg = load_config()
     settings = InterpreterSettings(**{k: v for k, v in cfg.section("understanding").items()
@@ -192,8 +202,8 @@ async def main(args: list[str]) -> None:
             o, n = row["old"], row["new"]
             print(f"\n=== {row['unit']} valid={row['valid']} repaired={res.repaired} tokens={used} "
                   f"via {res.provider} | visual={n['visual']}")
-            print(f"  topic {o['topic']} > {o['subtopic']} ({o['relation']})  |  {n['topic']} > {n['subtopic']} "
-                  f"({n['relation']})")
+            print(f"  topic {o['topic']} > {o['subtopic']} ({o['relation']})  |  {n['topic']} > "
+                  f"{n['parent'] + ' > ' if n['parent'] else ''}{n['subtopic']} ({n['relation']})")
             print("  OLD: " + "\n       ".join(o["items"]))
             print("  NEW: " + "\n       ".join(n["items"]))
             # stay below the 8k TPM of one key (2026-10-06: only one key had quota; 2 s pacing hit the TPM limit
@@ -207,7 +217,8 @@ async def main(args: list[str]) -> None:
           f"{sum(r['repaired'] for r in results)}, same topic {agree('topic')}, same subtopic {agree('subtopic')}, "
           f"same relation {agree('relation')}, same act kinds {agree('kinds')}, with visual "
           f"{sum(bool(r['new']['visual']) for r in results)}; real tokens {spent} "
-          f"(≈ {approx_tokens(P.NAMED_RULE)} prompt tokens added per call) → {path}")
+          f"(≈ {approx_tokens(P.NAMED_RULE if RULE == 'named' else P.PARENT_RULE + P.PARENT_SHAPE)} prompt tokens "
+          f"added per call) → {path}")
 
 
 if __name__ == "__main__":

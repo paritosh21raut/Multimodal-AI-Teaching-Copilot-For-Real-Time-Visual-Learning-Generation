@@ -1,6 +1,6 @@
 # F-013 — V1 hardening: evaluation of tests 1–30 and the fix plan
 
-Status: **S1 implemented** (2026-10-16; see "S1 result" below). S2–S5 planned. Evaluation spent 0 tokens.
+Status: **S1 implemented**, **S2 implemented, targets partly met** (2026-10-16; see "S1 result" / "S2 result"). S3–S5 planned. Evaluation spent 0 tokens.
 Inputs: `verify_results/test1..30` (slides.md, transcript, terminal log, slide PNGs), `_eval/e2e_d2.json`,
 `_eval/results.json`, annotator A workbooks (12 lectures), the user's 12 reported issues (2026-10-16).
 User answers (2026-10-16): best system first (free Groq now, a paid LLM later); faded provisional content is OK;
@@ -162,6 +162,42 @@ list names appending as spoken; "do what's best… making it fast must not make 
    new subtopic (B4).
 - Check: boundary R on the 12 annotated lectures (replay rebuild + 3 short live slices), part-N rate, revisit errors.
 - Target: boundary R ≥ 0.70 at P ≥ 0.78; part-N ≤ 45 %; sub_concept/child relations visible in Lecture Structure.
+
+**S2 result (2026-10-16): structure. Implemented, unit-tested, replay- and live-checked. Recall and part-N targets
+not met.**
+| Replay of the 18 annotated lectures (recorded answers, 0 tokens) | before | after | target |
+|---|---|---|---|
+| boundary precision | 0.796 | 0.775 | ≥ 0.78 |
+| boundary recall | 0.442 | 0.507 | ≥ 0.70 |
+| F1 | 0.507 | 0.555 | – |
+| "part N" rate | 0.733 | 0.619 | ≤ 0.45 |
+| slides under a parent | 0 | 34 | visible |
+(`tools/v1_eval.py --structure`; files `verify_results/_eval/s2_baseline.json`, `s2_replay.json`.)
+- Built: the tree by code (see presentation.md "Structure"): numbered sections, announced member under the model's
+  set, a registry of expected children, qualifier children (also under "X of Y"), member content gated by naming,
+  lines before an announcement stay, confirmed new topic on the slide already titled by it, revisit guard in the
+  interpreter, state outline tree and prompt outline children, crumb Topic — Parent, nested Lecture Structure in
+  deck order.
+- Item 1 (model `parent`): **rejected after its A/B** on gpt-oss-120b (test3 + test20, 12 units, 27,988 tokens).
+  It gave no useful parent, lost "Intellectual Causes", and invented a "Diodes at Atomic Theory" subtopic. The rule
+  stays in `prompt.py`, switched off.
+- Item 3 (novelty before "part N"): a newly defined term as a new subtopic was tried and dropped. Most such terms are
+  supporting terms ("Bolus", "SSID"), and precision fell. Only an absorbed facet that overflows gets its own title.
+- Live check (`tests/fixtures/lectures/f013_s2_causes.txt`, test20 causes → stages as Whisper heard it, session
+  20261016-122638-6e6a, 20 calls, 0 fallbacks, ≈ 47k tokens): Social (under "Causes of French Revolution") → Causes
+  → Political Causes → Intellectual Causes → Stage 1 (I, II) → Stage 2. Political and Intellectual had no parent
+  because of the "X of Y" form; fixed afterwards and covered by a unit test, but not re-run live.
+- Why recall stays low: the model's subtopics are coarser than the annotators' (test15 keeps one subtopic for the
+  whole lecture; web lectures are narrative with no cues), and test29 has fallback answers. This needs a model-side
+  change, either a better model or S3 prompt work, and an A/B for it.
+- Found and fixed on the way: "The third topic is Integral Calculus" shown as a bullet (announcement filter);
+  "Statics" (Statistics misheard) placed as a member of "Measures of Central Tendency"; the Lecture Structure listed
+  children after all of their parent's slides.
+- Still open (S3): the model sometimes copies a transcript line verbatim as a point ("Economic, as a result of
+  numerous wars wages by Louis XVI…", "Chantment among the masses…"). This was seen in the live run and in the
+  recorded A/B answers.
+- Tests: fast 626 (+18 in `tests/unit/test_structure.py`), browser 39; screenshots `tools/screenshot_structure.py`
+  (test20, test21, both themes) looked at.
 
 ### S3 — Representation + truthfulness (C1–C9, E1–E2)
 1. **N-way comparison**: schema `compare: [2–4 names]`, `rows: [{aspect, values[]}]`; comparison cue from S1 goes

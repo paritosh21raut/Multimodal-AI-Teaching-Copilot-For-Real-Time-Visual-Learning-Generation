@@ -218,6 +218,7 @@ class SlideSpec(_Model):
     topic_id: str = ""
     subtopic_id: Optional[str] = None
     facet: Optional[str] = None  # e.g. "Process", "Factors"
+    parent: Optional[str] = None  # F-013 S2: the subtopic the facet belongs to ("Causes" for "Social causes")
     title: str
     subtitle: str = ""
     continuation_of: Optional[str] = None  # previous slide of the same concept

@@ -28,7 +28,12 @@ LectureState
 - `SlideContextChanged(text)` sets `slide_context`.
 - `wait_applied(request_id)` lets the understanding service build the next prompt from applied state.
 
-`TopicNode(id, title, summary, subtopics: list[TopicNode], first_seen, last_seen)`
+`TopicNode(id, title, summary, subtopics: list[TopicNode], first_seen, last_seen)`. F-013 S2: a subtopic may hold
+children (≤ 6, three levels at most). `Interpretation.parent` names the outline subtopic a new subtopic belongs to.
+A child named again without its parent stays where it is. `state.subtopic()` also finds a child and
+`subtopic_parent()` returns its parent. The prompt outline shows "Causes (Social, Economic)" and CURRENT
+"subtopic=Social (in Causes)". The live prompt does not ask for `parent` (its A/B was worse), so the model rarely fills
+the field and children come mostly from the slides (`SlideSpec.parent`).
 
 `Concern(id, claim, issue, suggested_correction, confidence, status=open|accepted|kept|dismissed,
 kind=factual|transcription, wrong, right, applied, segment_id, segment_ids, request_id, ref)`

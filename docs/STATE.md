@@ -1,11 +1,20 @@
 # Current State
 
-_Last updated: 2026-10-15: **IEEE paper finished (6 pages, validation phase 4 done, 0 tokens)**. Before that, 2026-10-12:
+_Last updated: 2026-10-16: **F-013 S2 (structure) done, targets partly met** (≈ 75k Groq tokens: A/B + one live run).
+Before that, 2026-10-15: **IEEE paper finished (6 pages, validation phase 4 done, 0 tokens)**. Before that, 2026-10-12:
 F-012 group D (reference materials / study material) done (8,582 Groq tokens). V2 groups A–D are implemented. Next: the
 user's review of the paper and of group D, then the truthfulness bug below, then V1c.
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **F-013 S2 done, targets partly met (2026-10-16): structure.** Replay of the 18 annotated lectures (0 tokens):
+  boundary P 0.80 → 0.775, R 0.44 → 0.51, F1 0.51 → 0.555, part rate 0.73 → 0.62, 34 slides under a parent. Recall
+  (≥ 0.70) and part-N (≤ 45 %) are NOT met; the remaining gap is model subtopic granularity. The tree is built by code
+  (sections, set members, registry, qualifier children, naming gate, crumb Topic — Parent, nested Lecture
+  Structure). The model `parent` rule was A/B-tested on gpt-oss-120b (27,988 tokens), was worse, and is OFF. Live
+  check on `f013_s2_causes.txt` (≈ 47k tokens) looked right; a gap it showed ("X of Y" parent) was fixed but not
+  re-run live. Tests: fast 626, browser 39. Details: F-013 "S2 result". **Next:** S3 (representation +
+  truthfulness, including transcript lines copied verbatim as points).
 - **F-013 S1 done (2026-10-16): responsiveness.** An announced topic is on screen at once (replay 15.0 → 0.64 s
   median), named list members appear as spoken, units no longer mix two topics, call floor 4 s; live simulated check
   6.0 s median speech → slide (was 9.5 s on the same speech). Details: `docs/specs/F-013-v1-hardening.md` "S1 result".
