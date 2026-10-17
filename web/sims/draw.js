@@ -47,7 +47,7 @@ export function Label({ x, y, label, role, anchor = "start", fallback, id }) {
 }
 
 // "F_net" -> F with a subscript; "mg sin θ" keeps "sin" upright
-function symbolParts(sym) {
+export function symbolParts(sym) {
   const sub = sym.match(/^([^_]+)_(.+)$/);
   if (sub) return html`${sub[1]}<tspan class="sub" baseline-shift="sub" font-size="0.62em">${sub[2]}</tspan>`;
   const fn = sym.match(/^(.*?)\b(sin|cos|tan)\b(.*)$/);
@@ -55,12 +55,14 @@ function symbolParts(sym) {
   return sym;
 }
 
-// The computed readouts (Derived), top left of the stage: "a = 2.04 m/s²   computed".
-export function Readout({ sim, x = 34, y = 30 }) {
+// The computed readouts (Derived), top left of the stage: "a = 2.04 m/s²   computed"; right: top right (a scene whose
+// picture fills the top left, e.g. a steep incline, S2)
+export function Readout({ sim, x = 34, y = 30, right = false }) {
   const rows = sim.derived || [];
   if (!rows.length) return null;
   const h = 34 + rows.length * 52;
   const w = Math.max(430, 60 + Math.max(...rows.map((r) => (r.symbol.length + r.text.length + 3) * 18)));
+  if (right) x = W - 34 - w;
   return html`<g class="sim-readout" data-el="readout" transform=${`translate(${x},${y})`}>
     <rect class="card" x="0" y="0" width=${w} height=${h} rx="18" />
     ${rows.map((r, i) => html`<g key=${r.id} transform=${`translate(26,${62 + i * 52})`}>
@@ -84,3 +86,9 @@ export function Hatch({ x1, x2, y, rough }) {
 }
 
 export const shown = (sim, el) => (sim.shown || []).includes(el);
+
+// A value written inside a shape ("10000 kg" in the block): a smaller face when the label would not fit (S2)
+export const fitIn = (text, width) => {
+  const px = Math.min(LABEL_PX, (width - 24) / (0.62 * String(text).length));
+  return px < LABEL_PX ? { fontSize: `${Math.max(18, px).toFixed(0)}px` } : undefined;
+};

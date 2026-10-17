@@ -233,3 +233,14 @@ Controls send `Command` messages over the WebSocket → `CommandReceived` events
   Show what I said ⇄ Show correction, plus **Keep correction** / **Keep what I said** = keep the slide as it is and
   close the card (`dismiss`; round 5, the × alone was too small); × still closes; nothing to approve). Transcription concerns are never sent
   to /control (the hub drops them); the terminal logs them as `[HEARD] wrong -> right`.
+
+## Simulation stage + dock (F-014 S2)
+- **Dock:** icon + name on every button (as before S1) at 1536 px and wider; icons only while My Notes is open;
+  Simulation becomes Back to slides while a simulation runs. Picker rows (Simulation, Equation) always show their
+  text, also in the compact dock.
+- **Label layout** (`web/sims/layout.js`, after each draw): labels keep their home unless it overlaps another label,
+  an arrow or a stroke (surface, string, wire, wave ...); then fixed offsets in order; off-stage homes are clamped
+  back; the readout card takes the first free corner (top left, top right, bottom left). Deterministic: same spec,
+  same places. Measured by `tests/e2e/test_sim_labels_browser.py`.
+- **Graph strip** (`web/sims/graph.js`): under the motion, one or two panels from `series`; Python's ticks only; time
+  lines drawn up to the clock with a dashed cursor (held when paused), V-I without a cursor; Show > Graph toggles it.

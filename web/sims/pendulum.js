@@ -9,6 +9,8 @@ export const TWEEN = ["L"];
 const PX = 620, PY = 132, BOB = 34, MAX_V = 150;
 
 export const motion = () => ({ a: 0, dir: 0, L: 1, rest: 0 });  // the scene keeps its own time (table below)
+// S2 graph: θ-t covers two periods from the release, as the swing below (phase t / T)
+export const graphTime = ({ sim, t }) => (sim.drive.T > 0 ? t % (2 * sim.drive.T) : null);
 
 // K(k), the complete elliptic integral of the first kind: one quarter period in units of 1/ω₀
 function quarter(th0) {

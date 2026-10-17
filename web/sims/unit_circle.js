@@ -5,7 +5,7 @@ import { html } from "../vendor/htm-preact-standalone.mjs";
 import { Caption, Label, Readout, shown } from "./draw.js";
 
 export const TWEEN = [];
-const CX = 250, CY = 450, R = 150, GX = 500, GW = 540, TURN = 8, NPTS = 180;
+const CX = 330, CY = 450, R = 150, GX = 570, GW = 470, TURN = 8, NPTS = 180;  // S2: room left of the circle for sin θ
 
 export const motion = () => ({ a: 0, dir: 0, L: 1, rest: 0 });  // the scene keeps its own time
 

@@ -88,6 +88,16 @@ students should see (organ, planet, animal, plant part, apparatus, place) or a p
 diagram shows; omit it for abstract ideas, equations and definitions of abstract terms."""
 VISUAL_SHAPE = ', "visual": {"query": "", "kind": ""}'
 
+# F-014 S2: the simulation hint, a closed list (the registry's templates). A hint only: the deterministic core may
+# raise a Suggest chip from it, never show a simulation (simulation.policy). Live only after its A/B passes.
+SIM_RULE = """
+sim: ONLY when the NEW lines set up one of these physical situations with its quantities, its id:
+block_on_surface (a block pushed / pulled on a floor, friction), incline (a block on an inclined plane), pendulum,
+projectile (a body thrown / launched), dc_circuit (a cell with two resistors), wave (a wave on a string: wavelength,
+frequency), orbit (a satellite or moon in a circular orbit), unit_circle (sine / cosine on the unit circle); omit it
+otherwise (a mention, a definition, history, another situation)."""
+SIM_SHAPE = ', "sim": ""'
+
 
 # Verify round 4 step B: tried, NOT live. Goal: the members of a set stay one subtopic (the model had opened subtopics
 # "Wide Area Network", "Instruction Set" and put "Nodes" under "Types"). A/B on gpt-oss-120b, both arms resent
@@ -147,10 +157,10 @@ SAID_RULE = """
 
 
 def system_prompt(visual: bool = True, hierarchy: bool = True, named: bool = True, parent: bool = False,
-                  compare: bool = True, said: bool = False) -> str:
-    return (_SYSTEM_TEMPLATE.replace("{visual_rule}", VISUAL_RULE if visual else "")
+                  compare: bool = True, said: bool = False, sim: bool = False) -> str:
+    return (_SYSTEM_TEMPLATE.replace("{visual_rule}", (VISUAL_RULE if visual else "") + (SIM_RULE if sim else ""))
             .replace("{said_rule}", SAID_RULE if said else "")
-            .replace("{visual_shape}}}", (VISUAL_SHAPE if visual else "") + "}")
+            .replace("{visual_shape}}}", (VISUAL_SHAPE if visual else "") + (SIM_SHAPE if sim else "") + "}")
             .replace("{hierarchy_rule}", HIERARCHY_RULE if hierarchy else "")
             .replace("{named_rule}", NAMED_RULE if named else "")
             .replace("{parent_rule}", PARENT_RULE if parent else "")

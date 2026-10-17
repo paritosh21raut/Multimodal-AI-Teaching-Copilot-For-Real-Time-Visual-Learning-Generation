@@ -131,6 +131,7 @@
   --sim-normal: #0a7a52;
   --sim-friction: #c2362a;
   --sim-applied: #b05a00;
+  --sim-pull: #7a3fc0;  /* S2: the pull, its own role beside the push */
   --sim-component: #6b7380;
   --sim-surface: #2b3138;
   --sim-ground: #e7e1d4;
@@ -144,6 +145,7 @@
   --sim-normal: #3ddc97;
   --sim-friction: #ff7a6b;
   --sim-applied: #ffb347;
+  --sim-pull: #c9a2ff;
   --sim-component: #9aa3b2;
   --sim-surface: #c9d0da;
   --sim-ground: #141820;

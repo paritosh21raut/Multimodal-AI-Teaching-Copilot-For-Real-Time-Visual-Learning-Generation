@@ -42,6 +42,22 @@ SCENES = [
     ("block_lifted", "Friction", [
         "Consider a 2 kg block on a rough floor, mu is 0.3.",
         "I pull it with a rope with 60 newtons at 60 degrees above the horizontal."], 3),
+    # S2 (user 2026-10-18): a push and a pull together, against each other, at angles, on the incline
+    ("block_push_pull", "Friction", [
+        "Consider a block of 5 kg on a rough floor with mu equal to 0.2.",
+        "Pull it with 10 N and push with 20 N."], 6),
+    ("block_push_pull_opposite", "Friction", [
+        "Consider a block of 5 kg on a rough floor with mu equal to 0.2.",
+        "Push it with 20 N in the direction of motion and pull it back with 30 N."], 6),
+    ("block_push_pull_angles", "Friction", [
+        "Consider a 10 kg block on a rough floor, mu is 0.3.",
+        "We push it with 50 newtons at 30 degrees and pull it with a rope with 40 newtons at 20 degrees."], 6),
+    ("incline_push_pull", "Inclined plane", [
+        "Consider a 5 kg block on an incline of 30 degrees with mu 0.2.",
+        "Push it up the slope with 40 N and pull it down the slope with 5 N."], 6),
+    ("incline_pull_against", "Inclined plane", [
+        "Consider a 5 kg block on an incline of 30 degrees with mu 0.2.",
+        "Now pull it with 50 N against the motion."], 6),
     ("pendulum", "Oscillations", [
         "Consider a simple pendulum of length 2 metres, pulled aside by 30 degrees.",
         "The bob has a mass of 200 grams."], 3),
@@ -71,6 +87,27 @@ SCENES = [
         "We push it up the slope with 50 newtons."], 6),
     ("incline_unknown", "Inclined plane", [
         "Imagine a block on a ramp."], 5),
+    # S2: the graph strip, turned on by the spoken cue
+    ("graph_block", "Friction", [
+        "Consider a block of mass 5 kg resting on a rough floor.",
+        "The coefficient of friction is 0.2 and we push it with a force of 20 newtons.",
+        "Let us look at the graph."], 8),
+    ("graph_incline", "Inclined plane", [
+        "Suppose a 5 kg block is placed on an inclined plane at 30 degrees.",
+        "Let the coefficient of friction be 0.2.", "Now see the velocity time graph."], 8),
+    ("graph_pendulum", "Oscillations", [
+        "Consider a simple pendulum of length 2 metres, pulled aside by 30 degrees.",
+        "Look at the graph of the angle."], 5),
+    ("graph_projectile", "Projectile motion", [
+        "Imagine a stone thrown horizontally from a cliff 20 m high at 10 m/s.", "Let us plot it."], 6),
+    ("graph_circuit", "Electric circuits", [
+        "Consider a circuit with a 12 volt battery and two resistors of 4 ohm and 6 ohm in parallel.",
+        "Now look at the V I graph."], 3),
+    ("graph_wave", "Waves", [
+        "Consider a wave on a string with a frequency of 0.5 hertz and a wavelength of 2 metres and an amplitude of 30 cm.",
+        "Here is the graph of one particle."], 4),
+    ("graph_unknown", "Inclined plane", [
+        "Imagine a block on a ramp.", "Let us see the graph."], 5),
 ]
 
 

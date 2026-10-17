@@ -385,8 +385,13 @@ function useSimTemplates(q = "") {
 }
 const SIM_SPEEDS = [0.25, 0.5, 1, 1.5, 2];
 // choices of a template that are not numbers (Values popover): [slot, label, [[value, text], ...]]
+const FLOOR_DIRS = [["forward", "→ with the motion"], ["back", "← against the motion"]];
+const SLOPE_DIRS = [["up", "up the slope"], ["down", "down the slope"]];
 const SIM_CHOICES = {
   dc_circuit: [["arrangement", "Resistors", [["series", "in series"], ["parallel", "in parallel"]]]],
+  // S2 (user 2026-10-18): a push and a pull, each in or against the direction of motion
+  block_on_surface: [["applied_dir", "Push direction", FLOOR_DIRS], ["pull_dir", "Pull direction", FLOOR_DIRS]],
+  incline: [["applied_dir", "Push direction", SLOPE_DIRS], ["pull_dir", "Pull direction", SLOPE_DIRS]],
 };
 const speedLabel = (v) => (v === 0.25 ? "¼×" : v === 0.5 ? "½×" : `${v}×`);
 
@@ -420,13 +425,6 @@ function SimBar({ spec, b, send, running }) {
     ${menu === "values" && t && html`<div class="menu up sim-values" role="dialog">
       ${t.slots.map((sl) => html`<${SimValue} key=${sl.name + "@" + sim.version} sl=${sl} sim=${sim}
         onSet=${(v) => send("sim_set", { slide_id: spec.id, slot: sl.name, value: v })} />`)}
-      ${"applied_dir" in sim.params && html`<label class="sim-row"><span>Push direction</span>
-        <select value=${sim.params.applied_dir} onChange=${(e) => send("sim_set", { slide_id: spec.id, slot: "applied_dir", value: e.target.value })}>
-          <option value="up">up the slope</option><option value="down">down the slope</option></select><b></b></label>`}
-      ${"applied_mode" in sim.params && html`<label class="sim-row"><span>At an angle it</span>
-        <select value=${sim.params.applied_mode} onChange=${(e) => send("sim_set", { slide_id: spec.id, slot: "applied_mode", value: e.target.value })}>
-          <option value="push">pushes into the floor</option><option value="pull">pulls up from the floor</option></select>
-        <b class=${"src " + (sim.param_source.applied_mode || "default")}>${{ said: "said", teacher: "yours" }[sim.param_source.applied_mode] || "not said"}</b></label>`}
       ${(SIM_CHOICES[sim.template] || []).map(([slot, label, opts]) => html`<label key=${slot} class="sim-row"><span>${label}</span>
         <select value=${sim.params[slot]} onChange=${(e) => send("sim_set", { slide_id: spec.id, slot, value: e.target.value })}>
           ${opts.map(([v, l]) => html`<option key=${v} value=${v}>${l}</option>`)}</select>
@@ -748,7 +746,7 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
 // Teacher controls under the preview.
 const endLecture = (send) => () => confirm("End the lecture?") && send("end");
 
-function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd, theme }) {
+function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd, theme, notesWide }) {
   const running = !!(deck && deck.sim_mode);
   const dark = theme === "dark";
   const ids = deck ? deck.slide_ids : [];
@@ -760,7 +758,9 @@ function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd, theme }) {
       onClick=${toggle(on, off, name)} title=${`${label} (${key})`}>${svg(icon)}<span>${label}</span></button>`;
   };
   const ref = useRef(null);
-  const compact = useCompactRow(ref, `${paused}|${dark}`);
+  const fits = !useCompactRow(ref, `${paused}|${dark}|${running}`);
+  // icon + name; icons only while My Notes is expanded (user 2026-10-18), or on a window too narrow for the names
+  const compact = notesWide || !fits;
   return html`<div class=${"dock" + (compact ? " compact" : "")} ref=${ref}>
     <div class="group">
       <button class="icon" onClick=${() => send("prev")} disabled=${at <= 0} title="Previous slide (←)">${svg(ICON.prev)}</button>
@@ -2291,8 +2291,9 @@ function useCompactRow(ref, key) {
         const gap = parseFloat(getComputedStyle(el).columnGap || "0") || 0;
         need.current = kids.reduce((w, k) => w + k.getBoundingClientRect().width, 0) + gap * Math.max(0, kids.length - 1);
       }
-      // labels only with room to spare (a row filled to the last pixel looked jammed against End lecture)
-      setCompact((was) => (was ? need.current > el.clientWidth - 40 : need.current > el.clientWidth - 16));
+      // labels only with room to spare (a row filled to the last pixel looked jammed against End lecture); a small
+      // band against flicker (40 px kept the dock icons-only after My Notes was narrowed again, S2)
+      setCompact((was) => (was ? need.current > el.clientWidth - 12 : need.current > el.clientWidth - 6));
     };
     measure();
     const watch = new ResizeObserver(measure);
@@ -2475,7 +2476,7 @@ function App() {
           status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} simNotice=${state.simNotice}
           simSuggestion=${state.simSuggestion} simSetting=${state.simSetting} />
         <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle} theme=${state.theme}
-          canAdd=${!!liveSpec && !(deck && deck.zoom)} onAdd=${() => setAdding(true)} />
+          canAdd=${!!liveSpec && !(deck && deck.zoom)} onAdd=${() => setAdding(true)} notesWide=${wide && tab === "notes"} />
         <p class="hint">Keys: ← → navigate · Space pause / resume · B blank · N new slide · T light / dark slides · hover or double-click a slide item to edit it</p>
       </section>
       <section class="right">

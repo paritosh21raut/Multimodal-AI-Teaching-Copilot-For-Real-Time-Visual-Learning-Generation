@@ -87,7 +87,7 @@
 
     {"t": "block_on_surface", "last": null, "line": "Consider a block of five kilograms.", "expect": {"mass_kg": 5}, "src": "variant"},
     {"t": "block_on_surface", "last": null, "line": "A 500 gram block.", "expect": {"mass_kg": 0.5}, "src": "variant"},
-    {"t": "block_on_surface", "last": null, "line": "I pull it with 40 newtons at 30 degrees above the horizontal.", "expect": {"applied_n": 40, "push_angle_deg": 30}, "src": "variant"},
+    {"t": "block_on_surface", "last": null, "line": "I pull it with 40 newtons at 30 degrees above the horizontal.", "expect": {"pull_n": 40, "pull_angle_deg": 30}, "src": "variant"},
     {"t": "incline", "last": null, "line": "Theta equals 45.", "expect": {"angle_deg": 45}, "src": "variant"},
     {"t": "incline", "last": null, "line": "An angle of thirty.", "expect": {"angle_deg": 30}, "src": "variant"},
     {"t": "incline", "last": null, "line": "The mass is 8.", "expect": {"mass_kg": 8}, "src": "variant"},

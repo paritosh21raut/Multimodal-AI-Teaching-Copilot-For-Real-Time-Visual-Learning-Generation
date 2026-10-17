@@ -18,7 +18,7 @@ from typing import Literal
 from pydantic import Field
 
 from copilot.simulation.base import (
-    Derived, Element, SimBase, Slot, Solution, Template, _Model, fmt, known, value_label,
+    Derived, Element, SimBase, Slot, Solution, Template, _Model, fmt, known, time_graph, value_label,
 )
 from copilot.simulation.names import ANGLE, G, MASS
 
@@ -33,7 +33,7 @@ SLOTS = (
 )
 ELEMENTS = (
     Element("support", "Support"), Element("string", "String"), Element("bob", "Bob"), Element("angle", "Amplitude"),
-    Element("path", "Path"), Element("velocity", "Velocity"), Element("weight", "Weight"), Element("readout", "Values"),
+    Element("path", "Path"), Element("velocity", "Velocity"), Element("weight", "Weight"), Element("graph", "Graph"), Element("readout", "Values"),
 )
 
 
@@ -67,6 +67,27 @@ def period(length_m: float, amplitude_deg: float, g: float) -> float:
     return 4 * K / math.sqrt(g / length_m)
 
 
+def swing_curve(L: float, amplitude_deg: float, g: float, t1: float, n: int = 160) -> tuple[list[float], list[float]]:
+    """θ (degrees) at n + 1 times over [0, t1] of the exact swing released from rest at +amplitude (RK4, 25 steps
+    between samples)."""
+    w2, th, w = g / L, math.radians(amplitude_deg), 0.0
+    sub = 25
+    h = t1 / (n * sub)
+    f = lambda a, b: (b, -w2 * math.sin(a))  # noqa: E731
+    ts, out = [0.0], [amplitude_deg]
+    for i in range(n):
+        for _ in range(sub):
+            a1, b1 = f(th, w)
+            a2, b2 = f(th + h / 2 * a1, w + h / 2 * b1)
+            a3, b3 = f(th + h / 2 * a2, w + h / 2 * b2)
+            a4, b4 = f(th + h * a3, w + h * b3)
+            th += h / 6 * (a1 + 2 * a2 + 2 * a3 + a4)
+            w += h / 6 * (b1 + 2 * b2 + 2 * b3 + b4)
+        ts.append(t1 * (i + 1) / n)
+        out.append(math.degrees(th))
+    return ts, out
+
+
 def solve(p: PendulumParams, src: dict[str, str]) -> Solution:
     L, th0, m, g = p.length_m, math.radians(p.amplitude_deg), p.mass_kg, p.g
     T0 = 2 * math.pi * math.sqrt(L / g)
@@ -95,7 +116,10 @@ def solve(p: PendulumParams, src: dict[str, str]) -> Solution:
         derived = [Derived(id="T", label="Period (small swings)", symbol="T", value=T0, unit="s",
                            text=f"≈ {fmt(T0)} s (small swings)")]
     drive = {"L": L, "theta0_deg": p.amplitude_deg, "T": T, "m": m, "W": m * g, "g": g}
-    return Solution(drive=drive, labels=labels, derived=derived)
+    # S2 graph: θ-t over two periods, released from +θ0 at t = 0 as the stage swings it; numbers when T is printed
+    ts, ths = swing_curve(L, p.amplitude_deg, g, 2 * T)
+    series = [time_graph("theta_t", "Angle–time", ("θ", "°"), ts, ths, swing_ok)]
+    return Solution(drive=drive, labels=labels, derived=derived, series=series)
 
 
 def default_shown(p: PendulumParams, src: dict[str, str]) -> list[str]:

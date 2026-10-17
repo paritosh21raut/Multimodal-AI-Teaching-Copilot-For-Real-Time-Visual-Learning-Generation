@@ -11,6 +11,10 @@ MASS = r"mass|masses|block'?s mass"
 # push too, except after a result word (values._RESULT: "the friction force", "the net force")
 FORCE = (r"push(?:ing)?\s+force|pull(?:ing)?\s+force|applied\s+force|force\s+applied|external\s+force|"
          r"the\s+push|the\s+pull|push|pull|effort|force")
+# S2 (user 2026-10-18): a push and a pull are two forces. The push takes the generic names ("applied force", "the
+# force"); the pull its own ("the pull", "pulling force", "the rope", "tension in the rope" is a result)
+PUSH = (r"push(?:ing)?\s+force|applied\s+force|force\s+applied|external\s+force|the\s+push|push|effort|force")
+PULL = r"pull(?:ing)?\s+force|the\s+pull|pull|drag(?:ging)?\s+force|the\s+drag|rope"
 MU = MU_NAMES
 G = r"g|gravity|acceleration\s+due\s+to\s+gravity|value\s+of\s+g"
 ANGLE = r"angle(?:\s+of\s+(?:inclination|the\s+(?:incline|slope|plane|ramp)))?|inclination(?:\s+angle)?|theta|θ"

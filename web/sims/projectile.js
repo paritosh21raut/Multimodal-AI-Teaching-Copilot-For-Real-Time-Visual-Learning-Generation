@@ -10,14 +10,21 @@ const GROUND = 590, X0 = 150, WIDE = 860, TALL = 330, BALL = 18, HOLD = 1.0, ARR
 
 export const motion = () => ({ a: 0, dir: 0, L: 1, rest: 0 });  // the scene keeps its own time
 
+// the flight time at the clock's t: each flight is shown in 1.5 - 4 stage seconds, then held, then again
+function flightAt(d, t) {
+  const tf = d.tf || 0;
+  const pace = tf > 0 ? clamp(tf, 1.5, 4) / tf : 1;  // stage seconds per flight second
+  const cycle = tf + HOLD / pace;
+  return tf > 0 ? Math.min(tf, (t / pace) % cycle) : 0;
+}
+export const graphTime = ({ sim, t }) => (sim.drive.tf > 0 ? flightAt(sim.drive, t) : null);  // S2 graph
+
 export function scene({ sim, t }) {
   const d = sim.drive;
   const { ux = 0, uy = 0, h = 0, g = 9.81, tf = 0, R = 0, H = 0 } = d;
   const k = Math.min(WIDE / Math.max(R, 1e-6), TALL / Math.max(H, 1e-6));  // stage px per metre
   const X = (x) => X0 + x * k, Y = (y) => GROUND - y * k;
-  const pace = tf > 0 ? clamp(tf, 1.5, 4) / tf : 1;  // stage seconds per flight second
-  const cycle = tf + HOLD / pace;
-  const tau = tf > 0 ? Math.min(tf, (t / pace) % cycle) : 0;
+  const tau = flightAt(d, t);
   const bx = X(ux * tau), by = Y(h + uy * tau - 0.5 * g * tau * tau);
   const lb = sim.labels || {};
   const out = [];

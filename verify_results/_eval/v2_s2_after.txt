@@ -1,0 +1,82 @@
+values corpus: 97 lines (Counter({'user': 39, 'fix2': 22, 'variant': 17, 'fix3': 16, 's0run': 3}))
+
+[now]  slot                  P      R   tp fp fn
+        angle_deg          1.00   1.00   11  0  0
+        applied_n          1.00   1.00   30  0  0
+        g                  1.00   1.00    2  0  0
+        mass_kg            1.00   1.00   12  0  0
+        mu                 1.00   1.00   22  0  0
+        pull_angle_deg     1.00   1.00    1  0  0
+        pull_n             1.00   1.00    1  0  0
+        push_angle_deg     1.00   1.00    3  0  0
+        all                1.00   1.00   82  0  0
+
+== 20261017-200923-76c3: 64 lines
+  Imagine a box placed on the surface.                                   | S0 cue    | now {'mass_kg': 2.0, 'applied_n': 0.0, 'push_angle_deg': 0.0, 'applied_dir': 'forward', 'pull_n': 0.0, 'pull_angle_deg': 0.0, 'pull_dir': 'forward', 'mu': 0.0, 'g': 9.81}
+  50 Nf is applied on it.                                                | S0        | now {'applied_n': 50.0}
+  The weight of the box is 5kg.                                          | S0 value {'mass': 5.0} | now {'mass_kg': 5.0}
+  Let the value of G be 10 meter per second square.                      | S0 value {'g': 10.0} | now {'g': 10.0}
+  A force at an angle of 30 degree with the horizontal onto the box.     | S0 value {'angle': 30.0} | now {'push_angle_deg': 30.0}
+  If we apply a force of 30N at an angle of 0.5,                         | S0 value {'angle': 0.5, 'force': 30.0} | now {'applied_n': 30.0}
+  30 degree at an angle of 30 degree.                                    | S0 value {'angle': 30.0} | now -
+  0.3                                                                    | S0        | now {'mu': 0.3}
+  Let the coefficient of friction be 0.3.                                | S0 value {'mu': 0.3} | now -
+  Now imagine the same scenario in an inclined plane at an angle of 60 d | S0 cue   {'angle': 60.0} | now {'mass_kg': 5.0, 'angle_deg': 60.0, 'mu': 0.3, 'applied_n': 0.0, 'applied_dir': 'up', 'pull_n': 0.0, 'pull_dir': 'up', 'g': 10.0}
+  Let's change it to 45 degree.                                          | S0 value {'angle': 45.0} | now {'angle_deg': 45.0}
+  If you give an opposing force of 10 Nm on the block,                   | S0        | now {'applied_n': 10.0}
+  Now let's see what happens when the inclination angle is of 30 degree. | S0 value {'angle': 30.0} | now {'angle_deg': 30.0}
+  of 20 degree.                                                          | S0 value {'angle': 20.0} | now {'angle_deg': 20.0}
+  of 10 degree.                                                          | S0 value {'angle': 10.0} | now {'angle_deg': 10.0}
+  The inclination angle is of 15 degree.                                 | S0 value {'angle': 15.0} | now {'angle_deg': 15.0}
+  16 degree.                                                             | S0 value {'angle': 16.0} | now {'angle_deg': 16.0}
+  18 degree.                                                             | S0 value {'angle': 18.0} | now {'angle_deg': 18.0}
+  Now if the weight of the block is of 10kg.                             | S0 value {'mass': 10.0} | now {'mass_kg': 10.0}
+  If it is of 2KG.                                                       | S0 value {'mass': 2.0} | now {'mass_kg': 2.0}
+  If the angle of inclination is of 30 degree.                           | S0 value {'angle': 30.0} | now {'angle_deg': 30.0}
+  Weight of the Block is 50kg.                                           | S0 value {'mass': 50.0} | now {'mass_kg': 50.0}
+  If it is of 100kg.                                                     | S0 value {'mass': 100.0} | now {'mass_kg': 100.0}
+  If it is 1000 kg.                                                      | S0 value {'mass': 1000.0} | now {'mass_kg': 1000.0}
+  If the coefficient of friction is of 0.8                               | S0        | now {'mu': 0.8}
+  Push Force of 50 N                                                     | S0 value {'force': 50.0} | now {'applied_n': 50.0}
+  If it is of 100N.                                                      | S0        | now {'applied_n': 100.0}
+  The push force is 5000N.                                               | S0 value {'force': 5000.0} | now {'applied_n': 5000.0}
+  If the push force is it of 4999                                        | S0        | now {'applied_n': 4999.0}
+  Push Force 4999 N                                                      | S0 value {'force': 4999.0} | now -
+  2000N                                                                  | S0        | now {'applied_n': 2000.0}
+  Imagine a box on a plane surface.                                      | S0 cue    | now {'mass_kg': 1000.0, 'applied_n': 0.0, 'push_angle_deg': 0.0, 'applied_dir': 'forward', 'pull_n': 0.0, 'pull_angle_deg': 0.0, 'pull_dir': 'forward', 'mu': 0.8, 'g': 10.0}
+  10kg                                                                   | S0 value {'mass': 10.0} | now {'mass_kg': 10.0}
+  A pushing force of 20N is acted at an angle of 30 degree with the hori | S0 value {'angle': 30.0, 'force': 20.0} | now {'applied_n': 20.0, 'push_angle_deg': 30.0}
+  And the coefficient of friction is of 0.5                              | S0        | now {'mu': 0.5}
+  If the pushing force is of 100N.                                       | S0 value {'force': 100.0} | now {'applied_n': 100.0}
+  If the pushing force is of 200N,                                       | S0 value {'force': 200.0} | now {'applied_n': 200.0}
+  If it is of 1000N.                                                     | S0        | now {'applied_n': 1000.0}
+  If the pushing force is 1000N.                                         | S0 value {'force': 1000.0} | now -
+  If it is of 100,000 Nm.                                                | S0        | now {'applied_n': 100000.0}
+  If the pushing force is of 100,000N.                                   | S0 value {'force': 100000.0} | now -
+  If it is of 20 N.                                                      | S0        | now {'applied_n': 20.0}
+  If the pushing force is of 20N.                                        | S0 value {'force': 20.0} | now -
+  50N                                                                    | S0        | now {'applied_n': 50.0}
+
+== 20261017-195329-de19: 14 lines
+  Consider a block of mass 5 kg resting on a rough floor.                | S0 cue   {'mass': 5.0, 'rough': 0.0} | now {'mass_kg': 5.0, 'applied_n': 0.0, 'push_angle_deg': 0.0, 'applied_dir': 'forward', 'pull_n': 0.0, 'pull_angle_deg': 0.0, 'pull_dir': 'forward', 'mu': 0.3, 'g': 9.81}
+  The coefficient of friction between the block and the floor is 0.2.    | S0 setup {'mu': 0.2} | now {'mu': 0.2}
+  Now we push it with a force of 20 newtons.                             | S0 value {'force': 20.0} | now {'applied_n': 20.0}
+  Now let us tilt the surface.                                           | S0 setup  | now {'mass_kg': 5.0, 'angle_deg': 30.0, 'mu': 0.2, 'applied_n': 0.0, 'applied_dir': 'up', 'pull_n': 0.0, 'pull_dir': 'up', 'g': 9.81}
+  Imagine the same block on an inclined plane at 30 degrees.             | S0 cue   {'angle': 30.0} | now -
+  With a coefficient of friction of 0.2 the block slides down the slope. | S0 setup {'mu': 0.2} | now -
+  What if we push it up the slope with 20 newtons? Let's see what happen | S0 cue   {'force': 20.0, 'force_dir': 'up'} | now {'applied_n': 20.0}
+test21                 ann shows 0 suggest 0 | want 1 found 0
+test22                 ann shows 0 suggest 1 | want 1 found 1
+      suggest orbit             A satellite works by moving around the Earth along a path called an orbit.
+test23                 ann shows 0 suggest 1 | want 1 found 1
+      suggest unit_circle       On the unit circle, the horizontal coordinates represent cosine while the vertical coordin
+fx:electricity_live    ann shows 0 suggest 1 | want 1 found 1
+      suggest dc_circuit        In series, r equivalent equals to r1 plus r2.
+fx:incline_live        ann shows 1 suggest 0 | want 1 found 1
+      show    block_on_surface  Consider a block of mass 5 kg resting on a rough floor.
+fx:incline_mode        ann shows 1 suggest 0 | want 1 found 1
+      show    block_on_surface  Consider a block of mass 5 kg resting on a rough floor.
+20261017-200923-76c3   ann shows 1 suggest 0 | want 1 found 1
+      show    block_on_surface  Imagine a box placed on the surface.
+
+54 lectures: shows precision 1.00 (3/3), recall 1.00 (3/3), shows + suggestions on the negative lectures: 0; suggest moments raised 3/4

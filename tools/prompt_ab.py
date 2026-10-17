@@ -5,6 +5,8 @@
     .venv/Scripts/python tools/prompt_ab.py --old SESSION[:i,j] ...    # the old prompt again (sampling variance)
     .venv/Scripts/python tools/prompt_ab.py --compare ...              # NEW = the N-way comparison rule + cue tags (F-013 S3)
     .venv/Scripts/python tools/prompt_ab.py --said ...                 # NEW = "never state a fact not said" (F-013 S3c)
+    .venv/Scripts/python tools/prompt_ab.py --sim ...                  # NEW = the live prompt + the closed-list sim
+                                                                       # field (F-014 S2); OLD = the live prompt
     .venv/Scripts/python tools/prompt_ab.py --named ...                # NEW = the named-subtopic rule (default: the
                                                                        # F-013 S2 parent rule); SESSION may be testN
     .venv/Scripts/python tools/prompt_ab.py --both SESSION[:i,j] ...   # old AND new prompt on gpt-oss-120b (sessions
@@ -96,6 +98,13 @@ def build(u: Unit, new: bool, settings: InterpreterSettings) -> P.BuiltPrompt:
     RULE: the parent field (F-013 S2, the outline as a tree) or the named-subtopic rule (V1 long test, 2026-10-06).
     Round 4 step B compared the hierarchy rule the same way."""
     saved, tags = P.SYSTEM_PROMPT, P.COMPARE_TAGS
+    if RULE == "sim":  # F-014 S2: OLD is the live prompt exactly, NEW adds only the sim field
+        P.SYSTEM_PROMPT = P.system_prompt(visual=True, hierarchy=False, named=False, said=True, sim=new)
+        try:
+            return P.build_prompt(u.state, u.lines, dynamic_budget=settings.dynamic_budget_tokens,
+                                  total_budget=settings.prompt_budget_tokens)
+        finally:
+            P.SYSTEM_PROMPT = saved
     P.SYSTEM_PROMPT = P.system_prompt(visual=True, hierarchy=False, named=new and RULE == "named",
                                       parent=new and RULE == "parent",
                                       compare=new and RULE == "compare",
@@ -127,7 +136,7 @@ def items(it: Interpretation) -> list[str]:
 def summary(it: Interpretation) -> dict:
     return {"topic": it.topic, "subtopic": it.subtopic, "parent": it.parent, "relation": it.relation,
             "kinds": sorted({a.act for a in it.acts}), "items": items(it), "concerns": len(it.concerns),
-            "visual": it.visual.model_dump() if it.visual else None}
+            "visual": it.visual.model_dump() if it.visual else None, "sim": it.sim}
 
 
 def select(units: list[Unit], spec: str) -> list[Unit]:
@@ -145,7 +154,7 @@ async def main(args: list[str]) -> None:
     both = "--both" in args
     global RULE
     RULE = ("named" if "--named" in args else "compare" if "--compare" in args else "said" if "--said" in args
-            else "parent")
+            else "sim" if "--sim" in args else "parent")
     specs = [a for a in args if not a.startswith("--")]
     cfg = load_config()
     settings = InterpreterSettings(**{k: v for k, v in cfg.section("understanding").items()

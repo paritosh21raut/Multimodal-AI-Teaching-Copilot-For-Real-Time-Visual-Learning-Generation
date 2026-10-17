@@ -15,7 +15,7 @@ from typing import Literal
 from pydantic import Field
 
 from copilot.simulation.base import (
-    Derived, Element, SimBase, SimLabel, Slot, Solution, Template, _Model, fmt, value_label,
+    Derived, Element, Read, SimBase, SimLabel, Slot, Solution, Template, _Model, fmt, value_label,
 )
 
 G = 6.674e-11
@@ -140,6 +140,10 @@ TEMPLATE = Template(
                      r"(?:town|campus|office|city|dish|tv|television|channel|navigation|state)s?\b|"
                      r"\b(?:sun|moon) ?(?:light|rise|set|screen|burn|day)\b", re.IGNORECASE),
     said_as=tuple((_around(b), "body", b) for b in BODIES),
+    # S2 (S1 open item): "the Moon orbits the Earth at 384000 km" is the Moon's distance from the Earth's centre (the
+    # radius of its orbit), not a height above the surface (unless "above" / "high" is said)
+    reads=(Read("length", r"\bmoon\b[^.;]*\b(?:orbit\w*|revolv\w*|goes (?:a)?round|moves (?:a)?round|circl\w*)\b[^.;]*$",
+                "radius_m", after=r"(?!\s*(?:above|over|high|from the surface|altitude))"),),
     results=re.compile(r"\b(?:speed|velocity|period|takes|time)\b", re.IGNORECASE),
     aliases=("orbit", "satellite", "orbital speed", "gravitation", "geostationary", "kepler"),
     restart_on=("altitude_m", "radius_m"),

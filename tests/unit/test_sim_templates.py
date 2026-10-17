@@ -161,7 +161,8 @@ def test_projectile_prints_only_what_was_said():
     s = solve("projectile", src("speed_mps"), speed_mps=20, angle_deg=45)
     assert s.derived == [] and s.labels["range"].text == "" and s.labels["speed"].text == "20 m/s"
     s = solve("projectile", src("speed_mps", "angle_deg"), speed_mps=20, angle_deg=30)  # from the ground (h absent)
-    assert [(d.id, d.text) for d in s.derived] == [("tf", "2.04 s"), ("R", "35.3 m"), ("H", "5.1 m")]
+    # S2: + the landing speed, √(u² + 2gh) = u from the ground
+    assert [(d.id, d.text) for d in s.derived] == [("tf", "2.04 s"), ("R", "35.3 m"), ("H", "5.1 m"), ("v_land", "20 m/s")]
     assert s.labels["ux"].text == "17.3 m/s" and s.labels["uy"].text == "10 m/s"
 
 
@@ -216,7 +217,8 @@ async def test_projectile_lecture_end_to_end():
     assert deck.sim_mode is None and eng._sims.suggestion is not None
     await lines.say("Let me show you what happens.")
     sim = live_sim(deck)
-    assert sim.template == "projectile" and derived(sim) == {"tf": "2.04 s", "R": "35.3 m", "H": "5.1 m"}
+    assert sim.template == "projectile" and derived(sim) == {"tf": "2.04 s", "R": "35.3 m", "H": "5.1 m",
+                                                  "v_land": "20 m/s"}  # S2: + landing speed (= u)
     rev = sim.playback.rev
     await lines.say("Now throw it at 45 degrees.")
     sim = live_sim(deck)

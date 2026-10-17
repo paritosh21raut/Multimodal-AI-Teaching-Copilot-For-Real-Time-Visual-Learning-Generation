@@ -588,6 +588,19 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .sim-svg { width: 100%; height: 100%; display: block; overflow: visible; font-family: var(--font-text); }
 .sim-full { position: absolute; inset: 0; z-index: 4; background: var(--stage-bg); display: grid; place-items: center; }
 .sim-full .sim-stage { width: 1400px; height: 942px; }
+/* S2: the graph strip under the motion (web/sims/graph.js): the motion keeps its aspect, a little smaller */
+.sim-stage.with-graph { display: flex; flex-direction: column; }
+.sim-stage.with-graph .sim-svg { height: auto; flex: 1 1 0; min-height: 0; }
+.sim-graph { display: block; width: 100%; flex: 0 0 auto; aspect-ratio: 1100 / 250; font-family: var(--font-text); }
+.sim-graph-axis { stroke: var(--sim-surface); stroke-width: 3; }
+.sim-graph-grid { stroke: var(--sim-surface); stroke-width: 1.5; opacity: 0.18; }
+.sim-graph-cursor { stroke: var(--sim-surface); stroke-width: 2.5; stroke-dasharray: 6 6; opacity: 0.7; }
+.sim-graph-name { font-size: 30px; fill: var(--ink); font-family: KaTeX_Math, "Cambria Math", serif; font-style: italic; }
+.sim-graph-line { fill: none; stroke: var(--ink); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
+.sim-graph-line.ghost { stroke: var(--sim-component); stroke-width: 3; opacity: 0.3; }
+.sim-graph-line.r-applied { stroke: var(--sim-applied); } .sim-graph-line.r-pull { stroke: var(--sim-pull); }
+.sim-graph-dot { fill: var(--ink); } .sim-graph-dot.r-applied { fill: var(--sim-applied); } .sim-graph-dot.r-pull { fill: var(--sim-pull); }
+.sim-graph-name.r-applied { fill: var(--sim-applied); } .sim-graph-name.r-pull { fill: var(--sim-pull); }
 .sim-full.closable { cursor: zoom-out; }
 .sim-surface { stroke: var(--sim-surface); stroke-width: 6; stroke-linecap: round; }
 .sim-surface.base { stroke-width: 4; opacity: 0.55; }
@@ -625,6 +638,7 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .sim-arrow.r-normal line { stroke: var(--sim-normal); } .sim-arrow.r-normal path { fill: var(--sim-normal); }
 .sim-arrow.r-friction line { stroke: var(--sim-friction); } .sim-arrow.r-friction path { fill: var(--sim-friction); }
 .sim-arrow.r-applied line { stroke: var(--sim-applied); } .sim-arrow.r-applied path { fill: var(--sim-applied); }
+.sim-arrow.r-pull line { stroke: var(--sim-pull); } .sim-arrow.r-pull path { fill: var(--sim-pull); }
 .sim-arrow.r-component line { stroke: var(--sim-component); } .sim-arrow.r-component path { fill: var(--sim-component); }
 .sim-label { font-size: 34px; font-weight: 650; fill: var(--ink); paint-order: stroke; stroke: var(--stage-bg); stroke-width: 7px; stroke-linejoin: round; }
 .sim-label .sym { font-family: KaTeX_Math, "Cambria Math", serif; font-style: italic; font-weight: 400; font-size: 38px; }
@@ -634,6 +648,7 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .sim-label.r-weight .sym { fill: var(--sim-weight); } .sim-label.r-normal .sym { fill: var(--sim-normal); }
 .sim-label.r-friction .sym { fill: var(--sim-friction); } .sim-label.r-applied .sym { fill: var(--sim-applied); }
 .sim-label.r-component .sym { fill: var(--sim-component); }
+.sim-label.r-pull .sym { fill: var(--sim-pull); }
 .sim-readout .card { fill: var(--sim-card); stroke: var(--line); stroke-width: 2; }
 .sim-readout .sim-label { stroke: none; }
 .sim-readout .tag { font-size: 20px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--muted); }

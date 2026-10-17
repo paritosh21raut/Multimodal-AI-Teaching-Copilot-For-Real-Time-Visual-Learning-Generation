@@ -139,6 +139,12 @@ class VisualHint(_Lenient):
         return " ".join(v.split())[:60]
 
 
+# F-014: the simulation templates the interpretation's sim hint may name (simulation.registry ORDER; a test keeps the two
+# in step)
+SIM_IDS = frozenset({"block_on_surface", "incline", "pendulum", "projectile", "dc_circuit", "wave", "orbit",
+                     "unit_circle"})
+
+
 class Interpretation(_Lenient):
     topic: str
     subtopic: str = ""
@@ -153,6 +159,14 @@ class Interpretation(_Lenient):
     subject_estimate: str = ""
     summary_delta: str = ""
     visual: Optional[VisualHint] = None
+    sim: str = ""  # F-014 S2: a simulation template id (SIM_IDS) the lines set up; "" = none (a hint, never a show)
+
+    @field_validator("sim", mode="before")
+    @classmethod
+    def _sim(cls, v: object) -> str:
+        # the closed list only: anything else ("none", a made-up id) is no hint
+        s = str(v or "").strip().lower()
+        return s if s in SIM_IDS else ""
 
     @field_validator("visual", mode="before")
     @classmethod

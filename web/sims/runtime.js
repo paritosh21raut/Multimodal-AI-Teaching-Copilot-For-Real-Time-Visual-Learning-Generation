@@ -6,8 +6,10 @@
 // picture tweens to the new geometry and the motion continues from where the block is (Track below).
 // Position is a closed-form function of time, never a sum of frame steps, so a paused / background window (Edge stops
 // animation frames for a window it does not paint) cannot drift. prefers-reduced-motion: 2 frames a second.
-import { html, useEffect, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
+import { html, useEffect, useLayoutEffect, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
 import { H, W } from "./draw.js";
+import { placeLabels } from "./layout.js";
+import { Graph } from "./graph.js";
 import * as blockOnSurface from "./block_on_surface.js";
 import * as incline from "./incline.js";
 import * as pendulum from "./pendulum.js";
@@ -82,6 +84,8 @@ export function SimStage({ b, full, onClick }) {
     st.current = { template: sim.template, v: { ...sim.drive }, track: makeTrack(), rev: -1, last: now(), t: 0 };
   }
   const s = st.current;
+  const svgRef = useRef(null);
+  useLayoutEffect(() => placeLabels(svgRef.current));  // after every frame: no label on another (layout.js)
   const clock = clockOf(b.id, sim.playback);
   const restart = s.rev !== sim.playback.rev && (sim.playback.t === 0 || s.rev === -1);
   s.rev = sim.playback.rev;
@@ -117,19 +121,23 @@ export function SimStage({ b, full, onClick }) {
   if (reducedMotion()) t = Math.floor(t * 2) / 2;
   s.t = t;
   s.track.update(mod.motion(sim.drive), t, restart);
-  let body = null;
+  let body = null, gt = null;
   try {
     body = mod.scene({ sim, v: s.v, u: s.track.at(t), at: (tt) => s.track.at(tt), t });
+    gt = mod.graphTime ? mod.graphTime({ sim, u: s.track.at(t), t }) : null;
   } catch (e) {
     console.error("simulation render failed", sim.template, e);
   }
-  return html`<div class=${"sim-stage" + (full ? " full" : "") + (onClick ? " clickable" : "")} onClick=${onClick}
+  // S2: the graph strip under the motion when shown (the unit circle's "graph" is its own sine curve, no series)
+  const graph = (sim.shown || []).includes("graph") && (sim.series || []).length > 0;
+  return html`<div class=${"sim-stage" + (full ? " full" : "") + (onClick ? " clickable" : "") + (graph ? " with-graph" : "")} onClick=${onClick}
       title=${onClick ? "Show the simulation full screen" : undefined}>
-    <svg class="sim-svg" viewBox=${`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img"
+    <svg ref=${svgRef} class="sim-svg" viewBox=${`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img"
       aria-label=${sim.title} data-template=${sim.template} data-state=${sim.playback.state} data-t=${t.toFixed(3)}
       data-u=${s.track.at(t).toFixed(4)}>
       ${body}
     </svg>
+    ${graph && html`<${Graph} sim=${sim} gt=${gt} />`}
   </div>`;
 }
 

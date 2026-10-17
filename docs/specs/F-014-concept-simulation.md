@@ -192,7 +192,45 @@ picture).
   changes; "mentioned" stand-ins (a cliff, "at an angle") are drawn but never printed; the circuit / orbit need the
   arrangement / body said before any computed value; the dock's Simulation button becomes Back to slides while one
   runs (the dock had no room for both).
-- **Open:** "the period is 0.2 s" does not set f (no inverse slots); "crest to trough is 3 m" is read as λ = 3 m;
+- **Open (closed in S2 except the last two):** "the period is 0.2 s" does not set f (no inverse slots); "crest to trough is 3 m" is read as λ = 3 m;
   "the string is 3 m long" is read as λ; the orbit's "at 384000 km" without "from" is the altitude; longitudinal waves,
   ellipses and cosine curves need templates of their own; the replay has only 3 cue moments (the recorded lectures
   rarely say "consider a …" with a template): the cue path is tested mostly by unit positives.
+
+## S2 result (2026-10-18)
+- **Part A.** (1) The dock's Simulation list was not empty: at 1536 px the dock is compact and
+  `.dock.compact .group button:not(.icon) span {display:none}` hid the rows' text (the picker sits in the dock group;
+  the Equation picker had the same bug); fixed + a browser test at the compact width. (2) Values popover names use
+  the theme's text tokens (light-mode contrast). (3) S0's Simulation button pushed the dock past 1536 px into icons
+  only; the dock is tighter: icon + name as before S1, icons only while My Notes is open, Simulation / Back to slides.
+  (4) Push and pull (below). (5) Stage labels: one deterministic layout (`web/sims/layout.js`): each label tries its
+  home, then fixed offsets, avoiding other labels, arrows and strokes (surfaces, strings, wires, the wave); off-stage
+  homes are clamped back; the readout card goes to the first free corner. `test_sim_labels_browser.py` measures every
+  label box in all 8 templates and both themes.
+- **Forces.** `applied_n` = push (arrow onto the block at its angle), `pull_n` = pull (tail on the block, pointing
+  away at its angle); both can act. Direction per force: forward / back on the floor, up / down on the incline;
+  "with / against the motion" is read relative to the motion said in the line (an unsaid direction = forward / up the
+  slope). Friction is printed, "(kinetic)" or "(static)". Each force gets its own angle ("pushed at 30 degrees and
+  pulled at 20"). A lifted block prints a note only when N is known.
+- **Graphs.** `Solution.series` (<= 2 panels, <= 3 lines, <= 400 points each; Python ticks): block / incline s-t and
+  v-t over the run, pendulum theta-t (RK4, two periods), projectile y-t and v_y-t, wave y-t at one particle (two
+  periods), circuit V-I per resistor and R_eq with the working point marked (no clock). The client draws each time
+  line up to the scene's clock time (`graphTime`) with a dashed cursor; unknown inputs -> the curve's shape only, no
+  numbers. Off by default; Show > Graph or "graph / plot" in a line. Orbit and unit circle have no series (the unit
+  circle already draws sin). New readout: projectile `v_land` "Speed on landing".
+- **Values said in another form** (`Template.reads`): wave "the (time) period is 0.2 s" -> f = 5 Hz, crest to trough
+  -> lambda = 2d, crest to trough height -> A = d/2, "a string 3 m long" sets nothing; orbit "the Moon orbits the
+  Earth at 384000 km" -> radius (altitude only with "above"). A changed value has source `computed`, counts as known,
+  and prints marked computed.
+- **Closed-list `sim` hint** (interpretation field, `prompt.SIM_RULE`): A/B on gpt-oss-120b (`prompt_ab.py --sim`,
+  3 positive + 2 negative units, 16,027 tokens): 5/5 valid, no item change from the rule, +55 prompt tokens per
+  call; sim right in 2/3 positives (missed the projectile), 0/2 false on negatives. **Not live:** too few units, and
+  nothing consumes it yet; the field parses to the closed list only.
+- **Eval:** `v2_eval values/sessions/detect` before / after (`verify_results/_eval/v2_s2_before.txt`, `_after.txt`):
+  values 82 P/R 1.00 (now incl. pull_n, pull_angle_deg), detect show precision 1.00 (3/3), recall 1.00, 0 shows or
+  suggestions on the negative lectures, topic chips 3/4. Detector: the verbs "pulled / pulling / pull it", "drag", "rope" reveal the pull, not the push; "a larger pull down the slope" (gravity) and "pulleys" do not (found in the simulator run).
+- **Runtime:** simulated lecture incline_mode.txt (real Groq, 11 interpretations, 0 fallbacks): cue -> simulation mode, floor -> incline switch, 30 -> 40 -> 45 degrees, double the mass, end cue -> 2 recap slides, then Pulleys.
+- **Review subagent** (graphs + forces + values): 3 confirmed parser bugs fixed (a pull's angle taken by the push via
+  the word "angle"; a second force's angle dropped; incline with / against fixed to one side). Open (plausible):
+  "tension 40 N" not read as the pull; an exact N = 0 prints "0 N (kinetic)"; "towards the left" not a direction;
+  "coefficient of friction 0.2" without "is / of"; forces are not carried on a floor / incline switch.

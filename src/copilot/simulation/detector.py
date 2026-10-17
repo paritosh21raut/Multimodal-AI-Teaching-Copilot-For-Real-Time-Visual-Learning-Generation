@@ -65,8 +65,12 @@ _END_LATER = re.compile(r"\b(?:later|afterwards|after (?:this|that|the break)|in
                         r"when (?:we|i|you)|until)\b", re.IGNORECASE)
 _REVEAL = (("friction", re.compile(r"\bfriction\w*\b", re.I)), ("normal", re.compile(r"\bnormal (?:force|reaction)\b", re.I)),
            ("weight", re.compile(r"\b(?:weight|gravity|gravitational force|mg)\b", re.I)),
-           ("applied", re.compile(r"\b(?:push\w*|pull\w*|applied force)\b", re.I)),
-           ("components", re.compile(r"\b(?:components?|resolve\w*|sin(?:e)? theta|cos(?:ine)? theta)\b", re.I)))
+           ("applied", re.compile(r"\b(?:push\w*|applied force)\b", re.I)),
+           # S2: the pull is its own force; verbs only: "a larger pull down the slope" (gravity) and pulleys are not it
+           ("pull", re.compile(r"\b(?:pull(?:ed|ing|s)|drag(?:ged|ging|s)?|rope)\b|\bpull\s+(?:it|on|the|this|a|an)\b"
+                               r"|\b(?:we|you|i|they|to|and|then|now)\s+pull\b", re.I)),
+           ("components", re.compile(r"\b(?:components?|resolve\w*|sin(?:e)? theta|cos(?:ine)? theta)\b", re.I)),
+           ("graph", re.compile(r"\b(?:graphs?|plot(?:ted)?)\b", re.I)))  # S2: the graph strip under the motion
 _NUMBER = re.compile(NUM, re.IGNORECASE)
 _RELATIVE_WORDS = re.compile(r"\b(?:double|triple|halve|half|twice|increase|decrease|reduce|raise|lower|remove the push|"
                              r"no push|stop pushing|frictionless|smooth|rough|no friction)\b", re.IGNORECASE)
@@ -161,7 +165,7 @@ def detect(text: str, before: tuple[str, ...] = (), meta: bool = False) -> Detec
     if tid:
         s = score(tid, text)
         return Detection(tid, "score" if s >= SCORE_MIN else "setup", values, reveal, score=s)
-    if values or _maybe_values(text):
+    if values or "graph" in reveal or _maybe_values(text):  # "let's look at the graph" reaches an open simulation
         return Detection("", "values", values, reveal)
     return Detection()
 

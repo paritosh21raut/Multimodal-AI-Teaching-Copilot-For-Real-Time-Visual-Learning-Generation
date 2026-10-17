@@ -98,7 +98,8 @@ def test_fixture_dry_run_fixes():
     assert {h.kind: h.value for h in heard("The coefficient of friction between the block and the floor is 0.2.")} == {"mu": 0.2}
     assert not [h for h in heard("The push and the friction together balance the pull down the slope.") if h.kind == "force_dir"]
     assert [h.text for h in heard("Now push it up a little.") if h.kind == "force_dir"] == ["up"]
-    assert [h.text for h in heard("What if we push it up the slope with 20 newtons?") if h.kind == "force_dir"] == ["up"]
+    # S2: with a value the direction is the force's own (each force has one)
+    assert [(h.role, h.text) for h in heard("What if we push it up the slope with 20 newtons?") if h.kind == "force"] ==         [("push", "up")]
 
 
 def test_review_fixes():
@@ -215,8 +216,8 @@ def test_results_and_other_units_are_not_inputs(line):
 
 
 def test_push_direction():
-    assert {h.kind: h.text for h in heard("push it with a force of 50 N down the incline")}["force_dir"] == "down"
-    assert {h.kind: h.text for h in heard("Now I push it up the slope with 20 N.")}["force_dir"] == "up"
+    assert {h.kind: h.text for h in heard("push it with a force of 50 N down the incline")}["force"] == "down"
+    assert {h.kind: h.text for h in heard("Now I push it up the slope with 20 N.")}["force"] == "up"
     assert {h.kind: h.text for h in heard("What if we push it up the slope?")}["force_dir"] == "up"
     # the noun is the weight's pull, not the push (simulated run 2026-10-17, incline_mode.txt)
     assert "force_dir" not in {h.kind for h in heard("A steeper slope means a larger pull down the slope.")}

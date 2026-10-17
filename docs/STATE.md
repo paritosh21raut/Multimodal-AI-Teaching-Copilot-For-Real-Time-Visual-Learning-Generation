@@ -1,6 +1,8 @@
 # Current State
 
-_Last updated: 2026-10-17: **V2 Concept Simulation S1 done** (simulation mode + recap, values without the slot, 6
+_Last updated: 2026-10-18: **V2 Concept Simulation S2 done** (part A fixes, push + pull forces, time-series graphs,
+values said in another form; the closed-list `sim` hint A/B'd, not live), 16,027 Groq tokens (A/B) + one simulated
+lecture (11 calls, ~21.7k prompt + completions, est. ~25k). Before that, 2026-10-17: **V2 Concept Simulation S1 done** (simulation mode + recap, values without the slot, 6
 templates, Suggest, `tools/v2_eval.py`), ≈ 22k Groq prompt tokens recorded in one simulated lecture (est. 25–28k with
 completions; the simulation path itself 0). Before that, 2026-10-17: **V2 Concept Simulation S0 done** on branch `V2-Concept-Simulation` (F-014), 18,582 Groq
 tokens (one simulated lecture; the simulation path itself 0). V1 (incl. V1.5 = old "V2" groups A–D) is done; V1c is
@@ -17,6 +19,21 @@ user's review of the paper and of group D, then the truthfulness bug below, then
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **V2 Concept Simulation S2 done (2026-10-18).** Details: F-014 "S2 result".
+  - **Part A:** Simulation picker rows were hidden by the compact dock rule (the picker sits inside the dock group;
+    the Equation picker had it too); Values names on theme tokens; the dock is tighter so icon + name fit at 1536 px
+    again (icons only while My Notes is open; Simulation / Back to slides swap); stage labels placed by one
+    deterministic layout (`web/sims/layout.js`), measured by a browser test across the 8 templates.
+  - **Forces:** push (arrow onto the block) and pull (tail on the block, pointing away), each with its own angle and
+    with / against the motion (incline: relative to the said motion, else up the slope); friction value printed.
+  - **Graphs:** s-t / v-t (block, incline), theta-t (pendulum), y-t / v_y-t (projectile), y-t (wave), V-I (circuit);
+    Python samples `Solution.series` (<= 400 points), the client draws up to the clock time with a cursor. Off by
+    default: Show > Graph or "graph / plot" said.
+  - **Values:** "the period is 0.2 s" -> f (computed), crest to trough -> lambda/2 (or 2A with height), "the string
+    is 3 m long" is not lambda, "the Moon orbits the Earth at 384000 km" -> radius.
+  - **Tests:** fast 1163 pass; browser 92 pass (one unnamed flake in test_simulation_browser.py on 1 of 4 reruns); `v2_eval` before / after unchanged (values 82 P/R
+    1.00, detect precision 1.00, 0 on negatives).
+  - **Next:** the user's look in the app; a larger `sim`-hint A/B before it goes live; S3.
 - **V2 Concept Simulation S1 done (2026-10-17).** Details: F-014 "S1 result".
   - **Simulation mode:** a shown simulation is a slide of its own; no new slides while it runs (interpretations
     collected, values still update it); ends by "let's get back to the slides", Back to slides (sim bar / dock),

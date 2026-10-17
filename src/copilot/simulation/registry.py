@@ -70,6 +70,7 @@ def solved(sim: SimBase, toggled: Optional[dict[str, bool]] = None, bump: bool =
     data = sim.model_dump()
     data.update(labels={k: v.model_dump() for k, v in sol.labels.items()},
                 derived=[d.model_dump() for d in sol.derived], drive=sol.drive, shown=shown,
+                series=[x.model_dump() for x in sol.series],
                 version=sim.version + 1)
     if bump:
         data["playback"] = {**data["playback"], "t": 0.0, "rev": data["playback"]["rev"] + 1}

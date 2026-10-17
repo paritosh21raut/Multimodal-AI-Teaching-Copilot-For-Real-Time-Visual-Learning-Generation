@@ -212,10 +212,10 @@ class SimulationController:
             if r.rough and "mu" in fields and sim.param_source.get("mu", "default") == "default" \
                     and sim.params.mu == 0:  # type: ignore[attr-defined]
                 out.append(("mu", ROUGH_MU, "default"))
-            if r.direction and "applied_dir" in fields and sim.param_source.get("applied_dir") != "teacher":
-                out.append(("applied_dir", r.direction, "said"))
-            if r.mode and "applied_mode" in fields and sim.param_source.get("applied_mode") != "teacher":
-                out.append(("applied_mode", r.mode, "said"))
+            for role, name, words in t.force_dirs:  # S2: each force's direction (up the slope, against the motion)
+                value = words.get(r.dirs.get(role, ""))
+                if value and name in fields and sim.param_source.get(name) != "teacher":
+                    out = [x for x in out if x[0] != name] + [(name, value, "said")]
             for name, value in r.mentioned:  # "from a cliff": drawn, its number unknown
                 if sim.param_source.get(name) not in ("said", "teacher") and name not in {x[0] for x in out}:
                     out.append((name, value, "mentioned"))
@@ -233,7 +233,9 @@ class SimulationController:
                     log.info("[SIM] %s", msg)
                     await self.e.bus.publish(SimulationNotice(slide_id=slide_id, text=msg))
                     continue
-                out = [x for x in out if x[0] != slot_name] + [(slot_name, v, "said")]
+                # S2: a value worked out from another form ("the period is 0.2 s": f) is computed, not said
+                out = [x for x in out if x[0] != slot_name] + [(slot_name, v, "computed" if slot_name in r.computed
+                                                                else "said")]
         if self.mode is not None:
             self.mode.last = last
         return out
@@ -518,12 +520,8 @@ class SimulationController:
                 return
             slot = str(args.get("slot") or "")
             fields = type(sim.params).model_fields
-            if slot == "applied_dir" and "applied_dir" in fields:
-                value: Any = "down" if args.get("value") == "down" else "up"
-            elif slot == "applied_mode" and "applied_mode" in fields:
-                value = "pull" if args.get("value") == "pull" else "push"
-            elif slot in fields and slot not in registry.template_of(sim).slot_map:  # another choice (circuit kind ...)
-                value = str(args.get("value") or "")
+            if slot in fields and slot not in registry.template_of(sim).slot_map:  # a choice (direction, circuit kind)
+                value: Any = str(args.get("value") or "")  # the params model refuses a value outside its Literal
             else:
                 t = registry.template_of(sim)
                 v = _num(args.get("value"))

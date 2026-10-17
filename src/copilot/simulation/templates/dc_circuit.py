@@ -9,13 +9,15 @@ The arrangement must be said ("in series", "in parallel") before anything that d
 """
 from __future__ import annotations
 
+import math
+
 import re
 from typing import Literal
 
 from pydantic import Field
 
 from copilot.simulation.base import (
-    Derived, Element, SimBase, Slot, Solution, Template, _Model, fmt, known, value_label,
+    Derived, Element, SimBase, Slot, Solution, Template, _Model, fmt, known, Line, graph, value_label,
 )
 
 VOLTAGE = r"battery|cell|emf|e\.m\.f|voltage|potential difference|p\.d|supply|source"
@@ -30,7 +32,7 @@ SLOTS = (
 ELEMENTS = (
     Element("cell", "Cell"), Element("wires", "Wires"), Element("resistors", "Resistors"),
     Element("current", "Current (conventional)"), Element("currents", "Currents"), Element("voltages", "Voltages"),
-    Element("readout", "Values"),
+    Element("graph", "Graph"), Element("readout", "Values"),
 )
 
 
@@ -97,7 +99,16 @@ def solve(p: DcCircuitParams, src: dict[str, str]) -> Solution:
                     text=text(V * I, "W")),
         ]
     drive = {"I": I, "I1": I1, "I2": I2, "series": 1.0 if series else 0.0}
-    return Solution(drive=drive, labels=labels, derived=derived)
+    # S2 graph: V-I of R1, R2 and the whole circuit (straight lines through 0: Ohm's law), each marked where it works
+    top = max(I1, I2, I)
+    k = si(top, "A")[0] / top  # displayed current units per ampere (mA: 1000)
+    iu = si(top, "A")[1]
+    line = lambda id, label, role, i, v: Line(id=id, label=label, role=role, xs=[0.0, 1.25 * i * k],  # noqa: E731
+                                              ys=[0.0, 1.25 * v], mark=(i * k, v))
+    series = [graph("V_I", "Voltage–current", ("I", iu), ("V", "V"),
+                    [line("r1", "R₁", "applied", I1, V1), line("r2", "R₂", "pull", I2, V2),
+                     line("eq", "R_eq", "ink", I, V)], all_ok, time=False)]
+    return Solution(drive=drive, labels=labels, derived=derived, series=series)
 
 
 def default_shown(p: DcCircuitParams, src: dict[str, str]) -> list[str]:

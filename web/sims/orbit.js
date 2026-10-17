@@ -35,8 +35,8 @@ export function scene({ sim, t }) {
   if (shown(sim, "radius")) {  // drawn to the top of the orbit, still while the satellite moves
     out.push(html`<line key="rad" class="sim-guide solid" data-el="radius" x1=${CX} y1=${CY} x2=${CX - RPX * 0.7071} y2=${CY - RPX * 0.7071} />`);
     out.push(html`<${Label} key="rl" x=${CX - RPX * 0.36 - 18} y=${CY - RPX * 0.36 - 6} label=${lb.radius} anchor="end" fallback="r" id="radius" />`);
-    if (lb.altitude && lb.altitude.text) {
-      out.push(html`<${Label} key="al" x=${CX + RPX * 0.7071 + 24} y=${CY + RPX * 0.7071 + 30} label=${lb.altitude} id="radius" />`);
+    if (lb.altitude && lb.altitude.text) {  // under r, in the open stage left of the orbit (a long value fits there)
+      out.push(html`<${Label} key="al" x=${CX - RPX * 0.36 - 18} y=${CY - RPX * 0.36 + 40} label=${lb.altitude} anchor="end" id="radius" />`);
     }
   }
   if (shown(sim, "satellite")) {

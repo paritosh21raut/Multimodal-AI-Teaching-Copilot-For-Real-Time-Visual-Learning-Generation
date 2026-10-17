@@ -18,10 +18,18 @@ from copilot.display.server import DisplayServer
 from copilot.presentation.deck import Deck
 
 
+# ports Chromium / Edge refuse to open (net::ERR_UNSAFE_PORT): the OS may hand one out (5060 did, F-014 S2)
+_UNSAFE = {1719, 1720, 1723, 2049, 3659, 4045, 4190, 5060, 5061, 6000, 6566, 6665, 6666, 6667, 6668, 6669, 6679,
+           6697, 10080}
+
+
 def free_port() -> int:
-    with socket.socket() as s:
-        s.bind(("127.0.0.1", 0))
-        return s.getsockname()[1]
+    while True:
+        with socket.socket() as s:
+            s.bind(("127.0.0.1", 0))
+            port = s.getsockname()[1]
+        if port > 1023 and port not in _UNSAFE:
+            return port
 
 
 class Harness:

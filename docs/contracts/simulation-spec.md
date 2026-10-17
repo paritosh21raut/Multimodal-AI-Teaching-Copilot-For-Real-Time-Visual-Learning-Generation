@@ -22,6 +22,12 @@ SimBase
   drive: {name: float}               # numbers the renderer draws with (finite); the picture's only physics input
   annotations: [Annotation{target, text, source: said | added}]   # ≤ 3 (S2)
   playback: Playback{state: playing | paused, speed 0.25..2, t ≥ 0 (s, when it was anchored), rev ≥ 0}
+  series: [Series] ≤ 2               # S2: graph panels, drawn when "graph" is in shown (off by default)
+    Series{id, title, x_symbol, x_unit, y_symbol, y_unit, time: bool (x is the clock: drawn up to it with a cursor),
+           x_scale (seconds per x unit: ms / µs axes), x_range, y_range (non-empty), x_ticks, y_ticks: [Tick{value,
+           text}] ([] = unknown inputs: shape only, no numbers), lines: [Line] 1..3}
+    Line{id, label ("" when alone), role (ink | applied | pull ...: colour), xs, ys (same length ≤ 400, finite),
+         mark: [x, y] | null (a working point, e.g. the circuit's I, V)}
   origin: cue | policy | llm | teacher
 ```
 
@@ -37,6 +43,8 @@ SimBase
 | `wave` | `wavelength_m` 0.001–1e4 (2) · `frequency_hz` 0.01–1e5 (1) · `amplitude_m` 1e-4–100 (0.3; named: "amplitude", "high") | axis, wave, particle, wavelength, amplitude, readout. v = fλ (a said speed is a result, not an input), T in s / ms / µs; transverse on a string only (sound, light, standing, square waves are guarded) |
 | `orbit` | `altitude_m` 0–1e13 (400 km) · `radius_m` 1e5–1e13 (absent; centre-to-centre, wins over altitude) · `body` earth \| moon \| mars \| sun \| jupiter (choice; needed for every computed value) | body, path, satellite, velocity, gravity, radius, readout. v = √(GM/r), T (s / min / h / days), g(r); ellipses and comets are guarded |
 | `unit_circle` | `angle_deg` 0–720 (30) | axes, circle, point, graph, marked, components, readout. sin, cos, tan ("undefined" at 90° / 270°), true minus signs; a negative or π angle is refused, not misread |
+
+| S2 additions | block: `pull_n`, `pull_angle_deg`, `applied_dir` / `pull_dir` forward \| back; incline: `pull_n`, `pull_dir` up \| down; `graph` element in block, incline, pendulum, projectile, dc_circuit, wave; projectile derived `v_land`; drive `lift_note` (block) | + `pull` element (rope, tail on the block) |
 
 ## Rules
 - **Single source of truth:** every number shown is computed in Python (`registry.solved`): labels, derived values
@@ -58,6 +66,11 @@ SimBase
   `results` (words before a number that make it a result, not an input: "the range is 40 m"), `said_as` ((regex,
   slot, value): a number said in words, "thrown horizontally" → θ 0; a str value sets a choice field, "in parallel").
   Slot: `present` / `present_value` (the thing is there, its number unsaid → source `mentioned`).
+- **Template fields (S2):** `force_dirs` ((role push | pull, params field, spoken word -> value): "with / against the
+  motion", "up / down the slope"); `reads` (`Read{kind, before, slot, factor, inverse, after}`: a value said in another
+  form, tried before the slot names; `slot ""` = not an input; `inverse` or `factor != 1` -> source `computed`).
+- **`computed` source (S2):** a slot set from another form of a said value (f = 1 / T) is known and prints marked
+  computed.
 - **A choice field** (`arrangement`, `body`, `applied_mode`) is a `Literal` in the params model; its source is in
   `param_source` like a slot's; /control sets it with `sim_set {slot, value}`.
 - **Adding a template:** a module in `simulation/templates/` (slots, `Params` / `Sim` models, `ELEMENTS`, `LABELS`,

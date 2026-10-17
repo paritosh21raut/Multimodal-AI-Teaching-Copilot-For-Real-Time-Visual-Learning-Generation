@@ -8,6 +8,8 @@ export const TWEEN = [];
 const X0 = 120, X1 = 1040, AXIS = 430, LPX = (X1 - X0) / 2, NPTS = 240, PARTICLE = X0 + LPX * 1.25;
 
 export const motion = () => ({ a: 0, dir: 0, L: 1, rest: 0 });  // the scene keeps its own time
+// S2 graph: the real time of the marked particle (the picture runs at shown_f), over the curve's two periods
+export const graphTime = ({ sim, t }) => { const d = sim.drive; return d.f > 0 ? ((t * d.shown_f) / d.f) % (2 / d.f) : null; };
 
 export function scene({ sim, t }) {
   const d = sim.drive, lb = sim.labels || {};

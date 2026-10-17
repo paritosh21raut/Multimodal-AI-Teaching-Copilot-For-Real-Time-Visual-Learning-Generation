@@ -14,7 +14,7 @@
     {"t": "block_on_surface", "last": null, "line": "The kinetic friction coefficient is 0.15.", "expect": {"mu": 0.15}},
     {"t": "block_on_surface", "last": null, "line": "Now the frictional force will be 10 newtons.", "expect": {}},
     {"t": "block_on_surface", "last": null, "line": "The resultant force is 5 N.", "expect": {}},
-    {"t": "block_on_surface", "last": null, "line": "Pull it with a rope at 37 degrees with a force of 50 N.", "expect": {"applied_n": 50, "push_angle_deg": 37}},
+    {"t": "block_on_surface", "last": null, "line": "Pull it with a rope at 37 degrees with a force of 50 N.", "expect": {"pull_n": 50, "pull_angle_deg": 37}},
     {"t": "block_on_surface", "last": "applied_n", "line": "Increase the force by 10 newtons.", "expect": {"applied_n": 30}},
     {"t": "block_on_surface", "last": "applied_n", "line": "Reduce the push to 5 N.", "expect": {"applied_n": 5}},
     {"t": "incline", "last": null, "line": "Raise the incline to 50 degrees.", "expect": {"angle_deg": 50}},

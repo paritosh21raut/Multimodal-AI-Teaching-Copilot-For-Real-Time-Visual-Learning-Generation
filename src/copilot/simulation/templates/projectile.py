@@ -16,7 +16,7 @@ from typing import Literal
 from pydantic import Field
 
 from copilot.simulation.base import (
-    Derived, Element, SimBase, Slot, Solution, Template, _Model, fmt, known, value_label,
+    Derived, Element, SimBase, Slot, Solution, Template, _Model, fmt, known, sampled, time_graph, value_label,
 )
 from copilot.simulation.names import ANGLE, G
 
@@ -36,7 +36,7 @@ SLOTS = (
 ELEMENTS = (
     Element("ground", "Ground"), Element("ball", "Ball"), Element("path", "Path"), Element("launch", "Launch velocity"),
     Element("components", "Velocity components"), Element("velocity", "Velocity now"), Element("range", "Range"),
-    Element("peak", "Maximum height"), Element("readout", "Values"),
+    Element("peak", "Maximum height"), Element("graph", "Graph"), Element("readout", "Values"),
 )
 
 
@@ -91,10 +91,19 @@ def solve(p: ProjectileParams, src: dict[str, str]) -> Solution:
             Derived(id="tf", label="Time of flight", symbol="t_flight", value=tf, unit="s", text=f"{fmt(tf)} s"),
             Derived(id="R", label="Range", symbol="R", value=R, unit="m", text=f"{fmt(R)} m"),
             Derived(id="H", label="Maximum height", symbol="H", value=H, unit="m", text=f"{fmt(H)} m"),
+            Derived(id="v_land", label="Speed on landing", symbol="v_land", value=math.sqrt(u * u + 2 * g * h),
+                    unit="m/s", text=f"{fmt(math.sqrt(u * u + 2 * g * h))} m/s"),
         ]
     drive = {"ux": ux, "uy": uy, "h": h, "g": g, "tf": tf, "R": R, "H": H, "theta_deg": p.angle_deg,
              "v_max": math.sqrt(u * u + 2 * g * h)}  # the fastest it goes (it lands): the arrows' common scale
-    return Solution(drive=drive, labels=labels, derived=derived)
+    # S2 graph: height and vertical velocity over the flight (up +), as the ball flies on the stage
+    series = []
+    if flies:
+        ts, ys = sampled(lambda t: h + uy * t - 0.5 * g * t * t, 0.0, tf)
+        _, vys = sampled(lambda t: uy - g * t, 0.0, tf)
+        series = [time_graph("y_t", "Height–time", ("y", "m"), ts, ys, all_ok),
+                  time_graph("vy_t", "Vertical velocity–time", ("v_y", "m/s"), ts, vys, all_ok, role="applied")]
+    return Solution(drive=drive, labels=labels, derived=derived, series=series)
 
 
 def default_shown(p: ProjectileParams, src: dict[str, str]) -> list[str]:

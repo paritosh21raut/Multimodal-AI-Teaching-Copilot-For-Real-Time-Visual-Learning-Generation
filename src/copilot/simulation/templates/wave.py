@@ -8,13 +8,15 @@ contradict each other.
 """
 from __future__ import annotations
 
+import math
+
 import re
 from typing import Literal
 
 from pydantic import Field
 
 from copilot.simulation.base import (
-    Derived, Element, SimBase, Slot, Solution, Template, _Model, fmt, known, value_label,
+    Derived, Element, Read, SimBase, Slot, Solution, Template, _Model, fmt, known, sampled, time_graph, value_label,
 )
 
 SLOTS = (
@@ -29,7 +31,7 @@ SLOTS = (
 )
 ELEMENTS = (
     Element("axis", "Rest position"), Element("wave", "Wave"), Element("particle", "One particle"),
-    Element("wavelength", "Wavelength"), Element("amplitude", "Amplitude"), Element("readout", "Values"),
+    Element("wavelength", "Wavelength"), Element("amplitude", "Amplitude"), Element("graph", "Graph"), Element("readout", "Values"),
 )
 
 
@@ -61,7 +63,7 @@ SHOWN_HZ = 1.2  # the fastest the picture oscillates; a faster wave is shown slo
 def solve(p: WaveParams, src: dict[str, str]) -> Solution:
     lam, f, A = p.wavelength_m, p.frequency_hz, p.amplitude_m
     said = lambda s: src.get(s, "default")  # noqa: E731
-    printed = lambda s: said(s) in ("said", "teacher")  # noqa: E731
+    printed = lambda s: said(s) in ("said", "teacher", "computed")  # noqa: E731  (computed: from 1/T, S2)
     labels = {
         "wavelength": value_label("λ", lam, "m", said("wavelength_m"), printed("wavelength_m")),
         "amplitude": value_label("A", A, "m", said("amplitude_m"), printed("amplitude_m")),
@@ -75,7 +77,12 @@ def solve(p: WaveParams, src: dict[str, str]) -> Solution:
         derived.append(Derived(id="T", label="Period", symbol="T", value=1 / f, unit="s", text=period_text(1 / f)))
     shown_f = min(f, SHOWN_HZ)
     drive = {"lambda": lam, "f": f, "A": A, "shown_f": shown_f, "slowed": f / shown_f}
-    return Solution(drive=drive, labels=labels, derived=derived)
+    # S2 graph: the marked particle's displacement over two periods (web/sims/wave.js draws it 1.25 λ from the left
+    # end, so y = A cos 2πft at the real time); numbers when f and A are known
+    ts, ys = sampled(lambda t: A * math.cos(2 * math.pi * f * t), 0.0, 2 / f)
+    series = [time_graph("y_t", "Displacement–time (the marked particle)", ("y", "m"), ts, ys,
+                         known(src, _SLOTS, "frequency_hz", "amplitude_m"))]
+    return Solution(drive=drive, labels=labels, derived=derived, series=series)
 
 
 def default_shown(p: WaveParams, src: dict[str, str]) -> list[str]:
@@ -106,4 +113,19 @@ TEMPLATE = Template(
     results=re.compile(r"\b(?:speed|velocity|travels? at|moves? at)\b", re.IGNORECASE),
     aliases=("wave", "wavelength", "frequency", "amplitude", "v = f lambda", "crest", "transverse"),
     restart_on=("wavelength_m", "frequency_hz"),
+    # S2 (S1 open items): values said in another form
+    reads=(
+        # "the period is 0.2 s": f = 1 / T (computed)
+        Read("time", r"\b(?:time period|period|periodic time|time (?:taken )?for one (?:complete )?(?:oscillation|"
+                     r"vibration|cycle|wave))\b[^.,;]*$", "frequency_hz", inverse=True),
+        # crest to trough in height is twice the amplitude; along the wave it is half the wavelength
+        Read("length", r"\b(?:crest (?:to|and) (?:the |a |its )?(?:nearest |next |adjacent )?trough|trough (?:to|and) (?:the |a )?crest)\b[^.,;]*\b(?:height|high|vertical\w*|tall)\b[^.,;]*$|\b(?:height|vertical distance)\b"
+                       r"[^.,;]*\b(?:crest (?:to|and) (?:the |a |its )?(?:nearest |next |adjacent )?trough|trough (?:to|and) (?:the |a )?crest)\b[^.,;]*$", "amplitude_m", factor=0.5),
+        Read("length", r"\b(?:crest (?:to|and) (?:the |a |its )?(?:nearest |next |adjacent )?trough|trough (?:to|and) (?:the |a )?crest)\b[^.,;]*$", "amplitude_m", factor=0.5, after=r"\s*(?:high|tall|vertically|in height)\b"),
+        Read("length", r"\b(?:crest (?:to|and) (?:the |a |its )?(?:nearest |next |adjacent )?trough|trough (?:to|and) (?:the |a )?crest)\b[^.,;]*$", "wavelength_m", factor=2.0),
+        # "the string is 3 m long", "a wave on a string 3 m long": the string, not the wave
+        Read("length", r"\b(?:string|rope|slinky|spring|wire|cord|pipe|tube)\b(?:\s+\w+){0,3}\s*$",
+             after=r"\s*(?:long|in length)\b"),
+        Read("length", r"", after=r"\s*long\s+(?:string|rope|slinky|spring|wire|cord|pipe|tube)\b"),
+    ),
 )

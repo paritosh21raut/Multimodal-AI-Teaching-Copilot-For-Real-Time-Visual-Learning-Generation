@@ -80,10 +80,11 @@ def spoken_number(s: str) -> Optional[float]:
 @dataclass(frozen=True)
 class Heard:
     kind: str           # mass | angle | force | speed | length | voltage | resistance | current | frequency | time |
-    #                     mu | g | force_dir | force_mode | rough
+    #                     mu | g | force_dir | rough
     value: float = 0.0  # in the slot's unit (kg, degrees, N, m/s, m, V, Ω, A, Hz, s, -, m/s²)
     said: str = ""      # the words as heard ("five kilograms")
-    text: str = ""      # for force_dir: "up" / "down"
+    text: str = ""      # a force's direction (force, force_dir): up | down (the slope), with | against (the motion)
+    role: str = ""      # force, force_dir: push | pull (S2: two forces; "" = not said, the push)
     start: int = -1     # where in the line (resolve: the slot named just before it)
     loose: bool = False  # force with no push word ("if it is of 100 N"): the push only with a simulation open
     odd_unit: bool = False  # "Nm" / "Nf" (Whisper's N): a force only with a force context
@@ -136,8 +137,70 @@ _DOWN = re.compile(r"\b(?:down|downwards?|downhill)\s+(?:the|this|along the)?\s*
 # the verb, said by someone ("we push it up", "now pull the block down"), not the noun ("a larger pull down the slope")
 _PUSH_DIR = re.compile(r"(?:^|\b(?:we|you|i|let's|let us|now|then|and|to|will|can|must|if)\s+|,\s*)(?:push|pull|drag)\w*\s+"
                        r"(?:it\s+|the (?:block|box|body)\s+)?(?:up|down)\b", re.IGNORECASE)
-_MODE = re.compile(r"\b(?:push\w*|pull\w*|rope|string)\b", re.IGNORECASE)
+# "now pull it the other way", "push it backwards", "pull it in the direction of motion" (S2)
+_VERB_DIR = re.compile(r"(?:^|\b(?:we|you|i|let's|let us|now|then|and|to|will|can|must|if)\s+|,\s*)(?:push|pull|drag)\w*\s+"
+                       r"(?:it\s+|the (?:block|box|body)\s+)?(?:back(?:wards?)?\b|forwards?\b|the other way\b|to the "
+                       r"(?:left|right)\b|(?:in|along) the (?:same |opposite )?direction|opposite|against)",
+                       re.IGNORECASE)
+# S2 (user 2026-10-18): a push and a pull are two forces; the verb nearest before the value says which ("pull it with
+# 10 N and push with 20 N"), else the one just after it ("a force of 20 N pulling the block")
+_PULL_W = re.compile(r"\b(?:pull\w*|drag\w*|tow(?:s|ed|ing)?|rope|string|haul\w*)\b", re.IGNORECASE)
+_PUSH_W = re.compile(r"\b(?:push\w*|shov\w*)\b", re.IGNORECASE)
+# a force's direction, in its own clause: up / down the slope, with / against the motion (the template maps these:
+# on the floor "against" is to the left, on an incline it is up the slope)
+_WITH = re.compile(r"\b(?:in|along)\s+the\s+(?:same\s+)?direction\s+of\s+(?:the\s+|its\s+)?motion|\bforwards?\b|"
+                   r"\bto\s+the\s+right\b|\bin\s+the\s+same\s+direction\b", re.IGNORECASE)
+_AGAINST = re.compile(r"\b(?:opposite|against|opposing)\s+(?:to\s+)?(?:the\s+)?(?:direction\s+of\s+)?(?:the\s+|its\s+)?"
+                      r"(?:motion|movement)|\bopposing\s+force|\bin\s+the\s+opposite\s+direction|\bopposite\s+direction|\bbackwards?\b|"
+                      r"\bto\s+the\s+left\b|\bthe\s+other\s+way\b|\bback\b", re.IGNORECASE)
+_CLAUSE_END = re.compile(r",|;|\.\s|\s(?:and|but|while|whereas|then)\s", re.IGNORECASE)
 CONTEXT_WORDS = 7  # a force value's role is read from the words just before it
+
+
+def _role(before: str, after: str) -> str:
+    """push | pull for a force said here: the verb nearest before it, else the first just after it, else ""."""
+    hits = [(m.start(), "push") for m in _PUSH_W.finditer(before)] + [(m.start(), "pull") for m in _PULL_W.finditer(before)]
+    if hits:
+        return max(hits)[1]
+    hits = [(m.start(), "push") for m in _PUSH_W.finditer(after)] + [(m.start(), "pull") for m in _PULL_W.finditer(after)]
+    return min(hits)[1] if hits else ""
+
+
+def _clause(t: str, start: int, end: int) -> str:
+    """The clause around t[start:end] (from the last comma / "and" before it to the next one after it)."""
+    a = 0
+    for m in _CLAUSE_END.finditer(t, 0, start):
+        a = m.end()
+    m = _CLAUSE_END.search(t, end)
+    return t[a:m.start() if m else len(t)]
+
+
+# the way the block moves, said in the line ("if the block is moving up and we push opposite to the motion"): then
+# "with / against the motion" is that way or the other (S2 review: "against" was always up the slope / to the left)
+_MOVING = re.compile(r"\b(?:mov\w*|slid\w*|go(?:es|ing)?|travel\w*|slipp\w*|accelerat\w*)\s+(?:up|down|to\s+the\s+left|"
+                     r"to\s+the\s+right|left|right|forwards?|backwards?)\b", re.IGNORECASE)
+
+
+def _direction(clause: str, line: str = "") -> str:
+    """up | down | with | against said in this clause ("" = none). The slope words win (they are the plainer). With /
+    against the motion becomes up / down (or with / against the floor's forward) when the line says which way the block
+    moves, outside this clause."""
+    if _DOWN.search(clause):
+        return "down"
+    if _UP.search(clause):
+        return "up"
+    if re.search(r"\bfriction\w*\b", clause, re.IGNORECASE):
+        return ""  # "friction acts opposite to the motion" is about friction, not the push
+    d = "against" if _AGAINST.search(clause) else "with" if _WITH.search(clause) else ""
+    m = _MOVING.search(line.replace(clause, " ")) if d and line else None
+    if m:
+        way = m.group(0).lower()
+        if re.search(r"\b(?:up|down)\b", way):
+            up = bool(re.search(r"\bup\b", way))
+            return ("up" if up else "down") if d == "with" else ("down" if up else "up")
+        back = bool(re.search(r"left|backward", way))  # the floor: forward is to the right
+        return d if not back else ("against" if d == "with" else "with")
+    return d
 
 
 def _factor(kind: str, unit: str) -> float:
@@ -176,6 +239,7 @@ def heard(text: str) -> list[Heard]:
         taken.append(span)
         out.append(h)
 
+    force_end = 0  # where the last force value of the line ended (its role words end there)
     for kind, rx in _UNIT_RX:
         for m in rx.finditer(t):
             v = spoken_number(m.group("num"))
@@ -191,10 +255,21 @@ def heard(text: str) -> list[Heard]:
                 # "a friction of 5 N" / "the weight is 49 N" state a result; "push it with 20 N" is the input
                 if _RESULT.search(before):
                     continue
-                pushed = bool(_PUSH.search(before) or _PUSH.search(t[m.end():m.end() + 30]))
+                after = t[m.end():m.end() + 30]
+                pushed = bool(_PUSH.search(before) or _PUSH.search(after))
                 odd = bool(re.search(r"N\.? ?m|N[fF]$", unit))
+                # the role's words reach back to the previous force of the line ("pull it with a rope at 37 degrees with a
+                # force of 50 N"), not past it ("pull it with 10 N and push with 20 N")
+                role = _role(t[force_end:m.start()], after)
+                force_end = m.end()
+                # the direction in the value's clause, or in the clause of its verb ("push it up the slope, with 20 N")
+                d = _direction(_clause(t, m.start(), m.end()), t)
+                if not d and role:
+                    verb = max([x.start() for x in (_PUSH_W if role == "push" else _PULL_W).finditer(t, 0, m.start())],
+                               default=-1)
+                    d = _direction(_clause(t, verb, verb + 1), t) if verb >= 0 else ""
                 put(Heard("force", v * _factor(kind, unit), m.group(0), start=m.start(), loose=not pushed,
-                          odd_unit=odd), m.span())
+                          odd_unit=odd, role=role, text=d), m.span())
                 continue
             put(Heard(kind, v * _factor(kind, unit), m.group(0), start=m.start()), m.span())
     for m in _MU.finditer(t):
@@ -211,19 +286,15 @@ def heard(text: str) -> list[Heard]:
         v = spoken_number(m.group("num"))
         if v is not None:
             put(Heard("g", v, m.group(0), start=m.start()), m.span("num"))
-    # a direction belongs to a push said in the same line ("push it up the slope with 20 newtons") or straight after
-    # the push verb ("now push it up"); "balance the pull down the slope" is about the weight, not the push
-    if any(h.kind == "force" for h in out) or _PUSH_DIR.search(t):
-        if _DOWN.search(t):
-            out.append(Heard("force_dir", text="down", said=_DOWN.search(t).group(0)))  # type: ignore[union-attr]
-        elif _UP.search(t):
-            out.append(Heard("force_dir", text="up", said=_UP.search(t).group(0)))  # type: ignore[union-attr]
-    # a force at an angle pushes the block into the floor or pulls it up from it: said with the force or the angle
-    if any(h.kind in ("force", "angle") for h in out):
-        m = _MODE.search(t)
+    # a direction belongs to a force said in its clause (the force's own text, above) or straight after the verb with
+    # no value ("now push it up", "pull it the other way"); "balance the pull down the slope" is about the weight
+    if not any(h.kind == "force" for h in out):
+        m = _PUSH_DIR.search(t) or _VERB_DIR.search(t)
         if m:
-            out.append(Heard("force_mode", text="pull" if m.group(0).lower().startswith(("pull", "rope", "string"))
-                             else "push", said=m.group(0)))
+            d = _direction(_clause(t, m.start(), m.end()), t)
+            if d:
+                out.append(Heard("force_dir", text=d, said=m.group(0),
+                                 role="pull" if _PULL_W.search(m.group(0)) else "push"))
     return sorted(out, key=lambda h: (h.start < 0, h.start))
 
 
@@ -244,8 +315,8 @@ _STEP = re.compile(rf"\b(?P<verb>increase[sd]?|raise[sd]?|reduce[sd]?|decrease[s
 _FACTORS = {"double": 2.0, "doubles": 2.0, "doubled": 2.0, "doubling": 2.0, "twice": 2.0, "two times": 2.0,
             "triple": 3.0, "tripled": 3.0, "three times": 3.0, "quadruple": 4.0,
             "halve": 0.5, "halved": 0.5, "halving": 0.5, "half": 0.5}
-_NO_PUSH = re.compile(r"\b(?:remove (?:the )?(?:push|force)|no push|stop pushing|without (?:the |any )?push|"
-                      r"take away the (?:push|force)|let go)\b", re.IGNORECASE)
+_NO_PUSH = re.compile(r"\b(?:remove (?:the )?(?:push|pull|force)|no (?:push|pull)|stop (?:pushing|pulling)|"
+                      r"without (?:the |any )?(?:push|pull)|take away the (?:push|pull|force)|let go)\b", re.IGNORECASE)
 _TORQUE = re.compile(r"\b(?:torque|moment|work|energy|joules?)\b", re.IGNORECASE)
 _NEW_MU = re.compile(rf"\bnew\s+(?:{CONN}\s*){{1,2}}{NUM}", re.IGNORECASE)  # Whisper's "mu" ("new equal to 0.2")
 
@@ -289,11 +360,11 @@ class Resolved:
     values: list[tuple[str, float, str]] = field(default_factory=list)  # (slot, value, the words as heard)
     last: Optional[str] = None      # the slot changed or mentioned last in this line (the next bare number's slot)
     rough: bool = False
-    direction: str = ""             # "up" / "down" said with a push
-    mode: str = ""                  # "push" / "pull" said with a force or an angle
+    dirs: dict[str, str] = field(default_factory=dict)  # role (push | pull) -> up | down | with | against (S2)
     choices: dict[str, str] = field(default_factory=dict)  # a choice said in words ("in parallel": arrangement)
     mentioned: list[tuple[str, float]] = field(default_factory=list)  # there, number unsaid: (slot, stand-in)
     why: list[str] = field(default_factory=list)  # how each value was read (logs, tests)
+    computed: set[str] = field(default_factory=set)  # S2: slots set from another form (1 / T, crest to trough x 2)
 
 
 _NEGATIVE = re.compile(r"(?:\bminus|\bnegative|−|-)\s*$", re.IGNORECASE)
@@ -302,17 +373,64 @@ _PI_BY = re.compile(r"(?:\bpi|π)\s*(?:by|over|/)\s*$", re.IGNORECASE)
 
 
 def _named(t: "Template", words: str) -> Optional[str]:
-    """The slot these words name ("the pushing force" -> applied_n), the last one named when several are."""
-    best: tuple[int, Optional[str]] = (-1, None)
+    """The slot these words name ("the pushing force" -> applied_n), the last one named when several are. A name
+    inside a longer name of another slot does not count ("force" in "pulling force" names the pull, not the push)."""
+    hits: list[tuple[int, int, str]] = []
     for s in t.slots:
         if not s.names:
             continue
         for m in re.finditer(rf"\b(?:{s.names})\b", words, re.IGNORECASE):
             if s.kind == "force" and _RESULT.search(" ".join(words[:m.start()].split()[-3:]) + " " + m.group(0)):
                 continue  # "the friction force" names a result, not the push
-            if m.start() > best[0]:
-                best = (m.start(), s.name)
-    return best[1]
+            hits.append((m.start(), m.end(), s.name))
+    hits = [h for h in hits if not any(o[2] != h[2] and o[0] <= h[0] and h[1] <= o[1] and o[1] - o[0] > h[1] - h[0]
+                                       for o in hits)]
+    return max(hits)[2] if hits else None
+
+
+def _angle_slot(t: "Template", line: str, pos: int, last: Optional[str], items: list[Heard]) -> Optional[str]:
+    """The angle of which force (S2: push or pull): one named ("the angle of the pull"), else the force said nearest
+    before it in the line, else the force (or its angle) changed last, else the push's."""
+    angles = [s for s in t.slots if s.kind == "angle" and s.follows]
+    # a name counts only when it names one force's angle ("the angle of the pull"): the plain "angle" / "theta" is
+    # every angle's word (S2 review: "pull it with 40 N at an angle of 30 degrees" set the push's angle)
+    named = _named(t, " ".join(line[:max(pos, 0)].split()[-4:]))
+    slot = next((s for s in angles if s.name == named), None)
+    if slot is not None and not re.fullmatch(slot.names, "angle", re.IGNORECASE):
+        return named
+    # the push or pull said nearest before it: a force value with its role or the verb itself, whichever is later
+    # ("pushes it at 30 degree with 20 newton and pulls it at 45 degree": 45 is the pull's, after "pulls")
+    marks = [(h.start, h.role or "push") for h in items if h.kind == "force" and 0 <= h.start < pos]
+    marks += [(m.start(), "push") for m in _PUSH_W.finditer(line, 0, max(pos, 0))]
+    marks += [(m.start(), "pull") for m in _PULL_W.finditer(line, 0, max(pos, 0))]
+    nearest = force_slot(t, max(marks)[1]) if marks else None
+    if nearest is None and last is not None:
+        nearest = last if last in {s.follows for s in angles} else \
+            next((s.follows for s in angles if s.name == last), None)
+    return next((s.name for s in angles if s.follows == nearest), angles[0].name if angles else None)
+
+
+def _read(t: "Template", h: Heard, line: str):
+    """The template's Read that fits this value by the words before it (its sentence) and after it, else None."""
+    before = line[:h.start]
+    start = max(before.rfind(". "), before.rfind("; "))
+    before = before[start + 1:] if start >= 0 else before
+    after = line[h.start + len(h.said):h.start + len(h.said) + 40]
+    for rd in t.reads:
+        if rd.kind == h.kind and re.search(rd.before, before, re.IGNORECASE) and \
+                (not rd.after or re.match(rd.after, after, re.IGNORECASE)):
+            return rd
+    return None
+
+
+def force_slot(t: "Template", role: str = "") -> Optional[str]:
+    """The template's slot for a push (its first force slot) or a pull (a force slot named pull_*, else the push)."""
+    forces = [s.name for s in t.slots if s.kind == "force"]
+    if not forces:
+        return None
+    if role == "pull":
+        return next((n for n in forces if n.startswith("pull")), forces[0])
+    return forces[0]
 
 
 def _slot_for_kind(t: "Template", kind: str, before: str, after: str = "") -> Optional[str]:
@@ -342,8 +460,8 @@ def resolve(t: "Template", text: str, last: Optional[str] = None, *, friction_co
     params = params or {}
     r = Resolved()
     got: dict[str, int] = {}  # slot -> position said
-    force_slot = next((s.name for s in t.slots if s.kind == "force"), None)
-    force_words = bool(_PUSH.search(line)) or last == force_slot
+    forces = {s.name for s in t.slots if s.kind == "force"}
+    force_words = bool(_PUSH.search(line)) or last in forces
 
     def take(slot: Optional[str], value: float, said: str, pos: int, why: str) -> None:
         if slot is None or slot in got:
@@ -368,21 +486,41 @@ def resolve(t: "Template", text: str, last: Optional[str] = None, *, friction_co
             r.rough = True
             continue
         if h.kind == "force_dir":
-            r.direction = h.text
-            continue
-        if h.kind == "force_mode":
-            r.mode = h.text
+            r.dirs[h.role or "push"] = h.text
             continue
         if h.kind == "force" and h.odd_unit and (not force_words or _TORQUE.search(line)):
             continue  # "20 Nm" with nothing about a force: maybe a torque, not the push
         clause = line[max(0, line.rfind(",", 0, h.start), line.rfind(" and ", 0, h.start)):h.start] if h.start >= 0 else ""
+        rd = _read(t, h, line) if h.start >= 0 else None
+        if rd is not None:  # S2: said in another form, or not an input at all
+            if not rd.slot:
+                r.why.append(f"{h.said}: not an input here")
+                continue
+            if rd.slot not in got:
+                take(rd.slot, (1 / h.value if rd.inverse else h.value * rd.factor) if h.value else h.value, h.said,
+                     h.start, f"said as its {rd.kind}")
+                if rd.computed and rd.slot in got:
+                    r.computed.add(rd.slot)
+            continue
         if t.results is not None and h.start >= 0 and t.results.search(" ".join(line[:h.start].split()[-5:])):
             r.why.append(f"{h.said}: a result of the scene, not an input")
             continue
         after = line[h.start + len(h.said):] if h.start >= 0 else ""
-        slot = _slot_for_kind(t, h.kind, clause or line[:max(h.start, 0)], after)
-        if slot in got:  # a second value of this kind: the next slot of the kind ("a 4 ohm and a 6 ohm resistor")
+        if h.kind == "force" and h.role:
+            slot = force_slot(t, h.role)  # the verb says push or pull (S2)
+        elif h.kind == "force" and last in forces and not _named(t, clause or line[:max(h.start, 0)]):
+            slot = last  # "if it is of 100 N" after the pull was set: the pull
+        elif h.kind == "angle" and any(s.follows for s in t.slots if s.kind == "angle"):
+            slot = _angle_slot(t, line, h.start, last, items) or \
+                _slot_for_kind(t, h.kind, clause or line[:max(h.start, 0)], after)
+        else:
+            slot = _slot_for_kind(t, h.kind, clause or line[:max(h.start, 0)], after)
+        paired = h.kind == "angle" and slot is not None and bool(slots[slot].follows)
+        if slot in got and not paired:  # a second value of this kind: the next slot ("a 4 ohm and a 6 ohm resistor");
+            # a force's angle said twice ("30 degree at an angle of 30 degree") stays that force's
             slot = next((s.name for s in t.slots if s.kind == h.kind and s.name not in got), slot)
+        if h.kind == "force" and h.text and slot is not None and slot not in got:
+            r.dirs["pull" if slot.startswith("pull") else "push"] = h.text
         take(slot, h.value, h.said, max(h.start, 0), f"unit ({h.kind})")
     said_as = []  # earliest first: "a satellite orbiting the Moon, which itself orbits the Earth" is about the Moon
     for rx, slot, value in t.said_as:  # "thrown horizontally" (θ = 0), "straight up" (θ = 90°), "in parallel"
@@ -404,6 +542,8 @@ def resolve(t: "Template", text: str, last: Optional[str] = None, *, friction_co
         for m in rx.finditer(line):
             if m.start("num") in used:
                 continue  # that number has a unit and went to its own slot ("a force at an angle of 30 degrees")
+            if _named(t, line[max(0, m.start() - 12):m.start("num")]) not in (s.name, None):
+                continue  # "force" inside "the pulling force is 15" names the pull, not the push (S2)
             if s.kind == "force" and _RESULT.search(" ".join(line[:m.start()].split()[-3:]) + " " +
                                                     line[m.start():m.start("num")]):
                 continue
@@ -418,8 +558,10 @@ def resolve(t: "Template", text: str, last: Optional[str] = None, *, friction_co
         m = _NEW_MU.search(line)
         if m and (v := spoken_number(m.group("num"))) is not None and v <= slots["mu"].hi:
             take("mu", v, m.group(0), m.start(), "'new' heard for mu")
-    if force_slot and force_slot not in got and _NO_PUSH.search(line):
-        take(force_slot, 0.0, _NO_PUSH.search(line).group(0), 0, "no push")  # type: ignore[union-attr]
+    for m in _NO_PUSH.finditer(line):
+        slot = force_slot(t, "pull" if re.search(r"pull", m.group(0), re.IGNORECASE) else "push")
+        if slot and slot not in got:
+            take(slot, 0.0, m.group(0), m.start(), "no push / pull")
     # relative: "double it", "halve the mass", "twice the force"
     for rx in (_RELATIVE, _TWICE):
         for m in rx.finditer(line):
