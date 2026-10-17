@@ -202,6 +202,34 @@ class NotesLibrary:
         tmp.replace(out)
         return out
 
+    def render_region(self, doc_id: str, page: int, box: list[float], max_px: int = 1600):
+        """A part of a page (box: fractions of the page as shown, top-left origin [left, top, right, bottom]) as a PIL
+        image about `max_px` wide, rendered from the PDF (sharp, not cut from the preview); None if there is none
+        (F-013 S5: the teacher selects a figure the index did not find)."""
+        doc = self.get(doc_id) if _ID.fullmatch(doc_id) else None
+        if doc is None or not 1 <= page <= doc.pages or len(box) != 4:
+            return None
+        left, top, right, bottom = (min(1.0, max(0.0, float(x))) for x in box)
+        if right - left < 0.01 or bottom - top < 0.01:
+            return None
+        import pypdfium2 as pdfium
+
+        with self._lock:
+            pdf = pdfium.PdfDocument(str(self.root / f"{doc_id}.pdf"))
+            try:
+                p = pdf[page - 1]
+                w = p.get_width() if not p.get_rotation() % 180 else p.get_height()
+                # the whole page, then the part: pdfium's crop is taken before a page's rotation (the ESP32
+                # datasheet's turned schematic page); at most 4x, an A4 page is then ~8 MP
+                scale = min(4.0, max(1.0, max_px / max(1.0, (right - left) * w)))
+                full = p.render(scale=scale, draw_annots=True).to_pil().convert("RGB")
+                p.close()
+                W, H = full.size
+                image = full.crop((round(left * W), round(top * H), round(right * W), round(bottom * H)))
+            finally:
+                pdf.close()
+        return image
+
     def _extract(self, data: bytes) -> list[str]:
         import pypdfium2 as pdfium
 

@@ -29,6 +29,21 @@ DISTRACTORS = ("a logo", "a map", "a page of text", "a portrait photo of a perso
 # it lost to them; against these it is told apart from a photo or a logo
 FIGURE_DISTRACTORS = ("a logo", "a map", "a portrait photo of a person", "a flag", "a building", "a group of people",
                       "a photo of a landscape")
+# F-013 S5 (user 2026-10-17, a close-up photo of a mouth on the digestive-system slide: "avoid actual human related
+# images, they look gross; prefer pictorial images, the actual image only where it is important"). CLIP tells a
+# drawing from a photograph: style = best drawing prompt - best photo prompt; body = the close-up prompt - best drawing
+# prompt. On 11 body photos (mouth, ulcer, haemorrhoids, X-ray, muscle tissue ...) and 22 anatomy drawings from the
+# cache: style <= -0.008 for every photo, >= +0.005 for every drawing (a 3D render the lowest); a photo with labels
+# drawn on it ("Human Mouth Diagram.svg") passes as a drawing but its body score is +0.074 .. +0.076 (drawings <=
+# +0.060). The int8 model moves a score by up to ~0.007 with the other images of its batch.
+STYLE_DRAWING = ("a drawing", "an illustration", "a diagram", "a cartoon", "a vector drawing", "a painting",
+                 "a 3D render")
+STYLE_PHOTO = ("a photograph", "a real photo of a thing")
+BODY_PHOTO = ("a close-up photograph of human skin, mouth, teeth, eyes or organs",)
+PICTORIAL_MIN_STYLE = 0.0   # a human-body subject takes drawings only
+BODY_LABELLED_MIN = 0.065   # ... and no labelled photo of the body; anywhere: neither that nor a photo with body >=
+BODY_PHOTO_MIN = 0.03       # BODY_PHOTO_MIN (a lecture on food or sport must not show an ulcer either)
+STYLE_WEIGHT = 0.3          # elsewhere a drawing ranks a little ahead (+0.01 .. +0.02 against a photo)
 
 
 class Scorer(Protocol):
@@ -66,7 +81,17 @@ class FindResult:
     rejected: list[tuple[str, str]] = field(default_factory=list)  # (title, reason), for logs and tuning
 
 
+def real_photo(style: float, body: float, pictorial: bool) -> str:
+    """Why an image is refused as a photograph ("" = it is not): of the body anywhere, any photo for a body subject."""
+    if body >= BODY_LABELLED_MIN or (style < PICTORIAL_MIN_STYLE and body >= BODY_PHOTO_MIN):
+        return "a photo of the body"
+    if pictorial and style < PICTORIAL_MIN_STYLE:
+        return "a photo (the body is drawn)"
+    return ""
+
+
 def clip_text(query: str, kind: str) -> str:
+    """kind "diagram" also for a pictorial request (a drawing of the mouth, not a photo of it)."""
     return f"a {'diagram' if kind == 'diagram' else 'photo'} of {query}"
 
 
@@ -83,17 +108,19 @@ class ImageFinder:
                    else self.s.budget_s)
 
     async def find(self, query: str, kind: str = "photo", *, exclude: Sequence[str] = (),
-                   deeper: bool = False, asked: bool = False, lead_only: bool = False) -> FindResult:
+                   deeper: bool = False, asked: bool = False, lead_only: bool = False,
+                   pictorial: bool = False) -> FindResult:
         """exclude: image ids already shown or rejected by the teacher; deeper: look past the first results
         (Change image after the cached candidates ran out); asked: the teacher asked for this figure ("let's look at
         the block diagram of STM32", F-013 S4): web pages too, and more time; lead_only: only the lead image of the
         Wikipedia article that IS the query (a concept card's picture, F-013 S4: Commons search gave a water-cycle
-        diagram for "Router" and a bicycle hub for "Hub")."""
+        diagram for "Router" and a bicycle hub for "Hub"); pictorial: a human-body subject, drawings only (F-013 S5)."""
         query = " ".join(query.split())
         if not query:
             return FindResult([], "empty query")
         # answers found before labelled diagrams were preferred must not skip the preference (F-009)
-        cache_kind = (f"{kind}+labels" if wants_labels(query, kind) else kind) + ("+lead" if lead_only else "")
+        cache_kind = (f"{kind}+labels" if wants_labels(query, kind) else kind) + ("+lead" if lead_only else "") + \
+            ("+pic" if pictorial else "")
         if not deeper:
             hit = self.cache.load_query(query, cache_kind)
             if hit is not None:
@@ -102,7 +129,7 @@ class ImageFinder:
         budget = self.budget(kind, asked)
         try:
             return await asyncio.wait_for(self._search(query, kind, set(exclude), deeper, t0, cache_kind, asked,
-                                                       budget, lead_only), budget)
+                                                       budget, lead_only, pictorial), budget)
         except asyncio.TimeoutError:
             log.info("image search %r timed out after %.1f s: no image", query, budget)
             return FindResult([], "timeout")
@@ -112,12 +139,12 @@ class ImageFinder:
 
     async def _search(self, query: str, kind: str, exclude: set[str], deeper: bool, t0: float,
                       cache_kind: str = "", asked: bool = False, budget: float = 0.0,
-                      lead_only: bool = False) -> FindResult:
+                      lead_only: bool = False, pictorial: bool = False) -> FindResult:
         timings: dict[str, float] = {}
         labels = wants_labels(query, kind)
         budget = budget or self.s.budget_s
         async with sources.client(self.s.http_timeout_s, self.transport) as c:
-            cands = await self._candidates(c, query, kind, deeper, asked, lead_only)
+            cands = await self._candidates(c, query, kind, deeper, asked, lead_only, pictorial)
             timings["search_s"] = time.perf_counter() - t0
             rejected: list[tuple[str, str]] = []
             kept: list[Candidate] = []
@@ -145,14 +172,18 @@ class ImageFinder:
             if self.scorer is None:
                 return FindResult([], "no relevance model", rejected=rejected, timings=timings)
             t2 = time.perf_counter()
-            scored = await asyncio.to_thread(self._score, query, kind, pairs)
+            scored = await asyncio.to_thread(self._judge, query, "diagram" if pictorial else kind, pairs)
             timings["clip_s"] = time.perf_counter() - t2
             accepted = []
-            for (cand, img), (sim, margin) in zip(pairs, scored):
+            for (cand, img), (sim, margin, style, body) in zip(pairs, scored):
                 if sim < self.s.min_similarity or margin < self.s.min_margin:
                     rejected.append((cand.title, f"clip {sim:.3f} margin {margin:+.3f}"))
                     continue
-                accepted.append((sim + prior(cand, query, kind), cand, img))
+                why = real_photo(style, body, pictorial)
+                if why:
+                    rejected.append((cand.title, f"{why} (style {style:+.3f}, body {body:+.3f})"))
+                    continue
+                accepted.append((sim + prior(cand, query, kind) + STYLE_WEIGHT * style, cand, img))
             accepted = self._rank(accepted, labels)
             t3 = time.perf_counter()
             chosen = await self._full_size(c, accepted[: self.s.keep], t0, query, budget)
@@ -203,7 +234,7 @@ class ImageFinder:
         return out
 
     async def _candidates(self, c: httpx.AsyncClient, query: str, kind: str, deeper: bool,
-                          asked: bool = False, lead_only: bool = False) -> list[Candidate]:
+                          asked: bool = False, lead_only: bool = False, pictorial: bool = False) -> list[Candidate]:
         if lead_only:
             # "Mars planet" ranks "Life on Mars" first; "Mars" finds the planet (and Bruno Mars, refused as a singer)
             words = query.split()
@@ -222,7 +253,7 @@ class ImageFinder:
             return out
 
         def for_commons(q: str) -> str:
-            return f"{q} diagram" if kind == "diagram" and "diagram" not in q.lower() else q
+            return f"{q} diagram" if (kind == "diagram" or pictorial) and "diagram" not in q.lower() else q
         n = self.s.max_candidates
         core = core_query(query)
         if deeper:  # past the first page; the Wikipedia lead images were offered already
@@ -307,9 +338,22 @@ class ImageFinder:
             return None
 
     def _score(self, query: str, kind: str, pairs: list) -> list[tuple[float, float]]:
+        """(similarity to the query, margin over the best distractor) per image."""
+        return [j[:2] for j in self._judge(query, kind, pairs)]
+
+    def _judge(self, query: str, kind: str, pairs: list) -> list[tuple[float, float, float, float]]:
+        """(similarity, margin, style, body) per image: style > 0 a drawing, < 0 a photograph; body high for a
+        photograph of a human body part (F-013 S5)."""
         assert self.scorer is not None
-        texts = [clip_text(query, kind), *(FIGURE_DISTRACTORS if webpages.figure_type(query) else DISTRACTORS)]
+        distractors = FIGURE_DISTRACTORS if webpages.figure_type(query) else DISTRACTORS
+        texts = [clip_text(query, kind), *distractors, *STYLE_DRAWING, *STYLE_PHOTO, *BODY_PHOTO]
         t = self.scorer.embed_texts(texts)
         v = self.scorer.embed_images([img for _, img in pairs])
         sim = v @ t.T  # (images, texts)
-        return [(float(row[0]), float(row[0] - row[1:].max())) for row in sim]
+        d, k = 1 + len(distractors), len(STYLE_DRAWING)
+        out = []
+        for row in sim:
+            draw, photo = float(row[d:d + k].max()), float(row[d + k:d + k + len(STYLE_PHOTO)].max())
+            body = float(row[d + k + len(STYLE_PHOTO):].max()) - draw
+            out.append((float(row[0]), float(row[0] - row[1:d].max()), draw - photo, body))
+        return out

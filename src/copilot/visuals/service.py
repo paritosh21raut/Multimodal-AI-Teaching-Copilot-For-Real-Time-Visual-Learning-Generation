@@ -202,7 +202,8 @@ class ImageService:
                 images=[asdict(i) for i in own], seconds=round(time.perf_counter() - t0, 2)))
             return
         res = await self.finder.find(req.query, req.kind, exclude=req.exclude, deeper=req.deeper,
-                                     asked=req.reason == "asked", lead_only=req.reason.startswith("item:"))
+                                     asked=req.reason == "asked", lead_only=req.reason.startswith("item:"),
+                                     pictorial=req.pictorial)
         self.stats["found" if res.images else "none"] += 1
         if res.rejected:
             log.debug("image %r rejected: %s", req.query, res.rejected)

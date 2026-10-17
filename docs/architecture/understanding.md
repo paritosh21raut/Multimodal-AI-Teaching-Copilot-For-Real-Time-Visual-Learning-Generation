@@ -48,6 +48,10 @@ and how*, while calling the LLM rarely.
    content came back as "Reverse Bias"). The prompt's `parent` rule (`system_prompt(parent=True)`) is **off**. Its A/B
    on gpt-oss-120b (test3 + test20, 12 units, 27,988 tokens) was worse: it gave no useful parent (only the topic or
    the subtopic itself), lost "Intellectual Causes", and invented a subtopic ("Diodes at Atomic Theory").
+   **F-013 S4 (2026-10-17):** `cues.figure_cue` finds a figure the teacher turns to ("Now let's look at the block
+   diagram of STM32", "This is the pin diagram of 8051 microcontroller"; not "Look at the diagram."); `figure_query`
+   names it ("STM32 block diagram") and the service puts it on `ConceptSignal.figure`. The presentation engine asks
+   for it at once (`ImageRequested(reason="asked", kind="diagram")`), see visuals.md.
 5. **Interpreter** (LLM, JSON-schema output). Input (bounded, ≈ 1.2k tokens max):
    - header: subject, grade level (given or inferred), lecture title, outline (topic → subtopics, ≤ 150 tokens)
    - current slide summary (title, representation, items, remaining capacity): `LectureState.slide_context`,

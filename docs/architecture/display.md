@@ -112,6 +112,17 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
   fixed 600 px rule let five labels overlap between 600 and ~800 px). The study line now gets "Reading ... %",
   "Used for the slide" and the refusal (the hub had dropped those fields since F-012). The notes drop area no longer
   flickers over child elements.
+- **F-013 S5 (user 2026-10-17, second report: "the slide preview enlarges, the right panel shifts, mid lecture").**
+  The page's outer grid had one implicit column, which grows to its widest child's min-content: the transcript
+  strip's one-line text (nowrap) is as wide as the last sentence, so each longer sentence widened the page (a
+  horizontal scrollbar, the right panel cut off) and grew the preview. Now `.control` has `minmax(0, 1fr)` and hides
+  overflow; the top bar is one row of fixed height (56 px; a wrapped second row took height from the preview); dock
+  labels never break ("New / slide" with wide notes put Equation out of line), so a label that does not fit
+  overflows the row and Dock goes icons-only, with 16 px to spare. Browser test at 1536 x 730, 1536 x 864 (the
+  user's 1920 at 125 %, no browser bar) and 1920 x 960 with transcript lines up to 2,000 characters.
+- **Figures of the notes onto the slide (F-013 S5).** The figures the index found on the open page are outlined
+  faintly (clearly on hover, with "Show on slide"); click or drag one onto the preview. The crop button: drag over
+  any part of the page (Esc cancels). See visuals.md "Figures from My Notes onto the slide".
 - My notes: Add PDF / drop → `POST /api/notes` (teacher only, ≤ 50 MB) → `data/notes/<sha16>.pdf` (+ page texts) →
   `notes_open`; pages as PNG `GET /api/notes/<id>/page/<n>?w=` (pypdfium2, cached); ‹ n / m ›, arrows inside the
   panel, wider view, remove. The teacher turns the pages. (**Follow lecture** was removed in F-013, user 2026-10-17: it

@@ -25,7 +25,7 @@ MEDIA_PREFIX = "/media/"
 
 
 
-QUERY_VERSION = "s4"  # in every remembered answer's key; bump when the sources change
+QUERY_VERSION = "s5"  # in every remembered answer's key; bump when the sources change
 
 class BadImage(ValueError):
     pass

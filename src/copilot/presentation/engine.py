@@ -57,7 +57,8 @@ from copilot.core.memory import is_child_facet, same_subject, same_title, short_
 from copilot.presentation.planner import Decision, Frame, Signal, Working, decide
 from copilot.core.interpretation import VisualHint
 from copilot.presentation.spec import DefinitionBlock, ImageBlock, ItemImage, SlideSpec
-from copilot.visuals.policy import FrameVisual, blocked, names_a_thing, names_an_object, norm_query, sibling_hint
+from copilot.visuals.policy import (FrameVisual, blocked, body_subject, names_a_thing, names_an_object, norm_query,
+                                     sibling_hint)
 from copilot.visuals.policy import decide as image_decision
 
 log = logging.getLogger(__name__)
@@ -1682,9 +1683,12 @@ class PresentationEngine:
         # same topic it may come back (a continuation, or the same picture still about it: user 2026-10-17)
         elsewhere = {i for i, topics in self._image_topics.items()
                      if meta is not None and not any(titles_match(t, meta.frame.topic) for t in topics)}
+        # F-013 S5: the human body is drawn, never photographed ("Mouth" under "Digestive system")
+        pictorial = body_subject(query, *((meta.frame.topic, meta.frame.facet) if meta is not None else ()))
         await self.bus.publish(ImageRequested(request_id=rid, slide_id=slide_id, query=query,
                                               kind=kind if kind in ("photo", "diagram") else "photo",
-                                              exclude=sorted(fv.shown_ids | elsewhere), deeper=deeper, reason=reason))
+                                              exclude=sorted(fv.shown_ids | elsewhere), deeper=deeper, reason=reason,
+                                              pictorial=pictorial))
 
     async def _show_image(self, spec: SlideSpec, image: ImageBlock, teacher: bool, remember: bool = True) -> bool:
         """Put the image on the slide. Automatic: only when the content still fits at the default type size.
@@ -1902,8 +1906,9 @@ class PresentationEngine:
                 aspect = min(5.0, max(0.2, float(args.get("aspect") or 4 / 3)))
             except (TypeError, ValueError):
                 aspect = 4 / 3
+            # large: a figure from the teacher's notes (F-013 S5), shown in the wide column like an asked figure
             block = ImageBlock(url=f"/media/{image_id}.jpg", alt=str(args.get("alt") or spec.title)[:120],
-                               image_id=image_id, aspect=aspect, origin="teacher")
+                               image_id=image_id, aspect=aspect, origin="teacher", large=bool(args.get("large")))
             await self._show_image(spec, block, teacher=True)
             log.info("teacher image on %r", spec.title)
             return

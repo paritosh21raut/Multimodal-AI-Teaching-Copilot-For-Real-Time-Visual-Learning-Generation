@@ -1,0 +1,93 @@
+{
+ "total": {
+  "name": "TOTAL",
+  "lectures": 2,
+  "slides": 56,
+  "units": 131,
+  "latency_median": 7.05,
+  "latency_p90": 15.54,
+  "announcements": 9,
+  "announce_median": 0.34,
+  "announce_p90": 0.41,
+  "announce_missed": 0,
+  "parts": 18,
+  "part_rate": 0.321,
+  "definitions": 30,
+  "def_repeat": 21,
+  "def_repeat_rate": 0.7,
+  "compare_cues": 0,
+  "compare_blocks": 0,
+  "dup_items": 2,
+  "as_said": 0,
+  "images": 27,
+  "image_repeats": 1,
+  "fallback": 2,
+  "relations": {
+   "new_topic": 5,
+   "elaboration": 43,
+   "sub_concept": 3,
+   "same_concept": 45,
+   "sibling_concept": 35
+  }
+ },
+ "lectures": [
+  {
+   "name": "20261017-155953-ce9e",
+   "slides": 38,
+   "units": 102,
+   "latency_median": 7.71,
+   "latency_p90": 16.25,
+   "announcements": 7,
+   "announce_median": 0.0,
+   "announce_p90": 0.37,
+   "announce_missed": 0,
+   "parts": 16,
+   "part_rate": 0.421,
+   "definitions": 17,
+   "def_repeat": 11,
+   "compare_cues": 0,
+   "compare_blocks": 0,
+   "dup_items": 2,
+   "as_said": null,
+   "images": 24,
+   "image_repeats": 1,
+   "fallback": 2,
+   "relations": {
+    "new_topic": 4,
+    "elaboration": 33,
+    "sub_concept": 1,
+    "same_concept": 42,
+    "sibling_concept": 22
+   }
+  },
+  {
+   "name": "20261017-135414-4ece",
+   "slides": 18,
+   "units": 29,
+   "latency_median": 6.09,
+   "latency_p90": 15.05,
+   "announcements": 2,
+   "announce_median": 0.46,
+   "announce_p90": 0.56,
+   "announce_missed": 0,
+   "parts": 2,
+   "part_rate": 0.111,
+   "definitions": 13,
+   "def_repeat": 10,
+   "compare_cues": 0,
+   "compare_blocks": 0,
+   "dup_items": 0,
+   "as_said": null,
+   "images": 3,
+   "image_repeats": 0,
+   "fallback": 0,
+   "relations": {
+    "sub_concept": 2,
+    "sibling_concept": 13,
+    "elaboration": 10,
+    "same_concept": 3,
+    "new_topic": 1
+   }
+  }
+ ]
+}

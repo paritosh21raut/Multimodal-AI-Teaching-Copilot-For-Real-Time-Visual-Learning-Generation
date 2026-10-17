@@ -35,6 +35,21 @@ async function placeImage(file, slideId, send) {
   send("set_image", { slide_id: slideId, image_id: res.image_id, aspect: res.aspect, alt: res.alt });
 }
 
+// F-013 S5 (user 2026-10-17: "click on the block diagram in My Notes and it is displayed on the screen"): a figure
+// of the notes (body {page, n}) or a part of a page the teacher selected ({page, box}) becomes an image on the slide,
+// in the wide column; the server renders it from the PDF, the set_image command places it (the UI changes nothing).
+const FIG_MIME = "application/x-copilot-figure";
+const hasFigure = (e) => e.dataTransfer && [...e.dataTransfer.types].includes(FIG_MIME);
+const canHold = (spec) => !!spec && spec.layout !== "title";
+async function placeFigure(docId, body, slideId, send) {
+  const r = await fetch(`/api/notes/${docId}/clip`, {
+    method: "POST", body: JSON.stringify(body), headers: { "Content-Type": "application/json" },
+  });
+  const res = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(res.error || `Could not take the figure (${r.status})`);
+  send("set_image", { slide_id: slideId, image_id: res.image_id, aspect: res.aspect, alt: res.alt, large: true });
+}
+
 // While a file is dragged over the slide: the slide as it will look, with the image's place drawn as a drop zone.
 const withGhost = (spec, label) => ({
   ...spec,
@@ -53,6 +68,7 @@ const PLAY = html`<svg class="ico play" viewBox="0 0 24 24" aria-hidden="true">
   <path d="M8 5.7v12.6a1.2 1.2 0 0 0 1.8 1l10-6.3a1.2 1.2 0 0 0 0-2l-10-6.3A1.2 1.2 0 0 0 8 5.7z" fill="currentColor"/></svg>`;
 const ICON = {
   back: "M19 12H5M11 18l-6-6 6-6",
+  crop: "M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14",
   prev: "M15 18l-6-6 6-6",
   next: "M9 6l6 6-6 6",
   change: "M20 11a8 8 0 0 0-14.6-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.6 4.5L20 16M20 20v-4h-4",
@@ -519,10 +535,15 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
   const drop = async (e) => {
     e.preventDefault();
     depth.current = 0;
+    const fig = hasFigure(e) ? JSON.parse(e.dataTransfer.getData(FIG_MIME) || "null") : null;
     const file = e.dataTransfer.files && e.dataTransfer.files[0];
-    if (!file || !canDrop) { setDrag(null); return; }
+    if ((!file && !fig) || !canDrop) { setDrag(null); return; }
     setDrag("uploading");
-    try { await placeImage(file, spec.id, send); onNotice(""); }
+    try {
+      if (fig) await placeFigure(fig.doc_id, { page: fig.page, n: fig.n }, spec.id, send);
+      else await placeImage(file, spec.id, send);
+      onNotice("");
+    }
     catch (err) { onNotice(err.message); }
     finally { setDrag(null); }
   };
@@ -531,8 +552,8 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
   const glass = useGlassExit(!spec && !(deck && deck.blank), !!(deck && deck.blank));
   // the preview shows the slides in the projector's theme, whatever the control page's own theme is
   return html`<div class=${"preview" + (drag ? " dragging" : "")} ref=${ref} data-theme=${theme}
-      onDragEnter=${(e) => { if (!hasFiles(e)) return; e.preventDefault(); depth.current += 1; if (drag !== "uploading") setDrag("over"); }}
-      onDragOver=${(e) => { if (hasFiles(e)) { e.preventDefault(); e.dataTransfer.dropEffect = canDrop ? "copy" : "none"; } }}
+      onDragEnter=${(e) => { if (!hasFiles(e) && !hasFigure(e)) return; e.preventDefault(); depth.current += 1; if (drag !== "uploading") setDrag("over"); }}
+      onDragOver=${(e) => { if (hasFiles(e) || hasFigure(e)) { e.preventDefault(); e.dataTransfer.dropEffect = canDrop ? "copy" : "none"; } }}
       onDragLeave=${() => { depth.current = Math.max(0, depth.current - 1); if (!depth.current && drag === "over") setDrag(null); }}
       onDrop=${drop}>
     <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
@@ -850,8 +871,28 @@ function StudyLine({ n }) {
       : html`<span>Study material: ${inUse} file${inUse === 1 ? "" : "s"} in use</span>`}</p>`;
 }
 
-function Notes({ notes, send, wide, onWide }) {
+// The figures the index found on the open page ([] until the file is read, or when it is not in use).
+function usePageFigures(doc, page, reading) {
+  const [figs, setFigs] = useState([]);
+  useEffect(() => {
+    setFigs([]);
+    if (!doc || !page) return undefined;
+    let live = true;
+    fetch(`/api/notes/${doc.id}/figures/${page}`).then((r) => (r.ok ? r.json() : { figures: [] }))
+      .then((j) => { if (live) setFigs(j.figures || []); }).catch(() => {});
+    return () => { live = false; };
+  }, [doc && doc.id, page, reading]);
+  return figs;
+}
+
+const pct = (x) => `${(x * 100).toFixed(2)}%`;
+const boxStyle = ([l, t, r, b]) => ({ left: pct(l), top: pct(t), width: pct(r - l), height: pct(b - t) });
+
+function Notes({ notes, send, wide, onWide, slide }) {
   const input = useRef(null);
+  const wrap = useRef(null);
+  const [selecting, setSelecting] = useState(false);
+  const [sel, setSel] = useState(null);  // {x0, y0, x1, y1} as fractions of the page while dragging
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [over, setOver] = useState(false);
@@ -878,6 +919,7 @@ function Notes({ notes, send, wide, onWide }) {
   const turn = (page) => send("notes_page", { page });
   const keys = (e) => {  // inside the notes, arrows turn its pages (not the slides)
     if (!doc) return;
+    if (e.key === "Escape" && selecting) { e.preventDefault(); e.stopPropagation(); setSelecting(false); setSel(null); return; }
     if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); e.stopPropagation(); if (n.page < n.pages) turn(n.page + 1); }
     if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); e.stopPropagation(); if (n.page > 1) turn(n.page - 1); }
   };
@@ -887,6 +929,40 @@ function Notes({ notes, send, wide, onWide }) {
   // on a slide); the bin in the open doc's header still asks first
   const remove = (d) => send("notes_remove", { id: d.id });
   const removeOpen = (d) => confirm(`Remove “${d.name}” from your notes?`) && remove(d);
+  // F-013 S5: a figure of this page, or a part of it the teacher selects, onto the live slide
+  const figures = usePageFigures(doc, n.page, !!(doc && n.indexing && doc.id in n.indexing));  // again once it is read
+  const place = (body) => {
+    if (!canHold(slide)) { setError("Go to a content slide to show the figure on it"); return; }
+    run(async () => {
+      await placeFigure(doc.id, { page: n.page, ...body }, slide.id, send);
+      if (n.projecting) send("notes_project", { on: false });  // the slide with the figure is what they want to see
+    }, "Placing the figure…");
+  };
+  useEffect(() => { setSelecting(false); setSel(null); }, [doc && doc.id, n.page]);
+  const at = (e) => {
+    const r = wrap.current.getBoundingClientRect();
+    return [Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), Math.min(1, Math.max(0, (e.clientY - r.top) / r.height))];
+  };
+  const selDown = (e) => {
+    if (!selecting || e.button !== 0) return;
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const [x, y] = at(e);
+    setSel({ x0: x, y0: y, x1: x, y1: y });
+  };
+  const selMove = (e) => { if (sel) { const [x, y] = at(e); setSel({ ...sel, x1: x, y1: y }); } };
+  const selUp = () => {
+    if (!sel) return;
+    const box = [Math.min(sel.x0, sel.x1), Math.min(sel.y0, sel.y1), Math.max(sel.x0, sel.x1), Math.max(sel.y0, sel.y1)];
+    setSel(null);
+    if (box[2] - box[0] < 0.03 || box[3] - box[1] < 0.03) return;  // a click, not a selection: keep selecting
+    setSelecting(false);
+    place({ box });
+  };
+  const dragFigure = (e, f) => {
+    e.dataTransfer.setData(FIG_MIME, JSON.stringify({ doc_id: doc.id, page: n.page, n: f.n }));
+    e.dataTransfer.effectAllowed = "copy";
+  };
   return html`<div class=${"notes" + (over ? " over" : "")} tabindex="0" onKeyDown=${keys}
       onDragOver=${(e) => { if (hasDrop(e)) { e.preventDefault(); setOver(true); } }}
       onDragLeave=${(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setOver(false); }} onDrop=${drop}>
@@ -909,6 +985,9 @@ function Notes({ notes, send, wide, onWide }) {
           onLink=${() => setLinking(true)} onRemove=${remove} busy=${!!busy} send=${send} />
         ${doc.kind === "web" && doc.source && html`<a class="icon" href=${doc.source} target="_blank" rel="noopener"
           title="Open the original page">${svg(ICON.open)}</a>`}
+        <button class=${"icon select-area" + (selecting ? " on" : "")} aria-pressed=${selecting}
+          onClick=${() => { setSelecting(!selecting); setSel(null); }}
+          title=${selecting ? "Cancel (Esc)" : "Select a part of the page to show it on the slide"}>${svg(ICON.crop)}</button>
         <button class="icon" onClick=${onWide} title=${wide ? "Narrower notes" : "Wider notes"} aria-pressed=${wide}>
           ${svg(wide ? "M9 4v16M4 9l5 3-5 3M20 9l-5 3 5 3" : "M4 4v16M20 4v16M9 12h6M9 12l2-2M9 12l2 2M15 12l-2-2M15 12l-2 2")}</button>
         <button class="icon" onClick=${() => removeOpen(doc)} title="Remove these notes from the list">${svg(ICON.bin)}</button>
@@ -916,7 +995,17 @@ function Notes({ notes, send, wide, onWide }) {
       ${linking && html`<${LinkField} onAdd=${link} onCancel=${() => setLinking(false)} />`}
       ${busy && html`<p class="notes-busy"><span class="spinner"></span>${busy}</p>`}
       <div class="notes-page">
-        <img src=${src} alt=${`${doc.name}, page ${n.page}`} />
+        <div class=${"page-wrap" + (selecting ? " selecting" : "")} ref=${wrap}
+            onPointerDown=${selDown} onPointerMove=${selMove} onPointerUp=${selUp} onPointerCancel=${() => setSel(null)}>
+          <img src=${src} alt=${`${doc.name}, page ${n.page}`} draggable="false" />
+          ${!selecting && figures.map((f) => html`<button key=${f.n} class="fig-box" style=${boxStyle(f.box)}
+              draggable="true" onDragStart=${(e) => dragFigure(e, f)} onClick=${() => place({ n: f.n })}
+              aria-label=${"Show on the slide" + (f.caption ? `: ${f.caption}` : "")}>
+            <span class="fig-chip">${svg(ICON.project)}Show on slide</span></button>`)}
+          ${sel && html`<div class="sel-rect" style=${boxStyle([Math.min(sel.x0, sel.x1), Math.min(sel.y0, sel.y1),
+            Math.max(sel.x0, sel.x1), Math.max(sel.y0, sel.y1)])}></div>`}
+        </div>
+        ${selecting && html`<p class="select-hint">Drag over the part of the page to show on the slide · Esc to cancel</p>`}
       </div>
       <div class="notes-foot">
         <div class="steps">
@@ -2024,8 +2113,15 @@ function useCompactRow(ref, key) {
     const el = ref.current;
     if (!el) return undefined;
     const measure = () => {
-      if (!el.classList.contains("compact")) need.current = el.scrollWidth;
-      setCompact((was) => (was ? need.current > el.clientWidth - 8 : need.current > el.clientWidth));
+      // the row's natural width: its parts and gaps (scrollWidth equals the row's width whenever End lecture, pushed
+      // right by margin-left: auto, still fits, so it cannot tell how much room is left)
+      if (!el.classList.contains("compact")) {
+        const kids = [...el.children];
+        const gap = parseFloat(getComputedStyle(el).columnGap || "0") || 0;
+        need.current = kids.reduce((w, k) => w + k.getBoundingClientRect().width, 0) + gap * Math.max(0, kids.length - 1);
+      }
+      // labels only with room to spare (a row filled to the last pixel looked jammed against End lecture)
+      setCompact((was) => (was ? need.current > el.clientWidth - 40 : need.current > el.clientWidth - 16));
     };
     measure();
     const watch = new ResizeObserver(measure);
@@ -2215,7 +2311,7 @@ function App() {
             <${Structure} deck=${deck} slides=${state.slides} send=${send} />
           </${Tab}>
           <${Tab} id="notes" label="My Notes" icon=${ICON.notes} badge=${state.notes && state.notes.open ? `p. ${state.notes.page}` : ""}>
-            <${Notes} notes=${state.notes} send=${send} wide=${wide} onWide=${() => setWide(!wide)} />
+            <${Notes} notes=${state.notes} send=${send} wide=${wide} onWide=${() => setWide(!wide)} slide=${liveSpec} />
           </${Tab}>
           <${Tab} id="materials" label="Materials" icon=${ICON.materials}
               badge=${materials && materials.items.some((m) => m.status === "working") ? "…" : ""}>

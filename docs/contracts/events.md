@@ -29,7 +29,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `CorrectionPlaced` | presentation engine (F-013 S3c, E1) | `concern_id`, `shows` (correction / said / rewritten / absent), `elements`: what the slides show for a concern after placing it and after each switch; the hub puts it on the card (`shows`, `applied`), the terminal prints it |
 | `SlideContextChanged` | presentation engine | `text` (working-slide summary with `[S1]..` items → `LectureState.slide_context` → prompt), `refs` (S-ref → slide/item id) |
 | `SlideOverflow` | display hub (from `/display`) | `slide_id`, `version` (auto-fit failed; planner continues on a new slide) |
-| `ImageRequested` | presentation engine | `request_id`, `slide_id`, `query`, `kind` (photo/diagram), `exclude` (image ids already offered), `deeper`, `reason` (auto / change; F-013 S4: asked = a figure the teacher turned to, item:<block id> = one concept card's picture) — F-007b |
+| `ImageRequested` | presentation engine | `request_id`, `slide_id`, `query`, `kind` (photo/diagram), `exclude` (image ids already offered), `deeper`, `reason` (auto / change; F-013 S4: asked = a figure the teacher turned to, item:<block id> = one concept card's picture), `pictorial` (F-013 S5: a human-body subject, drawings only) — F-007b |
 | `ImageReady` | image service | `request_id`, `slide_id`, `query`, `kind`, `images` (≤ 3 `CachedImage` dumps, best first), `reason` (why none), `cached`, `seconds` |
 | `ImageChoices` | presentation engine | `slide_id`, `index`, `count` — the images this slide has shown, for the previous / next arrows (control only) |
 | `ShareChanged` | share service (F-008) | `state` (off/starting/on/failed), `url` (`<tunnel>/view` while on), `detail` (progress or why it failed) |
@@ -44,7 +44,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 
 `Command.kind`: `start, end, pause, resume (lifecycle LIVE ⇄ PAUSED; replaced freeze/unfreeze), next, prev, goto, blank, unblank (pin / unpin removed, round 5),
 force_new_slide, resolve_concern(id, action), remove_image(slide_id), change_image(slide_id),
-set_image(slide_id, image_id, aspect, alt), image_prev(slide_id), image_next(slide_id), zoom_image(slide_id),
+set_image(slide_id, image_id, aspect, alt[, large]), image_prev(slide_id), image_next(slide_id), zoom_image(slide_id),
 unzoom_image, edit_text(slide_id, item_id = title | element id | <definition id>:term, text), delete_item(slide_id,
 item_id), add_point(slide_id, text), show_equation(id: a presentation.equations entry, onto the live slide; F-013
 S3b), share_start, share_stop, set_theme(theme), set_mode(mode: standard | high; F-013, the app applies it and keeps it
@@ -59,7 +59,7 @@ assess_regen(qid), assess_open, assess_start, assess_pause, assess_resume, asses
 assess_close, assess_discard, assess_release(roll)` (quiz + test: F-011; students act over HTTP with their token,
 never by command; chapters, notes on the projector: F-010b; `materials_create` also takes `chapters[ids]`;
 materials + past lectures:
-F-010; themes + notes: F-009; editing and sharing: F-008; image commands: F-007b; `change_image` on a slide without an image = the teacher's Find image; `set_image` follows `POST /api/upload`; zoom is a deck display flag).
+F-010; themes + notes: F-009; editing and sharing: F-008; image commands: F-007b; `change_image` on a slide without an image = the teacher's Find image; `set_image` follows `POST /api/upload` or `POST /api/notes/<id>/clip` (F-013 S5, `large: true`: a figure of the notes in the wide column); zoom is a deck display flag).
 
 `Interpretation` (`core/interpretation.py`): `topic, subtopic, relation, acts[{act, lines, items, added}],
 representation_hint, meta_lines, concerns[{claim, issue, suggested_correction, confidence, lines, kind, wrong, right}], revisions[{ref, text}], level_estimate,

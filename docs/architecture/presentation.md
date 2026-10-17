@@ -119,6 +119,18 @@ The card and the terminal say exactly this (before: "the slide shows the correct
 lecture kept "one ventricle"). Replay, factual concerns: 14 correction, 8 rewritten, 6 absent, 1 said (test13's
 counterfactual "if the brain were fully suspended …", a false "said" the teacher can keep).
 
+## Images (F-013 S4, S5)
+Deterministic, in the engine (details and measurements: visuals.md):
+- **Asked figure** (`_on_figure`): a figure cue requests the figure at once, even on a slide no automatic image could
+  take; shown with `ImageBlock.large` (the wide column).
+- **Concept-card pictures** (`_consider_items`): 2-6 cards whose terms name objects, in a topic that shows pictures:
+  one lead-image search per card (`item_query`: "Mars" under "Planets" → "Mars planet"), shown only when every card
+  has one; a subtopic naming a thing in a visual topic gets its own picture (`VisualHint(facet)`).
+- **No repeat across topics** (`_image_topics`): an image shown under another topic is excluded from a request.
+- **Drawings for the body** (S5): `_request_image` sets `pictorial` when the query, topic or subtopic is about the
+  human body (`policy.body_subject`).
+- **The teacher's figure** (S5): `set_image` with `large` (a figure of My Notes) takes the wide column.
+
 ## Progressive update
 1. **Fast path (≤ 3–5 s):** after the gate's fast trigger, the Composer may place a deterministic provisional item
    (key term or short sentence) marked `provisional`.

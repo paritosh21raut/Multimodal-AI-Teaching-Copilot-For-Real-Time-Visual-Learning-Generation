@@ -278,6 +278,7 @@ class ImageRequested(Event):
     # auto | change | asked (F-013 S4: the teacher asked for this figure, "the block diagram of STM32") |
     # item:<block id> (F-013 S4: the picture of one concept on a concept-column slide)
     reason: str = "auto"
+    pictorial: bool = False  # F-013 S5: a human-body subject, drawings only (no photographs of the body)
 
 
 class ImageReady(Event):

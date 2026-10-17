@@ -16,7 +16,7 @@ import logging
 import re
 import threading
 from collections import Counter
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Callable, Optional, Sequence
 
@@ -28,7 +28,8 @@ from copilot.notes.service import Embedder, chunks
 
 log = logging.getLogger(__name__)
 
-FORMAT = 2               # bump when the cached index changes shape (2: captions, drawn figures; F-013 S4)
+FORMAT = 3               # bump when the cached index changes shape (2: captions, drawn figures; F-013 S4;
+                         # 3: each figure's place on its page, for clicking it in My Notes, F-013 S5)
 SNIPPET_MIN = 0.5        # MiniLM cosine: a passage clearly about these lines (calibrated in tests/unit/test_reference.py)
 SNIPPET_TOKENS = 150
 GROUND_MIN = 0.5         # ... clearly about a taught subtopic
@@ -68,6 +69,9 @@ class Figure:
     height: int = 0
     caption: str = ""    # F-013 S4: its caption without "Figure N:" ("ESP32-WROOM-32 Pin Layout (Top View)"), "" = none
     drawn: bool = False  # rendered from vector drawing (a datasheet's pin layout / schematic), not an image object
+    # F-013 S5: its place on the page as fractions of the rendered page, top-left origin [left, top, right, bottom];
+    # empty on a rotated page (the page image is turned, the PDF coordinates are not)
+    box: list = field(default_factory=list)
 
 
 def caption_text(line: str) -> str:
@@ -355,7 +359,9 @@ def extract_figures(pdf_path: Path, out_dir: Path, kind: str, name: str,
             tmp = out_dir / f"f{n}.tmp"
             img.save(tmp, format="PNG", optimize=True)
             tmp.replace(out_dir / f"f{n}.png")
-            out.append(Figure(n, i + 1, label, img.width, img.height, caption, drawn))
+            place = [round(l / pw, 4), round(1 - t / ph, 4), round(r / pw, 4), round(1 - b / ph, 4)] \
+                if not page.get_rotation() else []
+            out.append(Figure(n, i + 1, label, img.width, img.height, caption, drawn, place))
 
         for i, (l, b, r, t) in boxes:
             if len(out) >= limit:
@@ -393,6 +399,19 @@ def extract_figures(pdf_path: Path, out_dir: Path, kind: str, name: str,
         return out
     finally:
         pdf.close()
+
+
+def page_figures(library, doc_id: str, page: int) -> list[Figure]:
+    """The figures found on one page of a file in use, with their place (F-013 S5: the teacher clicks one in My Notes
+    to show it); [] when the file has no index of this format (not in use, or not read yet)."""
+    d = library.doc_dir(doc_id)
+    if not (d / f"ref.v{FORMAT}.npz").is_file():
+        return []
+    try:
+        figs = [Figure(**x) for x in json.loads((d / "figures.json").read_text(encoding="utf-8"))]
+    except (OSError, ValueError, TypeError):
+        return []
+    return [f for f in figs if f.page == page and len(f.box) == 4 and (d / f"f{f.n}.png").is_file()]
 
 
 def _heading(lines: list) -> str:

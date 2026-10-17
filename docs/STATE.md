@@ -1,7 +1,9 @@
 # Current State
 
-_Last updated: 2026-10-17: **F-013 S4 (images, figures the teacher asks for, own-PDF figures, web pages, /control
-layout lock, disk full)**, 0 LLM tokens. Before that, 2026-10-17: F-013 S3c (truthfulness) + performance mode + start
+_Last updated: 2026-10-17: **F-013 S5 (wrap-up) + the user's 3 issues: preview jumping with long transcript lines,
+no photos of the body, dock labels; figures from My Notes onto the slide**, ≈ 9k Groq tokens (app screenshot run only). **V1 (Live Lecture to
+Slides) is ready to be marked complete** after the user's check. Before that, 2026-10-17: F-013 S4 (images, figures the
+teacher asks for, own-PDF figures, web pages, /control layout lock, disk full), 0 LLM tokens. Before that, 2026-10-17: F-013 S3c (truthfulness) + performance mode + start
 card + Follow removed (31,338 Groq tokens, A/B). Before that, 2026-10-17: F-013 S3b (comparison, glossary, named equations, 34,808 tokens). Before
 that, 2026-10-17: F-013 S3a (deterministic representation fixes, 0 tokens). Before that, 2026-10-16:
 **F-013 S2 (structure) done, targets partly met** (≈ 75k Groq tokens: A/B + one live run).
@@ -11,6 +13,25 @@ user's review of the paper and of group D, then the truthfulness bug below, then
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **F-013 S5 done (2026-10-17, 0 LLM tokens) + the user's issues of that day.** Details: F-013 "S5 result".
+  - **Preview jumping mid-lecture (second report):** a long transcript line widened the whole page (outer grid's
+    implicit column; horizontal scrollbar, right panel cut off, preview grew). Fixed; the top bar is one fixed row;
+    dock labels never break (Equation out of line with wide notes), icons-only when they do not fit.
+  - **No photos of the body:** human-body subjects get drawings only, and a real photo of a body part is refused on
+    any slide (CLIP style + body score, measured on the cache; real search checked). Cache version s5.
+  - **Figures from My Notes:** figures on the open page are outlined; click or drag one onto the slide preview, or
+    select any part of a page (crop button); shown in the wide column. Index format 3: the files in use are read
+    once more at the next start.
+  - **v1_eval** of the user's two lectures of 2026-10-17 (56 slides) vs baseline: latency median 10.1 → 7.1 s,
+    announced topic → slide 17.2 → 0.3 s (missed 36 → 0), part slides 70 → 32 %, duplicates 19 → 2, image repeats
+    39 → 1, fallback 59 → 2.
+  - **Tests:** fast 751 pass (+7 `test_s5.py`), slow 24 pass, browser 45: the full run found one regression
+    (the dock went icons-only at 1600 px: End lecture's `margin-left: auto` made the measured width always "full");
+    fixed by measuring the row's parts, then the affected browser files pass (10/10). Runtime: `screenshot_app` (real
+    app, 4 Groq calls ≈ 9k tokens, the only tokens of S5), `screenshot_display` both themes; probe of the dock at
+    1536 x 864 / 1600 x 1000 / 1920 x 1080.
+  - **User:** two live mic lectures (one with a comparison and a classification) to close V1; then V2 (the user's
+    "Live Lecture to Visualization" = ROADMAP "Concept Simulation mode").
 - **F-013 S4 done (2026-10-17, 0 LLM tokens) + the user's 3 /control issues.** Details: F-013 "S4 result".
   - **/control layout locked:** at the user's 1536 x 730 (125 %) the page sat 2 px from a scrollbar, so the preview
     jumped; now every card keeps its size (probe of the real app + browser test). Tabs collapse to icons only when

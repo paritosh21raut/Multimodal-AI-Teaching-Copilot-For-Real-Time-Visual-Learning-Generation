@@ -61,6 +61,26 @@ def names_an_object(term: str) -> bool:
     return not head.endswith(_IDEA_ENDINGS) or head in {"ring", "wing", "string", "spring", "lung", "king"}
 
 
+# F-013 S5 (user 2026-10-17: a close-up photo of a mouth on "Digestive system - Mouth" looked gross): pictures of the
+# human body, its organs and its diseases are drawings, never photographs (the finder judges the style with CLIP)
+_BODY = re.compile(
+    r"\b(human body|anatom\w*|organs?|mouth|teeth|tooth|tongue|gums?|lips?|throat|pharynx|larynx|o?esophag\w*|"
+    r"stomach|intestin\w*|bowel|colon|rectum|anus|anal|liver|gall ?bladder|pancrea\w*|kidneys?|bladder|urinary|"
+    r"urethra|lungs?|bronch\w*|alveol\w*|trachea|heart|cardiac|arter\w*|veins?|capillar\w*|blood|brain|cerebr\w*|"
+    r"cerebellum|hypothalamus|pituitary|thyroid|glands?|nerves?|neurons?|spinal|spine|skull|skeleton|skeletal|bones?|"
+    r"femur|ribs?|pelvis|muscles?|muscular|tendons?|ligaments?|joints?|skin|eyes?|retina|cornea|ears?|cochlea|nose|"
+    r"nasal|digesti\w*|respirat\w*|circulat\w*|nervous system|reproducti\w*|excret\w*|endocrine|immune|"
+    r"uterus|womb|ovar\w*|testi\w*|penis|vagina|breasts?|placenta|f(o)?etus|embryo|saliva\w*|tissues?|"
+    r"diseases?|ulcers?|wounds?|injur\w*|tumou?rs?|cancers?|haemorrhoid\w*|hemorrhoid\w*|infection\w*|rash\w*|"
+    r"surgery|surgical|medical|symptoms?|teeth|dental)\b", re.I)
+
+
+def body_subject(*texts: str) -> bool:
+    """Is a picture for this query / topic / subtopic one of the human body (drawings only)? "Mouth" under
+    "Digestive system", "Heart" under "Circulatory system"; not "Motherboard" or "Mars"."""
+    return any(_BODY.search(t or "") for t in texts)
+
+
 def is_abstract(query: str) -> bool:
     words = [w for w in re.findall(r"[a-z]+", query.lower()) if w not in _FILLER]
     return not words or all(w in _ABSTRACT for w in words)

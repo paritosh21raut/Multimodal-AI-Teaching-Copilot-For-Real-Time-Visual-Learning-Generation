@@ -1,6 +1,8 @@
 """F-013 S4 in Edge (user 2026-10-17): at 1536 x 730 (a 1920 screen at 125 %) the slide preview grew and shrank while
 slides arrived with notes open, the tab labels ran into each other with wide notes, and Project had moved to the
 edge. Nothing may change size while the lecture runs; the tabs fit; Project is in the middle.
+Second report (same day, 1920 at 125 %): a long transcript line widened the whole page (horizontal scrollbar, right
+panel cut off) and the preview grew with every longer line.
 
     .venv/Scripts/python -m pytest -m browser tests/e2e/test_control_layout_browser.py
 """
@@ -13,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
 from display_harness import browser_page, display_harness  # noqa: E402
 
 from copilot.core.config import PROJECT_ROOT  # noqa: E402
-from copilot.core.events import ConcernRaised, ConcernResolved  # noqa: E402
+from copilot.core.events import ConcernRaised, ConcernResolved, TranscriptFinal, TranscriptSegment  # noqa: E402
 from copilot.presentation.demo import demo_frames  # noqa: E402
 
 pytestmark = pytest.mark.browser
@@ -31,13 +33,14 @@ async def put(h, op, spec) -> None:
     await h.settle()
 
 
-async def test_cards_keep_their_size_while_the_lecture_runs(tmp_path):
+@pytest.mark.parametrize("size", [(1536, 730), (1536, 864), (1920, 960)])
+async def test_cards_keep_their_size_while_the_lecture_runs(tmp_path, size):
     ART.mkdir(parents=True, exist_ok=True)
     frames = list(demo_frames())
     async with display_harness(notes_dir=tmp_path / "notes", store=True, materials_dir=tmp_path / "m") as h:
         for op, spec in frames[:3]:
             await put(h, op, spec)
-        async with browser_page(f"{h.url}/control", 1536, 730) as c:
+        async with browser_page(f"{h.url}/control", *size) as c:
             await c.click(".tabs button[aria-label='My Notes']")
             await c.set_input_files(".notes input[type=file]", str(PDF))
             await c.wait_for_selector(".notes-page img", timeout=15000)
@@ -49,6 +52,15 @@ async def test_cards_keep_their_size_while_the_lecture_runs(tmp_path):
                 before = await c.evaluate(BOXES)
                 for op, spec in frames[3:]:  # slides arrive, a page is turned, mistake cards come and go
                     await put(h, op, spec)
+                # transcript lines of every length, the longest far wider than the page
+                for i, n in enumerate((3, 40, 12)):
+                    await h.bus.publish(TranscriptFinal(segment=TranscriptSegment(
+                        id=f"t{wide}{i}", text=" ".join(["the coins for the chocolate collect in the machine"] * n),
+                        start=10.0 * i, end=10.0 * i + 8)))
+                    await h.settle()
+                    await c.wait_for_timeout(150)
+                    assert await c.evaluate("document.documentElement.scrollWidth <= innerWidth"), "page too wide"
+                    assert (await c.evaluate(BOXES))[".preview"] == before[".preview"]
                 await c.click(".notes-foot button[aria-label='Next page']")
                 for i in range(3):
                     await h.bus.publish(ConcernRaised(concern={**CARD, "id": f"c{wide}{i}"}))
@@ -75,10 +87,17 @@ async def test_cards_keep_their_size_while_the_lecture_runs(tmp_path):
                 assert not await c.evaluate("[...document.querySelectorAll('.tabs button span')]"
                                             ".some((s) => s.offsetParent && s.scrollWidth > s.clientWidth + 1)")
                 assert await c.evaluate("document.querySelector('.dock').getBoundingClientRect().height") < 50
+                # no label breaks onto a second line ("New / slide", Equation pushed out of line with wide notes)
+                assert not await c.evaluate("[...document.querySelectorAll('.dock button span')]"
+                                            ".some((s) => s.offsetParent && s.getBoundingClientRect().height > 24)")
+                assert await c.evaluate("[...document.querySelectorAll('.dock button')]"
+                                        ".every((b) => b.getBoundingClientRect().height <= 42)")
+                assert await c.evaluate("document.documentElement.scrollWidth <= innerWidth")
+                assert await c.evaluate("document.querySelector('.bar').getBoundingClientRect().height") == 56
                 # Project in the middle of the notes footer
                 mid = await c.evaluate("""() => { const f = document.querySelector('.notes-foot').getBoundingClientRect();
                     const p = document.querySelector('.notes-foot .project').getBoundingClientRect();
                     return Math.abs((p.left + p.right) / 2 - (f.left + f.right) / 2); }""")
                 assert mid < 3
-            await c.screenshot(path=str(ART / "control_layout_1536_wide.png"))
+            await c.screenshot(path=str(ART / f"control_layout_{size[0]}_wide.png"))
             assert not c.errors, c.errors

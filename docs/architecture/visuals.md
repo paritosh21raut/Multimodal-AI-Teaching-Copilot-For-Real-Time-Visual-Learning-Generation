@@ -96,7 +96,8 @@ Change image excludes it, which brings in the web search. Measured on the fixtur
 - **Captions** (D3). A "Figure N: ..." line under (≤ 12 % of the page) or over (≤ 6 %) a figure is its caption:
   the label is that line + the page heading + the file name; the alt text shown is the caption without its number,
   else the query, never the page's words. Index format 2 (`ref.v2.npz`; the format-1 `figures.json` is kept as
-  `figures.v1.json`); files in use are re-indexed once.
+  `figures.v1.json`); files in use are re-indexed once. Format 3 (S5): each figure also keeps its place on the page
+  (`Figure.box`, fractions of the page as shown; empty on a turned page), for clicking it in My Notes.
 - **Caption gate.** A teacher's figure whose caption names every subject word (and the asked figure type) with a
   label match ≥ 0.62 is used without the CLIP photo gate (screenshots and drawings score like "a page of text");
   an automatic photo request still needs CLIP unless the figure is drawn.
@@ -113,6 +114,38 @@ Change image excludes it, which brings in the web search. Measured on the fixtur
 - **No repeat across topics** (D2, user: "on consecutive slides or different slides when the topic is a continuation
   or the image is relevant"): an image shown under one topic is excluded from another topic's searches (and from a
   cached answer); within the topic it may come back.
+
+## F-013 S5: the human body is drawn, not photographed
+User 2026-10-17: a close-up photo of the inside of a mouth on "Digestive system - Mouth" ("they look gross; prefer
+pictorial images, the actual image only where it is important").
+- **Body subjects** (`policy.body_subject`): the query, the topic or the subtopic names the body, an organ, a body
+  system or a disease ("Mouth" under "Digestive system", "Heart", "stomach ulcers"). The engine sets
+  `ImageRequested.pictorial`; the finder then searches Commons for "<query> diagram", asks CLIP for a diagram of it,
+  and refuses every photograph. Cached answers are kept apart (`+pic`); the cache version is "s5", so answers
+  found before are searched again once.
+- **Style by CLIP** (`finder._judge`): style = best of 7 drawing prompts (drawing, illustration, diagram, cartoon,
+  vector drawing, painting, 3D render) - best of 2 photo prompts; body = "a close-up photograph of human skin,
+  mouth, teeth, eyes or organs" - best drawing prompt. Measured on 11 body photos and 22 anatomy drawings from the
+  image cache: every photo style ≤ -0.008, every drawing ≥ +0.004 (a 3D render the lowest); a photo with labels
+  drawn on it ("Human Mouth Diagram.svg") passes as a drawing but has body +0.074..0.076 (drawings ≤ +0.060). The
+  int8 model moves a score by up to ~0.007 with the other images of its batch.
+- **Rules** (`finder.real_photo`): on any slide, body ≥ 0.065, or a photo (style < 0) with body ≥ 0.03, is refused
+  (the mouth, an ulcer, haemorrhoids, colitis, muscle tissue; also a lion's mouth and a sprouting potato in the
+  cache); for a body subject every photo (style < 0) is refused (a real skeleton → the drawn one). Elsewhere a
+  drawing ranks a little ahead (+0.3 x style), so Saturn and a network switch keep their photos.
+- **Check** (real search, 0 tokens): mouth → "Human Mouth Diagram" refused, then the labelled drawing; stomach,
+  heart, skin layers, salivary glands → drawings; a carcinoid-tumour photo refused; Saturn, network switch → photos.
+
+## Figures from My Notes onto the slide (F-013 S5)
+User 2026-10-17: "if a block diagram is not shown, the teacher can simply click on the image of the block diagram in
+the My Notes section and it will be displayed". On the open notes page the index's figures are outlined
+(`GET /api/notes/<id>/figures/<page>`); a click, or a drag onto the slide preview, sends `POST /api/notes/<id>/clip`
+`{page, n}` (the saved figure, alt = its caption); the crop button selects any part of a page (`{page, box}`:
+`NotesLibrary.render_region` renders the whole page at up to 4x and cuts the part out, so a turned page such as the
+ESP32 datasheet's schematic is cut as shown; a selection under 3 % of the page is a click). The answer is an image in
+the cache (source "reference", licence "Your material"); the `set_image` command with `large: true` puts it in the
+wide column of the live slide (the UI changes nothing itself). Projected notes go back to the slide. Files not in
+use as study material have no index, so no outlines; selecting works on every file.
 
 ## Generated diagrams
 Structured data from the Interpretation (steps, nodes, edges, events) → `DiagramBlock` → rendered client-side

@@ -240,6 +240,63 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
             return Response(status_code=404)
         return FileResponse(path, media_type="image/png", headers={"Cache-Control": "no-store"})
 
+    @app.get("/api/notes/{doc_id}/figures/{page}")
+    async def notes_figures(request: Request, doc_id: str, page: int):
+        """The figures the index found on this page, with their place (F-013 S5: click one to show it)."""
+        if not trusted(request):
+            return Response(status_code=403)
+        if notes is None or notes.get(doc_id) is None:
+            return JSONResponse({"figures": []})
+        from copilot.notes.reference import page_figures
+
+        figs = await asyncio.to_thread(page_figures, notes, doc_id, page)
+        return JSONResponse({"figures": [{"n": f.n, "box": f.box, "caption": f.caption} for f in figs]})
+
+    @app.post("/api/notes/{doc_id}/clip")
+    async def notes_clip(request: Request, doc_id: str):
+        """A figure of the teacher's notes (`n`) or a part of a page they selected (`page` + `box`), stored as an image
+        for the slide (F-013 S5, user 2026-10-17: "click on the block diagram in My Notes and it is on the screen").
+        Like /api/upload it returns the image; the `set_image` command puts it on the slide."""
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
+        doc = notes.get(doc_id) if notes is not None else None
+        if media is None or doc is None:
+            return JSONResponse({"error": "not available"}, status_code=404)
+        from copilot.notes.reference import page_figures
+        from copilot.visuals.cache import BadImage, CachedImage
+
+        try:
+            body = await request.json()
+            page = int(body.get("page") or 0)
+            n = body.get("n")
+            box = [float(x) for x in body.get("box") or []]
+        except (ValueError, TypeError, AttributeError):
+            return JSONResponse({"error": "send {page, n} or {page, box}"}, status_code=400)
+        caption = ""
+        if n is not None:
+            fig = next((f for f in await asyncio.to_thread(page_figures, notes, doc_id, page) if f.n == int(n)), None)
+            if fig is None:
+                return JSONResponse({"error": "no such figure"}, status_code=404)
+            from PIL import Image
+
+            img = await asyncio.to_thread(lambda: Image.open(notes.doc_dir(doc_id) / f"f{fig.n}.png").convert("RGB"))
+            caption, key = fig.caption, f"ref:{doc_id}:{fig.n}"
+        else:
+            img = await asyncio.to_thread(notes.render_region, doc_id, page, box)
+            if img is None:
+                return JSONResponse({"error": "select a larger part of the page"}, status_code=422)
+            key = f"clip:{doc_id}:{page}:" + ",".join(f"{x:.3f}" for x in box)
+        stem = Path(doc.name).stem if doc.kind != "web" else doc.name
+        try:
+            stored = await asyncio.to_thread(media.store, img, key, CachedImage(
+                id="", width=0, height=0, source="reference", title=f"{doc.name} p.{page}",
+                alt=(caption or f"{stem}, page {page}")[:120], licence="Your material"))
+        except BadImage as e:
+            return JSONResponse({"error": str(e)}, status_code=422)
+        log.info("notes figure %s p.%d %s -> %s", doc.name, page, f"f{n}" if n is not None else box, stored.id)
+        return JSONResponse({"image_id": stored.id, "url": stored.url, "width": stored.width,
+                             "height": stored.height, "aspect": round(stored.aspect, 3), "alt": stored.alt})
+
     @app.get("/api/notes/{doc_id}/page/{page}")
     async def notes_page(request: Request, doc_id: str, page: int, w: int = 720):
         if not trusted(request):

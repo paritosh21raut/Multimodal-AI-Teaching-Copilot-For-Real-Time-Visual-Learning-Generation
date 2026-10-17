@@ -38,7 +38,7 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
                # name + standard: a named equation's standard form from presentation.equations (F-013 S3b)
                # consecutive slide-wide formulas (≤ 4, said together) render as ONE set: stacked cards, one legend
   example      { title?, text }
-  image        { url, alt, credit, licence, aspect, origin: auto|teacher, image_id, large }   # F-007b; large: F-013 S4 asked figure
+  image        { url, alt, credit, licence, aspect, origin: auto|teacher, image_id, large }   # F-007b; large: F-013 S4 asked figure, S5 a figure from My Notes
   # definition gets `image` { url, alt, image_id, aspect } (F-013 S4): its picture when concepts stand side by side
   callout      { kind: note|tip|key, text }
   simulation   { template, params }          # V3

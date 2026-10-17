@@ -3,7 +3,9 @@
 Status: **S1 implemented**, **S2 implemented, targets partly met** (2026-10-16; see "S1 result" / "S2 result"),
 **S3a implemented** (2026-10-17, 0 tokens), **S3b implemented** (2026-10-17, 34,808 tokens A/B; see "S3 result"),
 **S3c implemented** (2026-10-17, 31,338 tokens A/B) + performance mode, start card picker, Follow removed (from S4).
-**S4 implemented** (2026-10-17, 0 LLM tokens; see "S4 result"). S5 planned. Evaluation spent 0 tokens.
+**S4 implemented** (2026-10-17, 0 LLM tokens; see "S4 result"). **S5 done** (2026-10-17, ≈ 9k tokens; see "S5
+result"): the user's 3 issues of that day + figures from My Notes; V1 ready to be marked complete. Evaluation spent 0
+tokens.
 Inputs: `verify_results/test1..30` (slides.md, transcript, terminal log, slide PNGs), `_eval/e2e_d2.json`,
 `_eval/results.json`, annotator A workbooks (12 lectures), the user's 12 reported issues (2026-10-16).
 User answers (2026-10-16): best system first (free Groq now, a paid LLM later); faded provisional content is OK;
@@ -456,3 +458,39 @@ asks for ("the block diagram of STM32") from the teacher's material or the web, 
 ### S5 — Wrap-up
 Full suites (fast, slow, browser), `v1_eval` vs baseline, two live mic lectures by the user (one with a comparison
 and a classification), screenshots, docs (understanding, presentation, display, visuals), STATE, git checkpoint.
+
+### S5 result (2026-10-17, ≈ 9k Groq tokens for the app screenshot run)
+- **The user's two lectures of 2026-10-17 vs the baseline** (`tools/v1_eval.py 20261017-155953-ce9e
+  20261017-135414-4ece --compare verify_results/_eval/v1_baseline.json`, 56 slides, S4 build; file
+  `_eval/s5_live.json`):
+
+  | | baseline (tests 1-30) | 2026-10-17 lectures |
+  |---|---|---|
+  | speech → final slide, median / p90 | 10.1 s / 20.2 s | 7.1 s / 15.5 s |
+  | announced topic → its slide, median / p90 / missed | 17.2 s / 34.0 s / 36 | 0.3 s / 0.4 s / 0 |
+  | "(part N)" slides | 70 % | 32 % |
+  | duplicate items / lines shown as said | 19 / 117 | 2 / 0 |
+  | the same image on another slide | 39 | 1 |
+  | deterministic fallback units | 59 | 2 |
+
+  `def_repeat_rate` rose 0.41 → 0.70: it counts definition cards whose term is in the slide title in the data;
+  since C2 the display hides that term ("What is X?" with the definition card), so it no longer measures a defect.
+  No comparison was spoken in these two lectures (compare blocks 0 of 0 cues).
+- **Preview jumping mid-lecture (second report).** Cause: the outer grid's implicit column grew with the transcript
+  strip's one-line text, so every longer sentence widened the page (horizontal scrollbar, right panel cut off) and the
+  preview. Fixed (`minmax(0, 1fr)`, fixed one-row top bar, dock labels never break); the browser test now feeds
+  transcript lines of up to 2,000 characters at 1536 x 730, 1536 x 864 and 1920 x 960 and failed before the fix.
+- **Equation button out of line with wide notes**: the dock's buttons shrank and wrapped their labels instead of
+  overflowing, so the icons-only mode never started. Labels never break now; icons-only with 16 px to spare.
+- **No photos of the body** (`finder.real_photo`, `policy.body_subject`, see visuals.md): on 11 body photos and 22
+  anatomy drawings from the cache CLIP separates them (photo style ≤ -0.008, drawings ≥ +0.004; a labelled photo by
+  its body score). Real search: mouth / stomach / heart / skin / salivary glands → drawings, Saturn and a switch →
+  photos.
+- **Figures from My Notes** (user's addition): outlines on the notes page (index format 3 keeps each figure's
+  place), click or drag onto the preview, or select any part of a page (rendered sharp, turned pages too); shown in
+  the wide column. The user's files in use are re-indexed once more at the next start.
+- **Tests:** `tests/unit/test_s5.py` (7), browser `test_notes_figures_browser.py` (1) and the layout test at 3 sizes.
+  Suites: fast 751, slow 24, browser 45 (one regression found by the full run and fixed: the dock measured its width
+  with End lecture pushed right, so it always looked full and went icons-only; it now adds up its parts).
+  Tokens: only `screenshot_app` (4 Groq calls, ≈ 9k).
+
