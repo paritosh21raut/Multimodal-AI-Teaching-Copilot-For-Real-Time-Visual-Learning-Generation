@@ -1,0 +1,199 @@
+"""The simulation contract's shared parts (docs/contracts/simulation-spec.md).
+
+Python is the single source of truth for every number on the projector: a solver turns the parameters into
+`labels` (values printed beside an element), `derived` (computed readouts) and `drive` (numbers that only move the
+picture and are never printed). The renderer (web/sims/) prints `labels` / `derived` text as it is and never
+formats a number of its own.
+
+Truthfulness: a parameter's `source` says where its value came from. Only said / teacher values are printed; a
+computed value is printed (marked computed) only when every input it depends on is known (said, teacher or a
+standard constant such as g). A default moves the picture and is never printed.
+"""
+from __future__ import annotations
+
+import math
+import re
+from dataclasses import dataclass, field
+from typing import Callable, ClassVar, Literal, Optional
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+ParamSource = Literal["said", "teacher", "computed", "default", "standard"]
+KNOWN: frozenset[str] = frozenset({"said", "teacher", "standard"})  # inputs a printed computed value may rest on
+LabelSource = Literal["said", "teacher", "computed"]
+Origin = Literal["cue", "policy", "llm", "teacher"]
+
+
+class _Model(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class SimLabel(_Model):
+    """What is printed beside an element: its symbol, and its value only when known ("F" / "F = 20 N")."""
+    symbol: str = ""
+    text: str = ""                    # "20 N"; "" = the symbol alone (the value is a default or not yet known)
+    source: Optional[LabelSource] = None  # None when text is ""
+
+
+class Derived(_Model):
+    """A computed readout ("Acceleration", a = 2.04 m/s²), printed and marked computed."""
+    id: str
+    label: str
+    symbol: str
+    value: float
+    unit: str = ""
+    text: str                         # value + unit as printed ("2.04 m/s²", "3.21 m/s² down the slope")
+
+
+class Annotation(_Model):
+    target: str                       # an element id
+    text: str
+    source: Literal["said", "added"] = "said"  # an added note renders subtle (V1 rule)
+
+
+class Playback(_Model):
+    """Server-authoritative clock state. Every client anchors its own clock at `t` when `rev` changes and runs on
+    from there while playing, so a patch that changes only values never restarts the motion."""
+    state: Literal["playing", "paused"] = "playing"
+    speed: float = Field(default=1.0, ge=0.25, le=2.0)
+    t: float = Field(default=0.0, ge=0.0)   # simulation seconds at the last change of state
+    rev: int = Field(default=0, ge=0)       # bumped by play / pause / step / reset / a new motion (switch)
+
+
+class SimBase(_Model):
+    """Fields every template's spec has; a template subclasses it with `template: Literal[id]` and `params`."""
+    template: str
+    version: int = Field(default=0, ge=0)
+    title: str = ""
+    language: str = "en"
+    param_source: dict[str, ParamSource] = Field(default_factory=dict)
+    shown: list[str] = Field(default_factory=list)          # elements drawn (progressive reveal, teacher toggles)
+    labels: dict[str, SimLabel] = Field(default_factory=dict)
+    derived: list[Derived] = Field(default_factory=list)
+    drive: dict[str, float] = Field(default_factory=dict)   # never printed
+    annotations: list[Annotation] = Field(default_factory=list, max_length=3)
+    playback: Playback = Field(default_factory=Playback)
+    origin: Origin = "cue"
+
+    ELEMENTS: ClassVar[tuple[str, ...]] = ()
+    LABELS: ClassVar[tuple[str, ...]] = ()  # label keys beyond the elements (parts of one element: "w_par", "w_perp")
+
+    @model_validator(mode="after")
+    def _known_names(self) -> "SimBase":
+        params = getattr(self, "params", None)
+        slots = set(type(params).model_fields) if params is not None else set()
+        bad = [s for s in self.param_source if s not in slots]
+        if bad:
+            raise ValueError(f"unknown slot(s) in param_source: {bad}")
+        elements = set(self.ELEMENTS)
+        for what, names, ok in (("shown", self.shown, elements),
+                                 ("labels", list(self.labels), elements | set(self.LABELS)),
+                                 ("annotation targets", [a.target for a in self.annotations], elements)):
+            bad = [n for n in names if n not in ok]
+            if bad:
+                raise ValueError(f"unknown element(s) in {what}: {bad}")
+        if len(set(self.shown)) != len(self.shown):
+            raise ValueError("shown has duplicates")
+        if any(not math.isfinite(v) for v in self.drive.values()):
+            raise ValueError("drive values must be finite")
+        return self
+
+
+@dataclass(frozen=True)
+class Slot:
+    """One parameter of a template: its range (the params model enforces the same, tests check they agree), how a
+    spoken value reaches it (`kind`, see simulation.values) and its default."""
+    name: str            # params field ("mass_kg")
+    label: str           # "Mass"
+    symbol: str          # "m"
+    unit: str            # "kg" ("" = none)
+    lo: float
+    hi: float
+    step: float
+    default: float
+    kind: str            # mass | angle | force | mu | g (simulation.values)
+    standard: bool = False  # a textbook constant (g): its default counts as known, never printed unless said
+    absent: bool = False    # the default means "there is none" (no push: F = 0): known while it stays at the default
+
+
+@dataclass(frozen=True)
+class Element:
+    id: str
+    label: str           # /control toggles ("Friction")
+
+
+@dataclass
+class Solution:
+    drive: dict[str, float]
+    labels: dict[str, SimLabel] = field(default_factory=dict)
+    derived: list[Derived] = field(default_factory=list)
+
+
+def fmt(x: float, sig: int = 3) -> str:
+    """A value as printed: `sig` significant figures, no exponent in the classroom range, no trailing zeros; whole
+    numbers are never rounded to tens (49.05 -> "49.1", 2.038 -> "2.04", 20.0 -> "20", 0.2 -> "0.2", 1234.5 -> "1235")."""
+    if not math.isfinite(x):
+        return "?"
+    ax = abs(x)
+    if ax < 5e-4:  # never "5e-05" on a projector: a rounding error at a limit, or a value too small to read
+        return "0" if ax < 1e-9 else "≈ 0"
+    if ax >= 1e6:
+        return f"{x:.{sig}g}"
+    digits = max(0, sig - 1 - math.floor(math.log10(ax)))
+    s = f"{x + math.copysign(1e-12, x):.{digits}f}"  # 49.05 is 49.04999... in binary: round half up as on paper
+    return s.rstrip("0").rstrip(".") if "." in s else s
+
+
+def known(sources: dict[str, str], slots: dict[str, Slot], *names: str) -> bool:
+    """Is every named input said, set by the teacher or a standard constant left at its standard value?"""
+    for n in names:
+        src = sources.get(n, "default")
+        if src in KNOWN or (src == "default" and (slots[n].standard or slots[n].absent)):
+            continue
+        return False
+    return True
+
+
+def value_label(symbol: str, value: float, unit: str, source: str, printable: bool) -> SimLabel:
+    """A label with the value when printable ("F = 20 N"), else the symbol alone."""
+    if not printable:
+        return SimLabel(symbol=symbol)
+    text = f"{fmt(value)}{unit if unit in ('°',) else (' ' + unit if unit else '')}"
+    return SimLabel(symbol=symbol, text=text, source="computed" if source not in ("said", "teacher") else source)
+
+
+Solver = Callable[[BaseModel, dict[str, str]], Solution]
+
+
+@dataclass(frozen=True)
+class Template:
+    """One registry entry (simulation.registry). Adding a template = one of these + web/sims/<id>.js + the fixed test
+    checklist (solver vs textbook values, detector positives / negatives, browser render in both themes, screenshot).
+
+    Detection (simulation.detector), all on one transcript line:
+      setup     names this scenario ("an inclined plane", "a block ... on a rough surface"); with a spoken cue
+                ("consider", "let me show you") it shows the simulation
+      lexicon   its quantities and verbs ("friction", "slides", "push"): keeps an open simulation listening
+      guard     vetoes the line (traps: "block diagram", "block of code", "human body")
+    """
+    id: str
+    name: str                                   # "Block on an incline" (/control, the stage caption)
+    subject: str                                # "mechanics"
+    sim: type[SimBase]
+    params: type[BaseModel]
+    slots: tuple[Slot, ...]
+    elements: tuple[Element, ...]
+    solve: Solver
+    default_shown: Callable[[BaseModel, dict[str, str]], list[str]]
+    setup: "re.Pattern[str]"
+    lexicon: "re.Pattern[str]"
+    guard: Optional["re.Pattern[str]"] = None
+    aliases: tuple[str, ...] = ()               # search words for /control
+    carry: tuple[str, ...] = ()                 # slots taken over when the teacher switches to this template
+
+    def slot(self, name: str) -> Slot:
+        return next(s for s in self.slots if s.name == name)
+
+    @property
+    def slot_map(self) -> dict[str, Slot]:
+        return {s.name: s for s in self.slots}

@@ -81,6 +81,11 @@ CommandKind = Literal[
     "assess_create", "assess_edit", "assess_add", "assess_delete", "assess_regen", "assess_open", "assess_start",
     "assess_pause", "assess_resume", "assess_hold", "assess_next", "assess_end", "assess_close", "assess_discard",
     "assess_release",
+    # Concept Simulation (F-014): the engine applies them to the simulation block of {slide_id}; sim_show {template}
+    # puts one on the live slide; sim_set {slide_id, slot, value} | {slide_id, speed}; sim_toggle {slide_id, element,
+    # on?}; sim_pick {slide_id, template}; sim_full {slide_id, on} is a display flag (the Deck, like zoom_image)
+    "sim_show", "sim_set", "sim_play", "sim_pause", "sim_step", "sim_reset", "sim_toggle", "sim_pick", "sim_remove",
+    "sim_full",
 ]
 
 
@@ -178,6 +183,7 @@ class DeckState(Event):
     following: bool  # live slide auto-advances to new slides
     blank: bool
     zoom: Optional[str] = None  # slide whose image fills the display (teacher clicked it in /control)
+    sim_full: Optional[str] = None  # slide whose simulation fills the display (F-014, the teacher's Full stage)
 
 
 UtteranceKind = Literal["content", "classroom_management", "meta", "filler", "question_to_class"]
@@ -367,6 +373,31 @@ class AssessState(Event):
     now: float = 0.0   # server clock when made (pages count `left` down from their receipt)
 
 
+VisualKind = Literal["simulation", "story"]
+
+
+class RepresentationIntent(Event):
+    """What a stretch of the lecture asks for beyond slide text (RULES #6): modes plug in here and never change audio,
+    STT or understanding. Produced by deterministic detectors (simulation.detector, F-014 S0) and later by the
+    interpretation's closed-list field (S2); the presentation engine's policy decides what is done with it.
+    `values` are plain dicts (core does not import the simulation package): slot -> {value, unit, said, ok, why}."""
+    segment_ids: list[str] = Field(default_factory=list)
+    visual_kind: VisualKind = "simulation"
+    template: str = ""          # template id; "" = values for whichever simulation is open
+    strength: Literal["cue", "setup", "values"] = "cue"  # cue: "consider a block ..."; setup: a template noun alone
+    values: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    reveal: list[str] = Field(default_factory=list)  # element ids the line names ("friction opposes it")
+    origin: Literal["cue", "policy", "llm", "teacher"] = "cue"
+    text: str = ""              # the line (logs, evaluation)
+
+
+class SimulationNotice(Event):
+    """/control only (F-014): something about a simulation the teacher should know ("heard 95° - not used")."""
+    ephemeral: ClassVar[bool] = True
+    slide_id: str = ""
+    text: str
+
+
 class ErrorRaised(Event):
     component: str
     error: str
@@ -380,7 +411,7 @@ EVENT_TYPES: dict[str, type[Event]] = {
         CommandReceived, StateChanged, SlidePatch, DeckState, ErrorRaised,
         UtteranceClassified, ConceptSignal, InterpretRequested, InterpretationReady, LLMCallFailed,
         ConcernRaised, ConcernResolved, SlideContextChanged, SlideOverflow, ImageRequested, ImageReady,
-        ImageChoices, ThemeChanged, VocabularyChanged,
+        ImageChoices, ThemeChanged, VocabularyChanged, RepresentationIntent,
     )
 }
 

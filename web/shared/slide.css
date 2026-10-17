@@ -577,3 +577,42 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
   .glass .sheen { display: none; }
   .glass .edge, .glass .halo { animation-duration: 40s; }
 }
+
+/* ---- Concept Simulation (F-014): the stage ~65 % wide, the slide's points beside it (composer.SIM_COLUMN_PX) ---- */
+.slide-body.with-sim { display: grid; grid-template-columns: minmax(0, 1fr) 1100px; column-gap: 56px; align-items: center; }
+.slide-body.with-sim .main { align-content: safe center; }
+.slide-body.with-sim.sim-only { grid-template-columns: 1100px; justify-content: center; }
+.sim-col { height: 100%; min-height: 0; display: grid; place-items: center; }
+.sim-stage { width: 1100px; height: 740px; }
+.sim-stage.clickable { cursor: zoom-in; }
+.sim-svg { width: 100%; height: 100%; display: block; overflow: visible; font-family: var(--font-text); }
+.sim-full { position: absolute; inset: 0; z-index: 4; background: var(--stage-bg); display: grid; place-items: center; }
+.sim-full .sim-stage { width: 1400px; height: 942px; }
+.sim-full.closable { cursor: zoom-out; }
+.sim-surface { stroke: var(--sim-surface); stroke-width: 6; stroke-linecap: round; }
+.sim-surface.base { stroke-width: 4; opacity: 0.55; }
+.sim-ground { fill: var(--sim-ground); }
+.sim-hatch line { stroke: var(--sim-surface); stroke-width: 3; opacity: 0.5; }
+.sim-wedge { fill: var(--sim-wedge); stroke: var(--sim-surface); stroke-width: 4; stroke-linejoin: round; }
+.sim-angle { fill: none; stroke: var(--sim-surface); stroke-width: 4; }
+.sim-block { fill: var(--sim-block); stroke: var(--sim-block-edge); stroke-width: 5; }
+.sim-ghost { fill: none; stroke: var(--sim-block-edge); stroke-width: 4; }
+.sim-arrow line { stroke-width: 7; stroke-linecap: round; }
+.sim-arrow.dashed line { stroke-dasharray: 14 10; stroke-width: 5; }
+.sim-arrow.r-weight line { stroke: var(--sim-weight); } .sim-arrow.r-weight path { fill: var(--sim-weight); }
+.sim-arrow.r-normal line { stroke: var(--sim-normal); } .sim-arrow.r-normal path { fill: var(--sim-normal); }
+.sim-arrow.r-friction line { stroke: var(--sim-friction); } .sim-arrow.r-friction path { fill: var(--sim-friction); }
+.sim-arrow.r-applied line { stroke: var(--sim-applied); } .sim-arrow.r-applied path { fill: var(--sim-applied); }
+.sim-arrow.r-component line { stroke: var(--sim-component); } .sim-arrow.r-component path { fill: var(--sim-component); }
+.sim-label { font-size: 34px; font-weight: 650; fill: var(--ink); paint-order: stroke; stroke: var(--stage-bg); stroke-width: 7px; stroke-linejoin: round; }
+.sim-label .sym { font-family: KaTeX_Math, "Cambria Math", serif; font-style: italic; font-weight: 400; font-size: 38px; }
+.sim-label .sym .fn { font-family: KaTeX_Main, "Cambria Math", serif; font-style: normal; }
+.sim-label .val.computed { font-weight: 450; font-style: italic; fill: var(--ink-2); }
+.sim-label.in-block { stroke: none; }
+.sim-label.r-weight .sym { fill: var(--sim-weight); } .sim-label.r-normal .sym { fill: var(--sim-normal); }
+.sim-label.r-friction .sym { fill: var(--sim-friction); } .sim-label.r-applied .sym { fill: var(--sim-applied); }
+.sim-label.r-component .sym { fill: var(--sim-component); }
+.sim-readout .card { fill: var(--sim-card); stroke: var(--line); stroke-width: 2; }
+.sim-readout .sim-label { stroke: none; }
+.sim-readout .tag { font-size: 20px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--muted); }
+.sim-caption { font-size: 22px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--muted); }

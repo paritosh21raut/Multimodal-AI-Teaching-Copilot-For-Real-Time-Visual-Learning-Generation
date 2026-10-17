@@ -26,7 +26,7 @@ from copilot.presentation.mathtext import has_fraction, to_latex, visible_length
 from copilot.presentation.spec import (
     Block, CalloutBlock, CauseEffectBlock, CauseLink, Column, ComparisonBlock, DefinitionBlock, ExampleBlock, Fact,
     FactsBlock, FormulaBlock, Group, GroupsBlock, HierarchyBlock, ImageBlock, Item, PointsBlock, ProcessBlock, Row,
-    SlideSpec, Step, TimelineBlock, TimelineEvent, TreeNode, Variable,
+    SimulationBlock, SlideSpec, Step, TimelineBlock, TimelineEvent, TreeNode, Variable,
 )
 
 log = logging.getLogger(__name__)
@@ -45,13 +45,16 @@ IMAGE_HEIGHT_PX = BODY_BUDGET_PX  # image column sizing (mirrors slide.js imageC
 IMAGE_TOP_MAX_PX = 380      # an image beside the text above a formula (slide.css .image-top) is at most this tall
 MEMBER_GAP_PX = 36          # member cards / concept columns (slide.css .def-pair)
 ITEM_IMAGE_PX = 210         # F-013 S4: a concept card's picture + its gap (slide.css .def-img: 190 + 20)
+SIM_COLUMN_PX = 1100        # F-014: the simulation column (mirrors slide.js SIM_COLUMN, ~65 % of the body); the
+                            # slide's other blocks stack in the rest (540 px), like the text beside an image
+MEDIA = ("image", "simulation")  # the visual column's blocks: never teacher text, never moved by split_to_fit
 LAYOUT_FOR = {"definition": "definition", "points": "key_points", "steps": "process_flow",
               "comparison": "comparison", "timeline": "timeline", "formula": "formula", "causes": "cause_effect",
               "example": "example", "facts": "facts", "groups": "groups", "tree": "hierarchy"}
 BLOCK_LAYOUT = {"definition": "definition", "points": "key_points", "process": "process_flow",
                 "comparison": "comparison", "timeline": "timeline", "formula": "formula",
                 "cause_effect": "cause_effect", "example": "example", "callout": "concept", "facts": "facts",
-                "groups": "groups", "hierarchy": "hierarchy", "image": "concept"}
+                "groups": "groups", "hierarchy": "hierarchy", "image": "concept", "simulation": "simulation"}
 LARGE = {"process", "comparison", "timeline", "cause_effect", "formula", "hierarchy"}
 FULL_WIDTH = LARGE | {"facts", "groups"}  # mirrors FULL_WIDTH_PRIMARY in slide.js: no aside next to these
 SECONDARY = ("example", "callout")
@@ -292,7 +295,13 @@ def image_of(spec: SlideSpec) -> Optional[ImageBlock]:
     return next((b for b in spec.blocks if b.type == "image"), None)
 
 
+def sim_of(spec: SlideSpec) -> Optional[SimulationBlock]:
+    return next((b for b in spec.blocks if b.type == "simulation"), None)
+
+
 def content_width(spec: SlideSpec) -> float:
+    if sim_of(spec) is not None:
+        return BODY_WIDTH_PX - SIM_COLUMN_PX - IMAGE_GAP_PX
     img = image_of(spec)
     return BODY_WIDTH_PX - image_column_px(img.aspect, img.large) - IMAGE_GAP_PX if img is not None else BODY_WIDTH_PX
 
@@ -369,12 +378,17 @@ def block_height(b: Block, width: float = BODY_WIDTH_PX, narrow: bool = False) -
     if b.type == "image":
         col = image_column_px(b.aspect, b.large)
         return min(BODY_BUDGET_PX, col / max(0.2, b.aspect))
+    if b.type == "simulation":
+        return BODY_BUDGET_PX  # the stage fills the body height
     return 120
 
 
 def _split(blocks: list, members: bool = False) -> tuple[list, list]:
     """(main, aside) exactly as slide.js splitBlocks lays them out. With an image (image layout) everything else is
-    the content column and the image is alone in its column. Member cards take the full width (no aside)."""
+    the content column and the image is alone in its column. Member cards take the full width (no aside). A
+    simulation (F-014) is a visual column like an image."""
+    if any(b.type == "simulation" for b in blocks):
+        return [b for b in blocks if b.type not in MEDIA], [b for b in blocks if b.type == "simulation"][:1]
     if any(b.type == "image" for b in blocks):
         return [b for b in blocks if b.type != "image"], [b for b in blocks if b.type == "image"][:1]
     if len(blocks) < 2 or members or any(b.type in FULL_WIDTH for b in blocks) \
@@ -463,6 +477,9 @@ def _stack_height(blocks: list[Block], width: float, narrow: bool = False) -> fl
 
 def body_height(spec: SlideSpec) -> float:
     blocks = list(spec.blocks)
+    if sim_of(spec) is not None:  # F-014: the other blocks stack beside the stage (slide.js: the same plain stack)
+        rest = [b for b in blocks if b.type not in MEDIA]
+        return max(_stack_height(rest, content_width(spec), True), BODY_BUDGET_PX) if rest else BODY_BUDGET_PX
     img = image_of(spec)
     if img is not None and image_top(blocks):
         rest = [b for b in blocks if b.type != "image"]
@@ -556,7 +573,8 @@ SQUEEZE = 1.25             # display auto-fit shrinks the type down to 0.8 (= 1.
 def fits(spec: SlideSpec) -> bool:
     # beside an image the type may shrink first (auto-fit down to 0.8) before content moves to the next part
     # (user 2026-10-06); without an image only merge(..., squeeze=True) allows that
-    budget = max(_budget[0], BODY_BUDGET_PX * SQUEEZE) if image_of(spec) is not None else _budget[0]
+    visual = image_of(spec) is not None or sim_of(spec) is not None
+    budget = max(_budget[0], BODY_BUDGET_PX * SQUEEZE) if visual else _budget[0]
     return body_height(spec) <= budget
 
 
@@ -574,6 +592,16 @@ def without_image(spec: SlideSpec) -> SlideSpec:
     return _with_layout(spec.model_copy(update={"blocks": [b for b in spec.blocks if b.type != "image"]}))
 
 
+def with_simulation(spec: SlideSpec, block: SimulationBlock) -> SlideSpec:
+    """Put (or replace) the slide's simulation (F-014): the last block; an image yields to it (one visual column)."""
+    rest = [b for b in spec.blocks if b.type not in MEDIA]
+    return _with_layout(spec.model_copy(update={"blocks": rest + [block]}))
+
+
+def without_simulation(spec: SlideSpec) -> SlideSpec:
+    return _with_layout(spec.model_copy(update={"blocks": [b for b in spec.blocks if b.type != "simulation"]}))
+
+
 _SPLIT_LISTS = {"points": "items", "facts": "facts", "process": "steps"}
 
 
@@ -585,7 +613,7 @@ def split_to_fit(spec: SlideSpec) -> tuple[SlideSpec, list[Block]]:
     moved: list[Block] = []   # in slide order
     origin: dict[str, int] = {}  # source block id -> index in moved
     while not fits(cur):
-        content = [b for b in cur.blocks if b.type != "image"]
+        content = [b for b in cur.blocks if b.type not in MEDIA]
         if not content:
             break
         last = content[-1]
@@ -625,8 +653,8 @@ def rejoin(spec: SlideSpec, moved: list[Block]) -> SlideSpec:
             cur = _replace_block(cur, same, same.model_copy(
                 update={field_name: [*getattr(same, field_name), *getattr(b, field_name)]}))
         else:
-            images = [x for x in cur.blocks if x.type == "image"]
-            cur = cur.model_copy(update={"blocks": [x for x in cur.blocks if x.type != "image"] + [b] + images})
+            images = [x for x in cur.blocks if x.type in MEDIA]
+            cur = cur.model_copy(update={"blocks": [x for x in cur.blocks if x.type not in MEDIA] + [b] + images})
     return _with_layout(cur)
 
 
@@ -667,7 +695,9 @@ def _with_layout(spec: SlideSpec) -> SlideSpec:
     if not spec.blocks:
         return spec
     defs = [b for b in spec.blocks if b.type == "definition"]
-    if len(defs) > 1:
+    if any(b.type == "simulation" for b in spec.blocks):
+        layout = "simulation"
+    elif len(defs) > 1:
         layout = "concept"
     elif defs and spec.blocks[0] is defs[0] and not is_subject(spec, defs[0].term):
         layout = "members"
@@ -811,7 +841,7 @@ def merge(spec: SlideSpec, piece: Piece, *, full: bool = False, squeeze: bool = 
         return spec, piece
     if _is_empty(spec):  # nothing from the teacher yet (maybe a provisional item): the piece shapes the slide
         spec = spec.model_copy(update={"layout": LAYOUT_FOR[piece.kind],
-                                       "blocks": [b for b in spec.blocks if b.type == "image"]})
+                                       "blocks": [b for b in spec.blocks if b.type in MEDIA]})
     column = _column_for(spec, piece)
     if column is not None:
         out, left = _merge_column(spec, piece, column)
@@ -1598,7 +1628,7 @@ def element_texts(spec: SlideSpec) -> dict[str, str]:
             out.update({e.id: f"{e.when} {e.label}" for e in b.events})
         elif b.type == "cause_effect":
             out.update({l.id: f"{l.cause} {l.effect}" for l in b.links})
-        elif b.type != "image":  # an image has no slide text (never a correction target, never in the prompt)
+        elif b.type not in MEDIA:  # an image / a simulation has no slide text (never a correction target or prompt)
             out[b.id] = getattr(b, "text", "") or getattr(b, "spoken", "") or getattr(b, "latex", "")
     return out
 

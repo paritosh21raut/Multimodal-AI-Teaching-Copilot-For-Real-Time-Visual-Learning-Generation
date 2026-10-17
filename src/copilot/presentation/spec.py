@@ -6,10 +6,12 @@ from typing import Annotated, Literal, Optional, Union
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from copilot.core.events import new_id
+from copilot.simulation.registry import SimulationSpec
 
 Layout = Literal[
     "title", "concept", "definition", "key_points", "process_flow", "comparison", "timeline",
     "hierarchy", "cause_effect", "formula", "example", "application", "narrative", "facts", "groups", "members",
+    "simulation",  # F-014: a live simulation beside the slide's key points
 ]
 
 
@@ -215,10 +217,20 @@ class ImageBlock(_Model):
     large: bool = False  # F-013 S4: a figure the teacher turned to ("the block diagram of STM32"): the wide column
 
 
+class SimulationBlock(_Model):
+    """A live simulation (F-014, docs/contracts/simulation-spec.md): the visual column of the simulation layout, the
+    slide's other blocks beside it. Not teacher text: never in the prompt or a correction target. Its id stays the
+    same when it moves to another slide or switches template, so the clients keep its clock."""
+    type: Literal["simulation"] = "simulation"
+    id: str = Field(default_factory=new_id)
+    sim: SimulationSpec
+
+
 Block = Annotated[
     Union[
         DefinitionBlock, PointsBlock, ProcessBlock, ComparisonBlock, TimelineBlock, HierarchyBlock,
         CauseEffectBlock, FormulaBlock, ExampleBlock, CalloutBlock, ImageBlock, FactsBlock, GroupsBlock,
+        SimulationBlock,
     ],
     Field(discriminator="type"),
 ]

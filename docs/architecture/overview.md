@@ -58,6 +58,6 @@ In READY the terminal prompts "Press Enter to start the lecture"; the Control Vi
 - Audio capture uses the sounddevice callback thread → thread-safe queue.
 
 ## Mode extension point
-`Renderer`-style output strategies subscribe to `StateChanged` + `RepresentationIntent`.
-Live Slides is the first. Concept Simulation and Story Scenes are added as new planners/composers and
-new display components — see `modes.md`.
+A mode producer publishes `RepresentationIntent` (defined in `core/events.py`) from the existing events; the
+presentation engine's policy decides and places the visual as a block of the deck. Live Slides is the first mode;
+Concept Simulation (V2, F-014) is the second, Story Scenes the third — see `modes.md`.

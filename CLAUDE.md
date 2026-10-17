@@ -1,10 +1,11 @@
 # CLAUDE.md — Multimodal AI Teaching Copilot
 
 Listens to a live lecture, understands topic/continuity/meaning, and renders a designed,
-continuity-aware **live educational display** on the classroom projector. Later modes
-(Concept Simulation, Story Scenes) reuse the same understanding core.
+continuity-aware **live educational display** on the classroom projector. V1 = live slides (done). V2 = **Concept
+Simulation** (live parametric simulations inside slides); V3 Story Scenes, V4 Multilingual reuse the same core.
 
-Branch: **`CLAUDE_rebuild` only.** Do not touch other branches. Do not inspect old code from other branches.
+Branch: **`V2-Concept-Simulation`** (from `CLAUDE_rebuild` 029002c, 2026-10-17). It holds all of V1, so V1 fixes are
+made here too. `CLAUDE_rebuild` = V1, untouched unless the user asks. Do not inspect old code from other branches.
 Original requirements: `docs/brief/master-prompt.md` (read only when requirements are in question).
 
 ## Session start protocol
@@ -24,7 +25,8 @@ Original requirements: `docs/brief/master-prompt.md` (read only when requirement
 | Live display / control view | `docs/architecture/display.md`, `docs/contracts/slide-spec.md`, ADR-0003, ADR-0005 |
 | Images / diagrams | `docs/architecture/visuals.md`, `docs/contracts/slide-spec.md` |
 | Persistence / recovery / post-lecture | `docs/architecture/persistence.md` |
-| Simulation or Story modes | `docs/architecture/modes.md`, ADR-0006 |
+| Concept Simulation (V2) | `docs/specs/F-014-concept-simulation.md`, `docs/contracts/simulation-spec.md`, ADR-0010, `docs/architecture/modes.md` |
+| Story Scenes (V3) | `docs/architecture/modes.md`, ADR-0006 |
 | Testing work | `docs/TESTING.md` |
 | Planning next milestone | `docs/ROADMAP.md` |
 | Feature being built | its `docs/specs/F-xxx-*.md` |
@@ -92,7 +94,7 @@ PYTHONPATH=paper/build/lib .venv/Scripts/python paper/build/src/build_docx.py <o
 
 ## Git checkpoints
 After a verified milestone: tell the user briefly, give exact commands and a concise message:
-`git add -A && git commit -m "<type>: <msg>" && git push origin CLAUDE_rebuild`.
+`git add -A && git commit -m "<type>: <msg>" && git push origin V2-Concept-Simulation`.
 Do not commit tiny changes. Do not commit yourself unless asked.
 
 ## Reporting format

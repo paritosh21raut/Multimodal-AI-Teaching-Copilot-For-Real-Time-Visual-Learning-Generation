@@ -1,6 +1,8 @@
 # Current State
 
-_Last updated: 2026-10-17: **F-013 S5 (wrap-up) + the user's 3 issues: preview jumping with long transcript lines,
+_Last updated: 2026-10-17: **V2 Concept Simulation S0 done** on branch `V2-Concept-Simulation` (F-014), 18,582 Groq
+tokens (one simulated lecture; the simulation path itself 0). V1 (incl. V1.5 = old "V2" groups A–D) is done; V1c is
+marked done for now. CLAUDE_rebuild stays V1. Before that, 2026-10-17: **F-013 S5 (wrap-up) + the user's 3 issues: preview jumping with long transcript lines,
 no photos of the body, dock labels; figures from My Notes onto the slide**, ≈ 9k Groq tokens (app screenshot run only). **V1 (Live Lecture to
 Slides) is ready to be marked complete** after the user's check. Before that, 2026-10-17: F-013 S4 (images, figures the
 teacher asks for, own-PDF figures, web pages, /control layout lock, disk full), 0 LLM tokens. Before that, 2026-10-17: F-013 S3c (truthfulness) + performance mode + start
@@ -13,6 +15,26 @@ user's review of the paper and of group D, then the truthfulness bug below, then
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **V2 Concept Simulation S0 done (2026-10-17).** Details and plan to S4 + Explore mode: `docs/specs/F-014-concept-simulation.md`.
+  - **What works:** "Consider a block of 5 kg on a rough floor … push it with 20 newtons" → a live block-on-a-surface
+    simulation beside the slide's points (forces labelled, block sliding, "computed" a / F_net); "imagine it on an
+    inclined plane at 30 degrees" switches to the incline (mass and μ carried). Numbers only when said / set /
+    computed from those; defaults never printed. /control sim bar (play, step, restart, speed, Values, Show, pick,
+    Full stage, remove), dock **Simulation**; /display + /view follow; Full stage like a zoomed image.
+  - **Code:** `src/copilot/simulation/` (contract, registry, 2 templates, values parser, detector, policy),
+    `presentation/simulations.py` (controller in the engine), `RepresentationIntent` / `SimulationNotice` /
+    `sim_*` commands in `core/events.py`, `web/sims/` (runtime + scenes). Contract `docs/contracts/simulation-spec.md`,
+    ADR-0010 (SVG + own models, no matter.js).
+  - **Tests:** fast 820 pass (+67 `test_simulation.py`, +2 cue negatives); browser: `test_simulation_browser.py` 6 pass,
+    full browser suite 51 pass (45 V1 + 6 new). Independent physics review (subagent): 1 bug + 2 risks, all fixed.
+  - **Runtime:** `tools/screenshot_sims.py` (both templates, both themes, slide / Full stage / static / unknown values,
+    /control Values) looked at; layout fixed after the first look (arrows behind the block, labels off lines, readout
+    width, sim bar position). Simulated lecture `incline_live.txt` with real Groq (18,582 tokens): found and fixed μ
+    after "between … and …", a push direction taken from "the pull down the slope", and the simulation following
+    onto an empty slide that V1's heading rule made from "let's see what happens" (V1 cue fixed too).
+  - **Next:** S1 (6 more templates, scenario score, Suggest, `tools/v2_eval.py` replay with annotations); the user's
+    look at S0 in the app (`--simulate tests/fixtures/lectures/incline_live.txt`, or a mic lecture with "consider a
+    block of …").
 - **F-013 S5 done (2026-10-17, 0 LLM tokens) + the user's issues of that day.** Details: F-013 "S5 result".
   - **Preview jumping mid-lecture (second report):** a long transcript line widened the whole page (outer grid's
     implicit column; horizontal scrollbar, right panel cut off, preview grew). Fixed; the top bar is one fixed row;
@@ -176,8 +198,9 @@ Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 | V2 group B (materials, past lectures) + review fixes F-010b/c | 100 | verified |
 | V2 group C (quiz + test, F-011) + review fixes | 100 | verified, committed |
 | V2 group D (reference materials, F-012) | 95 | verified; speech terms unit-tested only (no real audio run) |
-| Crash recovery + soak (V1c) | 0 | not started |
-| Concept Simulation / Story Scenes / Multilingual | 0 | not started |
+| Crash recovery + soak (V1c) | 0 | marked done for now (user, 2026-10-17); not built |
+| Concept Simulation (V2, F-014) | 15 | S0 verified: 2 templates, cue path, /control, browser + simulated lecture; S1–S4 + Explore planned |
+| Story Scenes (V3) / Multilingual (V4) | 0 | not started |
 
 ## Verification (latest; the full log is in the history file)
 | Item | Unit | Integration | Runtime |
@@ -193,13 +216,17 @@ Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 - `src/copilot/llm/`: providers, ratelimit, router, usage
 - `src/copilot/understanding/`: filter, embedder (MiniLM ONNX), tracker, gate, prompt (+ REFERENCE block), grounding,
   interpreter, service
-- `src/copilot/presentation/`: spec, deck, content, composer, planner, engine, mathtext, demo
+- `src/copilot/presentation/`: spec, deck, content, composer, planner, engine, mathtext, demo, simulations (F-014
+  controller: policy, placement, follow, sim commands, clock)
+- `src/copilot/simulation/` (F-014): base (contract common parts, fmt, truthfulness), registry (union, build / solved /
+  switched), templates/ (block_on_surface, incline), values (spoken quantities), detector (cue → RepresentationIntent),
+  policy; `web/sims/` runtime (clock, track), draw, one scene per template
 - `src/copilot/visuals/`: sources, filters, finder (CLIP), cache, clip, service (the teacher's figures first)
 - `src/copilot/notes/`: library (files, flags), convert, service (open / follow / project / study material),
   reference (F-012 index)
 - `src/copilot/materials/` (F-010), `src/copilot/assess/` (F-011, generator + reference guard)
 - `src/copilot/display/`: hub, server, share; `web/` shared / display / control / view / export / vendor
-- `tools/`: display_harness, screenshot_*, prompt_ab, replay_interpretations, materials_check, quiz_check
+- `tools/`: display_harness, screenshot_* (screenshot_sims: F-014), prompt_ab, replay_interpretations, materials_check, quiz_check
   (`--reference`), reference_check, make_reference_fixture, paper tools
 
 ## Known issues / notes
@@ -218,6 +245,9 @@ Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 - Not reproduced: mic overflow lag; unbounded STT queue if Whisper runs slower than real time.
 
 ## User actions pending
+- Look at V2 S0: `artifacts/sims/*.png`; in the app `python -m copilot --simulate tests/fixtures/lectures/incline_live.txt
+  --no-wait --speed 1` (≈ 19k tokens) or a mic lecture ("Consider a block of 5 kg on a rough floor …"); try the sim
+  bar (Values, Full stage). Push the branch checkpoint.
 - Try S4 in the app: say "let's look at the block diagram of ..." with your datasheet in My Notes; check the /control
   page at your screen size (wide notes, mistake cards); a planets / organs lecture for the card pictures.
 - Review F-012 / F-013 S3c in the app: the Study material picker, the Speed switch (Standard / High performance), a

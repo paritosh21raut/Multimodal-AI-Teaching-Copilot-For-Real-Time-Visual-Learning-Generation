@@ -34,6 +34,8 @@ from copilot.core.events import (
     InterpretationReady,
     LiveCue,
     Lifecycle,
+    RepresentationIntent,
+    SimulationNotice,
     LifecycleChanged,
     SlideContextChanged,
     SlideOverflow,
@@ -48,13 +50,15 @@ from copilot.presentation.composer import (
     element_texts, fits,
     fits_unshrunk, frame_slide, image_of, is_about, is_duplicate, is_set_label, is_small, member_of, merge, rejoin,
     remove_elements, can_parent,
-    revise_item, set_provisional, split_to_fit, substitute, teacher_items, title_slide, with_image, without_image,
+    revise_item, set_provisional, sim_of, split_to_fit, substitute, teacher_items, title_slide, with_image,
+    without_image,
 )
 from copilot.presentation import equations
 from copilot.presentation.content import Piece, clean, pieces_and_chain
 from copilot.presentation.deck import Deck
 from copilot.core.memory import is_child_facet, same_subject, same_title, short_name, title_key, titles_match
 from copilot.presentation.planner import Decision, Frame, Signal, Working, decide
+from copilot.presentation.simulations import SimulationController
 from copilot.core.interpretation import VisualHint
 from copilot.presentation.spec import DefinitionBlock, ImageBlock, ItemImage, SlideSpec
 from copilot.visuals.policy import (FrameVisual, blocked, body_subject, names_a_thing, names_an_object, norm_query,
@@ -90,6 +94,7 @@ class PresentationSettings:
     live_def_ttl_s: float = 20.0  # S1b: a definition being said, not interpreted after this, is taken down
     shift_threshold: float = 0.75
     title_slide: bool = True
+    simulations: str = "auto"  # F-014: auto (a spoken cue shows one) | suggest (S1: a /control chip) | off
 
     @classmethod
     def from_config(cls, config: Config) -> "PresentationSettings":
@@ -327,12 +332,13 @@ class PresentationEngine:
         self._teacher: set[str] = set()
         self._teacher_titles: set[str] = set()
         self._dismissed: dict[str, list[str]] = {}
+        self._sims = SimulationController(self)  # F-014 Concept Simulation
 
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
         self.bus.subscribe("presentation", self._on_event, [
             InterpretationReady, ConceptSignal, LiveCue, CommandReceived, ConcernResolved, SlideOverflow,
-            LifecycleChanged, DeckState, ImageReady, TranscriptFinal,
+            LifecycleChanged, DeckState, ImageReady, TranscriptFinal, RepresentationIntent,
         ])
         self._tasks = [asyncio.create_task(self._ticker(), name="presentation:ticker")]
 
@@ -380,6 +386,10 @@ class PresentationEngine:
                     await self._on_edit(event.command.kind, event.command.args)
                 elif event.command.kind == "show_equation":
                     await self._show_equation(str(event.command.args.get("id") or ""))
+                elif event.command.kind.startswith("sim_") and event.command.kind != "sim_full":
+                    await self._sims.on_command(event.command.kind, event.command.args)
+            elif isinstance(event, RepresentationIntent):
+                await self._sims.on_intent(event)
             elif isinstance(event, TranscriptFinal):  # what was said, for named equations (F-013 S3)
                 self._said[event.segment.id] = event.segment.text
                 while len(self._said) > MAX_SIGNALS:
@@ -659,6 +669,7 @@ class PresentationEngine:
 
     # ---- fast path ----------------------------------------------------------------------------
     async def _on_signal(self, ev: ConceptSignal) -> None:
+        await self._sims.on_signal()
         self._signals[ev.segment_id] = Signal(ev.shift_score, ev.boundary)
         while len(self._signals) > MAX_SIGNALS:
             self._signals.popitem(last=False)
@@ -1097,6 +1108,7 @@ class PresentationEngine:
             await self._consider_image(self._working_id)
         self._hold_screen = False
         await self._confirm_cue(it)
+        await self._sims.follow()  # F-014: an open simulation goes with the explanation
 
     async def _take_back(self, t: Tentative) -> tuple[list[Piece], set[tuple[str, str]]]:
         """Remove a confirmed topic's early items from the slides they were shown on; the caller places them on the
@@ -1695,6 +1707,11 @@ class PresentationEngine:
         The teacher's choice: the type may shrink; if even that is not enough, the last content moves to the next
         part (the image never shrinks the content out of sight). Every image shown joins the slide's history
         (the teacher's previous / next arrows) unless it is a step through that history."""
+        if sim_of(spec) is not None:  # F-014: one visual column; the simulation keeps it
+            if teacher:
+                await self.bus.publish(SimulationNotice(slide_id=spec.id,
+                                                        text="This slide shows a simulation: remove it to add an image"))
+            return False
         new = with_image(spec, image.model_copy(update={"id": new_id()}))
         if not teacher and not fits_unshrunk(new):
             log.info("no room for an image on %r", spec.title)

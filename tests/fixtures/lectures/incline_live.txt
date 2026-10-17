@@ -1,0 +1,25 @@
+# Class 9 physics, ~1.5 minutes, written by Claude for F-014 S0 (Concept Simulation). Spoken values as Whisper writes
+# them. Expect: a block-on-a-surface simulation (5 kg, mu 0.2, push 20 N: moves, a = 2.04 m/s^2), the switch to an
+# incline (30 degrees, mass and mu carried: slides, a = 3.21 m/s^2), then a 20 N push up the slope (at rest). The
+# "friction force ... 9.8 newtons" line is a result, not a push: it must not change F.
+@setup subject=Physics grade=9 topic="Friction and the inclined plane"
+
+Good morning class. Today we will study friction and the inclined plane.
+[pause 1]
+Friction is the force that opposes relative motion between two surfaces in contact.
+It always acts along the surface, against the motion or against the tendency to move.
+[pause 1.5]
+Consider a block of mass 5 kg resting on a rough floor.
+The coefficient of friction between the block and the floor is 0.2.
+Now we push it with a force of 20 newtons.
+The friction force is mu times the normal force, which is about 9.8 newtons, so the block speeds up.
+[pause 2]
+Now let us tilt the surface.
+Imagine the same block on an inclined plane at 30 degrees.
+The weight now has a component m g sine theta along the slope, and m g cos theta into the surface.
+With a coefficient of friction of 0.2 the block slides down the slope.
+[pause 1.5]
+What if we push it up the slope with 20 newtons? Let's see what happens.
+The push and the friction together balance the pull down the slope, so the block stays at rest.
+[pause 1]
+That is how the inclined plane works. Next class we will look at pulleys.

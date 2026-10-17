@@ -9,7 +9,8 @@ SlideSpec
   parent?                                            # F-013 S2: the subtopic this facet is a child of (crumb Topic — Parent)
   part?                                              # 1, 2, 3 … when a frame spans slides (badge I / II / III)
   layout: concept | definition | key_points | process_flow | comparison | timeline |
-          hierarchy | cause_effect | formula | example | application | narrative | facts | groups | members | title
+          hierarchy | cause_effect | formula | example | application | narrative | facts | groups | members | title |
+          simulation                                 # F-014: the stage beside the points
   blocks: list[Block]                                # one primary + optional secondary
   language = "en", theme_hint?
   origin: lecture | materials                        # materials: a summary / key-concepts slide the teacher asked
@@ -41,8 +42,8 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
   image        { url, alt, credit, licence, aspect, origin: auto|teacher, image_id, large }   # F-007b; large: F-013 S4 asked figure, S5 a figure from My Notes
   # definition gets `image` { url, alt, image_id, aspect } (F-013 S4): its picture when concepts stand side by side
   callout      { kind: note|tip|key, text }
-  simulation   { template, params }          # V3
-  storyboard   { scenes[] }                  # V4
+  simulation   { sim: SimulationSpec }       # F-014 (V2): docs/contracts/simulation-spec.md
+  storyboard   { scenes[] }                  # V3
 ```
 
 ## Rules
@@ -77,6 +78,11 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
   an image uses the image layout (content | image column); without one, today's layouts. Not content: it never
   counts as a teacher item, never enters the prompt or correction targets, and does not stay on a slide whose content
   was removed. Beside an image the type may shrink to 0.8 before content opens the next part.
+- `simulation` (F-014): at most one per slide, always the last block, never with an `image` (one visual column;
+  `with_simulation` drops an image, the engine refuses an image on a sim slide). Layout `simulation`: the stage in a
+  1100 px column (`composer.SIM_COLUMN_PX`), the other blocks stacked beside it in 540 px (`slide.js` `splitBlocks`);
+  its height is the body budget. Not content: no teacher item, not in the prompt or correction targets. The deck's
+  `sim_full` (slide id) shows it full stage on /display (navigating ends it).
 - F-013 S3a (no schema change): "Label: …" points of one shape become `groups` / `facts` / member `definition`
   blocks; `timeline` events are dated; a secondary block with `about` renders with its definition card, never in the
   aside (`composer._split` = slide.js `splitBlocks`); slide.js `titleNames` folds plurals and ignores a bracketed acronym.

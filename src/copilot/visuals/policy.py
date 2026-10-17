@@ -143,6 +143,8 @@ def blocked(spec: SlideSpec) -> Optional[str]:
     """Why this slide can never take an automatic image (None = it can)."""
     if spec.layout == "title":
         return "title slide"
+    if any(b.type == "simulation" for b in spec.blocks):
+        return "a simulation has the visual column"  # F-014
     if teacher_items(spec) == 0:
         return "no content yet"
     content = [b for b in spec.blocks if b.type != "image"]

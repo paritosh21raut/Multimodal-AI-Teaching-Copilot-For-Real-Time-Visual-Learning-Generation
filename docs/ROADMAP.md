@@ -48,7 +48,8 @@ plugs into them.
   - **V1c** crash recovery + 60-min soak with recorded/fake LLM answers (0 tokens) → `F-007c-robustness.md`
   - Teacher controls and the concern flow already exist (M4).
 
-## V2 — Reference materials + post-lecture
+## V1.5 (done) — Reference materials + post-lecture
+_Built as "V2" (groups A–D); renamed 2026-10-17 when Concept Simulation became V2. History docs keep the old label._
 - Teacher uploads (PDF, docs, labelled images) → local index (separate from the transcript); used for enrichment only.
 - Post-lecture: notes, short and detailed summaries, key concepts, quiz/question bank, PPTX export, archive viewer.
 - **Plan (user, 2026-10-07)**, groups built one after another, everything only when the teacher asks for it:
@@ -64,15 +65,21 @@ plugs into them.
     roll number, one submission per roll number; questions previewed / edited by the teacher before start
   - **D** reference materials (upload + local index; most accurate / efficient use, LLM optional) — done 2026-10-12,
     F-012: My Notes = study material (slides passage, own figures first, speech terms, quiz fact check)
-- V1c (crash recovery + soak) after V2, with a full crash-recovery diagnosis (user).
+- V1c (crash recovery + soak): **marked done for now (user, 2026-10-17)**; V1 still has room for improvement
+  (crash-recovery diagnosis, 60-min soak). V1 fixes are made on the V2 branch.
 
-## V3 — Concept Simulation mode
-- Parametric simulation templates (forces on a block, incline, circuits, waves, orbits, cycles, geometry).
-- The LLM selects a template and fills parameters; rendered with Canvas/SVG (+ matter.js).
+## V2 — Concept Simulation (branch `V2-Concept-Simulation`) → `docs/specs/F-014-concept-simulation.md`
+- Live parametric simulations inside the slide (a `simulation` block beside the points), from a spoken cue and the
+  values said; every printed number said, set by the teacher or computed in Python. SVG + own closed-form models, no
+  matter.js (ADR-0010). The LLM never writes code; S2 adds an optional closed-list field after an A/B.
+- **S0** foundation + block on a surface + incline (done 2026-10-17) · **S1** 8 templates, scenario score, Suggest,
+  0-token replay · **S2** relative phrases, graphs, readouts, optional LLM field · **S3** processes · **S4** hard
+  topics (p-n junction, RLC transients / resonance / phasors, networks: packets, routing, TCP) · **Explore mode**
+  for students on /view (later).
 
-## V4 — Story Scenes mode
+## V3 — Story Scenes mode
 - Narrative detection → a storyboard of scenes (retrieved and optionally locally generated stills),
   procedural camera motion, captions, timeline. See ADR-0006.
 
-## V5 — Multilingual
+## V4 — Multilingual
 - Hindi, Marathi, and mixed-language input (multilingual Whisper / Indic models); selectable output language (LLM or IndicTrans2).

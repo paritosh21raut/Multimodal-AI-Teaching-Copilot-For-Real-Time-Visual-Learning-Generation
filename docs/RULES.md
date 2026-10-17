@@ -11,7 +11,7 @@
 4. **UI is a client.** Display and Control View consume published state/patches and send commands.
    They never import pipeline modules or block the pipeline.
 5. **Live display ≠ PPTX.** PPTX is a post-lecture export from the archived `SlideSpec`s.
-6. **Modes are plug-ins.** New modes consume `LectureState` + `RepresentationIntent`; they must not
+6. **Modes are plug-ins.** New modes consume `LectureState` + `RepresentationIntent` (`core/events.py`, F-014); they must not
    require changes to audio, STT, or understanding.
 7. **Language-aware interfaces.** Text-bearing contracts carry a `language` field (English only for now).
 8. **Teacher is the authority; the projector is truthful.** Display content comes from the lecture, written as

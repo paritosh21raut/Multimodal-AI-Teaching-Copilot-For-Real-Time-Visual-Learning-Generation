@@ -4,22 +4,27 @@ All modes share audio → STT → understanding → `LectureState`. They differ 
 
 | Mode | Name | Status | Output |
 |---|---|---|---|
-| A | **Live Slides** | MVP | `SlideSpec` deck |
-| B | **Concept Simulation** | V3 | `SimulationSpec` (template id + parameters + annotations) |
-| C | **Story Scenes** | V4 | `StoryboardSpec` (scenes: visual, caption, motion, duration) |
+| A | **Live Slides** | V1 (done) | `SlideSpec` deck |
+| B | **Concept Simulation** | V2 (S0 done 2026-10-17) | a `simulation` block (`SimulationSpec`) inside a slide |
+| C | **Story Scenes** | V3 | `StoryboardSpec` (scenes: visual, caption, motion, duration) |
 
 ## Mode selection
-Per concept, not global: the Planner can embed a simulation or storyboard **as a block** inside a slide when the
-`RepresentationIntent` says it helps (`visual_kind=simulation|story`), or the teacher can switch the display mode.
-"Is a visualization useful?" is a policy decision (mechanism/motion/field/process with dynamics → yes;
-definitions/lists → no).
+Per concept, never a global switch. A mode plugs in through **`RepresentationIntent`** (`core/events.py`, RULES #6):
+a producer proposes a visual for some transcript lines (`visual_kind = simulation | story`, `template` ("" = values
+for the open one), `strength` cue | setup | values, `values` heard, `reveal`, `origin` cue | policy | llm | teacher);
+the presentation engine's policy decides and places it in the deck. Producers subscribe only to existing events
+(`TranscriptFinal`, `UtteranceClassified`, `ConceptSignal`): audio, STT and understanding are unchanged. "Is a
+visualization useful?" is the policy's decision (a setup with dynamics → yes; definitions / lists / history → no).
 
-## Concept Simulation (V3)
-- A library of parametric templates written by developers, not the LLM: block on a surface/incline with force
-  arrows, pulley, simple circuit, wave propagation, orbit, pendulum, cell cycle, water cycle, geometric transforms.
-- The LLM picks a template and fills validated parameters (e.g. mass, angle, μ, which forces to show).
-- Rendered with SVG/Canvas; physics through matter.js only where needed. It runs at 60 fps on the laptop iGPU/dGPU.
+## Concept Simulation (V2) → F-014, contract `simulation-spec.md`, ADR-0010
+- `simulation/detector.py` (spoken cue + values, 0 tokens) → `RepresentationIntent` → `presentation/simulations.py`
+  (`SimulationController` in the engine: policy, placement beside the points, follow the explanation, teacher
+  commands, the clock) → `SlidePatch` → `web/sims/` (SVG scenes, one clock).
+- Templates are written by developers (Python solver + JS scene); the LLM never writes code or scenes. S0: block on a
+  surface, incline. Plan to S4 (processes; semiconductors, RLC, networks) and Explore mode: F-014 §2.
+- The teacher's Full stage (`sim_full`) shows it full screen, like a zoomed image.
 
-## Story Scenes (V4)
+## Story Scenes (V3)
 - First version: a storyboard of 3–6 scenes from retrieved images (or teacher images) with Ken Burns motion,
-  captions, and a timeline, synchronized to the narration. See ADR-0006 for why this is not generative video.
+  captions, and a timeline, synchronized to the narration. See ADR-0006 for why this is not generative video. It
+  uses the same `RepresentationIntent` path (`visual_kind = story`).

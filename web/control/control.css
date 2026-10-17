@@ -880,3 +880,18 @@ section.drop-gap { margin: 0; }
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
   button:active:not(:disabled) { transform: none; }
 }
+
+/* Concept Simulation (F-014): the sim bar shares the image bar's place and look; Values is a small form */
+.image-bar.sim-bar { position: absolute; }  /* .menu-wrap (relative) is later in this file */
+.sim-bar button.speed { min-width: 44px; padding: 0 8px; justify-content: center; font-variant-numeric: tabular-nums; }
+.sim-bar button.on { background: var(--accent-soft); color: var(--accent); }
+.sim-bar .menu.up { right: 0; left: auto; bottom: calc(100% + 8px); }
+.sim-values { min-width: 360px; padding: 10px 12px; display: grid; gap: 8px; }
+.sim-row { display: grid; grid-template-columns: 1fr 96px 70px; align-items: center; gap: 8px; font-size: 13px; }
+.sim-row i { font-family: KaTeX_Math, "Cambria Math", serif; font-size: 15px; }
+.sim-row em { color: var(--muted); font-style: normal; }
+.sim-row input, .sim-row select { height: 28px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 6px; font: inherit; }
+.sim-row select { grid-column: 2 / span 2; }
+.sim-row .src { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); text-align: right; }
+.sim-row .src.said { color: var(--accent); }
+.sim-row .src.teacher { color: var(--accent-2); }

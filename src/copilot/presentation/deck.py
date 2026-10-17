@@ -10,6 +10,7 @@ Display flags:
  Pin was removed, user 2026-10-06: Pause, Blank and navigating back cover it.)
 - zoom:      a slide's image fills the projector (the teacher clicked it in /control); ends on Back / Esc, on
              navigation, or when that image leaves the slide. New content keeps arriving behind it.
+- sim_full:  a slide's simulation fills the projector (F-014, the teacher's Full stage); ends like zoom.
 """
 from __future__ import annotations
 
@@ -23,11 +24,15 @@ from copilot.presentation.spec import SlideSpec
 
 log = logging.getLogger(__name__)
 
-NAV_COMMANDS = {"next", "prev", "goto", "blank", "unblank", "zoom_image", "unzoom_image"}
+NAV_COMMANDS = {"next", "prev", "goto", "blank", "unblank", "zoom_image", "unzoom_image", "sim_full"}
 
 
 def _has_image(spec: SlideSpec) -> bool:
     return any(b.type == "image" for b in spec.blocks)
+
+
+def _has_sim(spec: SlideSpec) -> bool:
+    return any(b.type == "simulation" for b in spec.blocks)
 
 
 class Deck:
@@ -39,6 +44,7 @@ class Deck:
         self.following = True
         self.blank = False
         self.zoom: Optional[str] = None
+        self.sim_full: Optional[str] = None
 
     def attach(self) -> None:
         self._bus.subscribe("deck", self._on_command, [CommandReceived])
@@ -58,7 +64,7 @@ class Deck:
     def state_event(self) -> DeckState:
         return DeckState(
             live_id=self.live_id, slide_ids=list(self._order), following=self.following,
-            blank=self.blank, zoom=self.zoom,
+            blank=self.blank, zoom=self.zoom, sim_full=self.sim_full,
         )
 
     # ---- slide ops (planner) --------------------------------------------------------------
@@ -97,6 +103,9 @@ class Deck:
         if self.zoom == spec.id and not _has_image(spec):  # the zoomed image was removed (or yielded to a diagram)
             self.zoom = None
             await self._publish_state()
+        if self.sim_full == spec.id and not _has_sim(spec):  # the simulation left the slide
+            self.sim_full = None
+            await self._publish_state()
         return spec
 
     async def remove(self, slide_id: str) -> None:
@@ -108,6 +117,8 @@ class Deck:
         del self._slides[slide_id]
         if self.zoom == slide_id:
             self.zoom = None
+        if self.sim_full == slide_id:
+            self.sim_full = None
         if self.live_id == slide_id:
             self.live_id = self._order[min(idx, len(self._order) - 1)] if self._order else None
         await self._publish_state()
@@ -139,7 +150,18 @@ class Deck:
             self.live_id = self._order[target]
             self.following = target == len(self._order) - 1
             self.zoom = None  # moving through the deck shows slides again
+            self.sim_full = None
             return True
+        if kind == "sim_full":  # args {slide_id, on}
+            target_id = args.get("slide_id")
+            on = args.get("on", True) is not False
+            want = target_id if on and target_id in self._slides and _has_sim(self._slides[target_id]) else None
+            if not on or want is not None:
+                if self.sim_full == want:
+                    return False
+                self.sim_full = want
+                return True
+            return False
         if kind == "zoom_image":
             target_id = args.get("slide_id")
             if target_id not in self._slides or not _has_image(self._slides[target_id]) or self.zoom == target_id:

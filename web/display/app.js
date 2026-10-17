@@ -3,6 +3,7 @@ import { html, render, useEffect, useReducer, useRef, useState } from "../vendor
 import { Glass, Slide, ZoomedImage, imageOf, useGlassExit, useStageScale } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
 import { ProjectorAssess, StudentAssess } from "../shared/assess.js";
+import { SimFull, simOf } from "../sims/runtime.js";
 
 const SLIDE_MS = 380;
 // /view: the same page for students on the shared link (F-008): it only watches, it sends nothing back
@@ -80,6 +81,8 @@ function App() {
   // the teacher clicked the slide's image in /control: it fills the screen until Back / Esc (blank still wins)
   const notes = state.notesShown && state.notesShown.on && !(deck && deck.blank) ? state.notesShown : null;
   const zoomed = deck && deck.zoom && !deck.blank && !notes ? imageOf(state.slides[deck.zoom]) : null;
+  // the teacher's Full stage (F-014): the slide's simulation fills the screen, same clock as on the slide
+  const simFull = deck && deck.sim_full && !deck.blank && !notes ? simOf(state.slides[deck.sim_full]) : null;
   // a quiz / test the teacher opened (F-011): over the slide on the projector; the join form on students' pages
   const pub = state.assess && state.assess.public;
   const [dismissed, setDismissed] = useState("");  // a student's "Back to the lecture" after it ended
@@ -94,6 +97,7 @@ function App() {
     <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})`, display: quiz ? "none" : undefined }}>
       ${layers.map((l) => html`<${Slide} key=${l.spec.id} spec=${l.spec} phase=${l.phase} onOverflow=${onOverflow} />`)}
       ${zoomed && html`<${ZoomedImage} key=${zoomed.image_id || zoomed.url} image=${zoomed} />`}
+      ${simFull && html`<${SimFull} key=${"full-" + simFull.id} b=${simFull} />`}
       ${glass && html`<${Glass} leaving=${glass === "leaving"} />`}
     </div>
     ${notes && html`<${NotesPage} shown=${notes} />`}

@@ -51,7 +51,9 @@ _ANNOUNCE = [
     re.compile(r"(?:^|[,;]\s+)(?:so\s+|now\s+|okay\s+|ok\s+|well\s+|and\s+|next\s+)*(?:let'?s|let us|we will|we'll|we are going to|"
                r"we're going to|now we will|i will|i'll)\s+(?:now\s+)?(?:start with|talk about|learn about|learn|study about|"
                r"study|look at|discuss|understand|see|move on to|move to|go to|begin with|focus on|read about|cover)"
-               r"\s+(?P<n>[^.?!;:]{2,80})", re.IGNORECASE),
+               # "let's see what happens" / "...whether it moves" names no heading (F-014 S0 incline_live run)
+               r"\s+(?!(?:what (?:happens|will happen|would happen|happened)|whether|if)\b)(?P<n>[^.?!;:]{2,80})",
+               re.IGNORECASE),
     re.compile(r"^(?:so\s+|now\s+|and\s+)*(?:moving on to|coming to|next we have|next is|next comes|"
                r"(?:the\s+)?next topic is|(?:the\s+)?next topic,?|our next topic is|today'?s topic is|"
                r"(?:the\s+)?topic (?:for today|of today'?s lecture) is|introduction to)\s+(?P<n>[^.?!;:]{2,80})",

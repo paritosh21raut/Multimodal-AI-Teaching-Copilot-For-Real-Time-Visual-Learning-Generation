@@ -22,7 +22,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `LLMCallFailed` | llm | `provider`, `error`, `will_retry` |
 | `StateChanged` | state store | `version`, `changes` (topic/subtopic/outline/concerns) |
 | `SlidePatch` | deck | `slide_id`, `version`, `op` (add/update), `spec` (SlideSpec dump) |
-| `DeckState` | deck | `live_id`, `slide_ids`, `following`, `blank`, `zoom` (slide whose image fills the display, or null) |
+| `DeckState` | deck | `live_id`, `slide_ids`, `following`, `blank`, `zoom` (slide whose image fills the display, or null), `sim_full` (slide whose simulation fills the display, F-014) |
 | `CommandReceived` | display/terminal | `command: Command` |
 | `ConcernRaised` | state store | `concern` (Concern dump) |
 | `ConcernResolved` | state store | `concern_id`, `status` (accepted/kept/dismissed) |
@@ -38,6 +38,8 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `NotesState` | notes service (F-009) | `docs`, `open`, `page`, `pages` (F-013: `follow` / `reason` / `matched` removed with Follow), F-012: docs carry `active` / `private`, `indexing` (id → 0..1), `used` ("<file> p.N" the last slide used), `notice` (a refused toggle) — control only, ephemeral |
 | `MaterialsState` | materials service (F-010) | `items` (made / being made: name, status, detail, tokens, …), `shared` ([{id, name}] PDFs students may download), `current` {id, title}, `llm`, `lectures_changed` — items to control, `shared` to viewers; ephemeral |
 | `AssessState` | assess service (F-011) | `control` (whole quiz / test, keys included → /control only), `public` (no key before it is due → /display + /view), `notice` (why the teacher's last action was refused), `llm`, `now`; ephemeral (saved in `data/assessments/`) |
+| `RepresentationIntent` | simulation detector (F-014; any mode producer, RULES #6) | `segment_ids`, `visual_kind` (simulation/story), `template` ("" = values for the open one), `strength` (cue/setup/values), `values` {kind: {value, said, text}}, `reveal[]`, `origin` (cue/policy/llm/teacher), `text`; the engine's policy decides |
+| `SimulationNotice` | presentation engine (F-014) | `slide_id`, `text` ("Heard “95 degrees” - not used (θ 0–89°)", a refused image); the hub sends it to /control only; **ephemeral** |
 | `ErrorRaised` | any | `component`, `error`, `fatal` |
 
 `TranscriptSegment`: `id, text, start, end, confidence, language="en", source="mic"|"sim"`.
@@ -47,7 +49,9 @@ force_new_slide, resolve_concern(id, action), remove_image(slide_id), change_ima
 set_image(slide_id, image_id, aspect, alt[, large]), image_prev(slide_id), image_next(slide_id), zoom_image(slide_id),
 unzoom_image, edit_text(slide_id, item_id = title | element id | <definition id>:term, text), delete_item(slide_id,
 item_id), add_point(slide_id, text), show_equation(id: a presentation.equations entry, onto the live slide; F-013
-S3b), share_start, share_stop, set_theme(theme), set_mode(mode: standard | high; F-013, the app applies it and keeps it
+S3b), sim_show(template), sim_set(slide_id, slot + value | speed), sim_play / sim_pause / sim_step /
+sim_reset(slide_id), sim_toggle(slide_id, element, on), sim_pick(slide_id, template), sim_remove(slide_id),
+sim_full(slide_id?, on) (F-014), share_start, share_stop, set_theme(theme), set_mode(mode: standard | high; F-013, the app applies it and keeps it
 in data/preferences.json), notes_open(id), notes_page(page), notes_follow(on) (removed in F-013: still decodes, nothing
 handles it), notes_remove(id), materials_create(items[{kind: summary|concepts|notes|assignment|pptx, name?,
 scope?: topic|lecture, count?, theme?}], lectures[past ids], current), materials_rename(id, name),

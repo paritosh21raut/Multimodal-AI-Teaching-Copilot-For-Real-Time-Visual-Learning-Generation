@@ -320,6 +320,10 @@ class App:
                 relevance=text_similarity(embedder) if embedder is not None else None,
             )
             self.presentation.attach()
+            from copilot.simulation.detector import SimulationDetector
+
+            self.sim_detector = SimulationDetector(self.bus)  # F-014: spoken cue -> RepresentationIntent (0 tokens)
+            self.sim_detector.attach()
             self._init_images()
 
     def _init_images(self) -> None:

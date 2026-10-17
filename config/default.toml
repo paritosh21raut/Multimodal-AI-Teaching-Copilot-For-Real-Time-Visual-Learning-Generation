@@ -28,6 +28,7 @@ part_dwell_s = 6.0         # ... but only this long before the next part of the 
 provisional = true         # fast path: keyword teaser on the live slide until the interpretation arrives
 provisional_ttl_s = 20.0
 title_slide = true         # title slide at LIVE when an expected topic is given
+simulations = "auto"       # F-014 Concept Simulation: auto (spoken cue shows one) | off; suggest comes in S1
 
 [images]
 enabled = true             # automatic images (F-007b); the teacher's own images work either way

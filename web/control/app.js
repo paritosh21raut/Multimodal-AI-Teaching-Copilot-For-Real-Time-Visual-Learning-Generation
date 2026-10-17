@@ -6,6 +6,7 @@ import {
 } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
 import { LETTERS, Leaderboard, OptionGrid, TimerRing, useLeft } from "../shared/assess.js";
+import { SimFull, simOf } from "../sims/runtime.js";
 
 const KEYS = {
   ArrowRight: ["next"], ArrowLeft: ["prev"],
@@ -121,6 +122,13 @@ const ICON = {
   // an exam sheet with a pencil (user's pick 2026-10-12, from artifacts/polish/icon_candidates.png)
   quiz: "M5 3h9l3 3v6M5 3v18h7M8 8h6M8 12h4M14 21l1-3 5-5 2 2-5 5z",
   hold: "M6 5h4v14H6zM14 5h4v14h-4z",
+  // Concept Simulation (F-014): a block on a slope; step = one frame on; full stage = corners out; sliders; shown
+  sim: "M3 20h18L3 8zM9.5 12.2l3.4-2.3 2 3-3.4 2.3z",
+  step: "M6 5v14M10 5l9 7-9 7z",
+  restart: "M4 12a8 8 0 1 0 2.4-5.7L4 8.5M4 4v4.5h4.5",
+  full: "M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",
+  sliders: "M4 7h10M18 7h2M4 17h4M12 17h8M14 5v4M8 15v4",
+  eye: "M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z",
   skip: "M5 5l9 7-9 7zM18 5v14",
 };
 
@@ -362,6 +370,104 @@ function ImageBar({ spec, image, choices, status, send, onNotice }) {
   </div>`;
 }
 
+// ---- Concept Simulation (F-014): the templates (/api/simulations), fetched once per page ----
+let templatesCache = null;
+function useSimTemplates(q = "") {
+  const [found, setFound] = useState(q ? [] : (templatesCache || []));
+  useEffect(() => {
+    let live = true;
+    const t = setTimeout(() => fetch(`/api/simulations?q=${encodeURIComponent(q)}`).then((r) => r.json())
+      .then((j) => { if (!q) templatesCache = j.results || []; if (live) setFound(j.results || []); })
+      .catch(() => live && setFound([])), q ? 120 : 0);
+    return () => { live = false; clearTimeout(t); };
+  }, [q]);
+  return found;
+}
+const SIM_SPEEDS = [0.25, 0.5, 1, 1.5, 2];
+const speedLabel = (v) => (v === 0.25 ? "¼×" : v === 0.5 ? "½×" : `${v}×`);
+
+// The simulation controls float on the preview where the image bar is (a slide has one visual column): play / pause,
+// step, restart, speed, Values (a field per value, marked said / yours / not said), Show (element toggles), another
+// template, Full stage, remove. Every action is a command; the engine changes the simulation, the pages follow.
+function SimBar({ spec, b, send }) {
+  const sim = b.sim;
+  const templates = useSimTemplates();
+  const t = templates.find((x) => x.id === sim.template);
+  const cmd = (kind, args = {}) => () => send(kind, { slide_id: spec.id, ...args });
+  const playing = sim.playback.state === "playing";
+  const speed = sim.playback.speed;
+  const nextSpeed = SIM_SPEEDS[(SIM_SPEEDS.indexOf(speed) + 1) % SIM_SPEEDS.length] || 1;
+  const [menu, setMenu, ref] = usePopover();
+  const toggle = (name) => () => setMenu(menu === name ? false : name);
+  return html`<div class="image-bar sim-bar menu-wrap" ref=${ref}>
+    <button class="icon" onClick=${cmd(playing ? "sim_pause" : "sim_play")} title=${playing ? "Pause the simulation" : "Play the simulation"}>
+      ${svg(playing ? ICON.pause : ICON.play)}</button>
+    <button class="icon" onClick=${cmd("sim_step")} title="One step on (pauses)">${svg(ICON.step)}</button>
+    <button class="icon" onClick=${cmd("sim_reset")} title="Start the motion again">${svg(ICON.restart)}</button>
+    <button class="speed" onClick=${cmd("sim_set", { speed: nextSpeed })} title="Speed of the motion">${speedLabel(speed)}</button>
+    <span class="sep"></span>
+    <button class=${menu === "values" ? "on" : ""} onClick=${toggle("values")} title="The values the simulation uses">${svg(ICON.sliders)}Values</button>
+    <button class=${"icon" + (menu === "show" ? " on" : "")} onClick=${toggle("show")} title="Forces and parts shown">${svg(ICON.eye)}</button>
+    <button class=${"icon" + (menu === "pick" ? " on" : "")} onClick=${toggle("pick")} title="Another simulation for this slide">${svg(ICON.change)}</button>
+    <button class="icon" onClick=${cmd("sim_full", { on: true })} title="Full screen on the display">${svg(ICON.full)}</button>
+    <button class="icon" onClick=${cmd("sim_remove")} title="Take the simulation off this slide">${svg(ICON.remove)}</button>
+    ${menu === "values" && t && html`<div class="menu up sim-values" role="dialog">
+      ${t.slots.map((sl) => html`<${SimValue} key=${sl.name + "@" + sim.version} sl=${sl} sim=${sim}
+        onSet=${(v) => send("sim_set", { slide_id: spec.id, slot: sl.name, value: v })} />`)}
+      ${"applied_dir" in sim.params && html`<label class="sim-row"><span>Push direction</span>
+        <select value=${sim.params.applied_dir} onChange=${(e) => send("sim_set", { slide_id: spec.id, slot: "applied_dir", value: e.target.value })}>
+          <option value="up">up the slope</option><option value="down">down the slope</option></select><b></b></label>`}
+    </div>`}
+    ${menu === "show" && t && html`<div class="menu up" role="menu">
+      ${t.elements.map((el) => html`<button key=${el.id} role="menuitemcheckbox" aria-checked=${sim.shown.includes(el.id)}
+        class=${"menu-row" + (sim.shown.includes(el.id) ? " on" : "")}
+        onClick=${() => send("sim_toggle", { slide_id: spec.id, element: el.id, on: !sim.shown.includes(el.id) })}>
+        ${svg(sim.shown.includes(el.id) ? ICON.check : ICON.add)}<span>${el.label}</span></button>`)}
+    </div>`}
+    ${menu === "pick" && html`<div class="menu up" role="menu">
+      ${templates.filter((x) => x.id !== sim.template).map((x) => html`<button key=${x.id} role="menuitem" class="menu-row"
+        onClick=${() => { send("sim_pick", { slide_id: spec.id, template: x.id }); setMenu(false); }}>${svg(ICON.sim)}<span>${x.name}</span></button>`)}
+    </div>`}
+  </div>`;
+}
+
+// One value of the Values popover: a number field in the slot's range, and where its value came from.
+function SimValue({ sl, sim, onSet }) {
+  const src = sim.param_source[sl.name] || "default";
+  const [v, setV] = useState(String(sim.params[sl.name]));
+  const commit = () => {
+    const x = Number(v);
+    if (Number.isFinite(x) && x >= sl.min && x <= sl.max && x !== sim.params[sl.name]) onSet(x);
+  };
+  return html`<label class="sim-row">
+    <span><i>${sl.symbol}</i> ${sl.label}${sl.unit ? html` <em>(${sl.unit})</em>` : ""}</span>
+    <input type="number" min=${sl.min} max=${sl.max} step=${sl.step} value=${v} onInput=${(e) => setV(e.target.value)}
+      onBlur=${commit} onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Enter") commit(); }} />
+    <b class=${"src " + src}>${{ said: "said", teacher: "yours", default: "not said", standard: "standard", computed: "computed" }[src]}</b>
+  </label>`;
+}
+
+// The dock's Simulation button: a template on the live slide (instead of the one it has), by name.
+function SimPicker({ send, disabled }) {
+  const [open, setOpen, ref] = usePopover();
+  const [q, setQ] = useState("");
+  const found = useSimTemplates(open ? q : "");
+  const pick = (t) => { send("sim_show", { template: t.id }); setOpen(false); setQ(""); };
+  return html`<div class="menu-wrap eq-picker sim-picker" ref=${ref}>
+    <button class=${open ? "on" : ""} onClick=${() => setOpen(!open)} disabled=${disabled} aria-expanded=${open}
+      title="Show a simulation on this slide">${svg(ICON.sim)}<span>Simulation</span></button>
+    ${open && html`<div class="menu up" role="menu">
+      <input class="eq-search" value=${q} placeholder="Search: incline, friction, block…"
+        ref=${(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus())}
+        onInput=${(e) => setQ(e.target.value)}
+        onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Enter" && found[0]) pick(found[0]); if (e.key === "Escape") setOpen(false); }} />
+      ${found.map((t) => html`<button key=${t.id} role="menuitem" class="menu-row eq-row" onClick=${() => pick(t)}>
+        <span><b>${t.name}</b><em>${t.subject} · ${t.slots.map((x) => x.symbol).join(", ")}</em></span></button>`)}
+      ${!found.length && html`<p class="eq-none">No simulation of that name yet</p>`}
+    </div>`}
+  </div>`;
+}
+
 // The chapter menu ends inside the preview (which clips): on a short window its rows scroll instead of being cut off
 const fitBelow = (el, most = 220) => {
   if (!el) return;
@@ -521,17 +627,20 @@ function NotesOnScreen({ shown, send }) {
 }
 
 function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice, adding, onAdded, theme,
-                   materials, notes, notesShown, onScreenAssess, mode }) {
+                   materials, notes, notesShown, onScreenAssess, mode, simNotice }) {
   const ref = useRef(null);
   const scale = useStageScale(ref);
   const [drag, setDrag] = useState(null); // null | "over" | "uploading"
   const depth = useRef(0);
   const onScreen = !!(notesShown && notesShown.on);  // a notes page covers the slide on the projector
   const zoomed = deck && deck.zoom && !onScreen ? imageOf(slides[deck.zoom]) : null;
+  const simFull = deck && deck.sim_full && !onScreen ? simOf(slides[deck.sim_full]) : null;  // F-014
+  const sim = simOf(spec);
   const before = lifecycle === "ready";  // waiting for Start (while models load the glass loader shows)
   const canDrop = spec && spec.layout !== "title" && !zoomed && !onScreen;
   const image = imageOf(spec);
-  const line = useStatus(status, notice, onNotice, !!image);
+  const fresh = simNotice && spec && simNotice.slide_id === spec.id && Date.now() - simNotice.at < 8000;
+  const line = useStatus(status, notice || (fresh ? simNotice.text : ""), onNotice, !!image);
   const drop = async (e) => {
     e.preventDefault();
     depth.current = 0;
@@ -558,15 +667,20 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
       onDrop=${drop}>
     <div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
       ${shown ? html`<${Slide} key=${spec.id} spec=${shown}
-        onImageClick=${drag ? undefined : () => send("zoom_image", { slide_id: spec.id })} />` : null}
+        onImageClick=${drag ? undefined : () => send("zoom_image", { slide_id: spec.id })}
+        onSimClick=${() => send("sim_full", { slide_id: spec.id, on: true })} />` : null}
+      ${simFull && html`<div onClick=${() => send("sim_full", { on: false })}><${SimFull} key=${"full-" + simFull.id} b=${simFull} onClose=${true} /></div>`}
       ${zoomed && html`<${ZoomedImage} key=${zoomed.image_id || zoomed.url} image=${zoomed} onClose=${() => send("unzoom_image")} />`}
       ${glass && html`<${Glass} leaving=${glass === "leaving"} />`}
     </div>
     ${spec && !zoomed && !drag && !onScreen && html`<${EditLayer} host=${ref} spec=${spec} send=${send} adding=${adding} onAdded=${onAdded} />`}
+    ${simFull && !zoomed && html`<button class="back" onClick=${() => send("sim_full", { on: false })} title="Back to the slide (Esc)">
+      ${svg(ICON.back)}<span>Back to slide</span><kbd>Esc</kbd></button>`}
     ${zoomed && html`<button class="back" onClick=${() => send("unzoom_image")} title="Back to the slide (Esc)">
       ${svg(ICON.back)}<span>Back to slide</span><kbd>Esc</kbd></button>`}
-    ${spec && spec.layout !== "title" && !zoomed && !drag && !onScreen && html`<${ImageBar} spec=${spec} image=${image}
-      choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`}
+    ${spec && spec.layout !== "title" && !zoomed && !simFull && !drag && !onScreen && (sim
+      ? html`<${SimBar} spec=${spec} b=${sim} send=${send} />`
+      : html`<${ImageBar} spec=${spec} image=${image} choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`)}
     <${NotesOnScreen} shown=${notesShown} send=${send} />
     ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} notes=${notes} mode=${mode} send=${send} />`}
     ${line && !drag && html`<div class=${"image-status" + (line.error ? " error" : "")}>
@@ -615,6 +729,7 @@ function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd, theme }) {
       <button class="add-point" onClick=${onAdd} disabled=${!canAdd} title="Add a point of your own to this slide">
         ${svg(ICON.point)}<span>Add point</span></button>
       <${EquationPicker} send=${send} disabled=${!canAdd} />
+      <${SimPicker} send=${send} disabled=${!canAdd} />
     </div>
     <button class="end" onClick=${endLecture(send)} title="End the lecture">${svg(ICON.end)}<span>End lecture</span></button>
   </div>`;
@@ -2258,6 +2373,7 @@ function App() {
       if (e.key === "Escape") {
         if (shownNotes) { e.preventDefault(); send("notes_project", { on: false }); }
         else if (deck && deck.zoom) { e.preventDefault(); send("unzoom_image"); }
+        else if (deck && deck.sim_full) { e.preventDefault(); send("sim_full", { on: false }); }
         return;
       }
       if (e.key === " ") {
@@ -2299,7 +2415,7 @@ function App() {
         <${Preview} spec=${liveSpec} deck=${deck} lifecycle=${state.lifecycle} slides=${state.slides} send=${send} theme=${state.theme}
           materials=${materials} notes=${state.notes} notesShown=${state.notesShown} onScreenAssess=${onScreenAssess(state.assess)} mode=${state.mode}
           notice=${notice} onNotice=${setNotice} adding=${adding} onAdded=${() => setAdding(false)}
-          status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} />
+          status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} simNotice=${state.simNotice} />
         <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle} theme=${state.theme}
           canAdd=${!!liveSpec && !(deck && deck.zoom)} onAdd=${() => setAdding(true)} />
         <p class="hint">Keys: ← → navigate · Space pause / resume · B blank · N new slide · T light / dark slides · hover or double-click a slide item to edit it</p>

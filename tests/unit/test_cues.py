@@ -33,6 +33,8 @@ def test_topic_announcements(line, name):
     "Chemistry is the branch of science which deals with the composition.",
     "The free electron is repelled to the left.",
     "Let's start with what",
+    "What if we push it up the slope with 20 newtons? Let's see what happens.",  # F-014 incline_live run
+    "Now let us see whether the block moves.",
 ])
 def test_no_topic(line):
     assert detect(line).of("topic") is None

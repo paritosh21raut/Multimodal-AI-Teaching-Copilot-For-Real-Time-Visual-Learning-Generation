@@ -122,3 +122,33 @@
   --g-sheen: rgba(255, 255, 255, 0.12);
   --g-dot: #5eead4;
 }
+
+/* Concept Simulation (F-014): one colour role per force kind in each theme; every arrow also carries its text label,
+   so colour is never the only cue. Light: ink on pearl; dark: luminous strokes on near-black. */
+:root,
+[data-theme="light"] {
+  --sim-weight: #1d5bbf;
+  --sim-normal: #0a7a52;
+  --sim-friction: #c2362a;
+  --sim-applied: #b05a00;
+  --sim-component: #6b7380;
+  --sim-surface: #2b3138;
+  --sim-ground: #e7e1d4;
+  --sim-wedge: #e9e2d3;
+  --sim-block: #ffffff;
+  --sim-block-edge: #2b3138;
+  --sim-card: rgba(255, 255, 255, 0.86);
+}
+[data-theme="dark"] {
+  --sim-weight: #6aa8ff;
+  --sim-normal: #3ddc97;
+  --sim-friction: #ff7a6b;
+  --sim-applied: #ffb347;
+  --sim-component: #9aa3b2;
+  --sim-surface: #c9d0da;
+  --sim-ground: #141820;
+  --sim-wedge: #171c24;
+  --sim-block: #262d38;
+  --sim-block-edge: #c9d0da;
+  --sim-card: rgba(28, 33, 42, 0.9);
+}

@@ -33,6 +33,7 @@ from copilot.core.events import (
     NotesProjected,
     NotesState,
     ShareChanged,
+    SimulationNotice,
     SlideOverflow,
     SlidePatch,
     ThemeChanged,
@@ -108,7 +109,7 @@ class DisplayHub:
             [SlidePatch, DeckState, LifecycleChanged, TranscriptFinal, UtteranceDropped, ConcernRaised,
              ConcernResolved, CorrectionPlaced, ImageRequested, ImageReady, ImageChoices, ShareChanged, ThemeChanged, ModeChanged, NotesState,
              NotesProjected,
-             MaterialsState, AssessState],
+             MaterialsState, AssessState, SimulationNotice],
         )
         # Audio levels are high-rate and only matter "now": drop old ones if the hub lags.
         self._bus.subscribe("display_hub_audio", self._on_event, [AudioLevel], queue_size=4, overflow="drop_oldest")
@@ -203,7 +204,7 @@ class DisplayHub:
             self._broadcast({"type": "patch", "slide_id": event.slide_id, "version": event.version, "spec": event.spec},
                             key=("patch", event.slide_id))
         elif isinstance(event, DeckState):
-            self.deck = event.model_dump(include={"live_id", "slide_ids", "following", "blank", "zoom"})
+            self.deck = event.model_dump(include={"live_id", "slide_ids", "following", "blank", "zoom", "sim_full"})
             for sid in [s for s in self.slides if s not in event.slide_ids]:  # removed slides
                 del self.slides[sid]
             self._broadcast({"type": "deck", "deck": self.deck}, key=("deck",))
@@ -257,6 +258,9 @@ class DisplayHub:
                              "state": "found" if event.images else "none",
                              "request": self._image_requests.pop(event.request_id, "auto"), "reason": event.reason},
                             key=("image", event.slide_id), roles=("control",))
+        elif isinstance(event, SimulationNotice):  # control only (F-014): "heard 95° - not used"
+            self._broadcast({"type": "sim_notice", "slide_id": event.slide_id, "text": event.text},
+                            key=("sim_notice",), roles=("control",))
         elif isinstance(event, ImageChoices):  # control only: the previous / next image arrows
             self.image_choices[event.slide_id] = {"index": event.index, "count": event.count}
             self._broadcast({"type": "image_choices", "slide_id": event.slide_id, "index": event.index,

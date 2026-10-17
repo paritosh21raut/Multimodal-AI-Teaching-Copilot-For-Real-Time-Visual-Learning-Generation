@@ -431,6 +431,15 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
         return JSONResponse({"results": [{"id": e.id, "name": e.name, "plain": e.plain, "latex": e.latex}
                                          for e in eq_search(q[:100], limit=10)]})
 
+    @app.get("/api/simulations")
+    async def simulations_search(request: Request, q: str = ""):
+        """F-014: /control Simulation (templates, their value ranges and elements, simulation.registry)."""
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
+        from copilot.simulation.registry import describe, search as sim_search
+
+        return JSONResponse({"results": [describe(t) for t in sim_search(q[:100])]})
+
     @app.get("/api/assess")
     async def assess_list(request: Request, lecture: str = ""):
         if not trusted(request):

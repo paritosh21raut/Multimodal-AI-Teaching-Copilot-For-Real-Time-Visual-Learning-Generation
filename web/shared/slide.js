@@ -3,6 +3,7 @@
 // mount animation (.enter) - in-place updates never re-animate the whole slide.
 import { html, useEffect, useLayoutEffect, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
 import { mixed, rich, Tex } from "./rich.js";
+import { SimStage } from "../sims/runtime.js";
 
 const ARROW = html`<svg class="arrow" viewBox="0 0 56 40" aria-hidden="true">
   <path d="M4 20h40M34 9l12 11-12 11" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -341,6 +342,9 @@ export function trailingDefs(blocks) {
 export const partLabel = (n) => (n ? ROMAN[n] || String(n) : "");
 
 function splitBlocks(blocks, members) {
+  // F-014: a simulation has the visual column (composer.SIM_COLUMN_PX); the other blocks stack beside it
+  const sim = blocks.find((b) => b.type === "simulation");
+  if (sim) return { main: blocks.filter((b) => b.type !== "simulation" && b.type !== "image"), aside: [], sim };
   const image = blocks.find((b) => b.type === "image");
   if (image) {
     const rest = blocks.filter((b) => b.type !== "image");
@@ -365,7 +369,7 @@ const FIT_STEPS = [0.8, 0.9, 1, 1.15, 1.3];
 const FIT_DEFAULT = 2;
 const SPARSE_RATIO = 0.6; // content filling less than this share of the body may grow
 
-export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
+export function Slide({ spec, phase = "", onOverflow, onImageClick, onSimClick }) {
   const bodyRef = useRef(null);
   const [fit, setFit] = useState({ idx: FIT_DEFAULT, done: false });
   const lastKey = useRef(null);
@@ -381,7 +385,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
     if (!el) return;
     const overflow = el.scrollHeight > el.clientHeight + 2;
     // the image column always fills the body height: only the content decides whether the type may grow
-    const content = [...el.children].filter((c) => !c.classList.contains("image-col"))
+    const content = [...el.children].filter((c) => !c.classList.contains("image-col") && !c.classList.contains("sim-col"))
       .reduce((h, c) => Math.max(h, c.scrollHeight), 0);
     if (overflow) {
       if (fit.idx > 0) setFit({ idx: fit.idx - 1, done: true });
@@ -402,7 +406,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
     </section>`;
   }
   const members = spec.layout === "members";
-  const { main, below, aside, image } = splitBlocks(spec.blocks, members);
+  const { main, below, aside, image, sim } = splitBlocks(spec.blocks, members);
   const defs = spec.blocks.filter((b) => b.type === "definition" && !b.provisional);
   const liveDef = spec.blocks.find((b) => b.type === "definition" && b.provisional);  // F-013 S1b: being said
   const liveInTitle = liveDef && titleNames(spec.title, liveDef.term);
@@ -428,7 +432,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
       ${spec.blocks.filter((b) => b.about === d.id).map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} />`)}
     </div>`)}</div>`;
   const stack = (blocks) => groupFormulas(blocks).map((b) => html`<${Block} key=${b.id} b=${b}
-    wide=${!aside.length && !image} narrow=${!!image} termInTitle=${b === def || (b === liveDef && liveInTitle)}
+    wide=${!aside.length && !image && !sim} narrow=${!!image || !!sim} termInTitle=${b === def || (b === liveDef && liveInTitle)}
     card=${b.type === "definition" && b !== def && !(b === liveDef && liveInTitle)} />`);
   const bodyClass = "slide-body" + (aside.length ? " with-aside" : "") + (image ? (below ? " image-top" : " with-image") : "");
   const figure = image && html`<div class="image-col"><${Figure} key=${image.id} b=${image}
@@ -446,7 +450,11 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
       <h1 class="slide-title"><span data-edit="title">${rich(title)}</span>${spec.part && html`<span class="part" title=${`Part ${spec.part}`}>${partLabel(spec.part)}</span>`}</h1>
       ${listening && html`<div class="listening" aria-label="Listening"><span></span><span></span><span></span></div>`}
     </header>
-    <div ref=${bodyRef} class=${bodyClass}
+    ${sim ? html`<div ref=${bodyRef} class=${"slide-body with-sim" + (main.length ? "" : " sim-only")}>
+      ${main.length > 0 && html`<div class="main">${stack(main)}</div>`}
+      <div class="sim-col"><${SimStage} key=${sim.id} b=${sim}
+        onClick=${onSimClick ? () => onSimClick(sim) : undefined} /></div>
+    </div>` : html`<div ref=${bodyRef} class=${bodyClass}
       style=${image ? { "--img-col": `${imageColumn(image.aspect, image.large)}px` } : null}>
       ${below ? html`<div class="image-top-row">
           <div class="main">${main.map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} narrow=${true}
@@ -463,7 +471,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
       </div>
       ${aside.length > 0 && html`<div class="aside">${aside.map((b) => html`<${Block} key=${b.id} b=${b} />`)}</div>`}
       ${figure}`}
-    </div>
+    </div>`}
   </section>`;
 }
 
