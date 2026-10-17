@@ -43,7 +43,7 @@ export function connect(role, onMessage, onStatus) {
 // Reducer shared by both pages: applies server messages to a plain state object.
 export const initialState = { theme: "light", lifecycle: "starting", slides: {}, deck: null, transcript: [], audio: null, connected: false, concerns: [], images: {}, choices: {},
   share: { state: "off", url: "", detail: "" }, viewers: 0, notes: null, materials: null, shared: [],
-  notesShown: { on: false, doc_id: "", page: 0, name: "" }, assess: null };
+  notesShown: { on: false, doc_id: "", page: 0, name: "" }, assess: null, mode: "" };
 
 // quiz / test (F-011): control gets {control, public, notice, llm}, the projector and students {public} only.
 // `at` = when it arrived: timers count `left` down from there (no clock sync needed).
@@ -55,13 +55,14 @@ export function reduce(state, msg) {
       return { ...state, theme: msg.theme, lifecycle: msg.lifecycle, slides: msg.slides || {}, deck: msg.deck, transcript: msg.transcript || [], concerns: msg.concerns || [], choices: msg.image_choices || {},
         share: msg.share || initialState.share, viewers: msg.viewers || 0, notes: msg.notes || null,
         materials: msg.materials || null, shared: msg.shared || [], notesShown: msg.notes_shown || initialState.notesShown,
-        assess: withAt(msg.assess) };
+        assess: withAt(msg.assess), mode: msg.mode || "" };
     case "assess": { const { type, ...a } = msg; return { ...state, assess: withAt(a) }; }  // F-011
     case "notes_shown": { const { type, ...shown } = msg; return { ...state, notesShown: shown }; }  // F-010b, every page
     case "materials": { const { type, ...materials } = msg; return { ...state, materials }; }  // control only (F-010)
     case "shared": return { ...state, shared: msg.items || [] };  // students: the PDFs they may download (F-010)
     case "share": return { ...state, share: { state: msg.state, url: msg.url, detail: msg.detail } };  // control only (F-008)
     case "viewers": return { ...state, viewers: msg.count };
+    case "mode": return { ...state, mode: msg.mode };  // control only: performance mode (F-013)
     case "theme": return { ...state, theme: msg.theme };  // the teacher switched light / dark (F-009)
     case "notes": { const { type, ...notes } = msg; return { ...state, notes }; }  // control only (F-009)
     case "patch": {

@@ -27,7 +27,7 @@ Topic and continuity:
   sibling_concept, new_topic (different main topic; also when there is no current topic), digression (aside).
 
 Slide content (acts):
-- Only what the teacher taught in the NEW lines; no facts beyond the lecture or the grade level.
+- Only what the teacher taught in the NEW lines; no facts beyond the lecture or the grade level.{said_rule}
 - Items are slide text, not transcript: short, clear, complete phrases (max 12 words) a student can recall fast.
   Drop fillers ("so", "now", "we have", "it is"), replace pronouns with what they refer to, join a sentence split
   across lines (or across the CURRENT SLIDE), and simplify wording for the grade. Keep facts, names and numbers.
@@ -136,9 +136,20 @@ COMPARE_SHAPE = '"rows": [{"aspect": "", "values": ["", ""]}]'
 COMPARE_TAGS = True  # tag lines with the comparison cue (build_prompt); tools/prompt_ab.py switches it with the rule
 
 
+# F-013 S3c (E2): facts the teacher did not say. Tests 1-30: the model finished cut-off lines from its own knowledge
+# (test10 "Physiology deals with the / Internal." -> "internal mechanisms and processes that sustain life"), put a
+# limitation under the wrong model (test4 "Cannot explain alpha-particle scattering" on Rutherford's drawbacks) and
+# re-dated an event (test6 "The march began on 6 April" for "on 6th April ... broke the salt law").
+SAID_RULE = """
+- Never state a fact the NEW lines do not say (a correction goes in concerns). A line cut off mid-sentence gives only
+  what it says, or nothing: the next lines continue it; never finish it from your own knowledge. A date, number,
+  name or limitation stays with the statement it was said with."""
+
+
 def system_prompt(visual: bool = True, hierarchy: bool = True, named: bool = True, parent: bool = False,
-                  compare: bool = True) -> str:
+                  compare: bool = True, said: bool = False) -> str:
     return (_SYSTEM_TEMPLATE.replace("{visual_rule}", VISUAL_RULE if visual else "")
+            .replace("{said_rule}", SAID_RULE if said else "")
             .replace("{visual_shape}}}", (VISUAL_SHAPE if visual else "") + "}")
             .replace("{hierarchy_rule}", HIERARCHY_RULE if hierarchy else "")
             .replace("{named_rule}", NAMED_RULE if named else "")
@@ -150,7 +161,10 @@ def system_prompt(visual: bool = True, hierarchy: bool = True, named: bool = Tru
 
 # The visual rule is live since the old-vs-new A/B on gpt-oss-120b passed (F-007b step 4, 2026-10-06: 11/11 valid,
 # no difference the rule caused; +86 prompt tokens per call). The hierarchy rule is off (see above).
-SYSTEM_PROMPT = system_prompt(visual=True, hierarchy=False, named=False)  # named: switched on after its A/B
+# said (F-013 S3c): A/B on gpt-oss-120b, 8 units of tests 4/6/8/10/11/15/27/30 + 2 old-prompt resends (31,338 tokens):
+# 2 unsaid facts gone (test4 "cannot explain alpha scattering", test30 "octet rule"), none added; the cost was cut-off
+# lines copied as items (dropped in code: interpreter._drop_cut_off) and one shorter point (test27). Live.
+SYSTEM_PROMPT = system_prompt(visual=True, hierarchy=False, named=False, said=True)  # named: switched on after its A/B
 
 OUTLINE_MAX_TOKENS = 150
 SUMMARY_MAX_TOKENS = 120

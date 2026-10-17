@@ -129,6 +129,13 @@ class SpeechPipeline:
         self.stats = {"utterances": 0, "published": 0, "dropped": 0, "latency_ms": []}
 
     # ---- lifecycle -------------------------------------------------------------------------
+    def set_split(self, on: bool) -> None:
+        """Cut lines at sentence ends heard by the live model (F-013 performance mode "high"), or keep the speaker's
+        utterances ("standard": fewer, longer lines, fewer LLM calls). Takes effect on the next partial pass."""
+        self._split_sentences = bool(on)
+        if not on:
+            self._split_request = None
+
     def set_prompt(self, prompt: Optional[str]) -> None:
         """A new vocabulary prompt for the next utterances (F-013 S3: the lecture glossary grew). The final model's
         thread reads it per utterance; one reference assignment, no lock needed."""

@@ -74,7 +74,7 @@ embed_dir = "models/minilm"
 shift_threshold = 0.75     # smoothed 1-cos vs concept centroid; calibrated on fixtures (F-004)
 concept_alpha = 0.35       # EMA weight of a new utterance in the concept centroid
 topic_alpha = 0.1
-pause_s = 0.6              # gate: VAD silence after a sentence end ... (F-013 S1b: 1.2 -> 0.6: every finished sentence goes to the LLM)
+pause_s = 0.6              # gate: VAD silence after a sentence end ... (F-013 S1b: 1.2 -> 0.6); the [performance] mode sets it in the app
 pause_min_words = 6        # ... with at least this many buffered words
 long_pause_s = 3.0         # ... or any complete unit after a long silence
 max_words = 32             # gate: buffered words (F-013: 40 -> 32, replay of tests 1-30)
@@ -82,13 +82,29 @@ max_wait_s = 8.0           # gate: oldest pending content age (lecture time; F-0
 min_unit_words = 6         # gate: max_wait holds a smaller or unfinished unit for its continuation ...
 hold_s = 4.0               # ... for at most this long past max_wait (F-013: 6 -> 4)
 buffer_cap_tokens = 600    # max transcript tokens per interpretation call
-min_call_interval_s = 2.0  # wall clock (S1b: 4 -> 2) (F-013: 8 -> 4; the router skips a key at its TPM limit; a paid LLM can go lower)
+min_call_interval_s = 2.0  # wall clock (S1b: 4 -> 2) (F-013: 8 -> 4); the [performance] mode sets it in the app
 interpret_deadline_s = 15.0
 prompt_budget_tokens = 3000   # whole prompt (static system part + dynamic part)
 dynamic_budget_tokens = 1200  # header + outline + summary + new lines
 max_output_tokens = 1400
 min_concern_confidence = 0.6
 min_transcription_confidence = 0.3   # concerns of kind "transcription" (suspected mis-hearing)
+
+# F-013 (user 2026-10-17): the teacher's switch in /control (the last choice is kept in data/preferences.json; this is
+# the first default). standard = the S1 settings, fewer LLM calls; high = the S1b settings, every finished sentence
+# goes to the LLM (same WAV: 16-17 calls vs 11). Both keep the instant display of the live speech model (0 tokens).
+[performance]
+mode = "standard"
+
+[performance.standard]
+pause_s = 1.2
+min_call_interval_s = 4.0
+split_sentences = false
+
+[performance.high]
+pause_s = 0.6
+min_call_interval_s = 2.0
+split_sentences = true
 
 [llm]
 timeout_s = 6.0

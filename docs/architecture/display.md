@@ -103,10 +103,9 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
   column narrower than 520 px the tabs not in use show their icon only; F-010b below).
 - My notes: Add PDF / drop → `POST /api/notes` (teacher only, ≤ 50 MB) → `data/notes/<sha16>.pdf` (+ page texts) →
   `notes_open`; pages as PNG `GET /api/notes/<id>/page/<n>?w=` (pypdfium2, cached); ‹ n / m ›, arrows inside the
-  panel, wider view, remove. **Follow lecture** (on by default): `NotesService` matches the live slide's words
-  (MiniLM, 0 tokens; formula TeX skipped) to page chunks → page when ≥ 0.45 and ≥ 0.04 better than the page shown;
-  a page turned by hand holds until the next slide. A scan without text: follow off, the panel says why. Never sent to
-  `/display`, `/view` or the LLM. The last opened notes reopen next lecture.
+  panel, wider view, remove. The teacher turns the pages. (**Follow lecture** was removed in F-013, user 2026-10-17: it
+  turned pages too early and sometimes back again; `notes_follow` still decodes in old logs but does nothing.) Never
+  sent to `/display`, `/view` or the LLM. The last opened notes reopen next lecture.
 - Review 2026-10-07 (user): the empty card is minimal (icon, Add PDF notes, "or drop one here · only you see it", the
   PDFs added before); the notes picker is a menu in the app's style (the open PDF ✓, the others, + Add PDF), not a
   native select.
@@ -124,8 +123,15 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
     on hover, with small marks after the name when they are on.
   - The **study line** under the notes says one of: "Reading <file> … n %", a refusal, "Used for the slide: <file>
     p.N", or "Study material: N files in use".
-  - The start card has a **Study material** row: chips for the files in use (× = not for this lecture) and Add, which
-    is the same upload as My Notes.
+  - The start card has a **Study material** row. F-013 (user 2026-10-17: 15 chips grew the card past the preview and
+    cut off its heading): one menu button ("<file>, <file>" or "<file> + N more", "n of m") that opens a picker:
+    search (more than 6 files), every My Notes file with a tick (`notes_use`), the refusal notice past 10, **Add
+    file** (the My Notes upload) and **Add web link** (`POST /api/notes/link`). The card's single grid column is
+    `minmax(0, 1fr)`, so a long name never widens it. Web pages are named by their title, else `og:title` / the first
+    heading, else the address ("Human Brain · byjus.com", `notes.library.link_name`; older entries are renamed on
+    read).
+  - **Speed** (F-013): the start card has Standard | High performance (`set_mode`), and the top bar a pill with the
+    mode in effect during the lecture (`ModeChanged`, control only). See `app/modes.py`.
   - A concern card cites "Your material: <file> p.N".
   - The Quiz & Test setup has *Check facts with My Notes*.
   - Nothing new reaches /display or /view, except a page the teacher projects (as before) and the teacher's figure as

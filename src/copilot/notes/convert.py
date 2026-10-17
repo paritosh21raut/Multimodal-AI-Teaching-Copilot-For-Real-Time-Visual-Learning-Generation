@@ -174,6 +174,10 @@ async def web_pdf(url: str) -> tuple[bytes, str]:
         except Exception:
             pass
         title = " ".join((await page.title() or "").split())[:120]
+        if not title:  # some sites send no <title> (byjus.com): the page's own name, else notes.library.link_name
+            title = " ".join((await page.evaluate(
+                "(document.querySelector('meta[property=\"og:title\"]') || {}).content"
+                " || (document.querySelector('h1') || {}).innerText || ''") or "").split())[:120]
         await page.emulate_media(media="screen")  # the page as seen, not its print style (often bare text)
         pdf = await page.pdf(format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm",
                                                                          "left": "8mm", "right": "8mm"})

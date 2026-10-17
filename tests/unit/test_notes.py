@@ -1,5 +1,5 @@
-"""The teacher's PDF notes in /control (F-009 §2): stored on the laptop, rendered page by page, following the lecture.
-Never sent to the projector or the students."""
+"""The teacher's PDF notes in /control (F-009 §2): stored on the laptop, rendered page by page, turned by the teacher
+(F-013: following the lecture was removed). Never sent to the projector or the students."""
 from pathlib import Path
 
 import numpy as np
@@ -9,7 +9,7 @@ from copilot.core.bus import EventBus
 from copilot.core.events import Command, CommandReceived, DeckState, NotesState, SlidePatch
 from copilot.display.hub import DisplayHub
 from copilot.notes.library import BadNotes, NotesLibrary
-from copilot.notes.service import FOLLOW_MIN, NotesService, choose_page, slide_text
+from copilot.notes.service import NotesService
 
 PDF = Path(__file__).resolve().parents[1] / "fixtures" / "notes" / "photosynthesis_notes.pdf"
 
@@ -53,27 +53,6 @@ def test_library_refuses_files_that_are_not_pdfs(tmp_path):
         lib(tmp_path).add(b"%PDF-1.7 broken", "x.pdf")
 
 
-def test_choose_page_needs_a_clear_and_better_match():
-    s = np.array([0.2, 0.8, 0.5, 0.79])
-    assert choose_page(s, current=1) == 2
-    assert choose_page(s, current=2) is None           # already there
-    assert choose_page(s, current=4) is None           # the page shown is as good (within the margin)
-    assert choose_page(np.array([0.2, FOLLOW_MIN - 0.01]), current=1) is None  # nothing clearly about the slide
-
-
-def test_slide_text_reads_the_slide_not_its_plumbing():
-    spec = {"id": "s1", "title": "How photosynthesis works", "subtitle": "Photosynthesis", "layout": "process_flow",
-            "blocks": [{"type": "process", "id": "b", "steps": [{"id": "x", "label": "Light is absorbed"}]},
-                       {"type": "image", "id": "i", "url": "/media/abc.jpg", "alt": "leaf", "image_id": "abc"}]}
-    text = slide_text(spec)
-    assert text.startswith("How photosynthesis works Photosynthesis") and "Light is absorbed" in text
-    assert "media" not in text and "process_flow" not in text and "leaf" not in text
-    # a formula: its words, not its TeX source (the real-app run matched "The equation" to the wrong page)
-    formula = {"id": "f", "title": "The equation", "blocks": [{"type": "formula", "id": "f1",
-               "latex": r"\text{6}\,\text{CO}_{\text{2}} \xrightarrow{\text{sunlight}}", "spoken": "6CO2 gives glucose"}]}
-    assert slide_text(formula) == "The equation 6CO2 gives glucose"
-
-
 async def _service(tmp_path, embedder=WordsEmbedder()):
     bus = EventBus()
     library = lib(tmp_path)
@@ -101,29 +80,20 @@ async def cmd(bus, kind, **args):
     await bus.drain()
 
 
-async def test_open_notes_follow_the_live_slide_and_a_hand_turned_page_holds(tmp_path):
+async def test_the_lecture_never_turns_the_teachers_page(tmp_path):
+    """User 2026-10-17: following turned pages early and sometimes back; only the teacher turns them now."""
     bus, svc, doc, states = await _service(tmp_path)
     await cmd(bus, "notes_open", id=doc.id)
     assert states[-1].open == doc.id and states[-1].pages == 7 and states[-1].page == 1
     await _live(bus, "s1", "What photosynthesis needs", "Sunlight, water, carbon dioxide and chlorophyll",
                 "Water enters through the roots; carbon dioxide through stomata")
-    assert states[-1].page == 3 and states[-1].matched == "What photosynthesis needs"
-    await cmd(bus, "notes_page", page=6)  # the teacher turns to another page
-    await _live(bus, "s1", "What photosynthesis needs", "Sunlight, water, stomata, stomata")  # same slide grows
-    assert states[-1].page == 6
-    await _live(bus, "s2", "Respiration", "Respiration releases energy from glucose, respiration")  # next slide
-    assert states[-1].page == 7
-    await cmd(bus, "notes_follow", on=False)
+    await _live(bus, "s2", "Respiration", "Respiration releases energy from glucose, respiration")
+    assert states[-1].page == 1 and svc.page == 1
+    await cmd(bus, "notes_page", page=6)
     await _live(bus, "s3", "The equation", "glucose equation")
-    assert states[-1].page == 7 and states[-1].follow is False
-    await bus.close()
-
-
-async def test_without_the_model_the_panel_says_why_following_is_off(tmp_path):
-    bus, svc, doc, states = await _service(tmp_path, embedder=None)
-    await cmd(bus, "notes_open", id=doc.id)
-    await _live(bus, "s1", "Respiration", "Respiration releases energy")
-    assert states[-1].page == 1 and "matching model" in states[-1].reason
+    assert states[-1].page == 6
+    await cmd(bus, "notes_page", page=9)  # past the last page: ignored
+    assert states[-1].page == 6
     await bus.close()
 
 

@@ -97,11 +97,27 @@ Deterministic, 0 tokens (`presentation.content`, `composer`, `mathtext`, `web/sh
   name the columns. One heading over named things gives fact tiles under that heading. A row that only repeats the
   names is dropped. Cells are placed by column name, a table widens by one more compared thing, a cell fills the same
   aspect, and a table is never drawn without headings (rows without names become "Aspect: a vs b" points).
-- **Named equations** (`presentation/equations.py`, 42 checked entries, KaTeX-tested). The engine reads `TranscriptFinal`.
+- **Named equations** (`presentation/equations.py`, 48 checked entries, KaTeX-tested; S3c added Pascal's law, Kirchhoff's
+  current / voltage laws (family "Kirchhoff's laws", heard "Kjotch's law"), the straight line and "O'Hams law"). The engine reads `TranscriptFinal`.
   It adds the standard form when a unit's line names an equation ("time-dependent Schrödinger equation", "Maxwell's
   equations" → the four) or asks for "the equation" of the slide's subject. Each is added once per lecture, and never
   when the unit has its own formula. The block carries `name` + `standard` ("standard form" tag).
   /control **Equation** (`/api/equations` search → `show_equation`) puts one on the live slide (its next part if full).
+
+## What the slide shows for a concern (F-013 S3c, E1)
+`_track_corrections` finds the elements made from a concern's lines. With the exact `wrong` / `right` words it switches
+them as before. Without them (replay of tests 1–30: 135 of 286 concerns) it reads what those elements state
+(`slide_version`: stemmed words only the correction has vs only the teacher's words have) and reports
+`CorrectionPlaced(shows)`:
+- **correction**: the corrected words are on the slide;
+- **said**: the teacher's words are. Elements that say it in other words (points and card notes only) are replaced
+  with the concern's corrected statement on Show correction and get their text back on Show what I said;
+- **rewritten**: the model already wrote the correct statement;
+- **absent**: neither is on the slides.
+
+The card and the terminal say exactly this (before: "the slide shows the correction" for all 135; the F-012 heart
+lecture kept "one ventricle"). Replay, factual concerns: 14 correction, 8 rewritten, 6 absent, 1 said (test13's
+counterfactual "if the brain were fully suspended …", a false "said" the teacher can keep).
 
 ## Progressive update
 1. **Fast path (≤ 3–5 s):** after the gate's fast trigger, the Composer may place a deterministic provisional item

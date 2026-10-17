@@ -215,12 +215,12 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
         if notes is None:
             return JSONResponse({"error": "notes are not available"}, status_code=503)
         from copilot.notes.convert import clean_url, web_pdf
-        from copilot.notes.library import BadNotes
+        from copilot.notes.library import BadNotes, link_name
 
         try:
             url = clean_url(str((await request.json()).get("url", "")))
             pdf, title = await web_pdf(url)
-            name = title or urllib.parse.urlsplit(url).netloc
+            name = link_name(url, title)
             doc = await asyncio.to_thread(notes.add, pdf, name, "web", url)
         except BadNotes as e:
             return JSONResponse({"error": str(e)}, status_code=422)

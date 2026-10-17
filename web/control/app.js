@@ -99,6 +99,7 @@ const ICON = {
   tree: "M4 5h6M4 5v14M4 12h6M4 19h6M14 5h6M14 12h6M14 19h6",
   notes: "M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h4",
   // study material (F-012): an open book; private: a padlock
+  bolt: "M13 3L5 13.5h6l-1 7.5 8-10.5h-6z",
   book: "M12 6.5C10.5 5 8 4.5 4 4.5v13c4 0 6.5.5 8 2 1.5-1.5 4-2 8-2v-13c-4 0-6.5.5-8 2zM12 6.5v13",
   lock: "M7 11V8a5 5 0 0 1 10 0v3M5 11h14v9H5zM12 15v2",
   // an exam sheet with a pencil (user's pick 2026-10-12, from artifacts/polish/icon_candidates.png)
@@ -346,47 +347,97 @@ function ImageBar({ spec, image, choices, status, send, onNotice }) {
 }
 
 // The chapter menu ends inside the preview (which clips): on a short window its rows scroll instead of being cut off
-const fitBelow = (el) => {
+const fitBelow = (el, most = 220) => {
   if (!el) return;
   const box = el.closest(".preview");
   const bottom = box ? box.getBoundingClientRect().bottom : window.innerHeight;
-  el.style.maxHeight = `${Math.max(96, Math.min(220, bottom - el.getBoundingClientRect().top - 10))}px`;
+  el.style.maxHeight = `${Math.max(96, Math.min(most, bottom - el.getBoundingClientRect().top - 10))}px`;
 };
 
 // ---- before the lecture (F-010b §1): pick the chapter, then Start (no Enter in the terminal needed) ----
-// F-012: the study material for this lecture (the My Notes files in use): × stops using one, Add takes a file
+// F-012: the study material for this lecture (the My Notes files in use). F-013 (user 2026-10-17: the chips grew the
+// card past the preview): one row "N files" that opens a picker: search, use / don't use, Add file, Add web link
 function StudyMaterial({ notes, send }) {
   const input = useRef(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [linking, setLinking] = useState(false);
+  const [q, setQ] = useState("");
+  const [open, setOpen, ref] = usePopover();
   const docs = (notes && notes.docs) || [];
   const inUse = docs.filter((d) => d.active);
   const reading = (notes && notes.indexing) || {};
-  const pick = async (e) => {
-    const f = e.target.files && e.target.files[0];
-    e.target.value = "";
-    if (!f) return;
+  const run = async (job) => {
     setBusy(true); setError("");
-    try { await uploadNotes(f, send); } catch (err) { setError(err.message); } finally { setBusy(false); }
+    try { await job(); setLinking(false); } catch (err) { setError(err.message); } finally { setBusy(false); }
   };
+  const pick = (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (f) run(() => uploadNotes(f, send)); };
+  const words = q.trim().toLowerCase();
+  const shown = words ? docs.filter((d) => d.name.toLowerCase().includes(words)) : docs;
+  const summary = !inUse.length ? "None: slides use only what you say"
+    : inUse.length <= 2 ? inUse.map((d) => d.name).join(", ") : `${inUse[0].name} + ${inUse.length - 1} more`;
+  const readingNow = Object.keys(reading).length > 0;
   return html`<div class="study">
     <label class="start-label">Study material</label>
-    <div class="study-chips">
-      ${inUse.map((d) => html`<span key=${d.id} class=${"study-chip" + (d.id in reading ? " reading" : "")}
-          title=${d.id in reading ? `Reading… ${Math.round(reading[d.id] * 100)} %` : d.name}>
-        ${svg(ICON.book)}<span class="label">${d.name}</span>
-        <button class="icon" onClick=${() => send("notes_use", { id: d.id, on: false })} title="Don't use it for this lecture"
-          aria-label=${`Stop using ${d.name}`}>${svg(ICON.remove)}</button></span>`)}
+    <div class="menu-wrap study-wrap" ref=${ref}>
+      <button class=${"menu-button" + (open ? " on" : "")} onClick=${() => setOpen(!open)} aria-expanded=${open}
+        title="Your notes, books, slides and web pages: used to show what you teach more accurately">
+        ${svg(ICON.book, readingNow ? "pulse" : "")}<span class="label">${summary}</span>
+        <em>${inUse.length} of ${docs.length}</em>${svg(ICON.chevron, "chev")}</button>
+      ${open && html`<div class="menu study-menu" role="menu" ref=${(el) => fitBelow(el, 340)}>
+        ${docs.length > 6 && html`<input class="eq-search" value=${q} placeholder="Search your files"
+          ref=${(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus())}
+          onInput=${(e) => setQ(e.target.value)} onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Escape") setOpen(false); }} />`}
+        <div class="study-list">
+          ${shown.map((d) => html`<button key=${d.id} role="menuitemcheckbox" aria-checked=${!!d.active}
+              class=${"menu-row study-row" + (d.active ? " on" : "")} onClick=${() => send("notes_use", { id: d.id, on: !d.active })}
+              title=${d.active ? `${d.name} · used for your lectures · click to stop using it` : `${d.name} · click to use it`}>
+            <span class=${"check-box" + (d.active ? " on" : "")}>${d.active && svg(ICON.check)}</span>
+            ${svg(docIcon(d))}<span>${d.name}</span>
+            ${d.id in reading ? html`<em>${Math.round(reading[d.id] * 100)} %</em>` : d.private ? svg(ICON.lock) : ""}</button>`)}
+          ${!docs.length && html`<p class="eq-none">No files yet: add your notes, a book, slides or a web page</p>`}
+          ${docs.length > 0 && !shown.length && html`<p class="eq-none">No file named like that</p>`}
+        </div>
+        ${notes && notes.notice && html`<p class="study-notice">${notes.notice}</p>`}
+        <div class="menu-sep"></div>
+        ${linking ? html`<${LinkField} onAdd=${(url) => run(() => addLink(url, send))} onCancel=${() => setLinking(false)} />`
+          : html`<div class="study-add">
+            <button class="menu-row add" onClick=${() => input.current.click()} disabled=${busy}>
+              ${svg(ICON.add, busy ? "pulse" : "")}<span>${busy ? "Adding…" : "Add file"}</span></button>
+            <button class="menu-row add" onClick=${() => setLinking(true)} disabled=${busy}>
+              ${svg(ICON.link)}<span>Add web link</span></button>
+          </div>`}
+      </div>`}
       <input ref=${input} type="file" accept=${NOTES_ACCEPT} hidden onChange=${pick} />
-      <button class="ghost-pill" onClick=${() => input.current.click()} disabled=${busy}
-        title="Your notes, a book, slides or images: used to show what you teach more accurately">
-        ${svg(ICON.add, busy ? "pulse" : "")}${busy ? "Adding…" : inUse.length ? "Add" : "Add notes, a book, slides…"}</button>
     </div>
     ${error && html`<p class="notes-error">${error}</p>`}
   </div>`;
 }
 
-function StartCard({ lifecycle, materials, notes, send }) {
+// Performance mode (F-013, user 2026-10-17): standard = fewer LLM calls (each pause), high = every finished sentence
+const MODE_TIP = {
+  standard: "Slides follow each pause in your speech: fewer AI calls, less of the free quota",
+  high: "Every finished sentence goes to the AI: slides keep up closely, about 50 % more AI calls",
+};
+function ModeSwitch({ mode, send }) {
+  if (!mode) return null;
+  return html`<div class="mode-row">
+    <label class="start-label">Speed</label>
+    <${Segmented} value=${mode} onChange=${(m) => m !== mode && send("set_mode", { mode: m })}
+      options=${[["standard", "Standard", MODE_TIP.standard], ["high", "High performance", MODE_TIP.high]]} />
+  </div>`;
+}
+
+function ModePill({ mode, send }) {
+  if (!mode) return null;
+  const high = mode === "high";
+  return html`<button class=${"mode-pill" + (high ? " on" : "")} aria-pressed=${high}
+      onClick=${() => send("set_mode", { mode: high ? "standard" : "high" })}
+      title=${`${MODE_TIP[mode]} · click for ${high ? "Standard" : "High performance"}`}>
+    ${svg(ICON.bolt)}<span>${high ? "High performance" : "Standard"}</span></button>`;
+}
+
+function StartCard({ lifecycle, materials, notes, mode, send }) {
   const chapters = (materials && materials.chapters) || [];
   const testRun = !!(materials && materials.current && materials.current.test_run);
   const [chosen, setChosen] = useState(null);       // null: not picked yet → the last one used
@@ -437,6 +488,7 @@ function StartCard({ lifecycle, materials, notes, send }) {
         </div>`}
     ${testRun && html`<p class="start-note">Test run: it stays in Unsorted</p>`}
     <${StudyMaterial} notes=${notes} send=${send} />
+    <${ModeSwitch} mode=${mode} send=${send} />
     <button class="primary start" onClick=${start} disabled=${!ready || sent || (naming && !name.trim())}>
       ${PLAY}${sent ? "Starting…" : "Start lecture"}</button>
   </div>`;
@@ -453,7 +505,7 @@ function NotesOnScreen({ shown, send }) {
 }
 
 function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice, adding, onAdded, theme,
-                   materials, notes, notesShown, onScreenAssess }) {
+                   materials, notes, notesShown, onScreenAssess, mode }) {
   const ref = useRef(null);
   const scale = useStageScale(ref);
   const [drag, setDrag] = useState(null); // null | "over" | "uploading"
@@ -495,7 +547,7 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
     ${spec && spec.layout !== "title" && !zoomed && !drag && !onScreen && html`<${ImageBar} spec=${spec} image=${image}
       choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`}
     <${NotesOnScreen} shown=${notesShown} send=${send} />
-    ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} notes=${notes} send=${send} />`}
+    ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} notes=${notes} mode=${mode} send=${send} />`}
     ${line && !drag && html`<div class=${"image-status" + (line.error ? " error" : "")}>
       ${line.busy && html`<span class="dot"></span>`}${line.text}</div>`}
     ${(lifecycle === "paused" || (deck && deck.blank) || onScreenAssess) && !zoomed && html`<div class="flags">
@@ -590,24 +642,31 @@ function Concerns({ concerns, send }) {
   const act = (id, action) => send("resolve_concern", { id, action });
   return html`<section class="concerns">
     <h2>Possible mistakes <span class="count">${concerns.length}</span></h2>
-    ${concerns.map((c) => html`<article key=${c.id} class=${"concern" + (c.applied ? " fixed" : " as-said")}>
+    ${concerns.map((c) => {
+      // F-013 S3 (E1): what the slide really shows (CorrectionPlaced); before the engine says, the model's choice
+      const shows = c.shows || (c.applied ? "correction" : "said");
+      const fix = c.suggested_correction && html`<p class="fix"><span>Correct</span> ${c.suggested_correction}</p>`;
+      const close = (label, tip) => html`<button class="keep" onClick=${() => act(c.id, "dismiss")} title=${tip}>${label}</button>`;
+      return html`<article key=${c.id} class=${"concern " + ({ correction: "fixed", rewritten: "fixed", said: "as-said", absent: "absent" })[shows]}>
       <button class="close" onClick=${() => act(c.id, "dismiss")} title="Close this card" aria-label="Close">${svg(ICON.remove)}</button>
       <p class="said"><span>You said</span> “${c.claim}”</p>
-      ${c.applied
-        ? html`<p class="shows"><span>The slide shows</span> “${c.suggested_correction || c.right}”</p>`
-        : html`<p class="shows"><span>The slide shows what you said</span></p>
-               ${c.suggested_correction && html`<p class="fix"><span>Correct</span> ${c.suggested_correction}</p>`}`}
+      ${shows === "correction" ? html`<p class="shows"><span>The slide shows</span> “${c.suggested_correction || c.right}”</p>`
+        : shows === "rewritten" ? html`<p class="shows"><span>The slide states it correctly</span></p>${fix}`
+        : shows === "absent" ? html`<p class="shows"><span>Not on the slide</span></p>${fix}`
+        : html`<p class="shows"><span>The slide shows what you said</span></p>${fix}`}
       ${c.issue && html`<p class="issue">${c.issue}</p>`}
       ${c.ref && html`<p class="concern-ref">${svg(ICON.book)}<span>Your material: ${c.ref}</span></p>`}
       <div class="concern-actions">
-        ${c.applied
+        ${shows === "correction"
           ? html`<button onClick=${() => act(c.id, "keep")} title="Put back what you said on the slide">Show what I said</button>
-                 <button class="keep" onClick=${() => act(c.id, "dismiss")} title="The slide stays corrected; close this card">Keep correction</button>`
-          : html`<button class="accept" disabled=${!c.suggested_correction} onClick=${() => act(c.id, "accept")}
+                 ${close("Keep correction", "The slide stays corrected; close this card")}`
+          : shows === "said"
+          ? html`<button class="accept" disabled=${!c.suggested_correction} onClick=${() => act(c.id, "accept")}
                    title="Show the corrected version on the slide">Show correction</button>
-                 <button class="keep" onClick=${() => act(c.id, "dismiss")} title="The slide stays as you said it; close this card">Keep what I said</button>`}
+                 ${close("Keep what I said", "The slide stays as you said it; close this card")}`
+          : close("OK", shows === "absent" ? "Nothing on the slide says it; close this card" : "Nothing to change; close this card")}
       </div>
-    </article>`)}
+    </article>`; })}
   </section>`;
 }
 
@@ -795,7 +854,7 @@ function Notes({ notes, send, wide, onWide }) {
   const [error, setError] = useState("");
   const [over, setOver] = useState(false);
   const [linking, setLinking] = useState(false);
-  const n = notes || { docs: [], open: "", page: 0, pages: 0, follow: true, reason: "", matched: "", projecting: false };
+  const n = notes || { docs: [], open: "", page: 0, pages: 0, projecting: false };
   const doc = n.docs.find((d) => d.id === n.open);
   const run = async (job, label) => {
     setBusy(label); setError(""); setLinking(false);
@@ -826,9 +885,6 @@ function Notes({ notes, send, wide, onWide }) {
   // on a slide); the bin in the open doc's header still asks first
   const remove = (d) => send("notes_remove", { id: d.id });
   const removeOpen = (d) => confirm(`Remove “${d.name}” from your notes?`) && remove(d);
-  const note = n.projecting ? "On the projector: only you turn its pages"
-    : n.reason || (n.follow ? (n.matched ? html`Matched to <b>${n.matched}</b>` : "Waiting for a slide that matches a page")
-      : "Following is off: turn the pages yourself");
   return html`<div class=${"notes" + (over ? " over" : "")} tabindex="0" onKeyDown=${keys}
       onDragOver=${(e) => { if (hasDrop(e)) { e.preventDefault(); setOver(true); } }}
       onDragLeave=${() => setOver(false)} onDrop=${drop}>
@@ -870,11 +926,8 @@ function Notes({ notes, send, wide, onWide }) {
           onClick=${() => send("notes_project", { on: !n.projecting })}
           title=${n.projecting ? "Showing on the projector and to students · click or Esc for the slide" : "Show this page on the projector and to the students"}>
           ${n.projecting ? html`<span class="live-dot"></span>` : svg(ICON.project)}<span>${n.projecting ? "On screen" : "Project"}</span></button>
-        <label class=${"switch" + (n.follow ? " on" : "")} title="Open the page that matches the slide on screen">
-          <input type="checkbox" checked=${n.follow} onChange=${(e) => send("notes_follow", { on: e.target.checked })} />
-          <span class="track"><span class="knob"></span></span>Follow</label>
       </div>
-      <p class=${"notes-note" + (n.reason && !n.projecting ? " off" : "")}>${note}</p>`}
+      ${n.projecting && html`<p class="notes-note">On the projector: only you turn its pages</p>`}`}
     <${StudyLine} n=${n} />
     ${error && html`<p class="notes-error">${error}</p>`}
   </div>`;
@@ -2085,6 +2138,7 @@ function App() {
       <span class=${"pill " + (state.connected ? "ok" : "bad")}>${state.connected ? "connected" : "offline"}</span>
       <${Meter} audio=${state.audio} />
       <span class="spacer"></span>
+      <${ModePill} mode=${state.mode} send=${send} />
       <${Share} share=${state.share} viewers=${state.viewers} send=${send} />
       <a class="open-display" href="/display" target="classroom-display">Open classroom display ↗</a>
       <button class="icon page-theme" onClick=${toggleControlTheme} aria-label="Control view theme"
@@ -2094,7 +2148,7 @@ function App() {
     <main class=${"grid" + (wide && tab === "notes" ? " notes-wide" : "")}>
       <section class="left">
         <${Preview} spec=${liveSpec} deck=${deck} lifecycle=${state.lifecycle} slides=${state.slides} send=${send} theme=${state.theme}
-          materials=${materials} notes=${state.notes} notesShown=${state.notesShown} onScreenAssess=${onScreenAssess(state.assess)}
+          materials=${materials} notes=${state.notes} notesShown=${state.notesShown} onScreenAssess=${onScreenAssess(state.assess)} mode=${state.mode}
           notice=${notice} onNotice=${setNotice} adding=${adding} onAdded=${() => setAdding(false)}
           status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} />
         <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle} theme=${state.theme}

@@ -4,6 +4,7 @@
     .venv/Scripts/python tools/prompt_ab.py SESSION[:i,j] ...          # new prompt on gpt-oss-120b (real Groq)
     .venv/Scripts/python tools/prompt_ab.py --old SESSION[:i,j] ...    # the old prompt again (sampling variance)
     .venv/Scripts/python tools/prompt_ab.py --compare ...              # NEW = the N-way comparison rule + cue tags (F-013 S3)
+    .venv/Scripts/python tools/prompt_ab.py --said ...                 # NEW = "never state a fact not said" (F-013 S3c)
     .venv/Scripts/python tools/prompt_ab.py --named ...                # NEW = the named-subtopic rule (default: the
                                                                        # F-013 S2 parent rule); SESSION may be testN
     .venv/Scripts/python tools/prompt_ab.py --both SESSION[:i,j] ...   # old AND new prompt on gpt-oss-120b (sessions
@@ -97,7 +98,8 @@ def build(u: Unit, new: bool, settings: InterpreterSettings) -> P.BuiltPrompt:
     saved, tags = P.SYSTEM_PROMPT, P.COMPARE_TAGS
     P.SYSTEM_PROMPT = P.system_prompt(visual=True, hierarchy=False, named=new and RULE == "named",
                                       parent=new and RULE == "parent",
-                                      compare=new and RULE == "compare")  # build_prompt reads the constant
+                                      compare=new and RULE == "compare",
+                                      said=new and RULE == "said")  # build_prompt reads the constant
     P.COMPARE_TAGS = new and RULE == "compare"
     try:
         return P.build_prompt(u.state, u.lines, dynamic_budget=settings.dynamic_budget_tokens,
@@ -142,7 +144,8 @@ async def main(args: list[str]) -> None:
     # (live test 2026-10-06 ran on qwen only), so both arms are the same model
     both = "--both" in args
     global RULE
-    RULE = "named" if "--named" in args else "compare" if "--compare" in args else "parent"
+    RULE = ("named" if "--named" in args else "compare" if "--compare" in args else "said" if "--said" in args
+            else "parent")
     specs = [a for a in args if not a.startswith("--")]
     cfg = load_config()
     settings = InterpreterSettings(**{k: v for k, v in cfg.section("understanding").items()
@@ -158,8 +161,10 @@ async def main(args: list[str]) -> None:
             print(f"{session}#{u.index}: old prompt {old.tokens} tok {match}; new {new.tokens}; "
                   f"{u.old_provider or 'fallback'} | {u.old.topic} > {u.old.subtopic} | "
                   f"{' / '.join(l.text for l in u.lines)[:110]}")
-            if old.tokens == u.recorded_tokens and (both or (not u.old_fallback
-                                                             and u.old_provider.startswith("groq_main"))):
+            # --both resends the old prompt too, so a rebuilt prompt that differs from the recorded one (a session with
+            # a REFERENCE passage, F-012) is still a fair pair
+            if both or (old.tokens == u.recorded_tokens and not u.old_fallback
+                        and u.old_provider.startswith("groq_main")):
                 chosen.append(u)
     print(f"{len(chosen)} unit(s) usable for the A/B")
     if dry or not chosen:
@@ -223,7 +228,7 @@ async def main(args: list[str]) -> None:
           f"{sum(r['repaired'] for r in results)}, same topic {agree('topic')}, same subtopic {agree('subtopic')}, "
           f"same relation {agree('relation')}, same act kinds {agree('kinds')}, with visual "
           f"{sum(bool(r['new']['visual']) for r in results)}; real tokens {spent} "
-          f"(≈ {approx_tokens(P.NAMED_RULE if RULE == 'named' else P.COMPARE_RULE if RULE == 'compare' else P.PARENT_RULE + P.PARENT_SHAPE)} prompt tokens "
+          f"(≈ {approx_tokens({'named': P.NAMED_RULE, 'compare': P.COMPARE_RULE, 'said': P.SAID_RULE}.get(RULE, P.PARENT_RULE + P.PARENT_SHAPE))} prompt tokens "
           f"added per call) → {path}")
 
 

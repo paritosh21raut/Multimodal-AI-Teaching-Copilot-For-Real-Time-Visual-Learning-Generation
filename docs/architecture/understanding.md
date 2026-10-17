@@ -36,6 +36,11 @@ and how*, while calling the LLM rarely.
    unfinished sentence (only a < 3-word scrap joins the new unit), so the end of one topic is not sent with the next
    (replay of tests 1–30: 7 mixed units → 0). Floor 8 → 4 s, max_wait 12 → 8 s, hold 6 → 4 s, max_words 40 → 32:
    replayed line wait 6.65 → 4.05 s median, p90 14.8 → 11.5 s, 3.8 → 4.4 calls/min (`tools/v1_eval.py --gate`).
+   **F-013 performance mode (2026-10-17, user: "a lot of Groq tokens in this high performance mode"):** the pause
+   (`gate.pause_s`) and the floor (`min_call_interval_s`) come from `app/modes.py` ([performance] in config, the
+   teacher's switch in /control, `apply_pace`, also mid-lecture): **standard** 1.2 s / 4 s with utterance lines (the S1
+   settings), **high** 0.6 s / 2 s with sentence lines (the S1b settings). On the same 2.7-min WAV the S1b run made
+   16-17 calls and the S1 run 11; one call is ≈ 2.2-2.4k tokens.
    **F-013 S2 (2026-10-16):** `cues.section` finds numbered section headings ("1. Social.", "Stage 2 …"). Their
    cue rule (`announce_rule` on `ConceptSignal`: `section` / `ordinal`) tells the presentation engine that the
    heading is one of a series. The interpreter's `_revisit_name` handles a sibling/sub_concept that reuses an earlier,
@@ -101,6 +106,17 @@ were real statements the model had partly covered. No unknown-word rule (the Min
 (`_compare_from_cue`). Rows are `{aspect, values[]}` in `compare` order (`_normalise_rows`; old `pairs` still read).
 The prompt tags a line with `(compares: A | B)` and asks for 2–4 names. The A/B (34,808 tokens) was not worse, so
 the rule is live.
+
+**F-013 S3c (2026-10-17), truthfulness (E2):** the prompt rule `SAID_RULE` ("Never state a fact the NEW lines do not
+say … a line cut off mid-sentence gives only what it says … never finish it from your own knowledge …") is live after
+an A/B on gpt-oss-120b (8 units + 2 old-prompt resends, 31,338 tokens): 2 unsaid facts gone (test4 "cannot explain
+alpha scattering" on Rutherford, test30 "octet rule"), none added; test6 "march began on 6 April" and test8's RNN
+definition stayed with both prompts. Its cost, cut-off lines copied as items, is handled in code:
+`interpreter._drop_cut_off` drops points / steps / examples ending in a lower-case function word ("… as the output of",
+"Each dipole has an"; 1 of 2050 recorded items). `_comparison_direction` swaps a two-way row of bare comparatives that
+contradicts the lines ("much higher for blue light than for green light" vs blue "Lower" | green "Higher", test15; the
+only change in tests 1-30). Hand check of 49 flagged "unsaid" items in tests 1-30: most were said in the next lines or
+were correct repairs of misheard words, so there is no word-overlap filter.
 
 ## Lecture glossary (F-013 S3b)
 `understanding/glossary.py`, owned by the service. The setup and study-material terms are trusted spellings. Each

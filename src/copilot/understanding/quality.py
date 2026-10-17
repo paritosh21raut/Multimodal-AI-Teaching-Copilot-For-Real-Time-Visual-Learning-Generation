@@ -62,6 +62,17 @@ def problem(text: str, *, speaker: bool = True) -> str:
     return ""
 
 
+# F-013 S3c: a model item that stops mid-sentence ("Current neural networks differ from feed-forward networks as the
+# output of", "Each dipole has an"): the teacher's sentence goes on in the next lines. Lower-case words only ("AND" is a
+# gate, "point A" a label); not "on" / "in" / "a" ("turns on", "at point a").
+_CUT_OFF_END = re.compile(r"\s(?:of|the|an|as|to|with|for|from|that|which|by|is|are|was|were|into|than|because|when|"
+                          r"where|whose|its|their|between|and|or)\s*[,;:…]?$")
+
+
+def cut_off(text: str) -> bool:
+    return bool(_CUT_OFF_END.search(" " + " ".join(text.split())))
+
+
 # a model item with a note about the transcript inside: "Violent crackdowns on peaceful protesters, notably at the
 # [unclear location, likely mis‑heard]" (test6) -> "Violent crackdowns on peaceful protesters"
 _META_PART = re.compile(r"\s*\[[^\]]*(?:unclear|mis-?heard|mis‑heard|inaudible|unknown|not clear)[^\]]*\]",

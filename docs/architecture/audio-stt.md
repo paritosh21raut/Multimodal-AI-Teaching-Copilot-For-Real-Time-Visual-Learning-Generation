@@ -34,6 +34,8 @@
   segmenter ends the utterance there (`split_at`: quietest frame within 0.25 s of the word end), so medium.en
   transcribes sentence by sentence even when the speaker does not pause (tests 1–30: 25 % of lines held several
   sentences, p90 line 13.5 s). Every `TranscriptFinal` carries its `utterance` number, linking it to its partials.
+  F-013 performance mode: only in **high**. In **standard** (the default) the lines stay the speaker's utterances
+  (`SpeechPipeline.set_split(False)`, also mid-lecture); the live text and its instant display are the same in both.
 - Hallucination guard: drop segments with high no_speech_prob or known filler hallucinations ("Thank you.", repeats).
 
 ## Budgets

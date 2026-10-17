@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections import deque
+from collections import OrderedDict, deque
 from typing import Any, Literal, Optional
 
 from pydantic import ValidationError
@@ -21,6 +21,7 @@ from copilot.core.events import (
     CommandReceived,
     ConcernRaised,
     ConcernResolved,
+    CorrectionPlaced,
     DeckState,
     Event,
     ImageChoices,
@@ -28,6 +29,7 @@ from copilot.core.events import (
     ImageRequested,
     LifecycleChanged,
     MaterialsState,
+    ModeChanged,
     NotesProjected,
     NotesState,
     ShareChanged,
@@ -71,6 +73,12 @@ class Connection:
         return batch
 
 
+def shown_as(card: dict, shows: str) -> dict:
+    """A mistake card with what the slides show (F-013 S3, E1): "correction" | "said" | "rewritten" | "absent".
+    `applied` stays the card's switch state: true when the slide carries the correction (or says it correctly)."""
+    return {**card, "shows": shows, "applied": shows in ("correction", "rewritten")}
+
+
 class DisplayHub:
     def __init__(self, bus: EventBus, theme: str = "light") -> None:
         self._bus = bus
@@ -81,11 +89,13 @@ class DisplayHub:
         self.lifecycle = "starting"
         self.transcript: deque[dict] = deque(maxlen=TRANSCRIPT_LINES)
         self.concerns: dict[str, dict] = {}  # open mistake cards (control view only; never sent to the display)
+        self._placed: OrderedDict[str, str] = OrderedDict()  # F-013 S3 (E1): what the slides show, per concern
         self.image_choices: dict[str, dict] = {}  # slide_id -> {index, count} (control only)
         self._image_requests: dict[str, str] = {}  # running image searches: request_id -> auto | change
         self.connects: dict[str, int] = {"display": 0, "control": 0, "viewer": 0}  # connections ever made, per role
         self.share: dict = {"state": "off", "url": "", "detail": ""}  # control only (F-008)
         self.notes: Optional[dict] = None  # the teacher's PDF notes (F-009), control only
+        self.mode = ""  # performance mode (F-013), control only; "" until the app says
         self.materials: Optional[dict] = None  # lecture materials (F-010), control only
         self.shared: list[dict] = []  # PDFs the students may download (F-010), to every viewer
         self.notes_shown: dict = {"on": False, "doc_id": "", "page": 0, "name": ""}  # F-010b, every role
@@ -96,7 +106,7 @@ class DisplayHub:
         self._bus.subscribe(
             "display_hub", self._on_event,
             [SlidePatch, DeckState, LifecycleChanged, TranscriptFinal, UtteranceDropped, ConcernRaised,
-             ConcernResolved, ImageRequested, ImageReady, ImageChoices, ShareChanged, ThemeChanged, NotesState,
+             ConcernResolved, CorrectionPlaced, ImageRequested, ImageReady, ImageChoices, ShareChanged, ThemeChanged, ModeChanged, NotesState,
              NotesProjected,
              MaterialsState, AssessState],
         )
@@ -142,6 +152,7 @@ class DisplayHub:
             msg["share"] = dict(self.share)
             msg["viewers"] = self.viewers
             msg["notes"] = self.notes
+            msg["mode"] = self.mode
             msg["materials"] = self.materials
             msg["assess"] = dict(self.assess_control)
         else:  # the projector and the students: never an answer key before it is due (F-011)
@@ -214,6 +225,8 @@ class DisplayHub:
             # misheard words (spelling / pronunciation) are corrected without asking (user 2026-10-06; terminal
             # log only); the teacher sees a card only for a factual, conceptual or formula mistake
             if c.get("status", "open") == "open" and c.get("kind") != "transcription":
+                if c["id"] in self._placed:  # the engine placed it before this card arrived
+                    c = shown_as(c, self._placed[c["id"]])
                 self.concerns[c["id"]] = c
                 self._broadcast({"type": "concern", "concern": c}, roles=("control",))
         elif isinstance(event, ConcernResolved):
@@ -224,6 +237,15 @@ class DisplayHub:
                                 roles=("control",))
             else:  # switched: stays listed so the teacher can switch back
                 c = {**c, "status": event.status, "applied": event.status == "accepted"}
+                self.concerns[event.concern_id] = c
+                self._broadcast({"type": "concern", "concern": c}, roles=("control",))
+        elif isinstance(event, CorrectionPlaced):  # F-013 S3 (E1): the card says what the slide really shows
+            self._placed[event.concern_id] = event.shows
+            while len(self._placed) > 128:
+                self._placed.popitem(last=False)
+            c = self.concerns.get(event.concern_id)
+            if c is not None:
+                c = shown_as(c, event.shows)
                 self.concerns[event.concern_id] = c
                 self._broadcast({"type": "concern", "concern": c}, roles=("control",))
         elif isinstance(event, ImageRequested):  # control only: the teacher sees "searching…" under the slide
@@ -245,8 +267,7 @@ class DisplayHub:
             if self.assess_public:  # an open quiz / test shows the join link on the projector (F-011)
                 self._broadcast({"type": "assess", **self._assess_for("display")}, key=("assess",), roles=("display",))
         elif isinstance(event, NotesState):  # control only: the teacher's own notes never reach a slide page
-            self.notes = event.model_dump(include={"docs", "open", "page", "pages", "follow", "reason", "matched",
-                                                   "projecting"})
+            self.notes = event.model_dump(include={"docs", "open", "page", "pages", "projecting"})
             self._broadcast({"type": "notes", **self.notes}, key=("notes",), roles=("control",))
         elif isinstance(event, NotesProjected):  # the teacher shows a notes page on the projector (F-010b)
             self.notes_shown = event.model_dump(include={"on", "doc_id", "page", "name"})
@@ -265,6 +286,9 @@ class DisplayHub:
                 self.assess_public = dict(event.public)
                 for role in ("display", "viewer"):
                     self._broadcast({"type": "assess", **self._assess_for(role)}, key=("assess",), roles=(role,))
+        elif isinstance(event, ModeChanged):  # the teacher's performance switch (F-013)
+            self.mode = event.mode
+            self._broadcast({"type": "mode", "mode": self.mode}, key=("mode",), roles=("control",))
         elif isinstance(event, ThemeChanged):  # every slide page repaints; students follow the teacher's theme
             self.theme = event.theme
             self._broadcast({"type": "theme", "theme": self.theme}, key=("theme",))

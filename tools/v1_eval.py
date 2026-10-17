@@ -264,6 +264,8 @@ def rerun_guards(it, lines, slide_context: str, state, fallback: bool):
         base = base.model_copy(update={"concerns": [c for c in base.concerns if not (
             I.problem(c.right) == "meta" or I.problem(c.suggested_correction) == "meta")]})
     out = I._cover_dropped_sentences(base, lines, slide_context)
+    if hasattr(I, "_comparison_direction"):  # F-013 S3c
+        out = I._comparison_direction(I._drop_cut_off(out), lines)
     added = [p for a in out.acts[len(base.acts):] for p in a.items.points]
     return out, added
 
@@ -693,7 +695,7 @@ GATE_TICK = 0.05
 CALL_S = 1.9  # median LLM call (e2e_d2)
 
 
-def gate_replay(name: str, floor_s: float, announce_cut: bool) -> dict:
+def gate_replay(name: str, floor_s: float, announce_cut: bool, cfg=None) -> dict:
     """The recorded transcript (lecture times, STT latencies, boundary signals) through the gate on a simulated clock,
     the way UnderstandingService._maybe_interpret runs it: VAD silence, the call-rate floor with sealing, one call in
     flight. Returns how long each line waited before its unit was sent, calls per minute and the units that mixed
@@ -709,7 +711,7 @@ def gate_replay(name: str, floor_s: float, announce_cut: bool) -> dict:
             for s in segs]
     ann = {i for i, r in enumerate(rows) if detect(r[0]).of("topic") or detect(r[0]).of("compare")}
     bnd = {i for i, s in enumerate(segs) if s["segment"]["id"] in bound} | ann
-    cfg = GateConfig()
+    cfg = cfg or GateConfig()
     gate, buf = Gate(cfg), DiscourseBuffer(min_unit_words=cfg.min_unit_words, whole_sentences=True)
     arrivals = sorted((e + 0.4 + lat / 1000, i) for i, (_, _, e, lat) in enumerate(rows))
     arrived: dict[int, float] = {}

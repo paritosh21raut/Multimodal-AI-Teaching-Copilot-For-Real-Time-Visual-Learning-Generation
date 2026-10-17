@@ -2,6 +2,7 @@
 
     .venv/Scripts/python tools/screenshot_s3.py [kind ...]      # kinds: groups facts members definition formula trig
                                                                 # S3b: compare3 tiles named_eq maxwell motion
+                                                                # S3c: cards (the four mistake-card states, /control)
 
 Each lecture is replayed through the current engine with the post-model guards run again (tools/v1_eval.py replay,
 guards=True); the first slide that shows the kind is screenshot on /display in both themes.
@@ -76,7 +77,43 @@ async def named_set(kind: str, theme: str) -> Path:
     return path
 
 
+# F-013 S3c (E1): what the slide shows for a concern, from real cases (heart lecture, test4, test10, test15)
+CARDS = [
+    ("correction", "Neptune is the hottest planet", "Venus is the hottest planet", ""),
+    ("rewritten", "Isotopes are species having same number of neutrons",
+     "Isotopes have the same atomic number but different mass numbers", ""),
+    ("said", "The heart has two atria and only one ventricle", "The heart has two atria and two ventricles",
+     "The human heart has four chambers: two atria and two ventricles."),
+    ("absent", "The central nervous system has four bones", "The central nervous system is the brain and spinal cord", ""),
+]
+
+
+async def cards(theme: str) -> Path:
+    from copilot.core.events import ConcernRaised, CorrectionPlaced
+
+    async with display_harness(theme) as h:
+        for i, (shows, claim, fix, issue) in enumerate(CARDS):
+            await h.bus.publish(ConcernRaised(concern={"id": f"c{i}", "kind": "factual", "status": "open", "applied": True,
+                                                       "claim": claim, "suggested_correction": fix, "issue": issue,
+                                                       "confidence": 0.95}))
+            await h.bus.publish(CorrectionPlaced(concern_id=f"c{i}", shows=shows))
+        await h.settle()
+        async with browser_page(f"{h.url}/control", 1600, 1250) as page:
+            if theme == "dark":
+                await page.evaluate("document.documentElement.dataset.theme = 'dark'")
+            await page.wait_for_selector(".concerns article >> nth=3")
+            await page.wait_for_timeout(400)
+            path = OUT / f"s3_cards_{theme}.png"
+            await (await page.query_selector(".concerns")).screenshot(path=str(path))
+            if page.errors:
+                print("console errors:", page.errors)
+    print(path.name)
+    return path
+
+
 async def capture(kind: str, theme: str) -> Path | None:
+    if kind == "cards":
+        return await cards(theme)
     if kind in SETS:
         return await named_set(kind, theme)
     name, shows = CASES[kind]
@@ -103,7 +140,7 @@ async def capture(kind: str, theme: str) -> Path | None:
 async def main(kinds: list[str]) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     logging.basicConfig(level=logging.ERROR)
-    for kind in kinds or [*CASES, *SETS]:
+    for kind in kinds or [*CASES, *SETS, "cards"]:
         for theme in ("light", "dark"):
             await capture(kind, theme)
 

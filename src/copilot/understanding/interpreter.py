@@ -23,7 +23,7 @@ from copilot.core.textutil import approx_tokens, ends_sentence, normalise_spoken
 from copilot.llm.router import AllProvidersFailed, LLMRouter
 from copilot.understanding.gate import BufferedLine
 from copilot.understanding.grounding import enforce_grounding
-from copilot.understanding.quality import problem, strip_meta
+from copilot.understanding.quality import cut_off, problem, strip_meta
 from copilot.understanding.prompt import BuiltPrompt, PromptBudgetError, build_prompt
 
 log = logging.getLogger(__name__)
@@ -478,6 +478,21 @@ def _strip_meta_notes(it: Interpretation) -> Interpretation:
     return it.model_copy(update={"acts": acts})
 
 
+def _drop_cut_off(it: Interpretation) -> Interpretation:
+    """Points, steps and examples that stop mid-sentence leave the slide (F-013 S3c): the next lines finish the
+    sentence, and the "never finish it from your own knowledge" rule (prompt.SAID_RULE) made the model copy such a
+    line (A/B test8#86). Recorded answers of tests 1-30: 1 of 2050 items ("Each dipole has an")."""
+    acts, changed = [], False
+    for a in it.acts:
+        x = a.items
+        keep = {k: [t for t in getattr(x, k) if not cut_off(t)] for k in ("points", "steps", "examples")}
+        if any(len(keep[k]) != len(getattr(x, k)) for k in keep):
+            log.info("cut-off item(s) dropped: %s", [t for k in keep for t in getattr(x, k) if cut_off(t)])
+            a, changed = a.model_copy(update={"items": x.model_copy(update=keep)}), True
+        acts.append(a)
+    return it.model_copy(update={"acts": acts}) if changed else it
+
+
 _EQUATION = re.compile(r"=|→|->|⟶")
 _SPOKEN_MATH = re.compile(r"\b(?:equals?|plus|minus|gives|upon|by|times|into|square[d]?|cube[d]?|root|over|"
                           r"divided|multiplied|half|delta)\b", re.IGNORECASE)
@@ -518,6 +533,80 @@ def _compare_from_cue(it: Interpretation, lines: Sequence[BufferedLine]) -> Inte
             a = a.model_copy(update={"items": x.model_copy(update={"compare": list(cue.items)})})
         acts.append(a)
     return it.model_copy(update={"acts": acts})
+
+
+# F-013 S3c (E2): which way a spoken comparison goes. test15: "The kinetic energy of the photoelectrons are much higher
+# for blue light than for green light" came back as blue "Lower" | green "Higher".
+_MORE = {"higher", "greater", "more", "larger", "bigger", "faster", "longer", "stronger", "heavier", "hotter", "warmer",
+         "denser", "louder", "brighter", "older", "taller", "wider", "deeper", "increased", "high", "large", "fast"}
+_LESS = {"lower", "less", "fewer", "smaller", "slower", "shorter", "weaker", "lighter", "colder", "cooler", "thinner",
+         "quieter", "dimmer", "younger", "narrower", "shallower", "decreased", "low", "small", "slow"}
+_CLAUSE = re.compile(r"[.;!?]|,\s+(?:but|while|whereas)\b|\b(?:because|since|whereas|while|but)\b", re.IGNORECASE)
+
+
+def _direction(value: str) -> int:
+    """+1 / -1 for a cell that is only a comparative ("Higher", "much lower", "Greater"), else 0."""
+    words = [w for w in re.findall(r"[a-z]+", value.lower()) if w not in ("much", "very", "slightly", "far", "a", "bit")]
+    if len(words) != 1:
+        return 0
+    return 1 if words[0] in _MORE else -1 if words[0] in _LESS else 0
+
+
+def spoken_order(text: str, a: str, b: str) -> int:
+    """+1 when the lines say A is more than B ("higher for A than for B", "A has a greater X than B"), -1 the other way
+    round, 0 when they do not say it or say both. Names match on their first content word ("blue light" -> blue)."""
+    def at(name: str, clause: str) -> list[int]:
+        head = next((w for w in re.findall(r"[a-z0-9]+", name.lower()) if w not in ("the", "a", "an")), "")
+        return [m.start() for m in re.finditer(rf"\b{re.escape(head)}\b", clause)] if head else []
+
+    votes = set()
+    for clause in _CLAUSE.split(text.lower()):
+        than = clause.find(" than ")
+        if than < 0:
+            continue
+        comp = [m for m in re.finditer(r"[a-z]+", clause[:than]) if m.group() in _MORE or m.group() in _LESS]
+        if not comp:
+            continue
+        sign = 1 if comp[-1].group() in _MORE else -1
+        pa, pb = at(a, clause), at(b, clause)
+        a_before, b_before = any(p < than for p in pa), any(p < than for p in pb)
+        a_after, b_after = any(p > than for p in pa), any(p > than for p in pb)
+        if a_before and b_after and not (b_before or a_after):
+            votes.add(sign)
+        elif b_before and a_after and not (a_before or b_after):
+            votes.add(-sign)
+    return votes.pop() if len(votes) == 1 else 0
+
+
+def _comparison_direction(it: Interpretation, lines: Sequence[BufferedLine]) -> Interpretation:
+    """A two-way comparison whose cells are only comparatives ("Lower" | "Higher") must go the way the teacher said
+    it; reversed cells are swapped (logged). Nothing else in the table is touched."""
+    said = " ".join(l.text for l in lines)
+    if " than " not in said.lower():
+        return it
+    acts, changed = [], False
+    for a in it.acts:
+        x = a.items
+        if a.act == "comparison" and len(x.compare) == 2:
+            order = spoken_order(said, *x.compare)
+            rows = []
+            for r in x.rows:
+                d = [_direction(v) for v in r.values]
+                if order and len(d) == 2 and d[0] and d[0] == -d[1] and d[0] != order:
+                    log.info("comparison %r reversed (%s): %s -> swapped", r.aspect, " | ".join(x.compare), r.values)
+                    r, changed = r.model_copy(update={"values": [r.values[1], r.values[0]]}), True
+                rows.append(r)
+            pairs = []
+            for p in x.pairs:
+                d = (_direction(p.left), _direction(p.right))
+                if order and d[0] and d[0] == -d[1] and d[0] != order:
+                    log.info("comparison %r reversed (%s): %s | %s -> swapped", p.aspect, " | ".join(x.compare),
+                             p.left, p.right)
+                    p, changed = p.model_copy(update={"left": p.right, "right": p.left}), True
+                pairs.append(p)
+            a = a.model_copy(update={"items": x.model_copy(update={"rows": rows, "pairs": pairs})})
+        acts.append(a)
+    return it.model_copy(update={"acts": acts}) if changed else it
 
 
 # "Atoms are the smallest particles of an element ..." -> term "Atoms" + definition (fallback only)
@@ -728,6 +817,7 @@ class Interpreter:
                                       prompt.tokens, attempts)
 
         it = _fill_empty_acts(_compare_from_cue(_examples_need_a_cue(_strip_meta_notes(it), lines), lines), lines)
+        it = _comparison_direction(_drop_cut_off(it), lines)  # F-013 S3c (E2)
         it, changed = enforce_grounding(it, [l.text for l in lines])
         if changed:
             log.warning("interpretation from %s changed spoken tokens without saying so; concern added: %s",

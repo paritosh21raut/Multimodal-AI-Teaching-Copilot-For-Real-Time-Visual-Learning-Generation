@@ -14,6 +14,7 @@ import logging
 import re
 import threading
 import time
+import urllib.parse
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Optional
@@ -26,6 +27,22 @@ RENDER_WIDTHS = (480, 720, 960, 1280, 1920)  # the client asks for one of these 
 _ID = re.compile(r"[0-9a-f]{16}")
 MAX_ACTIVE = 10  # reference files in use at a time (F-012)
 MIN_TEXT_WORDS = 15  # fewer words in the whole file: a scan / pictures only, nothing to follow the lecture with
+
+
+def link_name(url: str, title: str = "") -> str:
+    """What a saved web page is called (F-013): its title; a page without one (byjus.com sends none) gets the last
+    words of its address and the site, "Human Brain · byjus.com", never only the site (5 files were all "byjus.com")."""
+    parts = urllib.parse.urlsplit(url or "")
+    host = parts.netloc.lower().removeprefix("www.")
+    title = " ".join((title or "").split())[:120]
+    if title and title.lower().removeprefix("www.") != host:
+        return title
+    segs = [s for s in parts.path.split("/") if s and not s.isdigit()]
+    slug = re.sub(r"\.(html?|php|aspx?)$", "", urllib.parse.unquote(segs[-1]), flags=re.I) if segs else ""
+    words = re.sub(r"[-_+]+", " ", slug).strip()
+    if not words:
+        return host or "web page"
+    return f"{' '.join(w if w.isupper() else w.capitalize() for w in words.split())[:90]} · {host}"
 
 
 class BadNotes(ValueError):
@@ -69,7 +86,11 @@ class NotesLibrary:
         tmp.replace(self.root / "index.json")
 
     def docs(self) -> list[NoteDoc]:
-        return [NoteDoc(**d) for d in self._index()["docs"] if (self.root / f"{d['id']}.pdf").is_file()]
+        out = [NoteDoc(**d) for d in self._index()["docs"] if (self.root / f"{d['id']}.pdf").is_file()]
+        for d in out:  # pages saved before F-013 are called by their site only ("byjus.com")
+            if d.kind == "web" and d.source:
+                d.name = link_name(d.source, d.name)
+        return out
 
     def get(self, doc_id: str) -> Optional[NoteDoc]:
         return next((d for d in self.docs() if d.id == doc_id), None)

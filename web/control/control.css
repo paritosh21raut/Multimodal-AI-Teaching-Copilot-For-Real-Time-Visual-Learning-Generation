@@ -575,7 +575,7 @@ button.primary:disabled { opacity: 0.4; cursor: default; }
   position: absolute; z-index: 6; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(400px, calc(100% - 32px));
   /* no overflow clip: the chapter menu opens below the button, past the card's edge (user 2026-10-12: only the
      first two chapters were visible); the accent line is inset instead so the rounded corners stay clean */
-  display: grid; gap: 10px; padding: 24px 24px 18px; border-radius: 20px;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 24px 24px 18px; border-radius: 20px;
   /* F-010c #5: a soft accent glow from the top-left corner, a thin accent line on the top edge */
   background:
     radial-gradient(120% 70% at 0% 0%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%),
@@ -601,15 +601,25 @@ button.primary:disabled { opacity: 0.4; cursor: default; }
 .start-note { margin: 0; font-size: 12px; color: var(--muted); }
 /* F-012: the study material for this lecture (the My Notes files in use) */
 .study { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
-.study-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.study-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; height: 30px; padding: 0 4px 0 10px;
-  border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 13px; }
-.study-chip > .ico { width: 15px; height: 15px; color: var(--accent); flex: none; }
-.study-chip .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
-.study-chip button.icon { width: 22px; height: 22px; padding: 0; border-radius: 999px; }
-.study-chip button.icon .ico { width: 13px; height: 13px; }
-.study-chip.reading > .ico { animation: blink 1.2s ease-in-out infinite; }
-.study .ghost-pill { height: 30px; font-size: 13px; }
+/* F-013: one row + a picker (the chips grew the card past the preview, user 2026-10-17) */
+.start-card .study .menu-button { height: 40px; font-weight: 500; background: var(--surface); }
+.study-menu { display: flex; flex-direction: column; gap: 2px; overflow: hidden; min-width: 300px; }
+.study-list { display: grid; gap: 1px; min-height: 0; overflow: auto; }
+.study-row em { font-style: normal; font-size: 12px; color: var(--muted); }
+.study-row > .ico:not(.check-box .ico) { flex: none; }
+.study-add { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.study-add .menu-row { color: var(--accent); }
+.study-add .menu-row .ico { color: var(--accent); }
+.study-notice { margin: 4px 10px; font-size: 12px; color: var(--accent-2); }
+.study-menu .link-field { margin: 2px 0; }
+.mode-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; }
+.mode-row .segmented button { font-weight: 600; }
+/* the same switch in the top bar, during the lecture */
+.mode-pill { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 13px; font-weight: 600; }
+.mode-pill .ico { width: 15px; height: 15px; }
+.mode-pill:hover { color: var(--ink); border-color: var(--accent); }
+.mode-pill.on { color: var(--accent); background: var(--accent-soft); border-color: transparent; }
 .start-card button.start { justify-content: center; height: 44px; margin-top: 6px; font-size: 14px; letter-spacing: 0.01em;
   box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 32%, transparent); }
 .start-card button.start:hover:not(:disabled) { box-shadow: 0 10px 28px color-mix(in srgb, var(--accent) 42%, transparent); }

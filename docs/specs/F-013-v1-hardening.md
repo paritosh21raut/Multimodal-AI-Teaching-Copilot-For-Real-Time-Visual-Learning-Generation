@@ -1,8 +1,9 @@
 # F-013 — V1 hardening: evaluation of tests 1–30 and the fix plan
 
 Status: **S1 implemented**, **S2 implemented, targets partly met** (2026-10-16; see "S1 result" / "S2 result"),
-**S3a implemented** (2026-10-17, 0 tokens), **S3b implemented** (2026-10-17, 34,808 tokens A/B; see "S3 result").
-S3c, S4, S5 planned. Evaluation spent 0 tokens.
+**S3a implemented** (2026-10-17, 0 tokens), **S3b implemented** (2026-10-17, 34,808 tokens A/B; see "S3 result"),
+**S3c implemented** (2026-10-17, 31,338 tokens A/B) + performance mode, start card picker, Follow removed (from S4).
+S4 (rest), S5 planned. Evaluation spent 0 tokens.
 Inputs: `verify_results/test1..30` (slides.md, transcript, terminal log, slide PNGs), `_eval/e2e_d2.json`,
 `_eval/results.json`, annotator A workbooks (12 lectures), the user's 12 reported issues (2026-10-16).
 User answers (2026-10-16): best system first (free Groq now, a paid LLM later); faded provisional content is OK;
@@ -75,7 +76,7 @@ beyond the reported ones.
 | ID | Problem | Evidence |
 |---|---|---|
 | E1 | Applied concern changes nothing (STATE known issue) | 152 / 287; heart lecture |
-| E2 | Model infers facts not said | test4 "Cannot explain alpha scattering" on Rutherford; test6 "march began on 6 April"; test15 photon "quantum numbers all zero" |
+| E2 | Model infers facts not said | test4 "Cannot explain alpha scattering" on Rutherford; test6 "march began on 6 April"; test10 a cut-off line finished; test15 kinetic energy blue / green reversed (S3c check: "quantum numbers all zero" WAS said) |
 
 ### F. /control UI (user #6–#11)
 | ID | Problem | Cause |
@@ -357,6 +358,48 @@ measurement (see below). The comparison-hint A/B was done in S3b.
   - A Whisper prompt that lists terms can be echoed in a garbled chunk (seen once on fixed 8 s chunks: "The first term,
     the second term …"); this needs a real-mic check.
 
+**S3 result, group S3c (2026-10-17): truthfulness (item 9) + user requests of 2026-10-17 (performance mode, start
+card, Follow). Implemented, unit-tested, replay-checked, A/B on gpt-oss-120b (31,338 tokens), screenshots looked at.**
+User (2026-10-17) "do what's best" on the open questions: Show correction replaces a reworded item; no model
+`standard_formula` (4 missing equations in 30 lectures, all library entries now); no model code field; no word-overlap
+"added" flag; A/B budget ~30-40k. Also asked: fix the start card (image copy 2.png), remove or fix Follow, and a switch
+between high performance and a standard mode that uses fewer tokens.
+- **E1, what the slide shows for a concern** (engine `slide_version`, `CorrectionPlaced`, card + terminal). Measured
+  first (replay of tests 1–30, 286 concerns with wrong/right): 134 switched, 62 already rewritten correctly by the
+  model, 73 not on the slide, 8 "wrong words kept" by a word check, all 8 correct rewordings by hand; every one of the
+  152 unswitched said "slide shows the correction". After: factual cards 14 correction, 8 "states it correctly", 6
+  "not on the slide", 1 "shows what you said" (test13's counterfactual "if the brain were fully suspended …", false,
+  the teacher keeps it). A reworded item (points, card notes) gets the corrected statement on Show correction and its
+  text back on Show what I said; the heart lecture's case is a unit test.
+- **E2, facts not said.** Hand check of 49 items flagged by word overlap (2,135 items): most were said in the next
+  lines or were correct repairs of misheard words; real cases: test4 alpha scattering, test6 "began on 6 April",
+  test10 a finished cut-off line, test15 the reversed table. So no overlap filter. Built:
+  - prompt rule `SAID_RULE` (+74 tokens per call), **live**. A/B (`tools/prompt_ab.py --said`): 5 units vs recorded
+    answers, 3 with both arms resent (sessions with a REFERENCE passage do not rebuild exactly), 2 old-prompt resends.
+    Better: test4 (no alpha scattering), test30 (no added "octet rule" name), test15 (keeps the said reason). Same:
+    test6 (6 April with both), test11 (the old prompt did not invent this time). Worse in form: test8 and test10 copied
+    the cut-off line ("… as the output of", "deals with the internal"), test27 one shorter point. Truthfulness: 2 unsaid
+    facts gone, 0 added, so it ships; test8's invented RNN definition stays with both prompts.
+  - `interpreter._drop_cut_off`: items ending in a lower-case function word leave the slide (1 of 2,050 recorded
+    items: "Each dipole has an"; the A/B's "… as the output of").
+  - `interpreter._comparison_direction` (`spoken_order`): a two-way row of bare comparatives that contradicts the lines
+    is swapped; tests 1–30: only test15 changes, correctly.
+- **Equations:** library 48 entries (+ Pascal's law, Kirchhoff's current / voltage laws and family, straight line,
+  heard "Kjotch's law" / "O'Hams law").
+- **Performance mode** (`app/modes.py`, `[performance]` config, `set_mode`, `ModeChanged`, data/preferences.json,
+  `--mode`). Measured first: S1b's extra calls come from the sentence cuts + 0.6 s pause + 2 s floor (same 2.7-min WAV:
+  16 vs 11 recorded calls; the gate replay of tests 1–30 changes little because those lines were not cut). **Standard**
+  (default) = the S1 settings (utterance lines, 1.2 s, 4 s); **High performance** = the S1b settings. Both keep the
+  instant display of the live speech model (0 tokens). Switch on the start card (Speed) and as a top-bar pill.
+- **Start card** (F5, F6 from S4): one Study material row + picker (search, ticks, Add file, Add web link); the card's
+  column is `minmax(0, 1fr)` (a long name had pushed the fields past its edge); with 15 files it stays inside the
+  preview (browser test). Web pages without a `<title>` are named "Human Brain · byjus.com".
+- **Follow removed** (F4, user: it turned pages early and back): service, UI, events (`notes_follow` still decodes in
+  old logs), tests; the embedder still indexes the study material.
+- Tests: +11 `tests/unit/test_truthful_s3c.py`, +7 `tests/unit/test_modes.py`, notes tests rewritten (the lecture never
+  turns the page), browser: picker + 15 files + Speed / pill, notes turned by hand. Screenshots: `screenshot_s3.py
+  cards`, `artifacts/reference/start_card_*`, `mode_pill_high.png`, both themes.
+
 ### S4 — Images + UI + robustness (D1–D4, F1–F6, G1)
 1. Images: image need also from the subject + slide type (concrete / process / apparatus); one image per deck used
    once unless the teacher repeats it; captions = cleaned figure caption ("Figure 3.1: …") or the query, never page
@@ -364,9 +407,8 @@ measurement (see below). The comparison-hint A/B was done in S3b.
 2. Own PDFs (STM32): vector-figure clusters (`get_drawings`-style path regions) rendered as figures; caption =
    "Figure N.N" line only; screenshot class skips the CLIP photo gate and uses label match + text-on-figure match.
    Verified on the user's STM32 / ESP-WROOM PDFs in `data/notes`.
-3. UI: remove Follow (UI, service, tests, docs); fixed-ratio notes page box; drag depth counter; tabs collapse by
-   width (container query); start card: one "Study material · N" row → picker (search, use / not use, Add file,
-   **Add web link**); web chips named by page title.
+3. UI: ~~remove Follow~~ (done in S3c); fixed-ratio notes page box; drag depth counter; tabs collapse by width
+   (container query); ~~start card picker, web pages named by title~~ (done in S3c).
 4. G1: disk-full handled (warn at start when < 1 GB, no traceback; event log keeps running in memory).
 
 ### S5 — Wrap-up

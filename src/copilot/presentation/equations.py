@@ -37,6 +37,7 @@ def _eq(id, name, latex, plain, legend, aliases, family="", context="", search="
 
 
 _POSS = r"(?:'?s)?"  # "maxwell", "maxwell's", "maxwells"
+_KIRCH = r"(?:kirch+h?off|kirchof+|kjotch|kirchov)" + _POSS  # Whisper: "Kjotch's law" (test30), "Kirchoff"
 _SCHRO = r"s?ch?ro[e]?d[ie]ng[ae]r" + _POSS  # schrodinger / shrodinger / schroedinger / schrodingers
 
 LIBRARY: tuple[Equation, ...] = (
@@ -102,7 +103,14 @@ LIBRARY: tuple[Equation, ...] = (
         [r"coulomb" + _POSS + r" law"], search="electrostatic force"),
     _eq("ohm", "Ohm's law", r"V = I R", "V = IR",
         [("V", "V", "voltage"), ("I", "I", "current"), ("R", "R", "resistance")],
-        [r"ohm" + _POSS + r" law"], search="resistance current voltage"),
+        [r"ohm" + _POSS + r" law", r"o'?\s?hams? law"], search="resistance current voltage"),  # test30 "O'Hams law"
+    # F-013 S3c: Kirchhoff's laws (test30 heard "Kjotch's law"); the family name shows both
+    _eq("kirchhoff_current", "Kirchhoff's current law", r"\sum I_{	ext{in}} = \sum I_{	ext{out}}", "ΣI_in = ΣI_out",
+        [(r"I_{	ext{in}}, I_{	ext{out}}", "I_in, I_out", "currents into and out of a junction")],
+        [_KIRCH + r" (?:current|first|junction) (?:law|rule)", r"kcl"], family="kirchhoff", search="junction node"),
+    _eq("kirchhoff_voltage", "Kirchhoff's voltage law", r"\sum V = 0", "ΣV = 0 (around a closed loop)",
+        [("V", "V", "voltages around a closed loop")],
+        [_KIRCH + r" (?:voltage|second|loop) (?:law|rule)", r"kvl"], family="kirchhoff", search="loop circuit"),
     _eq("lorentz", "Lorentz force", r"\vec{F} = q\left(\vec{E} + \vec{v} \times \vec{B}\right)", "F = q(E + v×B)",
         [("q", "q", "charge"), (r"\vec{E}", "E", "electric field"), (r"\vec{v}", "v", "velocity"), (r"\vec{B}", "B", "magnetic field")],
         [r"lorentz" + _POSS + r" force(?: (?:law|equation))?"], search="magnetic force"),
@@ -133,6 +141,9 @@ LIBRARY: tuple[Equation, ...] = (
         "P + ½ρv² + ρgh = constant",
         [("P", "P", "pressure"), (r"\rho", "ρ", "density"), ("v", "v", "flow speed"), ("h", "h", "height")],
         [r"bernoulli" + _POSS + r" (?:equation|principle|theorem)"], search="fluid flow pressure"),
+    _eq("pascal", "Pascal's law (hydraulic press)", r"\dfrac{F_{1}}{A_{1}} = \dfrac{F_{2}}{A_{2}}", "F₁/A₁ = F₂/A₂",
+        [(r"F_{1}, F_{2}", "F₁, F₂", "forces on the two pistons"), (r"A_{1}, A_{2}", "A₁, A₂", "piston areas")],
+        [r"pascal" + _POSS + r" (?:law|principle)"], search="hydraulic pressure fluid"),  # F-013 S3c (test2)
     _eq("continuity", "Continuity equation (fluid flow)", r"A_{1} v_{1} = A_{2} v_{2}", "A₁v₁ = A₂v₂",
         [(r"A_{1}, A_{2}", "A₁, A₂", "cross-section areas"), (r"v_{1}, v_{2}", "v₁, v₂", "flow speeds")],
         [r"(?:equation of continuity|continuity equation)"], context=r"fluid|flow|pipe|liquid|mass flow",
@@ -185,6 +196,10 @@ LIBRARY: tuple[Equation, ...] = (
         [("f", "f", "focal length"), ("v", "v", "image distance"), ("u", "u", "object distance")],
         [r"mirror (?:formula|equation)"], search="optics"),
     # ---- mathematics -------------------------------------------------------------------------------------------
+    _eq("straight_line", "Equation of a straight line", r"y = m x + c", "y = mx + c",
+        [("m", "m", "slope"), ("c", "c", "y-intercept")],
+        [r"equation of (?:a |the )?(?:straight )?line", r"straight line (?:can be |is )?(?:represented|written|given) "
+         r"(?:using|by|as) (?:the |an )?equation", r"slope intercept form"], search="slope intercept linear"),  # test23
     _eq("pythagoras", "Pythagoras theorem", r"a^{2} + b^{2} = c^{2}", "a² + b² = c²",
         [("a, b", "a, b", "legs of a right triangle"), ("c", "c", "hypotenuse")],
         [r"pythagoras" + _POSS + r" theorem", r"pythagorean theorem"], search="right triangle"),
@@ -211,6 +226,7 @@ FAMILIES: tuple[tuple[str, tuple[str, ...]], ...] = (
     (r"maxwell" + _POSS + r" (?:four )?equations?(?! in integral form)", ("gauss_e", "gauss_b", "faraday", "ampere")),
     (_SCHRO + r"(?: wave)? equation", ("schrodinger_td",)),
     (r"(?:three )?equations of motion|kinematic equations", ("motion_1", "motion_2", "motion_3")),
+    (_KIRCH + r" (?:laws?|rules?)", ("kirchhoff_current", "kirchhoff_voltage")),
 )
 
 # "let us write the equation", "this is its formula": the equation of what the slide is about

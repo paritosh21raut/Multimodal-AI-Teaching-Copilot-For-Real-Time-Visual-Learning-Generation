@@ -1,6 +1,6 @@
 """V2 group A in a real browser (Edge via Playwright), F-009: the dock's light / dark switch repaints the projector,
 the students' page and the /control preview mid-lecture (the control page keeps its own theme); the teacher's PDF
-notes in /control follow the slides and never reach the projector.
+notes in /control stay on the page the teacher turns to and never reach the projector.
 
     .venv/Scripts/python -m pytest -m browser tests/e2e/test_themes_notes_browser.py
 """
@@ -64,7 +64,7 @@ async def test_dark_slides_mid_lecture_on_projector_students_and_preview_only():
             assert not control.errors and not display.errors and not view.errors, (control.errors, display.errors)
 
 
-async def test_teacher_notes_follow_the_slides_in_control_only(tmp_path):
+async def test_teacher_notes_turned_by_hand_in_control_only(tmp_path):
     from copilot.understanding.embedder import MiniLmEmbedder
 
     embedder = MiniLmEmbedder(PROJECT_ROOT / "models" / "minilm")
@@ -79,19 +79,18 @@ async def test_teacher_notes_follow_the_slides_in_control_only(tmp_path):
             await control.set_input_files(".notes input[type=file]", str(PDF))
             img = ".notes-page img"
             await page_loaded(control)
-            # the live slide "What is photosynthesis?" -> the notes page about its meaning (page 2)
-            await control.wait_for_selector(".notes-foot .count >> text=2 / 7", timeout=5000)
-            assert "page/2" in await control.get_attribute(img, "src")
-            await control.wait_for_selector(".notes-note >> text=What is photosynthesis?")
-            await play_rest(h)
-            await goto(h, "p3")  # "How it happens" (process) -> page 4, the steps
-            await control.wait_for_selector(".notes-foot .count >> text=4 / 7", timeout=5000)
-            await page_loaded(control, "page/4")
-            await control.wait_for_timeout(900)  # the slide's fade
-            await control.screenshot(path=str(ART / "notes_following.png"))
-            # turning a page by hand holds it on this slide
+            await control.wait_for_selector(".notes-foot .count >> text=1 / 7", timeout=5000)
+            assert await control.locator(".notes-foot .switch").count() == 0  # F-013: no Follow switch
+            # the teacher turns the pages; new slides never move them (F-013: following was removed)
             await control.click(".notes-foot button[aria-label='Next page']")
-            await control.wait_for_selector(".notes-foot .count >> text=5 / 7")
+            await control.wait_for_selector(".notes-foot .count >> text=2 / 7")
+            await page_loaded(control, "page/2")
+            await play_rest(h)
+            await goto(h, "p3")
+            await control.wait_for_timeout(1200)
+            assert await control.inner_text(".notes-foot .count") == "2 / 7"
+            assert "page/2" in await control.get_attribute(img, "src")
+            await control.screenshot(path=str(ART / "notes_turned_by_hand.png"))
             # the projector never shows them
             assert await display.locator("img[src*='/api/notes']").count() == 0
             assert "notes" not in (await display.evaluate("document.body.innerText")).lower()

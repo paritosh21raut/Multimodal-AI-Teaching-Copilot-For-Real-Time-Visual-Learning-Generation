@@ -25,6 +25,7 @@ from copilot.core.events import (
     CommandReceived,
     ConceptSignal,
     ConcernResolved,
+    CorrectionPlaced,
     DeckState,
     Event,
     ImageChoices,
@@ -40,6 +41,7 @@ from copilot.core.events import (
     new_id,
 )
 from copilot.core.state import Concern, LectureStateStore
+from copilot.core.textutil import normalise_spoken, stem
 from copilot.presentation.composer import (
     BODY_BUDGET_PX, TERM_SUFFIX, add_point, body_height, clear_cue_list, clear_provisional, continue_numbering,
     describe, edit_text, set_cue_list, set_live_definition, clear_block, LIVE_DEF_PREFIX,
@@ -116,6 +118,21 @@ class Correction:
     right: str \
             # the correction
     showing_right: bool = True
+    # F-013 S3 (E1): no element has the exact words. `reworded`: elements that state the teacher's version in other
+    # words (Show correction replaces each with `statement`, Show what I said puts `originals` back); `version`: what
+    # the elements made from the concern's lines say ("right" / "wrong" / "" = neither, or nothing was placed)
+    reworded: list[tuple[str, str]] = field(default_factory=list)
+    statement: str = ""
+    originals: dict[tuple[str, str], str] = field(default_factory=dict)
+    version: str = ""
+
+    @property
+    def shows(self) -> str:
+        if self.targets:
+            return "correction" if self.showing_right else "said"
+        if self.reworded:
+            return "correction" if self.originals else "said"
+        return "rewritten" if self.version == "right" else "absent"
 
 
 @dataclass
@@ -211,6 +228,25 @@ def mentions(it, name: str) -> bool:
         return False
     text = json.dumps(it.model_dump(include={"acts", "subtopic", "topic"}), ensure_ascii=False).lower()
     return all(w in text for w in words)
+
+
+_VERSION_STOP = {"the", "a", "an", "of", "and", "or", "in", "on", "to", "is", "are", "was", "were", "be", "it", "its",
+                 "that", "this", "by", "for", "with", "as", "at", "from"}
+
+
+def _version_words(text: str) -> set[str]:
+    return {stem(w) for w in re.findall(r"[a-z0-9]+", normalise_spoken(text)) if w not in _VERSION_STOP}
+
+
+def slide_version(text: str, wrong: str, right: str) -> str:
+    """Which version of a concern an element states when neither exact phrase is in it (F-013 S3, E1): "right" when it
+    has a word only the correction has and none only the teacher's words have, "wrong" the other way round, "" when
+    it has neither or both. test8: "AI is not limited to deep learning; deep learning is one advanced method within
+    AI" for "AI is deep learning" -> "AI includes many methods; deep learning is a subset" is neither."""
+    w, r = _version_words(wrong), _version_words(right)
+    have = _version_words(text)
+    says_right, says_wrong = bool(have & (r - w)), bool(have & (w - r))
+    return "right" if says_right and not says_wrong else "wrong" if says_wrong and not says_right else ""
 
 
 def contains_words(text: str, words: str) -> bool:
@@ -384,6 +420,18 @@ class PresentationEngine:
 
     def _all_specs(self) -> list[SlideSpec]:
         return self.deck.slides + list(self._pending)
+
+    def _plain_items(self) -> set[tuple[str, str]]:
+        """Elements whose whole text is one string (points, a card's notes): a reworded concern can replace it and put
+        it back exactly (a definition card, a fact tile or a step with its detail is two fields)."""
+        out: set[tuple[str, str]] = set()
+        for s in self._all_specs():
+            for b in s.blocks:
+                if b.type == "points":
+                    out |= {(s.id, i.id) for i in b.items}
+                elif b.type == "definition":
+                    out |= {(s.id, n.id) for n in b.notes}
+        return out
 
     def _elements(self) -> dict[tuple[str, str], str]:
         return {(s.id, eid): text for s in self._all_specs() for eid, text in element_texts(s).items()}
@@ -1111,7 +1159,16 @@ class PresentationEngine:
             elif wrong_hits:  # the model raised the correction but left the teacher's words in its items
                 corr = Correction(c.id, wrong_hits, c.wrong, c.right, showing_right=False)
             else:
-                corr = Correction(c.id, [], c.wrong, c.right, showing_right=want_right)
+                # F-013 S3 (E1): the words are on no element. Say what the elements made from the concern's lines
+                # state (the heart lecture's card said "corrected" while the slide kept "one ventricle" in other
+                # words; replay of tests 1-30: 62 of 135 such concerns were already rewritten correctly, 73 not on
+                # the slide at all)
+                said = {k: slide_version(texts.get(k, ""), c.wrong, c.right) for k in sorted(own)}
+                corr = Correction(c.id, [], c.wrong, c.right, showing_right=want_right,
+                                  reworded=[k for k, v in said.items() if v == "wrong" and k in self._plain_items()]
+                                  if c.suggested_correction else [],
+                                  statement=c.suggested_correction,
+                                  version="right" if "right" in said.values() and "wrong" not in said.values() else "")
             self._corrections[c.id] = corr
             while len(self._corrections) > MAX_CORRECTIONS:
                 self._corrections.popitem(last=False)
@@ -1119,8 +1176,10 @@ class PresentationEngine:
                 await self._toggle(corr, show_right=want_right)
                 if corr.showing_right:
                     self.stats.corrections_shown += 1
-            log.info("concern %s (%s, applied=%s): %d element(s); slide shows %r", c.id, c.kind, c.applied,
-                     len(corr.targets), c.right if corr.showing_right else c.wrong)
+            log.info("concern %s (%s, applied=%s): %d element(s); slide shows %r (%s)", c.id, c.kind, c.applied,
+                     len(corr.targets), c.right if corr.showing_right else c.wrong, corr.shows)
+            await self.bus.publish(CorrectionPlaced(concern_id=c.id, shows=corr.shows,  # type: ignore[arg-type]
+                                                    elements=len(corr.targets or corr.reworded)))
 
     async def _toggle(self, corr: Correction, show_right: bool) -> None:
         if corr.showing_right == show_right:
@@ -1144,10 +1203,35 @@ class PresentationEngine:
             return
         if ev.status == "accepted":
             await self._toggle(corr, show_right=True)
+            await self._reword(corr, show_right=True)
         elif ev.status == "kept":
             await self._toggle(corr, show_right=False)
-        log.info("concern %s %s: slide shows %r", ev.concern_id, ev.status,
-                 corr.right if corr.showing_right else corr.wrong)
+            await self._reword(corr, show_right=False)
+        log.info("concern %s %s: slide shows %r (%s)", ev.concern_id, ev.status,
+                 corr.right if corr.showing_right else corr.wrong, corr.shows)
+        if ev.status != "dismissed":
+            await self.bus.publish(CorrectionPlaced(concern_id=ev.concern_id, shows=corr.shows,  # type: ignore[arg-type]
+                                                    elements=len(corr.targets or corr.reworded)))
+
+    async def _reword(self, corr: Correction, show_right: bool) -> None:
+        """F-013 S3 (E1): items that state the teacher's version in other words get the corrected statement (Show
+        correction), or their own text back (Show what I said). The teacher's own edits are never replaced."""
+        if not corr.reworded or show_right == bool(corr.originals):
+            return
+        texts = self._elements()
+        for sid, eid in corr.reworded:
+            spec = self._spec(sid)
+            if spec is None or eid in self._locked():
+                continue
+            text = corr.statement if show_right else corr.originals.get((sid, eid), "")
+            new = edit_text(spec, eid, text) if text else None
+            if new is None:
+                continue
+            if show_right:
+                corr.originals[(sid, eid)] = texts.get((sid, eid), "")
+            await self._commit(new)
+        if not show_right:
+            corr.originals.clear()
 
     async def _apply(self, d: Decision, working: Optional[Working], pieces: list[Piece],
                      relation: str = "") -> Optional[str]:

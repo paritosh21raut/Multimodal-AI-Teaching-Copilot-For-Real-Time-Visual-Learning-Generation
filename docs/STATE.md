@@ -1,6 +1,7 @@
 # Current State
 
-_Last updated: 2026-10-17: **F-013 S3b (comparison, glossary, named equations) done** (34,808 Groq tokens, A/B). Before
+_Last updated: 2026-10-17: **F-013 S3c (truthfulness) + performance mode + start card + Follow removed** (31,338 Groq
+tokens, A/B). Before that, 2026-10-17: F-013 S3b (comparison, glossary, named equations, 34,808 tokens). Before
 that, 2026-10-17: F-013 S3a (deterministic representation fixes, 0 tokens). Before that, 2026-10-16:
 **F-013 S2 (structure) done, targets partly met** (≈ 75k Groq tokens: A/B + one live run).
 Before that, 2026-10-15: **IEEE paper finished (6 pages, validation phase 4 done, 0 tokens)**. Before that, 2026-10-12:
@@ -9,6 +10,24 @@ user's review of the paper and of group D, then the truthfulness bug below, then
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **F-013 S3c done (2026-10-17) + the user's 3 requests of that day.**
+  - **E1:** a concern card now says what the slide really shows (correction / states it correctly / what you said /
+    not on the slide; `CorrectionPlaced`). Replay: of 29 factual cards, 7 claimed "corrected" falsely before; now 1 is
+    imperfect (test13). Show correction replaces an item that says the teacher's version in other words. This fixes
+    the old "truthfulness bug" (heart lecture) below.
+  - **E2:** prompt rule "never state a fact the NEW lines do not say" live after an A/B (31,338 tokens: 2 unsaid facts
+    gone, none added; form cost handled by dropping cut-off items in code); a reversed two-way comparison is swapped
+    (test15). Library 48 equations (Pascal, Kirchhoff, straight line).
+  - **Performance mode:** Standard (default, the S1 settings, fewer calls) | High performance (S1b, every sentence);
+    switch on the start card and the top bar, remembered in data/preferences.json, `--mode`.
+  - **Start card:** one Study material row + picker (search, ticks, Add file, Add web link); fits with 15 files. Web
+    pages named by title ("Human Brain · byjus.com").
+  - **Follow removed** (it turned pages early and back).
+  - **Tests:** fast 721 pass. Browser suite: the full run was stopped by the system (low memory) after ~40 tests with
+    no failure printed; the changed browser files passed alone (`test_reference_browser.py` 2/2). Not yet re-run:
+    the whole browser suite, `test_themes_notes_browser.py`, the KaTeX test with the 48 equations.
+  - **Runtime (0 tokens):** WAV `f013_cues_chem.wav` with `--mode standard`: 14 lines (utterances, S1b cut it into ~31),
+    `[MODE]` line printed. The `--mode high` run was stopped by the system (low memory) before it produced lines.
 - **F-013 S3b done (2026-10-17): N-way comparison, lecture glossary + Whisper prompt, named equations.**
   - **Replay** of tests 1–30 (0 tokens): unusable comparison tables 2 → 0; formulas 23 → 32, of which 9 are named
     standard equations (test16 now shows both Schrödinger forms); boundaries unchanged (P 0.775, R 0.507).
@@ -144,7 +163,8 @@ Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
   (`--reference`), reference_check, make_reference_fixture, paper tools
 
 ## Known issues / notes
-- **Truthfulness bug (pre-existing, found by the F-012 live run).** A confident factual concern was marked applied,
+- **Truthfulness bug: FIXED in F-013 S3c (E1)** — the card says what the slide shows; kept below for history.
+  Original: A confident factual concern was marked applied,
   "slide shows the correction", while the model's *acts* kept the wrong words: "right atrium, left atrium and one
   ventricle". The engine found nothing to switch ("0 element(s)"), so the projector kept the wrong fact, and the
   archive and the quiz then used it. Evidence: temporary session 20261012-230109-6a3f (script
@@ -158,6 +178,6 @@ Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 - Not reproduced: mic overflow lag; unbounded STT queue if Whisper runs slower than real time.
 
 ## User actions pending
-- Review F-012 in the app: My Notes toggles, the Study material row, a lecture with your own PDF (e.g. STM32 notes).
-- Decide on the truthfulness-bug fix above.
+- Review F-012 / F-013 S3c in the app: the Study material picker, the Speed switch (Standard / High performance), a
+  lecture with your own PDF (e.g. STM32 notes).
 - Later: classroom lapel mic with `mic_check`.

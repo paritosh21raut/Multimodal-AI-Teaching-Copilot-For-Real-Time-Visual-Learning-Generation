@@ -7,7 +7,7 @@ fact-checking (see Verification). User decisions: 2026-10-12 (answers to the 14 
 The teacher's **My Notes** files (PDF, Word, PowerPoint, text, images, web links: everything F-009 / F-010b take) are
 also the lecture's **reference material**. A local index (MiniLM, 0 tokens) is kept apart from the live transcript
 and is used only to make what the teacher says show up more accurately. The lecture never depends on it, and it never
-adds content the teacher did not teach. All My Notes features stay as they are, including following the slides and
+adds content the teacher did not teach. All My Notes features stay as they are (following the slides was removed later, F-013) and
 projecting a page.
 
 ## What is indexed (`notes/reference.py`, under `data/notes/<id>/`)
@@ -34,7 +34,7 @@ projecting a page.
 | Lecture materials (summary, notes, assignment) | — | **Not used.** Their output has no single answer that a guard can check, so they stay taught-only (user: "if unable, only use lecture teaching") |
 | Topic / outline understanding | — | not used |
 
-Without an LLM, speech terms, images and following the slides still work, and the LLM uses are skipped.
+Without an LLM, speech terms and images still work, and the LLM uses are skipped.
 Students never see a reference file. A page reaches /display and /view only when the teacher projects it (F-010b).
 
 ## UI

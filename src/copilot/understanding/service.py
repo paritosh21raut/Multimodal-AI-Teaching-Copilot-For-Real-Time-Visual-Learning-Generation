@@ -84,6 +84,12 @@ class UnderstandingSettings:
         return cls(gate=GateConfig(**pick(GateConfig)), interpreter=InterpreterSettings(**pick(InterpreterSettings)), **top)
 
 
+def apply_pace(settings: "UnderstandingSettings", pause_s: float, min_call_interval_s: float) -> None:
+    """The performance mode's pace (F-013, app/modes.py), also mid-lecture: the gate reads the same GateConfig."""
+    settings.gate.pause_s = float(pause_s)
+    settings.min_call_interval_s = float(min_call_interval_s)
+
+
 STATS_HISTORY = 1000  # bounded: recent values only, regardless of lecture length
 
 

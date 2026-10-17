@@ -26,6 +26,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `CommandReceived` | display/terminal | `command: Command` |
 | `ConcernRaised` | state store | `concern` (Concern dump) |
 | `ConcernResolved` | state store | `concern_id`, `status` (accepted/kept/dismissed) |
+| `CorrectionPlaced` | presentation engine (F-013 S3c, E1) | `concern_id`, `shows` (correction / said / rewritten / absent), `elements`: what the slides show for a concern after placing it and after each switch; the hub puts it on the card (`shows`, `applied`), the terminal prints it |
 | `SlideContextChanged` | presentation engine | `text` (working-slide summary with `[S1]..` items → `LectureState.slide_context` → prompt), `refs` (S-ref → slide/item id) |
 | `SlideOverflow` | display hub (from `/display`) | `slide_id`, `version` (auto-fit failed; planner continues on a new slide) |
 | `ImageRequested` | presentation engine | `request_id`, `slide_id`, `query`, `kind` (photo/diagram), `exclude` (image ids already offered), `deeper`, `reason` (auto/change) — F-007b |
@@ -33,7 +34,8 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `ImageChoices` | presentation engine | `slide_id`, `index`, `count` — the images this slide has shown, for the previous / next arrows (control only) |
 | `ShareChanged` | share service (F-008) | `state` (off/starting/on/failed), `url` (`<tunnel>/view` while on), `detail` (progress or why it failed) |
 | `ThemeChanged` | state store (F-009) | `theme` (light/dark): after `set_theme`; the hub repaints display, viewers and the control preview |
-| `NotesState` | notes service (F-009) | `docs`, `open`, `page`, `pages`, `follow`, `reason` (why following does nothing), `matched` (slide title), F-012: docs carry `active` / `private`, `indexing` (id → 0..1), `used` ("<file> p.N" the last slide used), `notice` (a refused toggle) — control only, ephemeral |
+| `ModeChanged` | app (F-013) | `mode` (standard/high): at READY and after `set_mode`; the hub sends it to /control only (start card Speed, top-bar pill) |
+| `NotesState` | notes service (F-009) | `docs`, `open`, `page`, `pages` (F-013: `follow` / `reason` / `matched` removed with Follow), F-012: docs carry `active` / `private`, `indexing` (id → 0..1), `used` ("<file> p.N" the last slide used), `notice` (a refused toggle) — control only, ephemeral |
 | `MaterialsState` | materials service (F-010) | `items` (made / being made: name, status, detail, tokens, …), `shared` ([{id, name}] PDFs students may download), `current` {id, title}, `llm`, `lectures_changed` — items to control, `shared` to viewers; ephemeral |
 | `AssessState` | assess service (F-011) | `control` (whole quiz / test, keys included → /control only), `public` (no key before it is due → /display + /view), `notice` (why the teacher's last action was refused), `llm`, `now`; ephemeral (saved in `data/assessments/`) |
 | `ErrorRaised` | any | `component`, `error`, `fatal` |
@@ -45,8 +47,9 @@ force_new_slide, resolve_concern(id, action), remove_image(slide_id), change_ima
 set_image(slide_id, image_id, aspect, alt), image_prev(slide_id), image_next(slide_id), zoom_image(slide_id),
 unzoom_image, edit_text(slide_id, item_id = title | element id | <definition id>:term, text), delete_item(slide_id,
 item_id), add_point(slide_id, text), show_equation(id: a presentation.equations entry, onto the live slide; F-013
-S3b), share_start, share_stop, set_theme(theme), notes_open(id), notes_page(page),
-notes_follow(on), notes_remove(id), materials_create(items[{kind: summary|concepts|notes|assignment|pptx, name?,
+S3b), share_start, share_stop, set_theme(theme), set_mode(mode: standard | high; F-013, the app applies it and keeps it
+in data/preferences.json), notes_open(id), notes_page(page), notes_follow(on) (removed in F-013: still decodes, nothing
+handles it), notes_remove(id), materials_create(items[{kind: summary|concepts|notes|assignment|pptx, name?,
 scope?: topic|lecture, count?, theme?}], lectures[past ids], current), materials_rename(id, name),
 materials_share(id, on), materials_remove(id), materials_show(id), lecture_hide(id), chapter_create(name, start?),
 chapter_rename(id, name), chapter_move(id, index), chapter_delete(id), lecture_move(id, chapter, start?),

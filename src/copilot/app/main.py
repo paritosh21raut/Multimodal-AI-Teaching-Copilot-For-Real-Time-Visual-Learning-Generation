@@ -29,6 +29,8 @@ from copilot.core.events import (
     SlidePatch,
     TranscriptFinal,
     UtteranceDropped,
+    CorrectionPlaced,
+    ModeChanged,
     VocabularyChanged,
     new_id,
 )
@@ -102,6 +104,11 @@ def pages_to_open(connects: dict[str, int]) -> list[str]:
 
 def new_session_id() -> str:
     return f"{time.strftime('%Y%m%d-%H%M%S')}-{new_id()[:4]}"
+
+
+# what the slide shows for a concern (F-013 S3, E1: CorrectionPlaced)
+SHOWS = {"correction": "shows the correction", "said": "shows what was said (Show correction in /control)",
+         "rewritten": "already states it correctly", "absent": "does not show it"}
 
 
 class TerminalInput:
@@ -179,6 +186,12 @@ class App:
         self.assess = None  # assess.service.AssessService: quiz + test (F-011)
         self._notes_loader: Optional[asyncio.Task] = None
         self.control_key = secrets.token_urlsafe(18)  # the teacher key for /control from outside this machine
+        # performance mode (F-013): standard (fewer LLM calls) or high (every sentence); the teacher's last choice
+        from copilot.app.modes import Preferences, mode_from_config
+
+        self.prefs = Preferences(PROJECT_ROOT / config.get("app", "data_dir", "data") / "preferences.json",
+                                 config.get("performance", "mode", "standard"))
+        self.mode = mode_from_config(config, self.prefs.mode)
 
     async def _lifecycle(self, state: Lifecycle, reason: str = "") -> None:
         self._now = state
@@ -223,7 +236,7 @@ class App:
                                   u.get("embed_repo", "sentence-transformers/all-MiniLM-L6-v2"))
         try:
             await asyncio.to_thread(embedder.load)
-        except Exception:  # following stays off; the panel says why
+        except Exception:  # the study material is not indexed; the notes still open
             log.exception("notes: embedder load failed")
             return
         if self.notes is not None:
@@ -237,7 +250,7 @@ class App:
         from copilot.llm.router import build_router
         from copilot.understanding.embedder import MiniLmEmbedder
         from copilot.understanding.interpreter import Interpreter
-        from copilot.understanding.service import UnderstandingService, UnderstandingSettings
+        from copilot.understanding.service import UnderstandingService, UnderstandingSettings, apply_pace
 
         assert self.store is not None
         u = self.config.section("understanding")
@@ -253,7 +266,7 @@ class App:
             print(f"[INIT]  concept embedder unavailable ({type(e).__name__}); using cue words only", flush=True)
             embedder = None
         if self.notes is not None and embedder is not None:
-            # the notes follow the lecture and are indexed as study material with the same model (0 tokens)
+            # the notes are indexed as study material with the same model (0 tokens)
             self.notes.set_embedder(embedder)
             await self.notes.announce()
 
@@ -274,6 +287,7 @@ class App:
         names = [e.name for e in router.entries]
         print(f"[INIT]  LLM providers: {' -> '.join(names)}", flush=True)
         settings = UnderstandingSettings.from_config(self.config)
+        apply_pace(settings, self.mode.pause_s, self.mode.min_call_interval_s)  # F-013 performance mode
         self.understanding = UnderstandingService(
             self.bus, self.store, Interpreter(router, settings.interpreter), embedder, settings,
             speed=self.speed if self.simulate or self.audio_file else 1.0,
@@ -333,8 +347,11 @@ class App:
                       f" {shown} ({c.get('confidence')})", flush=True)
             else:
                 print(f"  [CONCERN] ({c.get('kind')}) {c.get('claim')} -> {c.get('suggested_correction')} "
-                      f"({c.get('confidence')}, slide shows {'the correction' if c.get('applied') else 'as said'})",
+                      f"({c.get('confidence')}, {'correct it on the slide' if c.get('applied') else 'keep as said'})",
                       flush=True)
+        elif isinstance(event, CorrectionPlaced):  # F-013 S3 (E1): what the slide really shows
+            print(f"            slide: {SHOWS.get(event.shows, event.shows)}"
+                  f"{f' ({event.elements} element(s))' if event.elements else ''}", flush=True)
 
     async def _print_slide(self, event: Event) -> None:
         if isinstance(event, SlidePatch):
@@ -361,12 +378,37 @@ class App:
             self._start_requested.set()
         elif event.command.kind == "end":
             self._stop.set()
+        elif event.command.kind == "set_mode":
+            await self._set_mode(str(event.command.args.get("mode", "")))
         else:
             nxt = lifecycle_for_command(event.command.kind, self._now)
             if nxt is not None:
                 await self._lifecycle(nxt, "teacher")
                 print("[PAUSE] paused: what is said now is not put on slides (Resume to continue)"
                       if nxt == Lifecycle.PAUSED else "[LIVE]  resumed", flush=True)
+
+    async def _set_mode(self, name: str) -> None:
+        """The teacher's performance switch (F-013), before or during the lecture; kept for the next lecture."""
+        from copilot.app.modes import MODES, mode_from_config
+        from copilot.understanding.service import apply_pace
+
+        if name not in MODES:
+            log.warning("set_mode ignored: %r", name)
+            return
+        self.mode = mode_from_config(self.config, name)
+        await asyncio.to_thread(self.prefs.set_mode, name)
+        if self.understanding is not None:
+            apply_pace(self.understanding.s, self.mode.pause_s, self.mode.min_call_interval_s)
+        if self.speech is not None:
+            self.speech.set_split(self.mode.split_sentences)
+        await self.bus.publish(ModeChanged(mode=name))
+        print(f"[MODE]  {self._mode_line()}", flush=True)
+
+    def _mode_line(self) -> str:
+        m = self.mode
+        return (f"{'high performance' if m.name == 'high' else 'standard'}: "
+                f"{'every finished sentence' if m.split_sentences else 'each pause'} goes to the LLM "
+                f"(pause {m.pause_s:g} s, calls >= {m.min_call_interval_s:g} s apart)")
 
     async def _start_display(self) -> None:
         from copilot.display.hub import DisplayHub
@@ -476,7 +518,8 @@ class App:
         self.bus.subscribe("terminal_transcript", self._print_transcript,
                            [TranscriptFinal, UtteranceDropped, AudioDeviceLost])
         self.bus.subscribe("app_commands", self._on_command, [CommandReceived])
-        self.bus.subscribe("terminal_understanding", self._print_understanding, [InterpretationReady, ConcernRaised])
+        self.bus.subscribe("terminal_understanding", self._print_understanding,
+                           [InterpretationReady, ConcernRaised, CorrectionPlaced])
         self.bus.subscribe("terminal_slides", self._print_slide, [SlidePatch])
         await self._lifecycle(Lifecycle.STARTING)
         try:
@@ -486,11 +529,13 @@ class App:
                 await self._init_speech()
             if self.understanding_enabled:
                 await self._init_understanding()
-            elif self.notes is not None:  # no understanding: the notes still follow the slides (model in background)
+            elif self.notes is not None:  # no understanding: study material is still indexed (model in background)
                 self._notes_loader = asyncio.create_task(self._load_notes_embedder())
             # Started only after every heavy import: on Windows a DLL import (numpy) can deadlock while another
             # thread is blocked reading a piped stdin (seen with tools/screenshot_app.py).
             TerminalInput(asyncio.get_running_loop(), self._terminal).start()
+            await self.bus.publish(ModeChanged(mode=self.mode.name))  # F-013: /control shows the switch
+            print(f"[MODE]  {self._mode_line()}  (switch in /control)", flush=True)
             await self._lifecycle(Lifecycle.READY)
             if self._router is not None:
                 print_quota(self._router)
@@ -608,6 +653,7 @@ class App:
             prompt=vocabulary_prompt(self.store.snapshot().setup, study),
             partial_engine=self.partial_engine,
             partial_interval_s=float(self.config.get("stt", "partial_interval_s", 0.8)),
+            split_sentences=self.mode.split_sentences,
         )
         speech = self.speech
 
@@ -736,6 +782,8 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
                         "of that role is already connected)")
     p.add_argument("--demo-slides", action="store_true", help="play a scripted slide sequence (display check)")
     p.add_argument("--no-understanding", action="store_true", help="disable lecture understanding (no LLM calls)")
+    p.add_argument("--mode", choices=["standard", "high"], default=None,
+                   help="performance mode for this run (default: the last one chosen in /control)")
     p.add_argument("--log-level", default=None)
     return p.parse_args(argv)
 
@@ -775,6 +823,9 @@ def main(argv: Optional[list[str]] = None) -> int:
             demo_slides=args.demo_slides,
             understanding=not args.no_understanding,
         )
+        if args.mode:  # this run only; the /control switch is what is remembered
+            from copilot.app.modes import mode_from_config
+            app.mode = mode_from_config(config, args.mode)
         return await app.run()
 
     try:

@@ -67,7 +67,9 @@ CommandKind = Literal[
     "show_equation",                              # a standard equation from the library on the live slide, {id} (F-013 S3)
     "share_start", "share_stop",                  # share /view with students over a Cloudflare quick tunnel (F-008)
     "set_theme",                                  # slide theme mid-lecture, args {theme: light | dark} (F-009)
-    "notes_open", "notes_page", "notes_follow", "notes_remove",  # the teacher's PDF notes in /control (F-009)
+    "set_mode",                                   # performance mode, args {mode: standard | high} (F-013, app/modes.py)
+    "notes_open", "notes_page", "notes_remove",  # the teacher's PDF notes in /control (F-009)
+    "notes_follow",  # removed (F-013, nothing handles it); kept so that older session logs still decode
     # lecture materials + past lectures (F-010): create {items, lectures, current}; rename {id, name};
     # share {id, on}; remove {id}; show {id} (a summary / key-concepts slide again); lecture_hide {id}
     "materials_create", "materials_rename", "materials_share", "materials_remove", "materials_show", "lecture_hide",
@@ -241,6 +243,16 @@ class ConcernResolved(Event):
     status: Literal["accepted", "kept", "dismissed"]
 
 
+class CorrectionPlaced(Event):
+    """F-013 S3 (E1): what the slides show for a concern, after the engine placed it (and after each switch).
+    correction: the corrected words are on the slide (switched there); said: the teacher's words are (Show correction
+    switches them, or replaces the items that say it in other words); rewritten: the model already wrote the correct
+    statement in its own words (nothing to switch); absent: neither version is on the slides."""
+    concern_id: str
+    shows: Literal["correction", "said", "rewritten", "absent"]
+    elements: int = 0  # slide elements the switch changes
+
+
 class SlideContextChanged(Event):
     """Short summary of the slide receiving content, for the interpretation prompt (presentation → store).
     refs: item reference used in the text ("S1") -> "slide_id/item_id", so revisions can be applied exactly."""
@@ -296,17 +308,19 @@ class ThemeChanged(Event):
     theme: Literal["light", "dark"]
 
 
+class ModeChanged(Event):
+    """The performance mode in effect (F-013, app/modes.py): standard (fewer LLM calls) or high (every sentence)."""
+    mode: Literal["standard", "high"]
+
+
 class NotesState(Event):
-    """The teacher's PDF notes in /control (F-009): the list, the open one, its page, following the lecture.
+    """The teacher's PDF notes in /control (F-009): the list, the open one, its page.
     Control only — never the projector or the students."""
     ephemeral: ClassVar[bool] = True  # a view state, not lecture history
     docs: list[dict[str, Any]] = Field(default_factory=list)  # [{id, name, pages, has_text, added}]
     open: str = ""
     page: int = 0
     pages: int = 0
-    follow: bool = True
-    reason: str = ""   # why following the lecture does nothing ("" = it works)
-    matched: str = ""  # the slide title the page was matched to
     projecting: bool = False  # the open page is on the projector (F-010b)
     # reference material (F-012): docs carry active / private; files being indexed (id -> 0..1); the passage the
     # last slide used ("<file> p.N"); a refused toggle ("at most 10 files ...")

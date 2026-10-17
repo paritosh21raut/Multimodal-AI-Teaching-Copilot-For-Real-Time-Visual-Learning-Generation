@@ -68,8 +68,9 @@ PYTHONPATH=paper/build/lib .venv/Scripts/python paper/build/src/build_docx.py <o
 .venv/Scripts/python tools/v1_eval.py --replay | --gate   # F-013: engine replay (cues off/on) / gate replay (call floors), 0 tokens
 .venv/Scripts/python tools/v1_eval.py --structure [names] [--out f.json]   # F-013 S2: boundaries vs annotators, part rate, child slides (0 tokens)
 .venv/Scripts/python tools/v1_eval.py --s3 [names] [--list verbatim,garbage,dup,def,table,formula] [--out f.json]   # F-013 S3: representation (0 tokens)
-.venv/Scripts/python tools/screenshot_s3.py [groups facts members definition formula trig compare3 tiles named_eq maxwell motion]   # S3 layouts, both themes -> artifacts/display
+.venv/Scripts/python tools/screenshot_s3.py [groups facts members definition formula trig compare3 tiles named_eq maxwell motion cards]   # S3 layouts + mistake cards, both themes -> artifacts/display
 .venv/Scripts/python tools/prompt_ab.py --compare <session>[:i,j]   # F-013 S3b: N-way comparison rule A/B (real Groq; --dry 0 tokens)
+.venv/Scripts/python tools/prompt_ab.py --said [--both|--old] <session>[:i,j]   # F-013 S3c: "never state a fact not said" A/B (real Groq)
 .venv/Scripts/python tools/screenshot_structure.py   # S2: nested Lecture Structure + child crumb, both themes -> artifacts/display
 .venv/Scripts/python tools/screenshot_cues.py      # announced slide / heard list / interpreted, both themes -> artifacts/display
 .venv/Scripts/python -m pytest                      # fast tests
@@ -82,6 +83,7 @@ PYTHONPATH=paper/build/lib .venv/Scripts/python paper/build/src/build_docx.py <o
 .venv/Scripts/python -m copilot.audio.mic_check     # list mics, record, transcribe
 .venv/Scripts/python -m copilot --audio-file tests/fixtures/audio/photosynthesis_tts.wav
 .venv/Scripts/python -m copilot                     # run app ([QUOTA] → ready → Enter → live; opens /control + /display, --no-open)
+.venv/Scripts/python -m copilot --mode high          # this run in high performance (default: the /control Speed switch, kept in data/preferences.json)
 .venv/Scripts/python -m copilot --simulate tests/fixtures/lectures/photosynthesis.txt
 .venv/Scripts/python -m copilot --simulate tests/fixtures/lectures/photosynthesis.txt --no-wait --speed 1   # M3 runtime check (real LLM)
 ```
