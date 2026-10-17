@@ -1,0 +1,34 @@
+{
+  "_doc": "F-014 expected simulation moments in the recorded lectures (verify_results/<name>) and the fixtures (fx:<name>), annotated by Claude 2026-10-17 from the transcripts. A moment = the template and a piece of the line that should show it (cue) or suggest it (topic talk without a cue: kind suggest). Moments of templates that do not exist yet are kept and skipped by tools/v2_eval.py detect until the template is built. negative = no simulation may be shown or suggested in the whole lecture.",
+  "lectures": {
+    "fx:incline_live": {"moments": [
+      {"template": "block_on_surface", "kind": "show", "line": "Consider a block of mass 5 kg resting on a rough floor"}]},
+    "fx:incline_mode": {"moments": [
+      {"template": "block_on_surface", "kind": "show", "line": "Consider a block of mass 5 kg resting on a rough floor"}]},
+    "20261017-200923-76c3": {"note": "the user's mic lecture (data/sessions); the incline and the second box come while the first simulation is still open: switches, not shows", "moments": [
+      {"template": "block_on_surface", "kind": "show", "line": "Imagine a box placed on the surface"}]},
+    "test1": {"note": "Newton's laws by examples (seat pushing up): no block / incline scenario is described", "moments": []},
+    "test2": {"note": "trap: friction = viscosity of a fluid", "negative": true},
+    "test22": {"moments": [{"template": "orbit", "kind": "suggest", "line": "A satellite is an object that revolves around"}]},
+    "test21": {"moments": [{"template": "orbit", "kind": "suggest", "line": "orbit"}]},
+    "test23": {"moments": [{"template": "unit_circle", "kind": "suggest", "line": "let us discuss the unit circle"}]},
+    "fx:electricity_live": {"moments": [{"template": "dc_circuit", "kind": "suggest", "line": "series and parallel"}]},
+    "test6": {"note": "history", "negative": true},
+    "test7": {"note": "history", "negative": true},
+    "test20": {"note": "history", "negative": true},
+    "test29": {"note": "economics", "negative": true},
+    "web6": {"note": "economics", "negative": true},
+    "test8": {"note": "machine learning", "negative": true},
+    "test14": {"note": "machine learning", "negative": true},
+    "test18": {"note": "machine learning", "negative": true},
+    "test25": {"negative": true},
+    "test27": {"negative": true},
+    "test3": {"note": "chemistry definitions", "negative": true},
+    "test5": {"note": "trap: orbital", "negative": true},
+    "test16": {"note": "trap: orbital", "negative": true},
+    "test19": {"note": "trap: orbital", "negative": true},
+    "test26": {"note": "trap: integrated circuit", "negative": true},
+    "test10": {"note": "trap: muscles push the bone", "negative": true},
+    "test12": {"note": "trap: push food down", "negative": true}
+  }
+}

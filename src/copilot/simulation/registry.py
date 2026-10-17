@@ -100,8 +100,9 @@ def with_values(sim: SimBase, values: Iterable[tuple[str, float, str]], toggled:
         params[slot] = value
         sources[slot] = source
     t = template_of(sim)
+    old = sim.params.model_dump()  # type: ignore[attr-defined]
     new = sim.model_copy(update={"params": t.params(**params), "param_source": sources})
-    return solved(new, toggled)
+    return solved(new, toggled, bump=any(params[s] != old[s] for s in t.restart_on))
 
 
 def switched(sim: SimBase, template_id: str, origin: Origin) -> SimBase:
@@ -109,7 +110,8 @@ def switched(sim: SimBase, template_id: str, origin: Origin) -> SimBase:
     template carries (mass, μ, g) keep their values and sources; the motion starts again (rev + 1)."""
     t = TEMPLATES[template_id]
     old = sim.params.model_dump()  # type: ignore[attr-defined]
-    keep = [(s, old[s], sim.param_source[s]) for s in t.carry if s in old and s in sim.param_source]
+    same = template_of(sim).kin == t.kin  # a pendulum's bob mass is not the next block's mass
+    keep = [(s, old[s], sim.param_source[s]) for s in t.carry if same and s in old and s in sim.param_source]
     new = build(template_id, keep, origin=origin, speed=sim.playback.speed)
     pb = new.playback.model_copy(update={"rev": sim.playback.rev + 1})
     return new.model_copy(update={"playback": pb, "version": sim.version + 1})

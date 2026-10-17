@@ -7,11 +7,11 @@ import pytest
 from pydantic import ValidationError
 
 from copilot.core.events import (
-    Command, CommandReceived, ConceptSignal, RepresentationIntent, SimulationNotice, TranscriptFinal,
-    TranscriptSegment, UtteranceClassified,
+    Command, CommandReceived, ConceptSignal, RepresentationIntent, SimulationModeChanged, SimulationNotice,
+    SimulationSuggestion, TranscriptFinal, TranscriptSegment, UtteranceClassified,
 )
 from copilot.presentation.composer import (
-    body_height, fits, sim_of, split_to_fit, with_image, with_simulation, BODY_BUDGET_PX,
+    body_height, element_texts, fits, sim_of, split_to_fit, with_image, with_simulation, BODY_BUDGET_PX,
 )
 from copilot.presentation.spec import ImageBlock, Item, PointsBlock, SimulationBlock, SlideSpec
 from copilot.simulation import registry
@@ -189,8 +189,8 @@ def test_spoken_numbers():
     ("a mass of five kilograms", "mass", 5),
     ("a 500 gram block", "mass", 0.5),
     ("Now tilt the surface to 30 degrees.", "angle", 30),
-    ("an angle of thirty", "angle", 30),
-    ("theta equals 45", "angle", 45),
+    # "an angle of thirty" / "theta equals 45" (no unit) are read against the open template since S1:
+    # tests/unit/test_sim_values.py (corpus)
     ("The coefficient of friction is 0.2.", "mu", 0.2),
     ("mu equals zero point two", "mu", 0.2),
     ("Let mu equal 0.2", "mu", 0.2),
@@ -217,6 +217,9 @@ def test_results_and_other_units_are_not_inputs(line):
 def test_push_direction():
     assert {h.kind: h.text for h in heard("push it with a force of 50 N down the incline")}["force_dir"] == "down"
     assert {h.kind: h.text for h in heard("Now I push it up the slope with 20 N.")}["force_dir"] == "up"
+    assert {h.kind: h.text for h in heard("What if we push it up the slope?")}["force_dir"] == "up"
+    # the noun is the weight's pull, not the push (simulated run 2026-10-17, incline_mode.txt)
+    assert "force_dir" not in {h.kind for h in heard("A steeper slope means a larger pull down the slope.")}
 
 
 # ---- the spoken cue and its context guards ---------------------------------------------------------------------
@@ -269,16 +272,20 @@ def test_setup_and_values_without_a_cue():
 
 # ---- the policy ---------------------------------------------------------------------------------------------------
 def test_policy():
-    kw = dict(open_template=None, earlier=False, removed=False)
+    """S1 (user 2026-10-17): a new use is a new simulation slide (no reopen); a score or Suggest gives a chip."""
+    kw = dict(open_template=None, removed=False)
     assert decide("incline", "cue", **kw).kind == "show"
-    assert decide("incline", "cue", **{**kw, "earlier": True}).kind == "reopen"
-    assert decide("incline", "cue", **{**kw, "removed": True}).kind == "ignore"
-    assert decide("incline", "setup", **kw).kind == "ignore"                      # no cue, nothing open
+    assert decide("incline", "cue", **{**kw, "removed": True}).kind == "suggest"   # the teacher removed it before
+    assert decide("incline", "cue", **kw, setting="suggest").kind == "suggest"
+    assert decide("incline", "score", **kw).kind == "suggest"                       # never shown without a cue
+    assert decide("incline", "setup", **kw).kind == "ignore"                        # no cue, nothing open
     assert decide("incline", "setup", **{**kw, "open_template": "block_on_surface"}).kind == "switch"
     assert decide("incline", "cue", **{**kw, "open_template": "incline"}).kind == "update"
     assert decide("", "values", **{**kw, "open_template": "incline"}).kind == "update"
     assert decide("", "values", **kw).kind == "ignore"
     assert decide("incline", "cue", **kw, setting="off").kind == "ignore"
+    assert decide("", "end", **kw, mode_on=True).kind == "end"
+    assert decide("", "end", **kw).kind == "ignore"
 
 
 # ---- composer -------------------------------------------------------------------------------------------------------
@@ -343,10 +350,14 @@ def live_sim(deck):
 
 async def test_spoken_cue_shows_and_values_follow():
     bus, deck, eng, clock, lines, _ = await _setup()
+    first = deck.live.id
     await lines.say("Consider a block of 5 kg on a rough surface.")
     s = live_sim(deck)
     assert s is not None and s.template == "block_on_surface"
-    assert deck.live.layout == "simulation" and deck.live.title  # beside the slide's definition
+    # S1: its own slide, only the stage, titled by the template under the topic's crumb
+    assert deck.live.id != first and [b.type for b in deck.live.blocks] == ["simulation"]
+    assert deck.live.title == "Block on a surface" and deck.live.subtitle == "Friction"
+    assert deck.sim_mode == deck.live.id
     assert s.params.mass_kg == 5 and s.param_source["mass_kg"] == "said"
     assert s.params.mu > 0 and s.param_source["mu"] == "default" and "friction" in s.shown  # rough: μ not said
     assert s.labels["surface"].text == ""
@@ -357,13 +368,69 @@ async def test_spoken_cue_shows_and_values_follow():
     assert (s.params.applied_n, s.params.mu) == (20, 0.2)
     assert d(s, "a") == pytest.approx(2.038)
     assert s.playback.rev == rev  # new values never restart the motion
+    await lines.say("Now make it 30.")  # fix 2: the slot changed last
+    # μ was changed last: 30 is outside its range (0-2), not used
+    assert (live_sim(deck).params.mu, live_sim(deck).params.applied_n) == (0.2, 20)
     await lines.say("Now if we tilt the surface to 30 degrees, it becomes an inclined plane.")
     s = live_sim(deck)
     assert s.template == "incline" and s.params.angle_deg == 30
     assert (s.params.mass_kg, s.params.mu) == (5, 0.2)  # carried over
     assert s.playback.rev == rev + 1  # a new motion
+    assert deck.live.title == "Block on an incline"  # the switch stays on the simulation's slide
     assert len([x for x in deck.slides if sim_of(x)]) == 1
     await eng.stop()
+
+
+async def test_bare_numbers_and_relative_phrases_follow_the_last_slot():
+    """Fix 2 end to end: "the pushing force is 10 N", "now assume it's 20 N", "make it 30", "double it", "45 degrees"."""
+    bus, deck, eng, clock, lines, _ = await _setup()
+    await lines.say("Imagine a block on an inclined plane.")
+    for text, want in (("Let's assume the pushing force is 10 N.", 10), ("Now assume it's 20 N.", 20),
+                       ("Make it 30.", 30), ("Double it.", 60)):
+        await lines.say(text)
+        assert live_sim(deck).params.applied_n == want, text
+    await lines.say("Now 45 degrees.")
+    assert live_sim(deck).params.angle_deg == 45
+    await lines.say("Make it 40.")  # the angle was changed last
+    assert (live_sim(deck).params.angle_deg, live_sim(deck).params.applied_n) == (40, 60)
+    await lines.say("If the coefficient of friction of the object of this")  # mentioned only
+    await say_meta(lines, "0.3")  # the filter flags a bare "0.3" as possible meta talk (user lecture 2026-10-17)
+    assert live_sim(deck).params.mu == 0.3
+    await eng.stop()
+
+
+async def test_physics_talk_during_the_incline_does_not_switch_it():
+    """Simulated run 2026-10-17 (incline_mode.txt): "the pull and the friction grow with the mass" switched the open
+    incline to a block on a floor. A setup line switches only when the open template's own setup does not fit it."""
+    bus, deck, eng, clock, lines, _ = await _setup()
+    await lines.say("Imagine a block on an inclined plane at 30 degrees.")
+    for text in ("The acceleration does not depend on the mass, because both the pull and the friction grow with it.",
+                 "The block is pulled up the slope by the rope.",
+                 "Notice that a steeper slope means a larger pull down the slope and less friction."):
+        await lines.say(text)
+        assert live_sim(deck).template == "incline", text
+    assert live_sim(deck).params.applied_dir == "up"  # not set by "a larger pull down the slope"
+    await lines.say("Now imagine the same block on a flat floor.")  # a cue still switches
+    assert live_sim(deck).template == "block_on_surface"
+    await eng.stop()
+
+
+async def say_meta(lines, text):
+    lines.n += 1
+    sid = f"line{lines.n}"
+    await send(lines.bus, TranscriptFinal(segment=TranscriptSegment(id=sid, text=text, start=lines.n, end=lines.n + 1)),
+               UtteranceClassified(segment_id=sid, kind="content", maybe_meta=True),
+               ConceptSignal(segment_id=sid, shift_score=0.0))
+    return sid
+
+
+async def say_management(lines, text):
+    """A line the filter takes as classroom talk: no ConceptSignal (it is not interpreted)."""
+    lines.n += 1
+    sid = f"line{lines.n}"
+    await send(lines.bus, TranscriptFinal(segment=TranscriptSegment(id=sid, text=text, start=lines.n, end=lines.n + 1)),
+               UtteranceClassified(segment_id=sid, kind="classroom_management"))
+    return sid
 
 
 async def test_out_of_range_value_is_not_used_and_reported():
@@ -379,9 +446,10 @@ async def test_no_simulation_from_ordinary_lectures():
     bus, deck, eng, clock, lines, _ = await _setup()
     for text in ("Viscosity is the internal friction between layers of a fluid.",
                  "Consider an orbital in a hydrogen atom.", "Let us consider the block diagram of STM32.",
-                 "Now tilt your head and look at the board.", "I push it with 20 newtons."):
+                 "Now tilt your head and look at the board.", "I push it with 20 newtons.",
+                 "Let's get back to the slides."):
         await lines.say(text)
-    assert not any(sim_of(s) for s in deck.slides)
+    assert not any(sim_of(s) for s in deck.slides) and deck.sim_mode is None
     await eng.stop()
 
 
@@ -392,29 +460,153 @@ async def test_setting_off():
     await eng.stop()
 
 
-async def test_the_explanation_goes_beside_it_and_it_follows_to_a_new_slide():
+async def _mode_events(bus):
+    got = []
+
+    async def keep(ev):
+        got.append(ev)
+    bus.subscribe("test_mode", keep, [SimulationModeChanged])
+    return got
+
+
+async def test_simulation_mode_round_trip_with_recap():
+    """Fix 1: start -> no new slides, content slides unchanged -> Back to slides -> one recap of what was taught."""
     bus, deck, eng, clock, lines, _ = await _setup()
-    await lines.say("Consider a block of 5 kg on a rough surface.")
+    modes = await _mode_events(bus)
+    before = deck.live.model_dump()
     first = deck.live.id
-    await send(bus, ready("Friction", "Friction", [act("explanation", points=["Friction acts against the push"])]))
-    assert deck.live.id == first and sim_of(deck.live) is not None
-    assert any(b.type == "points" for b in deck.live.blocks)
-    await send(bus, ready("Friction", "Friction on an incline", [act("explanation", points=[
-        "On a slope, gravity has a component along the surface"])], relation="sub_concept"))
-    assert deck.live.id != first and sim_of(deck.live) is not None  # it went along
-    assert sim_of(deck.get(first)) is None
+    await lines.say("Consider a block of 5 kg on a rough surface.")
+    sim_slide = deck.live.id
+    n = len(deck.slides)
+    assert modes[-1].on and modes[-1].slide_id == sim_slide
+    # what is taught meanwhile is collected, not placed: no new slide, no content slide changed
+    await send(bus, ready("Friction", "Friction on a block", [
+        act("explanation", points=["Friction opposes the tendency to move", "We apply a force of 20 N to the block",
+                                   "Let's see what happens", "Now make it 30 N"]),
+        act("formula", formula={"expression": "a = (F - mu m g) / m"}),
+        act("explanation", points=["The block has a mass of 5 kg"])], relation="new_topic"))
+    await send(bus, ready("Kinematics", "Speed", [act("definition", term="Speed", definition="Distance per unit time")],
+                          relation="new_topic"))
+    assert len(deck.slides) == n and deck.live.id == sim_slide
+    assert deck.get(first).model_dump() == before
+    await lines.say("Now we push it with 20 newtons.")  # values still update the simulation
+    assert live_sim(deck).params.applied_n == 20
+    await say_management(lines, "Okay, let's get back to the slides.")
+    assert deck.sim_mode is None and not modes[-1].on
+    recap = deck.live
+    assert recap.id != sim_slide and recap.title == "Recap: Block on a surface"
+    shown = " | ".join(element_texts(recap).values())
+    assert "Friction opposes the tendency to move" in shown and "Distance per unit time" in shown
+    assert "20 N" not in shown and "what happens" not in shown.lower() and "5 kg" not in shown
+    assert modes[-1].recap_ids == [recap.id] and modes[-1].dropped >= 3
+    # slides resume: the next content makes slides again, never beside the simulation
+    await send(bus, ready("Friction", "Kinetic friction", [act("explanation", points=["Kinetic friction acts on a sliding body"])],
+                          relation="sub_concept"))
+    assert sim_of(deck.live) is None
+    assert [b.type for b in deck.get(sim_slide).blocks] == ["simulation"]
+    await lines.say("I push it with 50 newtons.")  # the simulation stopped listening with its mode
+    assert sim_of(deck.get(sim_slide)).sim.params.applied_n == 20
     await eng.stop()
 
 
-async def test_the_simulation_stays_on_its_topic():
+async def test_no_recap_when_only_parameters_were_talked_about():
+    bus, deck, eng, clock, lines, _ = await _setup()
+    await lines.say("Imagine an inclined plane at 30 degrees.")
+    n = len(deck.slides)
+    await send(bus, ready("Friction", "Incline", [act("explanation", points=["The angle is 30 degrees",
+                                                                            "Now increase it to 45 degrees"])]))
+    await _cmd(bus, "sim_end")
+    assert deck.sim_mode is None and len(deck.slides) == n  # nothing worth keeping: no recap slide
+    await eng.stop()
+
+
+async def test_each_use_is_a_new_simulation_slide_and_removing_ends_the_mode():
+    bus, deck, eng, clock, lines, _ = await _setup()
+    await lines.say("Imagine an inclined plane at 30 degrees.")
+    one = deck.live.id
+    await _cmd(bus, "sim_end")
+    await lines.say("Imagine an inclined plane at 45 degrees.")
+    two = deck.live.id
+    assert two != one and sim_of(deck.get(one)) is not None and live_sim(deck).params.angle_deg == 45
+    await _cmd(bus, "sim_remove", slide_id=two)
+    assert deck.sim_mode is None and two not in [s.id for s in deck.slides]  # its own slide goes with it
+    await eng.stop()
+
+
+async def test_an_announced_topic_ends_the_mode_and_the_lecture_end_makes_the_recap():
     bus, deck, eng, clock, lines, _ = await _setup()
     await lines.say("Consider a block of 5 kg on a rough surface.")
-    first = deck.live.id
-    for p in ("Ohm's law relates voltage and current", "Resistance opposes current"):  # a new topic needs 2 units
-        await send(bus, ready("Electricity", "Ohm's law", [act("explanation", points=[p])], relation="new_topic"))
-    assert sim_of(deck.live) is None and sim_of(deck.get(first)) is not None
-    await lines.say("I push it with 30 newtons.")  # values for a simulation of another topic: not applied
-    assert sim_of(deck.get(first)).sim.params.applied_n == 0
+    await send(bus, ready("Friction", "Friction", [act("explanation", points=["Friction always opposes motion"])]))
+    await lines.say("The next topic is Pressure.", announce="Pressure")
+    assert deck.sim_mode is None
+    titles = [s.title for s in deck.slides]
+    assert titles.index("Recap: Block on a surface") < len(titles) - 1  # the recap first, then the announced slide
+    await lines.say("Imagine an inclined plane at 30 degrees.")
+    await send(bus, ready("Pressure", "Pressure", [act("explanation", points=["Pressure is force per area"])]))
+    await eng.flush_pending()
+    assert deck.sim_mode is None and deck.slides[-1].title == "Recap: Block on an incline"
+    await eng.stop()
+
+
+async def test_late_interpretation_of_the_simulation_joins_its_recap():
+    """The model answers seconds after the teacher went back to the slides: lines said during the simulation still
+    go to its recap, not onto a new content slide."""
+    bus, deck, eng, clock, lines, _ = await _setup()
+    await lines.say("Consider a block of 5 kg on a rough surface.")
+    during = await lines.say("Friction always opposes the tendency to move.")
+    await say_management(lines, "Let's get back to the slides.")
+    n = len(deck.slides)
+    await send(bus, ready("Friction", "Friction", [act("explanation", lines=(1,),
+                                                       points=["Friction always opposes the tendency to move"])],
+                          segs=[during]))
+    assert len(deck.slides) == n + 1 and deck.slides[-1].title == "Recap: Block on a surface"
+    await eng.stop()
+
+
+async def test_safety_end_after_minutes_without_the_simulation():
+    from copilot.presentation.simulations import SAFETY_S
+    bus, deck, eng, clock, lines, notices = await _setup()
+    await lines.say("Imagine an inclined plane at 30 degrees.")
+    clock.t += SAFETY_S - 10
+    await lines.say("The slope makes the block slide.")  # a word about it: still running
+    clock.t += 20
+    await eng._sims.tick()
+    assert deck.sim_mode is not None
+    clock.t += SAFETY_S
+    await eng._sims.tick()
+    await bus.drain()
+    assert deck.sim_mode is None and any("Back to slides" in x for x in notices)
+    await eng.stop()
+
+
+async def test_suggest_chip_and_score():
+    bus, deck, eng, clock, lines, _ = await _setup()
+    got = []
+
+    async def keep(ev):
+        got.append(ev)
+    bus.subscribe("test_suggest", keep, [SimulationSuggestion])
+    await lines.say("A 5 kg box is pushed with 20 N across the floor.")  # the score, no cue: a chip, not shown
+    assert not any(sim_of(s) for s in deck.slides) and got[-1].active and got[-1].template == "block_on_surface"
+    await _cmd(bus, "sim_accept", id=got[-1].id)
+    s = live_sim(deck)
+    assert s is not None and (s.params.mass_kg, s.params.applied_n) == (5, 20) and deck.sim_mode == deck.live.id
+    assert not got[-1].active
+    await eng.stop()
+    bus, deck, eng, clock, lines, _ = await _setup(simulations="suggest")
+    bus.subscribe("test_suggest", keep, [SimulationSuggestion])
+    await lines.say("Let's imagine a box on a plane.")
+    assert not any(sim_of(s) for s in deck.slides) and got[-1].active
+    await _cmd(bus, "sim_dismiss", id=got[-1].id)
+    assert not got[-1].active and not any(sim_of(s) for s in deck.slides)
+    await eng.stop()
+
+
+async def test_lets_imagine_a_box_on_a_plane_starts_in_auto():
+    """User 2026-10-17: "let's imagine a box on a plane" must start it by itself."""
+    bus, deck, eng, clock, lines, _ = await _setup()
+    await lines.say("Let's imagine a box on a plane.")
+    assert live_sim(deck) is not None and live_sim(deck).template == "block_on_surface"
     await eng.stop()
 
 
@@ -452,14 +644,16 @@ async def test_teacher_commands_and_the_clock():
     assert "components" in live_sim(deck).shown
     await _cmd(bus, "sim_pick", slide_id=sid, template="block_on_surface")
     assert live_sim(deck).template == "block_on_surface" and live_sim(deck).params.mass_kg == 8
+    assert deck.live.title == "Block on a surface"
     await _cmd(bus, "sim_full", slide_id=sid, on=True)
     assert deck.sim_full == sid
     await _cmd(bus, "sim_remove", slide_id=sid)
-    assert sim_of(deck.live) is None and deck.sim_full is None
-    await lines.say("Consider a block of 5 kg on a rough surface.")  # removed for this topic: not shown again
-    assert not any(sim_of(x) for x in deck.slides)
+    assert deck.sim_full is None and deck.sim_mode is None and not any(sim_of(x) for x in deck.slides)
     await _cmd(bus, "sim_show", template="incline")  # the teacher's own choice always works
     assert live_sim(deck).template == "incline" and live_sim(deck).origin == "teacher"
+    assert deck.sim_mode == deck.live.id
+    await _cmd(bus, "sim_show", template="block_on_surface")  # while one runs: it becomes this one
+    assert len([x for x in deck.slides if sim_of(x)]) == 1 and live_sim(deck).template == "block_on_surface"
     await eng.stop()
 
 
@@ -475,15 +669,49 @@ async def test_intent_events_decode_from_the_log():
     from copilot.core.events import decode_event
     ev = RepresentationIntent(template="incline", strength="cue", values={"angle": {"value": 30.0}})
     assert decode_event("RepresentationIntent", ev.model_dump_json()) == ev
+    ev = SimulationModeChanged(on=False, slide_id="x", template="incline", reason="Back to slides", recap_ids=["y"])
+    assert decode_event("SimulationModeChanged", ev.model_dump_json()) == ev
 
 
-async def test_it_does_not_follow_to_a_slide_with_only_a_title():
-    """incline_live run (F-014 S0): an empty 'What happens' slide took the simulation away from its explanation."""
+@pytest.mark.parametrize("line", ["Let's get back to the slides.", "Okay, end the simulation.", "Close the simulation now.",
+                                  "Back to the notes.", "So let us go back to the slides.", "That's it for the simulation."])
+def test_end_cues(line):
+    assert detect(line).strength == "end"
+
+
+@pytest.mark.parametrize("line", ["We will get back to the slides later.", "Before we close the simulation, look at f.",
+                                  "The slides are back on the website.", "The simulation shows the friction force."])
+def test_end_cue_traps(line):
+    assert detect(line).strength != "end"
+
+
+def test_recap_drops_parameter_facts():
+    """Simulated run 2026-10-17 (incline_mode.txt): the facts row "Coefficient of friction: 0.2" was kept."""
+    from copilot.presentation.content import Piece
+    from copilot.presentation.recap import recap_pieces
+    kept, dropped = recap_pieces([
+        Piece("facts", pairs=(("Coefficient of friction", "0.2"), ("Limiting friction", "μ × normal reaction"))),
+        Piece("points", texts=("Normal reaction is smaller than weight on an incline", "Make it 45 degrees"))])
+    assert [p.pairs for p in kept if p.kind == "facts"] == [(("Limiting friction", "μ × normal reaction"),)]
+    assert [p.texts for p in kept if p.kind == "points"] == [("Normal reaction is smaller than weight on an incline",)]
+    assert dropped == 2
+
+
+async def test_topic_talk_heard_twice_suggests():
+    """Topic talk with no cue and no numbers ("let us discuss the unit circle ... on the unit circle ...") raises the
+    chip on its second setup in the topic; a weak one-word setup ("Slope.") never counts (v2_eval 2026-10-17)."""
     bus, deck, eng, clock, lines, _ = await _setup()
-    await lines.say("Consider a block of 5 kg on a rough surface.")
-    first = deck.live.id
-    await send(bus, ready("Friction", "Friction", [act("explanation", points=["Friction acts against the push"])]))
-    await lines.say("What if we push it with 20 newtons? Let's see what happens.", announce="What happens")
-    assert [x.title for x in deck.slides if sim_of(x)] == [deck.get(first).title]
-    assert sim_of(deck.get(first)).sim.params.applied_n == 20
+    got = []
+
+    async def keep(ev):
+        got.append(ev)
+    bus.subscribe("test_suggest2", keep, [SimulationSuggestion])
+    for _ in range(3):
+        await lines.say("The slope.")
+    assert got == []
+    await lines.say("Now, let us discuss the unit circle, a circle with a radius of one unit.")
+    assert got == []  # once: not yet
+    await lines.say("On the unit circle, the vertical coordinate represents sine.")
+    assert got and got[-1].template == "unit_circle" and got[-1].active
+    assert not any(sim_of(s) for s in deck.slides)  # suggested, never shown by itself
     await eng.stop()

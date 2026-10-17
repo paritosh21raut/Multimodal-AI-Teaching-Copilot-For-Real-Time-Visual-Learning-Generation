@@ -14,11 +14,13 @@ from __future__ import annotations
 import math
 import re
 from dataclasses import dataclass, field
-from typing import Callable, ClassVar, Literal, Optional
+from typing import Any, Callable, ClassVar, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-ParamSource = Literal["said", "teacher", "computed", "default", "standard"]
+# mentioned: the thing is there but its number was not said ("from a cliff", "pushed at an angle"): the picture
+# shows Slot.present_value, nothing that depends on it is printed
+ParamSource = Literal["said", "teacher", "computed", "default", "standard", "mentioned"]
 KNOWN: frozenset[str] = frozenset({"said", "teacher", "standard"})  # inputs a printed computed value may rest on
 LabelSource = Literal["said", "teacher", "computed"]
 Origin = Literal["cue", "policy", "llm", "teacher"]
@@ -114,6 +116,10 @@ class Slot:
     kind: str            # mass | angle | force | mu | g (simulation.values)
     standard: bool = False  # a textbook constant (g): its default counts as known, never printed unless said
     absent: bool = False    # the default means "there is none" (no push: F = 0): known while it stays at the default
+    present: str = ""       # regex: the thing is there, its number unsaid ("cliff": a height) -> source mentioned
+    present_value: float = 0.0  # the picture's stand-in then (never printed)
+    names: str = ""         # regex of the words that name it ("push(?:ing)? force|applied force"): a value said
+    #                         without a unit, a slot only mentioned, "double the mass" (simulation.values.resolve)
 
 
 @dataclass(frozen=True)
@@ -190,6 +196,20 @@ class Template:
     guard: Optional["re.Pattern[str]"] = None
     aliases: tuple[str, ...] = ()               # search words for /control
     carry: tuple[str, ...] = ()                 # slots taken over when the teacher switches to this template
+    # slots whose change starts the motion again from its start (rev + 1, t = 0) on every page: a pendulum whose
+    # length changes mid-swing would jump (its period changes), so it is released again
+    restart_on: tuple[str, ...] = ()
+    # words before a quantity that make it this scene's result, not an input ("the range is 40 m", "the maximum
+    # height is 5 m"): such a value sets nothing
+    results: Optional["re.Pattern[str]"] = None
+    # words that state a value without a number: (regex, slot, value) ("thrown horizontally": θ = 0)
+    said_as: tuple[tuple[str, str, Any], ...] = ()  # a str value: a choice field ("in parallel" -> arrangement)
+    family: str = ""                            # templates of one situation (block on a floor / on an incline):
+                                                # only these carry values when one switches to another
+
+    @property
+    def kin(self) -> str:
+        return self.family or self.id
 
     def slot(self, name: str) -> Slot:
         return next(s for s in self.slots if s.name == name)

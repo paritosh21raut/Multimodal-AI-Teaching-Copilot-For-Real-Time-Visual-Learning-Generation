@@ -1,0 +1,33 @@
+# Class 9 physics, ~2 minutes, written by Claude for F-014 S1 (simulation mode). incline_live.txt with teaching said
+# while the simulation runs and a spoken end. Expect: one content slide on friction; the cue opens simulation mode (a
+# slide of its own, only the stage); values said during it change the simulation (bare "make it 40" = the angle said
+# last, "double the mass"); no new slide until "let's get back to the slides"; then a recap slide with the principles
+# said during the simulation (no parameter chatter); then the slides go on (pulleys).
+@setup subject=Physics grade=9 topic="Friction and the inclined plane"
+
+Good morning class. Today we will study friction and the inclined plane.
+[pause 1]
+Friction is the force that opposes relative motion between two surfaces in contact.
+It always acts along the surface, against the motion or against the tendency to move.
+[pause 1.5]
+Consider a block of mass 5 kg resting on a rough floor.
+The coefficient of friction between the block and the floor is 0.2.
+Now we push it with a force of 20 newtons.
+The limiting friction is mu times the normal reaction, so a push larger than that makes the block accelerate.
+[pause 2]
+Now let us tilt the surface.
+Imagine the same block on an inclined plane at 30 degrees.
+The component of the weight along the slope is m g sine theta, and the normal reaction is m g cos theta.
+So on an incline the normal reaction is smaller than the weight.
+[pause 1.5]
+Let's increase the angle to 40.
+Make it 45.
+Notice that a steeper slope means a larger pull down the slope and less friction.
+Now double the mass.
+The acceleration does not depend on the mass, because both the pull and the friction grow with it.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 1]
+So remember, friction always opposes the tendency to move.
+Next we will look at pulleys. A pulley changes the direction of a force.
+A single fixed pulley gives no mechanical advantage, it only changes the direction.

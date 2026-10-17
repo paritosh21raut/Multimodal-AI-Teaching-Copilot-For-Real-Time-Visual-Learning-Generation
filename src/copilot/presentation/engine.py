@@ -94,7 +94,7 @@ class PresentationSettings:
     live_def_ttl_s: float = 20.0  # S1b: a definition being said, not interpreted after this, is taken down
     shift_threshold: float = 0.75
     title_slide: bool = True
-    simulations: str = "auto"  # F-014: auto (a spoken cue shows one) | suggest (S1: a /control chip) | off
+    simulations: str = "auto"  # F-014: auto (a spoken cue shows one) | suggest (a /control chip) | off
 
     @classmethod
     def from_config(cls, config: Config) -> "PresentationSettings":
@@ -352,6 +352,8 @@ class PresentationEngine:
     async def flush_pending(self) -> None:
         """Lecture ending: put slides still waiting for the dwell time into the deck; nothing provisional stays."""
         async with self._lock:
+            if self._sims.collecting:  # F-014 S1: the lecture ended during a simulation: its recap still comes
+                await self._sims.end("the lecture ended")
             while self._pending:
                 await self._add_to_deck(self._pending.pop(0))
             ld, self._live_def = self._live_def, None
@@ -423,6 +425,7 @@ class PresentationEngine:
                     if self._prov and self.now() >= self._prov[2]:
                         await self._clear_provisional()
                     await self._expire_cues()
+                    await self._sims.tick()
             except asyncio.CancelledError:
                 raise
             except Exception:
@@ -638,6 +641,8 @@ class PresentationEngine:
 
     async def _force_new(self) -> None:
         self.stats.ops["force_new"] += 1
+        if self._sims.collecting and await self._sims.end("the teacher's New slide"):
+            return  # the recap is the new slide
         if self._pending:  # the teacher wants the next slide now
             while self._pending:
                 await self._add_to_deck(self._pending.pop(0))
@@ -669,7 +674,7 @@ class PresentationEngine:
 
     # ---- fast path ----------------------------------------------------------------------------
     async def _on_signal(self, ev: ConceptSignal) -> None:
-        await self._sims.on_signal()
+        await self._sims.on_signal(ev.segment_id)
         self._signals[ev.segment_id] = Signal(ev.shift_score, ev.boundary)
         while len(self._signals) > MAX_SIGNALS:
             self._signals.popitem(last=False)
@@ -687,6 +692,10 @@ class PresentationEngine:
                 self._cue_list.segments.add(ev.segment_id)
             if self._live_def is not None and self._live_def.utterance == ev.utterance:
                 self._live_def.segments.add(ev.segment_id)
+        if self._sims.collecting:  # F-014 S1: no cue slides, teasers or figures while a simulation runs ...
+            if not (ev.announce and self.s.cues):
+                return
+            await self._sims.end(f"a new topic was announced ({ev.announce!r})")  # ... unless a new topic is announced
         if self.s.cues:
             if ev.announce:
                 await self._on_announce(ev)
@@ -730,7 +739,7 @@ class PresentationEngine:
 
     async def _on_live_cue(self, ev: LiveCue) -> None:
         """F-013 S1b: structure heard while the teacher is still speaking (partial transcript)."""
-        if not self.s.cues:
+        if not self.s.cues or self._sims.collecting:  # F-014 S1: the final line decides during a simulation
             return
         if ev.announce:
             await self._on_announce(ev)
@@ -1044,6 +1053,9 @@ class PresentationEngine:
             await self._clear_provisional()
         if self._boundary_seg in ev.segment_ids:
             self._boundary_seg = None
+        if self._sims.collecting:  # F-014 S1: simulation mode: no new slides, no content slide changed
+            await self._collect_for_sim(ev)
+            return
         await self._settle_cues(ev)
         await self._superseded(it)
         revised = await self._apply_revisions(ev)
@@ -1051,6 +1063,7 @@ class PresentationEngine:
         carry = self._about_chain[1] if self._about_chain[0] == frame else ""
         pieces, chain = pieces_and_chain(it, carry)  # which concept each piece is about (concept columns)
         pieces += self._named_equations(ev, it, pieces)
+        pieces = await self._sims.take_late(ev, pieces)  # F-014 S1: said during the last simulation: its recap
         self._about_chain = (frame, chain)
         signals = [self._signals[x] for x in ev.segment_ids if x in self._signals]
         self._placements = []
@@ -1108,7 +1121,23 @@ class PresentationEngine:
             await self._consider_image(self._working_id)
         self._hold_screen = False
         await self._confirm_cue(it)
-        await self._sims.follow()  # F-014: an open simulation goes with the explanation
+
+    async def _collect_for_sim(self, ev: InterpretationReady) -> None:
+        """Simulation mode (F-014 S1): the unit's pieces wait for the recap. Lines said before the simulation's cue
+        still go to the slide that was being built (without taking the screen); nothing else is placed."""
+        it = ev.interpretation
+        pieces, _ = pieces_and_chain(it, "")
+        pieces += self._named_equations(ev, it, pieces)
+        early, later = self._sims.split_early(ev, pieces)
+        mode = self._sims.mode
+        before = mode.before_id if mode is not None else None
+        spec, meta = self._spec(before), self._meta.get(before or "")
+        if early and spec is not None and meta is not None and not meta.is_title:
+            self.stats.ops["update"] += 1
+            await self._place(spec, False, meta.frame, early, adopt=False)
+        else:
+            later = early + later
+        self._sims.collect(later)
 
     async def _take_back(self, t: Tentative) -> tuple[list[Piece], set[tuple[str, str]]]:
         """Remove a confirmed topic's early items from the slides they were shown on; the caller places them on the

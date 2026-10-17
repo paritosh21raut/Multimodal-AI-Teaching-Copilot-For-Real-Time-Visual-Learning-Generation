@@ -86,6 +86,9 @@ CommandKind = Literal[
     # on?}; sim_pick {slide_id, template}; sim_full {slide_id, on} is a display flag (the Deck, like zoom_image)
     "sim_show", "sim_set", "sim_play", "sim_pause", "sim_step", "sim_reset", "sim_toggle", "sim_pick", "sim_remove",
     "sim_full",
+    # F-014 S1: sim_end = Back to slides (simulation mode ends, the recap follows); sim_accept / sim_dismiss {id}: the
+    # Suggest chip; set_simulations {setting: auto | suggest | off} (kept in data/preferences.json)
+    "sim_end", "sim_accept", "sim_dismiss", "set_simulations",
 ]
 
 
@@ -184,6 +187,7 @@ class DeckState(Event):
     blank: bool
     zoom: Optional[str] = None  # slide whose image fills the display (teacher clicked it in /control)
     sim_full: Optional[str] = None  # slide whose simulation fills the display (F-014, the teacher's Full stage)
+    sim_mode: Optional[str] = None  # F-014 S1: the simulation slide of a running simulation mode (no new slides)
 
 
 UtteranceKind = Literal["content", "classroom_management", "meta", "filler", "question_to_class"]
@@ -384,7 +388,9 @@ class RepresentationIntent(Event):
     segment_ids: list[str] = Field(default_factory=list)
     visual_kind: VisualKind = "simulation"
     template: str = ""          # template id; "" = values for whichever simulation is open
-    strength: Literal["cue", "setup", "values"] = "cue"  # cue: "consider a block ..."; setup: a template noun alone
+    # cue: "consider a block ..."; setup: a template noun alone; score (S1): a strong setup without a cue (a Suggest
+    # chip); values: quantities only; end (S1): "let's get back to the slides" (simulation mode ends)
+    strength: Literal["cue", "setup", "score", "values", "end"] = "cue"
     values: dict[str, dict[str, Any]] = Field(default_factory=dict)
     reveal: list[str] = Field(default_factory=list)  # element ids the line names ("friction opposes it")
     origin: Literal["cue", "policy", "llm", "teacher"] = "cue"
@@ -396,6 +402,34 @@ class SimulationNotice(Event):
     ephemeral: ClassVar[bool] = True
     slide_id: str = ""
     text: str
+
+
+class SimulationModeChanged(Event):
+    """F-014 S1: simulation mode started (a simulation on its own slide; no new slides, content slides unchanged,
+    interpretations collected) or ended (slides resume; the recap's slides, if anything worth keeping was said)."""
+    on: bool
+    slide_id: str = ""            # the simulation slide
+    template: str = ""
+    reason: str = ""              # "spoken cue", "Back to slides", "removed", "'let's get back to the slides'", ...
+    recap_ids: list[str] = Field(default_factory=list)
+    kept: int = 0                 # recap items kept / dropped as parameter talk
+    dropped: int = 0
+
+
+class SimulationSuggestion(Event):
+    """F-014 S1: a /control chip "Show the <name> simulation?" (setting Suggest, a setup with its quantities and no
+    spoken cue, or the same template's setup heard twice in a topic);
+    active = False when it is accepted, dismissed or expired."""
+    id: str
+    template: str = ""
+    name: str = ""
+    text: str = ""                # the line that suggested it
+    active: bool = True
+
+
+class SimulationSettingChanged(Event):
+    """F-014 S1: Auto (a spoken cue shows a simulation) | Suggest (a /control chip) | Off; the teacher's switch."""
+    setting: Literal["auto", "suggest", "off"]
 
 
 class ErrorRaised(Event):
@@ -411,7 +445,8 @@ EVENT_TYPES: dict[str, type[Event]] = {
         CommandReceived, StateChanged, SlidePatch, DeckState, ErrorRaised,
         UtteranceClassified, ConceptSignal, InterpretRequested, InterpretationReady, LLMCallFailed,
         ConcernRaised, ConcernResolved, SlideContextChanged, SlideOverflow, ImageRequested, ImageReady,
-        ImageChoices, ThemeChanged, VocabularyChanged, RepresentationIntent,
+        ImageChoices, ThemeChanged, VocabularyChanged, RepresentationIntent, SimulationModeChanged,
+        SimulationSuggestion, SimulationSettingChanged,
     )
 }
 

@@ -595,8 +595,30 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .sim-hatch line { stroke: var(--sim-surface); stroke-width: 3; opacity: 0.5; }
 .sim-wedge { fill: var(--sim-wedge); stroke: var(--sim-surface); stroke-width: 4; stroke-linejoin: round; }
 .sim-angle { fill: none; stroke: var(--sim-surface); stroke-width: 4; }
+.sim-guide { stroke: var(--sim-surface); stroke-width: 3; stroke-dasharray: 10 8; opacity: 0.6; }
 .sim-block { fill: var(--sim-block); stroke: var(--sim-block-edge); stroke-width: 5; }
 .sim-ghost { fill: none; stroke: var(--sim-block-edge); stroke-width: 4; }
+.sim-string { stroke: var(--sim-surface); stroke-width: 4; stroke-linecap: round; }
+.sim-string.ghost, .sim-bob.ghost { opacity: 0.22; }
+.sim-bob { fill: var(--sim-block); stroke: var(--sim-block-edge); stroke-width: 5; }
+.sim-pivot { fill: var(--sim-surface); }
+.sim-hatch-line { stroke: var(--sim-surface); stroke-width: 3; opacity: 0.5; }
+.sim-wire { fill: none; stroke: var(--sim-surface); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+.sim-resistor { fill: none; stroke: var(--sim-applied); stroke-width: 6; stroke-linejoin: round; }
+.sim-plate { stroke: var(--sim-surface); stroke-width: 7; stroke-linecap: round; }
+.sim-plate.short { stroke-width: 12; }
+.sim-charge { fill: var(--sim-normal); }
+.sim-wave { fill: none; stroke: var(--sim-applied); stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; }
+.sim-guide.solid { stroke-dasharray: none; }
+.sim-wave.ghost { stroke: var(--sim-component); stroke-width: 3; opacity: 0.35; }
+.sim-marked { stroke: var(--sim-normal); stroke-width: 5; stroke-linecap: round; }
+.sim-marked.thin { stroke-width: 3; }
+.sim-marked-dot { fill: var(--sim-normal); }
+.sim-seg { stroke-width: 7; stroke-linecap: round; }
+.sim-seg.sin { stroke: var(--sim-applied); }
+.sim-seg.cos { stroke: var(--sim-weight); }
+.sim-tick { font-size: 24px; fill: var(--sim-component); }
+.sim-planet { fill: var(--sim-ground); stroke: var(--sim-surface); stroke-width: 3; }
 .sim-arrow line { stroke-width: 7; stroke-linecap: round; }
 .sim-arrow.dashed line { stroke-dasharray: 14 10; stroke-width: 5; }
 .sim-arrow.r-weight line { stroke: var(--sim-weight); } .sim-arrow.r-weight path { fill: var(--sim-weight); }

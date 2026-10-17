@@ -23,7 +23,7 @@ degrees" turns the floor into a slope: mass and μ carry over, and the motion st
 | Milestone | Scope | Tokens |
 |---|---|---|
 | **S0 Foundation** (this branch, done 2026-10-17) | Contract + registry, `simulation` block + layout, renderer runtime (one clock, closed-form motion, tween on patches), 2 templates (block on a surface, incline), spoken cue + minimal value parser, policy (Auto / Off), /control sim bar + dock picker + Full stage, `RepresentationIntent` in code | 0 |
-| **S1 First usable** | 6 more templates: pendulum, projectile, DC circuit (series / parallel), wave (transverse / longitudinal), orbit, unit circle → sine / function plot. Scenario score (lexicon + quantity within the topic), progressive reveal per element, **Suggest** chip in /control, setting on the start card + top bar, `tools/v2_eval.py` 0-token replay over the recorded lectures with annotations, fixtures `pendulum`, `projectile`, `ohm_circuit`, `waves` + one TTS WAV | 0 |
+| **S1 First usable** (done 2026-10-17; see "S1 result") | Simulation mode (its own slide, slides paused, recap after), values without a named slot, 6 more templates: pendulum, projectile, DC circuit (series / parallel), wave (transverse; longitudinal later), orbit, unit circle → sine. Scenario score (lexicon + quantity within the topic), progressive reveal per element, **Suggest** chip in /control, setting on the start card + top bar, `tools/v2_eval.py` 0-token replay over the recorded lectures with annotations, fixtures `pendulum`, `projectile`, `ohm_circuit`, `waves` + one TTS WAV | 0 |
 | **S2 Follows the explanation** | Relative phrases ("double the mass", "no friction", "increase the angle") as deterministic rules; derived readouts per template (a, N, f, T, I, period); **time-series graph** part beside the motion (x–t, v–t, V–I); optional closed-list `sim` field in the existing interpretation call, live only after an A/B on gpt-oss-120b (≈ 25–30k tokens) | ≤ +3–5k per 10-min physics lecture |
 | **S3 Processes** | Stage-animated process templates (discrete steps synced to speech): water cycle, heart (rate from speech), photosynthesis gas exchange, Bohr atom, acid–base neutralisation; first **discrete-event** template | 0 |
 | **S4 Hard topics** | Semiconductors: p-n junction (depletion width vs bias, drift / diffusion as a particle layer, I–V curve). RLC: transient (series RLC step response: under / critical / over-damped, V_C(t), I(t) graph), resonance (amplitude vs f), phasors (rotating V_R, V_L, V_C, sum). Computer networks: packets on a path, routing (shortest path on a small graph, step by step), TCP (handshake, sliding window, loss + retransmit). Geometry transforms, lens / refraction, gas piston. Still frame in PPTX / archive | 0 (S2 field reused) |
@@ -47,7 +47,11 @@ Context guards (per template, `guard`) veto the traps of the recordings: "orbita
 "business", "friction" meaning viscosity, "block diagram", "block of code", "slope of the line", "axial tilt",
 "human body", "black box", "object-oriented".
 
-Decision (S0): **show** on a cue with a template; **update** when the same template is open (values, setup lines);
+Decision (S0, S1): **show** on a cue with a template (setting Auto); **suggest** (a /control chip "Show the
+<name> simulation?", 30 s) on a cue with the setting Suggest, a setup with its quantities and no cue (the scenario
+score), the same template's setup heard twice in a topic with two of its own words (topic talk: "let us discuss the
+unit circle … on the unit circle …"), or a cue for a template the teacher removed; **end** on "let's get back to the
+slides" / "end the simulation" while one runs; **update** when the same template is open (values, setup lines);
 **switch** when another template's cue or setup is heard while one is open (said slots carry over, the motion starts
 again); **reopen** the earlier simulation of this topic instead of a second one; **ignore** for values with no open
 simulation, a template the teacher removed for this topic, setting Off. A simulation stops listening after 12 content
@@ -73,7 +77,13 @@ declares:
   density and drift velocity from `drive`; decorative motion only, every printed number is Python's.
 
 ### 3.3 Values from speech, updates, and the slides
-- `simulation/values.py`: spoken numbers (digits, "five", "two hundred", "zero point two"), units → kinds (mass,
+- `simulation/values.py` (S1): the **unit first** (a value's unit picks the slot; with several slots of the kind,
+  the one named just before, else in the 3 words after — "a 2 cm high wave" —, else the next free one); a **bare
+  number** goes to the slot changed or mentioned last ("make it 9"); push synonyms ("pull", "drag", "apply"); relative
+  phrases ("double the mass", "increase the angle by 10") only for a known value; μ variants ("coefficient of
+  friction 0.2", "mu equals 0.2", "new equal to 0.2" only with a simulation open and friction in context); numbers in
+  words (`said_as`: "horizontally", "in parallel"); "minus 30 degrees" and "3 pi by 2" refused, never misread.
+  S0: spoken numbers (digits, "five", "two hundred", "zero point two"), units → kinds (mass,
   angle, force, μ, g), "smooth / frictionless" → μ 0, "rough" → friction exists (μ default, not printed), push
   direction ("up / down the slope") only with a push in the same line. A force counts only near a push word and not
   as a result ("the friction force is 9.8 newtons" is not a push). Precision over recall.
@@ -81,11 +91,16 @@ declares:
 - New values are a new spec version in the usual `SlidePatch`; the motion is **not** restarted (same `playback.rev`).
   A template switch or Restart bumps `rev`.
 - A value the teacher set in /control is final; speech never overwrites it.
-- **Placement:** the simulation is a block of the working slide (layout `simulation`: stage ≈ 65 % / 1100 px, the
-  slide's points beside it, 540 px). A title slide or a slide with a teacher image → a new slide of the frame. It
-  **follows the explanation**: when the content moves on to a new slide of the same topic (a next part, a subtopic),
-  the open simulation moves with it — never onto a slide with only a title. A teacher action (any sim command) holds
-  it where it is. An image is never placed on a slide with a simulation (one visual column).
+- **Placement (S1, simulation mode):** a shown simulation gets a **slide of its own** (only the stage, titled by the
+  template, under the topic's crumb); every new use makes a new one. While it runs the engine makes **no new slides**
+  and changes no content slide; the interpretations still run and their pieces are collected; values and setup lines
+  keep updating the simulation; a switch ("imagine it on an incline") stays on that slide. It ends by the spoken end
+  cue, **Back to slides** (sim bar and dock, `sim_end`), removing it, an announced new topic, New slide, the lecture's
+  end, or 180 s without a word about it (a /control notice). Then a **recap** slide (`presentation/recap.py`,
+  deterministic): key points, rules, definitions, formulas and conclusions said meanwhile; parameter talk ("make it
+  30", "a = 2.04 m/s²") dropped; nothing worth keeping → no recap. Logged (`SimulationModeChanged`), on the Deck
+  (`sim_mode`), survives navigation; /control shows "Simulation running" whichever slide is on screen. (S0 placed it
+  beside the slide's points; the user found the slides made during a simulation unwanted.)
 - **Full stage** is the teacher's (`sim_full`), like zooming an image; navigating ends it.
 
 ### 3.4 Teacher controls (/control)
@@ -93,7 +108,11 @@ A glass **sim bar** on the preview where the image bar is: play / pause, step (0
 (¼× … 2×), **Values** (a field per slot in its range, marked said / yours / not said / standard; push direction),
 **Show** (element toggles), another template, Full stage, remove. Dock: **Simulation** (search, like Equation).
 Commands: `sim_show / sim_set / sim_play / sim_pause / sim_step / sim_reset / sim_toggle / sim_pick / sim_remove /
-sim_full` (`CommandKind`); the engine applies them, the UI never mutates state.
+sim_full` (`CommandKind`); the engine applies them, the UI never mutates state. S1: **Back to slides** (`sim_end`,
+sim bar; the dock's Simulation button becomes it while one runs), the **Suggest chip** on the preview (Show →
+`sim_accept`, × → `sim_dismiss`), the **Auto / Suggest / Off** switch on the start card and the top bar
+(`set_simulations`, kept in preferences), a "Simulation running" flag (goes to the simulation slide), choice fields in
+Values (push / pull, series / parallel).
 
 ### 3.5 Rendering
 SVG in a 1100 × 740 viewBox (Canvas only for particle layers, S4), one `requestAnimationFrame` clock per page,
@@ -116,7 +135,8 @@ picture).
 |---|---|---|
 | Solver values = hand-computed textbook values (±0.1 %) | ✅ both templates (independent review) | each template |
 | No default value printed; computed only from known inputs | ✅ unit + browser | each template |
-| Cue positives / traps | ✅ unit (11 traps) | S1: replay precision ≥ 0.9, recall ≥ 0.7 on strong lectures, **0 shows on the 13 negative lectures** |
+| Cue positives / traps | ✅ unit (11 traps) | S1 ✅ replay (`v2_eval detect`, 54 lectures): show precision 1.00 (3/3), recall 1.00 (3/3), **0 shows or chips on the 23 negative lectures**, topic-talk chips 3/4; per template ≥ 4 cue positives + ≥ 4 traps (unit) |
+| Values said without the slot | – | S1 ✅ corpus 97 lines P/R 1.00 per slot (`v2_eval values`); held-out 32 lines (first run 0.88, fixed, so no longer held out) |
 | A value patch never restarts the motion | ✅ browser (data-t continuity) | – |
 | Commands round trip, /display and /view follow | ✅ browser | – |
 | Both themes, no console errors, ≥ 34 px labels | ✅ browser + screenshots | each template |
@@ -149,3 +169,30 @@ picture).
   'What happens' — V1's heading rule took "let's see what happens" as a heading (fixed in `understanding/cues.py`).
 - Open: "Now let us tilt the surface." alone switches to the incline (a setup line; by design, but early); the
   `What happens` slide shows how V1 cue fixes can come from V2 runs.
+
+## S1 result (2026-10-17)
+- **Simulation mode** (FIX 1): own slide, no new slides, collect, end cue / Back to slides / remove / topic / 180 s,
+  deterministic recap (none when nothing is worth keeping), `SimulationModeChanged`, Deck `sim_mode`, /control
+  "Simulation running". Browser round trip (show → teach → Back to slides → recap) in both themes.
+- **Values** (FIX 2, FIX 3): unit first, bare number → last slot, push synonyms, relative phrases, μ variants; corpus
+  97 lines + held-out 32 + per-template value tables (unit). The 2026-10-17 sessions replayed (`v2_eval sessions`).
+- **Templates** pendulum, projectile, DC circuit, wave, orbit, unit circle: Python solver vs hand values, detector
+  positives and traps, JS scene, browser row (both themes; a spoken change updates the stage), screenshots in
+  `artifacts/sims` looked at, and an **independent review subagent per template**. Fixed from the reviews:
+  pendulum amplitude ≤ 90° (the AGM period is wrong above); projectile one arrow scale (u, components, v), θ = 0 at
+  h = 0 prints no flight, straight up R = 0; circuit SI prefixes (no "1e+06 Ω"), a slow branch still moves, P_cell
+  named, CPU registers / brain / springs / capacitors guarded; wave periods in ms / µs, "high" names the amplitude,
+  sound / light / standing / square waves guarded (this picture is a transverse string wave), λ bracket rides a crest,
+  an unsaid amplitude says "height not to scale"; orbit "150 million km", centre-to-centre distances are the radius,
+  the central body is the one named first ("orbiting the Moon, which orbits the Earth"), ellipses / comets guarded, a
+  surface orbit allowed; unit circle refuses negative and π angles, angles past 360° drawn within the turn, true minus
+  signs, cos x not this picture.
+- **Choices made:** a switch carries said values only within a family (block ↔ incline; a pendulum's mass never
+  reaches the incline); `restart_on` restarts the motion when the pendulum's length or the projectile's launch
+  changes; "mentioned" stand-ins (a cliff, "at an angle") are drawn but never printed; the circuit / orbit need the
+  arrangement / body said before any computed value; the dock's Simulation button becomes Back to slides while one
+  runs (the dock had no room for both).
+- **Open:** "the period is 0.2 s" does not set f (no inverse slots); "crest to trough is 3 m" is read as λ = 3 m;
+  "the string is 3 m long" is read as λ; the orbit's "at 384000 km" without "from" is the altitude; longitudinal waves,
+  ellipses and cosine curves need templates of their own; the replay has only 3 cue moments (the recorded lectures
+  rarely say "consider a …" with a template): the cue path is tested mostly by unit positives.

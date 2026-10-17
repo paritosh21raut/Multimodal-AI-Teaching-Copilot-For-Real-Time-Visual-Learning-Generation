@@ -11,6 +11,8 @@ Display flags:
 - zoom:      a slide's image fills the projector (the teacher clicked it in /control); ends on Back / Esc, on
              navigation, or when that image leaves the slide. New content keeps arriving behind it.
 - sim_full:  a slide's simulation fills the projector (F-014, the teacher's Full stage); ends like zoom.
+- sim_mode:  the simulation slide of a running simulation mode (F-014 S1, set by the engine): no new slides until
+             it ends; navigating keeps it (/control shows "Simulation running" whichever slide is on screen).
 """
 from __future__ import annotations
 
@@ -45,6 +47,7 @@ class Deck:
         self.blank = False
         self.zoom: Optional[str] = None
         self.sim_full: Optional[str] = None
+        self.sim_mode: Optional[str] = None
 
     def attach(self) -> None:
         self._bus.subscribe("deck", self._on_command, [CommandReceived])
@@ -64,8 +67,14 @@ class Deck:
     def state_event(self) -> DeckState:
         return DeckState(
             live_id=self.live_id, slide_ids=list(self._order), following=self.following,
-            blank=self.blank, zoom=self.zoom, sim_full=self.sim_full,
+            blank=self.blank, zoom=self.zoom, sim_full=self.sim_full, sim_mode=self.sim_mode,
         )
+
+    async def set_sim_mode(self, slide_id: Optional[str]) -> None:
+        """The engine's simulation mode (F-014 S1): the slide it runs on, or None when it ended."""
+        if self.sim_mode != slide_id:
+            self.sim_mode = slide_id
+            await self._publish_state()
 
     # ---- slide ops (planner) --------------------------------------------------------------
     async def add(self, spec: SlideSpec, activate: bool = True, after: Optional[str] = None) -> SlideSpec:

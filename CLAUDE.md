@@ -77,6 +77,8 @@ PYTHONPATH=paper/build/lib .venv/Scripts/python paper/build/src/build_docx.py <o
 .venv/Scripts/python tools/make_figure_fixture.py   # F-013 S4: tests/fixtures/notes/drawn_figures.pdf (vector figures + table + note)
 .venv/Scripts/python tools/screenshot_structure.py   # S2: nested Lecture Structure + child crumb, both themes -> artifacts/display
 .venv/Scripts/python tools/screenshot_cues.py      # announced slide / heard list / interpreted, both themes -> artifacts/display
+.venv/Scripts/python tools/v2_eval.py values|sessions|detect [names] [--list]   # F-014: values corpus P/R, 2026-10-17 sessions, detector replay vs annotations (0 tokens)
+.venv/Scripts/python tools/screenshot_sims.py [light dark] [scene names]   # F-014 scenes (8 templates), sim mode + recap -> artifacts/sims (LOOK at them)
 .venv/Scripts/python -m pytest                      # fast tests
 .venv/Scripts/python -m pytest -m slow              # + GPU/model tests
 .venv/Scripts/python -m pytest -m browser           # real Edge via Playwright (display)

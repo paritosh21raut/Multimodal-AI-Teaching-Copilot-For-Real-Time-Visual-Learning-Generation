@@ -1,6 +1,8 @@
 # Current State
 
-_Last updated: 2026-10-17: **V2 Concept Simulation S0 done** on branch `V2-Concept-Simulation` (F-014), 18,582 Groq
+_Last updated: 2026-10-17: **V2 Concept Simulation S1 done** (simulation mode + recap, values without the slot, 6
+templates, Suggest, `tools/v2_eval.py`), ≈ 22k Groq prompt tokens recorded in one simulated lecture (est. 25–28k with
+completions; the simulation path itself 0). Before that, 2026-10-17: **V2 Concept Simulation S0 done** on branch `V2-Concept-Simulation` (F-014), 18,582 Groq
 tokens (one simulated lecture; the simulation path itself 0). V1 (incl. V1.5 = old "V2" groups A–D) is done; V1c is
 marked done for now. CLAUDE_rebuild stays V1. Before that, 2026-10-17: **F-013 S5 (wrap-up) + the user's 3 issues: preview jumping with long transcript lines,
 no photos of the body, dock labels; figures from My Notes onto the slide**, ≈ 9k Groq tokens (app screenshot run only). **V1 (Live Lecture to
@@ -15,6 +17,25 @@ user's review of the paper and of group D, then the truthfulness bug below, then
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **V2 Concept Simulation S1 done (2026-10-17).** Details: F-014 "S1 result".
+  - **Simulation mode:** a shown simulation is a slide of its own; no new slides while it runs (interpretations
+    collected, values still update it); ends by "let's get back to the slides", Back to slides (sim bar / dock),
+    removing it, a new topic, 180 s; then a deterministic recap slide (none if nothing worth keeping). /control
+    "Simulation running" flag, `SimulationModeChanged` logged, Deck `sim_mode`.
+  - **Values:** unit first, bare number → the slot changed last, push synonyms, relative phrases, μ variants ("new
+    equal to 0.2" only with friction in context), push / pull at an angle; negative and π angles refused.
+  - **Templates (8 total):** + pendulum, projectile, DC circuit (series / parallel), wave, orbit, unit circle → sine;
+    each: solver vs hand values, detector positives + traps, JS scene, browser row both themes, screenshots looked at,
+    independent review subagent (all findings fixed or listed as open in F-014).
+  - **Suggest:** Auto / Suggest / Off on the start card + top bar; /control chip for a scored setup, a cue under
+    Suggest, or topic talk (a template's setup twice in a topic).
+  - **Tests:** fast 1100 pass; browser 65 pass (incl. sim-mode round trip, Suggest chip, 7 S1 template rows).
+    `v2_eval detect` (54 lectures): show precision 1.00, recall 1.00 (3/3 cue moments), 0 on 23 negative lectures,
+    topic chips 3/4. `v2_eval values`: 97 lines P/R 1.00.
+  - **Open:** few cue moments in the recordings (cue path mostly unit-tested); period → f, crest-to-trough, "at
+    384000 km" (no "from"); longitudinal waves / ellipses / cosine curve need their own templates.
+  - **Next:** the user's look in the app (`--simulate tests/fixtures/lectures/incline_mode.txt` or a mic lecture),
+    then S2 (time-series graphs, optional closed-list `sim` field after an A/B).
 - **V2 Concept Simulation S0 done (2026-10-17).** Details and plan to S4 + Explore mode: `docs/specs/F-014-concept-simulation.md`.
   - **What works:** "Consider a block of 5 kg on a rough floor … push it with 20 newtons" → a live block-on-a-surface
     simulation beside the slide's points (forces labelled, block sliding, "computed" a / F_net); "imagine it on an

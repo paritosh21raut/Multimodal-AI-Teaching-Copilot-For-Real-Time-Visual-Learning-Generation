@@ -895,3 +895,21 @@ section.drop-gap { margin: 0; }
 .sim-row .src { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); text-align: right; }
 .sim-row .src.said { color: var(--accent); }
 .sim-row .src.teacher { color: var(--accent-2); }
+
+/* F-014 S1 simulation mode: the running flag, Back to slides (sim bar + dock), the Suggest chip */
+.flag.sim { border: 0; cursor: pointer; font: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  background: var(--accent); color: var(--accent-ink); animation: blink 2.4s ease-in-out infinite; }
+.sim-bar button.sim-end { color: var(--accent); font-weight: 700; }
+.dock button.sim-end.on { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.sim-row select:has(+ .src) { grid-column: auto; }
+.sim-chip {
+  position: absolute; left: 10px; top: 10px; z-index: 3; display: inline-flex; align-items: center; gap: 10px;
+  padding: 6px 6px 6px 12px; border-radius: 999px; font-size: 13px; color: var(--ink);
+  background: color-mix(in srgb, var(--surface) 90%, transparent); backdrop-filter: blur(10px);
+  border: 1px solid var(--accent); box-shadow: 0 6px 22px rgba(0, 0, 0, 0.16); animation: bar-in 200ms ease both;
+}
+.sim-chip .ico { width: 16px; height: 16px; color: var(--accent); }
+.sim-chip button.primary { height: 28px; padding: 0 14px; border-radius: 999px; font-size: 13px; }
+.sim-chip button.icon { width: 28px; height: 28px; border: 0; border-radius: 999px; background: transparent; color: var(--muted);
+  display: inline-grid; place-items: center; }
+.sim-chip button.icon:hover { background: var(--accent-soft); color: var(--accent); }

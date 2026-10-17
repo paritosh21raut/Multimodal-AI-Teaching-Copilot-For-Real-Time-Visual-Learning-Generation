@@ -18,16 +18,17 @@ from pydantic import Field
 from copilot.simulation.base import (
     Derived, Element, SimBase, Slot, Solution, Template, _Model, fmt, known, value_label,
 )
+from copilot.simulation.names import ANGLE, FORCE, G, MASS, MU
 
 TRACK_M = 8.0  # length of slope the block travels before the motion repeats (picture only, never printed)
 EPS = 1e-9
 
 SLOTS = (
-    Slot("mass_kg", "Mass", "m", "kg", 0.01, 10_000.0, 0.1, 2.0, "mass"),
-    Slot("angle_deg", "Angle", "θ", "°", 0.0, 89.0, 1.0, 30.0, "angle"),
-    Slot("mu", "Coefficient of friction", "μ", "", 0.0, 2.0, 0.05, 0.0, "mu"),
-    Slot("applied_n", "Push along the slope", "F", "N", 0.0, 100_000.0, 1.0, 0.0, "force", absent=True),
-    Slot("g", "Gravity", "g", "m/s²", 0.1, 30.0, 0.01, 9.81, "g", standard=True),
+    Slot("mass_kg", "Mass", "m", "kg", 0.01, 10_000.0, 0.1, 2.0, "mass", names=MASS),
+    Slot("angle_deg", "Angle", "θ", "°", 0.0, 89.0, 1.0, 30.0, "angle", names=ANGLE),
+    Slot("mu", "Coefficient of friction", "μ", "", 0.0, 2.0, 0.05, 0.0, "mu", names=MU),
+    Slot("applied_n", "Push along the slope", "F", "N", 0.0, 100_000.0, 1.0, 0.0, "force", absent=True, names=FORCE),
+    Slot("g", "Gravity", "g", "m/s²", 0.1, 30.0, 0.01, 9.81, "g", standard=True, names=G),
 )
 ELEMENTS = (
     Element("surface", "Incline"), Element("block", "Block"), Element("angle", "Angle"),
@@ -117,14 +118,16 @@ TEMPLATE = Template(
     id="incline", name="Block on an incline", subject="mechanics",
     sim=InclineSim, params=InclineParams, slots=SLOTS, elements=ELEMENTS,
     solve=solve, default_shown=default_shown,  # type: ignore[arg-type]
-    setup=re.compile(r"\b(?:inclined plane|incline|inclined (?:surface|plank|board|track)|slope|ramp|wedge|"
+    setup=re.compile(r"\b(?:inclined plane|incline|inclination|inclined (?:surface|plank|board|track)|slope|ramp|wedge|"
                      r"tilt(?:s|ed|ing)?)\b", re.IGNORECASE),
     lexicon=re.compile(r"\b(?:friction\w*|incline\w*|slope|ramp|angle|degrees?|slid\w*|push\w*|force|forces|"
                        r"newtons?|accelerat\w*|mass|weight|normal|component\w*|sin|cos|sine|cosine|theta|rest|rough|"
                        r"smooth|frictionless|block|kg|kilograms?|net)\b", re.IGNORECASE),
     guard=re.compile(r"\bslope of (?:the|a|this|that) (?:line|graph|curve|tangent|function|secant)|slope[- ]intercept|"
                      r"slope (?:is|equals|=) (?:rise|dy|delta)|axial tilt|tilt of (?:the )?earth|earth'?s tilt|"
-                     r"inclined to|ramp (?:function|signal|up)|block diagram|learning curve", re.IGNORECASE),
+                     r"inclined to|ramp (?:function|signal|up)|block diagram|learning curve|"
+                     r"\b(?:windward|leeward|rainfall|valley|vegetation|erosion|mountain|hill ?side)\b", re.IGNORECASE),
     aliases=("incline", "inclined plane", "slope", "ramp", "friction", "angle", "sin", "cos", "component"),
+    family="block",
     carry=("mass_kg", "mu", "g"),
 )

@@ -1,15 +1,23 @@
-"""The presentation engine's Concept Simulation part (F-014 S0). Called by PresentationEngine under its lock; the
-engine stays the only writer of the deck.
+"""The presentation engine's Concept Simulation part (F-014). Called by PresentationEngine under its lock; the engine
+stays the only writer of the deck.
 
-    RepresentationIntent -> simulation.policy -> show / reopen / switch / update on the slide being built
+    RepresentationIntent -> simulation.policy -> show / suggest / switch / update / end
     teacher commands     -> sim_show / sim_set / sim_play / sim_pause / sim_step / sim_reset / sim_toggle / sim_pick /
-                            sim_remove (sim_full is a display flag: the Deck)
+                            sim_remove / sim_end / sim_accept / sim_dismiss (sim_full is a display flag: the Deck)
 
-Placement: the simulation is a block of the slide being built (the simulation layout: the stage ~65 % wide, the
-slide's points beside it). When the slide's content does not fit beside it (or the teacher put an image there) it
-opens the next part of the same slide. While it is open (same topic, spoken about within LISTEN_LINES lines) it
-follows the explanation: a new slide of the topic takes it along, so the stage never stays behind on a slide the
-projector has left. Anything the teacher does to it holds it where it is.
+Simulation mode (S1, user 2026-10-17: slides made from the talk during a simulation were unwanted):
+- It starts when a simulation is shown (spoken cue, the dock's Simulation, an accepted Suggest chip): the simulation
+  gets a slide of its own (only the stage, titled by the template, under the topic's crumb). Every new use makes a
+  new simulation slide; an old one is never reused. A switch ("imagine it on an incline") stays on that slide.
+- While it is on the engine makes no new slides and changes no content slide: the interpretations still run, their
+  pieces are collected (`collect`). Values and setup lines keep updating the simulation.
+- It ends on "let's get back to the slides" / "end the simulation" (detector, end cue), Back to slides in /control
+  (`sim_end`), removing the simulation, an announced new topic, the teacher's New slide, the lecture's end, or
+  SAFETY_S without a word about the simulation (a /control notice says so).
+- Then slides resume: first the recap of what was taught meanwhile (presentation.recap: key points, rules,
+  definitions, formulas, conclusions; parameter talk dropped), in parts when it is long; nothing worth keeping -> no
+  recap slide. Logged (SimulationModeChanged, the event log) and on the Deck (`sim_mode`, so /control shows
+  "Simulation running" whichever slide is on screen).
 
 Clock: the server keeps where the motion is (Playback.t at the anchor + the time since, at Playback.speed) so pause
 and step give every page the same frame; a change of values never touches the clock (the clients tween to the new
@@ -17,42 +25,76 @@ values and keep running).
 """
 from __future__ import annotations
 
+import dataclasses
+
 import logging
+import uuid
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Optional
 
 from pydantic import ValidationError
 
-from copilot.core.events import RepresentationIntent, SimulationNotice
-from copilot.core.memory import titles_match
-from copilot.presentation.composer import (
-    element_texts, fits, frame_slide, image_of, sim_of, with_simulation, without_simulation,
+from copilot.core.events import (
+    InterpretationReady, RepresentationIntent, SimulationModeChanged, SimulationNotice, SimulationSuggestion,
 )
+from copilot.core.memory import titles_match
+from copilot.presentation.composer import frame_slide, sim_of, with_simulation
+from copilot.presentation.content import Piece
 from copilot.presentation.planner import Frame
+from copilot.presentation.recap import recap_pieces
 from copilot.presentation.spec import SimulationBlock, SlideSpec
 from copilot.simulation import registry
-from copilot.simulation.base import SimBase, fmt
+from copilot.simulation.base import SimBase, fmt, known
 from copilot.simulation.policy import decide
+from copilot.simulation.values import resolve
 
 if TYPE_CHECKING:
     from copilot.presentation.engine import PresentationEngine
 
 log = logging.getLogger(__name__)
 
-LISTEN_LINES = 12   # content lines after the last intent for it before an open simulation stops listening
-STEP_S = 0.25       # simulation seconds per Step
-ROUGH_MU = 0.3      # "a rough surface", value not said: friction is drawn with this (never printed)
+STEP_S = 0.25        # simulation seconds per Step
+ROUGH_MU = 0.3       # "a rough surface", value not said: friction is drawn with this (never printed)
 SPEEDS = (0.25, 0.5, 1.0, 1.5, 2.0)
+SAFETY_S = 180.0     # simulation mode ends after this long (lecture time) without a word about the simulation
+SUGGEST_S = 30.0     # a Suggest chip stays this long
+RECAP_PREFIX = "Recap: "
 
 
 @dataclass
-class OpenSim:
+class SimMode:
+    """A running simulation mode: the simulation's own slide and what was taught meanwhile."""
     block_id: str
     slide_id: str
-    topic: str
     template: str
-    quiet: int = 0
-    held: bool = False  # the teacher acted on it: it stays on its slide
+    frame: Frame                       # the lecture's topic (the crumb of the simulation and recap slides)
+    before_id: Optional[str]           # the working slide when it started (content said before the cue goes there)
+    start_seq: int                     # arrival number of the cue line (engine._seg_order)
+    heard_at: float                    # lecture time of the last word about the simulation
+    names: list[str] = field(default_factory=list)   # template names shown (a switch adds one)
+    collected: list[Piece] = field(default_factory=list)
+    last: Optional[str] = None         # the slot changed or mentioned last (a bare number goes there)
+    origin: str = "cue"
+
+
+@dataclass
+class Ended:
+    """The last simulation mode, for interpretations that arrive after it ended (the model answers seconds later):
+    their lines said during the simulation join its recap."""
+    start_seq: int
+    end_seq: int
+    frame: Frame
+    name: str
+    slide_id: str
+    recap_last: Optional[str]
+
+
+@dataclass
+class Suggestion:
+    id: str
+    template: str
+    lines: list[str]                   # the line that suggested it (its values are used on Show)
+    until: float
 
 
 @dataclass
@@ -64,13 +106,20 @@ class _Clock:
 @dataclass
 class SimulationController:
     e: "PresentationEngine"
-    open: Optional[OpenSim] = None
+    mode: Optional[SimMode] = None
     where: dict[str, str] = field(default_factory=dict)            # block id -> slide id
     toggled: dict[str, dict[str, bool]] = field(default_factory=dict)  # block id -> the teacher's element choices
     revealed: dict[str, set[str]] = field(default_factory=dict)    # block id -> elements the teacher named
     clocks: dict[str, _Clock] = field(default_factory=dict)
-    by_topic: dict[tuple[str, str], str] = field(default_factory=dict)  # (topic, template) -> block id
     removed: set[tuple[str, str]] = field(default_factory=set)     # (topic, template) the teacher removed
+    setups: dict[tuple[str, str], int] = field(default_factory=dict)  # (topic, template) -> setups heard, none open
+    suggestion: Optional[Suggestion] = None
+    ended: Optional[Ended] = None
+    shown: int = 0                                                 # simulation slides made in this lecture
+
+    @property
+    def collecting(self) -> bool:
+        return self.mode is not None
 
     # ---- lookup ---------------------------------------------------------------------------------------------
     def _block(self, block_id: str) -> tuple[Optional[SlideSpec], Optional[SimulationBlock]]:
@@ -82,29 +131,19 @@ class SimulationController:
         spec = self.e._spec(slide_id)
         return (spec, sim_of(spec)) if spec is not None else (None, None)
 
-    def _target(self) -> tuple[Optional[SlideSpec], Optional[Frame]]:
-        """The slide content is going to (as for an asked figure); None for a title slide / nothing yet."""
-        e = self.e
-        spec = e._spec(e._open_cue_slide() or e._working_id or "") or e.deck.live
-        meta = e._meta.get(spec.id) if spec is not None else None
-        if spec is None or meta is None or meta.is_title:
-            return None, None
-        return spec, meta.frame
-
-    def _lecture_topic(self) -> str:
+    def _topic_frame(self) -> Frame:
+        """The topic the lecture is on (the working slide's, else the store's): the simulation slide's crumb."""
+        meta = self.e._meta.get(self.e._working_id or "")
+        if meta is not None and not meta.is_title:
+            return Frame(meta.frame.topic, meta.frame.topic)
         snap = self.e.store.snapshot()
         topic = snap.topic(snap.current_topic_id)
-        return (topic.title if topic is not None else "") or snap.setup.expected_topic or "Simulation"
+        name = (topic.title if topic is not None else "") or snap.setup.expected_topic or "Simulation"
+        return Frame(name, name)
 
     @staticmethod
     def _key(topic: str, template: str) -> tuple[str, str]:
         return " ".join(topic.lower().split()), template
-
-    def _find(self, topic: str, template: str) -> Optional[str]:
-        for (t, tid), bid in self.by_topic.items():
-            if tid == template and titles_match(t, topic) and self._block(bid)[1] is not None:
-                return bid
-        return None
 
     def _is_removed(self, topic: str, template: str) -> bool:
         return any(tid == template and titles_match(t, topic) for t, tid in self.removed)
@@ -124,192 +163,336 @@ class SimulationController:
         return {**{x: True for x in self.revealed.get(block_id, ())}, **self.toggled.get(block_id, {})}
 
     # ---- writing --------------------------------------------------------------------------------------------
-    async def _replace(self, spec: SlideSpec, b: SimulationBlock, sim: SimBase) -> SimulationBlock:
+    async def _replace(self, spec: SlideSpec, b: SimulationBlock, sim: SimBase, title: Optional[str] = None
+                       ) -> SimulationBlock:
         new = b.model_copy(update={"sim": sim})
-        await self.e._commit(spec.model_copy(update={"blocks": [new if x.id == b.id else x for x in spec.blocks]}))
+        upd: dict[str, Any] = {"blocks": [new if x.id == b.id else x for x in spec.blocks]}
+        if title and spec.id not in self.e._teacher_titles:
+            upd["title"] = title
+        await self.e._commit(spec.model_copy(update=upd))
         if sim.playback.rev != b.sim.playback.rev:
             self._anchor(new)
         return new
-
-    async def _place(self, block: SimulationBlock, target: Optional[SlideSpec], frame: Optional[Frame]) -> str:
-        """Put the block on the slide being built, or on its next part when the content does not fit beside it; a new
-        slide when there is no content slide yet (a title slide). Returns the slide id."""
-        e = self.e
-        from copilot.presentation.engine import SlideMeta  # the engine imports this module
-
-        if target is None or frame is None:
-            topic = self._lecture_topic()
-            frame = Frame(topic, topic)
-            spec = with_simulation(frame_slide(topic, topic, continuation_of=e._working_id), block)
-            await e._open(spec, SlideMeta(frame), exempt=True)
-            e._working_id = spec.id
-            return spec.id
-        img = image_of(target)
-        new = with_simulation(target, block)
-        if (img is not None and img.origin == "teacher") or not fits(new):
-            nxt = with_simulation(await e._next_part(target, frame), block)
-            await e._open(nxt, SlideMeta(frame), exempt=True)
-            e._working_id = nxt.id
-            log.info("[SIM] no room beside %r: part %s holds the simulation", target.title, nxt.part)
-            return nxt.id
-        await e._commit(new)
-        return target.id
 
     async def _take_off(self, block_id: str) -> None:
         spec, b = self._block(block_id)
         if spec is None:
             return
-        rest = without_simulation(spec)
+        rest = spec.model_copy(update={"blocks": [x for x in spec.blocks if x.type != "simulation"]})
         if rest.blocks:
-            await self.e._commit(rest)
+            from copilot.presentation.composer import without_simulation
+            await self.e._commit(without_simulation(spec))
         elif self.e._in_deck(spec.id):
-            await self.e.deck.remove(spec.id)  # a part that held only the simulation
+            await self.e.deck.remove(spec.id)  # the simulation's own slide
+            self.e._meta.pop(spec.id, None)
         else:
             self.e._pending = [p for p in self.e._pending if p.id != spec.id]
 
-    async def _move(self, block_id: str, target: SlideSpec, frame: Frame) -> None:
-        spec, b = self._block(block_id)
-        if b is None or spec is None or spec.id == target.id or sim_of(target) is not None:
-            return
-        await self._take_off(block_id)
-        target = self.e._spec(target.id) or target
-        self.where[block_id] = await self._place(b, target, frame)
-        if self.open is not None and self.open.block_id == block_id:
-            self.open.slide_id = self.where[block_id]
-        log.info("[SIM] %s follows the explanation to %r", b.sim.template, target.title)
-
     # ---- values -------------------------------------------------------------------------------------------------
-    async def _values(self, sim: SimBase, heard: dict[str, dict[str, Any]], slide_id: str
-                      ) -> list[tuple[str, Any, str]]:
-        """Heard values -> (slot, value, source) for this template. A slot the teacher set is final; a value out of
-        range is not used and /control says so."""
+    async def _values(self, sim: SimBase, lines: list[str], slide_id: str) -> list[tuple[str, Any, str]]:
+        """What the lines say for this template -> (slot, value, source). A slot the teacher set is final; a value out
+        of range is not used and /control says so. Updates the mode's last slot (the next bare number's)."""
         t = registry.template_of(sim)
-        by_kind = {s.kind: s for s in t.slots}
+        fields = type(sim.params).model_fields
         out: list[tuple[str, Any, str]] = []
-        for kind, h in heard.items():
-            if kind == "rough":
-                if "mu" in type(sim.params).model_fields and sim.param_source.get("mu", "default") == "default" \
-                        and sim.params.mu == 0:  # type: ignore[attr-defined]
-                    out.append(("mu", ROUGH_MU, "default"))
-                continue
-            if kind == "force_dir":
-                if "applied_dir" in type(sim.params).model_fields and sim.param_source.get("applied_dir") != "teacher":
-                    out.append(("applied_dir", h.get("text") or "up", "said"))
-                continue
-            slot = by_kind.get(kind)
-            if slot is None:
-                continue
-            if sim.param_source.get(slot.name) == "teacher":
-                log.info("[SIM] heard %s, but the teacher set %s: kept", h.get("said"), slot.label)
-                continue
-            v = float(h.get("value", 0.0))
-            if not slot.lo <= v <= slot.hi:
-                unit = slot.unit if slot.unit in ("°", "") else f" {slot.unit}"
-                msg = (f"Heard “{h.get('said', '')}” - not used ({slot.symbol} {fmt(slot.lo)}–{fmt(slot.hi)}{unit})")
-                log.info("[SIM] %s", msg)
-                await self.e.bus.publish(SimulationNotice(slide_id=slide_id, text=msg))
-                continue
-            out.append((slot.name, v, "said"))
+        last = self.mode.last if self.mode is not None else None
+        for line in lines:
+            # current values for "double it" / "increase it by 10": only those said (or standard): doubling a
+            # default nobody said would print it as said (pendulum check 2026-10-17)
+            params = {s.name: float(getattr(sim.params, s.name)) for s in t.slots
+                      if known(sim.param_source, t.slot_map, s.name)}
+            for slot, v, _ in out:  # a second line builds on the first ("double it" after "make it 10")
+                if isinstance(v, (int, float)) and slot in params:
+                    params[slot] = float(v)
+            friction = "friction" in sim.shown or last == "mu" or getattr(sim.params, "mu", 0) > 0
+            r = resolve(t, line, last, friction_context=friction, params=params)
+            if r.why:
+                log.info("[SIM] %r -> %s", line[:80], "; ".join(r.why))
+            last = r.last or last
+            if r.rough and "mu" in fields and sim.param_source.get("mu", "default") == "default" \
+                    and sim.params.mu == 0:  # type: ignore[attr-defined]
+                out.append(("mu", ROUGH_MU, "default"))
+            if r.direction and "applied_dir" in fields and sim.param_source.get("applied_dir") != "teacher":
+                out.append(("applied_dir", r.direction, "said"))
+            if r.mode and "applied_mode" in fields and sim.param_source.get("applied_mode") != "teacher":
+                out.append(("applied_mode", r.mode, "said"))
+            for name, value in r.mentioned:  # "from a cliff": drawn, its number unknown
+                if sim.param_source.get(name) not in ("said", "teacher") and name not in {x[0] for x in out}:
+                    out.append((name, value, "mentioned"))
+            for name, value in r.choices.items():  # "in parallel": the circuit's arrangement
+                if name in fields and sim.param_source.get(name) != "teacher":
+                    out = [x for x in out if x[0] != name] + [(name, value, "said")]
+            for slot_name, v, said in r.values:
+                slot = t.slot(slot_name)
+                if sim.param_source.get(slot_name) == "teacher":
+                    log.info("[SIM] heard %s, but the teacher set %s: kept", said, slot.label)
+                    continue
+                if not slot.lo <= v <= slot.hi:
+                    unit = slot.unit if slot.unit in ("°", "") else f" {slot.unit}"
+                    msg = f"Heard “{said}” - not used ({slot.symbol} {fmt(slot.lo)}–{fmt(slot.hi)}{unit})"
+                    log.info("[SIM] %s", msg)
+                    await self.e.bus.publish(SimulationNotice(slide_id=slide_id, text=msg))
+                    continue
+                out = [x for x in out if x[0] != slot_name] + [(slot_name, v, "said")]
+        if self.mode is not None:
+            self.mode.last = last
         return out
 
     # ---- intents --------------------------------------------------------------------------------------------
-    async def on_signal(self) -> None:
-        if self.open is not None:
-            self.open.quiet += 1
+    async def on_signal(self, segment_id: str) -> None:
+        """A content line: a word about the open simulation keeps simulation mode alive (SAFETY_S)."""
+        m = self.mode
+        if m is None:
+            return
+        t = registry.get(m.template)
+        text = self.e._said.get(segment_id, "")
+        if t is not None and text and t.lexicon.search(text):
+            m.heard_at = self.e.now()
 
     async def on_intent(self, ev: RepresentationIntent) -> None:
         if ev.visual_kind != "simulation":
             return
-        target, frame = self._target()
-        topic = frame.topic if frame is not None else self._lecture_topic()
-        o = self.open
-        if o is not None and (o.quiet > LISTEN_LINES or not titles_match(o.topic, topic)
-                              or self._block(o.block_id)[1] is None):
-            log.info("[SIM] %s stops listening (%s)", o.template,
-                     "quiet" if o.quiet > LISTEN_LINES else "new topic" if not titles_match(o.topic, topic) else "gone")
-            self.open = o = None
-        tid = ev.template or (o.template if o is not None else "")
+        m = self.mode
+        if m is not None and self._block(m.block_id)[1] is None:  # its slide went away (removed by the teacher)
+            await self.end("the simulation's slide was removed")
+            m = None
+        tid = ev.template or (m.template if m is not None else "")
         if tid and registry.get(tid) is None:
             log.warning("[SIM] unknown template %r", tid)
             return
-        earlier = self._find(topic, tid) if tid and o is None else None
-        action = decide(tid, ev.strength, open_template=o.template if o is not None else None,
-                        earlier=earlier is not None, removed=bool(tid) and self._is_removed(topic, tid),
-                        setting=self.e.s.simulations)  # type: ignore[arg-type]
+        topic = m.frame.topic if m is not None else self._topic_frame().topic
+        repeated = False
+        t_ = registry.get(tid) if tid else None
+        # a setup counts toward the repeat only with two of the template's own words: "Slope." in a maths lecture or
+        # "the windward slope" in geography is not a lecture on the incline (v2_eval test28 / web3, 2026-10-17)
+        words = {w.lower() for w in t_.lexicon.findall(ev.text)} if t_ is not None else set()
+        if m is None and tid and ev.strength == "setup" and len(words) >= 2:
+            k = self._key(topic, tid)
+            self.setups[k] = self.setups.get(k, 0) + 1
+            repeated = self.setups[k] >= 2
+        action = decide(tid, ev.strength, open_template=m.template if m is not None else None,
+                        removed=bool(tid) and self._is_removed(topic, tid),
+                        setting=self.e.s.simulations, mode_on=m is not None,  # type: ignore[arg-type]
+                        repeated=repeated)
+        if action.kind == "switch" and ev.strength != "cue" and m is not None:
+            open_t = registry.get(m.template)  # "the block is pulled up the slope" fits the open incline too: stay
+            if open_t is not None and open_t.setup.search(ev.text):
+                action = dataclasses.replace(action, kind="update", reason="fits the open simulation too")
+                tid = m.template
         log.info("[SIM] %s %s: %s (%s)", ev.strength, tid or "-", action.kind, action.reason)
         if action.kind == "ignore":
             return
         self.e.stats.ops[f"sim_{action.kind}"] += 1
-        if action.kind == "show":
-            sim = registry.build(tid, origin="cue")
-            block = SimulationBlock(sim=sim)
-            self.revealed[block.id] = set(ev.reveal)
-            sim = registry.with_values(sim, await self._values(sim, ev.values, target.id if target else ""),
-                                       self._toggles(block.id))
-            block = block.model_copy(update={"sim": sim})
-            self.where[block.id] = await self._place(block, target, frame)
-            self._anchor(block)
-            self.by_topic[self._key(topic, tid)] = block.id
-            self.open = OpenSim(block.id, self.where[block.id], topic, tid)
-            log.info("[SIM] shown: %s on %r", sim.title, self.e._spec(self.where[block.id]).title)  # type: ignore[union-attr]
+        if action.kind == "end":
+            await self.end(f"heard {ev.text[:60]!r}")
             return
-        bid = earlier if action.kind == "reopen" else o.block_id  # type: ignore[union-attr]
-        assert bid is not None
-        if action.kind == "reopen":
-            self.open = OpenSim(bid, self.where[bid], topic, tid)
-        assert self.open is not None
-        self.open.quiet = 0
-        if target is not None and frame is not None and not self.open.held and _explains(target):
-            await self._move(bid, target, frame)
-        spec, b = self._block(bid)
+        if action.kind == "suggest":
+            await self._suggest(tid, [ev.text])
+            return
+        if action.kind == "show":
+            # "A ball is thrown at 20 m/s at 30 degrees." (a chip) ... "Let me show you": the values said with the
+            # setup come along (projectile screenshot 2026-10-17)
+            sg = self.suggestion
+            lines = (sg.lines if sg is not None and sg.template == tid else []) + [ev.text]
+            await self.start(tid, lines, origin="cue", reveal=ev.reveal, cue_segment=next(iter(ev.segment_ids), ""))
+            return
+        assert m is not None
+        m.heard_at = self.e.now()
+        spec, b = self._block(m.block_id)
         if spec is None or b is None:
             return
         sim = b.sim
+        title = None
         if action.kind == "switch":
             sim = registry.switched(sim, tid, "cue")
-            self.open.template = tid
-            self.by_topic[self._key(topic, tid)] = bid
-            self.toggled.pop(bid, None)
-            self.revealed[bid] = set()
-        self.revealed.setdefault(bid, set()).update(ev.reveal)
-        vals = await self._values(sim, ev.values, spec.id)
-        sim = registry.with_values(sim, vals, self._toggles(bid))
+            m.template = tid
+            m.names.append(sim.title)
+            title = sim.title
+            self.toggled.pop(b.id, None)
+            self.revealed[b.id] = set()
+        self.revealed.setdefault(b.id, set()).update(ev.reveal)
+        vals = await self._values(sim, [ev.text], spec.id)
+        sim = registry.with_values(sim, vals, self._toggles(b.id))
         if sim.model_dump(exclude={"version"}) != b.sim.model_dump(exclude={"version"}):
-            await self._replace(spec, b, sim)
+            await self._replace(spec, b, sim, title)
             log.info("[SIM] %s %s: %s", action.kind, sim.template, {s: v for s, v, _ in vals})
 
-    async def follow(self) -> None:
-        """After content was placed: an open simulation goes with the explanation to the slide now being built."""
-        o = self.open
-        if o is None or o.held:
+    # ---- simulation mode ------------------------------------------------------------------------------------
+    async def start(self, tid: str, lines: list[str], *, origin: str, reveal: Optional[list[str]] = None,
+                    cue_segment: str = "") -> None:
+        """Simulation mode: the simulation on a new slide of its own; the slides wait until it ends."""
+        e = self.e
+        if self.mode is not None:
+            await self.end("another simulation was started")
+        self.ended = None
+        await self._clear_suggestion()
+        while e._pending:  # slides waiting for the dwell time go first: the simulation comes after them
+            await e._add_to_deck(e._pending.pop(0))
+        if e._prov:
+            await e._clear_provisional()
+        await e._drop_cue(keep_working=True)
+        frame = self._topic_frame()
+        sim = registry.build(tid, origin=origin)  # type: ignore[arg-type]
+        block = SimulationBlock(sim=sim)
+        self.revealed[block.id] = set(reveal or ())
+        mode = SimMode(block.id, "", tid, frame, e._working_id,
+                       e._seg_order.get(cue_segment, e._seg_n + 1), e.now(), [sim.title], origin=origin)
+        self.mode = mode
+        sim = registry.with_values(sim, await self._values(sim, [x for x in lines if x], ""), self._toggles(block.id))
+        block = block.model_copy(update={"sim": sim})
+        spec = with_simulation(frame_slide(frame.topic, sim.title, continuation_of=e._working_id), block)
+        spec = spec.model_copy(update={"title": sim.title})
+        from copilot.presentation.engine import SlideMeta  # the engine imports this module
+
+        await e._open(spec, SlideMeta(Frame(frame.topic, sim.title), is_title=True), exempt=True)
+        e._working_id = spec.id
+        mode.slide_id = spec.id
+        self.where[block.id] = spec.id
+        self._anchor(block)
+        self.removed.discard(self._key(frame.topic, tid))
+        self.shown += 1
+        await e.deck.set_sim_mode(spec.id)
+        await e.bus.publish(SimulationModeChanged(on=True, slide_id=spec.id, template=tid,
+                                                  reason="spoken cue" if origin == "cue" else origin))
+        log.info("[SIM] simulation mode on: %s on its own slide (%s)", sim.title, origin)
+
+    def split_early(self, ev: InterpretationReady, pieces: list[Piece]) -> tuple[list[Piece], list[Piece]]:
+        """Pieces of lines said before the simulation's cue (they belong on the slide before it) and the rest."""
+        m = self.mode
+        assert m is not None
+        early, later = [], []
+        for p in pieces:
+            seqs = [self.e._seg_order.get(ev.segment_ids[i - 1], 10 ** 9) for i in p.lines
+                    if 0 < i <= len(ev.segment_ids)]
+            (early if seqs and max(seqs) < m.start_seq else later).append(p)
+        return early, later
+
+    def collect(self, pieces: list[Piece]) -> None:
+        if self.mode is not None:
+            self.mode.collected.extend(pieces)
+            log.info("[SIM] simulation mode: %d piece(s) collected for the recap (%d so far)", len(pieces),
+                     len(self.mode.collected))
+
+    async def end(self, reason: str) -> list[str]:
+        """Slides resume: the recap first (if anything worth keeping was said). Returns the recap slide ids."""
+        m, self.mode = self.mode, None
+        if m is None:
+            return []
+        e = self.e
+        await e.deck.set_sim_mode(None)
+        kept, dropped = recap_pieces(m.collected)
+        ids: list[str] = []
+        name = m.names[-1] if m.names else "Simulation"
+        last: Optional[str] = None
+        if kept:
+            frame = Frame(m.frame.topic, RECAP_PREFIX + name)
+            spec = frame_slide(frame.topic, frame.facet, continuation_of=m.slide_id)
+            spec = spec.model_copy(update={"title": RECAP_PREFIX + name})
+            before = {s.id for s in e.deck.slides} | {p.id for p in e._pending}
+            last = await e._place(spec, True, frame, kept, exempt=True)
+            ids = [s.id for s in e.deck.slides if s.id not in before] + [p.id for p in e._pending if p.id not in before]
+            e._working_id = last
+        else:
+            e._working_id = m.before_id if e._spec(m.before_id) is not None else None
+        self.ended = Ended(m.start_seq, e._seg_n + 1, m.frame, name, m.slide_id, last)
+        items = sum(max(1, len(p.texts) + len(p.pairs)) for p in kept)
+        await e.bus.publish(SimulationModeChanged(on=False, slide_id=m.slide_id, template=m.template, reason=reason,
+                                                  recap_ids=ids, kept=items, dropped=dropped))
+        log.info("[SIM] simulation mode off (%s): recap %s (%d kept, %d dropped as parameter talk)", reason,
+                 f"{len(ids)} slide(s)" if ids else "none", items, dropped)
+        return ids
+
+    async def take_late(self, ev: InterpretationReady, pieces: list[Piece]) -> list[Piece]:
+        """Pieces of lines said during the last simulation that arrive after it ended go to its recap (kept as the
+        recap keeps them); the rest is returned for the slides."""
+        x = self.ended
+        if x is None or not pieces:
+            return pieces
+        late, rest = [], []
+        for p in pieces:
+            seqs = [self.e._seg_order.get(ev.segment_ids[i - 1], -1) for i in p.lines if 0 < i <= len(ev.segment_ids)]
+            (late if seqs and x.start_seq <= max(seqs) < x.end_seq else rest).append(p)
+        if not late:
+            return pieces
+        kept, dropped = recap_pieces(late)
+        if kept:
+            e = self.e
+            frame = Frame(x.frame.topic, RECAP_PREFIX + x.name)
+            spec = e._spec(x.recap_last)
+            if spec is None:
+                spec = frame_slide(frame.topic, frame.facet, continuation_of=x.slide_id)
+                spec = spec.model_copy(update={"title": RECAP_PREFIX + x.name})
+                x.recap_last = await e._place(spec, True, frame, kept, exempt=True, adopt=False)
+            else:
+                x.recap_last = await e._place(spec, False, frame, kept, adopt=False)
+        log.info("[SIM] %d late piece(s) of the simulation: %d to its recap, %d dropped", len(late), len(kept), dropped)
+        return rest
+
+    async def tick(self) -> None:
+        """Ticker: a forgotten simulation ends after SAFETY_S; a Suggest chip expires."""
+        now = self.e.now()
+        if self.mode is not None and now - self.mode.heard_at > SAFETY_S:
+            await self.end(f"{int(SAFETY_S // 60)} min without a word about the simulation")
+            await self.e.bus.publish(SimulationNotice(  # "" = whichever slide /control shows
+                slide_id="", text=f"Back to slides: nothing about the simulation for {int(SAFETY_S // 60)} min"))
+        if self.suggestion is not None and now > self.suggestion.until:
+            await self._clear_suggestion()
+
+    async def _suggest(self, tid: str, lines: list[str]) -> None:
+        t = registry.get(tid)
+        if t is None:
             return
-        target, frame = self._target()
-        if target is None or frame is None or target.id == o.slide_id or not titles_match(frame.topic, o.topic):
+        if self.suggestion is not None and self.suggestion.template == tid:
+            self.suggestion.lines += lines
+            self.suggestion.until = self.e.now() + SUGGEST_S
             return
-        if _explains(target):
-            await self._move(o.block_id, target, frame)
+        await self._clear_suggestion()
+        self.suggestion = Suggestion(uuid.uuid4().hex[:12], tid, list(lines), self.e.now() + SUGGEST_S)
+        await self.e.bus.publish(SimulationSuggestion(id=self.suggestion.id, template=tid, name=t.name,
+                                                      text=(lines[-1] if lines else "")[:200]))
+        log.info("[SIM] suggested: %s", t.name)
+
+    async def _clear_suggestion(self) -> None:
+        s, self.suggestion = self.suggestion, None
+        if s is not None:
+            await self.e.bus.publish(SimulationSuggestion(id=s.id, template=s.template, active=False))
 
     # ---- the teacher's commands ---------------------------------------------------------------------------------
     async def on_command(self, kind: str, args: dict) -> None:
         if kind == "sim_show":
             await self._show(str(args.get("template") or ""))
             return
+        if kind == "sim_end":
+            self.e.stats.ops["teacher_sim_end"] += 1
+            await self.end("Back to slides")
+            return
+        if kind in ("sim_accept", "sim_dismiss"):
+            s = self.suggestion
+            if s is None or (args.get("id") and args.get("id") != s.id):
+                return
+            if kind == "sim_dismiss":
+                await self._clear_suggestion()
+                return
+            self.e.stats.ops["teacher_sim_accept"] += 1
+            await self.start(s.template, s.lines, origin="policy")
+            return
         spec, b = self._on_slide(str(args.get("slide_id") or ""))
         if spec is None or b is None:
             log.warning("%s: no simulation on slide %r", kind, args.get("slide_id"))
             return
-        if self.open is not None and self.open.block_id == b.id:
-            self.open.held = True
         self.e.stats.ops[f"teacher_{kind}"] += 1
         sim, pb = b.sim, b.sim.playback
         t_now = self.now_t(b)
+        if self.mode is not None and self.mode.block_id == b.id:
+            self.mode.heard_at = self.e.now()  # the teacher is using it
         if kind == "sim_remove":
-            await self._take_off(b.id)
+            mine = self.mode is not None and self.mode.block_id == b.id
             meta = self.e._meta.get(spec.id)
-            topic = meta.frame.topic if meta is not None else self._lecture_topic()
+            topic = meta.frame.topic if meta is not None else self._topic_frame().topic
             self.removed.add(self._key(topic, sim.template))
-            if self.open is not None and self.open.block_id == b.id:
-                self.open = None
+            if mine:
+                await self.end("the teacher removed the simulation")
+            await self._take_off(b.id)
             self.where.pop(b.id, None)
             log.info("teacher removed the %s simulation from %r", sim.template, spec.title)
             return
@@ -320,11 +503,10 @@ class SimulationController:
             new = registry.switched(sim, tid, "teacher")
             self.toggled.pop(b.id, None)
             self.revealed[b.id] = set()
-            if self.open is not None and self.open.block_id == b.id:
-                self.open.template = tid
-            meta = self.e._meta.get(spec.id)
-            self.by_topic[self._key(meta.frame.topic if meta else self._lecture_topic(), tid)] = b.id
-            await self._replace(spec, b, new)
+            if self.mode is not None and self.mode.block_id == b.id:
+                self.mode.template = tid
+                self.mode.names.append(new.title)
+            await self._replace(spec, b, new, new.title if spec.title == sim.title else None)
             return
         if kind == "sim_set":
             if "speed" in args:
@@ -335,8 +517,13 @@ class SimulationController:
                 await self._replace(spec, b, sim.model_copy(update={"playback": new_pb, "version": sim.version + 1}))
                 return
             slot = str(args.get("slot") or "")
-            if slot == "applied_dir" and "applied_dir" in type(sim.params).model_fields:
+            fields = type(sim.params).model_fields
+            if slot == "applied_dir" and "applied_dir" in fields:
                 value: Any = "down" if args.get("value") == "down" else "up"
+            elif slot == "applied_mode" and "applied_mode" in fields:
+                value = "pull" if args.get("value") == "pull" else "push"
+            elif slot in fields and slot not in registry.template_of(sim).slot_map:  # another choice (circuit kind ...)
+                value = str(args.get("value") or "")
             else:
                 t = registry.template_of(sim)
                 v = _num(args.get("value"))
@@ -374,34 +561,17 @@ class SimulationController:
             await self._replace(spec, b, sim.model_copy(update={"playback": new_pb, "version": sim.version + 1}))
 
     async def _show(self, tid: str) -> None:
-        """/control Simulation: the template on the live slide (or switch the one it has)."""
-        e = self.e
-        live = e.deck.live
-        meta = e._meta.get(live.id) if live is not None else None
+        """/control Simulation: the running simulation becomes this template, else simulation mode starts with it."""
         if registry.get(tid) is None:
             log.warning("sim_show: unknown template %r", tid)
             return
-        if live is not None and sim_of(live) is not None:
-            await self.on_command("sim_pick", {"slide_id": live.id, "template": tid})
+        self.e.stats.ops["teacher_sim_show"] += 1
+        m = self.mode
+        if m is not None and self._block(m.block_id)[1] is not None:
+            await self.on_command("sim_pick", {"slide_id": m.slide_id, "template": tid})
             return
-        frame = meta.frame if meta is not None and not meta.is_title else None
-        block = SimulationBlock(sim=registry.build(tid, origin="teacher"))
-        slide_id = await self._place(block, live if frame is not None else None, frame)
-        self.where[block.id] = slide_id
-        self._anchor(block)
-        topic = frame.topic if frame is not None else self._lecture_topic()
-        self.by_topic[self._key(topic, tid)] = block.id
-        self.removed.discard(self._key(topic, tid))
-        self.open = OpenSim(block.id, slide_id, topic, tid, held=True)
-        e.stats.ops["teacher_sim_show"] += 1
+        await self.start(tid, [], origin="teacher")
         log.info("teacher sim_show %s", tid)
-
-
-def _explains(spec: SlideSpec) -> bool:
-    """A slide the open simulation may move to: one with some content. A slide with only a title is not where the
-    explanation is (incline_live run: "Let's see what happens" opened an announced slide 'What happens' with nothing on
-    it, and the points went on on the slide the simulation was on)."""
-    return any(t.strip() for t in element_texts(spec).values())
 
 
 def _num(v: Any) -> Optional[float]:

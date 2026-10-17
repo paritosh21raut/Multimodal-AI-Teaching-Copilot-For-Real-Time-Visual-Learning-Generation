@@ -32,6 +32,7 @@ from copilot.core.events import (
     UtteranceDropped,
     CorrectionPlaced,
     ModeChanged,
+    SimulationSettingChanged,
     VocabularyChanged,
     new_id,
 )
@@ -314,8 +315,10 @@ class App:
         if not self.demo_slides:
             from copilot.presentation.engine import PresentationEngine, PresentationSettings
 
+            settings = PresentationSettings.from_config(self.config)
+            settings.simulations = self.prefs.simulations(settings.simulations)  # F-014 S1: the teacher's last choice
             self.presentation = PresentationEngine(
-                self.bus, self.store, self.deck, PresentationSettings.from_config(self.config),
+                self.bus, self.store, self.deck, settings,
                 speed=self.speed if self.simulate or self.audio_file else 1.0,
                 relevance=text_similarity(embedder) if embedder is not None else None,
             )
@@ -401,6 +404,8 @@ class App:
             self._stop.set()
         elif event.command.kind == "set_mode":
             await self._set_mode(str(event.command.args.get("mode", "")))
+        elif event.command.kind == "set_simulations":
+            await self._set_simulations(str(event.command.args.get("setting", "")))
         else:
             nxt = lifecycle_for_command(event.command.kind, self._now)
             if nxt is not None:
@@ -424,6 +429,19 @@ class App:
             self.speech.set_split(self.mode.split_sentences)
         await self.bus.publish(ModeChanged(mode=name))
         print(f"[MODE]  {self._mode_line()}", flush=True)
+
+    async def _set_simulations(self, setting: str) -> None:
+        """F-014 S1: Auto (a spoken cue shows a simulation) | Suggest (a /control chip) | Off; kept for the next lecture."""
+        from copilot.simulation.policy import SETTINGS
+
+        if setting not in SETTINGS:
+            log.warning("set_simulations ignored: %r", setting)
+            return
+        await asyncio.to_thread(self.prefs.set_simulations, setting)
+        if self.presentation is not None:
+            self.presentation.s.simulations = setting
+        await self.bus.publish(SimulationSettingChanged(setting=setting))  # type: ignore[arg-type]
+        print(f"[SIM]   simulations: {setting}", flush=True)
 
     def _mode_line(self) -> str:
         m = self.mode
@@ -561,6 +579,8 @@ class App:
             # thread is blocked reading a piped stdin (seen with tools/screenshot_app.py).
             TerminalInput(asyncio.get_running_loop(), self._terminal).start()
             await self.bus.publish(ModeChanged(mode=self.mode.name))  # F-013: /control shows the switch
+            if self.presentation is not None:  # F-014 S1: and the simulation setting
+                await self.bus.publish(SimulationSettingChanged(setting=self.presentation.s.simulations))  # type: ignore[arg-type]
             print(f"[MODE]  {self._mode_line()}  (switch in /control)", flush=True)
             await self._lifecycle(Lifecycle.READY)
             if self._router is not None:

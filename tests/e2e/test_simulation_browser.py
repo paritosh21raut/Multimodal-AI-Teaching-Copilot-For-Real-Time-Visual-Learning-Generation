@@ -132,12 +132,12 @@ async def test_sim_bar_commands_reach_every_page():
             await h.settle()
             assert h.deck.sim_full is None
             await display.wait_for_selector(".sim-full", state="detached")
-            # remove: the image bar comes back
+            # remove: the simulation's own slide goes, simulation mode ends (S1)
             await control.click(".sim-bar button[aria-label='Take the simulation off this slide']")
             await h.settle()
-            assert not any(b.type == "simulation" for b in h.deck.live.blocks)
+            assert sid not in [s.id for s in h.deck.slides] and h.deck.sim_mode is None
             await display.wait_for_selector(".sim-svg", state="detached")
-            await control.wait_for_selector(".image-bar:not(.sim-bar)")
+            await control.wait_for_selector(".flag.sim", state="detached")
             for p in (control, display, view):
                 assert not p.errors, p.errors
 
@@ -173,3 +173,98 @@ async def test_full_stage_command_from_the_engine():
             await h.settle()
             assert h.deck.sim_full is None
             assert not display.errors, display.errors
+
+
+async def test_simulation_mode_round_trip():
+    """F-014 S1 fix 1: a spoken cue starts simulation mode (its own slide, the pill in /control), what is taught
+    meanwhile makes no slide, Back to slides in the dock ends it and the recap is the next slide on every page."""
+    async with display_harness() as h:
+        await lecture(h, ["Consider a block of mass 5 kg on a rough floor with mu equal to 0.2."])
+        sid = h.deck.live.id
+        n = len(h.deck.slides)
+        async with browser_page(f"{h.url}/control", 1600, 1000) as control, browser_page(f"{h.url}/display") as display:
+            await wait_for_slide(display, sid)
+            await display.wait_for_selector(".slide:not(.is-leaving) .slide-body.sim-only .sim-svg")  # only the stage
+            await control.wait_for_selector(".flag.sim:has-text('SIMULATION RUNNING')")
+            await control.wait_for_selector(".sim-bar button:has-text('Back to slides')")
+            await h.bus.publish(ready("Friction", "Friction", [act("explanation", points=[
+                "Friction opposes the tendency to move", "We push it with 20 N", "Let's see what happens"])]))
+            await h.settle()
+            assert len(h.deck.slides) == n and h.deck.live.id == sid  # no new slide while it runs
+            await control.click(".dock button.sim-end")
+            await h.settle()
+            recap = h.deck.live
+            assert h.deck.sim_mode is None and recap.title == "Recap: Block on a surface"
+            await wait_for_slide(display, recap.id)
+            text = await display.inner_text(".slide:not(.is-leaving)")
+            assert "Friction opposes the tendency to move" in text and "20 N" not in text and "what happens" not in text
+            await control.wait_for_selector(".flag.sim", state="detached")
+            assert not control.errors and not display.errors, (control.errors, display.errors)
+
+
+async def test_suggest_chip_shows_on_click():
+    async with display_harness() as h:
+        await lecture(h, [])
+        async with browser_page(f"{h.url}/control", 1600, 1000) as control:
+            talk = Lines(h.bus)
+            await talk.say("A 5 kg box is pushed with 20 N across the floor.")
+            await h.settle()
+            await control.wait_for_selector(".sim-chip:has-text('Block on a surface')")
+            assert not any(b.type == "simulation" for s in h.deck.slides for b in s.blocks)
+            await control.click(".sim-chip button.primary")
+            await h.settle()
+            assert h.deck.sim_mode == h.deck.live.id and sim_of(h.deck).params.applied_n == 20
+            await control.wait_for_selector(".sim-chip", state="detached")
+            assert not control.errors, control.errors
+
+
+# ---- S1 templates: each renders in both themes from a spoken lecture, moves, and follows a value change ------------
+S1 = [
+    ("pendulum", "Oscillations", ["Consider a simple pendulum of length 2 metres, pulled aside by 30 degrees."],
+     ["T = 2.89 s", "θ₀ = 30°", "L = 2 m"], "Now make the string 1 metre long.", "T = 2.04 s"),
+    ("projectile", "Projectile motion", ["Consider a ball thrown at 20 metres per second at an angle of 30 degrees."],
+     ["R = 35.3 m", "H = 5.1 m", "u = 20 m/s", "θ = 30°"], "Now throw it at 45 degrees.", "R = 40.8 m"),
+    ("dc_circuit", "Electric circuits",
+     ["Consider a circuit with a 12 volt battery and two resistors of 4 ohm and 6 ohm in series."],
+     ["I = 1.2 A", "V₁ = 4.8 V", "R₁ = 4 Ω", "V = 12 V"], "Now connect them in parallel.", "I = 5 A"),
+    ("wave", "Waves",
+     ["Consider a wave on a string with a frequency of 5 hertz and a wavelength of 2 metres."],
+     ["v = 10 m/s", "T = 0.2 s", "λ = 2 m", "f = 5 Hz"], "Now double the frequency.", "v = 20 m/s"),
+    ("orbit", "Gravitation", ["Consider a satellite orbiting the Earth at a height of 400 km."],
+     ["v = 7.67 km/s", "T = 92.4 min", "h = 400 km", "r = 6771 km"], "Now take it up to 35786 km.", "T = 23.9 h"),
+    ("unit_circle", "Trigonometry", ["Let me show you the unit circle and the angle of 30 degrees."],
+     ["sin θ = 0.5", "cos θ = 0.866", "θ = 30°"], "Now make it 90.", "tan θ = undefined"),
+]
+
+
+@pytest.mark.parametrize("theme", ["light", "dark"])
+@pytest.mark.parametrize("tid, topic, lines, shown, change, after", S1, ids=[s[0] for s in S1])
+async def test_s1_template_renders_moves_and_follows(theme, tid, topic, lines, shown, change, after):
+    async with display_harness(theme) as h:
+        async with browser_page(f"{h.url}/display") as page:
+            store = LectureStateStore(h.bus, "t", LectureSetup(subject="Physics"))
+            store.attach()
+            PresentationEngine(h.bus, store, h.deck, PresentationSettings(min_dwell_s=0.0, provisional=False)).attach()
+            SimulationDetector(h.bus).attach()
+            await h.bus.publish(ready(topic, topic, [act("explanation", points=[f"{topic} in one picture"])],
+                                      relation="new_topic"))
+            await h.settle()
+            talk = Lines(h.bus)
+            for line in lines:
+                await talk.say(line)
+            await h.settle()
+            await wait_for_slide(page, h.deck.live.id)
+            await page.wait_for_selector(SIM)
+            assert await attr(page, "data-template") == tid
+            text = await page.eval_on_selector(SIM, "e => e.textContent.replace(/\s+/g, ' ')")
+            for x in shown:
+                assert x in text, (x, text)
+            pos = await page.eval_on_selector(SIM, "e => e.innerHTML")
+            await page.wait_for_timeout(500)
+            assert await page.eval_on_selector(SIM, "e => e.innerHTML") != pos  # it moves
+            rev = sim_of(h.deck).playback.rev
+            await talk.say(change)
+            await h.settle()
+            await page.wait_for_function(f"() => document.querySelector('{SIM}').textContent.includes({after!r})")
+            assert sim_of(h.deck).playback.rev >= rev
+            assert not page.errors, page.errors

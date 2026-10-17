@@ -48,7 +48,8 @@ def mode_from_config(config: Config, name: str) -> Mode:
 
 
 class Preferences:
-    """The teacher's choices that outlive one lecture (data/preferences.json). Only the mode for now."""
+    """The teacher's choices that outlive one lecture (data/preferences.json): the performance mode and the
+    simulation setting (F-014 S1: auto | suggest | off)."""
 
     def __init__(self, path: Path, default_mode: str = DEFAULT_MODE) -> None:
         self.path = path
@@ -69,15 +70,29 @@ class Preferences:
         m = self._read().get("mode")
         return m if m in MODES else self.default_mode
 
+    def simulations(self, default: str = "auto") -> str:
+        from copilot.simulation.policy import SETTINGS
+        v = self._read().get("simulations")
+        return v if v in SETTINGS else default
+
     def set_mode(self, mode: str) -> None:
         if mode not in MODES:
             raise ValueError(mode)
+        self._write("mode", mode)
+
+    def set_simulations(self, setting: str) -> None:
+        from copilot.simulation.policy import SETTINGS
+        if setting not in SETTINGS:
+            raise ValueError(setting)
+        self._write("simulations", setting)
+
+    def _write(self, key: str, value: str) -> None:
         data = self._read()
-        data["mode"] = mode
+        data[key] = value
         try:
             self.path.parent.mkdir(parents=True, exist_ok=True)
             tmp = self.path.with_suffix(".tmp")
             tmp.write_text(json.dumps(data, indent=1), encoding="utf-8")
             tmp.replace(self.path)
-        except OSError as e:  # a full disk must not stop the lecture; the mode still applies now
+        except OSError as e:  # a full disk must not stop the lecture; the choice still applies now
             log.warning("preferences not saved (%s)", e)

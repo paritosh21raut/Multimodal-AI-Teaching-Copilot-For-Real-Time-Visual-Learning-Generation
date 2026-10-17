@@ -384,12 +384,16 @@ function useSimTemplates(q = "") {
   return found;
 }
 const SIM_SPEEDS = [0.25, 0.5, 1, 1.5, 2];
+// choices of a template that are not numbers (Values popover): [slot, label, [[value, text], ...]]
+const SIM_CHOICES = {
+  dc_circuit: [["arrangement", "Resistors", [["series", "in series"], ["parallel", "in parallel"]]]],
+};
 const speedLabel = (v) => (v === 0.25 ? "¼×" : v === 0.5 ? "½×" : `${v}×`);
 
 // The simulation controls float on the preview where the image bar is (a slide has one visual column): play / pause,
 // step, restart, speed, Values (a field per value, marked said / yours / not said), Show (element toggles), another
 // template, Full stage, remove. Every action is a command; the engine changes the simulation, the pages follow.
-function SimBar({ spec, b, send }) {
+function SimBar({ spec, b, send, running }) {
   const sim = b.sim;
   const templates = useSimTemplates();
   const t = templates.find((x) => x.id === sim.template);
@@ -411,12 +415,22 @@ function SimBar({ spec, b, send }) {
     <button class=${"icon" + (menu === "pick" ? " on" : "")} onClick=${toggle("pick")} title="Another simulation for this slide">${svg(ICON.change)}</button>
     <button class="icon" onClick=${cmd("sim_full", { on: true })} title="Full screen on the display">${svg(ICON.full)}</button>
     <button class="icon" onClick=${cmd("sim_remove")} title="Take the simulation off this slide">${svg(ICON.remove)}</button>
+    ${running && html`<span class="sep"></span><button class="sim-end" onClick=${() => send("sim_end")}
+      title="End the simulation: slides resume, first a recap of what you taught">${svg(ICON.back)}Back to slides</button>`}
     ${menu === "values" && t && html`<div class="menu up sim-values" role="dialog">
       ${t.slots.map((sl) => html`<${SimValue} key=${sl.name + "@" + sim.version} sl=${sl} sim=${sim}
         onSet=${(v) => send("sim_set", { slide_id: spec.id, slot: sl.name, value: v })} />`)}
       ${"applied_dir" in sim.params && html`<label class="sim-row"><span>Push direction</span>
         <select value=${sim.params.applied_dir} onChange=${(e) => send("sim_set", { slide_id: spec.id, slot: "applied_dir", value: e.target.value })}>
           <option value="up">up the slope</option><option value="down">down the slope</option></select><b></b></label>`}
+      ${"applied_mode" in sim.params && html`<label class="sim-row"><span>At an angle it</span>
+        <select value=${sim.params.applied_mode} onChange=${(e) => send("sim_set", { slide_id: spec.id, slot: "applied_mode", value: e.target.value })}>
+          <option value="push">pushes into the floor</option><option value="pull">pulls up from the floor</option></select>
+        <b class=${"src " + (sim.param_source.applied_mode || "default")}>${{ said: "said", teacher: "yours" }[sim.param_source.applied_mode] || "not said"}</b></label>`}
+      ${(SIM_CHOICES[sim.template] || []).map(([slot, label, opts]) => html`<label key=${slot} class="sim-row"><span>${label}</span>
+        <select value=${sim.params[slot]} onChange=${(e) => send("sim_set", { slide_id: spec.id, slot, value: e.target.value })}>
+          ${opts.map(([v, l]) => html`<option key=${v} value=${v}>${l}</option>`)}</select>
+        <b class=${"src " + (sim.param_source[slot] || "default")}>${{ said: "said", teacher: "yours" }[sim.param_source[slot]] || "not said"}</b></label>`)}
     </div>`}
     ${menu === "show" && t && html`<div class="menu up" role="menu">
       ${t.elements.map((el) => html`<button key=${el.id} role="menuitemcheckbox" aria-checked=${sim.shown.includes(el.id)}
@@ -559,7 +573,41 @@ function ModePill({ mode, send }) {
     ${svg(ICON.bolt)}<span>${high ? "High performance" : "Standard"}</span></button>`;
 }
 
-function StartCard({ lifecycle, materials, notes, mode, send }) {
+// Concept Simulation (F-014 S1): Auto = a spoken cue shows one; Suggest = a chip in /control asks first; Off.
+const SIM_TIP = {
+  auto: "Simulations: a spoken cue (“consider a block on a slope”) shows one by itself",
+  suggest: "Simulations: a chip here asks you first; nothing is shown until you click Show",
+  off: "Simulations: none by themselves (the Simulation button still works)",
+};
+const SIM_NEXT = { auto: "suggest", suggest: "off", off: "auto" };
+function SimSettingSwitch({ setting, send }) {
+  if (!setting) return null;
+  return html`<div class="mode-row">
+    <label class="start-label">Simulations</label>
+    <${Segmented} value=${setting} onChange=${(v) => v !== setting && send("set_simulations", { setting: v })}
+      options=${[["auto", "Auto", SIM_TIP.auto], ["suggest", "Suggest", SIM_TIP.suggest], ["off", "Off", SIM_TIP.off]]} />
+  </div>`;
+}
+
+function SimSettingPill({ setting, send }) {
+  if (!setting) return null;
+  const label = { auto: "Sims: Auto", suggest: "Sims: Suggest", off: "Sims: Off" }[setting];
+  return html`<button class=${"mode-pill sim-setting" + (setting === "off" ? "" : " on")} aria-label="Simulations setting"
+      onClick=${() => send("set_simulations", { setting: SIM_NEXT[setting] })}
+      title=${`${SIM_TIP[setting]} · click for ${SIM_NEXT[setting]}`}>${svg(ICON.sim)}<span>${label}</span></button>`;
+}
+
+// The Suggest chip: "Show the Block on a surface simulation?" (the setting Suggest, or a setup said without a cue)
+function SuggestChip({ suggestion, send }) {
+  if (!suggestion) return null;
+  return html`<div class="sim-chip" role="status" title=${suggestion.text}>
+    ${svg(ICON.sim)}<span>Show the <b>${suggestion.name}</b> simulation?</span>
+    <button class="primary" onClick=${() => send("sim_accept", { id: suggestion.id })}>Show</button>
+    <button class="icon" onClick=${() => send("sim_dismiss", { id: suggestion.id })} aria-label="Not now" title="Not now">${svg(ICON.remove)}</button>
+  </div>`;
+}
+
+function StartCard({ lifecycle, materials, notes, mode, simSetting, send }) {
   const chapters = (materials && materials.chapters) || [];
   const testRun = !!(materials && materials.current && materials.current.test_run);
   const [chosen, setChosen] = useState(null);       // null: not picked yet → the last one used
@@ -611,6 +659,7 @@ function StartCard({ lifecycle, materials, notes, mode, send }) {
     ${testRun && html`<p class="start-note">Test run: it stays in Unsorted</p>`}
     <${StudyMaterial} notes=${notes} send=${send} />
     <${ModeSwitch} mode=${mode} send=${send} />
+    <${SimSettingSwitch} setting=${simSetting} send=${send} />
     <button class="primary start" onClick=${start} disabled=${!ready || sent || (naming && !name.trim())}>
       ${PLAY}${sent ? "Starting…" : "Start lecture"}</button>
   </div>`;
@@ -627,7 +676,7 @@ function NotesOnScreen({ shown, send }) {
 }
 
 function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice, onNotice, adding, onAdded, theme,
-                   materials, notes, notesShown, onScreenAssess, mode, simNotice }) {
+                   materials, notes, notesShown, onScreenAssess, mode, simNotice, simSuggestion, simSetting }) {
   const ref = useRef(null);
   const scale = useStageScale(ref);
   const [drag, setDrag] = useState(null); // null | "over" | "uploading"
@@ -639,7 +688,7 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
   const before = lifecycle === "ready";  // waiting for Start (while models load the glass loader shows)
   const canDrop = spec && spec.layout !== "title" && !zoomed && !onScreen;
   const image = imageOf(spec);
-  const fresh = simNotice && spec && simNotice.slide_id === spec.id && Date.now() - simNotice.at < 8000;
+  const fresh = simNotice && spec && (!simNotice.slide_id || simNotice.slide_id === spec.id) && Date.now() - simNotice.at < 8000;
   const line = useStatus(status, notice || (fresh ? simNotice.text : ""), onNotice, !!image);
   const drop = async (e) => {
     e.preventDefault();
@@ -679,13 +728,16 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
     ${zoomed && html`<button class="back" onClick=${() => send("unzoom_image")} title="Back to the slide (Esc)">
       ${svg(ICON.back)}<span>Back to slide</span><kbd>Esc</kbd></button>`}
     ${spec && spec.layout !== "title" && !zoomed && !simFull && !drag && !onScreen && (sim
-      ? html`<${SimBar} spec=${spec} b=${sim} send=${send} />`
+      ? html`<${SimBar} spec=${spec} b=${sim} send=${send} running=${!!(deck && deck.sim_mode === spec.id)} />`
       : html`<${ImageBar} spec=${spec} image=${image} choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`)}
     <${NotesOnScreen} shown=${notesShown} send=${send} />
-    ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} notes=${notes} mode=${mode} send=${send} />`}
+    ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} notes=${notes} mode=${mode} simSetting=${simSetting} send=${send} />`}
     ${line && !drag && html`<div class=${"image-status" + (line.error ? " error" : "")}>
       ${line.busy && html`<span class="dot"></span>`}${line.text}</div>`}
-    ${(lifecycle === "paused" || (deck && deck.blank) || onScreenAssess) && !zoomed && html`<div class="flags">
+    <${SuggestChip} suggestion=${simSuggestion} send=${send} />
+    ${(lifecycle === "paused" || (deck && deck.blank) || onScreenAssess || (deck && deck.sim_mode)) && !zoomed && html`<div class="flags">
+      ${deck && deck.sim_mode && html`<button class="flag sim" onClick=${() => deck.sim_mode !== deck.live_id && send("goto", { slide_id: deck.sim_mode })}
+        title="Simulation mode: no new slides until you go back to the slides (click: show the simulation)">SIMULATION RUNNING</button>`}
       ${onScreenAssess && html`<span class="flag">${onScreenAssess.toUpperCase()} ON SCREEN</span>`}
       ${lifecycle === "paused" && html`<span class="flag paused">PAUSED</span>`}
       ${deck && deck.blank && html`<span class="flag warn">BLANK</span>`}
@@ -697,6 +749,7 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
 const endLecture = (send) => () => confirm("End the lecture?") && send("end");
 
 function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd, theme }) {
+  const running = !!(deck && deck.sim_mode);
   const dark = theme === "dark";
   const ids = deck ? deck.slide_ids : [];
   const at = deck ? ids.indexOf(deck.live_id) : -1;
@@ -729,7 +782,10 @@ function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd, theme }) {
       <button class="add-point" onClick=${onAdd} disabled=${!canAdd} title="Add a point of your own to this slide">
         ${svg(ICON.point)}<span>Add point</span></button>
       <${EquationPicker} send=${send} disabled=${!canAdd} />
-      <${SimPicker} send=${send} disabled=${!canAdd} />
+      ${running  // in its place while one runs: the dock keeps its width (screenshot 2026-10-17)
+        ? html`<button class="sim-end on" onClick=${() => send("sim_end")}
+            title="End the simulation: slides resume, first a recap of what you taught">${svg(ICON.back)}<span>Back to slides</span></button>`
+        : html`<${SimPicker} send=${send} disabled=${!canAdd} />`}
     </div>
     <button class="end" onClick=${endLecture(send)} title="End the lecture">${svg(ICON.end)}<span>End lecture</span></button>
   </div>`;
@@ -2403,6 +2459,7 @@ function App() {
       <span class=${"pill " + (state.connected ? "ok" : "bad")}>${state.connected ? "connected" : "offline"}</span>
       <${Meter} audio=${state.audio} />
       <span class="spacer"></span>
+      <${SimSettingPill} setting=${state.simSetting} send=${send} />
       <${ModePill} mode=${state.mode} send=${send} />
       <${Share} share=${state.share} viewers=${state.viewers} send=${send} />
       <a class="open-display" href="/display" target="classroom-display">Open classroom display ↗</a>
@@ -2415,7 +2472,8 @@ function App() {
         <${Preview} spec=${liveSpec} deck=${deck} lifecycle=${state.lifecycle} slides=${state.slides} send=${send} theme=${state.theme}
           materials=${materials} notes=${state.notes} notesShown=${state.notesShown} onScreenAssess=${onScreenAssess(state.assess)} mode=${state.mode}
           notice=${notice} onNotice=${setNotice} adding=${adding} onAdded=${() => setAdding(false)}
-          status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} simNotice=${state.simNotice} />
+          status=${liveSpec && state.images[liveSpec.id]} choices=${liveSpec && state.choices[liveSpec.id]} simNotice=${state.simNotice}
+          simSuggestion=${state.simSuggestion} simSetting=${state.simSetting} />
         <${Dock} deck=${deck} lifecycle=${state.lifecycle} send=${send} toggle=${toggle} theme=${state.theme}
           canAdd=${!!liveSpec && !(deck && deck.zoom)} onAdd=${() => setAdding(true)} />
         <p class="hint">Keys: ← → navigate · Space pause / resume · B blank · N new slide · T light / dark slides · hover or double-click a slide item to edit it</p>

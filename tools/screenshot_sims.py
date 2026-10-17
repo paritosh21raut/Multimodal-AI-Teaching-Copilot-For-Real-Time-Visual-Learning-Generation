@@ -33,6 +33,36 @@ SCENES = [
     ("block_static", "Friction", [
         "Imagine a box of 10 kg on a rough surface with mu equal to 0.5.",
         "Now push it with 30 newtons."], 4),
+    ("block_push_angle", "Friction", [
+        "Imagine a box of 10 kg on a rough floor with mu equal to 0.3.",
+        "A pushing force of 100 N acts at an angle of 30 degrees with the horizontal."], 6),
+    ("block_pull_angle", "Friction", [
+        "Consider a 10 kg block on a rough floor, mu is 0.3.",
+        "I pull it with a rope with 60 newtons at 37 degrees above the horizontal."], 6),
+    ("block_lifted", "Friction", [
+        "Consider a 2 kg block on a rough floor, mu is 0.3.",
+        "I pull it with a rope with 60 newtons at 60 degrees above the horizontal."], 3),
+    ("pendulum", "Oscillations", [
+        "Consider a simple pendulum of length 2 metres, pulled aside by 30 degrees.",
+        "The bob has a mass of 200 grams."], 3),
+    ("pendulum_unknown", "Oscillations", [
+        "Imagine a pendulum swinging."], 2),
+    ("projectile", "Projectile motion", [
+        "A ball is thrown at 20 metres per second at an angle of 30 degrees.",
+        "Let me show you what happens."], 3),
+    ("projectile_cliff", "Projectile motion", [
+        "Imagine a stone thrown horizontally from a cliff 20 m high at 10 m/s."], 4),
+    ("circuit_series", "Electric circuits", [
+        "Consider a circuit with a 12 volt battery and two resistors of 4 ohm and 6 ohm in series."], 3),
+    ("circuit_parallel", "Electric circuits", [
+        "Consider a circuit with a 12 volt battery and two resistors of 4 ohm and 6 ohm in parallel."], 3),
+    ("wave", "Waves", [
+        "Consider a wave on a string with a frequency of 0.5 hertz and a wavelength of 2 metres and an amplitude of 30 cm."], 3),
+    ("wave_fast", "Waves", ["Consider a transverse wave on a string with a frequency of 440 Hz and a wavelength of 75 cm."], 3),
+    ("orbit", "Gravitation", ["Consider a satellite orbiting the Earth at a height of 400 km."], 3),
+    ("orbit_moon", "Gravitation", ["Imagine a satellite orbiting the Moon with an orbit radius of 20000 km."], 3),
+    ("unit_circle", "Trigonometry", ["Let me show you the unit circle and the angle of 150 degrees."], 3),
+    ("unit_circle_plain", "Trigonometry", ["Let me show you the graph of the sine function."], 5),
     ("incline_sliding", "Inclined plane", [
         "Suppose a 5 kg block is placed on an inclined plane at 30 degrees.",
         "Let the coefficient of friction be 0.2."], 7),
@@ -76,7 +106,10 @@ async def build(h, topic, lines, steps):
 
 async def capture(theme: str) -> list[Path]:
     paths = []
+    only = [a for a in sys.argv[1:] if a not in ("light", "dark")]
     for name, topic, lines, steps in SCENES:
+        if only and name not in only:
+            continue
         async with display_harness(theme) as h:
             await engine(h)
             async with browser_page(f"{h.url}/display") as page:
@@ -111,6 +144,39 @@ async def capture(theme: str) -> list[Path]:
                     paths.append(p)
                     if control.errors:
                         print(theme, "control console errors:", control.errors)
+    if not only or "mode" in only:
+        paths += await capture_mode(theme)
+    return paths
+
+
+async def capture_mode(theme: str) -> list[Path]:
+    """Simulation mode (S1): /control while it runs (the flag, Back to slides), then the recap slide."""
+    paths = []
+    async with display_harness(theme) as h:
+        await engine(h)
+        async with browser_page(f"{h.url}/control", 1600, 1000) as control, browser_page(f"{h.url}/display") as page:
+            s = await build(h, "Friction", ["Consider a block of mass 5 kg resting on a rough floor.",
+                                            "We push it with a force of 20 newtons, mu is 0.2."], 6)
+            await h.bus.publish(ready("Friction", "Friction", [act("definition", term="Static friction",
+                definition="The friction that stops a body at rest from starting to move"),
+                act("explanation", points=["Kinetic friction is smaller than the limiting static friction",
+                                           "Now we push it with 20 N", "Let's see what happens"])]))
+            await h.settle()
+            await wait_for_slide(control, s.id)
+            await control.wait_for_selector(".flag.sim")
+            await control.wait_for_timeout(2500)
+            p = OUT / f"{theme}_control_sim_mode.png"
+            await control.screenshot(path=str(p))
+            paths.append(p)
+            await cmd(h, "sim_end")
+            await wait_for_slide(page, h.deck.live.id)
+            await page.wait_for_timeout(900)
+            p = OUT / f"{theme}_recap.png"
+            await page.screenshot(path=str(p))
+            paths.append(p)
+            for pg in (control, page):
+                if pg.errors:
+                    print(theme, "mode console errors:", pg.errors)
     return paths
 
 

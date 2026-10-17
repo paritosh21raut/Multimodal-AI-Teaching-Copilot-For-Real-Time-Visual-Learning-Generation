@@ -34,6 +34,8 @@ from copilot.core.events import (
     NotesState,
     ShareChanged,
     SimulationNotice,
+    SimulationSettingChanged,
+    SimulationSuggestion,
     SlideOverflow,
     SlidePatch,
     ThemeChanged,
@@ -97,6 +99,8 @@ class DisplayHub:
         self.share: dict = {"state": "off", "url": "", "detail": ""}  # control only (F-008)
         self.notes: Optional[dict] = None  # the teacher's PDF notes (F-009), control only
         self.mode = ""  # performance mode (F-013), control only; "" until the app says
+        self.sim_setting = ""  # F-014 S1: auto | suggest | off, control only; "" until the app says
+        self.sim_suggestion: Optional[dict] = None  # the open Suggest chip (control only)
         self.materials: Optional[dict] = None  # lecture materials (F-010), control only
         self.shared: list[dict] = []  # PDFs the students may download (F-010), to every viewer
         self.notes_shown: dict = {"on": False, "doc_id": "", "page": 0, "name": ""}  # F-010b, every role
@@ -109,7 +113,7 @@ class DisplayHub:
             [SlidePatch, DeckState, LifecycleChanged, TranscriptFinal, UtteranceDropped, ConcernRaised,
              ConcernResolved, CorrectionPlaced, ImageRequested, ImageReady, ImageChoices, ShareChanged, ThemeChanged, ModeChanged, NotesState,
              NotesProjected,
-             MaterialsState, AssessState, SimulationNotice],
+             MaterialsState, AssessState, SimulationNotice, SimulationSettingChanged, SimulationSuggestion],
         )
         # Audio levels are high-rate and only matter "now": drop old ones if the hub lags.
         self._bus.subscribe("display_hub_audio", self._on_event, [AudioLevel], queue_size=4, overflow="drop_oldest")
@@ -154,6 +158,8 @@ class DisplayHub:
             msg["viewers"] = self.viewers
             msg["notes"] = self.notes
             msg["mode"] = self.mode
+            msg["sim_setting"] = self.sim_setting
+            msg["sim_suggestion"] = self.sim_suggestion
             msg["materials"] = self.materials
             msg["assess"] = dict(self.assess_control)
         else:  # the projector and the students: never an answer key before it is due (F-011)
@@ -204,7 +210,7 @@ class DisplayHub:
             self._broadcast({"type": "patch", "slide_id": event.slide_id, "version": event.version, "spec": event.spec},
                             key=("patch", event.slide_id))
         elif isinstance(event, DeckState):
-            self.deck = event.model_dump(include={"live_id", "slide_ids", "following", "blank", "zoom", "sim_full"})
+            self.deck = event.model_dump(include={"live_id", "slide_ids", "following", "blank", "zoom", "sim_full", "sim_mode"})
             for sid in [s for s in self.slides if s not in event.slide_ids]:  # removed slides
                 del self.slides[sid]
             self._broadcast({"type": "deck", "deck": self.deck}, key=("deck",))
@@ -292,6 +298,13 @@ class DisplayHub:
                 self.assess_public = dict(event.public)
                 for role in ("display", "viewer"):
                     self._broadcast({"type": "assess", **self._assess_for(role)}, key=("assess",), roles=(role,))
+        elif isinstance(event, SimulationSettingChanged):  # F-014 S1: Auto / Suggest / Off
+            self.sim_setting = event.setting
+            self._broadcast({"type": "sim_setting", "setting": event.setting}, key=("sim_setting",), roles=("control",))
+        elif isinstance(event, SimulationSuggestion):  # F-014 S1: the chip, or its end
+            self.sim_suggestion = event.model_dump(include={"id", "template", "name", "text"}) if event.active else None
+            self._broadcast({"type": "sim_suggestion", "suggestion": self.sim_suggestion}, key=("sim_suggestion",),
+                            roles=("control",))
         elif isinstance(event, ModeChanged):  # the teacher's performance switch (F-013)
             self.mode = event.mode
             self._broadcast({"type": "mode", "mode": self.mode}, key=("mode",), roles=("control",))
