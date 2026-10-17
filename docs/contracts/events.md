@@ -14,6 +14,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `TranscriptFinal` | STT / simulator | `segment: TranscriptSegment`, `stt_latency_ms?`, `utterance` (S1b; 0 = simulator) |
 | `TranscriptPartial` | STT (live model, S1b) | `utterance`, `start`, `text`, `stable` (agreed prefix), `sentences[(text, start)]`, `latency_ms`, `infer_ms`; instant display only, never the LLM |
 | `LiveCue` | understanding (S1b) | `utterance`, `start`, `announce`, `compare[]`, `list_head`, `list_items[]`, `list_count`, `item`, `term`, `definition`; from `TranscriptPartial.stable`, for the engine's faded live layer |
+| `VocabularyChanged` | understanding (F-013 S3b) | `terms[]`: study-material + lecture glossary terms (newest last); speech sets Whisper's prompt from them |
 | `UtteranceClassified` | understanding | `segment_id`, `kind` (content/classroom_management/meta/filler/question_to_class), `maybe_meta`, `rule` |
 | `ConceptSignal` | understanding | `segment_id`, `shift_score`, `topic_shift`, `keyphrases`, `cues`, `boundary`; F-013 spoken cues (`understanding.cues`): `announce` (topic name, "A vs B"), `compare[]`, `list_head`, `list_items[]`, `list_count`, `item`; `utterance`, `start` (lecture time of the line, links live cues to it) |
 | `InterpretRequested` | understanding | `request_id`, `reason` (pause/words/boundary/max_wait/cap/flush), `segment_ids`, `prompt_tokens` |
@@ -43,7 +44,8 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 force_new_slide, resolve_concern(id, action), remove_image(slide_id), change_image(slide_id),
 set_image(slide_id, image_id, aspect, alt), image_prev(slide_id), image_next(slide_id), zoom_image(slide_id),
 unzoom_image, edit_text(slide_id, item_id = title | element id | <definition id>:term, text), delete_item(slide_id,
-item_id), add_point(slide_id, text), share_start, share_stop, set_theme(theme), notes_open(id), notes_page(page),
+item_id), add_point(slide_id, text), show_equation(id: a presentation.equations entry, onto the live slide; F-013
+S3b), share_start, share_stop, set_theme(theme), notes_open(id), notes_page(page),
 notes_follow(on), notes_remove(id), materials_create(items[{kind: summary|concepts|notes|assignment|pptx, name?,
 scope?: topic|lecture, count?, theme?}], lectures[past ids], current), materials_rename(id, name),
 materials_share(id, on), materials_remove(id), materials_show(id), lecture_hide(id), chapter_create(name, start?),

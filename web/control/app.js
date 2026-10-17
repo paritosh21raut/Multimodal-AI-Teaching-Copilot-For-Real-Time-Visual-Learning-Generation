@@ -67,6 +67,7 @@ const ICON = {
   edit: "M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4",
   bin: "M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13M10 11v6M14 11v6",
   point: "M5 7h.01M9 7h10M5 12h.01M9 12h10M5 17h.01M9 17h6M19 15v6M16 18h6",
+  sigma: "M18 5H6l6 7-6 7h12",  // Show equation (F-013 S3)
   share: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z",
   copy: "M9 9h11v11H9zM5 15H4V4h11v1",
   stop: "M6 6l12 12M18 6L6 18",
@@ -538,8 +539,38 @@ function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd, theme }) {
       <button onClick=${() => send("force_new_slide")} title="Start a new slide (N)">${svg(ICON.newSlide)}<span>New slide</span></button>
       <button class="add-point" onClick=${onAdd} disabled=${!canAdd} title="Add a point of your own to this slide">
         ${svg(ICON.point)}<span>Add point</span></button>
+      <${EquationPicker} send=${send} disabled=${!canAdd} />
     </div>
     <button class="end" onClick=${endLecture(send)} title="End the lecture">${svg(ICON.end)}<span>End lecture</span></button>
+  </div>`;
+}
+
+// F-013 S3: a standard equation from the local library on the live slide, for one the teacher wants without naming
+// it (named equations come on their own); search by name or symbol words ("maxwell", "gas", "schrodinger").
+function EquationPicker({ send, disabled }) {
+  const [open, setOpen, ref] = usePopover();
+  const [q, setQ] = useState("");
+  const [found, setFound] = useState([]);
+  useEffect(() => {
+    if (!open) return undefined;
+    let live = true;
+    const t = setTimeout(() => fetch(`/api/equations?q=${encodeURIComponent(q)}`).then((r) => r.json())
+      .then((j) => live && setFound(j.results || [])).catch(() => live && setFound([])), 120);
+    return () => { live = false; clearTimeout(t); };
+  }, [open, q]);
+  const pick = (e) => { send("show_equation", { id: e.id }); setOpen(false); setQ(""); };
+  return html`<div class="menu-wrap eq-picker" ref=${ref}>
+    <button class=${open ? "on" : ""} onClick=${() => setOpen(!open)} disabled=${disabled} aria-expanded=${open}
+      title="Show a standard equation on this slide">${svg(ICON.sigma)}<span>Equation</span></button>
+    ${open && html`<div class="menu up" role="menu">
+      <input class="eq-search" value=${q} placeholder="Search: Maxwell, Schrödinger, gas law…"
+        ref=${(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus())}
+        onInput=${(e) => setQ(e.target.value)}
+        onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Enter" && found[0]) pick(found[0]); if (e.key === "Escape") setOpen(false); }} />
+      ${found.map((e) => html`<button key=${e.id} role="menuitem" class="menu-row eq-row" onClick=${() => pick(e)}>
+        <span><b>${e.name}</b><em>${e.plain}</em></span></button>`)}
+      ${!found.length && html`<p class="eq-none">No equation of that name in the library</p>`}
+    </div>`}
   </div>`;
 }
 

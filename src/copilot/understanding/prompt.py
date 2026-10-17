@@ -47,8 +47,7 @@ Slide content (acts):
     [{label, items}] when things are split into named groups (e.g. "Inner planets": Mercury, Venus, Earth, Mars)
   process: steps in order, for any ordered procedure or input -> process -> output flow (never points/examples);
     if the CURRENT SLIDE is a process and the NEW lines continue it, give only the NEW steps
-  comparison: compare (the 2 things compared) + pairs (aspect, left, right) | timeline: events (when, what)
-  formula: {expression, variables [{symbol, meaning}]} | cause_effect: causes [{cause, effect}]
+{compare_rule}  formula: {expression, variables [{symbol, meaning}]} | cause_effect: causes [{cause, effect}]
   explanation, recap: points | example, application: examples (only what the teacher offers as examples)
   act is one of: definition, explanation, process, comparison, example, formula, cause_effect, timeline,
   classification, application, question, recap, transition, other.
@@ -74,7 +73,7 @@ what the NEW lines taught); level_estimate (e.g. "Grade 7"; keep a given grade);
 JSON shape:
 {"topic": "", "subtopic": "", "relation": "", "acts": [{"act": "", "lines": [1], "items": {"term": "",
 "definition": "", "label": "", "points": [""], "facts": [{"label": "", "value": ""}], "groups": [{"label": "",
-"items": [""]}], "steps": [""], "compare": ["", ""], "pairs": [{"aspect": "", "left": "", "right": ""}],
+"items": [""]}], "steps": [""], "compare": ["", ""], {compare_shape},
 "events": [{"when": "", "what": ""}], "formula": {"expression": "", "variables": [{"symbol": "", "meaning": ""}]},
 "causes": [{"cause": "", "effect": ""}], "examples": [""]}, "added": false}], "revisions": [{"ref": "S1",
 "text": ""}], "representation_hint": "", "meta_lines": [], "concerns": [{"kind": "factual", "claim": "",
@@ -123,13 +122,30 @@ PARENT_RULE = """ parent = the OUTLINE
 PARENT_SHAPE = ', "parent": ""'
 
 
-def system_prompt(visual: bool = True, hierarchy: bool = True, named: bool = True, parent: bool = False) -> str:
+# F-013 S3 (C1): N-way comparison. The old two-way form (aspect, left, right) could not hold 3 things (test18: ANN /
+# CNN / RNN as "TNN: ..." cells), and an announced comparison often came back as points (test8, test27). The line tag
+# (compares: A | B) comes from the deterministic cue (understanding.cues).
+COMPARE_OLD = "  comparison: compare (the 2 things compared) + pairs (aspect, left, right) | timeline: events (when, what)\n"
+COMPARE_OLD_SHAPE = '"pairs": [{"aspect": "", "left": "", "right": ""}]'
+COMPARE_RULE = """  comparison: compare (the 2-4 things compared, named as the teacher names them) + rows [{aspect, values}], one
+    value per compared thing in the order of compare; a line tagged (compares: A | B) announces a comparison of
+    those things: when the NEW lines contrast them, give a comparison act with those names
+  timeline: events (when, what)
+"""
+COMPARE_SHAPE = '"rows": [{"aspect": "", "values": ["", ""]}]'
+COMPARE_TAGS = True  # tag lines with the comparison cue (build_prompt); tools/prompt_ab.py switches it with the rule
+
+
+def system_prompt(visual: bool = True, hierarchy: bool = True, named: bool = True, parent: bool = False,
+                  compare: bool = True) -> str:
     return (_SYSTEM_TEMPLATE.replace("{visual_rule}", VISUAL_RULE if visual else "")
             .replace("{visual_shape}}}", (VISUAL_SHAPE if visual else "") + "}")
             .replace("{hierarchy_rule}", HIERARCHY_RULE if hierarchy else "")
             .replace("{named_rule}", NAMED_RULE if named else "")
             .replace("{parent_rule}", PARENT_RULE if parent else "")
-            .replace("{parent_shape}", PARENT_SHAPE if parent else ""))
+            .replace("{parent_shape}", PARENT_SHAPE if parent else "")
+            .replace("{compare_rule}", COMPARE_RULE if compare else COMPARE_OLD)
+            .replace("{compare_shape}", COMPARE_SHAPE if compare else COMPARE_OLD_SHAPE))
 
 
 # The visual rule is live since the old-vs-new A/B on gpt-oss-120b passed (F-007b step 4, 2026-10-06: 11/11 valid,
@@ -160,6 +176,18 @@ def announced_subject(text: str) -> str:
             break
         subject = stripped
     return " ".join(subject.split()[:6])
+
+
+def compared(text: str) -> str:
+    """"Now let's differentiate between AI and deep learning." -> "Artificial Intelligence | Deep Learning" (the
+    comparison cue of any sentence of the line; "" when there is none)."""
+    from copilot.understanding.cues import detect
+
+    for sent in re.split(r"(?<=[.!?])\s+", text):
+        cue = detect(sent).of("compare")
+        if cue is not None:
+            return " | ".join(cue.items)
+    return ""
 
 
 class PromptBudgetError(Exception):
@@ -241,7 +269,8 @@ def build_prompt(state: LectureState, lines: Sequence[BufferedLine], *, dynamic_
                + (f" (in {_clip(parent.title, 40)})" if parent else "") if topic else "CURRENT: (none yet)")
     numbered = "\n".join(
         f"[{i}]{' (maybe-meta)' if l.maybe_meta else ''}{' (question)' if l.question else ''}"
-        f"{f' (announces: {a})' if (a := announced_subject(l.text)) else ''} {' '.join(l.text.split())}"
+        f"{f' (announces: {a})' if (a := announced_subject(l.text)) else ''}"
+        f"{f' (compares: {c})' if COMPARE_TAGS and (c := compared(l.text)) else ''} {' '.join(l.text.split())}"
         for i, l in enumerate(lines, start=1)
     )
     fixed = "\n".join([header, current, "NEW LINES:", numbered])

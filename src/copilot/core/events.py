@@ -64,6 +64,7 @@ CommandKind = Literal[
     "image_prev", "image_next",                   # step through the images this slide has shown, args {slide_id}
     "zoom_image", "unzoom_image",                 # the slide's image full screen on the display, args {slide_id}
     "edit_text", "delete_item", "add_point",      # live slide editing, F-008: {slide_id, item_id[, text]} / {slide_id, text}
+    "show_equation",                              # a standard equation from the library on the live slide, {id} (F-013 S3)
     "share_start", "share_stop",                  # share /view with students over a Cloudflare quick tunnel (F-008)
     "set_theme",                                  # slide theme mid-lecture, args {theme: light | dark} (F-009)
     "notes_open", "notes_page", "notes_follow", "notes_remove",  # the teacher's PDF notes in /control (F-009)
@@ -111,6 +112,11 @@ class TranscriptPartial(Event):
     sentences: list[tuple[str, float]] = Field(default_factory=list)  # sentences of `stable`, lecture time each starts
     latency_ms: float = 0.0  # snapshot taken -> published
     infer_ms: float = 0.0    # of which the model pass
+
+
+class VocabularyChanged(Event):
+    """F-013 S3: the lecture glossary grew (understanding.glossary); speech primes Whisper with these terms."""
+    terms: list[str] = Field(default_factory=list)
 
 
 class LiveCue(Event):
@@ -356,7 +362,7 @@ EVENT_TYPES: dict[str, type[Event]] = {
         CommandReceived, StateChanged, SlidePatch, DeckState, ErrorRaised,
         UtteranceClassified, ConceptSignal, InterpretRequested, InterpretationReady, LLMCallFailed,
         ConcernRaised, ConcernResolved, SlideContextChanged, SlideOverflow, ImageRequested, ImageReady,
-        ImageChoices, ThemeChanged,
+        ImageChoices, ThemeChanged, VocabularyChanged,
     )
 }
 

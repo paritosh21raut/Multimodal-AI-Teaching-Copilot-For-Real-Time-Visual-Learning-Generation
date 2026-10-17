@@ -34,6 +34,11 @@ def is_announcement(text: str) -> bool:
 class FormulaData:
     expression: str
     variables: tuple[tuple[str, str], ...] = ()  # (symbol, meaning)
+    # F-013 S3 (C10): a named standard equation from presentation.equations (its own KaTeX and symbol latex)
+    latex: str = ""
+    name: str = ""
+    standard: bool = False
+    var_latex: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -74,8 +79,9 @@ class Piece:
             rows=tuple((fn(a), tuple(fn(c) for c in cells)) for a, cells in self.rows),
             pairs=tuple((fn(a), fn(b)) for a, b in self.pairs),
             groups=tuple((fn(g), tuple(fn(x) for x in items)) for g, items in self.groups),
-            formula=FormulaData(fn(self.formula.expression), tuple((fn(s), fn(m)) for s, m in self.formula.variables))
-            if self.formula else None,
+            formula=replace(self.formula, expression=fn(self.formula.expression),
+                            variables=tuple((fn(s), fn(m)) for s, m in self.formula.variables))
+            if self.formula and not self.formula.standard else self.formula,
         )
 
 
@@ -214,6 +220,53 @@ def _described_kinds(points: tuple[str, ...]) -> Optional[list[tuple[str, str]]]
     return [(m.group("label").strip(), cap(m.group("rest").strip())) for m in found if m]
 
 
+MAX_COLUMNS = 4
+# a cell that names its column: "TNN: fixed-length input", "ANN: moderate" (test18: three networks squeezed into a
+# two-way table whose only "compared" name was the aspect)
+_NAMED_CELL = re.compile(r"^(?P<n>[A-Z][\w.+&-]{0,15}(?: [A-Z][\w.+&-]{0,15})?):\s+(?P<v>\S.*)$")
+
+
+def comparison_pieces(it, base: dict) -> list[Piece]:
+    """An N-way comparison (F-013 S3, C1): columns = the compared names (2-4), rows = (aspect, one cell per column).
+    Repairs of the model's shapes, all from its own words: cells "Name: value" name the columns; one heading over
+    rows that each name a different thing are attribute facts, not a table (test5: mixture -> freezing point); a row
+    that only repeats the column names is no content (test15 "frequency: blue light | red light"). Without names the
+    rows continue the slide's comparison (the composer turns them into points when there is none)."""
+    names = list(_texts(it.compare))
+    rows = [(clean(r.aspect), [clean(v) for v in r.values]) for r in it.rows]
+    rows += [(clean(p.aspect), [clean(p.left), clean(p.right)]) for p in it.pairs]
+    rows = [(a, vs) for a, vs in rows if any(vs)]
+    if not rows:
+        return [Piece("comparison", columns=tuple(cap(n) for n in names), **base)]             if 2 <= len(names) <= MAX_COLUMNS else []
+    cells = [v for _, vs in rows for v in vs if v]
+    named = [_NAMED_CELL.match(v) for v in cells]
+    if all(named) and 2 <= len({m["n"].lower() for m in named}) <= MAX_COLUMNS:
+        cols: list[str] = []
+        for m in named:
+            if m["n"].lower() not in (c.lower() for c in cols):
+                cols.append(m["n"])
+        merged: dict[str, tuple[str, list[str]]] = {}
+        for a, vs in rows:
+            row = merged.setdefault(_key(a), (a, [""] * len(cols)))[1]
+            for v in filter(None, vs):
+                m = _NAMED_CELL.match(v)
+                i = [c.lower() for c in cols].index(m["n"].lower())
+                row[i] = row[i] or cap(m["v"])
+        return [Piece("comparison", columns=tuple(cols), rows=tuple((a or "—", tuple(r)) for a, r in merged.values()),
+                      **base)]
+    if len(names) < 2 and len(rows) >= 2 and len({_key(a) for a, _ in rows}) == 1             and all(len(vs) == 2 and all(vs) for _, vs in rows) and len({_key(vs[0]) for _, vs in rows}) == len(rows):
+        return [Piece("facts", pairs=tuple((cap(vs[0]), vs[1]) for _, vs in rows), term=cap(rows[0][0]), **base)]
+    keys = [_key(n) for n in names]
+    rows = [(a, vs) for a, vs in rows if not (keys and [_key(v) for v in vs] == keys[:len(vs)])]
+    if not rows:
+        return []
+    width = max(len(vs) for _, vs in rows)
+    cols = tuple(cap(n) for n in names) if 2 <= len(names) <= MAX_COLUMNS and width <= len(names) else ()
+    n = len(cols) or width
+    return [Piece("comparison", columns=cols, rows=tuple((a or "—", tuple((vs + [""] * n)[:n])) for a, vs in rows),
+                  **base)]
+
+
 def pieces_from_act(act: DiscourseAct) -> list[Piece]:
     it = act.items
     base = dict(lines=tuple(act.lines), added=act.added)
@@ -248,13 +301,7 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
         points = (definition, *points)
     if steps:
         out.append(Piece("steps", texts=steps, **base))
-    columns = _texts(it.compare)
-    rows = tuple((clean(p.aspect) or "—", (clean(p.left), clean(p.right))) for p in it.pairs if p.left or p.right)
-    if rows or len(columns) >= 2:
-        # rows have exactly two cells (left, right): other column counts are unusable (the model sometimes lists
-        # the aspect as "compare"); unknown columns merge into the current comparison
-        cols = (columns if len(columns) == 2 else ()) if rows else columns[:3]
-        out.append(Piece("comparison", columns=cols, rows=rows, **base))
+    out += comparison_pieces(it, base)
     events = tuple((clean(e.when), clean(e.what)) for e in it.events if e.what.strip())
     # a timeline holds dated events only; an undated "event" is a statement (F-013 S3, C9)
     points = points + tuple(f"{w}: {x}" if w else x for w, x in events if not _DATED.search(w))

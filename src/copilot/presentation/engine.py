@@ -36,6 +36,7 @@ from copilot.core.events import (
     LifecycleChanged,
     SlideContextChanged,
     SlideOverflow,
+    TranscriptFinal,
     new_id,
 )
 from copilot.core.state import Concern, LectureStateStore
@@ -47,6 +48,7 @@ from copilot.presentation.composer import (
     remove_elements, can_parent,
     revise_item, set_provisional, split_to_fit, substitute, teacher_items, title_slide, with_image, without_image,
 )
+from copilot.presentation import equations
 from copilot.presentation.content import Piece, clean, pieces_and_chain
 from copilot.presentation.deck import Deck
 from copilot.core.memory import is_child_facet, same_subject, same_title, short_name, title_key, titles_match
@@ -237,6 +239,8 @@ class PresentationEngine:
         self._candidate: Optional[str] = None
         self._about_chain: tuple[Optional[Frame], str] = (None, "")  # concept chain of the last unit, per frame
         self._signals: OrderedDict[str, Signal] = OrderedDict()
+        self._said: OrderedDict[str, str] = OrderedDict()  # segment id -> text (named equations, F-013 S3)
+        self._shown_eq: set[str] = set()  # library equations already shown in this lecture
         self._corrections: OrderedDict[str, Correction] = OrderedDict()
         self._tentative: Optional[Tentative] = None
         self._placements: Optional[list[tuple[Piece, set[tuple[str, str]]]]] = None  # collected by _place
@@ -273,7 +277,7 @@ class PresentationEngine:
     def attach(self) -> None:
         self.bus.subscribe("presentation", self._on_event, [
             InterpretationReady, ConceptSignal, LiveCue, CommandReceived, ConcernResolved, SlideOverflow,
-            LifecycleChanged, DeckState, ImageReady,
+            LifecycleChanged, DeckState, ImageReady, TranscriptFinal,
         ])
         self._tasks = [asyncio.create_task(self._ticker(), name="presentation:ticker")]
 
@@ -319,6 +323,13 @@ class PresentationEngine:
                     await self._on_image_command(event.command.kind, event.command.args)
                 elif event.command.kind in ("edit_text", "delete_item", "add_point"):
                     await self._on_edit(event.command.kind, event.command.args)
+                elif event.command.kind == "show_equation":
+                    await self._show_equation(str(event.command.args.get("id") or ""))
+            elif isinstance(event, TranscriptFinal):  # what was said, for named equations (F-013 S3)
+                self._said[event.segment.id] = event.segment.text
+                while len(self._said) > MAX_SIGNALS:
+                    self._said.popitem(last=False)
+                return
             elif isinstance(event, ImageReady):
                 await self._on_image_ready(event)
             elif isinstance(event, SlideOverflow):
@@ -506,6 +517,47 @@ class PresentationEngine:
         await self._open(spec, SlideMeta(Frame(setup.expected_topic, setup.expected_topic), is_title=True), True)
         self._working_id = spec.id
         self.stats.ops["title"] += 1
+
+    def _named_equations(self, ev: InterpretationReady, it, pieces: list[Piece]) -> list[Piece]:
+        """Standard equations the unit's lines name ("time-dependent Schrödinger equation", "Maxwell's equations"),
+        or ask for ("let us write the equation" on a slide about one), from the library (F-013 S3, C10). The
+        formula the teacher says wins: none when the unit has its own. Each equation once per lecture."""
+        if any(p.kind == "formula" for p in pieces):
+            return []
+        lines = [self._said[s] for s in ev.segment_ids if s in self._said]
+        subject = f"{it.subtopic} {it.topic}"
+        context = " ".join([subject, *lines])
+        ids: list[str] = []
+        for line in lines:
+            ids += equations.named(line, context) or equations.asked_for(line, subject)
+        out = []
+        for i in dict.fromkeys(ids):
+            e = equations.entry(i)
+            if e is not None and i not in self._shown_eq:
+                self._shown_eq.add(i)
+                out.append(equations.piece(e))
+                log.info("[EQ] %s: standard form from the library", e.name)
+        return out
+
+    async def _show_equation(self, eq_id: str) -> None:
+        """/control Show equation: the library entry on the live slide, or on its next part when it does not fit."""
+        e = equations.entry(eq_id)
+        live = self.deck.live
+        meta = self._meta.get(live.id) if live is not None else None
+        if e is None or live is None or meta is None or meta.is_title:
+            log.warning("show_equation: %r not shown (unknown equation or no content slide on screen)", eq_id)
+            return
+        self._shown_eq.add(eq_id)
+        new, rest = merge(live, equations.piece(e))
+        if rest is None:
+            await self._commit(new)
+        else:
+            nxt = await self._next_part(live, meta.frame)
+            new, _ = merge(nxt, rest)
+            await self._open(new, SlideMeta(meta.frame), exempt=True)
+            self._working_id = new.id
+        self.stats.ops["teacher_show_equation"] += 1
+        log.info("teacher show_equation on %r: %s", live.title, e.name)
 
     async def _force_new(self) -> None:
         self.stats.ops["force_new"] += 1
@@ -918,6 +970,7 @@ class PresentationEngine:
         frame = Frame.of(it)
         carry = self._about_chain[1] if self._about_chain[0] == frame else ""
         pieces, chain = pieces_and_chain(it, carry)  # which concept each piece is about (concept columns)
+        pieces += self._named_equations(ev, it, pieces)
         self._about_chain = (frame, chain)
         signals = [self._signals[x] for x in ev.segment_ids if x in self._signals]
         self._placements = []

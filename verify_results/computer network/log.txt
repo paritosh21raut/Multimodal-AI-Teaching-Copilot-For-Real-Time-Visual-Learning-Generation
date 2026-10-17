@@ -1,0 +1,455 @@
+(.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> python -m copilot
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (8.6 s)
+[INIT]  live speech model distil-small.en ready (3.7 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_5         openai/gpt-oss-120b           129k of 200k tokens IN USE
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           197k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b            55k of 200k tokens ok
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 273 lecture minutes
+
+[READY] session 20261017-122943-ed6b
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+12:29:57 INFO    copilot.visuals.service: CLIP ready in 0.6 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, digestive, Nucleo ...)
+12:31:04 INFO    copilot.presentation.engine: cue: 'Basics of computer networks' shown at once (pending)
+  [SLIDE] add    'Basics of computer networks' [concept] v1 (0 items)
+  [    0.4s] Let us start with basics of computer networks. (383 ms)
+12:31:07 INFO    copilot.understanding.service: [CUE] announce 'Basics of computer networks'
+12:31:07 INFO    copilot.presentation.engine: cue: announced slide renamed 'Basics of computer networks'
+  [SLIDE] update 'Basics of computer networks' [definition] v2 (1 items)
+  [SLIDE] update 'Basics of computer networks' [definition] v3 (1 items)
+  [SLIDE] update 'Basics of computer networks' [definition] v4 (1 items)
+  [SLIDE] update 'Basics of computer networks' [definition] v5 (1 items)
+  [SLIDE] update 'Basics of computer networks' [definition] v6 (1 items)
+  [SLIDE] update 'Basics of computer networks' [definition] v7 (1 items)
+  [SLIDE] update 'Basics of computer networks' [definition] v8 (1 items)
+  [SLIDE] update 'Basics of computer networks' [definition] v9 (1 items)
+  [    2.9s] Computer network is a collection of interconnected devices that communicate with each other to exchange data and resource... (446 ms)
+12:31:17 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: Init, Computer Networks, Basics)
+  [UNDERSTAND] Computer Networks > Basics (new_topic) acts=transition hint=none lines=1 via groq_main#5 1311 ms
+               Introduced the basics of computer networks
+12:31:17 INFO    copilot.presentation.engine: planner: noop Computer Networks > Basics (nothing to display)
+  [   10.6s] Resources enables efficient communication and supports services like email, file sharing, and internet access. (428 ms)
+12:31:20 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: Computer Networks, Basics, Computer network)
+  [UNDERSTAND] Computer Networks > Basics (same_concept) acts=definition,explanation hint=none lines=2 via groq_main#5 1268 ms
+               Defined a computer network and explained how resources enable communication and services
+12:31:20 INFO    copilot.presentation.engine: planner: retitle Computer Networks > Basics (new facet on an empty slide)
+  [SLIDE] update 'Basics of computer networks' [concept] v10 (0 items)
+  [SLIDE] update 'Basics of computer networks' [definition] v11 (2 items)
+12:31:20 INFO    copilot.presentation.engine: image search 'computer network diagram' (diagram) for 'Basics of computer networks'
+12:31:20 INFO    copilot.presentation.engine: cue: 'Basics of computer networks' confirmed as 'Basics of computer networks'
+  [SLIDE] update 'Basics of computer networks' [definition] v12 (2 items)
+12:31:24 INFO    copilot.presentation.engine: cue: list 'Nodes' ['Physical devices such as computers', 'Mobiles', 'Open']
+  [SLIDE] update 'Basics of computer networks' [definition] v13 (3 items)
+12:31:24 INFO    copilot.presentation.engine: cue: list 'Nodes' ['Physical devices such as computers', 'Mobiles', 'Open devices']
+  [SLIDE] update 'Basics of computer networks' [definition] v14 (3 items)
+12:31:26 INFO    copilot.presentation.engine: cue: list 'Nodes' ['Physical devices such as computers', 'Mobiles', 'Openers']
+  [SLIDE] update 'Basics of computer networks' [definition] v15 (3 items)
+12:31:26 INFO    copilot.visuals.finder: image search 'computer network diagram' (diagram, labels preferred): 7 candidate(s), 3 accepted (0 labelled), 6.49 s {'search_s': 1.54, 'download_s': 1.33, 'clip_s': 0.15, 'full_s': 3.46, 'total_s': 6.49}
+  [IMAGE] 'computer network diagram' -> File:Network-Switch-Architecture-Diagram.jpeg (6.5 s)
+12:31:26 INFO    copilot.presentation.engine: image 'computer network diagram' on 'Basics of computer networks': File:Network-Switch-Architecture-Diagram.jpeg
+  [SLIDE] update 'Basics of computer networks' [definition] v16 (4 items)
+  [   17.8s] Nodes are physical devices such as computers, mobiles, or printers. Routers and switches control the flow of the information. (515 ms)
+12:31:28 INFO    copilot.presentation.engine: cue: list 'Nodes' ['Physical devices such as computers', 'Mobiles', 'Printers']
+  [SLIDE] update 'Basics of computer networks' [definition] v17 (4 items)
+  [SLIDE] update 'Basics of computer networks' [definition] v18 (5 items)
+  [   26.4s] Transmission media carries data from one device to another. (394 ms)
+  [SLIDE] update 'Basics of computer networks' [definition] v19 (5 items)
+  [   30.3s] Wired media includes Ethernet and optical fiber cables. (354 ms)
+  [SLIDE] update 'Basics of computer networks' [definition] v20 (5 items)
+12:31:35 INFO    copilot.understanding.service: [REF] Machine learning, explained | MIT Sloan p.6 (0.50) for the interpretation
+12:31:37 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Basics' -> same_concept
+12:31:37 INFO    copilot: [STT] vocabulary prompt: 37 terms (newest: Routers and switches, Transmission media, Wired media)
+  [UNDERSTAND] Computer Networks > Basics (same_concept) acts=definition,definition,definition,definition hint=definition lines=3 via groq_main#5 1968 ms
+               Introduced nodes, transmission media, and wired media types in basic computer networks
+12:31:37 INFO    copilot.presentation.engine: planner: update Computer Networks > Basics (same frame)
+  [SLIDE] update 'Basics of computer networks' [definition] v21 (4 items)
+  [SLIDE] update 'Basics of computer networks' [definition] v22 (3 items)
+  [SLIDE] update 'Basics of computer networks' [concept] v23 (6 items)
+  [SLIDE] add    'Basics of computer networks' [members] v1 (1 items)
+12:31:37 INFO    copilot.presentation.engine: image search 'network nodes diagram' (diagram) for 'Basics of computer networks'
+12:31:39 INFO    copilot.presentation.engine: image 'network nodes diagram': none (no usable candidates)
+  [IMAGE] 'network nodes diagram' -> none (no usable candidates) (1.5 s)
+  [   36.6s] Let's talk about the working. (430 ms)
+12:31:40 INFO    copilot.understanding.service: [CUE] announce 'Working'
+12:31:40 INFO    copilot.presentation.engine: cue: 'Working' shown at once (pending)
+  [SLIDE] add    'Working' [concept] v1 (0 items)
+  [   38.5s] Computer network operates by enabling devices to communicate and exchange data using a shared communication system. (449 ms)
+  [   44.8s] HD device is a network. (757 ms)
+  [   46.8s] Uh... (1256 ms)
+12:31:50 INFO    copilot: [STT] vocabulary prompt: 38 terms (newest: Transmission media, Wired media, Working)
+  [UNDERSTAND] Computer Networks > Working (sibling_concept) acts=explanation hint=none lines=3 via groq_main#5 1857 ms
+               Explained that computer networks enable devices to communicate, exchange data, and use a shared communication system.
+  [CONCERN] (factual) HD device is a network. -> HD device is a network device. (0.9, slide shows the correction)
+12:31:50 INFO    copilot.presentation.engine: planner: update Computer Networks > Working (same frame)
+12:31:50 INFO    copilot.presentation.engine: concern 23d6047b9cea (factual, applied=True): 0 element(s); slide shows 'is a network device'
+12:31:50 INFO    copilot.presentation.engine: cue: 'Working' confirmed as 'Working'
+  [SLIDE] update 'Working' [key_points] v2 (3 items)
+  [SLIDE] update 'Working' [key_points] v3 (3 items)
+  [   48.4s] follows predefined rules to ensure that data is transmitted accurately, efficiently and securely. (432 ms)
+  [SLIDE] update 'Working' [key_points] v4 (4 items)
+  [UNDERSTAND] Computer Networks > Working (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1304 ms
+               Networks follow predefined rules (protocols) to transmit data accurately, efficiently, and securely.
+12:31:57 INFO    copilot.presentation.engine: planner: update Computer Networks > Working (same frame)
+  [SLIDE] update 'Working' [key_points] v5 (3 items)
+  [SLIDE] update 'Working' [key_points] v6 (4 items)
+12:31:57 INFO    copilot.presentation.engine: concern 23d6047b9cea dismissed: slide shows 'is a network device'
+  [   59.5s] A network consists of nodes such as computers, servers, routers and switches that sends or receives data. (541 ms)
+  [SLIDE] update 'Working' [key_points] v7 (5 items)
+  [UNDERSTAND] Computer Networks > Working (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1541 ms
+               Defined network nodes (computers, servers, routers, switches) that send or receive data.
+12:32:09 INFO    copilot.presentation.engine: planner: update Computer Networks > Working (same frame)
+  [SLIDE] update 'Working' [key_points] v8 (4 items)
+  [SLIDE] update 'Working' [key_points] v9 (5 items)
+  [   67.2s] These nodes are corrected through links which may be wired. (379 ms)
+  [SLIDE] update 'Working' [key_points] v10 (6 items)
+  [   70.4s] Cable optical fiber or wireless, Wi-Fi radio signals. (389 ms)
+  [SLIDE] update 'Working' [key_points] v11 (6 items)
+  [UNDERSTAND] Computer Networks > Working (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 4204 ms
+               Added that network nodes are linked, often using wired connections.
+12:32:20 INFO    copilot.presentation.engine: planner: update Computer Networks > Working (same frame)
+  [SLIDE] update 'Working' [key_points] v12 (7 items)
+12:32:20 INFO    copilot.presentation.engine: image search 'network links diagram' (diagram) for 'Working'
+12:32:25 INFO    copilot.visuals.finder: image search 'network links diagram' (diagram, labels preferred): 8 candidate(s), 1 accepted (0 labelled), 5.04 s {'search_s': 1.6, 'download_s': 2.18, 'clip_s': 0.16, 'full_s': 1.11, 'total_s': 5.04}
+  [IMAGE] 'network links diagram' -> File:DMZ network diagram 2.png (5.0 s)
+12:32:25 INFO    copilot.presentation.engine: no room for an image on 'Working'
+  [UNDERSTAND] Computer Networks > Working (elaboration) acts=- hint=key_points lines=1 via groq_main#6 1563 ms
+               Added wired cable and optical fiber, plus wireless Wi‑Fi radio signals as link types.
+12:32:26 INFO    copilot.presentation.engine: revised S6: Nodes are connected by links, which may be wired (cable, optical fiber) or wireless (Wi‑Fi radio signals)
+12:32:26 INFO    copilot.presentation.engine: planner: noop Computer Networks > Working (nothing to display)
+  [SLIDE] update 'Working' [key_points] v13 (6 items)
+  [SLIDE] update 'Working' [key_points] v14 (6 items)
+12:32:26 INFO    copilot.presentation.engine: image search 'network media types' (diagram) for 'Working'
+  [   77.7s] When data is sent, it is broken into small packets and transmitted across the network. (445 ms)
+12:32:27 INFO    copilot.presentation.engine: image 'network media types': none (no usable candidates)
+  [IMAGE] 'network media types' -> none (no usable candidates) (1.7 s)
+  [   81.8s] Protocols defined how data packets are formatted, transmitted, received and acknowledged. (433 ms)
+12:32:33 INFO    copilot: [STT] vocabulary prompt: 39 terms (newest: Wired media, Working, Protocols)
+  [UNDERSTAND] Computer Networks > Working (elaboration) acts=explanation,definition hint=key_points lines=2 via groq_main#6 1499 ms
+               Data is packetized for transmission and protocols specify packet format, transmission, receipt, and acknowledgment.
+12:32:33 INFO    copilot.presentation.engine: planner: update Computer Networks > Working (same frame)
+  [SLIDE] update 'Working' [key_points] v15 (7 items)
+  [SLIDE] add    'Working' [members] v1 (1 items)
+12:32:33 INFO    copilot.presentation.engine: image search 'network packet diagram' (diagram) for 'Working'
+  [   87.3s] Each device is identified by unique IP address which ensures data reaches the correct destination. (445 ms)
+  [SLIDE] update 'Working' [members] v2 (1 items)
+12:32:37 INFO    copilot.visuals.finder: image search 'network packet diagram' (diagram, labels preferred): 5 candidate(s), 3 accepted (1 labelled), 4.31 s {'search_s': 1.44, 'download_s': 1.13, 'clip_s': 0.11, 'full_s': 1.59, 'total_s': 4.31}
+  [IMAGE] 'network packet diagram' -> File:IPv4 Packet-en.svg (4.3 s)
+12:32:37 INFO    copilot.presentation.engine: image 'network packet diagram' on 'Working': File:IPv4 Packet-en.svg
+  [SLIDE] update 'Working' [members] v3 (2 items)
+  [   94.3s] Network devices like switches and routers forward data packets along the best available path. (429 ms)
+  [UNDERSTAND] Computer Networks > Working (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#5 1534 ms
+               Introduced unique IP addresses for devices and explained how switches and routers forward packets via optimal paths.
+12:32:42 INFO    copilot.presentation.engine: planner: update Computer Networks > Working (same frame)
+12:32:42 INFO    copilot.presentation.engine: no image for 'Working': has an image
+  [SLIDE] update 'Working' [members] v4 (2 items)
+  [SLIDE] update 'Working' [members] v5 (4 items)
+  [   99.7s] Security mechanisms such as firewalls, monitor traffic and allow or block data based on security rules. (573 ms)
+12:32:50 INFO    copilot: [STT] vocabulary prompt: 40 terms (newest: Working, Protocols, Firewalls)
+  [UNDERSTAND] Computer Networks > Working (elaboration) acts=definition hint=definition lines=1 via groq_main#6 1510 ms
+               Introduced firewalls as security mechanisms that monitor and filter network traffic according to rules.
+12:32:50 INFO    copilot.presentation.engine: planner: update Computer Networks > Working (same frame)
+12:32:50 INFO    copilot.presentation.engine: no image for 'Working': two concepts side by side
+  [SLIDE] update 'Working' [concept] v6 (4 items)
+12:32:54 INFO    copilot.presentation.engine: cue: 'Types' shown at once (pending)
+  [SLIDE] add    'Types' [concept] v1 (0 items)
+12:32:58 INFO    copilot.presentation.engine: cue: announced slide renamed 'Types of computer network architecture'
+  [SLIDE] update 'Types of computer network architecture' [concept] v2 (0 items)
+  [  111.2s] Now let's talk about the types of computer network architecture. (397 ms)
+12:32:58 INFO    copilot.understanding.service: [CUE] announce 'Types of computer network architecture'
+12:32:58 INFO    copilot.presentation.engine: cue: announced slide renamed 'Types of computer network architecture'
+  [  114.3s] Computer Network falls under these broad categories. (377 ms)
+  [UNDERSTAND] Computer Networks > Types of Computer Network Architecture (sibling_concept) acts=transition,explanation hint=concept lines=2 via groq_main#5 1820 ms
+               Introduced the categories of computer network architecture
+12:33:06 INFO    copilot.presentation.engine: planner: update Computer Networks > Types of computer network architecture (same frame)
+12:33:06 INFO    copilot.presentation.engine: cue: 'Types of computer network architecture' confirmed as 'Types of computer network architecture'
+  [SLIDE] update 'Types of computer network architecture' [key_points] v3 (1 items)
+  [SLIDE] update 'Types of computer network architecture' [key_points] v4 (1 items)
+  [  118.3s] Client-server architecture. This represents a type of network architecture in which nodes function a server as servers or clients, where the server manages client behavior known as client-server architecture. (695 ms)
+  [SLIDE] update 'Types of computer network architecture' [key_points] v5 (2 items)
+12:33:21 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Types of Computer Network Architecture' -> same_concept
+12:33:21 INFO    copilot: [STT] vocabulary prompt: 41 terms (newest: Protocols, Firewalls, Client-server architecture)
+  [UNDERSTAND] Computer Networks > Types of Computer Network Architecture (same_concept) acts=definition hint=definition lines=1 via groq_main#5 1248 ms
+               Introduced client‑server architecture as a type of network architecture
+12:33:21 INFO    copilot.presentation.engine: planner: update Computer Networks > Types of computer network architecture (same frame)
+  [SLIDE] update 'Types of computer network architecture' [key_points] v6 (1 items)
+  [SLIDE] update 'Types of computer network architecture' [key_points] v7 (2 items)
+12:33:21 INFO    copilot.presentation.engine: image search 'client server diagram' (diagram) for 'Types of computer network architecture'
+  [  130.5s] Peer-to-peer architecture operates without any central server, allows each device to act as either a client or a server, known as peer-to-peer architecture. (606 ms)
+  [SLIDE] update 'Types of computer network architecture' [key_points] v8 (3 items)
+12:33:23 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Types of Computer Network Architecture' -> same_concept
+12:33:23 INFO    copilot: [STT] vocabulary prompt: 42 terms (newest: Firewalls, Client-server architecture, Peer-to-peer architecture)
+  [UNDERSTAND] Computer Networks > Types of Computer Network Architecture (same_concept) acts=definition hint=definition lines=1 via groq_main#6 1172 ms
+               Introduced peer-to-peer architecture as a network type without a central server where each device can be client or server.
+12:33:23 INFO    copilot.presentation.engine: planner: update Computer Networks > Types of computer network architecture (same frame)
+12:33:23 INFO    copilot.presentation.engine: no image for 'Types of computer network architecture': two concepts side by side
+  [SLIDE] update 'Types of computer network architecture' [key_points] v9 (2 items)
+  [SLIDE] update 'Types of computer network architecture' [concept] v10 (3 items)
+12:33:27 INFO    copilot.presentation.engine: cue: 'Network' shown at once (pending)
+  [SLIDE] add    'Network' [concept] v1 (0 items)
+12:33:28 INFO    copilot.visuals.finder: image search 'client server diagram' (diagram, labels preferred): 4 candidate(s), 3 accepted (1 labelled), 6.07 s {'search_s': 1.45, 'download_s': 2.52, 'clip_s': 0.08, 'full_s': 1.96, 'total_s': 6.07}
+  [IMAGE] 'client server diagram' -> File:Client-Server Model-en.svg (6.1 s)
+12:33:28 INFO    copilot.presentation.engine: cue: announced slide renamed 'Network devices'
+  [SLIDE] update 'Network devices' [concept] v2 (0 items)
+  [  143.5s] Now let's talk about network devices. (372 ms)
+12:33:29 INFO    copilot.understanding.service: [CUE] announce 'Network devices'
+12:33:29 INFO    copilot.presentation.engine: cue: announced slide renamed 'Network devices'
+  [  145.8s] These are physical devices that connect computers, printers and other electronic equipments to a network and enables data sharing, transferring and managing. (647 ms)
+12:33:38 INFO    copilot: [STT] vocabulary prompt: 43 terms (newest: Client-server architecture, Peer-to-peer architecture, Network Devices)
+  [UNDERSTAND] Computer Networks > Network Devices (sibling_concept) acts=explanation hint=concept lines=2 via groq_main#5 1827 ms
+               Introduced network devices as physical equipment that connect computers and enable data sharing.
+12:33:38 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+  [SLIDE] update 'Network devices' [key_points] v3 (2 items)
+12:33:38 INFO    copilot.presentation.engine: image search 'network devices' (photo) for 'Network devices'
+12:33:38 INFO    copilot.presentation.engine: cue: 'Network devices' confirmed as 'Network devices'
+  [SLIDE] update 'Network devices' [key_points] v4 (2 items)
+  [  158.3s] Routers. (363 ms)
+  [SLIDE] update 'Network devices' [key_points] v5 (3 items)
+12:33:41 INFO    copilot.presentation.engine: image 'network devices': none (no usable candidates)
+  [IMAGE] 'network devices' -> none (no usable candidates) (2.5 s)
+  [  159.5s] Routers has a networking device that connects multiple networks and directs data between them. (429 ms)
+  [SLIDE] update 'Network devices' [key_points] v6 (3 items)
+12:33:51 INFO    copilot: [STT] vocabulary prompt: 44 terms (newest: Peer-to-peer architecture, Network Devices, Router)
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=definition hint=definition lines=2 via groq_main#5 1738 ms
+               Introduced routers as devices that connect multiple networks and direct data between them
+12:33:51 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+  [SLIDE] update 'Network devices' [key_points] v7 (2 items)
+  [SLIDE] update 'Network devices' [key_points] v8 (3 items)
+12:33:51 INFO    copilot.presentation.engine: image search 'router diagram' (photo) for 'Network devices'
+  [  165.7s] Connects local networks to the internet. (365 ms)
+  [SLIDE] update 'Network devices' [key_points] v9 (4 items)
+  [  168.1s] DITAMY is the best path for data packets. (402 ms)
+  [SLIDE] update 'Network devices' [key_points] v10 (4 items)
+  [  171.3s] Use this IP address to forward data directly. (380 ms)
+  [SLIDE] update 'Network devices' [key_points] v11 (4 items)
+12:33:57 INFO    copilot.visuals.finder: image search 'router diagram' (photo): 8 candidate(s), 3 accepted (0 labelled), 6.05 s {'search_s': 1.75, 'download_s': 1.33, 'clip_s': 0.15, 'full_s': 2.79, 'total_s': 6.05}
+  [IMAGE] 'router diagram' -> File:D-Link DI-524.jpg (6.1 s)
+12:33:57 INFO    copilot.presentation.engine: image 'router diagram' on 'Network devices': File:D-Link DI-524.jpg
+  [SLIDE] update 'Network devices' [key_points] v12 (5 items)
+12:33:57 INFO    copilot: [STT] vocabulary prompt: 45 terms (newest: Network Devices, Router, Dijkstra)
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=definition,definition hint=definition lines=2 via groq_main#6 1570 ms
+               Added that routers connect local networks to the internet and introduced Dijkstra algorithm for shortest paths.
+  [HEARD] 'DITAMY' -> 'Dijkstra' corrected on the slide (0.5)
+12:33:57 INFO    copilot.presentation.engine: revised S3: Router: A networking device that connects multiple networks and directs data between them; connects local networks to the internet
+12:33:57 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:33:57 INFO    copilot.presentation.engine: concern 2b70c2de890a (transcription, applied=True): 1 element(s); slide shows 'Dijkstra'
+12:33:57 INFO    copilot.presentation.engine: image removed from 'Network devices': two concepts side by side
+  [SLIDE] update 'Network devices' [key_points] v13 (5 items)
+  [SLIDE] update 'Network devices' [concept] v14 (6 items)
+  [SLIDE] update 'Network devices' [concept] v15 (5 items)
+  [  175.2s] Switch. (309 ms)
+  [SLIDE] update 'Network devices' [concept] v16 (4 items)
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=explanation hint=key_points lines=1 via groq_main#6 1274 ms
+               Routers forward data directly using a specific IP address.
+12:33:59 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:33:59 INFO    copilot.presentation.engine: no image for 'Network devices': two concepts side by side
+  [SLIDE] update 'Network devices' [concept] v17 (5 items)
+  [  176.4s] Switch connects devices within the same network and manages internal network data connection. (411 ms)
+12:34:05 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Network Devices' -> same_concept
+12:34:05 INFO    copilot: [STT] vocabulary prompt: 46 terms (newest: Router, Dijkstra, Switch)
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=definition hint=definition lines=1 via groq_main#5 5245 ms
+               Introduced the switch as another network device that connects multiple devices within a network.
+12:34:05 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+  [SLIDE] update 'Network devices' [concept] v18 (5 items)
+  [SLIDE] add    'Network devices' [members] v1 (1 items)
+12:34:05 INFO    copilot.presentation.engine: image search 'network switch' (photo) for 'Network devices'
+12:34:09 INFO    copilot.visuals.finder: image search 'network switch' (photo): 5 candidate(s), 3 accepted (0 labelled), 4.43 s {'search_s': 1.2, 'download_s': 1.22, 'clip_s': 0.09, 'full_s': 1.89, 'total_s': 4.43}
+  [IMAGE] 'network switch' -> File:Network switches.jpg (4.4 s)
+12:34:09 INFO    copilot.presentation.engine: image 'network switch' on 'Network devices': File:Network switches.jpg
+  [SLIDE] update 'Network devices' [members] v2 (2 items)
+  [  182.3s] Connects computers, printers and servers, send data only to the intended device, improves network efficiency and performance. (487 ms)
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=explanation hint=concept lines=1 via groq_main#6 1588 ms
+               Switch also manages internal data connections within its own network.
+12:34:13 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:34:13 INFO    copilot.presentation.engine: no image for 'Network devices': has an image
+  [SLIDE] update 'Network devices' [members] v3 (4 items)
+  [  192.1s] Hub acts as a device, a basic device that connects multiple devices into a network. (444 ms)
+12:34:24 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Network Devices' -> same_concept
+12:34:24 INFO    copilot: [STT] vocabulary prompt: 47 terms (newest: Dijkstra, Switch, Hub)
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=explanation,definition hint=concept lines=2 via groq_main#5 4993 ms
+               Added details about switch behavior and introduced the hub device.
+12:34:24 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+  [SLIDE] update 'Network devices' [members] v4 (5 items)
+  [SLIDE] add    'Network devices' [members] v1 (1 items)
+12:34:24 INFO    copilot.presentation.engine: image search 'network hub and switch' (diagram) for 'Network devices'
+  [  197.6s] Broadcast data to all connected devices, does not filter or manage traffic. (493 ms)
+  [SLIDE] update 'Network devices' [members] v2 (1 items)
+  [  202.2s] Less secure and less efficient than a switch. (400 ms)
+  [SLIDE] update 'Network devices' [members] v3 (1 items)
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=definition hint=definition lines=2 via groq_main#6 1240 ms
+               Added hub broadcast behavior and its lower security and efficiency compared to switches.
+12:34:27 INFO    copilot.presentation.engine: revised S1: Hub: A basic device that connects multiple devices into a network, broadcasting data to all connected devices without filtering; less…
+12:34:27 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:34:27 INFO    copilot.presentation.engine: no image for 'Network devices': search running
+  [SLIDE] update 'Network devices' [members] v4 (1 items)
+  [SLIDE] update 'Network devices' [members] v5 (1 items)
+12:34:30 INFO    copilot.visuals.finder: image search 'network hub and switch' (diagram, labels preferred): 8 candidate(s), 3 accepted (0 labelled), 6.27 s {'search_s': 2.73, 'download_s': 1.54, 'clip_s': 0.15, 'full_s': 1.82, 'total_s': 6.27}
+  [IMAGE] 'network hub and switch' -> File:Hub network diagram.svg (6.3 s)
+12:34:30 INFO    copilot.presentation.engine: image 'network hub and switch' on 'Network devices': File:Hub network diagram.svg
+  [SLIDE] update 'Network devices' [members] v6 (2 items)
+  [  207.4s] Bridge, corrects two network segments and filters traffic between them. (525 ms)
+  [  212.4s] Reduces unnecessary data transmission. (406 ms)
+  [  216.4s] Improves network performance. (334 ms)
+  [  218.3s] Works using MAC addresses. (390 ms)
+12:34:43 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Network Devices' -> same_concept
+12:34:43 INFO    copilot: [STT] vocabulary prompt: 48 terms (newest: Switch, Hub, Bridge)
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=definition,explanation hint=definition lines=3 via groq_main#5 1622 ms
+               Introduced the bridge device, which connects and filters traffic between network segments, reducing data and boosting performance.
+12:34:43 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:34:43 INFO    copilot.presentation.engine: no image for 'Network devices': two concepts side by side
+  [SLIDE] update 'Network devices' [concept] v7 (4 items)
+  [  221.9s] Gateway. (303 ms)
+  [  224.0s] Connects two different methods that uses different protocols, translates data between different systems, enables communication between. (479 ms)
+  [  233.0s] Similar networks. (310 ms)
+12:34:59 INFO    copilot: [STT] vocabulary prompt: 49 terms (newest: Hub, Bridge, Gateway)
+  [UNDERSTAND] Computer Networks > Network Devices (elaboration) acts=explanation,definition hint=key_points lines=2 via groq_main#5 5273 ms
+               Switch operates using MAC addresses; introduced gateway device.
+12:34:59 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:34:59 INFO    copilot.presentation.engine: no image for 'Network devices': two concepts side by side
+  [SLIDE] update 'Network devices' [concept] v8 (5 items)
+  [  235.6s] Commonly used to connect private networks to external networks. (382 ms)
+  [SLIDE] update 'Network devices' [concept] v9 (6 items)
+12:35:04 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Network Devices' -> same_concept
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=definition,explanation hint=none lines=2 via groq_main#6 1570 ms
+               Introduced gateway definition and clarified that a bridge links similar networks
+12:35:04 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:35:04 INFO    copilot.presentation.engine: no image for 'Network devices': two concepts side by side
+  [SLIDE] update 'Network devices' [concept] v10 (8 items)
+  [  241.4s] Access Point, EPIC, Proverge wireless continuity. (411 ms)
+  [  245.2s] Uh... (306 ms)
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=definition,explanation hint=none lines=2 via groq_main#6 1853 ms
+               Added that gateways link private to external networks and gave examples of access points and wireless devices
+12:35:12 INFO    copilot.presentation.engine: revised S7: Gateway: Connects two different methods that use different protocols, translates data between systems, enables communication, and commonly…
+12:35:12 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:35:12 INFO    copilot.presentation.engine: no image for 'Network devices': two concepts side by side
+  [SLIDE] update 'Network devices' [concept] v11 (7 items)
+  [SLIDE] update 'Network devices' [concept] v12 (7 items)
+  [SLIDE] update 'Network devices' [concept] v13 (10 items)
+  [  246.5s] Connectivity to devices in a network extends a wired network into Wi-Fi, allows mobile devices to connect wireless, improves network coverage area. (551 ms)
+12:35:29 INFO    copilot: [STT] vocabulary prompt: 50 terms (newest: Bridge, Gateway, Access Point)
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=definition hint=definition lines=1 via groq_main#5 1726 ms
+               Access points extend wired networks to Wi‑Fi, enabling mobile devices to connect and expanding coverage.
+12:35:29 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+  [SLIDE] add    'Network devices' [members] v1 (1 items)
+12:35:29 INFO    copilot.presentation.engine: image search 'Access point diagram' (photo) for 'Network devices'
+  [  257.8s] Modem converts digital data into signals suitable for transmission and vice versa, connects a home or office network to the ISP. (556 ms)
+  [SLIDE] update 'Network devices' [members] v2 (1 items)
+12:35:33 INFO    copilot.visuals.finder: image search 'Access point diagram': 1 slow download(s) dropped
+12:35:34 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Network Devices' -> same_concept
+12:35:34 INFO    copilot: [STT] vocabulary prompt: 51 terms (newest: Gateway, Access Point, Modem)
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=definition hint=definition lines=1 via groq_main#5 3357 ms
+               A modem converts digital data to signals for transmission and connects a network to the ISP.
+12:35:34 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:35:34 INFO    copilot.presentation.engine: no image for 'Network devices': two concepts side by side
+  [SLIDE] update 'Network devices' [members] v3 (1 items)
+  [SLIDE] update 'Network devices' [concept] v4 (2 items)
+12:35:36 INFO    copilot.visuals.finder: image search 'Access point diagram' (photo): 7 candidate(s), 3 accepted (0 labelled), 7.67 s {'search_s': 2.04, 'download_s': 2.45, 'clip_s': 0.14, 'full_s': 3.01, 'total_s': 7.67}
+  [IMAGE] 'Access point diagram' -> File:Cisco Aironet 1131AG - Close.jpg (7.7 s)
+  [  270.6s] Converse digital signal to analog and back, Animal's internet access. (474 ms)
+  [  275.6s] Firewall. (317 ms)
+12:35:46 INFO    copilot: [STT] vocabulary prompt: 52 terms (newest: Access Point, Modem, Firewall)
+  [UNDERSTAND] Computer Networks > Network Devices (elaboration) acts=definition hint=definition lines=2 via groq_main#6 1719 ms
+               Added clarification to modem conversion and introduced firewall definition.
+  [HEARD] "Converse, Animal's" -> "Convert, Analog's" corrected on the slide (0.5)
+12:35:46 INFO    copilot.presentation.engine: revised S2: Converts digital signal to analog and back, connecting a home or office network to the ISP
+12:35:46 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:35:46 INFO    copilot.presentation.engine: concern a71a8fd4c92a (transcription, applied=True): 0 element(s); slide shows "Convert, Analog's"
+12:35:46 INFO    copilot.presentation.engine: no image for 'Network devices': two concepts side by side
+  [SLIDE] update 'Network devices' [concept] v5 (2 items)
+  [SLIDE] update 'Network devices' [concept] v6 (3 items)
+  [  276.7s] It is a security device that monitors and controls network traffic. (416 ms)
+  [  280.9s] Blocks unauthorized access, filters incoming and outgoing data, protects network from cyber threats. (432 ms)
+  [UNDERSTAND] Computer Networks > Network Devices (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 3053 ms
+               Expanded firewall definition to include its monitoring, blocking, filtering, and protection functions.
+12:35:51 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:35:52 INFO    copilot.presentation.engine: no image for 'Network devices': two concepts side by side
+  [SLIDE] update 'Network devices' [concept] v7 (6 items)
+12:35:52 INFO    copilot.presentation.engine: cue: 'Goals and uses' shown at once (pending)
+  [SLIDE] add    'Goals and uses' [concept] v1 (0 items)
+  [  288.5s] Now let's discuss the goals and uses. (474 ms)
+12:35:52 INFO    copilot.understanding.service: [CUE] announce 'Goals and uses'
+12:35:52 INFO    copilot.presentation.engine: cue: announced slide renamed 'Goals and uses'
+12:35:53 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Network Devices' -> same_concept
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=transition hint=none lines=1 via groq_main#6 898 ms
+               Teacher announced discussion of goals and uses of network devices
+12:35:53 INFO    copilot.presentation.engine: planner: noop Computer Networks > Network Devices (nothing to display)
+  [  291.2s] First is resource sharing, allows multiple users to share hardware. (409 ms)
+12:35:59 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Network Devices' -> same_concept
+  [UNDERSTAND] Computer Networks > Network Devices (same_concept) acts=explanation hint=key_points lines=1 via groq_main#6 1415 ms
+               Network devices enable resource sharing, letting multiple users share hardware.
+12:35:59 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:35:59 INFO    copilot.presentation.engine: no image for 'Network devices': two concepts side by side
+  [SLIDE] update 'Network devices' [concept] v8 (7 items)
+  [  296.6s] Software and Data Resources Efficiently. (383 ms)
+  [  298.8s] Internet and Cloud Access, enables access to the Internet, Online Services and Cloud-based applications. (528 ms)
+  [UNDERSTAND] Computer Networks > Network Devices (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 1664 ms
+               Added uses of network devices: efficient resource use and Internet/cloud access.
+12:36:10 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+  [SLIDE] add    'Network devices' [key_points] v1 (2 items)
+12:36:10 INFO    copilot.presentation.engine: image search 'firewall device' (photo) for 'Network devices'
+12:36:16 INFO    copilot.visuals.finder: image search 'firewall device' (photo): 6 candidate(s), 3 accepted (0 labelled), 5.71 s {'search_s': 1.34, 'download_s': 1.67, 'clip_s': 0.11, 'full_s': 2.57, 'total_s': 5.71}
+  [IMAGE] 'firewall device' -> File:Watchguard Firebox 1000 back.jpg (5.7 s)
+12:36:16 INFO    copilot.presentation.engine: image 'firewall device' on 'Network devices': File:Watchguard Firebox 1000 back.jpg
+  [SLIDE] update 'Network devices' [key_points] v2 (3 items)
+  [  304.6s] Cost efficiency, Reduce operational and infrastructure costs through shared resources and centralized systems. Reliability and availability, Improve system reliability using backup paths and fault-torrent mechanisms. Scalability and growth. (761 ms)
+12:36:22 INFO    copilot.presentation.engine: cue: 'Goals and uses' came to nothing; its slide was removed
+  [  319.3s] Support easy expansion by adding new devices and services as demand increases. (407 ms)
+  [SLIDE] update 'Network devices' [key_points] v3 (4 items)
+  [  325.3s] Security and control. (321 ms)
+  [SLIDE] update 'Network devices' [key_points] v4 (4 items)
+  [UNDERSTAND] Computer Networks > Network Devices (elaboration) acts=explanation hint=key_points lines=2 via groq_main#5 2692 ms
+               Added details on cost efficiency, reliability, scalability, and easy expansion of network devices.
+12:36:28 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:36:28 INFO    copilot.presentation.engine: slide 'Network devices' waits for the min dwell time
+12:36:28 INFO    copilot.presentation.engine: image 'firewall device' kept on 'Network devices' (same visual as this topic's image)
+  [SLIDE] add    'Network devices' [key_points] v1 (5 items)
+  [  326.9s] Protects data and network resources using authentication, access control and monitoring. (449 ms)
+  [SLIDE] update 'Network devices' [key_points] v5 (3 items)
+  [SLIDE] update 'Network devices' [key_points] v2 (6 items)
+  [UNDERSTAND] Computer Networks > Network Devices (elaboration) acts=explanation hint=key_points lines=2 via groq_main#6 1961 ms
+               Introduced security and control as a goal of network devices, describing authentication, access control, and monitoring.
+12:36:37 INFO    copilot.presentation.engine: planner: update Computer Networks > Network devices (same frame)
+12:36:37 INFO    copilot.presentation.engine: no image for 'Network devices': has an image
+  [SLIDE] update 'Network devices' [key_points] v3 (5 items)
+  [SLIDE] update 'Network devices' [key_points] v4 (6 items)
+12:37:38 INFO    copilot.materials.service: material ready: Computer Networks - Slides - 17 Oct 2026.pptx (pptx, 0 LLM calls, 0 tokens)
+[MATERIAL] Computer Networks - Slides - 17 Oct 2026.pptx ready
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261017-122943-ed6b: 60 segments, 646 words, state v141, 1222 events logged
+        CommandReceived=105, ConceptSignal=58, ConcernRaised=3, ConcernResolved=1, DeckState=112, ImageChoices=7, ImageReady=12, ImageRequested=12, InterpretRequested=35, InterpretationReady=35, LifecycleChanged=5, LiveCue=66, SlideContextChanged=41, SlidePatch=108, StateChanged=141, TranscriptFinal=60, TranscriptPartial=343, UtteranceClassified=60, VocabularyChanged=18
+        stt: 60 published, 0 dropped, latency p50=429 ms p95=757 ms max=1256 ms
+        understanding: 35 interpretations (35 by LLM, 0 fallbacks, 0 repaired), max 9 calls/min, prompt tokens max=2096 avg=1991, latency p50=1622 ms max=5273 ms
+        presentation: 12 slides; planner ops {'cue_slide': 5, 'noop': 3, 'retitle': 1, 'update': 31}; revisions 5, corrections shown 1, shown as said 0
+        images: {'requests': 12, 'found': 9, 'none': 3}; slides with an image 4/11
+          1. [concept] Basics of computer networks [part 1]  (v23, ['definition', 'points', 'image', 'definition', 'definition', 'definition'])
+          2. [members] Basics of computer networks [part 2]  (v1, ['definition'])
+          3. [key_points] Working [part 1]  (v15, ['points'])
+          4. [concept] Working [part 2]  (v6, ['definition', 'definition', 'points'])
+          5. [concept] Types of computer network architecture  (v10, ['points', 'definition', 'definition'])
+          6. [concept] Network devices [part 1]  (v18, ['points', 'definition', 'definition', 'points'])
+          7. [members] Network devices [part 2]  (v4, ['definition', 'image', 'points', 'points'])
+          8. [concept] Network devices [part 3]  (v13, ['definition', 'definition', 'points', 'points', 'definition', 'points'])
+          9. [concept] Network devices [part 4]  (v8, ['definition', 'definition', 'definition', 'points'])
+          10. [key_points] Network devices [part 5]  (v5, ['points', 'image'])
+          11. [key_points] Network devices [part 6]  (v4, ['points', 'image'])
+        providers: {'groq_main#5': 21, 'groq_main#6': 14}; triggers: {'max_wait': 16, 'words': 4, 'pause': 13, 'boundary': 2}; outline: ['Computer Networks > Basics, Working, Types of Computer Network Architecture, Network Devices']; concerns: 3
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261017-122943-ed6b\session.sqlite
+(.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> 

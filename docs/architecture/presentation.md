@@ -92,6 +92,17 @@ Deterministic, 0 tokens (`presentation.content`, `composer`, `mathtext`, `web/sh
 - A block about a definition (`about`) stays with that card; it is never in the aside too.
 - Replay of tests 1–30 (`tools/v1_eval.py --s3`): duplicates 6 → 1, bad definition cards 18 → 2, broken formulas 7 → 0.
 
+## Comparisons and named equations (F-013 S3b)
+- **N-way comparison** (2–4 columns; `content.comparison_pieces`, `composer._merge_comparison`). Cells "Name: value"
+  name the columns. One heading over named things gives fact tiles under that heading. A row that only repeats the
+  names is dropped. Cells are placed by column name, a table widens by one more compared thing, a cell fills the same
+  aspect, and a table is never drawn without headings (rows without names become "Aspect: a vs b" points).
+- **Named equations** (`presentation/equations.py`, 42 checked entries, KaTeX-tested). The engine reads `TranscriptFinal`.
+  It adds the standard form when a unit's line names an equation ("time-dependent Schrödinger equation", "Maxwell's
+  equations" → the four) or asks for "the equation" of the slide's subject. Each is added once per lecture, and never
+  when the unit has its own formula. The block carries `name` + `standard` ("standard form" tag).
+  /control **Equation** (`/api/equations` search → `show_equation`) puts one on the live slide (its next part if full).
+
 ## Progressive update
 1. **Fast path (≤ 3–5 s):** after the gate's fast trigger, the Composer may place a deterministic provisional item
    (key term or short sentence) marked `provisional`.

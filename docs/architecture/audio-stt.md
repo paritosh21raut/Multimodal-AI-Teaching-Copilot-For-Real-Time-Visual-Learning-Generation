@@ -20,7 +20,9 @@
   (avoids hallucination loops), plus a short `initial_prompt` with the subject/topic keywords for vocabulary priming.
   F-012: + "Terms: …" with ≤ 30 words from the study material in use that MiniLM's WordPiece vocabulary does not know
   and that are seen at least twice (`notes.reference.rare_terms`: GPIO, sinoatrial, thylakoid), fixed when speech
-  starts. Not yet measured on real audio with study material.
+  starts. Not yet measured on real audio with study material. F-013 S3b: the prompt grows with the lecture glossary
+  (`VocabularyChanged` → `SpeechPipeline.set_prompt`, terms ≤ 60 words, newest kept). On medium.en a 59-word prompt
+  is not slower (f013 WAV, 8 s chunks). A listed term can be echoed in a garbled chunk; check on the real mic.
 - Emits `TranscriptFinal` (text, start/end time, avg logprob, no_speech_prob, language="en").
 - **Live partials (F-013 S1b).** A second, fast model (`[stt] partial_model = "distil-small.en"`, own thread, own
   CTranslate2 instance) transcribes the utterance in progress every `partial_interval_s` (0.8 s; latest snapshot only,

@@ -364,6 +364,16 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
         segno.make(url, error="m").save(out, kind="svg", scale=10, border=2, dark="#111111", light="#ffffff")
         return Response(out.getvalue(), media_type="image/svg+xml", headers={"Cache-Control": "no-store"})
 
+    @app.get("/api/equations")
+    async def equations_search(request: Request, q: str = ""):
+        """F-013 S3: /control Show equation, the local library of standard equations (presentation.equations)."""
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
+        from copilot.presentation.equations import search as eq_search
+
+        return JSONResponse({"results": [{"id": e.id, "name": e.name, "plain": e.plain, "latex": e.latex}
+                                         for e in eq_search(q[:100], limit=10)]})
+
     @app.get("/api/assess")
     async def assess_list(request: Request, lecture: str = ""):
         if not trusted(request):

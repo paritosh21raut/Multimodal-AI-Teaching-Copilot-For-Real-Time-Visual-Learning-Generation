@@ -97,6 +97,20 @@ such a note is dropped. Replay of tests 1–30 (`tools/v1_eval.py --s3`, recorde
 the slides 118 → 33, verbatim copies 187 → 105, garbage lines 31 → 10; by hand ~14 of the 93 lines no longer shown
 were real statements the model had partly covered. No unknown-word rule (the MiniLM vocabulary is too small).
 
+**F-013 S3b (2026-10-17):** a comparison act without names takes them from the unit's spoken cue
+(`_compare_from_cue`). Rows are `{aspect, values[]}` in `compare` order (`_normalise_rows`; old `pairs` still read).
+The prompt tags a line with `(compares: A | B)` and asks for 2–4 names. The A/B (34,808 tokens) was not worse, so
+the rule is live.
+
+## Lecture glossary (F-013 S3b)
+`understanding/glossary.py`, owned by the service. The setup and study-material terms are trusted spellings. Each
+interpretation's titles, defined terms and compared names are lecture terms, admitted only when all their words are
+English (wordfreq) or, for an acronym, when the lecture spells it out. New terms publish `VocabularyChanged`, and
+speech primes Whisper with them (≤ 60 words, newest kept). Slide text is fixed only from trusted terms: the differing
+words must not be English and must sound alike by phonetic key and by consonants. Acronyms are never fixed. Each fix
+is a transcription concern (`[HEARD]`). In the replay, lecture terms as a source were mostly wrong (2–3 of 10), which
+is why they only prime Whisper.
+
 ## Grounding guard
 Formula-like tokens the model changed from what was said get a `transcription` concern (wrong = heard,
 right = shown) when the model did not raise one itself (details: F-004). Transcription concerns are applied without a

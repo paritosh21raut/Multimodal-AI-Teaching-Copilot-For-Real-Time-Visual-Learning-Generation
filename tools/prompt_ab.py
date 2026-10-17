@@ -3,6 +3,7 @@
     .venv/Scripts/python tools/prompt_ab.py --dry SESSION[:i,j] ...    # rebuild prompts, 0 tokens
     .venv/Scripts/python tools/prompt_ab.py SESSION[:i,j] ...          # new prompt on gpt-oss-120b (real Groq)
     .venv/Scripts/python tools/prompt_ab.py --old SESSION[:i,j] ...    # the old prompt again (sampling variance)
+    .venv/Scripts/python tools/prompt_ab.py --compare ...              # NEW = the N-way comparison rule + cue tags (F-013 S3)
     .venv/Scripts/python tools/prompt_ab.py --named ...                # NEW = the named-subtopic rule (default: the
                                                                        # F-013 S2 parent rule); SESSION may be testN
     .venv/Scripts/python tools/prompt_ab.py --both SESSION[:i,j] ...   # old AND new prompt on gpt-oss-120b (sessions
@@ -93,14 +94,16 @@ def build(u: Unit, new: bool, settings: InterpreterSettings) -> P.BuiltPrompt:
     """OLD = the live prompt of the recorded sessions (visual rule on, hierarchy / named / parent rules off); NEW = with
     RULE: the parent field (F-013 S2, the outline as a tree) or the named-subtopic rule (V1 long test, 2026-10-06).
     Round 4 step B compared the hierarchy rule the same way."""
-    saved = P.SYSTEM_PROMPT
+    saved, tags = P.SYSTEM_PROMPT, P.COMPARE_TAGS
     P.SYSTEM_PROMPT = P.system_prompt(visual=True, hierarchy=False, named=new and RULE == "named",
-                                      parent=new and RULE == "parent")  # build_prompt reads the constant
+                                      parent=new and RULE == "parent",
+                                      compare=new and RULE == "compare")  # build_prompt reads the constant
+    P.COMPARE_TAGS = new and RULE == "compare"
     try:
         return P.build_prompt(u.state, u.lines, dynamic_budget=settings.dynamic_budget_tokens,
                               total_budget=settings.prompt_budget_tokens)
     finally:
-        P.SYSTEM_PROMPT = saved
+        P.SYSTEM_PROMPT, P.COMPARE_TAGS = saved, tags
 
 
 def items(it: Interpretation) -> list[str]:
@@ -113,6 +116,9 @@ def items(it: Interpretation) -> list[str]:
         out += [f"{a.act}:formula {x.formula.expression}"] if x.formula else []
         out += [f"{a.act}:{c.cause} -> {c.effect}" for c in x.causes]
         out += [f"{a.act}:group {g.label}: {', '.join(g.items)}" for g in x.groups]
+        out += [f"{a.act}:compare {' | '.join(x.compare)}"] if x.compare else []
+        out += [f"{a.act}:row {r.aspect}: {' | '.join(r.values)}" for r in x.rows]
+        out += [f"{a.act}:row {p.aspect}: {p.left} | {p.right}" for p in x.pairs]
     return out
 
 
@@ -136,7 +142,7 @@ async def main(args: list[str]) -> None:
     # (live test 2026-10-06 ran on qwen only), so both arms are the same model
     both = "--both" in args
     global RULE
-    RULE = "named" if "--named" in args else "parent"
+    RULE = "named" if "--named" in args else "compare" if "--compare" in args else "parent"
     specs = [a for a in args if not a.startswith("--")]
     cfg = load_config()
     settings = InterpreterSettings(**{k: v for k, v in cfg.section("understanding").items()
@@ -217,7 +223,7 @@ async def main(args: list[str]) -> None:
           f"{sum(r['repaired'] for r in results)}, same topic {agree('topic')}, same subtopic {agree('subtopic')}, "
           f"same relation {agree('relation')}, same act kinds {agree('kinds')}, with visual "
           f"{sum(bool(r['new']['visual']) for r in results)}; real tokens {spent} "
-          f"(≈ {approx_tokens(P.NAMED_RULE if RULE == 'named' else P.PARENT_RULE + P.PARENT_SHAPE)} prompt tokens "
+          f"(≈ {approx_tokens(P.NAMED_RULE if RULE == 'named' else P.COMPARE_RULE if RULE == 'compare' else P.PARENT_RULE + P.PARENT_SHAPE)} prompt tokens "
           f"added per call) → {path}")
 
 

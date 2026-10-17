@@ -129,6 +129,11 @@ class SpeechPipeline:
         self.stats = {"utterances": 0, "published": 0, "dropped": 0, "latency_ms": []}
 
     # ---- lifecycle -------------------------------------------------------------------------
+    def set_prompt(self, prompt: Optional[str]) -> None:
+        """A new vocabulary prompt for the next utterances (F-013 S3: the lecture glossary grew). The final model's
+        thread reads it per utterance; one reference assignment, no lock needed."""
+        self._prompt = prompt
+
     def start(self) -> None:
         self._loop = asyncio.get_running_loop()
         self._threads = [

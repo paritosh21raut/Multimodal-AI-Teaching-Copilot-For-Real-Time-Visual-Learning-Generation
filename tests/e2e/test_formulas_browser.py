@@ -107,3 +107,27 @@ async def test_equations_in_points_render_and_lists_use_bullets_unless_counted()
         assert info == {"katex": [True, True, True], "prose": True, "styles": ["list-bullets", "list-numbers"],
                         "bullets": 3, "numbers": ["1", "2"], "errors": 0}
         assert page.errors == []
+
+
+async def test_every_library_equation_renders_with_katex():
+    """F-013 S3: the standard equations (presentation.equations), each with its name and legend, in real KaTeX."""
+    from copilot.presentation.equations import LIBRARY
+
+    async with display_harness() as h, browser_page(f"{h.url}/display") as page:
+        for n, e in enumerate(LIBRARY):
+            sid = f"eq{n}"
+            await h.deck.add(SlideSpec(id=sid, title=e.name, layout="formula", blocks=[FormulaBlock(
+                id="f", latex=e.latex, spoken=e.plain, name=e.name, standard=True,
+                variables=[Variable(symbol=t, meaning=m, latex=lx) for lx, t, m in e.legend])]))
+            await h.settle()
+            await wait_for_slide(page, sid)
+            info = await page.evaluate("""() => {
+                const eq = document.querySelector('.slide:not(.is-leaving) .formula-eq');
+                return {katex: !!eq.querySelector('.katex'), error: !!document.querySelector('.slide:not(.is-leaving) .katex-error'),
+                        fallback: !!eq.querySelector('.tex-fallback'),
+                        vars: document.querySelectorAll('.slide:not(.is-leaving) .formula-vars .tex-fallback').length,
+                        name: eq.querySelector('.formula-name')?.textContent || ''};
+            }""")
+            assert info == {"katex": True, "error": False, "fallback": False, "vars": 0,
+                            "name": e.name + "standard form"}, (e.id, info)
+        assert page.errors == []

@@ -1,7 +1,8 @@
 # F-013 — V1 hardening: evaluation of tests 1–30 and the fix plan
 
 Status: **S1 implemented**, **S2 implemented, targets partly met** (2026-10-16; see "S1 result" / "S2 result"),
-**S3a implemented** (2026-10-17, 0 tokens; see "S3 result"). S3b, S3c, S4, S5 planned. Evaluation spent 0 tokens.
+**S3a implemented** (2026-10-17, 0 tokens), **S3b implemented** (2026-10-17, 34,808 tokens A/B; see "S3 result").
+S3c, S4, S5 planned. Evaluation spent 0 tokens.
 Inputs: `verify_results/test1..30` (slides.md, transcript, terminal log, slide PNGs), `_eval/e2e_d2.json`,
 `_eval/results.json`, annotator A workbooks (12 lectures), the user's 12 reported issues (2026-10-16).
 User answers (2026-10-16): best system first (free Groq now, a paid LLM later); faded provisional content is OK;
@@ -281,6 +282,80 @@ listed with `--list`, and the before lists were checked by hand: 6 of 6 duplicat
   members (test24), definition (test3), formulas (test15, test23).
 - Still open from S3a: Jupiter / Saturn descriptions with ";" stay definitions (acceptable); a trailing single card
   still shows its term ("Atom" under "Atoms"); recall 0.507 unchanged (not a goal of S3a).
+
+**S3 result, group S3b (2026-10-17): N-way comparison (item 1), glossary + Whisper prompt (item 5), named equations
+(item 8). Implemented, unit-tested, replay-checked, A/B on gpt-oss-120b (34,808 tokens), screenshots looked at.**
+User (2026-10-17) "do what's best" on the open questions. What that decided: the library only as the equation source
+((b) notes skipped, since PDF text garbles equations; (c) the model's `standard_formula` goes to S3c with the E2 A/B).
+A glossary fix only from trusted spellings. Code shown as heard only with ≥ 3 spoken symbols, then dropped after the
+measurement (see below). The comparison-hint A/B was done in S3b.
+| Replay of tests 1–30 (`tools/v1_eval.py --s3`, recorded answers, guards re-run, 0 tokens) | S3a | S3b |
+|---|---|---|
+| comparison tables / unusable (empty headings) | 6 / 2 | 5 / **0** |
+| formulas on slides (of which a named standard equation) | 23 | 32 (9) |
+| boundary P / R / part rate (`--structure`) | 0.775 / 0.507 / 0.613 | 0.775 / 0.507 / 0.615 |
+(files `verify_results/_eval/s3b_replay.json`, `s3b_structure.json`.)
+- **Item 1, comparison.** Schema `compare` (2–4 names) + `rows [{aspect, values[]}]`; the old `pairs {aspect, left,
+  right}` is still read. `interpreter._normalise_rows` also accepts values keyed by the names and plain lists. Repairs in
+  code (`content.comparison_pieces`):
+  - cells "Name: value" name the columns (test18: ANN / TNN / RNN as one 3-way table);
+  - one heading over rows that each name a thing are fact tiles under that heading (test5: mixture → −55 °C);
+  - a row that only repeats the column names is dropped (test15).
+
+  The composer places cells by column name, widens a table by one more compared thing (≤ 4 columns), fills a cell
+  into the same aspect, and never draws a table without headings (rows without names become points). The interpreter
+  takes the names from the unit's spoken cue when the model gave none (`_compare_from_cue`). The cue regex now
+  allows "Now let's differentiate …" (test8 was missed). Prompt: line tag `(compares: A | B)` from the cue, and the
+  N-way rule. **A/B** (`tools/prompt_ab.py --compare`, 9 units of test8 / test27 / test18 / test5, then the old prompt
+  re-sent on the 3 units that differed): the new rule gave the test27 table, the correct 3-way test18 table, the test5
+  facts and the test8 headings. The losses (test8#90, test18#13 comparison → points; test27#55 empty) happened with the
+  old prompt too, so they are sampling variance. No new unsaid fact. **Live.** Tokens 20,604 + 7,450 + 6,754.
+- **Item 5, glossary** (`understanding/glossary.py`, 0 tokens).
+  - **Sources:** the setup and study-material terms (trusted spellings), plus each interpretation's titles, defined
+    terms and compared names.
+  - **Admission:** a lecture term needs all English words (wordfreq, local data; new dependency in `understanding`
+    and `dev`). An acronym needs the lecture to spell it out. So "Wannesbord theory" and "TNN" are never admitted.
+  - **Whisper prompt:** grows as the lecture does (`VocabularyChanged` → `SpeechPipeline.set_prompt`; the newest terms
+    within 60 words). medium.en on the f013 WAV: 939 / 476 ms median with a 59-word prompt vs 1060 / 843 ms with the
+    short one, i.e. no slowdown.
+  - **Slide fixes, measured first** (replay, recorded answers):
+    - With lecture terms as the source: 10 fixes, only 2–3 right ("Polydentate ligand" → "Monodentate ligand",
+      "PMOS" → "CMOS", "Stichometry" → "Chemistry": real terms the word list lacks).
+    - Acronyms with rhyming letter names gave "TNN" → "CNN" but also "GSAT" → "EMAC" from a datasheet.
+    - **So:** fixes come only from trusted terms. A phrase must sound alike by phonetic key (≥ 0.7–0.8 by length) and by
+      consonants (≥ 0.75), and its differing words must not be English. Acronyms are never fixed.
+    - Replay with the current study-material terms: 1 fix ("photolytic" → "photoelectric", test15), and it is right.
+      Each fix is a transcription concern, logged `[HEARD]`.
+- **Item 8, named equations** (`presentation/equations.py`, 42 entries: quantum, Maxwell (differential + Gauss
+  integral), mechanics, gases / thermo, chemistry, optics, maths, GDP).
+  - **Rendering:** every entry renders in KaTeX in Edge (browser test), with its name and legend.
+  - **Matching:** names are matched on the normalised line, Whisper spellings included. A family name shows its
+    defaults (Maxwell → four, "equations of motion" → three, "Schrödinger equation" → time-dependent); a specific form
+    named in the line wins. An ambiguous name needs its subject (continuity equation: fluid / flow).
+  - **"Write the equation"** on a slide about one shows it.
+  - **Engine:** reads `TranscriptFinal` and adds the standard form to the unit's pieces, once per lecture, and never
+    when the unit has its own formula (what was said wins). `FormulaBlock.name` and `standard` show the name and a
+    "standard form" tag.
+  - **/control "Equation":** search via `/api/equations` and the `show_equation` command onto the live slide (its
+    next part if full).
+  - **Replay:** test16 now shows both Schrödinger forms (it showed nothing). Also test1 Newton 2/3, test2 continuity
+    + Bernoulli, test15 Planck, test29 GDP, test30 Ohm.
+  - **Layout:** a set of 3+ formulas renders in two columns, with an odd last card spanning both and one legend
+    (composer `FORMULA_GRID_MIN`). Stacked, Maxwell's four fitted only 2 per slide.
+- **Code block (C8): not built.** Spoken Verilog converted as heard (test26) is unreadable ("square bracket 3 is 2 0
+  square ) count", "If (, reset ) count <= 4", "Always add the red" for `always @(`). The model's prose bullets are
+  better. The copied bullet "Single inverted comma b1 semicolon …" is already gated (S3a). A code field filled by the
+  model belongs to the S3c prompt work.
+- **Tests:** +32 in `tests/unit/test_representation_s3b.py` (real lines); browser +1 (library in KaTeX). Fast 706 and
+  browser 40 pass (see STATE for the last run). Screenshots `tools/screenshot_s3.py compare3 tiles named_eq maxwell
+  motion`, both themes, plus /control Equation search ("maxwell"), all looked at.
+- **Still open:**
+  - test18's 3-way table is titled with the misheard "TNN"; it stays a second table beside "CNN | RNN", since an
+    unadmitted acronym cannot be fixed.
+  - test15 shows "Kinetic energy: blue Lower | green Higher", reversed from what was said; this is the model's (E2,
+    S3c).
+  - A Whisper prompt that lists terms can be echoed in a garbled chunk (seen once on fixed 8 s chunks: "The first term,
+    the second term …"); this needs a real-mic check.
 
 ### S4 — Images + UI + robustness (D1–D4, F1–F6, G1)
 1. Images: image need also from the subject + slide type (concrete / process / apparatus); one image per deck used

@@ -44,11 +44,20 @@ def make_source(config: Config, audio_file: Optional[Path], speed: float) -> Aud
     return MicSource(device=device)
 
 
+PROMPT_TERM_WORDS = 60  # terms in the prompt, in words (≈ 100 tokens; Whisper keeps the last 223 prompt tokens)
+
+
 def vocabulary_prompt(setup: LectureSetup, terms: Sequence[str] = ()) -> Optional[str]:
     """Short Whisper initial prompt that primes subject vocabulary; never the transcript. terms: rare words of the
-    teacher's study material (F-012, notes.reference.rare_terms; ≤ 30 words, well inside Whisper's 224 tokens)."""
+    teacher's study material (F-012, notes.reference.rare_terms) and, as the lecture grows, the terms it has shown
+    (F-013 S3, understanding.glossary: newest last); the newest are kept when they exceed PROMPT_TERM_WORDS."""
     parts = [p for p in (setup.subject, setup.expected_topic) if p]
     out = [f"A classroom lecture on {' - '.join(parts)}."] if parts else []
-    if terms:
-        out.append(f"Terms: {', '.join(terms)}.")
+    kept: list[str] = []
+    for t in reversed(list(dict.fromkeys(terms))):
+        if sum(len(x.split()) for x in kept) + len(t.split()) > PROMPT_TERM_WORDS:
+            break
+        kept.insert(0, t)
+    if kept:
+        out.append(f"Terms: {', '.join(kept)}.")
     return " ".join(out) or None

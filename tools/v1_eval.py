@@ -322,6 +322,16 @@ async def replay(name: str, cues: bool, setup=None, guards: bool = False) -> dic
     flags: dict[str, tuple[bool, bool]] = {}
     slide_context = req_context = ""
     guard_texts: list[str] = []
+    heard: list[tuple[str, str]] = []
+    try:
+        from copilot.understanding.glossary import Glossary
+        glossary = Glossary() if guards else None
+    except ImportError:  # code before F-013 S3b
+        glossary = None
+    if glossary is not None:
+        for t in ((setup.subject, setup.expected_topic) if setup else ()):
+            if t:
+                glossary.add(t, trusted=True)
     for _, t, ty, p in ev:
         if ty == "UtteranceClassified":
             flags[p["segment_id"]] = (p.get("maybe_meta", False), p["kind"] == "question_to_class")
@@ -329,6 +339,9 @@ async def replay(name: str, cues: bool, setup=None, guards: bool = False) -> dic
             slide_context = p["text"]
         elif ty == "InterpretRequested":
             req_context = slide_context
+        elif ty == "TranscriptFinal":  # the engine reads what was said for named equations (F-013 S3)
+            from copilot.core.events import TranscriptFinal
+            await bus.publish(TranscriptFinal.model_validate(p))
         if ty not in ("ConceptSignal", "InterpretationReady"):
             continue
         clock.t = t - t0
@@ -340,6 +353,12 @@ async def replay(name: str, cues: bool, setup=None, guards: bool = False) -> dic
             if guards:
                 it, added = rerun_guards(rec, lines, req_context, store.snapshot(), bool(p.get("fallback")))
                 guard_texts += added
+                if glossary is not None:  # F-013 S3: misheard terms fixed from the lecture glossary
+                    from copilot.understanding.glossary import fix_interpretation, names_of
+                    said = [l.text for l in lines]
+                    it, fx = fix_interpretation(glossary, it, said)
+                    heard += [(f.heard, f.shown) for f in fx]
+                    glossary.learn(names_of(it), said + names_of(it))
                 p = {**p, "interpretation": it.model_dump()}
             elif not p.get("fallback") and (g := _guard_act(rec, lines)) >= 0:
                 guard_texts += rec.acts[g].items.points
@@ -375,7 +394,7 @@ async def replay(name: str, cues: bool, setup=None, guards: bool = False) -> dic
     return dict(name=name, slides=len(slides), part_rate=round(parts / max(1, len(slides)), 3),
                 announcements=len(ann), announce_median=pct(shown, 50), announce_p90=pct(shown, 90),
                 announce_missed=sum(1 for x in ann if x is None), cue_slides=eng.stats.ops.get("cue_slide", 0),
-                _ann=ann, _deck=slides, _opened=opened, _outline=store.snapshot().outline, _guard=guard_texts,
+                _ann=ann, _deck=slides, _opened=opened, _outline=store.snapshot().outline, _guard=guard_texts, _heard=heard,
                 _sents=[_words(x) for t in text.values() for x in re.split(r"(?<=[.!?])\s+", t)],
                 _fallback={p["request_id"] for _, _, ty, p in ev if ty == "InterpretationReady" and p.get("fallback")})
 

@@ -28,6 +28,7 @@ from copilot.core.events import (
     TranscriptPartial,
     UtteranceClassified,
     UtteranceDropped,
+    VocabularyChanged,
     new_id,
 )
 from copilot.core.state import LectureStateStore
@@ -36,6 +37,7 @@ from copilot.understanding.cues import live_definition_any
 from copilot.understanding.embedder import Embedder
 from copilot.understanding.filter import UtteranceFilter
 from copilot.understanding.gate import BufferedLine, DiscourseBuffer, Gate, GateConfig
+from copilot.understanding.glossary import Glossary, fix_interpretation, names_of
 from copilot.understanding.interpreter import (
     InterpretResult,
     Interpreter,
@@ -127,6 +129,8 @@ class UnderstandingService:
         self.interpreter = interpreter
         self.embedder = embedder
         self.reference = None  # notes.reference.ReferenceIndex (F-012): one passage per call when it clearly matches
+        self.glossary = Glossary()  # F-013 S3: terms this lecture showed / the study material spells (misheard fixes)
+        self._seeded = False
         self.s = settings or UnderstandingSettings()
         self.speed = speed
         self.clock = clock
@@ -346,6 +350,27 @@ class UnderstandingService:
         log.info("[REF] %s (%.2f) for the interpretation", s.cite, s.score)
         return s.cite, s.text
 
+    def study_terms(self, terms: list[str]) -> None:
+        """The study material's rare words (F-012): trusted glossary terms and Whisper's first vocabulary."""
+        self.glossary.study = list(terms)
+        for t in terms:
+            self.glossary.add(t, trusted=True)
+
+    async def _glossary(self, state, it, lines: list[BufferedLine]):
+        """Misheard terms fixed from the lecture glossary, then what this unit names is learned (F-013 S3, C5)."""
+        if not self._seeded:
+            self._seeded = True
+            for t in (state.setup.subject, state.setup.expected_topic):
+                if t:
+                    self.glossary.add(t, trusted=True)
+        texts = [l.text for l in lines]
+        it, fixes = fix_interpretation(self.glossary, it, texts)
+        for fx in fixes:
+            log.info("[HEARD] %r -> %r (lecture glossary)", fx.heard, fx.shown)
+        if self.glossary.learn(names_of(it), texts + names_of(it)):
+            await self.bus.publish(VocabularyChanged(terms=self.glossary.prompt_terms()))
+        return it
+
     async def _interpret(self, lines: list[BufferedLine], reason: str) -> None:
         state = self.store.snapshot()
         request_id = new_id()
@@ -369,6 +394,7 @@ class UnderstandingService:
             log.exception("interpreter raised")
             res = InterpretResult(fallback_interpretation(state, lines), fallback=True,
                                   fallback_reason=f"interpreter raised {type(e).__name__}: {e}"[:500])
+        res.interpretation = await self._glossary(state, res.interpretation, lines)
         st.prompt_tokens.append(res.prompt_tokens)
         st.max_prompt_tokens = max(st.max_prompt_tokens, res.prompt_tokens)
         st.latencies_ms.append(res.latency_ms)

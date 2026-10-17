@@ -71,7 +71,7 @@ _COMPARE = [
     re.compile(r"^(?:(?:so|now|and|then|next|let'?s see|let us see|we will see|we'll see|here is|what is|the)\s+){0,3}"
                r"(?:main\s+|major\s+|key\s+)?(?:difference|differences|comparison|distinction)s?\s+"
                r"(?:between|of)\s+(?P<a>[^.?!;:]{2,120})", re.IGNORECASE),
-    re.compile(r"^(?:let'?s|let us|we will|now we will|now let us)\s+(?:now\s+)?(?:compare|differentiate(?: between)?|"
+    re.compile(r"^(?:(?:so|now|and|okay|next)\s*,?\s+)*(?:let'?s|let us|we will|we'll|we are going to)\s+(?:now\s+)?(?:compare|differentiate(?: between)?|"
                r"distinguish(?: between)?)\s+(?P<a>[^.?!;:]{2,120})", re.IGNORECASE),
     re.compile(r"^(?P<a>[^.?!;:]{2,40}\s+(?:vs\.?|versus)\s+[^.?!;:]{2,40})$", re.IGNORECASE),
 ]

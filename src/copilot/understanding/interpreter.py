@@ -187,6 +187,40 @@ def _normalise_items(items: dict) -> None:
                 its = its if isinstance(its, list) else [its]
                 out.append({"label": str(g["label"]), "items": [str(x) for x in its if x is not None]})
         items["groups"] = out
+    _normalise_rows(items)
+
+
+def _normalise_rows(items: dict) -> None:
+    """Comparison rows (F-013 S3) as {aspect, values[]} in `compare` order. Also accepted: values keyed by the compared
+    names ({"aspect": .., "values": {"CNN": .., "RNN": ..}} or the names as keys of the row), the two-way
+    {aspect, left, right} and a plain list [aspect, value, ...]."""
+    rows = items.get("rows")
+    if not isinstance(rows, list):
+        items.pop("rows", None)
+        return
+    names = [str(x) for x in items.get("compare") or [] if isinstance(x, str)]
+    key = {n.strip().lower(): i for i, n in enumerate(names)}
+    out = []
+    for r in rows:
+        if isinstance(r, (list, tuple)) and r:
+            r = {"aspect": str(r[0]), "values": [str(x) for x in r[1:]]}
+        if not isinstance(r, dict):
+            continue
+        values = r.get("values")
+        if values is None and ("left" in r or "right" in r):
+            values = [r.get("left") or "", r.get("right") or ""]
+        if values is None:
+            values = {k: v for k, v in r.items() if k != "aspect"}
+        if isinstance(values, dict):
+            by_name = {str(k).strip().lower(): v for k, v in values.items()}
+            values = ([by_name.get(n.strip().lower(), "") for n in names] if names and set(by_name) <= set(key)
+                      else list(values.values()))
+        if isinstance(values, str):
+            values = [values]
+        if not isinstance(values, list):
+            continue
+        out.append({"aspect": str(r.get("aspect") or ""), "values": ["" if v is None else str(v) for v in values]})
+    items["rows"] = out
 
 
 def parse_interpretation(text: str) -> Interpretation:
@@ -466,6 +500,26 @@ def _examples_need_a_cue(it: Interpretation, lines: Sequence[BufferedLine]) -> I
     return it.model_copy(update={"acts": acts})
 
 
+def _compare_from_cue(it: Interpretation, lines: Sequence[BufferedLine]) -> Interpretation:
+    """A comparison act that does not name what it compares takes the names the teacher announced in this unit
+    ("Difference between ethical hacking and penetration testing"; F-013 S3: such tables had empty headings), when
+    the count fits its rows. Rows written as "Name: value" name their columns themselves (presentation.content)."""
+    from copilot.understanding.cues import detect
+
+    cue = next((c for l in lines for sent in re.split(r"(?<=[.!?])\s+", l.text)
+                if (c := detect(sent).of("compare")) is not None), None)
+    if cue is None:
+        return it
+    acts = []
+    for a in it.acts:
+        x = a.items
+        width = max([len(r.values) for r in x.rows] + [2 for _ in x.pairs[:1]] + [0])
+        if a.act == "comparison" and len(x.compare) < 2 and (not width or width == len(cue.items)):
+            a = a.model_copy(update={"items": x.model_copy(update={"compare": list(cue.items)})})
+        acts.append(a)
+    return it.model_copy(update={"acts": acts})
+
+
 # "Atoms are the smallest particles of an element ..." -> term "Atoms" + definition (fallback only)
 _DEFINES = re.compile(r"^(?:(?:the|an?)\s+)?(?P<term>[A-Za-z][A-Za-z-]*(?:\s+[A-Za-z-]+){0,2}?)\s+(?:is|are|means)\s+"
                       r"(?P<def>(?:the|a|an|any|anything)\b.{8,})$", re.IGNORECASE)
@@ -673,7 +727,7 @@ class Interpreter:
                 return self._fallback(state, lines, f"invalid output after repair: {second}", t0,
                                       prompt.tokens, attempts)
 
-        it = _fill_empty_acts(_examples_need_a_cue(_strip_meta_notes(it), lines), lines)
+        it = _fill_empty_acts(_compare_from_cue(_examples_need_a_cue(_strip_meta_notes(it), lines), lines), lines)
         it, changed = enforce_grounding(it, [l.text for l in lines])
         if changed:
             log.warning("interpretation from %s changed spoken tokens without saying so; concern added: %s",

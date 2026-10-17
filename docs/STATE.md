@@ -1,6 +1,7 @@
 # Current State
 
-_Last updated: 2026-10-17: **F-013 S3a (deterministic representation fixes) done** (0 tokens). Before that, 2026-10-16:
+_Last updated: 2026-10-17: **F-013 S3b (comparison, glossary, named equations) done** (34,808 Groq tokens, A/B). Before
+that, 2026-10-17: F-013 S3a (deterministic representation fixes, 0 tokens). Before that, 2026-10-16:
 **F-013 S2 (structure) done, targets partly met** (≈ 75k Groq tokens: A/B + one live run).
 Before that, 2026-10-15: **IEEE paper finished (6 pages, validation phase 4 done, 0 tokens)**. Before that, 2026-10-12:
 F-012 group D (reference materials / study material) done (8,582 Groq tokens). V2 groups A–D are implemented. Next: the
@@ -8,6 +9,20 @@ user's review of the paper and of group D, then the truthfulness bug below, then
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **F-013 S3b done (2026-10-17): N-way comparison, lecture glossary + Whisper prompt, named equations.**
+  - **Replay** of tests 1–30 (0 tokens): unusable comparison tables 2 → 0; formulas 23 → 32, of which 9 are named
+    standard equations (test16 now shows both Schrödinger forms); boundaries unchanged (P 0.775, R 0.507).
+  - **Comparison:** 2–4 columns, cells placed by name, no table without headings. Rule + cue tag A/B on gpt-oss-120b
+    (34,808 tokens) was not worse (it gained the test27 / test18 tables), so it is live.
+  - **Glossary:** primes Whisper as the lecture grows; a 59-word prompt is not slower on medium.en. It fixes slide
+    text only from study-material / setup spellings (lecture terms as the source were 2–3 of 10 right in the replay).
+    New dependency: wordfreq.
+  - **Equation library:** 42 entries, all KaTeX-tested. Engine adds a named equation once per lecture and never over
+    the teacher's own formula. /control **Equation** search. 3+ formulas in two columns.
+  - **Code block:** not built; as-heard spoken code is unreadable (test26).
+  - **Tests:** fast 706, browser 40 (one intermittent failure in `test_blank_and_navigation_on_projector`, which passes
+    alone 3/3). Screenshots looked at.
+  - **Next:** S3c (E1 card, E2 "never state a fact not said" + the model's `standard_formula`, A/B).
 - **F-013 S3a done (2026-10-17, 0 tokens): representation, deterministic.** Replay of tests 1–30 with the guards re-run
   (`tools/v1_eval.py --s3`): coverage-guard lines on slides 118 → 33, verbatim copies 187 → 105 (12.7 → 7.7 %), garbage
   lines 31 → 10, duplicates 6 → 1, bad definition cards 18 → 2, broken formulas 7 → 0; boundaries unchanged (P 0.775,
@@ -93,9 +108,9 @@ Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 | Core (events, bus, config, state store, lifecycle) | 30 | verified; snapshots in V1c |
 | Persistence (event log, recovery) | 15 | event log verified; recovery = V1c |
 | Simulator / test harness | 55 | text simulator, WAV-as-mic, display harness, screenshot / check tools; no soak runner |
-| Audio / STT | 95 | verified on WAV and real voice; F-012 terms not yet tried on real audio |
+| Audio / STT | 95 | verified on WAV and real voice; F-012 terms not yet tried on real audio; S3b glossary prompt timed on WAV only |
 | Lecture understanding + LLM | 88 | verified with real Groq; F-012 passage verified live |
-| Presentation engine | 89 | verified on several lectures with real LLM + screenshots; F-013 cue slides verified (replay + simulated live); S3a replay-verified (0 tokens) |
+| Presentation engine | 90 | verified on several lectures with real LLM + screenshots; F-013 cue slides verified (replay + simulated live); S3a/S3b replay-verified, S3b comparison rule A/B on Groq |
 | Live display + control view | 85 | verified in Edge |
 | Visual system (images/diagrams) | 65 | web images + CLIP, labelled diagrams, the teacher's own figures (F-012); generated diagrams not started |
 | V2 group A (themes, teacher notes, labelled images) | 100 | verified |

@@ -27,14 +27,15 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
                                                                      # list: sentences under each label (summary)
   process      { steps[{id, label, detail?}], cyclic: bool, start = 1 }   # ≤ 10 steps: one row ≤ 6, else two rows;
                                                                          # start: first step number on a next part
-  comparison   { columns[{id, heading}], rows[{id, aspect, cells[]}] }
+  comparison   { columns[{id, heading}], rows[{id, aspect, cells[]}] }   # 2-4 columns, headings never empty (F-013 S3b)
   timeline     { events[{id, when, label, detail?}] }
   hierarchy    { root{label, children[...]}, provisional = false }   # provisional (F-013): members as the teacher
                                                                      # names them, faded; never merged into, not in
                                                                      # the prompt's CURRENT SLIDE, replaced by the
                                                                      # interpretation
   cause_effect { links[{id, cause, effect}] }
-  formula      { latex, spoken, variables[{symbol, meaning, unit?, latex?}] }   # latex from mathtext (F-007a);
+  formula      { latex, spoken, variables[{symbol, meaning, unit?, latex?}], name?, standard? }   # latex from mathtext (F-007a);
+               # name + standard: a named equation's standard form from presentation.equations (F-013 S3b)
                # consecutive slide-wide formulas (≤ 4, said together) render as ONE set: stacked cards, one legend
   example      { title?, text }
   image        { url, alt, credit, licence, aspect, origin: auto|teacher, image_id }   # F-007b

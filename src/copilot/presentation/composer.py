@@ -32,7 +32,7 @@ from copilot.presentation.spec import (
 log = logging.getLogger(__name__)
 
 # Hard caps per block (readability), on top of the space budget.
-CAPACITY = {"points": 8, "notes": 2, "steps": 10, "columns": 3, "rows": 6, "events": 6, "links": 4,
+CAPACITY = {"points": 8, "notes": 2, "steps": 10, "columns": 4, "rows": 6, "events": 6, "links": 4,
             "variables": 4, "secondary": 2, "facts": 8, "groups": 4, "group_items": 8, "tree": 6, "definitions": 6,
             "member_points": 3, "formulas": 4}
 BODY_BUDGET_PX = 740       # slide body height at the default type size (auto-fit can still shrink to 0.8); measured
@@ -358,7 +358,7 @@ def block_height(b: Block, width: float = BODY_WIDTH_PX, narrow: bool = False) -
     if b.type == "formula":
         shown = visible_length(b.latex) if b.latex else len(b.spoken)
         return (140 + 72 * _lines("x" * shown, _cpl(width - 128, 55)) + (50 if has_fraction(b.latex) else 0)
-                + (60 if b.variables else 0))
+                + (60 if b.variables else 0) + (FORMULA_NAME_PX if b.name else 0))
     if b.type in SECONDARY:
         return 110 + 45 * _lines(b.text, _cpl(width - 80, 34))
     if b.type == "image":
@@ -413,14 +413,24 @@ FORMULA_SET_EQ_PX = 106    # one compact equation card of a formula set (slide.c
 FORMULA_SET_GAP_PX = 22
 
 
+FORMULA_NAME_PX = 40  # the name line above a named equation (slide.css .formula-name)
+FORMULA_GRID_MIN = 3  # a set of this many formulas renders in two columns (slide.css .formula-set.grid)
+
+
 def _formula_set_height(fs: list[FormulaBlock], width: float) -> float:
-    """Several formulas said together (mirrors slide.js FormulaSet): stacked compact cards, one shared legend."""
-    h = 0.0
-    for f in fs:
+    """Several formulas said together (mirrors slide.js FormulaSet): stacked compact cards, one shared legend; three or
+    more (Maxwell's equations, F-013 S3) in two columns, each row as tall as its taller card; an odd last card spans
+    both."""
+    cols = 2 if len(fs) >= FORMULA_GRID_MIN else 1
+    card_w = (width - FORMULA_SET_GAP_PX * (cols - 1)) / cols
+
+    def card(f: FormulaBlock) -> float:
         shown = visible_length(f.latex) if f.latex else len(f.spoken)
-        h += FORMULA_SET_EQ_PX + 69 * (_lines("x" * shown, _cpl(width - 112, 49)) - 1) \
-            + (44 if has_fraction(f.latex) else 0)
-    h += FORMULA_SET_GAP_PX * (len(fs) - 1)
+        return (FORMULA_SET_EQ_PX + 69 * (_lines("x" * shown, _cpl(card_w - 112, 49)) - 1)
+                + (44 if has_fraction(f.latex) else 0) + (FORMULA_NAME_PX if f.name else 0))
+
+    rows = [fs[k:k + cols] for k in range(0, len(fs), cols)]
+    h = sum(max(card(f) for f in row) for row in rows) + FORMULA_SET_GAP_PX * (len(rows) - 1)
     seen: dict[str, str] = {}
     for f in fs:
         for v in f.variables:
@@ -1116,6 +1126,9 @@ def _merge_definition(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optiona
 
 def _merge_facts(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:
     fb = _find(spec, "facts")
+    if piece.term and fb is not None and not titles_match(fb.heading, piece.term):
+        # tiles under their own heading ("Freezing temperature") joining other tiles keep it in the value
+        piece = replace(piece, term="", pairs=tuple((a, f"{piece.term}: {b}") for a, b in piece.pairs))
     existing = [f"{f.label} {f.value}" for f in fb.facts] if fb else []
     labels = {_norm(f.label) for f in fb.facts} if fb else set()
     fresh = [(a, b) for a, b in piece.pairs
@@ -1124,7 +1137,7 @@ def _merge_facts(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Pie
         return spec, None
     if fb is None:
         out, rest = _greedy(spec, fresh[:CAPACITY["facts"]], lambda fs: _add_block(
-            spec, FactsBlock(facts=[Fact(label=a, value=b) for a, b in fs])))
+            spec, FactsBlock(heading=piece.term, facts=[Fact(label=a, value=b) for a, b in fs])))
         rest += fresh[CAPACITY["facts"]:]
         if out is spec:
             return spec, piece
@@ -1290,28 +1303,62 @@ def _merge_steps(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Pie
 
 
 def _merge_comparison(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:
+    """Rows go into the slide's table by column name (F-013 S3: 2-4 columns, a later unit may name one more thing
+    compared, cells in any order). A new table needs its headings: rows without names and without a table become
+    points ("Data type: spatial vs sequential"); a table is never drawn with empty headings (test5, test18)."""
     cb = _find(spec, "comparison")
+    order: Optional[list[int]] = None  # piece cell i -> table column order[i]
     if cb is None:
         if any(b.type in LARGE for b in spec.blocks):
             return spec, piece
-        cols = list(piece.columns) or ["", ""]
-        width = max(len(cols), max((len(c) for _, c in piece.rows), default=0))
-        cols = (cols + [""] * width)[:min(width, CAPACITY["columns"])]
-        cb = ComparisonBlock(columns=[Column(heading=cap(h)) for h in cols])
+        if len(piece.columns) < 2:
+            texts = tuple(f"{a}: {' vs '.join(c for c in cells if c)}" if a and a != "—" else " vs ".join(cells)
+                          for a, cells in piece.rows if any(cells))
+            return _merge_points(spec, replace(piece, kind="points", texts=texts, columns=(), rows=()))                 if texts else (spec, None)
+        cb = ComparisonBlock(columns=[Column(heading=cap(h)) for h in piece.columns[:CAPACITY["columns"]]])
         base = _add_block(spec, cb)
-    elif piece.columns and not _same_columns([c.heading for c in cb.columns], list(piece.columns)):
-        return spec, piece
     else:
+        heads = [c.heading for c in cb.columns]
+        if piece.columns:
+            order = [next((j for j, h in enumerate(heads) if titles_match(h, c)), -1) for c in piece.columns]
+            new_cols = [c for c, j in zip(piece.columns, order) if j < 0]
+            if new_cols and (sum(j >= 0 for j in order) < min(2, len(heads)) or len(heads) + len(new_cols)
+                             > CAPACITY["columns"]):
+                return spec, piece  # another comparison: its own slide
+            if new_cols:  # one more thing compared (ANN after CNN | RNN): widen the table
+                cb2 = cb.model_copy(update={
+                    "columns": cb.columns + [Column(heading=cap(c)) for c in new_cols],
+                    "rows": [r.model_copy(update={"cells": r.cells + [""] * len(new_cols)}) for r in cb.rows]})
+                heads += new_cols
+                order = [heads.index(c) if j < 0 else j for c, j in zip(piece.columns, order)]
+                spec = _replace_block(spec, cb, cb2)
+                cb = cb2
         base = spec
     n = len(cb.columns)
     existing = [r.aspect + " " + " ".join(r.cells) for r in cb.rows]
-    rows = []
+    rows, updated = [], {}
     for aspect, cells in piece.rows:
-        text = aspect + " " + " ".join(cells)
+        placed = [""] * n
+        for i, c in enumerate(cells):
+            j = order[i] if order is not None and i < len(order) else i
+            if 0 <= j < n:
+                placed[j] = c
+        same = next((r for r in cb.rows if _norm(r.aspect) == _norm(aspect) and aspect != "—"), None)
+        if same is not None and all(not a or not b or a == b for a, b in zip(same.cells, placed)):
+            fill = [a or b for a, b in zip(same.cells, placed)]
+            if fill != same.cells:  # the same aspect, a cell more ("RNN: high" after "ANN: moderate")
+                updated[same.id] = fill
+            continue
+        text = aspect + " " + " ".join(placed)
         if any(is_duplicate(text, e) for e in existing):
             continue
         existing.append(text)
-        rows.append(Row(aspect=cap(aspect), cells=(list(cells) + [""] * n)[:n]))
+        rows.append(Row(aspect=cap(aspect), cells=placed))
+    if updated:
+        cb2 = cb.model_copy(update={"rows": [r.model_copy(update={"cells": updated[r.id]}) if r.id in updated else r
+                                             for r in cb.rows]})
+        spec = base = _replace_block(spec, cb, cb2)  # only an existing table has rows to fill (base is spec)
+        cb = cb2
     room = max(0, CAPACITY["rows"] - len(cb.rows))
     out, rest = _greedy(spec if base is not spec and rows else base, rows[:room], lambda rs: _replace_block(
         base, cb, cb.model_copy(update={"rows": cb.rows + rs})))
@@ -1324,12 +1371,6 @@ def _merge_comparison(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optiona
         return out, replace(piece, rows=tuple((r.aspect, tuple(r.cells)) for r in rest),
                             columns=tuple(c.heading for c in cb.columns))
     return out, None
-
-
-def _same_columns(a: list[str], b: list[str]) -> bool:
-    a = [x for x in a if x]
-    b = [x for x in b if x]
-    return not a or not b or (len(a) >= len(b) and all(any(titles_match(x, y) for y in a) for x in b))
 
 
 def _merge_pairs(block_type: str, cap_key: str):
@@ -1373,7 +1414,7 @@ def _merge_formula(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[P
     f = piece.formula
     assert f is not None
     formulas = [b for b in spec.blocks if b.type == "formula" and not b.about]
-    if any(is_duplicate(fb.spoken or fb.latex, f.expression) for fb in formulas):
+    if any(is_duplicate(fb.spoken or fb.latex, f.expression) or (f.name and fb.name == f.name) for fb in formulas):
         return spec, None
     if any(b.type in LARGE and b.type != "formula" for b in spec.blocks):
         return spec, piece
@@ -1382,8 +1423,10 @@ def _merge_formula(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[P
         # formulas said together form one set (round 5: the equations of motion were three slides); only when the
         # new one directly follows a slide-wide formula, so the set stays one stack
         return spec, piece
-    variables = [_variable(s, m) for s, m in f.variables[:CAPACITY["variables"]]]
-    cand = _add_block(spec, FormulaBlock(latex=to_latex(f.expression), spoken=f.expression, variables=variables))
+    variables = [Variable(symbol=s, meaning=m, latex=f.var_latex[i]) if i < len(f.var_latex) else _variable(s, m)
+                 for i, (s, m) in enumerate(f.variables[:CAPACITY["variables"]])]
+    cand = _add_block(spec, FormulaBlock(latex=f.latex or to_latex(f.expression), spoken=f.expression,
+                                         variables=variables, name=f.name, standard=f.standard))
     return (cand, None) if fits(cand) or not spec.blocks else (spec, piece)
 
 

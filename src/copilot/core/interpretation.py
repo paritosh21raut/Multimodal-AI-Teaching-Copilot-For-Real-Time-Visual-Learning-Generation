@@ -33,6 +33,12 @@ class Pair(_Lenient):
     right: str = ""
 
 
+class CompareRow(_Lenient):
+    """One aspect of an N-way comparison (F-013 S3): values in the order of `compare`."""
+    aspect: str = ""
+    values: list[str] = Field(default_factory=list)
+
+
 class TimedEvent(_Lenient):
     when: str = ""
     what: str
@@ -70,8 +76,9 @@ class ContentItems(_Lenient):
     definition: str = ""
     points: list[str] = Field(default_factory=list)
     steps: list[str] = Field(default_factory=list)
-    compare: list[str] = Field(default_factory=list)  # the things compared, e.g. ["photosynthesis", "respiration"]
-    pairs: list[Pair] = Field(default_factory=list)
+    compare: list[str] = Field(default_factory=list)  # the things compared (2-4), e.g. ["photosynthesis", "respiration"]
+    rows: list[CompareRow] = Field(default_factory=list)  # F-013 S3: one per aspect, values in `compare` order
+    pairs: list[Pair] = Field(default_factory=list)       # older two-way form (aspect, left, right), still read
     events: list[TimedEvent] = Field(default_factory=list)
     formula: Optional[Formula] = None
     causes: list[CauseEffect] = Field(default_factory=list)

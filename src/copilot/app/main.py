@@ -29,6 +29,7 @@ from copilot.core.events import (
     SlidePatch,
     TranscriptFinal,
     UtteranceDropped,
+    VocabularyChanged,
     new_id,
 )
 from copilot.core.logging_setup import setup_logging
@@ -596,15 +597,25 @@ class App:
 
         assert self.engine is not None and self.store is not None
         source = make_source(self.config, self.audio_file, self.speed)
+        study = await self._study_terms()
+        if self.understanding is not None:
+            self.understanding.study_terms(study)
         self.speech = SpeechPipeline(
             self.bus,
             source,
             self.engine,
             segmenter=segmenter_config(self.config),
-            prompt=vocabulary_prompt(self.store.snapshot().setup, await self._study_terms()),
+            prompt=vocabulary_prompt(self.store.snapshot().setup, study),
             partial_engine=self.partial_engine,
             partial_interval_s=float(self.config.get("stt", "partial_interval_s", 0.8)),
         )
+        speech = self.speech
+
+        async def on_vocabulary(e: VocabularyChanged) -> None:  # F-013 S3: Whisper hears the lecture's terms
+            speech.set_prompt(vocabulary_prompt(self.store.snapshot().setup, e.terms))
+            log.info("[STT] vocabulary prompt: %d terms (newest: %s)", len(e.terms), ", ".join(e.terms[-3:]))
+
+        self.bus.subscribe("speech_vocabulary", on_vocabulary, [VocabularyChanged])
         try:
             self.speech.start()
             stop_task = asyncio.create_task(self._stop.wait())

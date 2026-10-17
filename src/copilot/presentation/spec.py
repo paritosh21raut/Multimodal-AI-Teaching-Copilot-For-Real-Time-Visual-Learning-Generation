@@ -152,6 +152,8 @@ class FormulaBlock(_Model):
     spoken: str = ""  # the formula as the model wrote it from the lecture (plain text)
     variables: list[Variable] = Field(default_factory=list)
     about: str = ""  # id of the definition block whose column this belongs to (two definitions side by side)
+    name: str = ""   # a named equation ("Gauss's law (electric)"), shown above it (F-013 S3)
+    standard: bool = False  # its standard form from the library (presentation.equations), not what was said
 
 
 class ExampleBlock(_Model):

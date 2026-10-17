@@ -210,8 +210,11 @@
 /* ---------- comparison ---------- */
 .compare { width: 100%; border-collapse: separate; border-spacing: 0; font-size: calc(var(--fs-body) * var(--fit)); }
 .compare th { text-align: left; padding: 22px 30px; font-family: var(--font-display); font-size: calc(var(--fs-lead) * var(--fit)); }
-.compare th:nth-child(2) { color: var(--accent); }
-.compare th:nth-child(3) { color: var(--accent-2); }
+.compare th:nth-child(even) { color: var(--accent); }
+.compare th:nth-child(odd) { color: var(--accent-2); }
+/* 3-4 things compared (F-013 S3): tighter cells, the aspect column narrower */
+.compare.many th, .compare.many td { padding-left: 22px; padding-right: 22px; }
+.compare.many td.aspect { width: 16%; }
 .compare td { padding: 22px 30px; border-top: 2px solid var(--line); line-height: 1.3; vertical-align: top; }
 .compare td.aspect { color: var(--muted); font-size: calc(var(--fs-small) * var(--fit)); font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase; width: 22%; }
 
@@ -276,7 +279,17 @@
 .formula-set { gap: 22px; }
 .formula-set .formula-eq { font-size: calc(var(--fs-lead) * 1.05 * var(--fit)); padding: 18px 56px; min-width: 46%; }
 .formula-set .formula-vars { margin-top: 12px; }
+/* three or more (Maxwell's equations, F-013 S3): two columns of cards, the legend under both (composer FORMULA_GRID_MIN) */
+.formula-set.grid { grid-template-columns: 1fr 1fr; justify-items: stretch; column-gap: 22px; }
+.formula-set.grid .formula-eq { min-width: 0; padding: 18px 28px; }
+.formula-set.grid .formula-vars, .formula-set.grid .formula-eq.span { grid-column: 1 / -1; }
+.formula-set.grid .formula-eq.span { justify-self: center; min-width: 50%; }
 .formula-eq .katex .base { margin: 0.12em 0; }
+/* a named equation (F-013 S3): its name above it, a tag when it is the library's standard form (composer FORMULA_NAME_PX) */
+.formula-name { font-family: var(--font-text); font-size: calc(var(--fs-small) * var(--fit)); font-weight: 650; color: var(--muted);
+  letter-spacing: 0.02em; margin-bottom: 8px; display: flex; gap: 14px; justify-content: center; align-items: baseline; }
+.formula-name .std { font-size: 0.8em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent);
+  border: 2px solid var(--accent-soft); border-radius: 999px; padding: 2px 12px; }
 .tex .katex .text, .tex .katex .text * { font-family: var(--font-display); font-weight: 600; font-style: normal; }
 .tex .katex .mrel, .tex .katex .mbin { color: var(--accent); }
 .tex .katex .msupsub .text, .tex .katex .msupsub .text * { font-weight: 500; }

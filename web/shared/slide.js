@@ -100,7 +100,7 @@ function Process({ b }) {
 }
 
 function Comparison({ b }) {
-  return html`<table class="compare enter">
+  return html`<table class=${"compare enter" + (b.columns.length >= 3 ? " many" : "")}>
     <thead><tr><th></th>${b.columns.map((c) => html`<th key=${c.id}>${rich(c.heading)}</th>`)}</tr></thead>
     <tbody>
       ${b.rows.map((r) => html`<tr key=${r.id} class="enter">
@@ -158,9 +158,14 @@ function NarrowTree({ root }) {
 
 // KaTeX (latex built by presentation.mathtext); the formula as said when it cannot be rendered. Words and chemical
 // formulas inside it use the slide font (slide.css), so a word equation looks like the rest of the slide.
+// A named equation (F-013 S3): its name above it; "standard form" when it comes from the library, not the speech.
+function FormulaName({ b }) {
+  return b.name ? html`<div class="formula-name">${b.name}${b.standard && html`<span class="std">standard form</span>`}</div>` : null;
+}
+
 function Formula({ b }) {
   return html`<div class="formula">
-    <div class="formula-eq enter" data-edit=${b.id} data-delete-only="1"><${Tex} latex=${b.latex} text=${b.spoken || b.latex} /></div>
+    <div class="formula-eq enter" data-edit=${b.id} data-delete-only="1"><${FormulaName} b=${b} /><${Tex} latex=${b.latex} text=${b.spoken || b.latex} /></div>
     ${b.variables.length > 0 && html`<div class="formula-vars">
       ${b.variables.map((v) => html`<span key=${v.symbol} class="var enter"><${Tex} cls="sym" latex=${v.latex} text=${v.symbol} />
         <span class="meaning">${rich(v.meaning)}</span>${v.unit && html`<span class="unit">${v.unit}</span>`}</span>`)}
@@ -174,9 +179,11 @@ function FormulaSet({ b }) {
   const seen = new Map();
   b.items.forEach((f) => f.variables.forEach((v) => { if (!seen.has(v.symbol)) seen.set(v.symbol, v); }));
   const vars = [...seen.values()];
-  return html`<div class="formula formula-set">
-    ${b.items.map((f) => html`<div key=${f.id} class="formula-eq enter" data-edit=${f.id} data-delete-only="1">
-      <${Tex} latex=${f.latex} text=${f.spoken || f.latex} /></div>`)}
+  const grid = b.items.length >= 3;  // composer FORMULA_GRID_MIN: two columns, an odd last card spans both
+  return html`<div class=${"formula formula-set" + (grid ? " grid" : "")}>
+    ${b.items.map((f, i) => html`<div key=${f.id} class=${"formula-eq enter" + (grid && i === b.items.length - 1 && i % 2 === 0 ? " span" : "")}
+      data-edit=${f.id} data-delete-only="1">
+      <${FormulaName} b=${f} /><${Tex} latex=${f.latex} text=${f.spoken || f.latex} /></div>`)}
     ${vars.length > 0 && html`<div class="formula-vars">
       ${vars.map((v) => html`<span key=${v.symbol} class="var enter"><${Tex} cls="sym" latex=${v.latex} text=${v.symbol} />
         <span class="meaning">${rich(v.meaning)}</span>${v.unit && html`<span class="unit">${v.unit}</span>`}</span>`)}
