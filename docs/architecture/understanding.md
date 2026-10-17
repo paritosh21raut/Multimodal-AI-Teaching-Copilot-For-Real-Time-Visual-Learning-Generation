@@ -86,6 +86,17 @@ and a sentence Whisper ended early counts together with its lower-case continuat
 paraphrase (0.53) from a real dropped fact (0.52), so it is not used here.
 A `relation` given as an act name ("transition") is read as `same_concept` instead of costing a repair call.
 
+**F-013 S3a (2026-10-17):** words compare as stems (`textutil.stem`: "masses" ~ "Mass", "rioting" ~ "riots") and
+quantities in one form (`textutil.normalise_spoken`). A sentence whose line the model cited in a content act comes back
+only when ≤ 20 % of its words are covered (`COVER_CITED_SHARE`; ≤ 34 % otherwise). Every recovered or filled-in line
+passes the garbage gate (`understanding/quality.py`): meta notes, spoken code, references to other lessons, the speaker
+as subject, a bare pronoun subject, glued headings and cut-off starts are not shown (logged). `tidy_spoken` drops
+linking words ("Thus,", "Recently,", "As a result,"). The fallback uses the gate without the speaker rules. Model items
+lose bracketed notes about the transcript ("[unclear location, likely mis-heard]"), and a concern whose correction is
+such a note is dropped. Replay of tests 1–30 (`tools/v1_eval.py --s3`, recorded answers, guards re-run): guard lines on
+the slides 118 → 33, verbatim copies 187 → 105, garbage lines 31 → 10; by hand ~14 of the 93 lines no longer shown
+were real statements the model had partly covered. No unknown-word rule (the MiniLM vocabulary is too small).
+
 ## Grounding guard
 Formula-like tokens the model changed from what was said get a `transcription` concern (wrong = heard,
 right = shown) when the model did not raise one itself (details: F-004). Transcription concerns are applied without a

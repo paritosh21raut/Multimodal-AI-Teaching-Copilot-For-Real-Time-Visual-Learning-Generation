@@ -5,6 +5,11 @@
     .venv/Scripts/python tools/v1_eval.py --gate [test1 ...]     # gate only: recorded speech timing, call floors
     .venv/Scripts/python tools/v1_eval.py --structure [names] [--out f.json]   # S2: replay (cues on), boundary P/R
                                                                  # vs the annotators, part rate, reused titles
+    .venv/Scripts/python tools/v1_eval.py --s3 [names] [--recorded] [--list verbatim,garbage,dup,def,table,formula]
+                                         [--out f.json]          # S3: replay (cues on) with the post-model guards
+                                                                 # run again (--recorded: as recorded); verbatim
+                                                                 # copies, guard lines, garbage, duplicates, bad
+                                                                 # definition cards / tables / formulas
 
 With no names: every verify_results/test<N>. A name is a validation test folder (verify_results/<name>) or a session id
 under data/sessions. Everything comes from the session's event log (the slides as they ended, the transcript, the
@@ -222,9 +227,51 @@ def total(rows: list[dict]) -> dict:
 
 
 # ---------------------------------------------------------------------------------------------- engine replay
-async def replay(name: str, cues: bool, setup=None) -> dict:
+def _words(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+
+def _guard_act(it, lines) -> int:
+    """Index of the coverage guard's act in a recorded interpretation (-1 = none): the last act, an explanation
+    whose every point is a spoken sentence of the unit as the guard tidies it."""
+    from copilot.understanding.interpreter import _LEAD_FILLERS
+    from difflib import SequenceMatcher
+
+    if not it.acts:
+        return -1
+    a = it.acts[-1]
+    if a.act != "explanation" or a.added or not a.items.points or a.items != a.items.model_copy(
+            update={"points": a.items.points}):
+        return -1
+    sents = [_words(_LEAD_FILLERS.sub("", s))[:30] for l in lines
+             for s in re.split(r"(?<=[.!?])\s+", " ".join(l.text.split()))]
+    ok = all(any(SequenceMatcher(None, _words(p), s).ratio() >= 0.95 for s in sents) for p in a.items.points)
+    return len(it.acts) - 1 if ok else -1
+
+
+def rerun_guards(it, lines, slide_context: str, state, fallback: bool):
+    """The recorded model answer through the CURRENT post-model guards (0 tokens): the recorded coverage-guard act
+    is removed and the guard runs again; a fallback unit is interpreted again by the current fallback. Returns the
+    interpretation and the texts the guard added."""
+    from copilot.understanding import interpreter as I
+
+    if fallback:
+        return I.fallback_interpretation(state, lines), []
+    g = _guard_act(it, lines)
+    base = it.model_copy(update={"acts": [a for i, a in enumerate(it.acts) if i != g]}) if g >= 0 else it
+    if hasattr(I, "_strip_meta_notes"):  # F-013 S3
+        base = I._strip_meta_notes(base)
+        base = base.model_copy(update={"concerns": [c for c in base.concerns if not (
+            I.problem(c.right) == "meta" or I.problem(c.suggested_correction) == "meta")]})
+    out = I._cover_dropped_sentences(base, lines, slide_context)
+    added = [p for a in out.acts[len(base.acts):] for p in a.items.points]
+    return out, added
+
+
+async def replay(name: str, cues: bool, setup=None, guards: bool = False) -> dict:
     """The recorded transcript cues + interpretations, on their recorded clock, through the current presentation
-    engine (0 tokens). Measures what the engine alone changes; the gate / LLM timing stays as recorded."""
+    engine (0 tokens). Measures what the engine alone changes; the gate / LLM timing stays as recorded.
+    guards: the recorded answers also go through the current post-model guards again (`rerun_guards`)."""
     from copilot.core.bus import EventBus
     from copilot.core.events import ConceptSignal, InterpretationReady, SlidePatch
     from copilot.core.state import LectureSetup, LectureStateStore
@@ -269,10 +316,33 @@ async def replay(name: str, cues: bool, setup=None) -> dict:
             await eng._expire_cues()
         await bus.drain()
 
+    from copilot.understanding.gate import BufferedLine
+
+    seg = {p["segment"]["id"]: p["segment"] for _, _, ty, p in ev if ty == "TranscriptFinal"}
+    flags: dict[str, tuple[bool, bool]] = {}
+    slide_context = req_context = ""
+    guard_texts: list[str] = []
     for _, t, ty, p in ev:
+        if ty == "UtteranceClassified":
+            flags[p["segment_id"]] = (p.get("maybe_meta", False), p["kind"] == "question_to_class")
+        elif ty == "SlideContextChanged":
+            slide_context = p["text"]
+        elif ty == "InterpretRequested":
+            req_context = slide_context
         if ty not in ("ConceptSignal", "InterpretationReady"):
             continue
         clock.t = t - t0
+        if ty == "InterpretationReady":
+            from copilot.core.interpretation import Interpretation
+            lines = [BufferedLine(s, seg[s]["text"], seg[s]["start"], seg[s]["end"], *flags.get(s, (False, False)))
+                     for s in p["segment_ids"] if s in seg]
+            rec = Interpretation.model_validate(p["interpretation"])
+            if guards:
+                it, added = rerun_guards(rec, lines, req_context, store.snapshot(), bool(p.get("fallback")))
+                guard_texts += added
+                p = {**p, "interpretation": it.model_dump()}
+            elif not p.get("fallback") and (g := _guard_act(rec, lines)) >= 0:
+                guard_texts += rec.acts[g].items.points
         await release()
         p = {k: v for k, v in p.items() if k not in ("id", "ts", "session_id")}
         cause[:] = [p["segment_id"]] if ty == "ConceptSignal" else p.get("segment_ids", [])
@@ -305,7 +375,9 @@ async def replay(name: str, cues: bool, setup=None) -> dict:
     return dict(name=name, slides=len(slides), part_rate=round(parts / max(1, len(slides)), 3),
                 announcements=len(ann), announce_median=pct(shown, 50), announce_p90=pct(shown, 90),
                 announce_missed=sum(1 for x in ann if x is None), cue_slides=eng.stats.ops.get("cue_slide", 0),
-                _ann=ann, _deck=slides, _opened=opened, _outline=store.snapshot().outline)
+                _ann=ann, _deck=slides, _opened=opened, _outline=store.snapshot().outline, _guard=guard_texts,
+                _sents=[_words(x) for t in text.values() for x in re.split(r"(?<=[.!?])\s+", t)],
+                _fallback={p["request_id"] for _, _, ty, p in ev if ty == "InterpretationReady" and p.get("fallback")})
 
 
 def report_replay(names: list[str]) -> None:
@@ -388,6 +460,212 @@ def report_structure(names: list[str], out: Path | None = None) -> None:
     print("total:", tot)
     if out is not None:
         out.write_text(json.dumps(dict(total=tot, lectures=rows), indent=1), encoding="utf-8")
+        print(f"-> {out}")
+
+
+# ---------------------------------------------------------------------------------------------- S3 representation
+# Fixed measuring rules, independent of the code under test (the garbage gate in the app may differ); every flagged
+# line is listed with --list so the counts can be checked by hand.
+_M_META = re.compile(r"\[[^\]]*[a-z]{4,}[^\]]*\]|\bmis-?heard\b|\bunclear\b|\binaudible\b", re.I)
+_M_OPENER = re.compile(r"^(?:recall that|as (?:previously|already|we) (?:discussed|mentioned|saw)|before discussing|"
+                       r"in today'?s world|that'?s it|there you (?:go|went)|let'?s|let us|recently|again|sometimes|"
+                       r"however|finally|thus|therefore|hence|so|well|okay|now)\b(?!-)|\b(?:will be discussed|"
+                       r"we (?:will|shall) (?:see|discuss|learn))\b", re.I)
+_M_YOU = re.compile(r"\b(?:you|your|we|our|us)\b|(?<!War )(?<!Type )\bI\b(?! \()")
+_M_CODE = re.compile(r"\b(?:semicolon|inverted comma|bracket (?:open|close)|(?:round|curly|square) bracket|"
+                     r"end ?module|begin end)\b", re.I)
+_M_VAGUE = re.compile(r"^(?:it|this|that|these|those|they|he|she)\b(?! (?:is|are) (?:called|known))", re.I)
+_M_GREEK = "αβγδεζηθικλμνξπρστυφχψωΔΘΛΞΠΣΦΨΩ"
+
+
+def m_garbage(text: str) -> str:
+    """Why a slide line is not slide text ("" = fine). "vague" (a bare pronoun subject) is counted apart: it reads
+    badly on a slide but is not garbage."""
+    t = text.strip()
+    if _M_META.search(t):
+        return "meta"
+    if _M_CODE.search(t):
+        return "spoken code"
+    if _M_OPENER.search(t):
+        return "opener"
+    if _M_YOU.search(t):
+        return "speaker"
+    if re.match(r"^[A-Z][a-z]+, (?:as|the|in|while|this|it|a)\b", t):
+        return "glued heading"
+    return ""
+
+
+def m_vague(text: str) -> bool:
+    return bool(_M_VAGUE.match(text.strip())) and len(text.split()) >= 4
+
+
+_UNITS = [(r"centimet(?:er|re)s?", "cm"), (r"millimet(?:er|re)s?", "mm"), (r"kilomet(?:er|re)s?", "km"),
+          (r"met(?:er|re)s?", "m"), (r"kilograms?", "kg"), (r"grams?", "g"), (r"degrees? (?:celsius|centigrade)", "c"),
+          (r"percent|per cent", "%"), (r"coulombs?", "c"), (r"seconds?", "s"), (r"hertz", "hz")]
+
+
+_SUP = {c: d for c, d in zip("⁰¹²³⁴⁵⁶⁷⁸⁹⁻", "0123456789-")}
+
+
+def m_norm(text: str) -> str:
+    t = re.sub(r"[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+", lambda m: " to the power " + "".join(_SUP[c] for c in m.group()), text)
+    t = t.replace("°", " ").replace("%", " percent ").replace("−", "-").replace("~", " ")
+    t = re.sub(r"\b(?:minus|negative)\s+(?=\d)", "-", t.lower())
+    t = re.sub(r"\bto the power (?:of )?", "^", t)
+    t = re.sub(r"(?<=\d)\s*\^\s*", "^", t)
+    t = re.sub(r"(?<=\d)\s+(?:into|x|times|×)\s+(?=\d)", "x", t)
+    for a, b in _UNITS:
+        t = re.sub(rf"\b{a}\b", b, t)
+    return " ".join(w for w in re.findall(r"[a-z0-9^.\-]+", t) if w.strip(".-") and w not in _M_FILLER)
+
+
+_M_FILLER = {"the", "a", "an", "of", "is", "are", "and", "in", "its", "it", "order", "about", "approximately"}
+
+
+def m_dup(a: str, b: str) -> bool:
+    """The same item twice: one item's words all inside the other's (plurals folded), or nearly the same words."""
+    wa, wb = {_fold(w) for w in m_norm(a).split()}, {_fold(w) for w in m_norm(b).split()}
+    if len(wa) < 3 or len(wb) < 3:
+        return False
+    return wa <= wb or wb <= wa or len(wa & wb) / len(wa | wb) >= 0.75
+
+
+def _fold(w: str) -> str:
+    return w[:-2] if w.endswith("es") and len(w) > 4 else w[:-1] if w.endswith("s") and len(w) > 3 else w
+
+
+def m_term_repeats(title: str, term: str) -> bool:
+    """The term says what the title says (plural, a bracketed acronym, "What is ...?")."""
+    strip = lambda s: [_fold(w) for w in _words(re.sub(r"\([^)]*\)", " ", s)) if w not in ("what", "is", "are", "a", "an", "the")]  # noqa: E731
+    a, b = strip(title), strip(term)
+    return bool(a) and bool(b) and (a == b or f" {' '.join(b)} " in f" {' '.join(a)} ")
+
+
+def display_hides_term(title: str, term: str) -> bool:
+    """web/shared/slide.js titleNames (F-013 S3: plurals folded, a bracketed acronym ignored). Before S3 the display
+    needed the exact words; that figure is in s3_before.json (measured on the S2 code)."""
+    def fold(w: str) -> str:
+        if len(w) > 4 and re.search(r"(ses|xes|ches|shes)$", w):
+            return w[:-2]
+        return w[:-1] if len(w) > 3 and w.endswith("s") and not re.search(r"(ss|us|is)$", w) else w
+    a = " ".join(fold(w) for w in _words(re.sub(r"\([^)]*\)", " ", title)))
+    b = " ".join(fold(w) for w in _words(re.sub(r"\([^)]*\)", " ", term)))
+    return bool(b) and f" {b} " in f" {a} "
+
+
+_NOT_DEF = re.compile(r"^(?:was|were|has|had|have|can|could|will|would|did|does)\b", re.I)
+
+
+def m_formula_bad(latex: str, spoken: str) -> str:
+    if not latex:
+        return "not rendered"
+    if re.search(rf"\\text\{{[^}}]*[{_M_GREEK}]", latex):
+        return "greek as text"
+    if re.search(r"\b(?:s i n|c o s|t a n|l o g|l n)\b", latex):
+        return "function split"
+    return ""
+
+
+def s3_row(name: str, r: dict) -> dict:
+    """S3 measures of one replayed deck: verbatim copies, guard lines shown, garbage lines, duplicates, definition
+    cards that repeat the title or are not definitions, unusable tables, formulas that do not render properly."""
+    from difflib import SequenceMatcher
+
+    guard = {" ".join(_words(g)) for g in r["_guard"]}
+    sents = [s for s in r["_sents"] if len(s) >= 6]
+    out = Counter()
+    lists: dict[str, list[str]] = {k: [] for k in ("verbatim", "garbage", "dup", "def", "table", "formula")}
+    for spec in r["_deck"]:
+        s = spec.model_dump()
+        title = s["title"]
+        texts, other = [], []  # other: definitions / facts, only for the duplicate check
+        defs = [b for b in s["blocks"] if b["type"] == "definition"]
+        for b in s["blocks"]:
+            t = b["type"]
+            if t in ("points",):
+                texts += [i["text"] for i in b["items"]]
+            elif t == "callout":
+                texts.append(b["text"])
+            elif t == "example":
+                texts.append(b["text"])
+            elif t == "facts":
+                other += [f"{f['label']}: {f['value']}" for f in b["facts"]]
+            elif t == "definition":
+                other.append(f"{b['term']}: {b['definition']}")
+                texts += [n["text"] for n in b["notes"]]
+                out["definitions"] += 1
+                lone = len(defs) == 1
+                why = ("repeats title" if lone and m_term_repeats(title, b["term"]) and not display_hides_term(
+                    title, b["term"]) else
+                       "term twice" if b["definition"].lower().startswith(b["term"].lower() + ":") else
+                       "not a definition" if _NOT_DEF.match(b["definition"]) or b["definition"].count(";") >= 2 else "")
+                if why:
+                    out["def_bad"] += 1
+                    lists["def"].append(f"{name} {why}: {title!r} | {b['term']} :: {b['definition'][:80]}")
+            elif t == "comparison":
+                out["tables"] += 1
+                heads = [c["heading"] for c in b["columns"]]
+                why = ("empty heading" if any(not h for h in heads) else "one column" if len(heads) < 2 else
+                       "no rows" if not b["rows"] else
+                       "prefixed cells" if any(re.match(r"^[A-Z]{2,6}:", c) for row in b["rows"] for c in row["cells"])
+                       else "")
+                if why:
+                    out["tables_bad"] += 1
+                    lists["table"].append(f"{name} {why}: {title!r} {heads}")
+            elif t == "formula":
+                out["formulas"] += 1
+                why = m_formula_bad(b["latex"], b["spoken"])
+                if why:
+                    out["formulas_bad"] += 1
+                    lists["formula"].append(f"{name} {why}: {b['spoken']!r} -> {b['latex']!r}")
+        for i, x in enumerate(texts):
+            out["items"] += 1
+            w = _words(x)
+            if " ".join(w) in guard:
+                out["guard_shown"] += 1
+            if len(w) >= 8 and any(SequenceMatcher(None, w, y).ratio() >= 0.85 for y in sents
+                                   if abs(len(y) - len(w)) < len(w)):
+                out["verbatim"] += 1
+                lists["verbatim"].append(f"{name} {'G' if ' '.join(w) in guard else 'M'}: {x[:120]}")
+            if m_vague(x):
+                out["vague"] += 1
+            why = m_garbage(x)
+            if why:
+                out["garbage"] += 1
+                lists["garbage"].append(f"{name} {why}: {x[:120]}")
+            twin = next((y for y in other + texts[:i] if m_dup(x, y)), None)
+            if twin is not None:
+                out["dup_items"] += 1
+                lists["dup"].append(f"{name}: {twin[:70]} || {x[:70]}")
+    return dict(name=name, slides=r["slides"], **out, _lists=lists)
+
+
+def report_s3(names: list[str], out: Path | None, show: str = "", guards: bool = True) -> None:
+    """S3 check on recorded answers (0 tokens): the decks rebuilt by the current engine, with the post-model guards
+    run again (guards=True), every test by default."""
+    import asyncio
+    import logging
+
+    logging.basicConfig(level=logging.ERROR)
+    keys = ["slides", "items", "verbatim", "guard_shown", "garbage", "vague", "dup_items", "definitions", "def_bad", "tables",
+            "tables_bad", "formulas", "formulas_bad"]
+    rows = [s3_row(n, asyncio.run(replay(n, True, guards=guards))) for n in names]
+    print("name    " + " ".join(f"{k[:11]:>11}" for k in keys))
+    for r in rows:
+        print(f"{r['name'][:7]:7s} " + " ".join(f"{r.get(k, 0):>11}" for k in keys))
+    tot = {k: sum(r.get(k, 0) for r in rows) for k in keys}
+    tot.update(verbatim_rate=round(tot["verbatim"] / max(1, tot["items"]), 3),
+               garbage_rate=round(tot["garbage"] / max(1, tot["items"]), 3))
+    print("total:", tot)
+    for k in [x for x in show.split(",") if x]:
+        print(f"\n--- {k}")
+        for r in rows:
+            for line in r["_lists"][k]:
+                print(" ", line)
+    if out is not None:
+        out.write_text(json.dumps(dict(total=tot, lectures=[{k: v for k, v in r.items() if k != "_lists"} for r in rows],
+                                       lists={k: [x for r in rows for x in r["_lists"][k]] for k in rows[0]["_lists"]}
+                                       if rows else {}), indent=1, ensure_ascii=False), encoding="utf-8")
         print(f"-> {out}")
 
 
@@ -483,6 +761,21 @@ def main(argv: list[str]) -> None:
         argv.remove("--gate")
         report_gate(argv or sorted((p.name for p in (ROOT / "verify_results").glob("test*") if p.is_dir()),
                                    key=lambda n: int(re.sub(r"\D", "", n) or 0)))
+        return
+    if "--s3" in argv:
+        argv.remove("--s3")
+        show, guards = "", "--recorded" not in argv
+        argv = [a for a in argv if a != "--recorded"]
+        if "--list" in argv:
+            i = argv.index("--list")
+            show = argv[i + 1]
+            del argv[i:i + 2]
+        if "--out" in argv:
+            i = argv.index("--out")
+            out = Path(argv[i + 1])
+            del argv[i:i + 2]
+        report_s3(argv or sorted((p.name for p in (ROOT / "verify_results").glob("test*") if p.is_dir()),
+                                 key=lambda n: int(re.sub(r"\D", "", n) or 0)), out, show, guards)
         return
     if "--structure" in argv:
         argv.remove("--structure")

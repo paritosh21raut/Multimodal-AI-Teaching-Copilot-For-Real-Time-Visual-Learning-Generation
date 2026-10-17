@@ -83,7 +83,10 @@ MAX_DEFINITION_CHARS = 320  # definitions stay exact (RULES.md); live kinematics
 
 
 def clean(text: str, max_chars: int = MAX_TEXT_CHARS) -> str:
-    text = " ".join(str(text).split()).strip(" -–•;,")
+    text = " ".join(str(text).split()).rstrip(" -–•;,")
+    # a leading dash is a list marker, but not a minus sign: "-55 °C" became "55 °C" on the slide (test5, F-013 S3)
+    if not re.match(r"[-–]\s*\d", text):
+        text = text.lstrip(" -–•;,")
     if len(text) > max_chars:
         cut = text[:max_chars].rsplit(" ", 1)[0]
         text = cut + "…"
@@ -130,7 +133,20 @@ _VALUE = re.compile(r"^[≈~<>]?\s*[-+]?\d[\d.,]*(?:\s*[×x*]\s*10\S*)?(?:\s+\S+
 
 
 def cap(text: str) -> str:
-    return text[:1].upper() + text[1:] if text else text
+    """First letter upper; a Greek symbol keeps its case (test15: the term "ν" became "Ν", capital nu)."""
+    return text[:1].upper() + text[1:] if text and not "\u0370" <= text[0] <= "\u03ff" else text
+
+
+# a "definition" that only tells a fact about the term (test4 "Electron: was discovered as a result of study of
+# cathode rays") is a point: "Electron was discovered ..." (F-013 S3)
+_NOT_A_DEFINITION = re.compile(r"^(?:was|were|has|had|have|can|could|will|would|did|does|became|got)\b", re.IGNORECASE)
+
+
+def _list_not_definition(definition: str) -> tuple[str, ...]:
+    """"Encryption; Secure communication; Digital signature; Cyber security" (test23, as the "definition" of prime
+    numbers) is a list of short items, not a definition: its parts, else ()."""
+    parts = [p.strip() for p in definition.split(";") if p.strip()]
+    return tuple(parts) if len(parts) >= 3 and all(len(p.split()) <= 3 for p in parts) else ()
 
 
 # "PAN (Personal Area Network) – connects personal devices within ~10 m": a member named, then what it is. Not the
@@ -147,6 +163,57 @@ def _members(points: tuple[str, ...]) -> Optional[list[tuple[str, str]]]:
     return [(m.group("term").strip(), m.group("text").strip()) for m in found]
 
 
+# a date or time of a timeline event: a number (1930, 6 April), a month, an era ("18th century", "BC")
+_DATED = re.compile(r"\d|\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b|\b(?:century|centuries|era|"
+                    r"age|period|dynasty|bc|bce|ad|ce|ancient|medieval|modern|today|now|later|earlier|before|after|"
+                    r"during|spring|summer|autumn|winter|morning|evening|night)\b", re.IGNORECASE)
+
+# "Label: rest" points (F-013 S3, layouts): what the rest is decides the block
+LABELLED = re.compile(r"^(?P<label>[^:]{1,40}?):\s+(?P<rest>\S.*)$")
+
+
+def list_items(rest: str) -> tuple[str, ...]:
+    """"Germany, Austria, Hungary, Turkey" -> the names; () when the rest is a description ("warm year-round, often
+    heavy rainfall"). A list: three or more short items, or two or more capitalised names."""
+    items = [x.strip() for x in re.split(r",\s*|\s+and\s+", rest.rstrip(".")) if x.strip()]
+    if len(items) < 2 or any(len(x.split()) > 4 for x in items):
+        return ()
+    return tuple(items) if len(items) >= 3 or all(x[:1].isupper() for x in items) else ()
+
+
+def _labelled(points: tuple[str, ...]) -> tuple[tuple, tuple, tuple[str, ...]]:
+    """Points that are really named groups or attribute tiles, from at least two of the same shape (one line alone
+    stays a point):
+    - groups: "Central Powers: Germany, Austria, Hungary, Turkey" + "Allied Powers: France, …" (test7, said as a
+      text wall),
+    - facts: "Distance: 240 miles", "Initial followers: 78" (test6): short values, most with a number.
+    Returns (groups, facts, the other points)."""
+    found = [(p, LABELLED.match(p)) for p in points]
+    lists = [(p, m.group("label"), list_items(m.group("rest"))) for p, m in found if m and len(m.group("label").split()) <= 4]
+    lists = [x for x in lists if x[2]]
+    groups = tuple((cap(lb), items) for _, lb, items in lists) if len(lists) >= 2 else ()
+    used = {p for p, _, _ in lists} if groups else set()
+    attrs = [(p, m.group("label"), m.group("rest")) for p, m in found
+             if m and p not in used and len(m.group("label").split()) <= 4 and len(m.group("rest").split()) <= 4]
+    with_number = sum(1 for _, _, v in attrs if re.search(r"\d", v))
+    facts = tuple((cap(lb), v) for _, lb, v in attrs) if len(attrs) >= 2 and 2 * with_number >= len(attrs) else ()
+    used |= {p for p, _, _ in attrs} if facts else set()
+    return groups, facts, tuple(p for p in points if p not in used)
+
+
+def _described_kinds(points: tuple[str, ...]) -> Optional[list[tuple[str, str]]]:
+    """A classification whose every point is "Kind: what it is" ("Star: Devices connect to a central switch or hub",
+    test24; "Ready: Waiting for CPU time", test25): the members of the set, each defined (member cards, not a text
+    wall). A named group with its kinds ("Physical: solid, liquid, gas") is not one."""
+    found = [LABELLED.match(p) for p in points]
+    if len(points) < 2 or not all(found):
+        return None
+    if any(len(m.group("label").split()) > 4 or len(m.group("rest").split()) < 3 or list_items(m.group("rest"))
+           for m in found if m):
+        return None
+    return [(m.group("label").strip(), cap(m.group("rest").strip())) for m in found if m]
+
+
 def pieces_from_act(act: DiscourseAct) -> list[Piece]:
     it = act.items
     base = dict(lines=tuple(act.lines), added=act.added)
@@ -154,7 +221,8 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
     if act.act in NO_CONTENT_ACTS:
         return out  # transitions and questions never put text on the slide
     points = _texts(it.points)
-    members = _members(points) if act.act == "classification" and not it.groups else None
+    members = _members(points) or _described_kinds(points) if act.act == "classification" and not it.groups \
+        else None
     if members:
         return [Piece("definition", term=term, definition=text, **base) for term, text in members]
     steps = _texts(it.steps)
@@ -162,6 +230,13 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
         steps, points = points, ()  # a process given as points is still a process
     term, definition = clean(it.term), clean(it.definition, MAX_DEFINITION_CHARS)
     definition = drop_self_alias(definition, term) if term else definition
+    if term and definition.lower().startswith(term.lower() + ":"):  # "Hypothalamus: Hypothalamus: brain region ..."
+        definition = cap(definition[len(term) + 1:].strip())
+    if term and definition and _NOT_A_DEFINITION.match(definition):
+        points, term, definition = (f"{cap(term)} {definition}", *points), "", ""
+    elif term and definition and _list_not_definition(definition):
+        out.append(Piece("points", texts=_texts(_list_not_definition(definition)), term=cap(term), **base))
+        term, definition = "", ""
     if term and is_tautology(definition, term):
         definition = ""
         term = ""
@@ -181,6 +256,9 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
         cols = (columns if len(columns) == 2 else ()) if rows else columns[:3]
         out.append(Piece("comparison", columns=cols, rows=rows, **base))
     events = tuple((clean(e.when), clean(e.what)) for e in it.events if e.what.strip())
+    # a timeline holds dated events only; an undated "event" is a statement (F-013 S3, C9)
+    points = points + tuple(f"{w}: {x}" if w else x for w, x in events if not _DATED.search(w))
+    events = tuple((w, x) for w, x in events if _DATED.search(w))
     if events:
         out.append(Piece("timeline", pairs=events, **base))
     causes = tuple((clean(c.cause), clean(c.effect)) for c in it.causes if c.cause.strip() and c.effect.strip())
@@ -204,6 +282,10 @@ def pieces_from_act(act: DiscourseAct) -> list[Piece]:
         # of the classification; live test 2026-10-06 lost this classification ("nothing to display")
         points = points + _texts([g for g, _ in groups])
     groups = tuple(g for g in groups if g[1])
+    if not groups and not facts:  # the model gave them as "Label: ..." points
+        groups, facts, points = _labelled(points)
+        if facts:
+            out.append(Piece("facts", pairs=facts, **base))
     if groups:
         out.append(Piece("groups", groups=groups, term=cap(clean(it.label)), **base))
     label = cap(clean(it.label))

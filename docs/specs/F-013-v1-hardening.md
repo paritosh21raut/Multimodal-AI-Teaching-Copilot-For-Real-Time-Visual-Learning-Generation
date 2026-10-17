@@ -1,6 +1,7 @@
 # F-013 — V1 hardening: evaluation of tests 1–30 and the fix plan
 
-Status: **S1 implemented**, **S2 implemented, targets partly met** (2026-10-16; see "S1 result" / "S2 result"). S3–S5 planned. Evaluation spent 0 tokens.
+Status: **S1 implemented**, **S2 implemented, targets partly met** (2026-10-16; see "S1 result" / "S2 result"),
+**S3a implemented** (2026-10-17, 0 tokens; see "S3 result"). S3b, S3c, S4, S5 planned. Evaluation spent 0 tokens.
 Inputs: `verify_results/test1..30` (slides.md, transcript, terminal log, slide PNGs), `_eval/e2e_d2.json`,
 `_eval/results.json`, annotator A workbooks (12 lectures), the user's 12 reported issues (2026-10-16).
 User answers (2026-10-16): best system first (free Groq now, a paid LLM later); faded provisional content is OK;
@@ -223,6 +224,63 @@ not met.**
    group block, revealed one by one as each is named.
 9. **E1**: an applied concern that changes no element → card says "the slide shows what you said" + Show correction.
    **E2**: prompt rule "never state a fact that was not said" + A/B.
+
+**S3 result, group S3a (2026-10-17): deterministic representation fixes (items 3, 4, 2, 6, 7), 0 tokens.
+Implemented, unit-tested, replay-checked, screenshots looked at.** User (2026-10-17): "do what's best" on the open
+questions: keep the guard behind a gate; no unknown-word rule (see below); the code block moves to S3b with the schema;
+signed numbers fixed now; a layout conversion needs at least two lines of the same shape.
+| Replay of tests 1–30, recorded answers, guards re-run (`tools/v1_eval.py --s3`, 0 tokens) | before | after |
+|---|---|---|
+| slide items (points, notes, examples) | 1,468 | 1,370 |
+| verbatim copies (≥ 8 words, ≥ 0.85 of a spoken sentence) | 187 (12.7 %) | 105 (7.7 %) |
+| coverage-guard lines on the slides ("shown as said") | 118 | 33 |
+| garbage lines (meta, spoken code, references, speaker asides, glued headings) | 31 | 10 |
+| lines with a bare pronoun subject ("It can involve …") | 38 | 21 |
+| duplicate items on a slide (quantities normalised) | 6 | 1 |
+| definition cards that repeat the title, repeat their term or are no definition | 18 | 2 |
+| formulas that do not render properly (Greek as text, "s i n", nothing) | 7 | 0 |
+| unusable comparison tables (empty headings) | 2 | 2 (item 1, S3b) |
+| boundary P / R / F1, part rate (18 annotated, `--structure`) | 0.775 / 0.507 / 0.555, 0.619 | 0.775 / 0.507 / 0.555, 0.613 |
+(files `verify_results/_eval/s3_before.json` (S2 code), `s3a_replay.json`, `s3a_structure.json`; every flagged line is
+listed with `--list`, and the before lists were checked by hand: 6 of 6 duplicates and 31 of 32 garbage lines real.)
+- **Main finding:** the "verbatim bullets" of the S2 live run ("Economic, as a result of numerous wars …",
+  "Chantment among the masses …") came from our coverage guard, not from the model; the model had paraphrased both.
+  The guard's word match was too weak (no stemming: "masses" ≠ "Mass"; no quantities).
+- **Item 3, dedupe:** `textutil.normalise_spoken` (powers, superscripts, "minus N", "into", unit words → symbols, only
+  after a number or "per") and `textutil.stem`; used by the guard and by `composer.is_duplicate` / `_subsumed`. On a
+  slide: a definition card replaces a shorter point of the same term (test28 "Convergent: …"); a fuller version of a
+  point grows it in place, same id, when it adds ≥ 2 content words (test13, test27); a definition already shown as a
+  point is not added; a "Label: names" point for an existing group card adds its names to the card.
+- **Item 4, garbage gate** (`understanding/quality.py`): meta notes, spoken code, references to other lessons
+  ("Recall that", "will be discussed in later chapter", "The third topic is …"), the speaker as subject ("You …", "We
+  need …", "Imagine …"), a bare pronoun subject, headings glued to the sentence ("Economic, as …", "Doping a
+  semiconductor One way …") and cut-off starts ("Will come out …", "Through …"). It filters the coverage guard and the
+  empty-act filler; the fallback keeps the teacher's examples ("If you buy the book …") but drops the rest. Linking
+  words are tidied away ("Thus,", "Recently,", "As a result,"; not "Generally,"). A line the model cited in a content act
+  comes back only when ≤ 20 % of it is on the slide (≤ 34 % otherwise). Model notes lose "[unclear …, likely
+  mis-heard]"; a concern whose "correction" is such a note is dropped (test6: applied, it replaced the teacher's words).
+  Cost, checked by hand: of the 93 guard lines no longer shown, ~14 were real statements the model had cited and partly
+  covered (e.g. test27 "The hacker verifies whether the identified vulnerabilities can actually be exploited …"), ~79
+  noise, duplicates or announcements.
+- **No unknown-word rule:** the MiniLM vocabulary lacks real words ("rioting", "buoyancy", "grievances") and splits
+  "chantment" into real pieces; the transcript has only a segment confidence. Per-word Whisper probabilities fit item 5.
+- **Item 2, definition cards:** the display hides the term when the title names it with plurals folded and a bracketed
+  acronym ignored ("Atom" / "Atoms", "Operating System (OS)"); a repeated "Term:" prefix is removed; "was discovered …"
+  becomes the point "Electron was discovered …"; a ";" list of short items is a list; a Greek symbol keeps its case
+  (test15 showed "Ν" for ν).
+- **Item 6, formulas** (`mathtext`): ν₀ / ν0 / "nu naught" → ν₀, λ_T, hν → h ν, sin / cos / tan / log as functions,
+  a trailing "..." → ⋯, all Greek letters; "Δx", "ωt" stay products.
+- **Item 7, layouts:** ≥ 2 "Label: names" points → group cards (test7 Central / Allied Powers); ≥ 2 short "Label: value"
+  points, most with a number → fact tiles (test6); a classification of "Kind: what it is" points → member cards (test24
+  topologies, test25 process states); an undated timeline event → a point. Code block: S3b.
+- **Found beyond the list and fixed:** `content.clean` stripped a leading minus as a list dash ("-55 °C" → "55 °C",
+  test5); an example tied to a definition card was drawn twice, under the card and in the aside (test3; slide.js and
+  `composer._split`).
+- Tests: `tests/unit/test_representation.py` (48, real lines from tests 1–30); fast 674, browser 39 (one run of three
+  had 1 failure that did not repeat). Screenshots `tools/screenshot_s3.py`, both themes: groups (test7), facts (test6),
+  members (test24), definition (test3), formulas (test15, test23).
+- Still open from S3a: Jupiter / Saturn descriptions with ";" stay definitions (acceptable); a trailing single card
+  still shows its term ("Atom" under "Atoms"); recall 0.507 unchanged (not a goal of S3a).
 
 ### S4 — Images + UI + robustness (D1–D4, F1–F6, G1)
 1. Images: image need also from the subject + slide type (concrete / process / apparatus); one image per deck used

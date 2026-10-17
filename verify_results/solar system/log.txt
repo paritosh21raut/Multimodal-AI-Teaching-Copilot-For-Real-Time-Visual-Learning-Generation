@@ -1,0 +1,214 @@
+(.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> python -m copilot
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (4.9 s)
+[INIT]  live speech model distil-small.en ready (1.3 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.2 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_4         openai/gpt-oss-120b           151k of 200k tokens IN USE
+        GROQ_API_KEY_5         openai/gpt-oss-120b           184k of 200k tokens ok
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           149k of 200k tokens ok
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              118k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              191k of 200k tokens ok
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b               92k of 200k tokens ok
+        enough for about 260 lecture minutes
+
+[READY] session 20261016-222123-1fb3
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+22:21:31 INFO    copilot.visuals.service: CLIP ready in 0.4 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, digestive, Nucleo ...)
+  [    0.6s] Let us learn about the solar system. (426 ms)
+22:21:39 INFO    copilot.understanding.service: [CUE] announce 'Solar system'
+22:21:39 INFO    copilot.presentation.engine: cue: 'Solar system' shown at once (pending)
+  [SLIDE] add    'Solar system' [concept] v1 (0 items)
+  [    2.9s] The solar system is gravitationally bound. (360 ms)
+  [    5.4s] The system consisting of the Sun and the objects that orbited, including 8 planets, dwarf planets, moons, asteroids and comets. (680 ms)
+  [UNDERSTAND] Solar System > Overview (new_topic) acts=other hint=key_points lines=2 via groq_main#4 1644 ms
+               The solar system is gravitationally bound.
+22:21:51 INFO    copilot.presentation.engine: planner: retitle Solar System > Overview (new facet on an empty slide)
+  [SLIDE] update 'Solar system' [facts] v2 (1 items)
+22:21:51 INFO    copilot.presentation.engine: image search 'solar system diagram' (diagram) for 'Solar system'
+22:21:51 INFO    copilot.presentation.engine: cue: 'Solar system' confirmed as 'Solar system'
+  [SLIDE] update 'Solar system' [facts] v3 (1 items)
+  [   14.4s] Formed about 4.6 billion years ago, Chromo-Collapsing Molecule. (479 ms)
+22:21:55 INFO    copilot.visuals.finder: image search 'solar system diagram' (diagram, labels preferred): 8 candidate(s), 3 accepted (1 labelled), 4.01 s {'search_s': 1.39, 'download_s': 1.56, 'clip_s': 0.16, 'full_s': 0.88, 'total_s': 4.01}
+  [IMAGE] 'solar system diagram' -> File:Solar System True Color EN.png (4.0 s)
+22:21:55 INFO    copilot.presentation.engine: image 'solar system diagram' on 'Solar system': File:Solar System True Color EN.png
+  [SLIDE] update 'Solar system' [facts] v4 (2 items)
+  [UNDERSTAND] Solar System > Overview (same_concept) acts=definition hint=definition lines=1 via groq_main#4 1015 ms
+               Defined the solar system as the Sun plus orbiting objects such as planets, dwarf planets, moons, asteroids, and comets.
+22:21:56 INFO    copilot.presentation.engine: planner: update Solar System > Overview (same frame)
+22:21:56 INFO    copilot.presentation.engine: no image for 'Solar system': has an image
+  [SLIDE] update 'Solar system' [facts] v5 (3 items)
+  [UNDERSTAND] Solar System > Overview (elaboration) acts=other hint=key_points lines=1 via groq_main#4 1580 ms
+               The solar system formed about 4.6 billion years ago from a collapsing molecular cloud.
+  [HEARD] 'Chromo-Collapsing Molecule' -> 'collapsing molecular cloud (solar nebula)' corrected on the slide (0.5)
+22:21:59 INFO    copilot.presentation.engine: planner: update Solar System > Overview (same frame)
+22:21:59 INFO    copilot.presentation.engine: concern 8fe474ca9f81 (transcription, applied=True): 0 element(s); slide shows 'collapsing molecular cloud (solar nebula)'
+22:21:59 INFO    copilot.presentation.engine: no image for 'Solar system': has an image
+  [SLIDE] update 'Solar system' [facts] v6 (3 items)
+  [   20.0s] It resides in the Orion Arm of the Milky Way Galaxy. (438 ms)
+  [UNDERSTAND] Solar System > Overview (elaboration) acts=other hint=key_points lines=1 via groq_main#4 730 ms
+               The solar system resides in the Orion Arm of the Milky Way Galaxy.
+22:22:02 INFO    copilot.presentation.engine: planner: update Solar System > Overview (same frame)
+22:22:02 INFO    copilot.presentation.engine: no image for 'Solar system': has an image
+  [SLIDE] update 'Solar system' [facts] v7 (3 items)
+  [   27.8s] order of the planets from the Sun (336 ms)
+  [   30.4s] Mercury, the smallest and the closest planet to the Sun, featuring a rocky center surface and extreme temperature shifts. (478 ms)
+  [UNDERSTAND] Solar System > Overview (same_concept) acts=classification,other hint=hierarchy lines=2 via groq_main#4 3060 ms
+               Listed the planetary order and gave key facts about Mercury.
+22:22:18 INFO    copilot.presentation.engine: planner: update Solar System > Overview (same frame)
+  [SLIDE] update 'Solar system' [facts] v8 (3 items)
+  [SLIDE] add    'Solar system' [key_points] v1 (9 items)
+22:22:18 INFO    copilot.presentation.engine: no room for an image on 'Solar system'
+  [   39.4s] Venus, the second planet, known for its dense, toxic sulfuric acid atmosphere and granaries, (502 ms)
+  [   47.3s] Greenhouse effects making it the hottest planet. (354 ms)
+  [UNDERSTAND] Solar System > Overview (same_concept) acts=- hint=key_points lines=2 via groq_main#5 1570 ms
+               Added Venus's dense sulfuric acid atmosphere and greenhouse effect making it the hottest planet.
+22:22:29 INFO    copilot.presentation.engine: revised S2: Venus: dense toxic sulfuric acid atmosphere; greenhouse effect makes it hottest planet
+22:22:29 INFO    copilot.presentation.engine: planner: noop Solar System > Overview (nothing to display)
+  [SLIDE] update 'Solar system' [key_points] v2 (9 items)
+  [   52.9s] Earth, the third planet from the Sun and the only planet known astronomical body who harbor life. (556 ms)
+  [UNDERSTAND] Solar System > Overview (same_concept) acts=- hint=key_points lines=1 via groq_main#4 1914 ms
+               Added that Earth is the third planet and the only known body with life
+22:22:40 INFO    copilot.presentation.engine: revised S3: Earth, the third planet from the Sun and the only known astronomical body that harbors life
+22:22:40 INFO    copilot.presentation.engine: planner: noop Solar System > Overview (nothing to display)
+  [SLIDE] update 'Solar system' [key_points] v3 (9 items)
+22:22:40 INFO    copilot.presentation.engine: slide d26ce03034b9 overflows on the display; further content continues on a new slide
+  [   62.3s] Mars, the red planet famous for its (345 ms)
+  [   66.7s] Iron oxide surface, polar ice caps, and past evidence of liquid water. (522 ms)
+  [UNDERSTAND] Solar System > Overview (same_concept) acts=- hint=key_points lines=2 via groq_main#4 2143 ms
+               Added Mars details: iron‑oxide surface, polar ice caps, and evidence of past liquid water
+22:22:53 INFO    copilot.presentation.engine: revised S4: Mars, the red planet with iron‑oxide surface, polar ice caps, and past evidence of liquid water
+22:22:53 INFO    copilot.presentation.engine: planner: noop Solar System > Overview (nothing to display)
+  [SLIDE] update 'Solar system' [key_points] v4 (9 items)
+  [   75.3s] Jupiter (287 ms)
+  [   77.1s] The largest planet in the solar system, a massive gas giant with a prominent great red spot and dozens of moons. (489 ms)
+  [UNDERSTAND] Solar System > Overview (same_concept) acts=definition hint=key_points lines=2 via groq_main#5 2733 ms
+               Added Jupiter's size, gas‑giant nature, great red spot, and many moons
+22:23:04 INFO    copilot.presentation.engine: revised S5: Jupiter – the largest planet, a massive gas giant with a great red spot and dozens of moons
+22:23:04 INFO    copilot.presentation.engine: planner: update Solar System > Overview (same frame)
+  [SLIDE] update 'Solar system' [key_points] v5 (9 items)
+  [SLIDE] add    'Solar system' [definition] v1 (1 items)
+22:23:04 INFO    copilot.presentation.engine: image 'solar system diagram' kept on 'Solar system' (same visual as this topic's image)
+  [SLIDE] update 'Solar system' [definition] v2 (2 items)
+  [   85.8s] Saturn, Augustia, celebrated. (336 ms)
+  [   89.6s] For its existence. (344 ms)
+  [UNDERSTAND] Solar System > Overview (same_concept) acts=- hint=none lines=2 via groq_main#4 1652 ms
+               Teacher mentioned Saturn and an unclear term "Augustia".
+  [HEARD] 'Augustia' -> '[correct term]' corrected on the slide (0.5)
+22:23:09 INFO    copilot.presentation.engine: planner: noop Solar System > Overview (nothing to display)
+22:23:09 INFO    copilot.presentation.engine: concern d263e8c491e6 (transcription, applied=True): 0 element(s); slide shows '[correct term]'
+  [   92.0s] Bring bright ring system and low densities. (495 ms)
+  [   95.9s] Uranus. (298 ms)
+  [   97.2s] An ice giant that rotates nearly on its side. (385 ms)
+22:23:20 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Overview' -> same_concept
+  [UNDERSTAND] Solar System > Overview (same_concept) acts=explanation,definition hint=concept lines=3 via groq_main#5 1896 ms
+               Added Saturn’s bright rings and low density, and defined Uranus as a tilted ice giant.
+22:23:20 INFO    copilot.presentation.engine: planner: update Solar System > Overview (same frame)
+22:23:20 INFO    copilot.presentation.engine: image removed from 'Solar system': two concepts side by side
+  [SLIDE] update 'Solar system' [concept] v3 (5 items)
+  [SLIDE] update 'Solar system' [concept] v4 (4 items)
+  [  102.2s] Possessing a cold atmosphere and a faint ring system. (369 ms)
+  [UNDERSTAND] Solar System > Overview (elaboration) acts=- hint=definition lines=1 via groq_main#4 4681 ms
+               Added that Uranus has a cold atmosphere and a faint ring system.
+22:23:27 INFO    copilot.presentation.engine: revised S4: Uranus: an ice giant that rotates nearly on its side, possessing a cold atmosphere and a faint ring system.
+22:23:27 INFO    copilot.presentation.engine: planner: noop Solar System > Overview (nothing to display)
+  [SLIDE] update 'Solar system' [concept] v5 (4 items)
+  [  111.5s] Neptune, the outermost recognized major planet, and ice giant characteristics by deep blue hues and ultra-fast winds. (556 ms)
+22:23:39 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Overview' -> same_concept
+  [UNDERSTAND] Solar System > Overview (same_concept) acts=definition hint=definition lines=1 via groq_main#5 1210 ms
+               Introduced Neptune as the outermost ice giant with deep blue color and ultra‑fast winds.
+22:23:39 INFO    copilot.presentation.engine: planner: update Solar System > Overview (same frame)
+  [SLIDE] add    'Solar system' [definition] v1 (1 items)
+22:23:39 INFO    copilot.presentation.engine: image search 'Neptune planet' (photo) for 'Solar system'
+  [  121.6s] The key components and structure of solar system are (375 ms)
+  [SLIDE] update 'Solar system' [definition] v2 (1 items)
+22:23:43 INFO    copilot.visuals.finder: image search 'Neptune planet' (photo): 8 candidate(s), 2 accepted (0 labelled), 4.65 s {'search_s': 1.28, 'download_s': 1.67, 'clip_s': 0.18, 'full_s': 1.49, 'total_s': 4.65}
+  [IMAGE] 'Neptune planet' -> File:Neptune Full.jpg (4.7 s)
+22:23:43 INFO    copilot.presentation.engine: image 'Neptune planet' on 'Solar system': File:Neptune Full.jpg
+  [SLIDE] update 'Solar system' [definition] v3 (2 items)
+  [  125.3s] The sun, a yellow dwarf star containing roughly 99.8% of total mass in the solar system and driving the system's orbital mechanics. (525 ms)
+  [UNDERSTAND] Solar System > Overview (elaboration) acts=other hint=hierarchy lines=2 via groq_main#4 1448 ms
+               Teacher identified the Sun as the dominant component, a yellow dwarf containing 99.8% of the system's mass.
+22:23:54 INFO    copilot.presentation.engine: planner: update Solar System > Overview (same frame)
+22:23:54 INFO    copilot.presentation.engine: no image for 'Solar system': has an image
+  [SLIDE] update 'Solar system' [definition] v4 (2 items)
+  [SLIDE] update 'Solar system' [definition] v5 (3 items)
+22:23:57 INFO    copilot.presentation.engine: cue: 'Inner vs Outer planets' shown at once (pending)
+  [SLIDE] add    'Inner vs Outer planets' [concept] v1 (0 items)
+  [  136.5s] Inner vs. Auto Planets. The Inner Rocky Planets. (442 ms)
+  [  139.7s] Mercury Venus Earth Masks are separated from the outer gas and ice giant Jupiter Saturn Uranus Nipsule by the main asteroid belt. (626 ms)
+  [UNDERSTAND] Solar System > Inner and Outer Planets (sibling_concept) acts=classification hint=hierarchy lines=2 via groq_main#4 1792 ms
+               Classified planets into inner rocky planets and outer gas/ice giants separated by the asteroid belt.
+22:24:07 INFO    copilot.presentation.engine: planner: update Solar System > Inner vs Outer planets (same frame)
+22:24:07 INFO    copilot.presentation.engine: no image for 'Inner vs Outer planets': groups needs the full width
+22:24:07 INFO    copilot.presentation.engine: cue: 'Inner vs Outer planets' confirmed as 'Inner vs Outer planets'
+  [SLIDE] update 'Inner vs Outer planets' [groups] v2 (1 items)
+  [SLIDE] update 'Inner vs Outer planets' [groups] v3 (1 items)
+  [  149.7s] dwarf planets, and not dwarf... (336 ms)
+  [  152.6s] planets and outer reaches. Beyond Neptune lies the (399 ms)
+  [  156.8s] Cupert bed, home of Pluto and other IC bodies. (384 ms)
+  [  161.0s] and the distance, ALT, club. (350 ms)
+  [UNDERSTAND] Solar System > Dwarf Planets and Kuiper Belt (sibling_concept) acts=definition,classification hint=concept lines=3 via groq_main#4 3119 ms
+               Introduced dwarf planets and the Kuiper Belt beyond Neptune
+22:24:21 INFO    copilot.presentation.engine: planner: continue Solar System > Dwarf Planets and Kuiper Belt (new facet)
+  [SLIDE] add    'Dwarf Planets and Kuiper Belt' [members] v1 (2 items)
+22:24:21 INFO    copilot.presentation.engine: image search 'Kuiper Belt diagram' (diagram) for 'Dwarf Planets and Kuiper Belt'
+  [  164.6s] Galactic bodies. (315 ms)
+  [UNDERSTAND] Solar System > Galactic Bodies (new_topic) acts=transition hint=none lines=2 via groq_main#5 1100 ms
+               Teacher mentioned galactic bodies, shifting beyond the Solar System
+22:24:24 INFO    copilot.presentation.engine: planner: noop Solar System > Galactic Bodies (nothing to display)
+22:24:25 INFO    copilot.visuals.finder: image search 'Kuiper Belt diagram' (diagram, labels preferred): 8 candidate(s), 3 accepted (3 labelled), 4.72 s {'search_s': 1.86, 'download_s': 1.52, 'clip_s': 0.15, 'full_s': 1.16, 'total_s': 4.72}
+  [IMAGE] 'Kuiper Belt diagram' -> File:Relationship of the Kuiper Belt to the Oort Cloud (opo0204i).jpg (4.7 s)
+22:24:25 INFO    copilot.presentation.engine: image 'Kuiper Belt diagram' on 'Dwarf Planets and Kuiper Belt': File:Relationship of the Kuiper Belt to the Oort Cloud (opo0204i).jpg
+  [SLIDE] update 'Dwarf Planets and Kuiper Belt' [members] v2 (3 items)
+  [  168.4s] Galactic orbit. The solar system travels around the center of the Milky Way galaxy at roughly (425 ms)
+  [  174.5s] 500, 815. (411 ms)
+  [  177.9s] 51500 thousand. (507 ms)
+  [UNDERSTAND] Solar System > Galactic Bodies (elaboration) acts=explanation hint=concept lines=2 via groq_main#4 4604 ms
+               The solar system orbits the Milky Way’s center.
+  [HEARD] '500, 815' -> '≈ 220 km/s (or 225‑250\u202fMyr)' corrected on the slide (0.5)
+22:24:38 INFO    copilot.presentation.engine: planner: continue Solar System > Galactic Bodies (new facet)
+22:24:38 INFO    copilot.presentation.engine: concern 6c25fff2b1fc (transcription, applied=True): 0 element(s); slide shows '≈ 220 km/s (or 225‑250\u202fMyr)'
+  [SLIDE] add    'Galactic Bodies' [key_points] v1 (1 items)
+22:24:38 INFO    copilot.presentation.engine: image search 'Milky Way with solar orbit' (diagram) for 'Galactic Bodies'
+  [  179.8s] miles per hour that is the (370 ms)
+  [SLIDE] update 'Galactic Bodies' [key_points] v2 (2 items)
+22:24:44 INFO    copilot.visuals.finder: image search 'Milky Way with solar orbit' (diagram, labels preferred): 5 candidate(s), 3 accepted (2 labelled), 5.69 s {'search_s': 1.51, 'download_s': 1.7, 'clip_s': 0.1, 'full_s': 2.34, 'total_s': 5.69}
+  [IMAGE] 'Milky Way with solar orbit' -> File:Annotated illustration of Motion of Earth & Sun Around the Milky Way 07Jul2022 no credits or captions - inclination of moon's orbit is ~5 degrees relative to ecliptic plane.jpg (5.7 s)
+22:24:44 INFO    copilot.presentation.engine: image 'Milky Way with solar orbit' on 'Galactic Bodies': File:Annotated illustration of Motion of Earth & Sun Around the Milky Way 07Jul2022 no credits or captions - inclination of moon's orbit is ~5 degrees relative to ecliptic plane.jpg
+  [SLIDE] update 'Galactic Bodies' [key_points] v3 (3 items)
+  [  184.8s] 1028 kmph. (322 ms)
+  [UNDERSTAND] Solar System > Galactic Bodies (elaboration) acts=other hint=key_points lines=3 via groq_main#5 1927 ms
+               Provided the orbital speed of the solar system around the Milky Way center.
+  [CONCERN] (factual) 1028 kmph -> ≈828 km/s (≈514,000 mph) (0.9, slide shows the correction)
+22:24:46 INFO    copilot.presentation.engine: planner: update Solar System > Galactic Bodies (same frame)
+22:24:46 INFO    copilot.presentation.engine: concern 53e9ef965571 (factual, applied=True): 1 element(s); slide shows '≈828 km/s'
+22:24:46 INFO    copilot.presentation.engine: no image for 'Galactic Bodies': has an image
+  [SLIDE] update 'Galactic Bodies' [key_points] v4 (2 items)
+  [SLIDE] update 'Galactic Bodies' [key_points] v5 (3 items)
+  [  189.0s] Computing one full circuit every 200 million years. (437 ms)
+  [UNDERSTAND] Solar System > Galactic Bodies (same_concept) acts=other hint=key_points lines=1 via groq_main#5 888 ms
+               The solar system completes one orbit around the Milky Way roughly every 200 million years.
+22:24:51 INFO    copilot.presentation.engine: planner: update Solar System > Galactic Bodies (same frame)
+22:24:51 INFO    copilot.presentation.engine: no image for 'Galactic Bodies': has an image
+  [SLIDE] update 'Galactic Bodies' [key_points] v6 (3 items)
+22:25:21 INFO    copilot.presentation.engine: concern 53e9ef965571 dismissed: slide shows '≈828 km/s'
+22:25:41 INFO    copilot.materials.service: material ready: Solar System - Slides - 16 Oct 2026.pptx (pptx, 0 LLM calls, 0 tokens)
+[MATERIAL] Solar System - Slides - 16 Oct 2026.pptx ready
+
+[ENDED] interrupted
+(.venv) PS C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation> 

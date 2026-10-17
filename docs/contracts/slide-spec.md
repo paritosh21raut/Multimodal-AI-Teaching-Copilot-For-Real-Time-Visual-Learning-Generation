@@ -75,6 +75,9 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
   an image uses the image layout (content | image column); without one, today's layouts. Not content: it never
   counts as a teacher item, never enters the prompt or correction targets, and does not stay on a slide whose content
   was removed. Beside an image the type may shrink to 0.8 before content opens the next part.
+- F-013 S3a (no schema change): "Label: …" points of one shape become `groups` / `facts` / member `definition`
+  blocks; `timeline` events are dated; a secondary block with `about` renders with its definition card, never in the
+  aside (`composer._split` = slide.js `splitBlocks`); slide.js `titleNames` folds plurals and ignores a bracketed acronym.
 - Builder: `presentation.composer` (space-based height model, F-005). Overflow continues on the next part of the
   same frame: same title, `part` badge, never "(cont.)". Several `definition` blocks render side by side. A member
   explained in depth continues on a slide titled by the member (no `part`, same crumb); the set's next part follows.

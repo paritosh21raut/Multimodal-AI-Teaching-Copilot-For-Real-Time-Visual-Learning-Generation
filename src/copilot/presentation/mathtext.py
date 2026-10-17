@@ -27,11 +27,26 @@ _PART = re.compile(r"([A-Z][a-z]?)(\d*)")
 _ION = re.compile(r"^(?P<coef>\d*)(?P<body>(?:[A-Z][a-z]?[0-9₀-₉]*)+)(?P<charge>[⁰¹²³⁴⁵⁶⁷⁸⁹]*[⁺⁻])$")
 
 GREEK = {name: "\\" + name for name in (
-    "alpha beta gamma epsilon theta lambda mu pi rho sigma tau phi omega "
-    "Gamma Delta Theta Lambda Pi Sigma Phi Omega").split()}
+    "alpha beta gamma epsilon zeta eta theta kappa lambda mu nu xi pi rho sigma tau phi chi psi omega "
+    "Gamma Delta Theta Lambda Xi Pi Sigma Phi Psi Omega").split()}
 GREEK.update({"delta": r"\Delta", "α": r"\alpha", "β": r"\beta", "γ": r"\gamma", "δ": r"\delta", "ε": r"\epsilon",
-              "θ": r"\theta", "λ": r"\lambda", "μ": r"\mu", "π": r"\pi", "ρ": r"\rho", "σ": r"\sigma", "τ": r"\tau",
-              "φ": r"\phi", "ω": r"\omega", "Δ": r"\Delta", "Σ": r"\Sigma", "Ω": r"\Omega"})
+              "ζ": r"\zeta", "η": r"\eta", "θ": r"\theta", "κ": r"\kappa", "λ": r"\lambda", "μ": r"\mu", "ν": r"\nu",
+              "ξ": r"\xi", "π": r"\pi", "ρ": r"\rho", "σ": r"\sigma", "τ": r"\tau", "φ": r"\phi", "χ": r"\chi",
+              "ψ": r"\psi", "ω": r"\omega", "Γ": r"\Gamma", "Δ": r"\Delta", "Θ": r"\Theta", "Λ": r"\Lambda",
+              "Π": r"\Pi", "Σ": r"\Sigma", "Φ": r"\Phi", "Ψ": r"\Psi", "Ω": r"\Omega"})
+_GREEK_CHARS = "".join(k for k in GREEK if len(k) == 1)
+# a Greek symbol with a subscript, maybe after one Latin factor (F-013 S3, test15: "hν₀" was the upright word "hν0",
+# "λ_T" the word "λ\_T"): ν0, λ_T, λts, hν, hν0. One letter after it is a product ("ωt", "Δx"), two or three a
+# subscript ("λts" = λ threshold)
+_GREEK_SYMBOL = re.compile(rf"(?P<pre>[A-Za-z]?)(?P<g>[{_GREEK_CHARS}])(?:_?(?P<sub>\d+)|_(?P<lsub>[A-Za-z]\w{{0,3}})|"
+                           rf"(?P<tail>[a-z]{{2,3}}))?")
+# spoken subscripts: "nu naught", "lambda not", "v zero" -> ν0, λ0, v0
+_NAUGHT = re.compile(r"\b(?P<s>[A-Za-z]|alpha|beta|gamma|theta|lambda|mu|nu|rho|sigma|tau|phi|omega)\s+"
+                     r"(?:naught|nought|knot|not|zero)\b", re.IGNORECASE)
+_SPOKEN_GREEK = {"alpha": "α", "beta": "β", "gamma": "γ", "theta": "θ", "lambda": "λ", "mu": "μ", "nu": "ν",
+                 "rho": "ρ", "sigma": "σ", "tau": "τ", "phi": "φ", "omega": "ω"}
+_FUNCTIONS = {"sin", "cos", "tan", "cot", "sec", "csc", "log", "ln", "exp", "lim", "det", "sinh", "cosh", "tanh",
+              "arcsin", "arccos", "arctan"}
 # capital + these letters is a subscripted quantity in a formula (Vin → V_in, Req → R_eq)
 _SUB_TAILS = {"in", "out", "eq", "net", "max", "min", "avg", "tot", "total", "rms"}
 
@@ -69,7 +84,7 @@ _RELATIONS = {"=": "=", "≈": r"\approx", "≠": r"\neq", "≤": r"\leq", "≥"
 _ADD = {"+": "+", "−": "-", "-": "-", "±": r"\pm"}
 _MUL = {"×": r"\times", "*": r"\times", "·": r"\cdot", "÷": r"\div"}
 _TOKEN = re.compile(r"\s*(?:(?P<ph>\x00\d+\x00)|(?P<cnum>\d+[A-Za-z]{1,3}(?![A-Za-z0-9_]))|(?P<num>\d+(?:\.\d+)?)|"
-                    r"(?P<word>[A-Za-zΑ-Ωα-ω&][A-Za-zΑ-Ωα-ω0-9_'’‐&]*)|(?P<op>[=≈≠≤≥<>∝→,+\-−±×*·÷/^()√\[\]%]))")
+                    r"(?P<word>[A-Za-zΑ-Ωα-ω&][A-Za-zΑ-Ωα-ω0-9_'’‐&]*)|(?P<op>[=≈≠≤≥<>∝→,+\-−±×*·÷/^()√\[\]%⋯]))")
 
 
 class _Fail(Exception):
@@ -141,12 +156,14 @@ def _group_spoken_denominators(s: str) -> str:
 
 def _normalise(expr: str) -> tuple[str, str, list[str]]:
     """Spoken words → symbols, chemical formulas → placeholders, condition over the arrow split off."""
-    s = " ".join(expr.replace("\u2212", "−").split()).rstrip(". ")
+    # "f(x) = a_0/2 + ..." (test23 rendered nothing): a trailing ellipsis is the series going on
+    s = re.sub(r"\s*(?:\.\.\.|…)", " ⋯ ", " ".join(expr.replace("−", "−").split())).rstrip(". ")
     label, colon, rest = s.partition(":")
     if colon and ("=" in rest or "→" in rest) and "=" not in label and len(label.split()) <= 4:
         s = rest.strip()  # "Ohm's law: V = IR" → the formula; the slide title names it
     chem: list[str] = []
     s = s.translate(_SUB_DIGITS)
+    s = _NAUGHT.sub(lambda m: _SPOKEN_GREEK.get(m.group("s").lower(), m.group("s")) + "0", s)  # "nu naught" → ν0
     s = re.sub(r"(?<![A-Za-z])([A-Za-z])_(\d+)", r"\1\2", s)  # "P_1" → "P1"
     # numbered quantities: a count of 1 is never chemistry, so "P1V1 = P2V2" is P₁V₁ = P₂V₂ (long test 2026-10-06:
     # "P1V1" was one upright word and "P2V2" a chemical formula)
@@ -200,7 +217,8 @@ def _tokens(s: str) -> list[tuple[str, str]]:
 
 
 def _short(w: str) -> bool:
-    return (len(w) <= 3 or w in GREEK or bool(re.fullmatch(r"[A-Za-z]\d+|[A-Za-z]_[A-Za-z0-9]+", w))
+    return (len(w) <= 3 or w in GREEK or bool(_GREEK_SYMBOL.fullmatch(w))
+            or bool(re.fullmatch(r"[A-Za-z]\d+|[A-Za-z]_[A-Za-z0-9]+", w))
             or (w[:1].isupper() and w[1:] in _SUB_TAILS))
 
 
@@ -215,7 +233,8 @@ def _symbolic_sides(toks: list[tuple[str, str]]) -> list[bool]:
     for side in sides:
         words = [v for k, v in side if k == "word"]
         has_number = any(k == "num" for k, _ in side)
-        singles = [w for w in words if len(w) == 1 or w in GREEK or re.fullmatch(r"[A-Za-z]\d+|[A-Za-z]_\w+", w)
+        singles = [w for w in words if len(w) == 1 or w in GREEK or _GREEK_SYMBOL.fullmatch(w)
+                   or re.fullmatch(r"[A-Za-z]\d+|[A-Za-z]_\w+", w)
                    or (has_number and re.fullmatch(r"[a-z]{2,3}", w))]
         flags.append(bool(singles) and all(_short(w) for w in words))
     if any(flags):  # "F = ma": a side of short letter groups next to a symbolic side is symbolic too
@@ -278,7 +297,7 @@ class _Parser:
 
     def _starts_atom(self) -> bool:
         k, v = self.peek()
-        return k in ("num", "cnum", "word", "ph") or (k == "op" and v in ("(", "[", "√", "%"))
+        return k in ("num", "cnum", "word", "ph") or (k == "op" and v in ("(", "[", "√", "%", "⋯"))
 
     def product(self) -> str:
         """Factors joined by ×, ·, ÷ or by nothing (implicit). A "/" divides the implicit product before it by the
@@ -343,12 +362,21 @@ class _Parser:
             return self.word(v, single)
         if k == "op" and v == "%":
             return r"\%"
+        if k == "op" and v == "⋯":
+            return r"\cdots"
         raise _Fail(f"unexpected {v!r}")
 
     def word(self, w: str, single: bool) -> str:
         symbolic = self.symbolic[min(self.side, len(self.symbolic) - 1)]
         if w in GREEK:
             return GREEK[w]
+        if w in _FUNCTIONS and symbolic:
+            return "\\" + w  # "sin(θ)" was the product "s i n"
+        g = _GREEK_SYMBOL.fullmatch(w)
+        if g:
+            sub = g.group("sub") or g.group("lsub") or g.group("tail")
+            return ((g.group("pre") + " " if g.group("pre") else "") + GREEK[g.group("g")]
+                    + (f"_{{{sub if len(sub) == 1 or sub.isdigit() else _text(sub)}}}" if sub else ""))
         if len(w) > 1 and w[0] in GREEK and re.fullmatch(r"[A-Za-z]\w{0,2}", w[1:]):
             return GREEK[w[0]] + " " + self.word(w[1:], True)  # "Δx", "ΔU"
         if not symbolic:

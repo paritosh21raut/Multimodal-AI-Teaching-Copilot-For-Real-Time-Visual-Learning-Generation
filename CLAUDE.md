@@ -67,6 +67,8 @@ PYTHONPATH=paper/build/lib .venv/Scripts/python paper/build/src/build_docx.py <o
 .venv/Scripts/python tools/v1_eval.py [--out f.json] [--compare verify_results/_eval/v1_baseline.json]   # F-013 metrics from event logs (0 tokens)
 .venv/Scripts/python tools/v1_eval.py --replay | --gate   # F-013: engine replay (cues off/on) / gate replay (call floors), 0 tokens
 .venv/Scripts/python tools/v1_eval.py --structure [names] [--out f.json]   # F-013 S2: boundaries vs annotators, part rate, child slides (0 tokens)
+.venv/Scripts/python tools/v1_eval.py --s3 [names] [--list verbatim,garbage,dup,def,table,formula] [--out f.json]   # F-013 S3: representation (0 tokens)
+.venv/Scripts/python tools/screenshot_s3.py [groups facts members definition formula trig]   # S3 layouts, both themes -> artifacts/display
 .venv/Scripts/python tools/screenshot_structure.py   # S2: nested Lecture Structure + child crumb, both themes -> artifacts/display
 .venv/Scripts/python tools/screenshot_cues.py      # announced slide / heard list / interpreted, both themes -> artifacts/display
 .venv/Scripts/python -m pytest                      # fast tests

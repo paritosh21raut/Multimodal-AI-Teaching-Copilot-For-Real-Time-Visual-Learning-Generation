@@ -78,6 +78,20 @@ is built by code. The model's `parent` field was A/B-tested and rejected (see un
 - Replay of the 18 annotated lectures (`tools/v1_eval.py --structure`, recorded answers, 0 tokens): boundary P 0.80 →
   0.78, R 0.44 → 0.51, F1 0.51 → 0.56, part rate 0.73 → 0.62, 34 child slides.
 
+## Representation quality (F-013 S3a)
+Deterministic, 0 tokens (`presentation.content`, `composer`, `mathtext`, `web/shared/slide.js`):
+- **Duplicates:** quantities compare as one form (`textutil.normalise_spoken`: "10 to the power minus 8 centimeter" =
+  "10⁻⁸ cm"). A definition card replaces a shorter point of the same term; a fuller version of a point (≥ 2 more content
+  words) grows it in place, same id; a "Label: names" point for a group card on the slide adds its names to the card.
+- **Definition cards:** the term is hidden when the title names it (plurals folded, a bracketed acronym ignored); a
+  repeated "Term:" prefix is removed; "Electron: was discovered …" is the point "Electron was discovered …"; a ";" list of
+  short items is a list. A Greek symbol keeps its case.
+- **Layouts from "Label: …" points** (at least two of one shape): names → group cards; short values, most with a number
+  → fact tiles; a classification of "Kind: description" → member cards. A timeline holds dated events only.
+- **Signs:** a leading "-" before a number is a minus, not a list dash ("-55 °C").
+- A block about a definition (`about`) stays with that card; it is never in the aside too.
+- Replay of tests 1–30 (`tools/v1_eval.py --s3`): duplicates 6 → 1, bad definition cards 18 → 2, broken formulas 7 → 0.
+
 ## Progressive update
 1. **Fast path (≤ 3–5 s):** after the gate's fast trigger, the Composer may place a deterministic provisional item
    (key term or short sentence) marked `provisional`.

@@ -19,10 +19,11 @@ from copilot.core.interpretation import (
 )
 from copilot.core.memory import same_title, titles_match
 from copilot.core.state import LectureState
-from copilot.core.textutil import approx_tokens, ends_sentence
+from copilot.core.textutil import approx_tokens, ends_sentence, normalise_spoken, stem
 from copilot.llm.router import AllProvidersFailed, LLMRouter
 from copilot.understanding.gate import BufferedLine
 from copilot.understanding.grounding import enforce_grounding
+from copilot.understanding.quality import problem, strip_meta
 from copilot.understanding.prompt import BuiltPrompt, PromptBudgetError, build_prompt
 
 log = logging.getLogger(__name__)
@@ -252,6 +253,11 @@ def _sanitise(it: Interpretation, n_lines: int, min_conf: float, state: LectureS
         if not (c.wrong and c.right):  # derive the minimal differing words from claim vs correction
             wrong, right = minimal_change(c.claim, c.suggested_correction)
             upd.update({"wrong": c.wrong or wrong, "right": c.right or right})
+        if problem(upd.get("right", c.right)) == "meta" or problem(c.suggested_correction) == "meta":
+            # "[unclear location, likely mis-heard]" is no correction: applied, it replaced the teacher's words on
+            # the slide (test6; F-013 S3)
+            log.info("concern with a note instead of a correction dropped: %r", c.suggested_correction)
+            continue
         concerns.append(c.model_copy(update=upd))
     refs = state.slide_refs
     revisions = [r for r in it.revisions if r.ref.strip().upper() in refs]
@@ -292,9 +298,24 @@ _LEAD_FILLERS = re.compile(r"^(?:(?:so|and|now|okay|ok|well|also|then|basically|
                            r"we have|there is|there are)[,\s]+)+", re.IGNORECASE)
 
 
+# linking words that only tie the sentence to the previous one ("Thus, Ethical Hacking is ...", "Recently, the world
+# of technology ..."; F-013 S3): dropped with their comma. Not "Generally," / "Sometimes," (they change the claim).
+_LEAD_LINKS = re.compile(r"^(?:(?:thus|therefore|hence|recently|again|however|finally|also|in simple words|in other "
+                         r"words|in fact|the fact is|as a result|basically|actually|now|so|okay|ok|right|alright|but|"
+                         r"and)\s*,\s*)+",
+                         re.IGNORECASE)
+
+
 def tidy_spoken(text: str) -> str:
-    """Spoken line → plain slide text: leading fillers dropped, first letter capitalised, no final period."""
-    t = _LEAD_FILLERS.sub("", " ".join(text.split())).strip().rstrip(".")
+    """Spoken line → plain slide text: leading fillers and linking words dropped, first letter capitalised, no final
+    period."""
+    t = " ".join(text.split())
+    while True:  # "So, thus, ..." -> both go
+        u = _LEAD_LINKS.sub("", _LEAD_FILLERS.sub("", t))
+        if u == t:
+            break
+        t = u
+    t = t.strip().rstrip(".")
     return t[:1].upper() + t[1:] if t else t
 
 
@@ -310,6 +331,7 @@ def _fill_empty_acts(it: Interpretation, lines: Sequence[BufferedLine]) -> Inter
             texts = [tidy_spoken(" ".join(lines[n - 1].text.split()[:FILL_MAX_WORDS])) for n in a.lines
                      if 1 <= n <= len(lines) and n not in meta and n not in used and not lines[n - 1].maybe_meta
                      and ends_sentence(lines[n - 1].text) and len(lines[n - 1].text.split()) >= 4]
+            texts = [t for t in texts if not problem(t)]  # F-013 S3: the garbage gate
             if texts:
                 log.info("act %s on lines %s had no items; using the spoken line", a.act, a.lines)
                 a = a.model_copy(update={"items": ContentItems(points=texts)})
@@ -319,6 +341,7 @@ def _fill_empty_acts(it: Interpretation, lines: Sequence[BufferedLine]) -> Inter
 
 COVER_MIN_WORDS = 4      # content words a dropped sentence must have to be worth showing
 COVER_MAX_SHARE = 0.34   # ... and at most this share of them may already be on the slide / in the output
+COVER_CITED_SHARE = 0.2  # ... or this share, when the model cited the sentence's line in a content act
 COVER_MAX_SENTENCES = 3
 _STOP = set("""about above after again also always another because been before being below between both could does
 doing down during each even every from further have having here into just like made make many more most much must
@@ -380,8 +403,16 @@ def _cover_dropped_sentences(it: Interpretation, lines: Sequence[BufferedLine], 
             continue
         if n in eq_lines and len(_SPOKEN_MATH.findall(sentence)) >= 2:
             continue
-        if len(words & have) / len(words) <= COVER_MAX_SHARE:
-            missed.append((n, tidy_spoken(" ".join(sentence.split()[:30]))))
+        # a line the model cited in a content act was read and summarised: only a sentence of it that left almost
+        # nothing on the slide is recovered (F-013 S3: tests 1–30, 83 -> ~40 recovered lines, mostly noise gone)
+        cited = bool(acts_of[n] - _NO_CONTENT_ACTS)
+        if len(words & have) / len(words) <= (COVER_CITED_SHARE if cited else COVER_MAX_SHARE):
+            tidy = tidy_spoken(" ".join(sentence.split()[:30]))
+            why = problem(tidy)
+            if why:  # F-013 S3: "Recall that ...", "You will have ...", spoken code, "It can involve ..."
+                log.info("left-out sentence not shown (%s): %r", why, tidy)
+                continue
+            missed.append((n, tidy))
             have |= words
     missed = missed[:COVER_MAX_SENTENCES]
     if not missed:
@@ -390,6 +421,27 @@ def _cover_dropped_sentences(it: Interpretation, lines: Sequence[BufferedLine], 
     act = DiscourseAct(act="explanation", lines=sorted({n for n, _ in missed}),
                        items=ContentItems(points=[t for _, t in missed]))
     return it.model_copy(update={"acts": list(it.acts) + [act]})
+
+
+def _strip_meta_notes(it: Interpretation) -> Interpretation:
+    """The model's bracketed notes about the transcript leave the slide text: "Violent crackdowns on peaceful
+    protesters, notably at the [unclear location, likely mis-heard]" (test6) -> "Violent crackdowns on peaceful
+    protesters" (F-013 S3)."""
+    def walk(v):
+        if isinstance(v, str):
+            return strip_meta(v)
+        if isinstance(v, list):
+            return [walk(x) for x in v]
+        if isinstance(v, dict):
+            return {k: walk(x) for k, x in v.items()}
+        return v
+
+    acts = []
+    for a in it.acts:
+        items = a.items.model_dump()
+        clean = walk(items)
+        acts.append(a if clean == items else a.model_copy(update={"items": ContentItems.model_validate(clean)}))
+    return it.model_copy(update={"acts": acts})
 
 
 _EQUATION = re.compile(r"=|→|->|⟶")
@@ -425,8 +477,14 @@ FALLBACK_SHORT_WORDS = 6  # a shorter sentence off the current subject is a rema
 _VAGUE_SUBJECT = re.compile(r"^(?:it|that|this|these|those|they)\b", re.IGNORECASE)
 
 
+_QUANTITY = re.compile(r"-?\d[\d.,]*(?:x\d+)?(?:\^[-+]?\d+)?")
+
+
 def _stems(text: str) -> set[str]:
-    return {w[:-1] if w.endswith("s") and len(w) > 4 else w for w in _content_words(text)}
+    """Content words as stems ("masses" ~ "Mass", "rioting" ~ "riots") plus the quantities, spoken or written the
+    same way ("10 to the power minus 8 centimeter" ~ "10⁻⁸ cm"; F-013 S3: such pairs were shown twice)."""
+    t = normalise_spoken(text)
+    return {stem(w) for w in _content_words(t)} | set(_QUANTITY.findall(t))
 
 
 def _spoken_sentences(lines: Sequence[BufferedLine]) -> list[tuple[int, str]]:
@@ -495,6 +553,10 @@ def fallback_interpretation(state: LectureState, lines: Sequence[BufferedLine]) 
     for n, sentence in sentences:
         tidy = tidy_spoken(" ".join(sentence.split()[:30]))
         if len(tidy.split()) < 4 or tidy.endswith("?") or _announced(tidy) or _NOT_CONTENT.search(tidy):
+            continue
+        why = problem(tidy, speaker=False)  # the teacher's examples ("If you buy ...") are all there is to show
+        if why:
+            log.info("fallback: not shown (%s): %r", why, tidy)
             continue
         if len(tidy.split()) < FALLBACK_SHORT_WORDS:
             others = " ".join(s for m, s in sentences if s is not sentence)
@@ -611,7 +673,7 @@ class Interpreter:
                 return self._fallback(state, lines, f"invalid output after repair: {second}", t0,
                                       prompt.tokens, attempts)
 
-        it = _fill_empty_acts(_examples_need_a_cue(it, lines), lines)
+        it = _fill_empty_acts(_examples_need_a_cue(_strip_meta_notes(it), lines), lines)
         it, changed = enforce_grounding(it, [l.text for l in lines])
         if changed:
             log.warning("interpretation from %s changed spoken tokens without saying so; concern added: %s",

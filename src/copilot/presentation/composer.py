@@ -20,7 +20,8 @@ from typing import Callable, Optional
 
 from copilot.core.events import new_id
 from copilot.core.memory import is_child_facet, same_title, title_key, titles_match
-from copilot.presentation.content import Piece, drop_self_alias
+from copilot.core.textutil import normalise_spoken
+from copilot.presentation.content import LABELLED, Piece, drop_self_alias, list_items
 from copilot.presentation.mathtext import has_fraction, to_latex, visible_length
 from copilot.presentation.spec import (
     Block, CalloutBlock, CauseEffectBlock, CauseLink, Column, ComparisonBlock, DefinitionBlock, ExampleBlock, Fact,
@@ -113,7 +114,17 @@ def is_duplicate(a: str, b: str) -> bool:
         return False
     if na == nb:
         return True
+    # one quantity written and spoken ("Atomic radii: ~10⁻⁸ cm" / "... of the order of 10 to the power minus 8
+    # centimeter", F-013 S3): the same content words and the same numbers
+    qa, qb = _quantity_words(a), _quantity_words(b)
+    if qa and qa == qb and any(any(c.isdigit() for c in w) for w in qa):
+        return True
     short, long_ = sorted((na, nb), key=len)
+    # an item cut at MAX_TEXT_CHARS ("… example:…") is the start of the full one (test28: a point and a definition
+    # card with the same words)
+    cut = a if len(_norm(a)) == len(short) else b
+    if cut.rstrip().endswith("…") and len(short) >= 40 and long_.startswith(short):
+        return True
     # containment = the same item with a few words more; a bare term inside a longer sentence ("acceleration" in
     # "Unit of acceleration: m/s²") is a new item that mentions it (V1a: such points were silently dropped)
     if len(short) >= 12 and 2 * len(short) >= len(long_) and f" {short} " in f" {long_} ":
@@ -129,6 +140,15 @@ _STOP = {"the", "a", "an", "of", "and", "in", "to", "for", "is", "are", "it", "i
          "be", "that", "this", "which", "from", "at", "or"}
 
 
+_ROUGHLY = {"order", "about", "approximately", "roughly", "around", "nearly", "almost"}
+
+
+def _quantity_words(text: str) -> frozenset[str]:
+    words = re.findall(r"-?[a-z0-9][a-z0-9.^°%+#-]*", normalise_spoken(text))
+    return frozenset(w[:-1] if len(w) > 3 and w.endswith("s") else w for w in words
+                     if w not in _STOP and w not in _ROUGHLY)
+
+
 def _content_words(norm: str) -> frozenset[str]:
     return frozenset(w[:-1] if len(w) > 3 and w.endswith("s") else w for w in norm.split() if w not in _STOP)
 
@@ -136,7 +156,7 @@ def _content_words(norm: str) -> frozenset[str]:
 def _subsumed(new: str, old: str) -> bool:
     """A new item that only repeats words of an existing one ("Formed by end-to-end overlap of orbitals" after
     "Formed by end-to-end overlap of half-filled orbitals with opposite spin", long test 2026-10-06)."""
-    cn, co = _content_words(_norm(new)), _content_words(_norm(old))
+    cn, co = _content_words(_norm(normalise_spoken(new))), _content_words(_norm(normalise_spoken(old)))
     return len(cn) >= 3 and cn < co
 
 
@@ -149,8 +169,9 @@ def _new(existing: list[str], candidates: tuple[str, ...]) -> list[str]:
 
 
 def cap(text: str) -> str:
-    """Display case for a heading-like phrase: first letter upper, rest as said ("photosynthesis" -> "Photosynthesis")."""
-    return text[:1].upper() + text[1:] if text else text
+    """Display case for a heading-like phrase: first letter upper, rest as said ("photosynthesis" -> "Photosynthesis");
+    a Greek symbol keeps its case ("ν" is not "Ν", test15)."""
+    return text[:1].upper() + text[1:] if text and not "\u0370" <= text[0] <= "\u03ff" else text
 
 
 _JOINS = ("means", "is", "are", "refers", "stands")
@@ -354,8 +375,11 @@ def _split(blocks: list, members: bool = False) -> tuple[list, list]:
     if len(blocks) < 2 or members or any(b.type in FULL_WIDTH for b in blocks) \
             or sum(1 for b in blocks if b.type == "definition") > 1:
         return blocks, []
-    main = [blocks[0]] + [b for b in blocks[1:] if b.type not in SECONDARY + ("image",)]
-    aside = [b for b in blocks[1:] if b.type in SECONDARY + ("image",)]
+    # a block about a definition stays with that definition's card, never in the aside too (test3: the example under
+    # the "Atom" card was drawn twice; F-013 S3)
+    side = lambda b: b.type in SECONDARY + ("image",) and not getattr(b, "about", "")  # noqa: E731
+    main = [blocks[0]] + [b for b in blocks[1:] if not side(b)]
+    aside = [b for b in blocks[1:] if side(b)]
     return main, aside
 
 
@@ -687,13 +711,15 @@ def _texts_on(spec: SlideSpec) -> list[str]:
         if b.type == "points":
             out += [i.text for i in b.items if not i.provisional]
         elif b.type == "definition":
-            out += [b.term, b.definition] + [n.text for n in b.notes if not n.provisional]
+            out += [b.term, b.definition, f"{b.term} {b.definition}"] + [n.text for n in b.notes if not n.provisional]
         elif b.type in SECONDARY:
             out.append(b.text)
         elif b.type == "process":
             out += [s.label for s in b.steps]
         elif b.type == "facts":
             out += [f"{f.label} {f.value}" for f in b.facts]
+        elif b.type == "groups":
+            out += [f"{g.label}: {', '.join(i.text for i in g.items)}" for g in b.groups]
     return out
 
 
@@ -874,6 +900,7 @@ def _merge_column(spec: SlideSpec, piece: Piece, db: DefinitionBlock) -> tuple[S
         cand = _add_block(spec, FormulaBlock(latex=to_latex(f.expression), spoken=f.expression, variables=variables,
                                              about=db.id))
         return (cand, None) if fits(cand) else (spec, piece)
+    spec, piece = _grow_points(spec, piece)
     fresh = _new(_texts_on(spec), piece.texts)
     if piece.added:
         fresh = fresh[:1]
@@ -919,7 +946,58 @@ def _items(texts: list[str], added: bool) -> list[Item]:
     return [Item(text=t, added=added) for t in texts]
 
 
+def _grow_points(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Piece]:
+    """A fuller version of a point already on the slide grows that point in place (same id) instead of standing
+    beside it: test13 "Connects the spinal cord" then "Connects the spinal cord, pons, and cerebral cortex"; test27
+    the same list said twice, the second time longer (F-013 S3). Returns the spec and the texts still to place."""
+    if piece.added:
+        return spec, piece
+    rest = []
+    for text in piece.texts:
+        # at least two more content words: "Plants need sunlight daily" does not rewrite "Plants need sunlight"
+        old = next((i for b in spec.blocks if b.type == "points" for i in b.items
+                    if not i.provisional and not i.added and _subsumed(i.text, text)
+                    and len(_content_words(_norm(text)) - _content_words(_norm(i.text))) >= 2), None)
+        cand = revise_item(spec, old.id, text) if old is not None else None
+        if cand is not None and fits(cand):
+            spec = cand
+        else:
+            rest.append(text)
+    return spec, piece.with_texts(rest)
+
+
+def _into_groups(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Piece]:
+    """A "Label: a, b, c" point for a group card already on the slide adds its new names to that card: the group
+    cards are not revisable items, so a fuller list said again comes as a point (test7: "Allied Powers: France, ...,
+    Japan" as cards, then "..., United States"; F-013 S3)."""
+    gb = _find(spec, "groups")
+    if gb is None or piece.added:
+        return spec, piece
+    rest = []
+    for text in piece.texts:
+        m = LABELLED.match(text)
+        items = list_items(m.group("rest")) if m else ()
+        g = next((x for x in gb.groups if titles_match(x.label, m.group("label"))), None) if items else None
+        if g is None:
+            rest.append(text)
+            continue
+        fresh = _new([i.text for i in g.items], items)[: max(0, CAPACITY["group_items"] - len(g.items))]
+        groups = [x.model_copy(update={"items": x.items + _items(fresh, False)}) if x is g else x for x in gb.groups]
+        cand = _replace_block(spec, gb, gb.model_copy(update={"groups": groups}))
+        if fits(cand):
+            spec, gb = cand, _find(cand, "groups")
+        else:
+            rest.append(text)
+    return spec, piece.with_texts(rest)
+
+
 def _merge_points(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:
+    spec, piece = _into_groups(spec, piece)
+    if not piece.texts:
+        return spec, None
+    spec, piece = _grow_points(spec, piece)
+    if not piece.texts:
+        return spec, None
     label = piece.term
     # a heading belongs to the items it came with: unlabelled points never join a labelled list, and a labelled
     # list never takes over earlier unlabelled points (live test 2026-10-06: "Low power consumption" under
@@ -970,6 +1048,16 @@ def _add_note(spec: SlideSpec, db: DefinitionBlock, piece: Piece, text: str) -> 
 
 def _merge_definition(spec: SlideSpec, piece: Piece) -> tuple[SlideSpec, Optional[Piece]]:
     defs = [b for b in spec.blocks if b.type == "definition"]
+    said = f"{piece.term}: {piece.definition}"
+    points = [i for b in spec.blocks if b.type == "points" for i in b.items if not i.provisional]
+    # the same term given as a point before ("Convergent: plates move toward each other, ..."), now defined in full:
+    # the card replaces that point (test28 showed both; F-013 S3)
+    shorter = {i.id for i in points if _norm(i.text).startswith(_norm(piece.term) + " ") and _subsumed(i.text, said)}
+    if shorter:
+        spec = remove_elements(spec, shorter)
+        defs = [b for b in spec.blocks if b.type == "definition"]
+    elif any(is_duplicate(said, i.text) for i in points):
+        return spec, None  # already a point of this slide (F-013 S3)
     for db in defs:
         if same_term(db.term, piece.term):
             if is_duplicate(db.definition, piece.definition):

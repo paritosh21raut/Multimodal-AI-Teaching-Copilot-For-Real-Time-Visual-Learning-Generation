@@ -1,12 +1,26 @@
 # Current State
 
-_Last updated: 2026-10-16: **F-013 S2 (structure) done, targets partly met** (≈ 75k Groq tokens: A/B + one live run).
+_Last updated: 2026-10-17: **F-013 S3a (deterministic representation fixes) done** (0 tokens). Before that, 2026-10-16:
+**F-013 S2 (structure) done, targets partly met** (≈ 75k Groq tokens: A/B + one live run).
 Before that, 2026-10-15: **IEEE paper finished (6 pages, validation phase 4 done, 0 tokens)**. Before that, 2026-10-12:
 F-012 group D (reference materials / study material) done (8,582 Groq tokens). V2 groups A–D are implemented. Next: the
 user's review of the paper and of group D, then the truthfulness bug below, then V1c.
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **F-013 S3a done (2026-10-17, 0 tokens): representation, deterministic.** Replay of tests 1–30 with the guards re-run
+  (`tools/v1_eval.py --s3`): coverage-guard lines on slides 118 → 33, verbatim copies 187 → 105 (12.7 → 7.7 %), garbage
+  lines 31 → 10, duplicates 6 → 1, bad definition cards 18 → 2, broken formulas 7 → 0; boundaries unchanged (P 0.775,
+  R 0.507). The S2 "verbatim bullets" came from our coverage guard, not the model. Built: quantity normaliser + stemmer,
+  garbage gate (`understanding/quality.py`), cited-line limit, definition-card fixes, Greek / subscript / function
+  formulas, group cards / fact tiles / member cards from "Label: …" points, dated timelines. Also fixed: "-55 °C"
+  shown as "55 °C" (a list-dash strip), an example drawn twice (card + aside), a meta note applied as a correction.
+  Cost: ~14 real statements of 93 no-longer-shown guard lines. Tests: fast 674 (+48 `test_representation.py`),
+  browser 39. Screenshots `tools/screenshot_s3.py` looked at. Not live-checked (no LLM change). Details: F-013
+  "S3 result". **Next:** S3b (N-way comparison, glossary + Whisper prompt, named equations + Show equation, code block).
+- **Paper v8** (2026-10-16, 0 tokens): `paper/..._v8.docx/.pdf`, 6 pages; AI-flagged passages rewritten, Fig. 4 = 9 accurate slides (3 × 3) from verify_results/ subject folders. v7 report: similarity 13 % (all bibliography/author block), AI 28 %. Details: docs/paper/VALIDATION.md "Phase 10".
+- **Paper v7** (2026-10-16, 0 tokens): `paper/..._v7.docx/.pdf`, 6 pages; 31 references (2 removed, long author lists → et al.), every reference cited in Related Work (asserted by build_docx.py). The 24 % report was run on the old v5 report PDF, not on the paper. Details: docs/paper/VALIDATION.md "Phase 9".
+- **Paper v6** (2026-10-16, 0 tokens): `paper/..._v6.docx/.pdf`, 6 pages; plagiarism-matched sentences rewritten, tables simplified (6 tables, one measure per row), Fig. 1 larger, Fig. 3 = notes page + assignment, Fig. 4 = 12 slides. Details: docs/paper/VALIDATION.md "Phase 8".
 - **F-013 S2 done, targets partly met (2026-10-16): structure.** Replay of the 18 annotated lectures (0 tokens):
   boundary P 0.80 → 0.775, R 0.44 → 0.51, F1 0.51 → 0.555, part rate 0.73 → 0.62, 34 slides under a parent. Recall
   (≥ 0.70) and part-N (≤ 45 %) are NOT met; the remaining gap is model subtopic granularity. The tree is built by code
@@ -81,7 +95,7 @@ Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 | Simulator / test harness | 55 | text simulator, WAV-as-mic, display harness, screenshot / check tools; no soak runner |
 | Audio / STT | 95 | verified on WAV and real voice; F-012 terms not yet tried on real audio |
 | Lecture understanding + LLM | 88 | verified with real Groq; F-012 passage verified live |
-| Presentation engine | 87 | verified on several lectures with real LLM + screenshots; F-013 cue slides verified (replay + simulated live) |
+| Presentation engine | 89 | verified on several lectures with real LLM + screenshots; F-013 cue slides verified (replay + simulated live); S3a replay-verified (0 tokens) |
 | Live display + control view | 85 | verified in Edge |
 | Visual system (images/diagrams) | 65 | web images + CLIP, labelled diagrams, the teacher's own figures (F-012); generated diagrams not started |
 | V2 group A (themes, teacher notes, labelled images) | 100 | verified |

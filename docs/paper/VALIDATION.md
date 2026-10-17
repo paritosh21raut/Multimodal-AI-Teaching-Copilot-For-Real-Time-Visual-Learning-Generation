@@ -267,3 +267,37 @@ and latency CDF removed (small, unreadable; content in eq. (6) and Table II); D1
 - Fig. 3: full pages (notes p2, p3, assignment), only blank paper margins trimmed (user: no content crops).
 - Not done (need new runs/people): append-only baseline, baseline key-fact coverage (needs annotation), gate sweep,
   per-model split, accented-speech WER, blinded baseline rating.
+
+## Phase 8 — plagiarism report + layout (2026-10-16, 0 tokens) → v6
+- iThenticate report on v5 (`plagarism_result/`): 17 % overall, but ~13 points come from the reference list
+  (standard citation strings that also appear in other papers; top source arxiv.org 6 %), the rest from the author
+  block and three short sentences (Mayer "words with pictures … words alone", Sweller "working memory is limited",
+  "a laptop with an RTX 3050 GPU (4 GB)"). Those sentences and the abstract hardware phrase were rewritten.
+  References were not altered. Re-run with "Exclude bibliography" (standard setting) to get the body score.
+- Tables made one-measure-per-row: II data, III live performance (split from old II), IV accuracy grouped
+  (boundaries / content / ratings / agreement) with ↑/↓, V ablation with full column names, VI baseline transposed
+  (+ "lectures with fewer rewrites 18 of 18"). No number changed.
+- Fig. 1 6.0 → 6.9 in; Fig. 3 = one notes page (mat_notes_3) + assignment, full pages, single column 3.4 in;
+  Fig. 4 = 12 D1 slides, 4 × 3 (added 1110_21, e652_14, e652_08).
+- New system results (F-013 S1/S2) are NOT in the paper: they need new live D2 runs + re-annotation.
+
+## Phase 9 — second plagiarism report + references (2026-10-16, 0 tokens) → v7
+- The new report (`plagarism_result/..._v5 (1) (1).pdf`, 24 %) was run on the *v5 iThenticate report PDF* (11 pages: 5
+  report pages + the v5 paper), not on v6: the report pages and their highlight colours (flag "hidden text") raised
+  the score. In the paper part the matches are again almost only the reference list and the author block.
+- References 33 → 31: Landis & Koch and Feinstein & Cicchetti removed ("substantial" → "good"; the prevalence
+  remark now cites Gwet). Author lists with more than three authors shortened to "et al.". Titles unchanged.
+- Every reference is now cited with its reason in Related Work (CLIP, gpt-oss, Qwen3, ROUGE-1, P_k, κ, AC1, ICC
+  added there); `build_docx.py` asserts this. No number changed. 6 pages.
+- To check: upload the paper PDF itself and use "Exclude bibliography" (and quotes / small matches if allowed).
+
+## Phase 10 — AI-writing report + Fig. 4 (2026-10-16, 0 tokens) → v8
+- iThenticate on v7 (`plagarism_result/`): similarity 13 %, all matches in the reference list and author block
+  (body none); AI-writing 28 %, flagged: intro gap/contribution paragraphs, slide-generator and agreement
+  sentences, method overview, interpretation + guard paragraphs, planner, composer, ablation, captions/notes.
+- Those passages rewritten in plainer, varied sentences (same facts, no number changed); "Table IV groups ..."
+  paragraph (repeated the table) and a few clauses dropped for space.
+- Fig. 4 = 9 slides, 3 × 3 at 5.8 in, from the verify_results/ subject folders (Physics, Maths, chemistry,
+  Biology); ionic bond / bond order are the slide preview cut from /control screenshots (paper/build/sheets/).
+  The scripted heart lesson and the skeleton slide were not used. Caption: development lectures by the authors.
+- Fig. 2 anchor moved before "Bounded Interpretation" (it had left a gap on page 3). 6 pages.

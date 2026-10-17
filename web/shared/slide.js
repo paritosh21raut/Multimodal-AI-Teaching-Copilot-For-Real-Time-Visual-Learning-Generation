@@ -309,10 +309,14 @@ const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
 // definition cards per row (composer.grid_columns): 1 | 2 | 3 | 2x2 | 3+2 | 3x2
 const cardColumns = (n) => (n <= 1 ? 1 : n === 3 || n >= 5 ? 3 : 2);
 const words = (s) => (s || "").toLowerCase().match(/[a-z0-9]+/g) || [];
-// does the title name this term ("What is dipole moment?" / "Dipole moment")? (composer._title_names)
+// does the title name this term ("What is dipole moment?" / "Dipole moment")? Plurals fold and a bracketed acronym
+// does not count (F-013 S3: "Atom" under "Atoms", "Operating System (OS)" under "Operating System" repeated the title)
+const fold = (w) => (w.length > 4 && /(ses|xes|ches|shes)$/.test(w) ? w.slice(0, -2)
+  : w.length > 3 && w.endsWith("s") && !/(ss|us|is)$/.test(w) ? w.slice(0, -1) : w);
+const nameWords = (s) => words((s || "").replace(/\([^)]*\)/g, " ")).map(fold);
 export const titleNames = (title, term) => {
-  const t = words(term).join(" ");
-  return !!t && ` ${words(title).join(" ")} `.includes(` ${t} `);
+  const t = nameWords(term).join(" ");
+  return !!t && ` ${nameWords(title).join(" ")} `.includes(` ${t} `);
 };
 // definitions after other content, with at most one definition before it (composer.trailing_definitions)
 export function trailingDefs(blocks) {
@@ -341,7 +345,9 @@ function splitBlocks(blocks, members) {
   // wide content anywhere (a diagram, tiles, two definitions side by side) needs the full width: stack instead
   if (blocks.some((b) => FULL_WIDTH_PRIMARY.has(b.type)) || blocks.filter((b) => b.type === "definition").length > 1)
     return { main: blocks, aside: [] };
-  return { main: [primary, ...rest.filter((b) => !ASIDE_TYPES.has(b.type))], aside: rest.filter((b) => ASIDE_TYPES.has(b.type)) };
+  // a block about a definition stays with that definition's card, never in the aside too (composer._split)
+  const side = (b) => ASIDE_TYPES.has(b.type) && !b.about;
+  return { main: [primary, ...rest.filter((b) => !side(b))], aside: rest.filter(side) };
 }
 
 // Type scale fitting: grow sparse slides (classroom legibility, no dead space) and shrink overfull
