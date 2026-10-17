@@ -24,6 +24,9 @@ MAX_PIXELS = 40_000_000  # decompression-bomb guard (Pillow default warns at 89 
 MEDIA_PREFIX = "/media/"
 
 
+
+QUERY_VERSION = "s4"  # in every remembered answer's key; bump when the sources change
+
 class BadImage(ValueError):
     pass
 
@@ -117,7 +120,9 @@ class ImageCache:
 
     # ---- query results --------------------------------------------------------------------------------------
     def _qfile(self, query: str, kind: str) -> Path:
-        return self.root / f"q-{hashlib.sha1(f'{kind}|{query.lower().strip()}'.encode()).hexdigest()[:16]}.json"
+        # F-013 S4: answers found before the web-page and article sources are not reused (searched again once)
+        key = f"{QUERY_VERSION}|{kind}|{query.lower().strip()}"
+        return self.root / f"q-{hashlib.sha1(key.encode()).hexdigest()[:16]}.json"
 
     def save_query(self, query: str, kind: str, images: list[CachedImage]) -> None:
         self._ensure()

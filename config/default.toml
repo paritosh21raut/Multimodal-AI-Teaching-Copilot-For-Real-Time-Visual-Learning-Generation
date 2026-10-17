@@ -2,6 +2,7 @@
 
 [app]
 data_dir = "data"
+min_free_gb = 1.0          # F-013 S4: warn at start when the data folder's disk has less free
 log_level = "INFO"
 theme = "light"            # light | dark
 
@@ -36,6 +37,10 @@ budget_s = 8.0             # whole search (sources + downloads + CLIP); after th
 min_similarity = 0.22      # CLIP int8 cosine floor (labelled set, F-007b)
 min_margin = 0.01          # over the best generic distractor ("a logo", "a map", ...)
 openverse = false          # user 2026-10-06: only if it proves educational
+web_pages = true           # F-013 S4: figures from educational web pages (diagrams + figures the teacher asks for)
+article_images = true      # F-013 S4: the images inside the best Wikipedia article, not only its lead image
+diagram_budget_s = 12.0    # F-013 S4: a diagram search (web pages take 2-5 s)
+asked_budget_s = 15.0      # F-013 S4: "let's look at the block diagram of ..."
 upload_max_mb = 10
 
 [bus]

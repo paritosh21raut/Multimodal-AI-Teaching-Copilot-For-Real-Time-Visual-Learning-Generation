@@ -1,0 +1,108 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 7 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 1518 >>
+stream
+BT /F1 14 Tf 56 800 Td (3. Architecture) Tj ET
+80 680 110 50 re S
+BT /F1 10 Tf 110 700 Td (CPU) Tj ET
+240 680 110 50 re S
+BT /F1 10 Tf 270 700 Td (Flash) Tj ET
+400 680 110 50 re S
+BT /F1 10 Tf 430 700 Td (SRAM) Tj ET
+80 560 110 50 re S
+BT /F1 10 Tf 110 580 Td (GPIO) Tj ET
+240 560 110 50 re S
+BT /F1 10 Tf 270 580 Td (ADC) Tj ET
+400 560 110 50 re S
+BT /F1 10 Tf 430 580 Td (UART) Tj ET
+70 540 450 210 re S
+190 705 m 240 705 l S
+350 705 m 400 705 l S
+135 680 m 135 610 l S
+295 680 m 295 610 l S
+455 680 m 455 610 l S
+190 585 m 240 585 l S
+350 585 m 400 585 l S
+BT /F1 11 Tf 180 515 Td (Figure 1: Block diagram of a microcontroller) Tj ET
+BT /F1 10 Tf 56 480 Td (Figure 1 shows the blocks of the chip and how the bus joins them.) Tj ET
+56 380 480 70 re S
+BT /F1 10 Tf 66 430 Td (Note: the ADC shares its pins with GPIO port A, so a pin used for analog input) Tj ET
+BT /F1 10 Tf 66 412 Td (cannot be a digital output at the same time. Configure the port before reading.) Tj ET
+BT /F1 11 Tf 220 340 Td (Table 1: Pin functions) Tj ET
+56 320 m 536 320 l S
+56 296 m 536 296 l S
+56 272 m 536 272 l S
+56 248 m 536 248 l S
+56 224 m 536 224 l S
+56 200 m 536 200 l S
+56 320 m 56 200 l S
+200 320 m 200 200 l S
+536 320 m 536 200 l S
+BT /F1 10 Tf 66 302 Td (PA0) Tj ET
+BT /F1 10 Tf 210 302 Td (ADC input) Tj ET
+BT /F1 10 Tf 66 278 Td (PA1) Tj ET
+BT /F1 10 Tf 210 278 Td (GPIO) Tj ET
+BT /F1 10 Tf 66 254 Td (PA2) Tj ET
+BT /F1 10 Tf 210 254 Td (UART TX) Tj ET
+BT /F1 10 Tf 66 230 Td (PA3) Tj ET
+BT /F1 10 Tf 210 230 Td (UART RX) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 7 0 R >> /XObject << /Fm1 8 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 131 >>
+stream
+BT /F1 14 Tf 56 800 Td (4. Power) Tj ET
+q 1.4 0 0 1.4 120 500 cm /Fm1 Do Q
+BT /F1 11 Tf 230 470 Td (Figure 2: Reset circuit) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+8 0 obj
+<< /Type /XObject /Subtype /Form /BBox [0 0 300 120] /Resources << /Font << /F1 7 0 R >> >> /Length 299 >>
+stream
+40 40 60 40 re S
+160 40 60 40 re S
+10 60 m 40 60 l S
+100 60 m 160 60 l S
+220 60 m 260 60 l S
+190 40 m 190 10 l S
+70 40 m 70 10 l S
+60 10 m 200 10 l S
+120 60 m 120 90 l S
+110 90 m 130 90 l S
+260 60 m 260 95 l S
+250 95 m 270 95 l S
+BT /F1 8 Tf 52 56 Td (VCC) Tj ET
+BT /F1 8 Tf 170 56 Td (RESET) Tj ET
+endstream
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000247 00000 n 
+0000001816 00000 n 
+0000001968 00000 n 
+0000002149 00000 n 
+0000002219 00000 n 
+trailer
+<< /Size 9 /Root 1 0 R >>
+startxref
+2657
+%%EOF

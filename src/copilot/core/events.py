@@ -205,6 +205,7 @@ class ConceptSignal(Event):
     list_items: list[str] = Field(default_factory=list)   # members heard in this line
     list_count: int = 0         # announced number of members, 0 = not said
     item: str = ""              # one member said on its own ("The second type is ...")
+    figure: str = ""            # F-013 S4: a figure the teacher turns to, as an image search ("STM32 block diagram")
     utterance: int = 0          # F-013 S1b: TranscriptFinal.utterance (links the partials' live cues to this line)
     start: float = -1.0         # lecture time the line starts (-1 = unknown): what came before / after a cue
 
@@ -274,7 +275,9 @@ class ImageRequested(Event):
     kind: Literal["photo", "diagram"] = "photo"
     exclude: list[str] = Field(default_factory=list)  # image ids already offered for this topic
     deeper: bool = False   # past the first results (Change image after the candidates ran out)
-    reason: str = "auto"   # auto | change
+    # auto | change | asked (F-013 S4: the teacher asked for this figure, "the block diagram of STM32") |
+    # item:<block id> (F-013 S4: the picture of one concept on a concept-column slide)
+    reason: str = "auto"
 
 
 class ImageReady(Event):

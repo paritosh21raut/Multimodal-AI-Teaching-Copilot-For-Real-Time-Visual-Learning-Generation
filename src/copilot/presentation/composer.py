@@ -44,6 +44,7 @@ IMAGE_GAP_PX = 56           # image layout (F-007b): content column | image colu
 IMAGE_HEIGHT_PX = BODY_BUDGET_PX  # image column sizing (mirrors slide.js imageColumn)
 IMAGE_TOP_MAX_PX = 380      # an image beside the text above a formula (slide.css .image-top) is at most this tall
 MEMBER_GAP_PX = 36          # member cards / concept columns (slide.css .def-pair)
+ITEM_IMAGE_PX = 210         # F-013 S4: a concept card's picture + its gap (slide.css .def-img: 190 + 20)
 LAYOUT_FOR = {"definition": "definition", "points": "key_points", "steps": "process_flow",
               "comparison": "comparison", "timeline": "timeline", "formula": "formula", "causes": "cause_effect",
               "example": "example", "facts": "facts", "groups": "groups", "tree": "hierarchy"}
@@ -276,10 +277,14 @@ def _cpl(width_px: float, font_px: float) -> float:
     return width_px / (font_px * 0.5)  # average glyph ≈ 0.5 em for Segoe UI
 
 
-def image_column_px(aspect: float) -> float:
+LARGE_IMAGE_PX = (1100.0, 820.0)  # F-013 S4: a figure the teacher asked for (landscape, portrait), mirrors slide.js
+
+
+def image_column_px(aspect: float, large: bool = False) -> float:
     """Width of the image column (mirrors slide.js imageColumn): wider for landscape images, and a tall image takes
-    only the width it needs at the body height, so the content keeps the rest."""
-    widest = 720.0 if aspect >= 1.25 else 600.0
+    only the width it needs at the body height, so the content keeps the rest. A figure the teacher asked for
+    (`large`) gets most of the slide; the text beside it is narrow, and what does not fit moves to the next part."""
+    widest = (LARGE_IMAGE_PX[0] if aspect >= 1.25 else LARGE_IMAGE_PX[1]) if large else 720.0 if aspect >= 1.25 else 600.0
     return float(round(min(widest, max(380.0, IMAGE_HEIGHT_PX * aspect))))
 
 
@@ -289,7 +294,7 @@ def image_of(spec: SlideSpec) -> Optional[ImageBlock]:
 
 def content_width(spec: SlideSpec) -> float:
     img = image_of(spec)
-    return BODY_WIDTH_PX - image_column_px(img.aspect) - IMAGE_GAP_PX if img is not None else BODY_WIDTH_PX
+    return BODY_WIDTH_PX - image_column_px(img.aspect, img.large) - IMAGE_GAP_PX if img is not None else BODY_WIDTH_PX
 
 
 def block_height(b: Block, width: float = BODY_WIDTH_PX, narrow: bool = False) -> float:
@@ -362,7 +367,7 @@ def block_height(b: Block, width: float = BODY_WIDTH_PX, narrow: bool = False) -
     if b.type in SECONDARY:
         return 110 + 45 * _lines(b.text, _cpl(width - 80, 34))
     if b.type == "image":
-        col = image_column_px(b.aspect)
+        col = image_column_px(b.aspect, b.large)
         return min(BODY_BUDGET_PX, col / max(0.2, b.aspect))
     return 120
 
@@ -465,7 +470,7 @@ def body_height(spec: SlideSpec) -> float:
         top, below = rest[:at], rest[at:]
         width = content_width(spec)
         h_top = sum(block_height(b, width, True) for b in top) + BLOCK_GAP_PX * (len(top) - 1)
-        h_img = min(IMAGE_TOP_MAX_PX, image_column_px(img.aspect) / max(0.2, img.aspect))
+        h_img = min(IMAGE_TOP_MAX_PX, image_column_px(img.aspect, img.large) / max(0.2, img.aspect))
         h_below = _stack_height(below, BODY_WIDTH_PX)
         return max(h_top, h_img) + BLOCK_GAP_PX + h_below
     members = spec.layout == "members"
@@ -492,6 +497,7 @@ def body_height(spec: SlideSpec) -> float:
 
         def card(d: DefinitionBlock) -> float:
             head = 80 + block_height(d, w) if len(defs) == 2 else _member_height(d, w, cols)  # + the term heading
+            head += ITEM_IMAGE_PX if d.image is not None else 0
             return head + sum(_column_block_height(b, w) + 24 for b in main if getattr(b, "about", "") == d.id)
 
         rows = [defs[i:i + cols] for i in range(0, len(defs), cols)]

@@ -40,8 +40,14 @@ OUT = ROOT / "artifacts" / "replay"
 TYPES = {"InterpretationReady": InterpretationReady, "ConceptSignal": ConceptSignal}
 
 
+def db_path(session_id: str) -> Path:
+    """A session in data/sessions, or a paper validation test (verify_results/testN/session)."""
+    test = ROOT / "verify_results" / session_id / "session" / "session.sqlite"
+    return test if test.exists() else ROOT / "data" / "sessions" / session_id / "session.sqlite"
+
+
 def transcript(session_id: str) -> dict[str, BufferedLine]:
-    db = ROOT / "data" / "sessions" / session_id / "session.sqlite"
+    db = db_path(session_id)
     out = {}
     for (payload,) in sqlite3.connect(db).execute("select payload from events where type='TranscriptFinal'"):
         seg = json.loads(payload)["segment"]
@@ -50,7 +56,7 @@ def transcript(session_id: str) -> dict[str, BufferedLine]:
 
 
 def recorded(session_id: str) -> list:
-    db = ROOT / "data" / "sessions" / session_id / "session.sqlite"
+    db = db_path(session_id)
     rows = sqlite3.connect(db).execute(
         "select type, payload from events where type in ('InterpretationReady', 'ConceptSignal') order by seq")
     out = []
@@ -89,7 +95,7 @@ async def replay(session_id: str, theme: str, with_images: bool = False) -> list
                 await h.bus.publish(e)
                 await h.settle()
                 if images is not None:
-                    await images.idle(8)
+                    await images.idle(15)  # a diagram search may take 12 s (F-013 S4)
                     await h.settle()
             await eng.flush_pending()
             await h.settle()
@@ -105,8 +111,17 @@ async def replay(session_id: str, theme: str, with_images: bool = False) -> list
             if page.errors:
                 print("console errors:", page.errors)
         if images is not None:
+            slides = h.deck.slides
+            shown: dict[str, set] = {}
+            for s in slides:
+                for b in s.blocks:
+                    if b.type == "image":
+                        shown.setdefault(b.image_id, set()).add(s.topic_id or s.title)
+            items = sum(1 for s in slides for b in s.blocks if b.type == "definition" and b.image is not None)
             print(f"images: {images.stats}; slides with an image "
-                  f"{sum(any(b.type == 'image' for b in s.blocks) for s in h.deck.slides)}/{len(h.deck.slides)}")
+                  f"{sum(any(b.type == 'image' for b in s.blocks) for s in slides)}/{len(slides)}; "
+                  f"concept-card pictures {items}; images on more than one slide "
+                  f"{sum(1 for v in shown.values() if len(v) > 1)}")
             await images.stop()
         await eng.stop()
     return paths

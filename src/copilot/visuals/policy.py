@@ -41,6 +41,26 @@ _FILLER = {"of", "the", "and", "a", "an", "in", "vs", "versus", "diagram", "diag
            "images", "picture", "pictures", "illustration", "chart"}
 
 
+# F-013 S4: card terms that name ideas, not things ("Encryption", "Authentication", "SSID", "Protocols" got a hash tree,
+# a block chart and a network sketch as pictures in the test24 replay)
+_IDEA_ENDINGS = ("tion", "sion", "ment", "ness", "ity", "ism", "ance", "ence", "ship", "logy", "ics", "acy", "ing")
+_IDEA_HEADS = {"protocol", "protocols", "algorithm", "algorithms", "method", "methods", "model", "models", "principle",
+               "theory", "law", "process", "concept", "function", "functions", "technique", "strategy", "policy",
+               "standard", "service", "services", "address", "layer", "layers", "software", "program", "code", "data",
+               "information", "devices", "components", "elements", "parts", "types", "rule", "rules", "matter"}
+
+
+def names_an_object(term: str) -> bool:
+    """A concept card's term that a photo can show (a planet, an organ, a device), not an idea or an acronym."""
+    words = term.strip().split()
+    if not words or not names_a_thing(term) or is_abstract(term):
+        return False
+    head = words[-1].lower()
+    if re.fullmatch(r"[A-Z0-9]{2,6}s?", words[-1]) or head in _IDEA_HEADS:
+        return False
+    return not head.endswith(_IDEA_ENDINGS) or head in {"ring", "wing", "string", "spring", "lung", "king"}
+
+
 def is_abstract(query: str) -> bool:
     words = [w for w in re.findall(r"[a-z]+", query.lower()) if w not in _FILLER]
     return not words or all(w in _ABSTRACT for w in words)

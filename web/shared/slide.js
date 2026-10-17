@@ -15,6 +15,7 @@ const itemClass = (it, base) =>
 // dull). Concepts side by side / members of a set (`card`): the whole column is one card, the term its heading.
 function Definition({ b, termInTitle, card }) {
   return html`<div class=${"def enter" + (card ? " def-card" : "")}>
+    ${card && b.image && html`<div class="def-img enter"><img src=${b.image.url} alt=${b.image.alt || b.term} /></div>`}
     ${!termInTitle && html`<div class="def-term enter" data-edit=${card ? b.id + ":term" : undefined}>${rich(b.term)}</div>`}
     <div class="def-body enter" data-edit=${b.id}>${!card && html`<span class="def-tab">Definition</span>`}${mixed(b.definition, b.math)}</div>
     ${b.notes.length > 0 && html`<div class="def-notes">
@@ -274,9 +275,10 @@ export const imageOf = (spec) => (spec && spec.blocks ? spec.blocks.find((b) => 
 
 // Mirrors composer.image_column_px: wider column for landscape images; a tall image takes only the width it needs.
 const BODY_BUDGET_PX = 740; // composer.IMAGE_HEIGHT_PX (the body is 754-763 px tall in Edge)
-export const imageColumn = (aspect) => {
+// a figure the teacher asked for (`large`, F-013 S4): most of the slide (composer.LARGE_IMAGE_PX)
+export const imageColumn = (aspect, large) => {
   const a = aspect || 4 / 3;
-  return Math.round(Math.min(a >= 1.25 ? 720 : 600, Math.max(380, BODY_BUDGET_PX * a)));
+  return Math.round(Math.min(large ? (a >= 1.25 ? 1100 : 820) : (a >= 1.25 ? 720 : 600), Math.max(380, BODY_BUDGET_PX * a)));
 };
 
 function Block({ b, wide, termInTitle, narrow, card }) {
@@ -445,7 +447,7 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick }) {
       ${listening && html`<div class="listening" aria-label="Listening"><span></span><span></span><span></span></div>`}
     </header>
     <div ref=${bodyRef} class=${bodyClass}
-      style=${image ? { "--img-col": `${imageColumn(image.aspect)}px` } : null}>
+      style=${image ? { "--img-col": `${imageColumn(image.aspect, image.large)}px` } : null}>
       ${below ? html`<div class="image-top-row">
           <div class="main">${main.map((b) => html`<${Block} key=${b.id} b=${b} wide=${false} narrow=${true}
             termInTitle=${b === def} card=${b.type === "definition" && b !== def} />`)}</div>

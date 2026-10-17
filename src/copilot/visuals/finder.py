@@ -16,15 +16,19 @@ from typing import Optional, Protocol, Sequence
 import httpx
 import numpy as np
 
-from copilot.visuals import sources
+from copilot.visuals import sources, webpages
 from copilot.visuals.cache import BadImage, CachedImage, ImageCache, decode
-from copilot.visuals.filters import core_query, is_labelled, prior, reject_reason, wants_labels
+from copilot.visuals.filters import core_query, is_labelled, is_topic_lead, prior, reject_reason, wants_labels
 from copilot.visuals.sources import Candidate
 
 log = logging.getLogger(__name__)
 
 DISTRACTORS = ("a logo", "a map", "a page of text", "a portrait photo of a person", "a flag", "a chart or graph",
                "a building", "a group of people")
+# F-013 S4: a block diagram / schematic / pinout IS boxes, lines and words: judged against "a page of text" and "a chart"
+# it lost to them; against these it is told apart from a photo or a logo
+FIGURE_DISTRACTORS = ("a logo", "a map", "a portrait photo of a person", "a flag", "a building", "a group of people",
+                      "a photo of a landscape")
 
 
 class Scorer(Protocol):
@@ -45,6 +49,12 @@ class FinderSettings:
     full_reserve_s: float = 2.5    # ... and for downloading the chosen image(s) at full size
     openverse: bool = False
     labelled_slots: int = 5        # of the previews, at most this many go to labelled candidates first (F-009)
+    # F-013 S4: figures from educational web pages (diagrams, and figures the teacher asked for) and the images inside
+    # the best Wikipedia article; diagrams and asked figures get more time (the page search + fetch take 2-5 s)
+    web_pages: bool = True
+    article_images: bool = True
+    diagram_budget_s: float = 12.0
+    asked_budget_s: float = 15.0
 
 
 @dataclass
@@ -68,42 +78,52 @@ class ImageFinder:
         self.s = settings or FinderSettings()
         self.transport = transport
 
+    def budget(self, kind: str, asked: bool = False) -> float:
+        return max(self.s.budget_s, self.s.asked_budget_s if asked else self.s.diagram_budget_s if kind == "diagram"
+                   else self.s.budget_s)
+
     async def find(self, query: str, kind: str = "photo", *, exclude: Sequence[str] = (),
-                   deeper: bool = False) -> FindResult:
+                   deeper: bool = False, asked: bool = False, lead_only: bool = False) -> FindResult:
         """exclude: image ids already shown or rejected by the teacher; deeper: look past the first results
-        (Change image after the cached candidates ran out)."""
+        (Change image after the cached candidates ran out); asked: the teacher asked for this figure ("let's look at
+        the block diagram of STM32", F-013 S4): web pages too, and more time; lead_only: only the lead image of the
+        Wikipedia article that IS the query (a concept card's picture, F-013 S4: Commons search gave a water-cycle
+        diagram for "Router" and a bicycle hub for "Hub")."""
         query = " ".join(query.split())
         if not query:
             return FindResult([], "empty query")
         # answers found before labelled diagrams were preferred must not skip the preference (F-009)
-        cache_kind = f"{kind}+labels" if wants_labels(query, kind) else kind
+        cache_kind = (f"{kind}+labels" if wants_labels(query, kind) else kind) + ("+lead" if lead_only else "")
         if not deeper:
             hit = self.cache.load_query(query, cache_kind)
             if hit is not None:
                 return FindResult([i for i in hit if i.id not in exclude], "" if hit else "no match (cached)", True)
         t0 = time.perf_counter()
+        budget = self.budget(kind, asked)
         try:
-            return await asyncio.wait_for(self._search(query, kind, set(exclude), deeper, t0, cache_kind),
-                                          self.s.budget_s)
+            return await asyncio.wait_for(self._search(query, kind, set(exclude), deeper, t0, cache_kind, asked,
+                                                       budget, lead_only), budget)
         except asyncio.TimeoutError:
-            log.info("image search %r timed out after %.1f s: no image", query, self.s.budget_s)
+            log.info("image search %r timed out after %.1f s: no image", query, budget)
             return FindResult([], "timeout")
         except httpx.HTTPError as e:
             log.info("image search %r: network error (%s): no image", query, e)
             return FindResult([], f"network: {type(e).__name__}")
 
     async def _search(self, query: str, kind: str, exclude: set[str], deeper: bool, t0: float,
-                      cache_kind: str = "") -> FindResult:
+                      cache_kind: str = "", asked: bool = False, budget: float = 0.0,
+                      lead_only: bool = False) -> FindResult:
         timings: dict[str, float] = {}
         labels = wants_labels(query, kind)
+        budget = budget or self.s.budget_s
         async with sources.client(self.s.http_timeout_s, self.transport) as c:
-            cands = await self._candidates(c, query, kind, deeper)
+            cands = await self._candidates(c, query, kind, deeper, asked, lead_only)
             timings["search_s"] = time.perf_counter() - t0
             rejected: list[tuple[str, str]] = []
             kept: list[Candidate] = []
             seen: set[str] = set()
             for cand in cands:
-                why = reject_reason(cand, cand.meta.get("query") or query, kind)
+                why = reject_reason(cand, cand.meta.get("query") or query, kind, max_aspect=2.6 if lead_only else 0.0)
                 if why is None and cand.title in seen:
                     why = "duplicate"
                 if why:
@@ -116,7 +136,7 @@ class ImageFinder:
                 return FindResult([], "no usable candidates", rejected=rejected, timings=timings)
             t1 = time.perf_counter()
             # previews get what is left of the budget minus the CLIP and full-size reserves; slow ones are dropped
-            left = self.s.budget_s - self.s.clip_reserve_s - self.s.full_reserve_s - (t1 - t0)
+            left = budget - self.s.clip_reserve_s - self.s.full_reserve_s - (t1 - t0)
             loaded = await self._download_all(c, [k.preview_url or k.image_url for k in kept], max(0.5, left), query)
             timings["download_s"] = time.perf_counter() - t1
             pairs = [(k, img) for k, img in zip(kept, loaded) if img is not None]
@@ -135,7 +155,7 @@ class ImageFinder:
                 accepted.append((sim + prior(cand, query, kind), cand, img))
             accepted = self._rank(accepted, labels)
             t3 = time.perf_counter()
-            chosen = await self._full_size(c, accepted[: self.s.keep], t0, query)
+            chosen = await self._full_size(c, accepted[: self.s.keep], t0, query, budget)
             timings["full_s"] = time.perf_counter() - t3
         if accepted and not chosen:  # relevant images exist but none arrived in time: not "nothing relevant"
             return FindResult([], "downloads failed", rejected=rejected, timings=timings)
@@ -182,7 +202,25 @@ class ImageFinder:
                 out += [a for a in group if a[0] >= group[0][0] - self.s.alt_within]
         return out
 
-    async def _candidates(self, c: httpx.AsyncClient, query: str, kind: str, deeper: bool) -> list[Candidate]:
+    async def _candidates(self, c: httpx.AsyncClient, query: str, kind: str, deeper: bool,
+                          asked: bool = False, lead_only: bool = False) -> list[Candidate]:
+        if lead_only:
+            # "Mars planet" ranks "Life on Mars" first; "Mars" finds the planet (and Bruno Mars, refused as a singer)
+            words = query.split()
+            asks = [query, " ".join(words[:-1]) if len(words) > 1 else "", core_query(query)]
+            asks = list(dict.fromkeys(q for q in asks if q))
+            found = await asyncio.gather(*(sources.wikipedia_lead_images(c, q) for q in asks), return_exceptions=True)
+            out = []
+            for q, r in zip(asks, found):
+                if isinstance(r, BaseException):
+                    log.info("image source failed: %r", r)
+                    continue
+                for cand in r:
+                    if is_topic_lead(cand, query) and cand.title not in {o.title for o in out}:
+                        cand.meta["query"] = q  # judged against what found it ("Mars"), CLIP against the card
+                        out.append(cand)
+            return out
+
         def for_commons(q: str) -> str:
             return f"{q} diagram" if kind == "diagram" and "diagram" not in q.lower() else q
         n = self.s.max_candidates
@@ -200,6 +238,12 @@ class ImageFinder:
         if self.s.openverse:
             jobs.append(sources.openverse_search(c, query, page=2 if deeper else 1))
             searched.append(query)
+        if self.s.article_images and not deeper:  # F-013 S4: the figures inside the article, not only its lead
+            jobs.append(sources.wikipedia_article_images(c, core or query))
+            searched.append(query)
+        if self.s.web_pages and (kind == "diagram" or asked):  # F-013 S4: educational pages (few searches a lecture)
+            jobs.append(webpages.web_figures(c, query))
+            searched.append(query)
         if wants_labels(query, kind):  # labelled diagrams of the thing (F-009), judged against the thing itself
             base = core or query
             jobs.append(sources.commons_search(c, f"{base} labelled diagram", limit=n, offset=n if deeper else 0))
@@ -215,7 +259,10 @@ class ImageFinder:
             lists.append(r)
         if not lists and results:
             raise httpx.NetworkError("every image source failed")
-        # the Wikipedia lead image of the best article first, then the sources interleaved by rank
+        # the Wikipedia lead image of the best article first, then the sources interleaved by rank; a figure the
+        # teacher asked for: the pictures named by educational pages first (Commons rarely holds block diagrams)
+        if asked:
+            lists.sort(key=lambda x: not (x and x[0].source == "web"))
         out: list[Candidate] = []
         for i in range(max((len(x) for x in lists), default=0)):
             out += [x[i] for x in lists if i < len(x)]
@@ -230,7 +277,8 @@ class ImageFinder:
             log.info("image search %r: %d slow download(s) dropped", query, len(late))
         return [t.result() if t in done else None for t in tasks]
 
-    async def _full_size(self, c: httpx.AsyncClient, accepted: list, t0: float, query: str) -> list:
+    async def _full_size(self, c: httpx.AsyncClient, accepted: list, t0: float, query: str,
+                         budget: float = 0.0) -> list:
         """The chosen images at full size, best first: the best one alone (all the bandwidth), then the alternatives
         together, each within what is left of the budget (an alternative takes over when the best one does not
         arrive). A candidate whose preview already is the full image is reused."""
@@ -238,7 +286,7 @@ class ImageFinder:
         for group in (accepted[:1], accepted[1:]):
             if not group:
                 continue
-            left = self.s.budget_s - (time.perf_counter() - t0) - 0.3  # caching after
+            left = (budget or self.s.budget_s) - (time.perf_counter() - t0) - 0.3  # caching after
             urls = [cand.image_url if (cand.preview_url or cand.image_url) != cand.image_url else None
                     for _, cand, _ in group]
             fetch = [u for u in urls if u]
@@ -260,7 +308,7 @@ class ImageFinder:
 
     def _score(self, query: str, kind: str, pairs: list) -> list[tuple[float, float]]:
         assert self.scorer is not None
-        texts = [clip_text(query, kind), *DISTRACTORS]
+        texts = [clip_text(query, kind), *(FIGURE_DISTRACTORS if webpages.figure_type(query) else DISTRACTORS)]
         t = self.scorer.embed_texts(texts)
         v = self.scorer.embed_images([img for _, img in pairs])
         sim = v @ t.T  # (images, texts)

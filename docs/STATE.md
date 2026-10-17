@@ -1,7 +1,8 @@
 # Current State
 
-_Last updated: 2026-10-17: **F-013 S3c (truthfulness) + performance mode + start card + Follow removed** (31,338 Groq
-tokens, A/B). Before that, 2026-10-17: F-013 S3b (comparison, glossary, named equations, 34,808 tokens). Before
+_Last updated: 2026-10-17: **F-013 S4 (images, figures the teacher asks for, own-PDF figures, web pages, /control
+layout lock, disk full)**, 0 LLM tokens. Before that, 2026-10-17: F-013 S3c (truthfulness) + performance mode + start
+card + Follow removed (31,338 Groq tokens, A/B). Before that, 2026-10-17: F-013 S3b (comparison, glossary, named equations, 34,808 tokens). Before
 that, 2026-10-17: F-013 S3a (deterministic representation fixes, 0 tokens). Before that, 2026-10-16:
 **F-013 S2 (structure) done, targets partly met** (≈ 75k Groq tokens: A/B + one live run).
 Before that, 2026-10-15: **IEEE paper finished (6 pages, validation phase 4 done, 0 tokens)**. Before that, 2026-10-12:
@@ -10,6 +11,24 @@ user's review of the paper and of group D, then the truthfulness bug below, then
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **F-013 S4 done (2026-10-17, 0 LLM tokens) + the user's 3 /control issues.** Details: F-013 "S4 result".
+  - **/control layout locked:** at the user's 1536 x 730 (125 %) the page sat 2 px from a scrollbar, so the preview
+    jumped; now every card keeps its size (probe of the real app + browser test). Tabs collapse to icons only when
+    their labels do not fit (measured), Project centred, mistake cards capped with their own scroll, the study line
+    finally shows "Reading ... %" / "Used for the slide".
+  - **Figures the teacher asks for:** "let's look at the block diagram of STM32" → fetched at once (own files first,
+    then Wikipedia / Commons / educational web pages), large on the slide. Checked with the user's ESP-WROOM-32
+    datasheet and STM32 IDE book (`tools/figure_check.py`).
+  - **Own PDFs:** drawn (vector) figures and "Figure N:" captions (ESP-WROOM-32: 0 → 6 figures). The user's files in
+    use are re-indexed once at the next start (format 2; old figure lists kept as figures.v1.json).
+  - **Images:** one picture per concept card for objects (each planet: the article's lead image, all or none); a
+    subtopic naming a thing in a visual topic gets one; no image repeated across topics.
+  - **Disk full:** no traceback, events kept in memory, `[DISK]` warning at start below 1 GB.
+  - Web-page figures are not free-licensed (credited by page, classroom use). DuckDuckGo refuses bursts of scripted
+    searches (rests 15 min; Bing fallback is unreliable for scripts).
+  - **Tests:** fast 744 pass (+23 `test_s4.py`), browser 42 pass (+1 layout). Runtime (0 tokens): real-app layout
+    probe at 1536 x 730; figure check with the user's PDFs; image replays of test13 / 21 / 24 (live network, many
+    failed downloads in some runs, so counts vary); the S3c leftover `--mode high` WAV run: 30 lines (standard 14).
 - **F-013 S3c done (2026-10-17) + the user's 3 requests of that day.**
   - **E1:** a concern card now says what the slide really shows (correction / states it correctly / what you said /
     not on the slide; `CorrectionPlaced`). Replay: of 29 factual cards, 7 claimed "corrected" falsely before; now 1 is
@@ -24,10 +43,10 @@ Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
     pages named by title ("Human Brain · byjus.com").
   - **Follow removed** (it turned pages early and back).
   - **Tests:** fast 721 pass. Browser suite: the full run was stopped by the system (low memory) after ~40 tests with
-    no failure printed; the changed browser files passed alone (`test_reference_browser.py` 2/2). Not yet re-run:
-    the whole browser suite, `test_themes_notes_browser.py`, the KaTeX test with the 48 equations.
+    no failure printed; the changed browser files passed alone (`test_reference_browser.py` 2/2). Re-run in S4: the
+    whole browser suite passes (42, incl. the notes and KaTeX tests).
   - **Runtime (0 tokens):** WAV `f013_cues_chem.wav` with `--mode standard`: 14 lines (utterances, S1b cut it into ~31),
-    `[MODE]` line printed. The `--mode high` run was stopped by the system (low memory) before it produced lines.
+    `[MODE]` line printed. `--mode high` (re-run in S4): 30 lines.
 - **F-013 S3b done (2026-10-17): N-way comparison, lecture glossary + Whisper prompt, named equations.**
   - **Replay** of tests 1–30 (0 tokens): unusable comparison tables 2 → 0; formulas 23 → 32, of which 9 are named
     standard equations (test16 now shows both Schrödinger forms); boundaries unchanged (P 0.775, R 0.507).
@@ -178,6 +197,8 @@ Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 - Not reproduced: mic overflow lag; unbounded STT queue if Whisper runs slower than real time.
 
 ## User actions pending
+- Try S4 in the app: say "let's look at the block diagram of ..." with your datasheet in My Notes; check the /control
+  page at your screen size (wide notes, mistake cards); a planets / organs lecture for the card pictures.
 - Review F-012 / F-013 S3c in the app: the Study material picker, the Speed switch (Standard / High performance), a
   lecture with your own PDF (e.g. STM32 notes).
 - Later: classroom lapel mic with `mic_check`.

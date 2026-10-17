@@ -28,7 +28,7 @@ from copilot.notes.service import Embedder, chunks
 
 log = logging.getLogger(__name__)
 
-FORMAT = 1               # bump when the cached index changes shape
+FORMAT = 2               # bump when the cached index changes shape (2: captions, drawn figures; F-013 S4)
 SNIPPET_MIN = 0.5        # MiniLM cosine: a passage clearly about these lines (calibrated in tests/unit/test_reference.py)
 SNIPPET_TOKENS = 150
 GROUND_MIN = 0.5         # ... clearly about a taught subtopic
@@ -45,6 +45,18 @@ _MIN_WIDTH = 0.12        # of the page width
 _MIN_PX = 140            # the image's longer side, in its own pixels
 _REPEATED = 3            # the same image (size + place) on this many pages: a logo / decoration
 _WORD = re.compile(r"[A-Za-z][A-Za-z0-9\-]{3,}")
+# F-013 S4: "Figure 3.1: The Target Selection wizard" / "Fig. 2 - Block diagram" / "Figure 1: ESP32-WROOM-32 Pin
+# Layout": a caption line. "Figure 3.5 shows what appears ..." is a sentence about a figure, not its caption.
+_CAPTION = re.compile(r"^\s*(?:fig(?:ure)?\.?|diagram)\s*(\d+(?:[.\-]\d+)*)\s*(?:[:.\-\u2013\u2014|]\s*|\s+(?=[A-Z0-9(]))"
+                      r"(?P<text>\S.*)$", re.IGNORECASE)
+_TABLE = re.compile(r"^\s*table\s*\d+(?:[.\-]\d+)*\s*[:.\-–]?\s*\S", re.IGNORECASE)
+CAPTION_BELOW = 0.12     # of the page height: how far under a figure its caption may sit
+CAPTION_ABOVE = 0.06     # ... or over it
+# a drawn (vector) figure: the path objects next to a caption line, grown while the gap stays small
+DRAW_GAP_PT = 28
+DRAW_MIN_PATHS = 8
+DRAW_MIN_AREA = 0.04     # of the page
+DRAW_PAD_PT = 14         # labels just outside the drawn lines (pin names) stay in the picture
 
 
 @dataclass
@@ -54,6 +66,205 @@ class Figure:
     label: str
     width: int = 0
     height: int = 0
+    caption: str = ""    # F-013 S4: its caption without "Figure N:" ("ESP32-WROOM-32 Pin Layout (Top View)"), "" = none
+    drawn: bool = False  # rendered from vector drawing (a datasheet's pin layout / schematic), not an image object
+
+
+def caption_text(line: str) -> str:
+    """The caption's words without its number ("Figure 3.1: The Target Selection wizard - STEP 1" -> "The Target
+    Selection wizard - STEP 1"); "" when the line is not a caption."""
+    m = _CAPTION.match(line)
+    if not m:
+        return ""
+    text = " ".join(m.group("text").split())
+    if not text or text[0].islower() or len(text) > 160:
+        return ""
+    return text
+
+
+def _lines(page) -> list[tuple[tuple[float, float, float, float], str]]:
+    """The page's text runs merged into lines: ((left, bottom, right, top), text), top of the page first."""
+    tp = page.get_textpage()
+    try:
+        runs = []
+        for i in range(tp.count_rects()):
+            box = tp.get_rect(i)
+            text = " ".join(tp.get_text_bounded(*box).split())
+            if text:
+                runs.append((box, text))
+    finally:
+        tp.close()
+    rows: list[list] = []  # runs on one baseline (a caption's number and words can be separate runs, any order)
+    for run in sorted(runs, key=lambda x: -x[0][1]):
+        if rows and abs(rows[-1][0][0][1] - run[0][1]) < 2.5:
+            rows[-1].append(run)
+        else:
+            rows.append([run])
+    lines = []
+    for row in rows:
+        row.sort(key=lambda x: x[0][0])
+        cur = [row[0][0], row[0][1]]
+        for (l, b, r, t), text in row[1:]:
+            if l - cur[0][2] < 60:  # the same line; farther apart: another column
+                cur = [(cur[0][0], min(cur[0][1], b), max(cur[0][2], r), max(cur[0][3], t)), f"{cur[1]} {text}"]
+            else:
+                lines.append((tuple(cur[0]), cur[1]))
+                cur = [(l, b, r, t), text]
+        lines.append((tuple(cur[0]), cur[1]))
+    return lines
+
+
+def _caption_near(lines, box, ph: float) -> tuple[str, str]:
+    """(caption, its whole line) of the figure at `box`: the caption line just under it, else just over it."""
+    l, b, r, t = box
+    best = None
+    for (cl, cb, cr, ct), text in lines:
+        cap = caption_text(text)
+        if not cap or cr < l - 20 or cl > r + 20:
+            continue
+        if b - CAPTION_BELOW * ph <= ct <= b + 4:
+            d = b - ct
+        elif t - 4 <= cb <= t + CAPTION_ABOVE * ph:
+            d = (cb - t) + 1000  # under the figure first
+        else:
+            continue
+        if best is None or d < best[0]:
+            best = (d, cap, text)
+    return (best[1], best[2]) if best else ("", "")
+
+
+def page_boxes(page, kind: int):
+    """(object, (left, bottom, right, top)) of the page's objects of one kind, in PAGE coordinates. pdfium gives an
+    object inside a form XObject its bounds in the form's own space (F-013 S4: the ESP-WROOM-32 reset circuit sat
+    at y 355-371 of an 842-wide form scaled 1.39 on a portrait page); the forms' matrices put it back in place."""
+    import pypdfium2.raw as raw
+
+    chain: dict[int, list] = {}  # level -> matrices of the forms around objects one level deeper, innermost first
+    for obj in page.get_objects(max_depth=3):
+        outer = chain.get(obj.level - 1, []) if obj.level else []
+        if obj.type == raw.FPDF_PAGEOBJ_FORM:
+            chain[obj.level] = [obj.get_matrix()] + outer
+            continue
+        if obj.type != kind:
+            continue
+        l, b, r, t = obj.get_bounds()
+        if outer:
+            pts = [(l, b), (l, t), (r, b), (r, t)]
+            for m in outer:
+                pts = [m.on_point(x, y) for x, y in pts]
+            xs, ys = [x for x, _ in pts], [y for _, y in pts]
+            l, b, r, t = min(xs), min(ys), max(xs), max(ys)
+        yield obj, (l, b, r, t)
+
+
+def _drawn_regions(page, lines, taken: list) -> list[tuple[tuple[float, float, float, float], str, str]]:
+    """Figures drawn with vector paths (F-013 S4, the ESP-WROOM-32 datasheet: 0 image objects; its pin layout and
+    schematics are drawings): the page's paths grouped into clusters (boxes closer than DRAW_GAP_PT, never joined
+    across another figure's caption), and for each caption line no image figure claimed, the nearest cluster above
+    or below it. A table's ruling has a "Table N" caption and is never taken. Rotated pages: not yet (0 figures)."""
+    import pypdfium2.raw as raw
+
+    if page.get_rotation() % 360:
+        return []
+    pw, ph = page.get_size()
+    boxes = []
+    for _obj, (l, b, r, t) in page_boxes(page, raw.FPDF_PAGEOBJ_PATH):
+        l, b, r, t = max(0.0, l), max(0.0, b), min(pw, r), min(ph, t)
+        w, h = r - l, t - b
+        if w <= 0 or h <= 0 or w * h > 0.5 * pw * ph:  # a page frame / clip box
+            continue
+        if h < 1.5 and w > 0.6 * pw and (t > 0.9 * ph or b < 0.1 * ph or w > 0.85 * pw):  # header / footer / rule
+            continue
+        # a frame around text (a "Note:" box): two or more lines of words fill it; not part of a drawing
+        inside = [lb for lb, text in lines if lb[0] >= l - 2 and lb[2] <= r + 2 and lb[1] >= b - 2 and lb[3] <= t + 2
+                  and len(text.split()) >= 4]
+        if len(inside) >= 2 and sum(lb[2] - lb[0] for lb in inside) >= 1.2 * w:
+            continue
+        boxes.append((l, b, r, t))
+    caps = [(box, text, caption_text(text)) for box, text in lines if caption_text(text)]
+    tables = [box for box, text in lines if _TABLE.match(text)]
+    if not boxes or not caps:
+        return []
+    # a box crossing a caption or table line (a frame around figure, caption and table) would join them all
+    bars = [x[0] for x in caps] + tables
+    boxes = [bx for bx in boxes if not any(bx[1] < cb and bx[3] > ct for cl, cb, cr, ct in bars)]
+
+    def between(a, c) -> bool:  # a caption line lies between the two boxes (one over it, one under it)
+        for (cl, cb, cr, ct) in [x[0] for x in caps] + tables:  # across the whole width: it ends the figure
+            mid = (cb + ct) / 2  # by the boxes' middles: a small mark level with the caption must not bridge it
+            if ((a[1] + a[3]) / 2 - mid) * ((c[1] + c[3]) / 2 - mid) < 0:
+                return True
+        return False
+
+    parent = list(range(len(boxes)))
+
+    def root(i: int) -> int:
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    g = DRAW_GAP_PT / 2
+    order = sorted(range(len(boxes)), key=lambda i: boxes[i][0])
+    for k, i in enumerate(order):
+        a = boxes[i]
+        for j in order[k + 1:]:
+            c = boxes[j]
+            if c[0] - g > a[2] + g:
+                break
+            if c[1] - g <= a[3] + g and a[1] - g <= c[3] + g and not between(a, c):
+                parent[root(j)] = root(i)
+    clusters: dict[int, list] = {}
+    for i, bx in enumerate(boxes):
+        clusters.setdefault(root(i), []).append(bx)
+    regions, parts = [], []
+    for members in clusters.values():
+        l, b = min(m[0] for m in members), min(m[1] for m in members)
+        r, t = max(m[2] for m in members), max(m[3] for m in members)
+        parts.append((l, b, r, t))  # any size: a drawing's smaller pieces join it (below)
+        if len(members) < DRAW_MIN_PATHS:
+            continue
+        under_table = any(tl - 20 <= r and l <= tr + 20 and 0 <= tb - t <= 40 for tl, tb, tr, tt in tables)
+        if (r - l) * (t - b) >= DRAW_MIN_AREA * pw * ph and t - b >= 50 and r - l >= 0.25 * pw and not under_table:
+            regions.append((l, b, r, t))
+    out, used = [], set()
+    for (cl, cb, cr, ct), text, cap in caps:
+        if text in taken:
+            continue
+        best = None
+        for k, (l, b, r, t) in enumerate(regions):
+            if k in used or cr < l - 20 or cl > r + 20:
+                continue
+            side = "over" if b >= ct - 3 else "under" if t <= cb + 3 else ""
+            gap = b - ct if side == "over" else cb - t if side == "under" else None
+            if gap is None and l <= cl and cr <= r and b <= cb and ct <= t:
+                side, gap = "over", 0.0  # the caption sits inside the drawing (a framed figure): part of it
+            # a caption is under its figure in most books and datasheets: the drawing over it first
+            if gap is not None and gap <= 2 * DRAW_GAP_PT + 20 and                     (best is None or (side == "over", -gap) > (best[2] == "over", -best[0])):
+                best = (gap, k, side)
+        if best is None:
+            continue
+        used.add(best[1])
+        l, b, r, t = regions[best[1]]
+        joined: set[int] = set()
+        grown = True
+        while grown:  # the other pieces of the same drawing on that side (a module outline, its antenna)
+            grown = False
+            for k, (l2, b2, r2, t2) in enumerate(parts):
+                if k in joined or r2 < l - 20 or l2 > r + 20 or (l2, b2, r2, t2) in [regions[u] for u in used]:
+                    continue
+                if any(c[0] == (l2, b2, r2, t2) for c in out):
+                    continue
+                if best[2] == "over" and b2 < ct - 3 or best[2] == "under" and t2 > cb + 3:
+                    continue
+                gap2 = b2 - t if b2 >= t else b - t2 if t2 <= b else 0.0
+                if gap2 <= 2 * DRAW_GAP_PT and not between((l, b, r, t), (l2, b2, r2, t2)):
+                    joined.add(k)
+                    l, b, r, t = min(l, l2), min(b, b2), max(r, r2), max(t, t2)
+                    grown = True
+        out.append(((max(0.0, l - DRAW_PAD_PT), max(0.0, b - DRAW_PAD_PT), min(pw, r + DRAW_PAD_PT),
+                     min(ph, t + DRAW_PAD_PT)), cap, text))
+    return out
 
 
 @dataclass
@@ -111,8 +322,7 @@ def extract_figures(pdf_path: Path, out_dir: Path, kind: str, name: str,
         for i in range(len(pdf)):
             page = pdf[i]
             pw, ph = page.get_size()
-            for obj in page.get_objects(filter=[raw.FPDF_PAGEOBJ_IMAGE], max_depth=3):
-                l, b, r, t = obj.get_bounds()
+            for obj, (l, b, r, t) in page_boxes(page, raw.FPDF_PAGEOBJ_IMAGE):
                 l, b, r, t = max(0.0, l), max(0.0, b), min(pw, r), min(ph, t)
                 w, h = r - l, t - b
                 px = max(obj.get_px_size())
@@ -128,6 +338,25 @@ def extract_figures(pdf_path: Path, out_dir: Path, kind: str, name: str,
         repeated = {k for k, c in seen.items() if c >= _REPEATED}
         out: list[Figure] = []
         out_dir.mkdir(parents=True, exist_ok=True)
+        page_lines: dict[int, list] = {}
+        claimed: dict[int, list[str]] = {}  # page -> caption lines an image figure took
+
+        def lines_of(i: int, page) -> list:
+            if i not in page_lines:
+                page_lines[i] = _lines(page)
+            return page_lines[i]
+
+        def save(page, i: int, box, label: str, caption: str, drawn: bool) -> None:
+            l, b, r, t = box
+            pw, ph = page.get_size()
+            scale = min(4.0, max(1.0, 960 / max(1.0, r - l)))
+            img = page.render(scale=scale, crop=(l, b, pw - r, ph - t)).to_pil().convert("RGB")
+            n = len(out) + 1
+            tmp = out_dir / f"f{n}.tmp"
+            img.save(tmp, format="PNG", optimize=True)
+            tmp.replace(out_dir / f"f{n}.png")
+            out.append(Figure(n, i + 1, label, img.width, img.height, caption, drawn))
+
         for i, (l, b, r, t) in boxes:
             if len(out) >= limit:
                 break
@@ -136,18 +365,39 @@ def extract_figures(pdf_path: Path, out_dir: Path, kind: str, name: str,
             if kind != "image" and any(k[:4] == (round(l), round(b), round(r - l), round(t - b)) for k in repeated):
                 page.close()
                 continue
-            label = _name_label(name) if kind == "image" else _label(page, (l, b, r, t), name)
-            scale = min(4.0, max(1.0, 960 / max(1.0, r - l)))
-            img = page.render(scale=scale, crop=(l, b, pw - r, ph - t)).to_pil().convert("RGB")
+            caption = ""
+            if kind == "image":
+                label = _name_label(name)
+            else:
+                caption, line = _caption_near(lines_of(i, page), (l, b, r, t), ph)
+                if caption:  # D3: the caption names the figure; the page's other words are noise
+                    claimed.setdefault(i, []).append(line)
+                    label = " ".join(f"{line} {_heading(lines_of(i, page))} {_name_label(name)}".split()[:40])
+                else:
+                    label = _label(page, (l, b, r, t), name)
+            save(page, i, (l, b, r, t), label, caption, False)
             page.close()
-            n = len(out) + 1
-            tmp = out_dir / f"f{n}.tmp"
-            img.save(tmp, format="PNG", optimize=True)
-            tmp.replace(out_dir / f"f{n}.png")
-            out.append(Figure(n, i + 1, label, img.width, img.height))
+        if kind in ("pdf", "web", "word", "slides"):  # drawn figures: datasheets, exported slides, papers
+            for i in range(len(pdf)):
+                if len(out) >= limit:
+                    break
+                page = pdf[i]
+                lines = lines_of(i, page)
+                if any(caption_text(text) for _, text in lines):
+                    for box, cap, line in _drawn_regions(page, lines, claimed.get(i, [])):
+                        if len(out) >= limit:
+                            break
+                        label = " ".join(f"{line} {_heading(lines)} {_name_label(name)}".split()[:40])
+                        save(page, i, box, label, cap, True)
+                page.close()
         return out
     finally:
         pdf.close()
+
+
+def _heading(lines: list) -> str:
+    """The page's first line (its section heading, usually), at most 12 words."""
+    return " ".join(lines[0][1].split()[:12]) if lines else ""
 
 
 def _label(page, box: tuple[float, float, float, float], name: str) -> str:
@@ -209,7 +459,8 @@ class ReferenceIndex:
 
     # ---- building ------------------------------------------------------------------------------
     def _file(self, doc_id: str) -> Path:
-        return self.library.doc_dir(doc_id) / "ref.npz"
+        # the format is in the name: an index of an older format counts as not built, so it is rebuilt (F-013 S4)
+        return self.library.doc_dir(doc_id) / f"ref.v{FORMAT}.npz"
 
     def is_built(self, doc_id: str) -> bool:
         return doc_id in self._docs or self._file(doc_id).is_file()
@@ -238,11 +489,15 @@ class ReferenceIndex:
         fig_vectors = _embed(self.embedder, [f.label for f in figures])
         d = self.library.doc_dir(doc.id)
         d.mkdir(parents=True, exist_ok=True)
+        old = d / "figures.json"
+        if (d / "ref.npz").is_file() and old.is_file() and not (d / "figures.v1.json").exists():
+            old.replace(d / "figures.v1.json")  # the format-1 list, kept (user 2026-10-17)
         (d / "figures.json").write_text(json.dumps([asdict(f) for f in figures]), encoding="utf-8")
         tmp = d / "ref.tmp.npz"
         np.savez(tmp, format=np.array([FORMAT]), vectors=vectors.astype(np.float16),
                  pages=np.array(pages, dtype=np.int32), fig_vectors=fig_vectors.astype(np.float16))
         tmp.replace(self._file(doc.id))
+        (d / "ref.npz").unlink(missing_ok=True)  # the format-1 index
         if progress:
             progress(1.0)
         log.info("reference index %r: %d chunks, %d figures", doc.name, len(texts), len(figures))

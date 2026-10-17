@@ -7,6 +7,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import sqlite3
+import time
 from pathlib import Path
 from typing import Iterator, Optional
 
@@ -29,6 +30,12 @@ CREATE TABLE IF NOT EXISTS snapshots (
 """
 
 
+# F-013 S4 (G1): events kept in memory while the disk refuses them (test15: "database or disk is full" killed the
+# flush task, so nothing more was written and shutdown ended in a traceback); the oldest go first past this many
+MAX_UNWRITTEN = 200_000
+RETRY_S = 5.0  # while failing, a write is tried at most this often
+
+
 class EventLog:
     def __init__(self, path: Path, flush_interval_s: float = 0.5, flush_batch: int = 200) -> None:
         self.path = path
@@ -39,10 +46,16 @@ class EventLog:
         self._flusher: Optional[asyncio.Task] = None
         self._lock = asyncio.Lock()
         self.written = 0
+        self.failing = ""  # why the last write failed ("" = writing); the events wait in memory meanwhile
+        self.dropped = 0   # events lost because the memory buffer was full too
+        self._retry_at = 0.0
 
     async def open(self, bus: EventBus) -> None:
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._conn = await asyncio.to_thread(self._connect)
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self._conn = await asyncio.to_thread(self._connect)
+        except (OSError, sqlite3.Error) as e:  # a full / read-only disk must not stop the lecture
+            self._fail(e)
         bus.subscribe("event_log", self._on_event, queue_size=10_000)
         self._flusher = asyncio.create_task(self._periodic_flush(), name="event_log:flush")
 
@@ -64,13 +77,37 @@ class EventLog:
             await asyncio.sleep(self._flush_interval)
             await self.flush()
 
-    async def flush(self) -> None:
+    async def flush(self, force: bool = False) -> None:
         async with self._lock:
-            if not self._buffer or self._conn is None:
+            if not self._buffer or (self.failing and not force and time.monotonic() < self._retry_at):
                 return
+            if self._conn is None:
+                try:  # the disk may have room again
+                    self._conn = await asyncio.to_thread(self._connect)
+                except (OSError, sqlite3.Error) as e:
+                    self._fail(e)
+                    return
             batch, self._buffer = self._buffer, []
-            await asyncio.to_thread(self._write, batch)
+            try:
+                await asyncio.to_thread(self._write, batch)
+            except (OSError, sqlite3.Error) as e:
+                self._buffer = batch + self._buffer  # kept, in order; written when the disk has room again
+                self._fail(e)
+                return
             self.written += len(batch)
+            if self.failing:
+                log.warning("event log writing again (%d events kept in memory were saved)", len(batch))
+                self.failing = ""
+
+    def _fail(self, e: BaseException) -> None:
+        if len(self._buffer) > MAX_UNWRITTEN:
+            self.dropped += len(self._buffer) - MAX_UNWRITTEN
+            del self._buffer[: len(self._buffer) - MAX_UNWRITTEN]
+        if not self.failing:  # once per failure streak, without a traceback: the lecture goes on
+            log.warning("event log %s cannot be written (%s); events are kept in memory until the disk has room",
+                        self.path, e)
+        self.failing = str(e) or type(e).__name__
+        self._retry_at = time.monotonic() + RETRY_S
 
     def _write(self, batch: list[tuple[float, str, str]]) -> None:
         assert self._conn is not None
@@ -85,10 +122,16 @@ class EventLog:
                 await self._flusher
             except asyncio.CancelledError:
                 pass
-        await self.flush()
+        await self.flush(force=True)
+        if self.failing:
+            log.warning("event log: %d event(s) of this lecture could not be saved (%s)%s", len(self._buffer),
+                        self.failing, f", {self.dropped} more dropped" if self.dropped else "")
         if self._conn is not None:
             conn, self._conn = self._conn, None
-            await asyncio.to_thread(conn.close)
+            try:
+                await asyncio.to_thread(conn.close)
+            except sqlite3.Error as e:
+                log.warning("event log close: %s", e)
 
 
 def read_events(path: Path) -> Iterator[tuple[int, str, Optional[Event]]]:

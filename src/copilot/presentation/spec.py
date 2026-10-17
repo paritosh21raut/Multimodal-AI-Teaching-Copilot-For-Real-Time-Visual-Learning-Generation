@@ -82,6 +82,14 @@ class Variable(_Model):
     latex: str = ""  # the symbol for KaTeX ("" = show the symbol as text)
 
 
+class ItemImage(_Model):
+    """F-013 S4: the picture of one concept in a row of concept cards (each planet, each lobe of the brain)."""
+    url: str
+    alt: str = ""
+    image_id: str = ""
+    aspect: float = 4 / 3
+
+
 class DefinitionBlock(_Model):
     type: Literal["definition"] = "definition"
     id: str = Field(default_factory=new_id)
@@ -90,6 +98,7 @@ class DefinitionBlock(_Model):
     notes: list[Item] = Field(default_factory=list)
     math: str = ""  # `definition` with \(latex\) around its equations
     provisional: bool = False  # F-013 S1b: the definition as it is being said, before the interpretation
+    image: Optional[ItemImage] = None  # F-013 S4: shown at the top of its card when concepts stand side by side
 
 
 ListStyle = Literal["bullets", "numbers", "letters"]
@@ -203,6 +212,7 @@ class ImageBlock(_Model):
     aspect: float = 4 / 3  # width / height: the layout reserves the image box before the file has loaded
     origin: Literal["auto", "teacher"] = "auto"
     image_id: str = ""  # image cache id
+    large: bool = False  # F-013 S4: a figure the teacher turned to ("the block diagram of STM32"): the wide column
 
 
 Block = Annotated[

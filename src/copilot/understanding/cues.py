@@ -5,6 +5,8 @@
     list     "Matter can be classified into pure substances and mixtures."   -> head + items (items may come later:
              "There are two types of extrinsic semiconductors." then "The first type is ...")
     compare  "Difference between ethical hacking and penetration testing."   -> items (2-4)
+    figure   "Let's look at the block diagram of STM32." / "Here is the circuit diagram of a full adder."
+             -> name "STM32", items ("block diagram",): the figure is fetched at once (F-013 S4, user 2026-10-17)
 
 Used for the instant display (the engine shows the announced title / list items before the interpretation arrives),
 for cutting the gate's unit at a topic announcement and for naming topics when no LLM answer is available. The
@@ -17,7 +19,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Literal, Optional
 
-CueKind = Literal["topic", "list", "compare"]
+CueKind = Literal["topic", "list", "compare", "figure"]
 
 MAX_NAME_WORDS = 6
 MAX_ITEM_WORDS = 5
@@ -98,6 +100,45 @@ _CAN_BE = re.compile(r"^(?P<head>[^.?!;:]{2,60}?)\s+(?:can be|may be|are|include
 _ORDINAL_ITEM = re.compile(
     rf"^(?:so\s+|and\s+|now\s+)*(?:the\s+)?(?:{_ORDINALS}|another|other)\s+(?:one\s+|{_GROUP}\s+)?(?:is|are|will be)\s+"
     r"(?:called\s+)?(?P<n>[^.?!;:,]{2,60})", re.IGNORECASE)
+
+
+# F-013 S4: a figure the teacher turns to. The kind of figure ("block diagram", "pin diagram", "circuit diagram",
+# "flowchart", plain "diagram" / "figure") and what it is of; "look at the diagram" alone names nothing: no cue.
+_FIG_KIND = (r"(?:(?:functional|internal|simplified|basic|labell?ed|detailed|neat|complete|general)\s+)?"
+             r"(?:(?:block|circuit|schematic|pin|ray|flow|free[- ]body|energy[- ]level|timing|logic|wiring|connection|"
+             r"architecture|architectural|structural|cross[- ]sectional|labell?ed|internal)\s+)?"
+             r"(?:diagram|schematic|figure|flowchart|flow chart|architecture|pinout|pin ?out|layout)")
+_FIG_VERB = (r"(?:look at|see|show you|draw|study|observe|check|refer to|here is|here's|this is|consider|discuss|"
+             r"understand|explain|go through|have a look at|take a look at)")
+_FIGURE_OF = re.compile(rf"{_FIG_VERB}\s+(?:the|a|an|this|its|our)\s+(?P<t>{_FIG_KIND})\s+(?:of|for)\s+"
+                        r"(?P<n>[^.?!;:,]{2,60})", re.IGNORECASE)
+_FIGURE_PRE = re.compile(rf"{_FIG_VERB}\s+(?:the|a|an|this)\s+(?P<n>[A-Za-z0-9][\w\-+]*(?:\s+[\w\-+]+){{0,3}}?)"
+                         rf"(?:'s)?\s+(?P<t>{_FIG_KIND})\b", re.IGNORECASE)
+_NOT_FIGURE_OF = {"following", "above", "below", "next", "given", "same", "previous", "last", "first", "second",
+                  "simple", "whole", "entire", "complete", "basic", "neat", "general"}
+
+
+def figure_cue(body: str) -> Optional[Cue]:
+    """F-013 S4: "let's look at the block diagram of STM32" -> Cue("figure", "STM32", ("block diagram",))."""
+    for rx in (_FIGURE_OF, _FIGURE_PRE):
+        m = rx.search(body)
+        if not m:
+            continue
+        name = tidy_name(re.sub(r"^(?:(?:a|an|the)\s+)?(?:typical|simple|basic|general|generic)\s+", "", m.group("n"),
+                                flags=re.IGNORECASE))
+        if not name or name.lower() in _NOT_FIGURE_OF or len(name.split()) > 5:
+            continue
+        kind = " ".join(m.group("t").lower().replace("-", " ").split())
+        kind = re.sub(r"^(?:functional|internal|simplified|basic|labell?ed|detailed|neat|complete|general)\s+(?=\w+\s)",
+                      "", kind)
+        kind = "diagram" if kind in ("figure", "layout") else kind.replace("pin out", "pinout")
+        return Cue("figure", name, (kind,), rule="figure")
+    return None
+
+
+def figure_query(cue: Cue) -> str:
+    """The image search for a figure cue: "STM32 block diagram"."""
+    return f"{cue.name} {cue.items[0] if cue.items else 'diagram'}"
 
 
 _VAGUE_HEADS = {"most", "some", "all", "main", "other", "others", "many", "few", "example", "examples"}
@@ -228,6 +269,9 @@ def detect(text: str) -> LineCues:
             head = tidy_name(m.group("head"))
             if len(items) >= 3 and head and head.lower() not in _VAGUE_HEADS:
                 cues.append(Cue("list", head, items, rule="can be"))
+    fig = figure_cue(body)
+    if fig is not None:
+        cues.append(fig)
     item = ""
     m = _ORDINAL_ITEM.match(body)
     if m:

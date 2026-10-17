@@ -55,8 +55,9 @@ from copilot.presentation.content import Piece, clean, pieces_and_chain
 from copilot.presentation.deck import Deck
 from copilot.core.memory import is_child_facet, same_subject, same_title, short_name, title_key, titles_match
 from copilot.presentation.planner import Decision, Frame, Signal, Working, decide
-from copilot.presentation.spec import ImageBlock, SlideSpec
-from copilot.visuals.policy import FrameVisual, blocked, names_a_thing, norm_query, sibling_hint
+from copilot.core.interpretation import VisualHint
+from copilot.presentation.spec import DefinitionBlock, ImageBlock, ItemImage, SlideSpec
+from copilot.visuals.policy import FrameVisual, blocked, names_a_thing, names_an_object, norm_query, sibling_hint
 from copilot.visuals.policy import decide as image_decision
 
 log = logging.getLogger(__name__)
@@ -254,6 +255,17 @@ def contains_words(text: str, words: str) -> bool:
         is not None
 
 
+def item_query(term: str, facet: str) -> str:
+    """The picture search for one concept card (F-013 S4): a one-word term is named with the set it belongs to, in the
+    singular ("Mars" under "Planets" -> "Mars planet", as the model named Mercury and Venus in test21); with the
+    lecture topic instead, "Mars Solar System" found an Italian-labelled orbit diagram. Otherwise the term alone."""
+    head = facet.strip().lower()
+    if len(term.split()) > 1 or len(head.split()) != 1 or not names_a_thing(facet) or head in term.lower():
+        return term
+    one = head[:-3] + "y" if head.endswith("ies") else head[:-1] if head.endswith("s") and not head.endswith("ss") else head
+    return f"{term} {one}"
+
+
 class PresentationEngine:
     def __init__(self, bus: EventBus, store: LectureStateStore, deck: Deck,
                  settings: Optional[PresentationSettings] = None, *, speed: float = 1.0,
@@ -300,6 +312,12 @@ class PresentationEngine:
         self._tasks: list[asyncio.Task] = []
         self._visuals: list[tuple[Frame, FrameVisual]] = []      # per frame: its image, candidates, teacher choices
         self._image_requests: dict[str, tuple[str, str]] = {}   # request id -> (slide id, reason)
+        # F-013 S4 (D2): the topics each automatic image was shown under: another topic's image is not repeated
+        self._image_topics: dict[str, set[str]] = {}
+        # F-013 S4 (D1): the pictures of a slide's concept cards, per slide -> block id -> image (None = none found);
+        # a block id missing while its request runs
+        self._items: dict[str, dict[str, Optional[ItemImage]]] = {}
+        self._item_asked: set[tuple[str, str]] = set()  # (slide id, block id) whose picture was searched
         self._image_history: dict[str, tuple[list[ImageBlock], int]] = {}  # slide id -> (images it showed, current)
         self._tails: dict[str, tuple[str, list]] = {}  # slide id -> (next part, blocks moved there for an image)
         # the teacher's edits are final (F-008): the elements the teacher wrote (ids are unique across slides, so they
@@ -662,6 +680,8 @@ class PresentationEngine:
                 await self._on_announce(ev)
             if ev.list_items or ev.list_count or ev.item:
                 await self._on_list_cue(ev)
+        if ev.figure:
+            await self._on_figure(ev.figure)
         if ev.boundary:
             self._boundary_seg = ev.segment_id
             if self._prov:
@@ -1537,6 +1557,55 @@ class PresentationEngine:
                 self._meta[spec.id] = SlideMeta(frame)
 
     # ---- images (F-007b) ----------------------------------------------------------------------------
+    async def _on_figure(self, query: str) -> None:
+        """F-013 S4: the teacher turns to a figure ("let's look at the block diagram of STM32"): it is fetched at once
+        (the teacher's own files first, then the web) for the slide being built, whatever the slide holds; it may
+        push content to the next part, like an image the teacher placed."""
+        target = self._spec(self._open_cue_slide() or self._working_id or "") or self.deck.live
+        meta = self._meta.get(target.id) if target is not None else None
+        if target is None or meta is None or meta.is_title:
+            log.info("figure %r asked: no slide to put it on", query)
+            return
+        fv = self._fv(meta.frame)
+        fv.removed = False  # asked for: the teacher wants a picture here after all
+        fv.pending = query
+        await self._request_image(target.id, query, "diagram", fv, "asked")
+        log.info("figure asked: %r for %r", query, target.title)
+
+    def _visual_topic(self, frame: Frame) -> str:
+        """The kind of picture ("photo" / "diagram") this frame's topic has shown already, "" = none: a topic the
+        model judged worth seeing (its hint found an image)."""
+        for f, v in self._visuals:
+            if f.same_topic(frame) and v.image is not None:
+                return v.kind or "photo"
+        return ""
+
+    def _item_cards(self, spec: SlideSpec) -> list[DefinitionBlock]:
+        """The concepts shown side by side as cards (2-6 definitions), [] when the slide is not that layout (one member
+        card keeps the slide's single image)."""
+        defs = [b for b in spec.blocks if b.type == "definition" and not b.provisional]
+        return defs if 2 <= len(defs) <= 6 else []
+
+    async def _consider_items(self, spec: SlideSpec, meta: SlideMeta, fv: FrameVisual) -> bool:
+        """F-013 S4 (D1, user 2026-10-17: "describing each planet, each planet's image must be loaded"): concept
+        cards of concrete things in a topic that shows pictures get one picture each (all or none). True when this
+        slide is such a slide (no single image then)."""
+        defs = self._item_cards(spec)
+        kind = (fv.kind if fv.image is not None else "") or self._visual_topic(meta.frame) or \
+            (fv.hint.kind if fv.hint is not None and fv.hint.query else "")
+        if not defs or not kind or fv.removed:
+            return False
+        if not all(names_an_object(d.term) and len(d.term.split()) <= 4 for d in defs):
+            return False
+        have = self._items.setdefault(spec.id, {})
+        for d in defs:
+            if d.id in have or d.image is not None or (spec.id, d.id) in self._item_asked:
+                continue
+            self._item_asked.add((spec.id, d.id))
+            # a card's picture is the lead image of the term's own article: a photo, whatever the topic's kind
+            await self._request_image(spec.id, item_query(d.term, meta.frame.facet), "photo", fv, f"item:{d.id}")
+        return True
+
     def _fv(self, frame: Frame) -> FrameVisual:
         for f, v in self._visuals:
             if f.same(frame):
@@ -1558,6 +1627,8 @@ class PresentationEngine:
             await self._commit(without_image(spec))
             log.info("image removed from %r: %s", spec.title, blocked(spec))
             return
+        if await self._consider_items(spec, meta, fv):
+            return
         hint = fv.hint
         if hint is None and fv.image is None and not fv.removed:
             hint = sibling_hint(meta.frame.facet, [(f.facet, v.hint) for f, v in self._visuals
@@ -1565,6 +1636,13 @@ class PresentationEngine:
                                                    and not f.same(meta.frame)])
             if hint is not None:
                 log.info("image hint %r for %r from its sibling subtopic", hint.query, spec.title)
+            # F-013 S4 (D1): a subtopic naming a thing, in a topic whose pictures were shown already (test13:
+            # Hypothalamus, Tectum, Pons had none while Forebrain / Hindbrain had theirs)
+            kind = self._visual_topic(meta.frame) if hint is None else ""
+            if kind and meta.frame.facet and not same_title(meta.frame.facet, meta.frame.topic) \
+                    and names_a_thing(meta.frame.facet) and len(meta.frame.facet.split()) <= 4:
+                hint = VisualHint(query=meta.frame.facet, kind=kind)
+                log.info("image hint %r for %r: a thing in a topic with pictures", hint.query, spec.title)
         d = image_decision(spec, hint, fv)
         if d.action == "keep" and fv.image is not None:
             if await self._about(fv.query, spec) and await self._show_image(spec, fv.image, teacher=False):
@@ -1599,9 +1677,14 @@ class PresentationEngine:
                              deeper: bool = False) -> None:
         rid = new_id()
         self._image_requests[rid] = (slide_id, reason)
+        meta = self._meta.get(slide_id)
+        # F-013 S4 (D2): an image shown under another topic is not offered again (test30: 13 repeats); within the
+        # same topic it may come back (a continuation, or the same picture still about it: user 2026-10-17)
+        elsewhere = {i for i, topics in self._image_topics.items()
+                     if meta is not None and not any(titles_match(t, meta.frame.topic) for t in topics)}
         await self.bus.publish(ImageRequested(request_id=rid, slide_id=slide_id, query=query,
                                               kind=kind if kind in ("photo", "diagram") else "photo",
-                                              exclude=sorted(fv.shown_ids), deeper=deeper, reason=reason))
+                                              exclude=sorted(fv.shown_ids | elsewhere), deeper=deeper, reason=reason))
 
     async def _show_image(self, spec: SlideSpec, image: ImageBlock, teacher: bool, remember: bool = True) -> bool:
         """Put the image on the slide. Automatic: only when the content still fits at the default type size.
@@ -1612,6 +1695,9 @@ class PresentationEngine:
         if not teacher and not fits_unshrunk(new):
             log.info("no room for an image on %r", spec.title)
             return False
+        meta = self._meta.get(spec.id)
+        if meta is not None and image.image_id and image.origin == "auto":
+            self._image_topics.setdefault(image.image_id, set()).add(meta.frame.topic)
         moved: list = []
         if teacher and not fits(new):
             new, moved = split_to_fit(new)
@@ -1692,9 +1778,15 @@ class PresentationEngine:
         if meta is None:
             return
         fv = self._fv(meta.frame)
+        if reason.startswith("item:"):
+            await self._on_item_image(slide_id, reason[5:], ev)
+            return
         if norm_query(fv.pending) == norm_query(ev.query):
             fv.pending = ""
         blocks = [self._block(i, ev.query) for i in ev.images]
+        elsewhere = {i for i, topics in self._image_topics.items()
+                     if not any(titles_match(t, meta.frame.topic) for t in topics)}
+        blocks = [b for b in blocks if b.image_id not in elsewhere]  # a cached answer skips the exclude list
         if not blocks:
             if reason == "auto" and ev.reason in ("no relevant image", "no usable candidates", "no match (cached)"):
                 fv.no_match.add(norm_query(ev.query))
@@ -1711,6 +1803,17 @@ class PresentationEngine:
             if spec is not None and fresh:
                 await self._replace_image(spec, fresh[0], fv)
             return
+        if reason == "asked":  # F-013 S4: the figure the teacher turned to, on its slide (or where the frame went)
+            target = spec if spec is not None else self._spec(self._working_id or "")
+            blocks[0] = blocks[0].model_copy(update={"large": True})
+            if target is not None and await self._show_image(target, blocks[0], teacher=True):
+                fv.image, fv.query, fv.kind = blocks[0], ev.query, ev.kind
+                fv.shown_ids.add(blocks[0].image_id)
+                meta_t = self._meta.get(target.id)
+                if meta_t is not None and blocks[0].image_id:
+                    self._image_topics.setdefault(blocks[0].image_id, set()).add(meta_t.frame.topic)
+                log.info("figure %r on %r: %s", ev.query, target.title, ev.images[0].get("title", ""))
+            return
         if fv.removed:
             return
         # the content may have moved on to the next part while the search ran: then the frame's working slide
@@ -1726,6 +1829,45 @@ class PresentationEngine:
                 log.info("image %r on %r: %s", ev.query, t.title, ev.images[0].get("title", ""))
                 return
         fv.image = fv.image or blocks[0]  # no room now: a later part of this topic may take it
+
+    async def _on_item_image(self, slide_id: str, block_id: str, ev: ImageReady) -> None:
+        """F-013 S4: one concept card's picture arrived. When every card of the slide has its answer: all pictures
+        go on together if each card has one and the slide still fits at its type size, else none (a row where some
+        cards have a picture and some not looks broken)."""
+        have = self._items.setdefault(slide_id, {})
+        if not ev.images and ev.reason not in ("no relevant image", "no usable candidates", "no match (cached)"):
+            # a timeout / failed download says nothing about the picture: searched again on the slide's next update
+            self._item_asked.discard((slide_id, block_id))
+            log.info("concept picture %r: %s, will search again", ev.query, ev.reason)
+            return
+        img = next((i for i in ev.images if i["id"] not in self._image_topics), None)  # not shown elsewhere
+        have[block_id] = ItemImage(url=f"/media/{img['id']}.jpg", alt=img.get("alt") or ev.query, image_id=img["id"],
+                                   aspect=round((img.get("width") or 4) / (img.get("height") or 3), 3)) if img else None
+        spec = self._spec(slide_id)
+        if spec is None:
+            return
+        defs = self._item_cards(spec)
+        if not defs or any(d.id not in have for d in defs if d.image is None):
+            return  # still waiting for some
+        if any(have.get(d.id) is None and d.image is None for d in defs):
+            log.info("concept pictures on %r: not every card has one (%d of %d): none", spec.title,
+                     sum(1 for d in defs if have.get(d.id) is not None or d.image is not None), len(defs))
+            if any(d.image is not None for d in defs):  # a card joined later without one: the others give theirs up
+                await self._commit(spec.model_copy(update={"blocks": [
+                    b.model_copy(update={"image": None}) if b.type == "definition" else b for b in spec.blocks]}))
+            return
+        blocks = [b.model_copy(update={"image": have[b.id]}) if b.type == "definition" and b.image is None
+                  and have.get(b.id) is not None and b in defs else b for b in spec.blocks]
+        new = spec.model_copy(update={"blocks": blocks})
+        if not fits_unshrunk(new):
+            log.info("concept pictures on %r: no room", spec.title)
+            return
+        await self._commit(new)
+        meta = self._meta.get(slide_id)
+        for d in defs:
+            if have.get(d.id) is not None and meta is not None:
+                self._image_topics.setdefault(have[d.id].image_id, set()).add(meta.frame.topic)
+        log.info("concept pictures on %r: %s", spec.title, ", ".join(d.term for d in defs))
 
     async def _replace_image(self, spec: SlideSpec, block: ImageBlock, fv: FrameVisual) -> None:
         fv.shown_ids.add(block.image_id)

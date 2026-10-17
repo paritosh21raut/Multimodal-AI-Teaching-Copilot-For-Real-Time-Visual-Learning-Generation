@@ -152,17 +152,19 @@ def language(c: Candidate) -> str:
     return "en" if "english" in cats else ""
 
 
-def reject_reason(c: Candidate, query: str = "", kind: str = "photo") -> Optional[str]:
-    """Why a candidate can never be shown, or None."""
+def reject_reason(c: Candidate, query: str = "", kind: str = "photo", max_aspect: float = 0.0) -> Optional[str]:
+    """Why a candidate can never be shown, or None. max_aspect: a wider limit (a concept card's picture, F-013 S4:
+    Saturn's lead image is 2.5 : 1)."""
     if c.mime.lower() not in MIMES:
         return f"mime {c.mime or '?'}"
     if c.mime != "image/svg+xml" and c.width and c.height:
         if max(c.width, c.height) < MIN_SIDE_PX or min(c.width, c.height) < MIN_SHORT_PX:
             return f"small {c.width}x{c.height}"
-    if c.width and c.height and not ASPECT[0] <= c.width / c.height <= (
-            DIAGRAM_MAX_ASPECT if kind == "diagram" else ASPECT[1]):
+    if c.width and c.height and not ASPECT[0] <= c.width / c.height <= max(max_aspect, (
+            DIAGRAM_MAX_ASPECT if kind == "diagram" else ASPECT[1])):
         return f"aspect {c.width / c.height:.2f}"
-    if c.source != "openverse" and not _FREE.search(c.licence):
+    # web-page figures (F-013 S4) are not free-licensed: shown in the teacher's classroom with their page as credit
+    if c.source not in ("openverse", "web") and not _FREE.search(c.licence):
         return f"licence {c.licence or '?'}"
     if c.meta.get("restrictions"):
         return f"restricted ({c.meta['restrictions']})"
@@ -199,4 +201,6 @@ def prior(c: Candidate, query: str, kind: str) -> float:
         bonus += 0.005
     if kind == "diagram" and _DIAGRAMMY.search(_haystack(c)):
         bonus += 0.01
+    if c.source == "web" and c.meta.get("match", 0) >= 1.0:  # its caption names the subject and the figure type
+        bonus += 0.02
     return bonus

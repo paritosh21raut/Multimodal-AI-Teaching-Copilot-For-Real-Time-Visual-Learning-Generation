@@ -267,7 +267,9 @@ class DisplayHub:
             if self.assess_public:  # an open quiz / test shows the join link on the projector (F-011)
                 self._broadcast({"type": "assess", **self._assess_for("display")}, key=("assess",), roles=("display",))
         elif isinstance(event, NotesState):  # control only: the teacher's own notes never reach a slide page
-            self.notes = event.model_dump(include={"docs", "open", "page", "pages", "projecting"})
+            # F-013 S4: the study-material lines (reading %, the passage a slide used, a refused toggle) reach /control too
+            self.notes = event.model_dump(include={"docs", "open", "page", "pages", "projecting", "indexing", "used",
+                                                   "notice"})
             self._broadcast({"type": "notes", **self.notes}, key=("notes",), roles=("control",))
         elif isinstance(event, NotesProjected):  # the teacher shows a notes page on the projector (F-010b)
             self.notes_shown = event.model_dump(include={"on", "doc_id", "page", "name"})

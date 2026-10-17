@@ -146,3 +146,35 @@ async def openverse_search(c: httpx.AsyncClient, query: str, limit: int = 8, pag
             author=x.get("creator") or "", categories="|".join(t.get("name", "") for t in x.get("tags") or []),
             rank=i, meta={"provider": x.get("provider", "")}))
     return out
+
+
+# file names that are page furniture, not figures of the article ("Commons-logo.svg", "Question book-new.svg")
+_FURNITURE = re.compile(r"logo|icon|symbol|question.book|edit-clear|ambox|padlock|wiktionary|wikisource|commons-|"
+                        r"crystal.clear|nuvola|folder|portal|stub|disambig|red.pencil|flag.of", re.IGNORECASE)
+
+
+async def wikipedia_article_images(c: httpx.AsyncClient, query: str, limit: int = 12) -> list[Candidate]:
+    """F-013 S4: every free image IN the best article for the query, not only its lead image: "Hypothalamus" holds the
+    nuclei diagrams, "ESP32" its function block diagram. Furniture (icons, logos) is left out; the finder judges the
+    rest by name and CLIP."""
+    r = await c.get(WIKIPEDIA_API, params={
+        "action": "query", "format": "json", "formatversion": 2, "generator": "search", "gsrsearch": query,
+        "gsrlimit": 1, "prop": "images|description", "imlimit": 50})
+    r.raise_for_status()
+    pages = (r.json().get("query") or {}).get("pages") or []
+    if not pages:
+        return []
+    page = pages[0]
+    names = [i["title"] for i in page.get("images") or []
+             if re.search(r"\.(?:jpe?g|png|svg|webp|tiff?)$", i.get("title", ""), re.I)
+             and not _FURNITURE.search(i.get("title", ""))][:limit]
+    files = await commons_files(c, names)
+    out = []
+    for rank, name in enumerate(names):
+        cand = files.get(name.replace("_", " "))
+        if cand is None:
+            continue  # a local (non-Commons) file: not free
+        cand.article, cand.article_description, cand.rank = page.get("title", ""), page.get("description", ""), rank + 1
+        cand.source = "wikipedia"
+        out.append(cand)
+    return out

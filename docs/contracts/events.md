@@ -16,7 +16,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `LiveCue` | understanding (S1b) | `utterance`, `start`, `announce`, `compare[]`, `list_head`, `list_items[]`, `list_count`, `item`, `term`, `definition`; from `TranscriptPartial.stable`, for the engine's faded live layer |
 | `VocabularyChanged` | understanding (F-013 S3b) | `terms[]`: study-material + lecture glossary terms (newest last); speech sets Whisper's prompt from them |
 | `UtteranceClassified` | understanding | `segment_id`, `kind` (content/classroom_management/meta/filler/question_to_class), `maybe_meta`, `rule` |
-| `ConceptSignal` | understanding | `segment_id`, `shift_score`, `topic_shift`, `keyphrases`, `cues`, `boundary`; F-013 spoken cues (`understanding.cues`): `announce` (topic name, "A vs B"), `compare[]`, `list_head`, `list_items[]`, `list_count`, `item`; `utterance`, `start` (lecture time of the line, links live cues to it) |
+| `ConceptSignal` | understanding | `segment_id`, `shift_score`, `topic_shift`, `keyphrases`, `cues`, `boundary`; F-013 spoken cues (`understanding.cues`): `announce` (topic name, "A vs B"), `compare[]`, `list_head`, `list_items[]`, `list_count`, `item`; `utterance`, `start` (lecture time of the line, links live cues to it); F-013 S4 `figure`: a figure the teacher turns to, as an image search ("STM32 block diagram") |
 | `InterpretRequested` | understanding | `request_id`, `reason` (pause/words/boundary/max_wait/cap/flush), `segment_ids`, `prompt_tokens` |
 | `InterpretationReady` | understanding | `request_id`, `interpretation: Interpretation`, `segment_ids` (line n = `segment_ids[n-1]`), `provider` ("" = fallback), `latency_ms`, `fallback`, `fallback_reason`, `slide_refs` (refs the prompt showed), `reference` ("<file> p.N" of the study-material passage the prompt held, F-012; "" = none) |
 | `LLMCallFailed` | llm | `provider`, `error`, `will_retry` |
@@ -29,7 +29,7 @@ Class var `ephemeral=True` → skipped by the event log. Audio frames/utterance 
 | `CorrectionPlaced` | presentation engine (F-013 S3c, E1) | `concern_id`, `shows` (correction / said / rewritten / absent), `elements`: what the slides show for a concern after placing it and after each switch; the hub puts it on the card (`shows`, `applied`), the terminal prints it |
 | `SlideContextChanged` | presentation engine | `text` (working-slide summary with `[S1]..` items → `LectureState.slide_context` → prompt), `refs` (S-ref → slide/item id) |
 | `SlideOverflow` | display hub (from `/display`) | `slide_id`, `version` (auto-fit failed; planner continues on a new slide) |
-| `ImageRequested` | presentation engine | `request_id`, `slide_id`, `query`, `kind` (photo/diagram), `exclude` (image ids already offered), `deeper`, `reason` (auto/change) — F-007b |
+| `ImageRequested` | presentation engine | `request_id`, `slide_id`, `query`, `kind` (photo/diagram), `exclude` (image ids already offered), `deeper`, `reason` (auto / change; F-013 S4: asked = a figure the teacher turned to, item:<block id> = one concept card's picture) — F-007b |
 | `ImageReady` | image service | `request_id`, `slide_id`, `query`, `kind`, `images` (≤ 3 `CachedImage` dumps, best first), `reason` (why none), `cached`, `seconds` |
 | `ImageChoices` | presentation engine | `slide_id`, `index`, `count` — the images this slide has shown, for the previous / next arrows (control only) |
 | `ShareChanged` | share service (F-008) | `state` (off/starting/on/failed), `url` (`<tunnel>/view` while on), `detail` (progress or why it failed) |

@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import logging
+import re
 import time
 from dataclasses import asdict
 from pathlib import Path
@@ -20,12 +21,34 @@ from copilot.core.config import PROJECT_ROOT, Config
 from copilot.core.events import ErrorRaised, Event, ImageReady, ImageRequested
 from copilot.visuals.cache import CachedImage, ImageCache
 from copilot.visuals.finder import FinderSettings, ImageFinder
+from copilot.visuals.webpages import figure_type, subject_words
 
 if TYPE_CHECKING:
     from copilot.notes.reference import ReferenceIndex
 
 log = logging.getLogger(__name__)
 
+# F-013 S4: a figure of the teacher's own file whose CAPTION names the query this clearly is used without the CLIP
+# photo gate (CLIP was made for photos: the STM32CubeIDE screenshots and the datasheet's drawn schematics score like
+# "a page of text"); a caption below it still goes through CLIP
+CAPTION_MATCH_MIN = 0.62
+
+
+def queue_key(req: ImageRequested) -> str:
+    """One queued request per slide (a newer one replaces it), except the pictures of a slide's items (F-013 S4:
+    each planet of a concept-column slide), which wait side by side."""
+    return f"{req.slide_id}|{req.reason}" if req.reason.startswith("item:") else req.slide_id
+
+
+def caption_matches(caption: str, query: str) -> bool:
+    """The caption names every subject word of the query, and the figure type when one was asked ("block
+    diagram")."""
+    hay = " ".join(re.findall(r"[a-z0-9]+", caption.lower()))
+    squashed = hay.replace(" ", "")
+    words = subject_words(query)
+    kind = figure_type(query)
+    return bool(words) and all(w[:5] in hay or w[:5] in squashed for w in words) and \
+        (not kind or kind.replace(" ", "") in squashed)
 
 
 def figure_image_id(doc_id: str, n: int) -> str:
@@ -101,7 +124,7 @@ class ImageService:
 
     async def _on_event(self, event: Event) -> None:
         assert isinstance(event, ImageRequested)
-        self._queue[event.slide_id] = event
+        self._queue[queue_key(event)] = event
         self._idle.clear()
         self._wake.set()
 
@@ -110,8 +133,8 @@ class ImageService:
             await self._wake.wait()
             self._wake.clear()
             while self._queue:
-                slide_id = next(iter(self._queue))
-                req = self._queue.pop(slide_id)
+                key = next(iter(self._queue))
+                req = self._queue.pop(key)
                 try:
                     await self._handle(req)
                 except asyncio.CancelledError:
@@ -145,10 +168,18 @@ class ImageService:
             # the same CLIP gate as web images (the label matched already; on the fixture the right figure scores
             # 0.29-0.34, the other figures of the file 0.19-0.28 with a smaller margin)
             ok = sim >= self.finder.s.min_similarity and margin >= self.finder.s.min_margin
-            log.info("reference figure %s p.%d f%d for %r: label %.3f, clip %.3f margin %+.3f -> %s", m.doc.name,
-                     m.figure.page, m.figure.n, req.query, m.score, sim, margin, "used" if ok else "no")
-            if ok:
-                meta = CachedImage(id="", width=0, height=0, alt=m.figure.label[:200] or req.query,
+            caption = getattr(m.figure, "caption", "")
+            # F-013 S4: or its caption says it ("Figure 1: ESP32-WROOM-32 Pin Layout" for "ESP32 pin layout")
+            by_caption = bool(caption) and m.score >= CAPTION_MATCH_MIN and caption_matches(caption, req.query)
+            if by_caption and not ok and req.reason != "asked" and figure_type(req.query) == "" and \
+                    not getattr(m.figure, "drawn", False) and margin < -0.05:
+                by_caption = False  # an automatic photo request: a caption match alone is not enough for a photo
+            log.info("reference figure %s p.%d f%d for %r: label %.3f, clip %.3f margin %+.3f%s -> %s", m.doc.name,
+                     m.figure.page, m.figure.n, req.query, m.score, sim, margin, ", caption matches" if by_caption
+                     else "", "used" if ok or by_caption else "no")
+            if ok or by_caption:
+                # D3: the caption or the query, never the page's words ("65,523 Modes of Reproduction ...")
+                meta = CachedImage(id="", width=0, height=0, alt=(caption or req.query)[:200],
                                    source="reference", title=f"{m.doc.name} p.{m.figure.page}",
                                    licence="Your material", query=req.query, score=round(m.score + sim, 4))
                 out.append(await asyncio.to_thread(self.finder.cache.store, img,
@@ -162,7 +193,7 @@ class ImageService:
             await asyncio.wait_for(self._ready.wait(), self.finder.s.budget_s)
         except asyncio.TimeoutError:
             pass  # finder answers "no relevance model"
-        own = await self._from_reference(req)
+        own = await self._from_reference(req) if not req.reason.startswith("item:") else []
         if own:  # the teacher's own material first (F-012); Change image excludes them → the web search
             self.stats["found"] += 1
             self.stats["reference"] = self.stats.get("reference", 0) + 1
@@ -170,7 +201,8 @@ class ImageService:
                 request_id=req.request_id, slide_id=req.slide_id, query=req.query, kind=req.kind,
                 images=[asdict(i) for i in own], seconds=round(time.perf_counter() - t0, 2)))
             return
-        res = await self.finder.find(req.query, req.kind, exclude=req.exclude, deeper=req.deeper)
+        res = await self.finder.find(req.query, req.kind, exclude=req.exclude, deeper=req.deeper,
+                                     asked=req.reason == "asked", lead_only=req.reason.startswith("item:"))
         self.stats["found" if res.images else "none"] += 1
         if res.rejected:
             log.debug("image %r rejected: %s", req.query, res.rejected)

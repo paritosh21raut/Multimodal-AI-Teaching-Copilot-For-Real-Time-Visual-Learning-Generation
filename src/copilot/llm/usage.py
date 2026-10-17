@@ -80,10 +80,14 @@ class UsageLedger:
             tmp.write_text(json.dumps(data), encoding="utf-8")
             os.replace(tmp, self.path)
             self._save_failed = False
-        except OSError:
-            if not self._save_failed:  # logged once per failure streak; the lecture goes on
+        except OSError as e:
+            try:
+                tmp.unlink(missing_ok=True)  # a half-written file must not stay behind
+            except OSError:
+                pass
+            if not self._save_failed:  # logged once per failure streak, no traceback (G1); the lecture goes on
                 self._save_failed = True
-                log.exception("could not save LLM usage to %s", self.path)
+                log.warning("could not save LLM usage to %s (%s)", self.path, e)
 
     def add(self, key: str, tokens: int) -> None:
         u = self._data.setdefault(key, _Usage())

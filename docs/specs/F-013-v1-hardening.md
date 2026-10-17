@@ -3,7 +3,7 @@
 Status: **S1 implemented**, **S2 implemented, targets partly met** (2026-10-16; see "S1 result" / "S2 result"),
 **S3a implemented** (2026-10-17, 0 tokens), **S3b implemented** (2026-10-17, 34,808 tokens A/B; see "S3 result"),
 **S3c implemented** (2026-10-17, 31,338 tokens A/B) + performance mode, start card picker, Follow removed (from S4).
-S4 (rest), S5 planned. Evaluation spent 0 tokens.
+**S4 implemented** (2026-10-17, 0 LLM tokens; see "S4 result"). S5 planned. Evaluation spent 0 tokens.
 Inputs: `verify_results/test1..30` (slides.md, transcript, terminal log, slide PNGs), `_eval/e2e_d2.json`,
 `_eval/results.json`, annotator A workbooks (12 lectures), the user's 12 reported issues (2026-10-16).
 User answers (2026-10-16): best system first (free Groq now, a paid LLM later); faded provisional content is OK;
@@ -410,6 +410,48 @@ between high performance and a standard mode that uses fewer tokens.
 3. UI: ~~remove Follow~~ (done in S3c); fixed-ratio notes page box; drag depth counter; tabs collapse by width
    (container query); ~~start card picker, web pages named by title~~ (done in S3c).
 4. G1: disk-full handled (warn at start when < 1 GB, no traceback; event log keeps running in memory).
+
+### S4 result (2026-10-17, 0 LLM tokens; network for image searches)
+Built in one group (user: "don't separate S4"), with the user's answers: card sizes locked; capped mistake cards;
+icons-only tabs when labels do not fit; an image may repeat within a topic (continuation / still relevant) but not
+across topics; pictures wherever a slide shows concrete things, not only when the model hints; figures the teacher
+asks for ("the block diagram of STM32") from the teacher's material or the web, including educational web pages.
+- **/control layout (user's 3 issues, F1-F3).** Measured first with a probe of the real app (simulated lecture, a
+  notes file added, every card's box every 50 ms): at 1920 px nothing moved; at the user's 1536 x 730 (125 %
+  scaling) the left column was 2 px from needing a scrollbar and the dock wrapped to 2 rows, so a scrollbar came and
+  went and the preview jumped; the right card took its content's height (149 → 284 → 584 px). Fixed (display.md
+  "Fixed sizes"); the same probe now shows one size per card for the whole run, and a browser test pins it
+  (`test_control_layout_browser.py`: slides, a page turn, 3 mistake cards come and go, normal and wide notes).
+  Tabs are measured (`useCompactTabs`); Project is centred; the drop area no longer flickers.
+- **Found beyond the list:** the study line never showed "Reading ... %", "Used for the slide" or the refusal (the
+  hub dropped those fields since F-012); mistake cards could squeeze the notes page to 0 px (probe screenshot).
+- **Asked figures.** Spoken cue → `ConceptSignal.figure` → `reason="asked"`, large image on the slide being built.
+  `tools/figure_check.py` with the user's ESP-WROOM-32 datasheet + STM32 IDE book: "ESP32 pin layout" → the
+  datasheet's drawn Figure 1, "Nucleo board" → the book's Figure 3.7, "8051 microcontroller block diagram" → a
+  public-domain block diagram (web). "STM32 block diagram": none in that run (DuckDuckGo was resting after my test
+  burst, the Bing pages had no captioned STM32 block diagram); an earlier run found stm32world.com's STM32F405 block
+  diagram.
+- **Sources.** Images inside the Wikipedia article; educational web pages (DuckDuckGo, Bing fallback filtered by the
+  subject; robots.txt; not free-licensed, credited by page) for diagrams and asked figures; fair CLIP decoys for block
+  diagrams; answer cache version "s4".
+- **Own PDFs (D3, D4).** Captions read from "Figure N:" lines; drawn figures clustered from vector paths (forms
+  mapped to page space, tables / notes / captions as barriers). ESP-WROOM-32: 0 → 6 figures (the rotated schematic
+  page not yet); "creating new project in ide.pdf": 10 of 13 figures now carry their real caption (were page text).
+  Index format 2: the user's files in use are re-indexed once at the next start (the reading line shows it).
+- **Card pictures (D1).** 2-6 cards naming objects, in a topic with pictures: the lead image of each term's own
+  Wikipedia article, all or none, re-searched after a network failure. Replay test21 (recorded answers, real search):
+  Mars and Jupiter got theirs in the first run; the loose Commons version gave Router a water-cycle diagram and Hub
+  a bicycle hub (test24), which is why only article lead images count now. A subtopic naming a thing in a visual
+  topic gets its own picture (test13: 8 → 12 of 16 slides with an image in one run).
+- **No repeat across topics (D2).** In the replays: images on more than one slide test24 3 → 0, test21 0, test13 1
+  (same topic).
+- **Measurement limits:** the replays use the live network; several runs had many "downloads failed" (6 of 15 in
+  one test13 run), so slide-with-image counts vary run to run and are not a before/after metric here.
+- **G1.** Event log keeps events in memory on a full disk (retries every 5 s, one warning, saved when there is
+  room), usage file: one warning, no traceback; `[DISK]` warning at start below 1 GB (the user's C: has 5.2 GB).
+- Tests: `tests/unit/test_s4.py` (cues, asked figure, D1 / D2, captions, drawn figures on
+  `tests/fixtures/notes/drawn_figures.pdf` from `tools/make_figure_fixture.py`, web-page parsing, caption gate, full
+  disk, hub fields), browser `test_control_layout_browser.py`.
 
 ### S5 — Wrap-up
 Full suites (fast, slow, browser), `v1_eval` vs baseline, two live mic lectures by the user (one with a comparison

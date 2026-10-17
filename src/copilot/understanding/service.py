@@ -33,6 +33,7 @@ from copilot.core.events import (
 )
 from copilot.core.state import LectureStateStore
 from copilot.understanding.cues import detect_all as detect_cues
+from copilot.understanding.cues import figure_query
 from copilot.understanding.cues import live_definition_any
 from copilot.understanding.embedder import Embedder
 from copilot.understanding.filter import UtteranceFilter
@@ -251,6 +252,7 @@ class UnderstandingService:
         topic = cues.of("topic") if cues else None
         compare = cues.of("compare") if cues else None
         lst = cues.of("list") if cues else None
+        fig = cues.of("figure") if cues else None
         announce = (compare.name if compare else "") or (topic.name if topic else "")
         await self.bus.publish(ConceptSignal(
             segment_id=seg.id, shift_score=round(sig.shift_score, 4), topic_shift=round(sig.topic_shift, 4),
@@ -259,8 +261,10 @@ class UnderstandingService:
             compare=list(compare.items) if compare else [],
             list_head=lst.name if lst else "", list_items=list(lst.items) if lst else [],
             list_count=lst.count if lst else 0, item=cues.item if cues else "", utterance=event.utterance,
-            start=seg.start,
+            start=seg.start, figure=figure_query(fig) if fig else "",
         ))
+        if fig is not None:
+            log.info("[CUE] figure %r", figure_query(fig))
         if announce:
             log.info("[CUE] %s %r", "compare" if compare else topic.rule if topic else "", announce)
         self.buffer.add(

@@ -365,6 +365,11 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
   border: 2px solid color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .def-card .def-term { line-height: 1.08; }
+/* F-013 S4: each concept's picture at the top of its card (the planets, the lobes of the brain); a fixed box, so the
+   card's height is known before the file arrives (composer.ITEM_IMAGE_PX) */
+.def-img { height: 190px; margin: -10px -16px 6px; display: grid; place-items: center; border-radius: calc(var(--radius) * 0.7);
+  background: color-mix(in srgb, var(--ink) 4%, transparent); overflow: hidden; }
+.def-img img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
 .def-pair .def-card .def-body {
   background: none; border: 0; box-shadow: none; padding: 0; border-radius: 0; margin: 0;
   font-size: calc(var(--fs-body) * var(--fit)); color: var(--ink-2);

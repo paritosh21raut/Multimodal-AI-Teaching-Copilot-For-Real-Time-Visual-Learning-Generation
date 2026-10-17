@@ -101,6 +101,17 @@ WebSocket roles need the per-run teacher key (`/control?key=…` from the termin
 ## Teacher notes (F-009, V2)
 - Right column = mistake cards + one card with tabs: **Structure · My notes · Materials · Lectures** (F-010; in a
   column narrower than 520 px the tabs not in use show their icon only; F-010b below).
+- **Fixed sizes (F-013 S4, user 2026-10-17: "lock the sizes of all the cards").** At 1536 x 730 (a 1920 screen at
+  125 %) the left column was 2 px short of the page: a scrollbar came and went and the slide preview jumped. Now:
+  the preview is sized to the column's width AND height (`.left` is a size container: `min(100cqw, (100cqh - 104px)
+  * 16/9)`), the dock never wraps (labels go first below 1010 px, tooltips keep the names), the page's scrollbar
+  gutter is always reserved, the right column is a flex column the tab card fills whatever it shows (it had taken
+  its content's height, 149 → 584 px), mistake cards scroll inside 40 % of it, the notes page box fills what is
+  left (never the image's height), the busy line floats over it, and Project sits in the middle of the notes footer.
+  Tabs: `useCompactTabs` measures the labels; when they do not fit the tabs not in use show their icon only (the
+  fixed 600 px rule let five labels overlap between 600 and ~800 px). The study line now gets "Reading ... %",
+  "Used for the slide" and the refusal (the hub had dropped those fields since F-012). The notes drop area no longer
+  flickers over child elements.
 - My notes: Add PDF / drop → `POST /api/notes` (teacher only, ≤ 50 MB) → `data/notes/<sha16>.pdf` (+ page texts) →
   `notes_open`; pages as PNG `GET /api/notes/<id>/page/<n>?w=` (pypdfium2, cached); ‹ n / m ›, arrows inside the
   panel, wider view, remove. The teacher turns the pages. (**Follow lecture** was removed in F-013, user 2026-10-17: it

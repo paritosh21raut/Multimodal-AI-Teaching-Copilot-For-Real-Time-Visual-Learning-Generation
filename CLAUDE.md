@@ -71,6 +71,8 @@ PYTHONPATH=paper/build/lib .venv/Scripts/python paper/build/src/build_docx.py <o
 .venv/Scripts/python tools/screenshot_s3.py [groups facts members definition formula trig compare3 tiles named_eq maxwell motion cards]   # S3 layouts + mistake cards, both themes -> artifacts/display
 .venv/Scripts/python tools/prompt_ab.py --compare <session>[:i,j]   # F-013 S3b: N-way comparison rule A/B (real Groq; --dry 0 tokens)
 .venv/Scripts/python tools/prompt_ab.py --said [--both|--old] <session>[:i,j]   # F-013 S3c: "never state a fact not said" A/B (real Groq)
+.venv/Scripts/python tools/figure_check.py <notes.pdf ...> --ask "STM32 block diagram"   # F-013 S4: asked figure end to end (own files, web; 0 tokens) -> artifacts/figures
+.venv/Scripts/python tools/make_figure_fixture.py   # F-013 S4: tests/fixtures/notes/drawn_figures.pdf (vector figures + table + note)
 .venv/Scripts/python tools/screenshot_structure.py   # S2: nested Lecture Structure + child crumb, both themes -> artifacts/display
 .venv/Scripts/python tools/screenshot_cues.py      # announced slide / heard list / interpreted, both themes -> artifacts/display
 .venv/Scripts/python -m pytest                      # fast tests

@@ -5,6 +5,7 @@ import argparse
 import asyncio
 import logging
 import secrets
+import shutil
 import sys
 import threading
 import time
@@ -104,6 +105,22 @@ def pages_to_open(connects: dict[str, int]) -> list[str]:
 
 def new_session_id() -> str:
     return f"{time.strftime('%Y%m%d-%H%M%S')}-{new_id()[:4]}"
+
+
+def disk_warning(path: Path, min_free_gb: float) -> str:
+    """F-013 S4 (G1): a warning when the disk holding the data folder has less than `min_free_gb` free ("" = enough).
+    test15 ran out mid-lecture: the usage file and the event log could not be written."""
+    probe = path
+    while not probe.exists() and probe.parent != probe:
+        probe = probe.parent
+    try:
+        free = shutil.disk_usage(probe).free / 1e9
+    except OSError:
+        return ""
+    if free >= min_free_gb:
+        return ""
+    return (f"only {free:.2f} GB free on the disk of {path} (less than {min_free_gb:g} GB): the lecture runs, but its "
+            "log, images and files may not be saved; free some space")
 
 
 # what the slide shows for a concern (F-013 S3, E1: CorrectionPlaced)
@@ -515,6 +532,11 @@ class App:
         self.store.attach()
         self.deck.attach()
         await self.event_log.open(self.bus)
+        low = disk_warning(PROJECT_ROOT / self.config.get("app", "data_dir", "data"),
+                           float(self.config.get("app", "min_free_gb", 1.0)))
+        if low:  # F-013 S4 (G1): said at the start, not as a traceback at the end
+            print(f"[DISK]  {low}", flush=True)
+            log.warning(low)
         self.bus.subscribe("terminal_transcript", self._print_transcript,
                            [TranscriptFinal, UtteranceDropped, AudioDeviceLost])
         self.bus.subscribe("app_commands", self._on_command, [CommandReceived])

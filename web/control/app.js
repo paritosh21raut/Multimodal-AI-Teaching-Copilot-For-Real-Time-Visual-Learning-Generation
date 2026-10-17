@@ -571,7 +571,9 @@ function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd, theme }) {
     return html`<button class=${(active ? "on" : "") + (warn ? " warn" : "")} aria-pressed=${active}
       onClick=${toggle(on, off, name)} title=${`${label} (${key})`}>${svg(icon)}<span>${label}</span></button>`;
   };
-  return html`<div class="dock">
+  const ref = useRef(null);
+  const compact = useCompactRow(ref, `${paused}|${dark}`);
+  return html`<div class=${"dock" + (compact ? " compact" : "")} ref=${ref}>
     <div class="group">
       <button class="icon" onClick=${() => send("prev")} disabled=${at <= 0} title="Previous slide (←)">${svg(ICON.prev)}</button>
       <span class="count">${ids.length ? `${at + 1} / ${ids.length}` : "– / –"}</span>
@@ -887,7 +889,7 @@ function Notes({ notes, send, wide, onWide }) {
   const removeOpen = (d) => confirm(`Remove “${d.name}” from your notes?`) && remove(d);
   return html`<div class=${"notes" + (over ? " over" : "")} tabindex="0" onKeyDown=${keys}
       onDragOver=${(e) => { if (hasDrop(e)) { e.preventDefault(); setOver(true); } }}
-      onDragLeave=${() => setOver(false)} onDrop=${drop}>
+      onDragLeave=${(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setOver(false); }} onDrop=${drop}>
     ${file}
     ${!doc ? html`<div class="notes-empty">
         <div class="notes-art">${svg(ICON.notes)}</div>
@@ -924,10 +926,9 @@ function Notes({ notes, send, wide, onWide }) {
         </div>
         <button class=${"project" + (n.projecting ? " on" : "")} aria-pressed=${n.projecting}
           onClick=${() => send("notes_project", { on: !n.projecting })}
-          title=${n.projecting ? "Showing on the projector and to students · click or Esc for the slide" : "Show this page on the projector and to the students"}>
+          title=${n.projecting ? "On the projector and the students' page: only you turn its pages · click or Esc for the slide" : "Show this page on the projector and to the students"}>
           ${n.projecting ? html`<span class="live-dot"></span>` : svg(ICON.project)}<span>${n.projecting ? "On screen" : "Project"}</span></button>
-      </div>
-      ${n.projecting && html`<p class="notes-note">On the projector: only you turn its pages</p>`}`}
+      </div>`}
     <${StudyLine} n=${n} />
     ${error && html`<p class="notes-error">${error}</p>`}
   </div>`;
@@ -2001,9 +2002,11 @@ function PastAssessments({ lectureId }) {
 function SidePanel({ tab, onTab, children }) {
   const tabs = children.filter(Boolean);
   const nav = useRef(null);
-  const thumb = useThumb(nav, `${tab}|${tabs.map((t) => `${t.props.id}:${t.props.badge || ""}`).join("|")}`);
+  const key = `${tab}|${tabs.map((t) => `${t.props.id}:${t.props.badge || ""}`).join("|")}`;
+  const compact = useCompactTabs(nav, key);
+  const thumb = useThumb(nav, `${key}|${compact}`);
   return html`<section class="side-panel">
-    <nav class="tabs" role="tablist" ref=${nav}>${thumb}${tabs.map((t) => html`<button key=${t.props.id} role="tab" title=${t.props.label}
+    <nav class=${"tabs" + (compact ? " compact" : "")} role="tablist" ref=${nav}>${thumb}${tabs.map((t) => html`<button key=${t.props.id} role="tab" title=${t.props.label}
         class=${t.props.id === tab ? "on" : ""} aria-selected=${t.props.id === tab} onClick=${() => onTab(t.props.id)}>
       ${t.props.icon && svg(t.props.icon)}<span>${t.props.label}</span>${t.props.badge
         ? html`<em class="badge">${t.props.badge}</em>` : null}</button>`)}</nav>
@@ -2011,6 +2014,56 @@ function SidePanel({ tab, onTab, children }) {
   </section>`;
 }
 const Tab = ({ children }) => children;
+
+// F-013 S4: does a one-row bar (the dock) fit with its labels? Measured with the labels shown (kept while compact,
+// so it knows when they would fit again), a few px of slack so it does not flip at the edge.
+function useCompactRow(ref, key) {
+  const [compact, setCompact] = useState(false);
+  const need = useRef(0);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    const measure = () => {
+      if (!el.classList.contains("compact")) need.current = el.scrollWidth;
+      setCompact((was) => (was ? need.current > el.clientWidth - 8 : need.current > el.clientWidth));
+    };
+    measure();
+    const watch = new ResizeObserver(measure);
+    watch.observe(el);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+    return () => watch.disconnect();
+  }, [key]);
+  return compact;
+}
+
+// F-013 S4 (F1): do every tab's label fit? Measured with all labels shown (the widths are kept, so a compact bar
+// knows when they would fit again); a few px of slack so it does not flip at the edge.
+function useCompactTabs(nav, key) {
+  const [compact, setCompact] = useState(false);
+  const need = useRef(0);
+  useLayoutEffect(() => {
+    const el = nav.current;
+    if (!el) return undefined;
+    const measure = () => {
+      const buttons = [...el.querySelectorAll(":scope > button")];
+      const gaps = parseFloat(getComputedStyle(el).columnGap || "0") * Math.max(0, buttons.length - 1);
+      const pad = parseFloat(getComputedStyle(el).paddingLeft || "0") + parseFloat(getComputedStyle(el).paddingRight || "0");
+      if (!el.classList.contains("compact")) {
+        // a button's content width: icon + label + badge (min-width 0 lets the button shrink below it)
+        need.current = buttons.reduce((s, b) => s + [...b.children].reduce((w, c) => w + Math.max(c.getBoundingClientRect().width, c.scrollWidth || 0), 0)
+          + parseFloat(getComputedStyle(b).columnGap || "0") * Math.max(0, b.children.length - 1) + 20, 0) + gaps + pad;
+      }
+      const room = el.clientWidth;
+      setCompact((was) => (was ? need.current > room - 8 : need.current > room));
+    };
+    measure();
+    const watch = new ResizeObserver(measure);
+    watch.observe(el);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+    return () => watch.disconnect();
+  }, [key]);
+  return compact;
+}
 // "quiz" / "test" while it covers the projector (lobby → results), else ""
 const onScreenAssess = (a) => {
   const p = a && a.public;
