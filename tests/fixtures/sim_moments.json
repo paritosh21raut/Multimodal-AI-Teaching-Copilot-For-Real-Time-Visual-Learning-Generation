@@ -1,12 +1,9 @@
 {
   "_doc": "F-014 expected simulation moments in the recorded lectures (verify_results/<name>) and the fixtures (fx:<name>), annotated by Claude 2026-10-17 from the transcripts. A moment = the template and a piece of the line that should show it (cue) or suggest it (topic talk without a cue: kind suggest). Moments of templates that do not exist yet are kept and skipped by tools/v2_eval.py detect until the template is built. negative = no simulation may be shown or suggested in the whole lecture.",
   "lectures": {
-    "fx:incline_live": {"moments": [
-      {"template": "block_on_surface", "kind": "show", "line": "Consider a block of mass 5 kg resting on a rough floor"}]},
-    "fx:incline_mode": {"moments": [
-      {"template": "block_on_surface", "kind": "show", "line": "Consider a block of mass 5 kg resting on a rough floor"}]},
-    "20261017-200923-76c3": {"note": "the user's mic lecture (data/sessions); the incline and the second box come while the first simulation is still open: switches, not shows", "moments": [
-      {"template": "block_on_surface", "kind": "show", "line": "Imagine a box placed on the surface"}]},
+    "fx:incline_live": {"moments": [{"template": "block_on_surface", "kind": "show", "line": "Consider a block of mass 5 kg resting on a rough floor"}]},
+    "fx:incline_mode": {"moments": [{"template": "block_on_surface", "kind": "show", "line": "Consider a block of mass 5 kg resting on a rough floor"}]},
+    "20261017-200923-76c3": {"note": "the user's mic lecture (data/sessions); the incline and the second box come while the first simulation is still open: switches, not shows", "moments": [{"template": "block_on_surface", "kind": "show", "line": "Imagine a box placed on the surface"}]},
     "test1": {"note": "Newton's laws by examples (seat pushing up): no block / incline scenario is described", "moments": []},
     "test2": {"note": "trap: friction = viscosity of a fluid", "negative": true},
     "test22": {"moments": [{"template": "orbit", "kind": "suggest", "line": "A satellite is an object that revolves around"}]},
@@ -29,6 +26,17 @@
     "test19": {"note": "trap: orbital", "negative": true},
     "test26": {"note": "trap: integrated circuit", "negative": true},
     "test10": {"note": "trap: muscles push the bone", "negative": true},
-    "test12": {"note": "trap: push food down", "negative": true}
+    "test12": {"note": "trap: push food down", "negative": true},
+    "test28": {"note": "S3: a real water-cycle lecture without a cue; the announced topic is a chip (user 2026-10-19)", "moments": [{"template": "water_cycle", "kind": "suggest", "line": "The topic is water cycle"}]},
+    "fx:bohr_atom_live": {"moments": [{"template": "bohr_atom", "kind": "show", "line": "Let me show you the Bohr model of the atom"}]},
+    "fx:neutralisation_titration_live": {"moments": [{"template": "neutralisation", "kind": "show", "line": "Let me show you a neutralisation reaction"}]},
+    "fx:neutralization_live": {"note": "S3: the user's live chemistry test (2026-10-06): the announced topic is a chip, no cue", "moments": [{"template": "neutralisation", "kind": "suggest", "line": "Let us learn neutralization reaction"}]},
+    "fx:water_cycle_live": {"moments": [{"template": "water_cycle", "kind": "show", "line": "Let me show you the water cycle"}]},
+    "fx:heart_live": {"moments": [{"template": "heart", "kind": "show", "line": "Let me show you how the human heart pumps blood"}]},
+    "fx:photosynthesis_leaf_live": {"moments": [{"template": "photosynthesis", "kind": "show", "line": "Let me show you how photosynthesis happens in a leaf"}]},
+    "fx:photosynthesis": {"note": "V1's demo lecture: the announced topic is a chip; no show (S3)", "moments": [{"template": "photosynthesis", "kind": "suggest", "line": "learn about photosynthesis"}]},
+    "fx:hierarchy_live": {"moments": [{"template": "photosynthesis", "kind": "suggest", "line": "Let us study photosynthesis"}]},
+    "fx:multitopic_live": {"moments": [{"template": "photosynthesis", "kind": "suggest", "line": "Let us study photosynthesis"}]},
+    "fx:human_body": {"note": "S3: a heart part of a body-systems lecture; topic talk, a chip", "moments": [{"template": "heart", "kind": "suggest", "line": "The heart has four chambers"}]}
   }
 }

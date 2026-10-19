@@ -9,6 +9,7 @@ SimulationSpec = Annotated[Union[<one Sim model per template>], discriminator="t
 
 SimBase
   template: Literal["<id>"]          # block_on_surface | incline (S0) | pendulum | projectile | dc_circuit | wave | orbit | unit_circle (S1)
+                                     # | water_cycle | heart | photosynthesis | bohr_atom | neutralisation (S3 processes)
   version: int                       # +1 on every change of this simulation
   title                              # the template's name ("Block on an incline")
   language = "en"
@@ -28,6 +29,14 @@ SimBase
            text}] ([] = unknown inputs: shape only, no numbers), lines: [Line] 1..3}
     Line{id, label ("" when alone), role (ink | applied | pull ...: colour), xs, ys (same length ≤ 400, finite),
          mark: [x, y] | null (a working point, e.g. the circuit's I, V)}
+  steps: [Step] (S3, processes only; [] otherwise)
+    Step{id, n (its number among the drawn steps, 0 = not drawn yet: an optional step before it is said),
+         label ("" until said or gone to by Next / Prev), source: said | teacher | null, optional}
+  step: int ≥ -1                     # the current step (-1: none said yet, nothing highlighted)
+  step_by: "" | speech | teacher | auto   # who moved it last; auto: `cycle` decides it
+  cycle: Cycle{t0, first, every_s} | null # auto-cycle: from step `first` at simulation time t0, the next drawn step
+                                     # every every_s s, round and round (closed form: steps.current(), JS currentStep)
+  named: [part id]                   # parts the teacher named: their labels print ("left ventricle", "CO₂")
   origin: cue | policy | llm | teacher
 ```
 
@@ -43,6 +52,12 @@ SimBase
 | `wave` | `wavelength_m` 0.001–1e4 (2) · `frequency_hz` 0.01–1e5 (1) · `amplitude_m` 1e-4–100 (0.3; named: "amplitude", "high") | axis, wave, particle, wavelength, amplitude, readout. v = fλ (a said speed is a result, not an input), T in s / ms / µs; transverse on a string only (sound, light, standing, square waves are guarded) |
 | `orbit` | `altitude_m` 0–1e13 (400 km) · `radius_m` 1e5–1e13 (absent; centre-to-centre, wins over altitude) · `body` earth \| moon \| mars \| sun \| jupiter (choice; needed for every computed value) | body, path, satellite, velocity, gravity, radius, readout. v = √(GM/r), T (s / min / h / days), g(r); ellipses and comets are guarded |
 | `unit_circle` | `angle_deg` 0–720 (30) | axes, circle, point, graph, marked, components, readout. sin, cos, tan ("undefined" at 90° / 270°), true minus signs; a negative or π angle is refused, not misread |
+
+| `water_cycle` (S3) | none (a process) | sea, land, sun, cloud, flows, readout. Steps evaporation, transpiration (optional), condensation, precipitation, collection, runoff (optional) |
+| `heart` (S3) | `rate_bpm` 30–220 (72, "rate") · `stroke_ml` 10–200 (70, "volume"; only after a stroke-volume phrase or "per beat") | chambers, lungs, body, vessels, valves, readout. Steps RA → RV → lungs → LA → LV → body. T = 60 / HR; CO = HR × SV only with both said; "a beat lasts 0.8 s" → HR 75 (computed) |
+| `photosynthesis` (S3) | none | plant, leaf, stomata, sun, flows, equation, readout. Steps light, water, CO₂ in, glucose, O₂ out; the word equation built term by term (a dashed box until said); respiration only if said |
+| `bohr_atom` (S3) | `z` 1–20 (6, "count"; printed / drawn only when said: an element name or atomic number) · `n_from`, `n_to` 0–7 (absent) | nucleus, shells, electrons, photon, readout. Shells 2, 8, 8, 2; config + valence; a said jump: for hydrogen only ΔE = 13.6 \|1/n₁² − 1/n₂²\| eV, λ = 1239.84 / ΔE nm. Ions, orbitals, Z > 20: notices |
+| `neutralisation` (S3) | `acid_m`, `base_m` 1e-4–10 M ("concentration") · `acid_ml` 0.1–1000, `base_ml` 0–1000 (absent at 0) mL · `acid`, `base` choices (strong list, h2so4, weak) | flask, burette, ions, graph, readout. Strong acid + strong base, 25 °C, Kw 1e-14: pH (exact quadratic), V(eq), salt name + formula; H₂SO₄ and weak ones drawn, no pH (notice); pH–V graph only with c(acid), V(acid), c(base) said |
 
 | S2 additions | block: `pull_n`, `pull_angle_deg`, `applied_dir` / `pull_dir` forward \| back; incline: `pull_n`, `pull_dir` up \| down; `graph` element in block, incline, pendulum, projectile, dc_circuit, wave; projectile derived `v_land`; drive `lift_note` (block) | + `pull` element (rope, tail on the block) |
 
@@ -71,6 +86,14 @@ SimBase
   form, tried before the slot names; `slot ""` = not an input; `inverse` or `factor != 1` -> source `computed`).
 - **`computed` source (S2):** a slot set from another form of a said value (f = 1 / T) is known and prints marked
   computed.
+- **Template fields (S3, processes):** `steps` (`StepDef{id, label, words, optional, element, weak}`: weak words name a
+  step only when the line names no step by its own term or verb), `parts` (`Part{id, label, words}`: a part's label
+  prints once named), `every_s` (auto-cycle step time), `parse` (a hook `(line, items) -> [(slot, value, said, pos)]`
+  for values the unit-first parser cannot read; slot `"!"` = a notice: `Resolved.refused` -> `SimulationNotice`),
+  `listens` (a regex: a line with these words and no number still reaches the open simulation, "take sodium").
+- **Steps rules (S3):** a step is named only when said (or gone to with Next / Prev, source teacher); a line naming
+  several steps names them all and the first is current; none is highlighted until one is said; the auto-cycle starts
+  after 20 s with no step word and never names a step. New slot kinds: rate, volume, concentration.
 - **A choice field** (`arrangement`, `body`, `applied_mode`) is a `Literal` in the params model; its source is in
   `param_source` like a slot's; /control sets it with `sim_set {slot, value}`.
 - **Adding a template:** a module in `simulation/templates/` (slots, `Params` / `Sim` models, `ELEMENTS`, `LABELS`,

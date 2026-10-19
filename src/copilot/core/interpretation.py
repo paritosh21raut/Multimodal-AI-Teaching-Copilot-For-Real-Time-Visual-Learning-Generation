@@ -142,7 +142,8 @@ class VisualHint(_Lenient):
 # F-014: the simulation templates the interpretation's sim hint may name (simulation.registry ORDER; a test keeps the two
 # in step)
 SIM_IDS = frozenset({"block_on_surface", "incline", "pendulum", "projectile", "dc_circuit", "wave", "orbit",
-                     "unit_circle"})
+                     "unit_circle", "water_cycle", "heart", "photosynthesis",
+                     "bohr_atom", "neutralisation"})
 
 
 class Interpretation(_Lenient):

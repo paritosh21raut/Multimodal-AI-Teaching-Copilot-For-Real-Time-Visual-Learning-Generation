@@ -57,18 +57,20 @@ export function symbolParts(sym) {
 
 // The computed readouts (Derived), top left of the stage: "a = 2.04 m/s²   computed"; right: top right (a scene whose
 // picture fills the top left, e.g. a steep incline, S2)
-export function Readout({ sim, x = 34, y = 30, right = false }) {
-  const rows = sim.derived || [];
+// fixed (S3): the scene places the card itself (a process picture has no free corner); layout.js leaves it there
+// said (S3): rows of said values first (a heart rate said in the lecture, not computed), plain ink; minW: a narrower card
+export function Readout({ sim, x = 34, y = 30, right = false, fixed = false, said = [], minW = 430 }) {
+  const rows = [...said.map((r) => ({ ...r, said: true })), ...(sim.derived || [])];
   if (!rows.length) return null;
   const h = 34 + rows.length * 52;
-  const w = Math.max(430, 60 + Math.max(...rows.map((r) => (r.symbol.length + r.text.length + 3) * 18)));
+  const w = Math.max(minW, 60 + Math.max(...rows.map((r) => (r.symbol.length + r.text.length + 3) * 18)));
   if (right) x = W - 34 - w;
-  return html`<g class="sim-readout" data-el="readout" transform=${`translate(${x},${y})`}>
+  return html`<g class=${"sim-readout" + (fixed ? " fixed" : "")} data-el="readout" transform=${`translate(${x},${y})`}>
     <rect class="card" x="0" y="0" width=${w} height=${h} rx="18" />
     ${rows.map((r, i) => html`<g key=${r.id} transform=${`translate(26,${62 + i * 52})`}>
-      <text class="sim-label r-ink"><tspan class="sym">${symbolParts(r.symbol)}</tspan><tspan class="val computed">${` = ${r.text}`}</tspan></text>
+      <text class="sim-label r-ink"><tspan class="sym">${symbolParts(r.symbol)}</tspan><tspan class=${"val" + (r.said ? "" : " computed")}>${` = ${r.text}`}</tspan></text>
     </g>`)}
-    <text class="tag" x=${w - 26} y="30" text-anchor="end">computed</text>
+    <text class="tag" x=${w - 26} y="30" text-anchor="end">${said.length ? "said · computed" : "computed"}</text>
   </g>`;
 }
 

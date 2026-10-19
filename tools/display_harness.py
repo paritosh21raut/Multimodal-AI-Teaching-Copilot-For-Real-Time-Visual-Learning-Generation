@@ -51,6 +51,20 @@ class Harness:
     async def settle(self) -> None:
         await self.bus.drain()
 
+    async def until(self, done, timeout: float = 5.0) -> None:
+        """Wait until `done()` holds. A click in /control reaches the server over the page's websocket some time later;
+        settle() alone may drain the bus before the command has arrived (F-014 S3: the S2 browser flake, reproduced by
+        delaying commands 200 ms)."""
+        loop = asyncio.get_running_loop()
+        end = loop.time() + timeout
+        while True:
+            await self.bus.drain()
+            if done():
+                return
+            if loop.time() > end:
+                raise AssertionError(f"timed out after {timeout} s waiting for the engine")
+            await asyncio.sleep(0.02)
+
 
 @asynccontextmanager
 async def display_harness(theme: str = "light", media_dir: Optional[Path] = None, notes_dir: Optional[Path] = None,

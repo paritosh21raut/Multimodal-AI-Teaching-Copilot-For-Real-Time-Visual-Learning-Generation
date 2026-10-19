@@ -1,0 +1,29 @@
+# Class 6 geography, ~2 minutes, written by Claude for F-014 S3 (processes). Expect: a content slide on the water cycle;
+# "let me show you the water cycle" opens simulation mode with the four steps drawn and unnamed; each step said moves
+# the stage and names it (evaporation, condensation, precipitation, collection); transpiration and runoff are drawn
+# only once said; "washing machine ... cycle" is a trap; "let's get back to the slides" ends the mode with a recap;
+# then the slides go on (groundwater). No numbers anywhere: nothing printed but the step names said.
+@setup subject=Geography grade=6 topic="The water cycle"
+
+Good morning everyone. Today we will learn about the water cycle.
+[pause 1]
+Water on the earth keeps moving between the sea, the air and the land. This movement never stops.
+It is powered by the heat of the sun.
+[pause 1.5]
+Let me show you the water cycle.
+First, the sun heats the water in the oceans, lakes and rivers, and the water evaporates into water vapour.
+Plants also lose water from their leaves into the air. We call this transpiration.
+[pause 1]
+As the water vapour rises, it cools and condenses into tiny droplets, and these droplets form clouds.
+When the droplets join together and become heavy, they fall back to the earth as rain, snow or hail. This is precipitation.
+[pause 1]
+Some of the rain flows over the ground into rivers. That is called runoff.
+Finally the water collects in the oceans and lakes, and the whole cycle starts again.
+[pause 1.5]
+Think about it: a washing machine also runs a rinse cycle with water, but that is not a natural cycle.
+The water cycle has no beginning and no end.
+[pause 1]
+Okay, let's get back to the slides.
+[pause 1]
+Some rain water also seeps into the soil and becomes groundwater.
+Groundwater is stored in rocks called aquifers, and we draw it up with wells.

@@ -101,7 +101,7 @@ async def test_sim_bar_commands_reach_every_page():
             assert await attr(display, "data-template") == "block_on_surface"
             # pause from the sim bar: the engine pauses it and every page stops at the same time
             await control.click(".sim-bar button[aria-label='Pause the simulation']")
-            await h.settle()
+            await h.until(lambda: sim_of(h.deck).playback.state == "paused")
             assert sim_of(h.deck).playback.state == "paused"
             for p in (display, view):
                 await p.wait_for_function(f"() => document.querySelector('{SIM}')?.dataset.state === 'paused'")
@@ -118,23 +118,23 @@ async def test_sim_bar_commands_reach_every_page():
             field = control.locator(".sim-values input[type=number]").first
             await field.fill("10")
             await field.press("Enter")
-            await h.settle()
+            await h.until(lambda: sim_of(h.deck).params.mass_kg == 10)
             sim = sim_of(h.deck)
             assert sim.params.mass_kg == 10 and sim.param_source["mass_kg"] == "teacher"
             await display.wait_for_function(f"() => document.querySelector('{SIM}').textContent.includes('10 kg')")
             # Full stage on the display, Esc on /control closes it
             await control.keyboard.press("Escape")  # closes the popover first
             await control.click(".sim-bar button[aria-label='Full screen on the display']")
-            await h.settle()
+            await h.until(lambda: h.deck.sim_full == sid)
             assert h.deck.sim_full == sid
             await display.wait_for_selector(".sim-full .sim-svg")
             await control.keyboard.press("Escape")
-            await h.settle()
+            await h.until(lambda: h.deck.sim_full is None)
             assert h.deck.sim_full is None
             await display.wait_for_selector(".sim-full", state="detached")
             # remove: the simulation's own slide goes, simulation mode ends (S1)
             await control.click(".sim-bar button[aria-label='Take the simulation off this slide']")
-            await h.settle()
+            await h.until(lambda: h.deck.sim_mode is None)
             assert sid not in [s.id for s in h.deck.slides] and h.deck.sim_mode is None
             await display.wait_for_selector(".sim-svg", state="detached")
             await control.wait_for_selector(".flag.sim", state="detached")
@@ -152,7 +152,7 @@ async def test_the_dock_picker_shows_a_simulation():
             await control.fill(".sim-picker .eq-search", "incline")
             await control.wait_for_selector(".sim-picker .eq-row:has-text('Block on an incline')")
             await control.keyboard.press("Enter")
-            await h.settle()
+            await h.until(lambda: any(b.type == "simulation" for b in h.deck.live.blocks))
             assert sim_of(h.deck).template == "incline"
             await display.wait_for_selector(SIM)
             assert await attr(display, "data-template") == "incline"
@@ -192,7 +192,7 @@ async def test_simulation_mode_round_trip():
             await h.settle()
             assert len(h.deck.slides) == n and h.deck.live.id == sid  # no new slide while it runs
             await control.click(".dock button.sim-end")
-            await h.settle()
+            await h.until(lambda: h.deck.sim_mode is None)
             recap = h.deck.live
             assert h.deck.sim_mode is None and recap.title == "Recap: Block on a surface"
             await wait_for_slide(display, recap.id)
@@ -212,7 +212,7 @@ async def test_suggest_chip_shows_on_click():
             await control.wait_for_selector(".sim-chip:has-text('Block on a surface')")
             assert not any(b.type == "simulation" for s in h.deck.slides for b in s.blocks)
             await control.click(".sim-chip button.primary")
-            await h.settle()
+            await h.until(lambda: h.deck.sim_mode is not None)
             assert h.deck.sim_mode == h.deck.live.id and sim_of(h.deck).params.applied_n == 20
             await control.wait_for_selector(".sim-chip", state="detached")
             assert not control.errors, control.errors

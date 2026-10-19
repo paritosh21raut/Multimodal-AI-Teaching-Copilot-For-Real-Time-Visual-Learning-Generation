@@ -1,6 +1,7 @@
 # Current State
 
-_Last updated: 2026-10-18: **V2 Concept Simulation S2 done** (part A fixes, push + pull forces, time-series graphs,
+_Last updated: 2026-10-19: **V2 Concept Simulation S3 (processes) done**: 5 process templates, 23,109 Groq tokens
+(one simulated heart lecture; the simulation path itself 0). Before that, 2026-10-18: **V2 Concept Simulation S2 done** (part A fixes, push + pull forces, time-series graphs,
 values said in another form; the closed-list `sim` hint A/B'd, not live), 16,027 Groq tokens (A/B) + one simulated
 lecture (11 calls, ~21.7k prompt + completions, est. ~25k). Before that, 2026-10-17: **V2 Concept Simulation S1 done** (simulation mode + recap, values without the slot, 6
 templates, Suggest, `tools/v2_eval.py`), ≈ 22k Groq prompt tokens recorded in one simulated lecture (est. 25–28k with
@@ -19,6 +20,21 @@ user's review of the paper and of group D, then the truthfulness bug below, then
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **V2 Concept Simulation S3 done (2026-10-19).** Details: F-014 "S3 result".
+  - **Processes:** discrete steps moved by speech (named only once said), Prev / Next on the sim bar, an auto-cycle
+    after 20 s of silence about steps (never names), parts labelled once named; process cues show in the same line,
+    look-back setups / announced topics give a Suggest chip.
+  - **Templates (13 total):** + water cycle, heart (HR, CO), photosynthesis (word equation term by term), Bohr atom
+    (Z ≤ 20, hydrogen ΔE / λ, notices for ions / orbitals / Z > 20), acid–base neutralisation (strong pairs: pH,
+    V(eq), salt; H₂SO₄ / weak: drawn, notice; pH–V graph). Each: hand values, detector positives + traps, step tests,
+    ~2 min fixture (annotated), browser row both themes, screenshots looked at; two review subagents, all findings
+    fixed or listed in F-014.
+  - **S2 leftovers:** tension = pull, N = 0 no "(kinetic)", left / right, μ without is / of, forces carried on a
+    switch; the S2 browser flake reproduced (delayed commands) and fixed (`Harness.until`).
+  - **Also:** /control Simulation list was capped at 10 templates (fixed).
+  - **Tests:** fast 1302 pass; browser 102 pass (full suite); `v2_eval`: values unchanged, show precision 1.00 (8/8), 0 on
+    negatives, chips 9/10.
+  - **Next:** the user's look (`--simulate tests/fixtures/lectures/heart_live.txt` or any S3 fixture), then S4.
 - **V2 Concept Simulation S2 done (2026-10-18).** Details: F-014 "S2 result".
   - **Part A:** Simulation picker rows were hidden by the compact dock rule (the picker sits inside the dock group;
     the Equation picker had it too); Values names on theme tokens; the dock is tighter so icon + name fit at 1536 px

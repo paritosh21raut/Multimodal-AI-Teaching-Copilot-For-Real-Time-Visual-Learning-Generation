@@ -1,0 +1,29 @@
+# Class 10 biology, ~2 minutes, written by Claude for F-014 S3 (processes). Expect: a content slide on the heart; "let
+# me show you how the human heart pumps blood" opens simulation mode (four chambers, the six steps drawn, unnamed);
+# the heart rate (72 beats per minute) and the stroke volume (70 mL per beat) print, with T = 0.833 s and cardiac
+# output 5.04 L/min computed; each step said moves the stage (right atrium ... aorta); "the heart of the matter" is a
+# trap; "let's get back to the slides" ends the mode with a recap; then the slides go on (blood vessels).
+@setup subject=Biology grade=10 topic="The human heart"
+
+Good morning class. Today we will study the human heart and how it pumps blood.
+[pause 1]
+The heart is a muscular organ about the size of your fist. It has four chambers: two atria on top and two ventricles below.
+The right side carries deoxygenated blood and the left side carries oxygenated blood. This is called double circulation.
+[pause 1.5]
+Let me show you how the human heart pumps blood.
+A normal heart beats about 72 times a minute, and each beat pumps out about 70 mL of blood.
+[pause 1]
+Deoxygenated blood from the body enters the right atrium through the vena cava.
+The right atrium contracts and pushes the blood into the right ventricle through the tricuspid valve.
+The right ventricle then pumps it to the lungs through the pulmonary artery.
+[pause 1]
+In the lungs the blood picks up oxygen. Oxygenated blood returns to the left atrium through the pulmonary veins.
+From the left atrium the blood passes into the left ventricle through the mitral valve.
+The left ventricle has the thickest wall, because it pumps oxygenated blood to the rest of the body through the aorta.
+[pause 1.5]
+And that is really the heart of the matter: the valves make sure blood flows only one way.
+[pause 1]
+Okay, let's get back to the slides.
+[pause 1]
+Blood vessels are of three types: arteries, veins and capillaries.
+Arteries carry blood away from the heart, and veins bring it back to the heart.

@@ -453,7 +453,13 @@ def test_orbit_cue_positives(line):
     "Consider a satellite dish on the roof.",
 ])
 def test_orbit_traps(line):
-    assert detect(line).strength != "cue", line
+    d = detect(line)
+    # S3: the Bohr model is a template of its own now: the electron orbit is its cue, never the satellite's
+    assert not (d.strength == "cue" and d.template == "orbit"), line
+    if "Bohr" in line:
+        assert (d.template, d.strength) == ("bohr_atom", "cue")
+    else:
+        assert d.strength != "cue", line
 
 
 @pytest.mark.parametrize("line, want, body", [

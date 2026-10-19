@@ -1,0 +1,28 @@
+# Class 10 chemistry, ~2 minutes, written by Claude for F-014 S3 (processes). Expect: a content slide on acids and
+# bases; "the acid test" is a trap; "let me show you a neutralisation reaction" opens simulation mode (flask, burette,
+# H+ particles, nothing named); 25 mL of 0.1 M HCl and 0.1 M NaOH print the salt NaCl, the equivalence volume 25 mL and
+# pH 1.00; 10 mL added: pH 1.37; 25 mL: pH 7.00; 30 mL: pH 11.96; the steps follow (acid, base, water, salt); acetic
+# acid is weak (a notice, no pH); "let's get back to the slides" ends the mode with a recap; then indicators.
+@setup subject=Chemistry grade=10 topic="Acids, bases and salts"
+
+Good morning everyone. Today we will study acids, bases and salts.
+[pause 1]
+Acids taste sour and turn blue litmus red. Bases taste bitter and feel soapy.
+The real acid test for this chapter is whether you can explain what happens when they meet.
+[pause 1.5]
+Let me show you a neutralisation reaction.
+We take 25 mL of 0.1 M hydrochloric acid in a flask. The acid gives H+ ions.
+We titrate it with 0.1 molar sodium hydroxide from the burette. The base gives OH- ions.
+[pause 1]
+Now we add 10 mL of the base.
+H+ and OH- combine to form water.
+Now add 25 mL of the base in total.
+Now 30 mL.
+The sodium and chloride ions stay in the solution: the salt remains, sodium chloride.
+[pause 1]
+If we used acetic acid instead, it is a weak acid, so the pH works differently.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 1]
+An indicator like phenolphthalein turns pink in a basic solution.
+Methyl orange is red in acid and yellow in base.

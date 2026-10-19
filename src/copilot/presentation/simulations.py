@@ -43,7 +43,7 @@ from copilot.presentation.content import Piece
 from copilot.presentation.planner import Frame
 from copilot.presentation.recap import recap_pieces
 from copilot.presentation.spec import SimulationBlock, SlideSpec
-from copilot.simulation import registry
+from copilot.simulation import registry, steps
 from copilot.simulation.base import SimBase, fmt, known
 from copilot.simulation.policy import decide
 from copilot.simulation.values import resolve
@@ -116,6 +116,8 @@ class SimulationController:
     suggestion: Optional[Suggestion] = None
     ended: Optional[Ended] = None
     shown: int = 0                                                 # simulation slides made in this lecture
+    stepped: dict[str, float] = field(default_factory=dict)        # S3: block id -> lecture time of the last step word
+    #                                                                (or Next / Prev, or the show): the auto-cycle waits
 
     @property
     def collecting(self) -> bool:
@@ -209,6 +211,9 @@ class SimulationController:
             if r.why:
                 log.info("[SIM] %r -> %s", line[:80], "; ".join(r.why))
             last = r.last or last
+            for msg in r.refused:  # S3: heard but not drawn (an ion, orbitals)
+                log.info("[SIM] %s", msg)
+                await self.e.bus.publish(SimulationNotice(slide_id=slide_id, text=msg))
             if r.rough and "mu" in fields and sim.param_source.get("mu", "default") == "default" \
                     and sim.params.mu == 0:  # type: ignore[attr-defined]
                 out.append(("mu", ROUGH_MU, "default"))
@@ -239,6 +244,20 @@ class SimulationController:
         if self.mode is not None:
             self.mode.last = last
         return out
+
+    def _steps(self, sim: SimBase, lines: list[str], block_id: str) -> SimBase:
+        """S3: the steps and parts the lines name (a process template): the current step follows the speech."""
+        t = registry.template_of(sim)
+        if not t.steps and not t.parts:
+            return sim
+        for line in lines:
+            upd = steps.said(sim, t, line)
+            if upd:
+                sim = sim.model_copy(update=upd)
+                if "step" in upd:
+                    self.stepped[block_id] = self.e.now()
+                    log.info("[SIM] step: %s (%r)", sim.steps[sim.step].id, line[:60])
+        return sim
 
     # ---- intents --------------------------------------------------------------------------------------------
     async def on_signal(self, segment_id: str) -> None:
@@ -281,6 +300,11 @@ class SimulationController:
             if open_t is not None and open_t.setup.search(ev.text):
                 action = dataclasses.replace(action, kind="update", reason="fits the open simulation too")
                 tid = m.template
+            elif open_t is not None and (open_t.process or (t_ is not None and t_.process)):
+                # S3: a process is not left (or entered) on a passing mention ("the heart pumps it to the lungs,
+                # where ... water"): only a spoken cue switches; the line still talks to the open one
+                action = dataclasses.replace(action, kind="update", reason="a process switches only on a cue")
+                tid = m.template
         log.info("[SIM] %s %s: %s (%s)", ev.strength, tid or "-", action.kind, action.reason)
         if action.kind == "ignore":
             return
@@ -307,6 +331,7 @@ class SimulationController:
         title = None
         if action.kind == "switch":
             sim = registry.switched(sim, tid, "cue")
+            self.stepped[b.id] = self.e.now()  # a process's auto-cycle waits from the switch (S3 review)
             m.template = tid
             m.names.append(sim.title)
             title = sim.title
@@ -314,7 +339,7 @@ class SimulationController:
             self.revealed[b.id] = set()
         self.revealed.setdefault(b.id, set()).update(ev.reveal)
         vals = await self._values(sim, [ev.text], spec.id)
-        sim = registry.with_values(sim, vals, self._toggles(b.id))
+        sim = registry.with_values(self._steps(sim, [ev.text], b.id), vals, self._toggles(b.id))
         if sim.model_dump(exclude={"version"}) != b.sim.model_dump(exclude={"version"}):
             await self._replace(spec, b, sim, title)
             log.info("[SIM] %s %s: %s", action.kind, sim.template, {s: v for s, v, _ in vals})
@@ -340,7 +365,11 @@ class SimulationController:
         mode = SimMode(block.id, "", tid, frame, e._working_id,
                        e._seg_order.get(cue_segment, e._seg_n + 1), e.now(), [sim.title], origin=origin)
         self.mode = mode
-        sim = registry.with_values(sim, await self._values(sim, [x for x in lines if x], ""), self._toggles(block.id))
+        lines = [x for x in lines if x]
+        self.stepped[block.id] = e.now()  # the auto-cycle waits from the show
+        # the steps from the cue line only: the talk before the show is not a walk through the picture
+        sim = registry.with_values(self._steps(sim, lines[-1:], block.id), await self._values(sim, lines, ""),
+                                   self._toggles(block.id))
         block = block.model_copy(update={"sim": sim})
         spec = with_simulation(frame_slide(frame.topic, sim.title, continuation_of=e._working_id), block)
         spec = spec.model_copy(update={"title": sim.title})
@@ -439,6 +468,25 @@ class SimulationController:
                 slide_id="", text=f"Back to slides: nothing about the simulation for {int(SAFETY_S // 60)} min"))
         if self.suggestion is not None and now > self.suggestion.until:
             await self._clear_suggestion()
+        await self._auto_cycle(now)
+
+    async def _auto_cycle(self, now: float) -> None:
+        """S3: the steps cycle by themselves after AUTO_AFTER_S without a step word, while the simulation plays."""
+        m = self.mode
+        if m is None:
+            return
+        spec, b = self._block(m.block_id)
+        if spec is None or b is None or not registry.template_of(b.sim).steps:
+            return
+        sim = b.sim
+        if sim.step_by == "auto" or sim.playback.state != "playing":
+            return
+        if now - self.stepped.get(b.id, now) < steps.AUTO_AFTER_S:
+            return
+        upd = steps.cycling(sim, registry.template_of(sim), self.now_t(b))
+        if upd:
+            await self._replace(spec, b, sim.model_copy(update={**upd, "version": sim.version + 1}))
+            log.info("[SIM] auto-cycle: %s without a step word", f"{steps.AUTO_AFTER_S:.0f} s")
 
     async def _suggest(self, tid: str, lines: list[str]) -> None:
         t = registry.get(tid)
@@ -503,6 +551,7 @@ class SimulationController:
             if registry.get(tid) is None or tid == sim.template:
                 return
             new = registry.switched(sim, tid, "teacher")
+            self.stepped[b.id] = self.e.now()  # a process's auto-cycle waits from the switch (S3 review)
             self.toggled.pop(b.id, None)
             self.revealed[b.id] = set()
             if self.mode is not None and self.mode.block_id == b.id:
@@ -545,6 +594,12 @@ class SimulationController:
             self.toggled.setdefault(b.id, {})[el] = on
             await self._replace(spec, b, registry.solved(sim, self._toggles(b.id)))
             return
+        if kind in ("sim_next", "sim_prev"):  # S3: the teacher moves the process on / back (names that step)
+            upd = steps.moved(sim, registry.template_of(sim), 1 if kind == "sim_next" else -1, t_now)
+            if upd:
+                self.stepped[b.id] = self.e.now()
+                await self._replace(spec, b, registry.solved(sim.model_copy(update=upd), self._toggles(b.id)))
+            return
         update: Optional[dict[str, Any]] = None
         if kind == "sim_play" and pb.state != "playing":
             update = {"state": "playing", "t": t_now}
@@ -556,7 +611,14 @@ class SimulationController:
             update = {"t": 0.0}
         if update is not None:
             new_pb = pb.model_copy(update={**update, "rev": pb.rev + 1})
-            await self._replace(spec, b, sim.model_copy(update={"playback": new_pb, "version": sim.version + 1}))
+            extra: dict[str, Any] = {}
+            if sim.steps and kind == "sim_reset":  # S3: a process starts again with no step highlighted (names stay)
+                extra = {"step": -1, "step_by": "", "cycle": None}
+                self.stepped[b.id] = self.e.now()
+            elif sim.step_by == "auto" and kind == "sim_step":
+                extra = steps.frozen(sim, t_now)
+            await self._replace(spec, b, sim.model_copy(update={"playback": new_pb, "version": sim.version + 1,
+                                                                **extra}))
 
     async def _show(self, tid: str) -> None:
         """/control Simulation: the running simulation becomes this template, else simulation mode starts with it."""

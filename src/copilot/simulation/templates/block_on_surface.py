@@ -79,7 +79,9 @@ def solve(p: BlockOnSurfaceParams, src: dict[str, str]) -> Solution:
     Fx = sp * F * math.cos(tp) + sq * P * math.cos(tq)
     N = W + F * math.sin(tp) - P * math.sin(tq)
     lifted = N < -EPS * max(1.0, W)
-    N = max(0.0, N)
+    # exactly on the verge of lifting (P sin θ = W + F sin θ on paper) is N = 0, not a rounding error's 1e-15 N that
+    # would print "0 N (kinetic)" (S2 review)
+    N = 0.0 if N < EPS * max(1.0, W) else N
     f_max = mu * N
     # lifted off: the floor model no longer holds (it would rise too), so it is not slid along the floor
     moving = not lifted and abs(Fx) > f_max * (1 + EPS) + EPS
@@ -122,7 +124,7 @@ def solve(p: BlockOnSurfaceParams, src: dict[str, str]) -> Solution:
         ]
         if mu > 0:  # the friction force's value, also when it only holds the block (user 2026-10-18)
             derived.append(Derived(id="f", label="Friction", symbol="f", value=f, unit="N",
-                                   text=f"{fmt(f)} N ({kind})" if f > 0 else "0 N"))
+                                   text=f"{fmt(f)} N ({kind})" if f > EPS * max(1.0, W) else "0 N"))
     drive = {"m": m, "W": W, "N": N, "F": F, "P": P, "f": f, "a": a, "moving": 1.0 if moving else 0.0,
              "dir": direction, "f_dir": f_dir, "track_m": TRACK_M, "theta_deg": p.push_angle_deg,
              "phi_deg": p.pull_angle_deg, "F_dir": sp, "P_dir": sq, "lifted": 1.0 if lifted else 0.0,
@@ -167,6 +169,6 @@ TEMPLATE = Template(
                      re.IGNORECASE),
     aliases=("block", "friction", "force", "newton", "push", "pull", "f = ma", "surface", "horizontal"),
     family="block",
-    carry=("mass_kg", "mu", "g"),
+    carry=("mass_kg", "mu", "g", "applied_n", "pull_n"),  # S3: the forces too (not one pushed at an angle)
     force_dirs=(("push", "applied_dir", DIRS), ("pull", "pull_dir", DIRS)),
 )

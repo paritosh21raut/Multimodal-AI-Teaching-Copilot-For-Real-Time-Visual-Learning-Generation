@@ -114,7 +114,8 @@ def solve(p: InclineParams, src: dict[str, str]) -> Solution:
         ]
         if mu > 0:  # the friction force's value, also when it only holds the block (user 2026-10-18)
             derived.append(Derived(id="f", label="Friction", symbol="f", value=f, unit="N",
-                                   text=f"{fmt(f)} N ({'kinetic' if direction else 'static'})" if f > 0 else "0 N"))
+                                   text=f"{fmt(f)} N ({'kinetic' if direction else 'static'})"
+                                   if f > EPS * max(1.0, W) else "0 N"))  # a rounding error is no friction (S3)
     drive = {"m": m, "theta_deg": p.angle_deg, "W": W, "N": N, "w_par": w_par, "w_perp": w_perp, "F": F,
              "F_dir": 1.0 if p.applied_dir == "down" else -1.0, "P": P, "P_dir": 1.0 if p.pull_dir == "down" else -1.0,
              "f": f, "f_dir": f_dir, "a": a, "dir": direction,
@@ -150,6 +151,6 @@ TEMPLATE = Template(
                      r"\b(?:windward|leeward|rainfall|valley|vegetation|erosion|mountain|hill ?side)\b", re.IGNORECASE),
     aliases=("incline", "inclined plane", "slope", "ramp", "friction", "angle", "sin", "cos", "component"),
     family="block",
-    carry=("mass_kg", "mu", "g"),
+    carry=("mass_kg", "mu", "g", "applied_n", "pull_n"),  # S3: the forces too (not one pushed at an angle)
     force_dirs=(("push", "applied_dir", DIRS), ("pull", "pull_dir", DIRS)),
 )

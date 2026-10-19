@@ -653,3 +653,96 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .sim-readout .sim-label { stroke: none; }
 .sim-readout .tag { font-size: 20px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--muted); }
 .sim-caption { font-size: 22px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--muted); }
+/* S3 processes (web/sims/process.js): the step heading, numbered step badges, flows (the current step bold and moving,
+   the others quiet), words as labels (a step's or a part's name, not a math symbol) */
+.sim-step-title { font-size: 40px; font-weight: 700; fill: var(--ink); }
+.sim-step-title .num { fill: var(--muted); font-weight: 650; }
+.sim-badge circle { fill: var(--sim-card); stroke: var(--sim-surface); stroke-width: 4; }
+.sim-badge .num { font-size: 28px; font-weight: 800; fill: var(--ink); }
+.sim-badge .pill { fill: var(--sim-card); stroke: var(--sim-surface); stroke-width: 3; }
+.sim-badge .name { font-size: 34px; font-weight: 700; fill: var(--ink); }
+.sim-badge.named circle { stroke-width: 0; fill: var(--sim-component); }
+.sim-badge.named .num { fill: var(--stage-bg); }
+.sim-badge.cur .pill, .sim-badge.cur circle { fill: var(--sim-applied); stroke: var(--sim-applied); }
+.sim-badge.cur .num { fill: var(--stage-bg); }
+.sim-badge.cur.named circle { fill: var(--stage-bg); } .sim-badge.cur.named .num { fill: var(--sim-applied); }
+.sim-badge.cur .name { fill: var(--stage-bg); }
+.sim-label.word .sym { font-family: var(--font-text); font-style: normal; font-weight: 700; font-size: 34px; }
+.sim-label.word.cur .sym { fill: var(--sim-applied); }
+.sim-label.word.part .sym { font-weight: 600; fill: var(--ink-2); }
+.sim-flow .line { fill: none; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 18 12; opacity: 0.45; }
+.sim-flow .head { opacity: 0.45; }
+.sim-flow.cur .line { stroke-width: 9; opacity: 1; }
+.sim-flow.cur .head { opacity: 1; }
+.sim-flow.r-water .line { stroke: var(--sim-water); } .sim-flow.r-water .head { fill: var(--sim-water); }
+.sim-flow.r-vapour .line { stroke: var(--sim-vapour); } .sim-flow.r-vapour .head { fill: var(--sim-vapour); }
+.sim-flow.r-ground .line { stroke: var(--sim-wood); } .sim-flow.r-ground .head { fill: var(--sim-wood); }
+.sim-flow.r-oxy .line { stroke: var(--sim-oxy); } .sim-flow.r-oxy .head { fill: var(--sim-oxy); }
+.sim-flow.r-deoxy .line { stroke: var(--sim-deoxy); } .sim-flow.r-deoxy .head { fill: var(--sim-deoxy); }
+.sim-flow.r-gas .line { stroke: var(--sim-component); } .sim-flow.r-gas .head { fill: var(--sim-component); }
+.sim-flow.r-light .line { stroke: var(--sim-sun); } .sim-flow.r-light .head { fill: var(--sim-sun); }
+.sim-flow.r-applied .line { stroke: var(--sim-applied); } .sim-flow.r-applied .head { fill: var(--sim-applied); }
+.sim-dot { fill: var(--sim-water); } .sim-dot.r-vapour { fill: var(--sim-vapour); }
+.sim-dot.r-oxy { fill: var(--sim-oxy); } .sim-dot.r-deoxy { fill: var(--sim-deoxy); }
+.sim-sea { fill: var(--sim-water-fill); stroke: var(--sim-water); stroke-width: 4; }
+.sim-sea.cur { fill: var(--sim-water-hi); }
+.sim-land { fill: var(--sim-ground); stroke: var(--sim-surface); stroke-width: 4; stroke-linejoin: round; }
+.sim-tree .trunk { stroke: var(--sim-wood); stroke-width: 10; stroke-linecap: round; }
+.sim-tree .crown { fill: var(--sim-leaf); }
+.sim-sun circle { fill: var(--sim-sun); } .sim-sun line { stroke: var(--sim-sun); stroke-width: 6; stroke-linecap: round; }
+.sim-cloud circle, .sim-cloud rect { fill: var(--sim-cloud); stroke: none; }
+.sim-cloud { filter: drop-shadow(0 2px 0 var(--sim-component)); }
+.sim-cloud.cur circle, .sim-cloud.cur rect { fill: var(--sim-cloud-hi); }
+.sim-rain line { stroke: var(--sim-water); stroke-width: 4; stroke-linecap: round; opacity: 0.45; }
+.sim-rain.cur line { opacity: 1; stroke-width: 5; }
+/* S3 heart: chambers tinted by the blood they hold (oxygen-poor / -rich), organs, valves (two leaflets) */
+.sim-chamber { stroke: var(--sim-surface); stroke-width: 5; }
+.sim-chamber.right { fill: color-mix(in srgb, var(--sim-deoxy) 16%, var(--sim-heart)); }
+.sim-chamber.left { fill: color-mix(in srgb, var(--sim-oxy) 16%, var(--sim-heart)); }
+.sim-chamber.cur { stroke: var(--sim-applied); stroke-width: 8; }
+.sim-organ { fill: var(--sim-ground); stroke: var(--sim-surface); stroke-width: 4; }
+.sim-valve line { stroke: var(--sim-surface); stroke-width: 7; stroke-linecap: round; }
+.sim-valve.open line { stroke: var(--sim-component); }
+/* S3 photosynthesis: plant, soil, stomata, glucose, the word equation built term by term */
+.sim-soil { fill: color-mix(in srgb, var(--sim-wood) 30%, var(--sim-ground)); }
+.sim-roots line, .sim-stem { stroke: var(--sim-wood); stroke-width: 9; stroke-linecap: round; fill: none; }
+.sim-leaf { fill: var(--sim-leaf-fill); stroke: var(--sim-leaf); stroke-width: 5; }
+.sim-leaf.cur { stroke: var(--sim-applied); stroke-width: 8; }
+.sim-midrib { stroke: var(--sim-leaf); stroke-width: 4; }
+.sim-stoma { fill: var(--sim-surface); }
+.sim-glucose polygon { fill: var(--sim-sun); stroke: var(--sim-surface); stroke-width: 3; opacity: .7; }
+.sim-glucose.cur polygon { opacity: 1; stroke: var(--sim-applied); }
+.sim-gas { font: 600 30px var(--font-text); fill: var(--ink); }
+.sim-eq-term rect { fill: none; stroke: var(--muted); stroke-width: 3; stroke-dasharray: 8 6; }
+.sim-eq-term.said rect { stroke: var(--ink); stroke-dasharray: none; fill: var(--sim-ground); }
+.sim-eq-term.cur rect { stroke: var(--sim-applied); stroke-width: 5; }
+.sim-eq-term text, .sim-eq-op { font: 600 30px var(--font-text); fill: var(--ink); }
+.sim-eq-arrow line { stroke: var(--ink); stroke-width: 4; }
+.sim-eq-arrow path { fill: var(--ink); }
+.sim-eq-cond { font: 500 24px var(--font-text); fill: var(--muted); }
+.sim-label.word.part.in-block .sym { font-size: 30px; }
+/* S3 Bohr atom: shells, nucleus, electrons, the photon (its colour from its wavelength when known) */
+.sim-shell { fill: none; stroke: var(--muted); stroke-width: 2.5; stroke-dasharray: 6 8; }
+.sim-shell.on { stroke: var(--sim-surface); stroke-dasharray: none; }
+.sim-nucleus { fill: var(--sim-nucleus); stroke: var(--sim-surface); stroke-width: 3; }
+.sim-nucleus-z { font: 700 24px var(--font-text); fill: #fff; }
+.sim-electron { fill: var(--sim-electron); stroke: var(--bg, #fff); stroke-width: 2; }
+.sim-electron.jump { stroke: var(--sim-applied); stroke-width: 4; }
+.sim-photon { --photon: var(--sim-applied); }
+.sim-photon polyline { fill: none; stroke: var(--photon); stroke-width: 5; stroke-linecap: round; }
+.sim-photon polygon { fill: var(--photon); }
+/* S3 neutralisation: burette, flask, liquid, ions (H⁺ acid colour, OH⁻ base colour, water, the salt's ions) */
+.sim-burette rect, .sim-burette path { fill: var(--sim-ground); stroke: var(--sim-surface); stroke-width: 3; }
+.sim-burette line { stroke: var(--sim-surface); stroke-width: 4; }
+.sim-drop { fill: var(--sim-base); opacity: .8; }
+.sim-drop.cur { opacity: 1; }
+.sim-flask { fill: none; stroke: var(--sim-surface); stroke-width: 5; stroke-linejoin: round; }
+.sim-liquid { fill: var(--sim-water-fill); }
+.sim-liquid.cur { fill: color-mix(in srgb, var(--sim-acid) 22%, var(--sim-water-fill)); }
+.sim-ion.h { fill: var(--sim-acid); }
+.sim-ion.oh { fill: var(--sim-base); }
+.sim-ion.spec { fill: var(--sim-salt); }
+.sim-ion.water circle { fill: var(--sim-water); }
+.sim-ion.water circle + circle { fill: var(--sim-surface); }
+.sim-ion.cur, .sim-ion.water.cur circle:first-child { stroke: var(--sim-applied); stroke-width: 3; }
+.sim-legend .sim-ion.water { fill: var(--sim-water); }

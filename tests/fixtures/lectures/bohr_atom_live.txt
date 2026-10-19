@@ -1,0 +1,29 @@
+# Class 9 chemistry, ~2 minutes, written by Claude for F-014 S3 (processes). Expect: a content slide on the structure
+# of the atom; Rutherford's "circular orbits" is not the Bohr model (test4 trap); "let me show you the Bohr model"
+# opens simulation mode (nucleus, four empty shells, no electrons); "sodium, atomic number 11" fills 2, 8, 1 (valence 1);
+# "iron" is not used (Z > 20, a notice); orbitals get a notice; hydrogen's electron falling from the third level to the
+# second emits a photon of 1.89 eV, 656 nm; "let's get back to the slides" ends the mode with a recap; then valency.
+@setup subject=Chemistry grade=9 topic="Structure of the atom"
+
+Good morning everyone. Today we continue with the structure of the atom.
+[pause 1]
+Rutherford said that electrons revolve around the nucleus in circular orbits, but his model could not explain why the atom is stable.
+Niels Bohr improved this model in 1913.
+[pause 1.5]
+Let me show you the Bohr model of the atom.
+At the centre is the nucleus, which has protons and neutrons.
+The electrons revolve in fixed shells called K, L, M and N, and each shell can hold a fixed number of electrons.
+[pause 1]
+Take sodium, atomic number 11.
+Its electrons are arranged as 2, 8 and 1, so it has one valence electron.
+Iron has many more electrons, but we will not draw it today.
+In higher classes you will learn about orbitals like 1s and 2p.
+[pause 1]
+Now take hydrogen.
+When its electron absorbs energy, it gets excited and jumps to a higher shell.
+When the electron falls from the third level to the second, it emits a photon of red light.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 1]
+The electrons in the outermost shell are called valence electrons.
+The number of valence electrons decides how an atom combines with other atoms. This is called valency.

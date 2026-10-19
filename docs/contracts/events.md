@@ -51,7 +51,8 @@ unzoom_image, edit_text(slide_id, item_id = title | element id | <definition id>
 item_id), add_point(slide_id, text), show_equation(id: a presentation.equations entry, onto the live slide; F-013
 S3b), sim_show(template), sim_set(slide_id, slot + value | speed), sim_play / sim_pause / sim_step /
 sim_reset(slide_id), sim_toggle(slide_id, element, on), sim_pick(slide_id, template), sim_remove(slide_id),
-sim_full(slide_id?, on) (F-014), share_start, share_stop, set_theme(theme), set_mode(mode: standard | high; F-013, the app applies it and keeps it
+sim_full(slide_id?, on) (F-014), sim_next / sim_prev(slide_id) (S3: a process's next / previous drawn step, named with
+source teacher), share_start, share_stop, set_theme(theme), set_mode(mode: standard | high; F-013, the app applies it and keeps it
 in data/preferences.json), notes_open(id), notes_page(page), notes_follow(on) (removed in F-013: still decodes, nothing
 handles it), notes_remove(id), materials_create(items[{kind: summary|concepts|notes|assignment|pptx, name?,
 scope?: topic|lecture, count?, theme?}], lectures[past ids], current), materials_rename(id, name),

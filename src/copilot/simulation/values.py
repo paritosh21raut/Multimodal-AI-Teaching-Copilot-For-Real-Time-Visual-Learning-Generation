@@ -97,6 +97,14 @@ _UNIT_SPECS: tuple[tuple[str, str], ...] = (
              r"tonnes?\b|tons?\b"),
     ("angle", r"°|degrees?\b|deg\b"),
     ("force", r"(?i:kilo ?newtons?\b|newtons?\b)|(?<=\d)\s?kN\b|(?<=\d)\s?N(?:m|f|F)?\b|(?<=\d)\s?N\.? ?m\b"),
+    # S3: a beat rate ("72 beats per minute", "72 bpm", "beats 72 times a minute"), a volume ("25 mL", "70
+    # millilitres", "1.5 litres", "25 cm3"), a concentration ("0.1 M", "0.1 molar", "0.1 moles per litre"); before the
+    # length, so "25 cm3" / "0.1 M" are never metres
+    ("rate", r"(?i:beats?\s+(?:per|a|each|every)\s+minute\b|bpm\b|times\s+(?:per|a|each|every)\s+minute\b)"),
+    ("volume", r"(?i:millilit(?:re|er)s?\b|lit(?:re|er)s?\b(?!\s*per)|cubic\s+centimet(?:re|er)s?\b|cc\b)|"
+               r"(?<=\d)\s?(?:mL|ml|cm3|cm³|L|dm3|dm³)\b"),
+    ("concentration", r"(?i:molar\b|moles?\s+per\s+(?:lit(?:re|er)|dm3|dm³|cubic\s+decimet(?:re|er))\b|"
+                      r"mol(?:es)?\s?/\s?(?:l|dm3|dm³)\b|mol\s?dm-?3\b)|(?<=\d)\s?M\b"),
     ("speed", r"m/s\b(?!\s*(?:squared|square|²|2\b))|(?:metres?|meters?) per second\b(?!\s*(?:squared|square|²|per))|"
               r"km/h\b|kmph\b|kilomet(?:re|er)s? per hour\b"),
     ("length", r"(?i:(?:centi|milli|kilo)?(?:metres?|meters?)\b(?!\s*(?:per|/)))|(?<=\d)\s?(?:cm|mm|km)\b(?!\s*/)|"
@@ -108,7 +116,8 @@ _UNIT_SPECS: tuple[tuple[str, str], ...] = (
     ("time", r"(?i:seconds?\b|secs?\b|milliseconds?\b)|(?<=\d)\s?s\b|(?<=\d)\s?ms\b"),
 )
 _UNIT_RX = [(k, re.compile(rf"{NUM}\s*(?P<u>{u})", re.IGNORECASE if k not in ("force", "voltage", "current",
-                                                                                     "length", "time") else 0))
+                                                                                     "length", "time", "volume",
+                                                                                     "concentration") else 0))
             for k, u in _UNIT_SPECS]
 # case-sensitive kinds still accept their spelled-out unit in any case ("Newtons", "Volts")
 _ANY_UNIT = re.compile(r"\s*(?:" + "|".join(u for _, u in _UNIT_SPECS) + r"|percent|%)", re.IGNORECASE)
@@ -117,13 +126,18 @@ _PUSH = re.compile(r"\b(?:push\w*|pull\w*|appl(?:y|ied|ies|ying)|exert\w*|drag\w
                    r"external force|effort|force)\b", re.IGNORECASE)
 _RESULT = re.compile(r"\b(?:friction\w*|weight|normal|net|resultant|tension|gravit\w*|reaction|unbalanced|"
                      r"balanced|component|frictional)\b", re.IGNORECASE)
+# S3 (S2 review): "the tension in the rope is 40 N" pulling a block is the pull, not a result: only with a rope /
+# string / pull in the line and no other result word (a pendulum has no force slot, so its string's tension sets nothing)
+_TENSION = re.compile(r"\btension\b", re.IGNORECASE)
+_TENSION_PULL = re.compile(r"\b(?:rope|string|cord|cable|pull\w*|tow\w*)\b", re.IGNORECASE)
 MU_NAMES = (r"mu(?:\s+(?:sub\s+)?[ks])?|μ(?:\s?[ks])?|mew|myu|"
             r"(?:co-?\s?efficient|coefficient)\s+of\s+(?:kinetic\s+|static\s+|sliding\s+|limiting\s+)?f(?:r)?ictions?|"
             r"f(?:r)?iction(?:al)?\s+co-?\s?efficients?|fictional\s+co-?\s?efficients?")
 CONN = (r"(?:is|are|it|its|it's|of|be|=|equals?|equal\s+to|to|as|now|about|around|approximately|roughly|nearly|"
         r"becomes?|will\s+be|would\s+be|was|value(?:\s+of)?|let|taken\s+as|say|at|has|with|,|:)")
 _FILLER_WORDS = r"(?:\s+[a-z']+){0,6}?"  # "coefficient of friction [of the object of this surface] is"
-_MU = re.compile(rf"\b(?:{MU_NAMES})(?:\s+between(?:\s+\w+){{1,6}}?|{_FILLER_WORDS})?\s*(?:{CONN}\s*){{1,3}}"
+# S3 (S2 review): "coefficient of friction 0.2", the number straight after the name, no "is" / "of"
+_MU = re.compile(rf"\b(?:{MU_NAMES})(?:(?:\s+between(?:\s+\w+){{1,6}}?|{_FILLER_WORDS})?\s*(?:{CONN}\s*){{1,3}}|\s+(?=[\d.]))"
                  rf"{NUM}(?!\s*(?:kg|kilo|newtons?|N\b|degrees?|°|m\b|metres?|meters?|%))", re.IGNORECASE)
 _SMOOTH = re.compile(r"\b(?:smooth|frictionless|no friction|without friction|friction ?less|zero friction|"
                      r"neglect(?:ing)? friction|ignore friction|remove (?:the )?friction)\b", re.IGNORECASE)
@@ -139,7 +153,7 @@ _PUSH_DIR = re.compile(r"(?:^|\b(?:we|you|i|let's|let us|now|then|and|to|will|ca
                        r"(?:it\s+|the (?:block|box|body)\s+)?(?:up|down)\b", re.IGNORECASE)
 # "now pull it the other way", "push it backwards", "pull it in the direction of motion" (S2)
 _VERB_DIR = re.compile(r"(?:^|\b(?:we|you|i|let's|let us|now|then|and|to|will|can|must|if)\s+|,\s*)(?:push|pull|drag)\w*\s+"
-                       r"(?:it\s+|the (?:block|box|body)\s+)?(?:back(?:wards?)?\b|forwards?\b|the other way\b|to the "
+                       r"(?:it\s+|the (?:block|box|body)\s+)?(?:back(?:wards?)?\b|forwards?\b|the other way\b|to(?:wards?)? the "
                        r"(?:left|right)\b|(?:in|along) the (?:same |opposite )?direction|opposite|against)",
                        re.IGNORECASE)
 # S2 (user 2026-10-18): a push and a pull are two forces; the verb nearest before the value says which ("pull it with
@@ -149,10 +163,10 @@ _PUSH_W = re.compile(r"\b(?:push\w*|shov\w*)\b", re.IGNORECASE)
 # a force's direction, in its own clause: up / down the slope, with / against the motion (the template maps these:
 # on the floor "against" is to the left, on an incline it is up the slope)
 _WITH = re.compile(r"\b(?:in|along)\s+the\s+(?:same\s+)?direction\s+of\s+(?:the\s+|its\s+)?motion|\bforwards?\b|"
-                   r"\bto\s+the\s+right\b|\bin\s+the\s+same\s+direction\b", re.IGNORECASE)
+                   r"\bto(?:wards?)?\s+the\s+right\b|\bin\s+the\s+same\s+direction\b", re.IGNORECASE)
 _AGAINST = re.compile(r"\b(?:opposite|against|opposing)\s+(?:to\s+)?(?:the\s+)?(?:direction\s+of\s+)?(?:the\s+|its\s+)?"
                       r"(?:motion|movement)|\bopposing\s+force|\bin\s+the\s+opposite\s+direction|\bopposite\s+direction|\bbackwards?\b|"
-                      r"\bto\s+the\s+left\b|\bthe\s+other\s+way\b|\bback\b", re.IGNORECASE)
+                      r"\bto(?:wards?)?\s+the\s+left\b|\bthe\s+other\s+way\b|\bback\b", re.IGNORECASE)
 _CLAUSE_END = re.compile(r",|;|\.\s|\s(?:and|but|while|whereas|then)\s", re.IGNORECASE)
 CONTEXT_WORDS = 7  # a force value's role is read from the words just before it
 
@@ -177,8 +191,8 @@ def _clause(t: str, start: int, end: int) -> str:
 
 # the way the block moves, said in the line ("if the block is moving up and we push opposite to the motion"): then
 # "with / against the motion" is that way or the other (S2 review: "against" was always up the slope / to the left)
-_MOVING = re.compile(r"\b(?:mov\w*|slid\w*|go(?:es|ing)?|travel\w*|slipp\w*|accelerat\w*)\s+(?:up|down|to\s+the\s+left|"
-                     r"to\s+the\s+right|left|right|forwards?|backwards?)\b", re.IGNORECASE)
+_MOVING = re.compile(r"\b(?:mov\w*|slid\w*|go(?:es|ing)?|travel\w*|slipp\w*|accelerat\w*)\s+(?:up|down|to(?:wards?)?\s+the\s+left|"
+                     r"to(?:wards?)?\s+the\s+right|left|right|forwards?|backwards?)\b", re.IGNORECASE)
 
 
 def _direction(clause: str, line: str = "") -> str:
@@ -216,6 +230,8 @@ def _factor(kind: str, unit: str) -> float:
             1000.0 if u.startswith(("k", "kilo")) else 1.0
     if kind in ("voltage", "resistance", "frequency"):
         return 1000.0 if u.startswith("k") else 1.0
+    if kind == "volume":  # in mL: a millilitre = a cubic centimetre; a litre = a cubic decimetre = 1000 mL
+        return 1.0 if u.startswith(("m", "c")) else 1000.0
     if kind == "current":
         return 0.001 if u.startswith("m") else 1.0
     if kind == "time":
@@ -253,14 +269,16 @@ def heard(text: str) -> list[Heard]:
                     continue  # "in 1687 Newton published ...": a year and the name
                 before = " ".join(t[:m.start()].split()[-CONTEXT_WORDS:])
                 # "a friction of 5 N" / "the weight is 49 N" state a result; "push it with 20 N" is the input
-                if _RESULT.search(before):
+                tension = bool(_TENSION.search(before) and _TENSION_PULL.search(t)
+                               and not _RESULT.search(_TENSION.sub(" ", before)))
+                if _RESULT.search(before) and not tension:
                     continue
                 after = t[m.end():m.end() + 30]
-                pushed = bool(_PUSH.search(before) or _PUSH.search(after))
+                pushed = tension or bool(_PUSH.search(before) or _PUSH.search(after))
                 odd = bool(re.search(r"N\.? ?m|N[fF]$", unit))
                 # the role's words reach back to the previous force of the line ("pull it with a rope at 37 degrees with a
                 # force of 50 N"), not past it ("pull it with 10 N and push with 20 N")
-                role = _role(t[force_end:m.start()], after)
+                role = "pull" if tension else _role(t[force_end:m.start()], after)
                 force_end = m.end()
                 # the direction in the value's clause, or in the clause of its verb ("push it up the slope, with 20 N")
                 d = _direction(_clause(t, m.start(), m.end()), t)
@@ -365,6 +383,7 @@ class Resolved:
     mentioned: list[tuple[str, float]] = field(default_factory=list)  # there, number unsaid: (slot, stand-in)
     why: list[str] = field(default_factory=list)  # how each value was read (logs, tests)
     computed: set[str] = field(default_factory=set)  # S2: slots set from another form (1 / T, crest to trough x 2)
+    refused: list[str] = field(default_factory=list)  # S3: heard, not drawn ("an ion", "orbitals"): /control notices
 
 
 _NEGATIVE = re.compile(r"(?:\bminus|\bnegative|−|-)\s*$", re.IGNORECASE)
@@ -479,6 +498,19 @@ def resolve(t: "Template", text: str, last: Optional[str] = None, *, friction_co
     for slot, v, said, pos, why in steps:
         take(slot, v, said, pos, why)
     stepped = {pos for *_, pos, _ in steps}
+    if t.parse is not None:  # S3: the template's own reading ("from the third level to the second", amounts per chemical)
+        for slot, v, said, pos in t.parse(line, items):
+            if slot == "!":  # a notice: heard, not drawn
+                r.refused.append(v)
+                continue
+            if slot == "~":  # a number the template read as nothing ("10 mL of water"): not the unit-first reading's
+                stepped.add(pos)
+                continue
+            if isinstance(v, str):
+                r.choices.setdefault(slot, v)
+            else:
+                take(slot, v, said, pos, "the template's own reading")
+            stepped.add(pos)  # that number is this value's, the unit-first reading leaves it
     for h in items:
         if h.start in stepped:
             continue  # the number of a step ("increase it to 40 degrees") is that step's value
@@ -497,7 +529,7 @@ def resolve(t: "Template", text: str, last: Optional[str] = None, *, friction_co
                 r.why.append(f"{h.said}: not an input here")
                 continue
             if rd.slot not in got:
-                take(rd.slot, (1 / h.value if rd.inverse else h.value * rd.factor) if h.value else h.value, h.said,
+                take(rd.slot, (rd.factor / h.value if rd.inverse else h.value * rd.factor) if h.value else h.value, h.said,
                      h.start, f"said as its {rd.kind}")
                 if rd.computed and rd.slot in got:
                     r.computed.add(rd.slot)

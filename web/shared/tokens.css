@@ -154,3 +154,46 @@
   --sim-block-edge: #c9d0da;
   --sim-card: rgba(28, 33, 42, 0.9);
 }
+
+/* S3 processes: water, vapour, the Sun, leaves, blood (oxygen-rich / -poor), ions, electrons; both themes */
+:root,
+[data-theme="light"] {
+  --sim-water: #1f6fd1;
+  --sim-water-fill: rgba(31, 111, 209, 0.14);
+  --sim-water-hi: rgba(31, 111, 209, 0.3);
+  --sim-vapour: #5b8fb9;
+  --sim-sun: #e09a00;
+  --sim-cloud: #ffffff;
+  --sim-cloud-hi: #dbe9fb;
+  --sim-leaf: #2e8b3e;
+  --sim-leaf-fill: #d6ecd2;
+  --sim-wood: #8a5a2b;
+  --sim-oxy: #c62828;
+  --sim-deoxy: #1e5bb8;
+  --sim-heart: #f6dede;
+  --sim-acid: #c2362a;
+  --sim-base: #1d5bbf;
+  --sim-salt: #6b7380;
+  --sim-electron: #1d5bbf;
+  --sim-nucleus: #c2362a;
+}
+[data-theme="dark"] {
+  --sim-water: #5aa9ff;
+  --sim-water-fill: rgba(90, 169, 255, 0.14);
+  --sim-water-hi: rgba(90, 169, 255, 0.3);
+  --sim-vapour: #9cc3e6;
+  --sim-sun: #ffc94a;
+  --sim-cloud: #3a4352;
+  --sim-cloud-hi: #4d5c74;
+  --sim-leaf: #5fd16f;
+  --sim-leaf-fill: #18301c;
+  --sim-wood: #c49a6c;
+  --sim-oxy: #ff6b6b;
+  --sim-deoxy: #6aa8ff;
+  --sim-heart: #3a2226;
+  --sim-acid: #ff7a6b;
+  --sim-base: #6aa8ff;
+  --sim-salt: #9aa3b2;
+  --sim-electron: #6aa8ff;
+  --sim-nucleus: #ff7a6b;
+}

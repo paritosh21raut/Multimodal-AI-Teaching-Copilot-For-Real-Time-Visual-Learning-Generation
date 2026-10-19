@@ -11,7 +11,8 @@ from typing import Annotated, Any, Iterable, Optional, Union
 
 from pydantic import Field, TypeAdapter
 
-from copilot.simulation.base import Origin, SimBase, Template
+from copilot.simulation import steps
+from copilot.simulation.base import Origin, SimBase, SimLabel, Template
 from copilot.simulation.templates import ALL
 
 TEMPLATES: dict[str, Template] = {t.id: t for t in ALL}
@@ -39,7 +40,7 @@ def _fold(s: str) -> str:
     return re.sub(r"[^a-z0-9 =]+", " ", "".join(c for c in s if not unicodedata.combining(c)))
 
 
-def search(q: str, limit: int = 10) -> list[Template]:
+def search(q: str, limit: int = 50) -> list[Template]:  # S3: 13 templates; 10 hid the last three
     """/control template search: every word of the query in the name, subject or aliases (all when empty)."""
     words = _fold(q).split()
     out = []
@@ -66,9 +67,14 @@ def solved(sim: SimBase, toggled: Optional[dict[str, bool]] = None, bump: bool =
     sol = t.solve(sim.params, sim.param_source)  # type: ignore[attr-defined]
     default = set(t.default_shown(sim.params, sim.param_source))  # type: ignore[attr-defined]
     toggled = toggled or {}
+    # S3: a step's own element (its arrow) is drawn once the step is said; a named part prints its label
+    default |= {d.element for d, st in zip(t.steps, sim.steps) if d.element and st.source is not None}
     shown = [e.id for e in t.elements if toggled.get(e.id, e.id in default)]
+    labels = {**sol.labels, **{p.id: SimLabel(symbol=p.label) for p in t.parts if p.id in sim.named
+                               and p.id not in sol.labels}}
     data = sim.model_dump()
-    data.update(labels={k: v.model_dump() for k, v in sol.labels.items()},
+    data.update(labels={k: v.model_dump() for k, v in labels.items()},
+                steps=[x.model_dump() for x in steps.numbered(t, sim.steps)] if t.steps else [],
                 derived=[d.model_dump() for d in sol.derived], drive=sol.drive, shown=shown,
                 series=[x.model_dump() for x in sol.series],
                 version=sim.version + 1)
@@ -88,7 +94,7 @@ def build(template_id: str, values: Iterable[tuple[str, float, str]] = (), origi
         params[slot] = value
         sources[slot] = source
     sim = t.sim(params=t.params(**params), param_source=sources, title=t.name, origin=origin,
-                playback={"speed": speed})
+                playback={"speed": speed}, steps=steps.initial(t))
     return solved(sim)
 
 
@@ -112,7 +118,12 @@ def switched(sim: SimBase, template_id: str, origin: Origin) -> SimBase:
     t = TEMPLATES[template_id]
     old = sim.params.model_dump()  # type: ignore[attr-defined]
     same = template_of(sim).kin == t.kin  # a pendulum's bob mass is not the next block's mass
-    keep = [(s, old[s], sim.param_source[s]) for s in t.carry if same and s in old and s in sim.param_source]
+    # S3: a force goes along (floor <-> incline), but not one at an angle the new template cannot draw (a push at 30°
+    # on the floor is not a push along the slope); its direction stays unsaid there (up / down is not forward / back)
+    angled = {s.follows for s in template_of(sim).slots if s.follows and old.get(s.name, 0) and
+              s.name not in t.slot_map}
+    keep = [(s, old[s], sim.param_source[s]) for s in t.carry
+            if same and s in old and s in sim.param_source and s not in angled]
     new = build(template_id, keep, origin=origin, speed=sim.playback.speed)
     pb = new.playback.model_copy(update={"rev": sim.playback.rev + 1})
     return new.model_copy(update={"playback": pb, "version": sim.version + 1})

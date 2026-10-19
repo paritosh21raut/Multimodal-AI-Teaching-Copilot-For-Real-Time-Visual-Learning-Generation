@@ -46,12 +46,25 @@ _SETUP_CUE = re.compile(
     r"\b(?:consider(?:ing)?|imagine|suppose|assume|picture|visuali[sz]e|think of|take|say)\b"
     r"(?:\s+(?:that|now|here|we have|we've got|you have|i have|there is|there's|an?\s+example of))*"
     r"\s+(?:a|an|the|one|this|some)\b"
-    r"|\blet(?:'s| us) (?:say|assume|consider|imagine|take|suppose|picture|visuali[sz]e)\b", re.IGNORECASE)
+    r"|\blet(?:'?s| us) (?:say|assume|consider|imagine|take|suppose|picture|visuali[sz]e)\b", re.IGNORECASE)
 # "let me show you", "let's see what happens", "let's simulate"
 _SHOW_CUE = re.compile(
-    r"\b(?:let me show you|i(?:'ll| will) show you|let(?:'s| us) (?:see|look at|watch) what happens|watch what happens|"
-    r"let(?:'s| us) (?:simulate|visuali[sz]e|animate)|let me (?:simulate|demonstrate)|see it in action)\b",
+    r"\b(?:let me show you|i(?:'ll| will) show you|let(?:'?s| us) (?:see|look at|watch) what happens|watch what happens|"
+    r"let(?:'?s| us) (?:simulate|visuali[sz]e|animate)|let me (?:simulate|demonstrate)|see it in action)\b",
     re.IGNORECASE)
+# S3 processes: "let's see how the heart pumps blood", "let's trace the path of the blood", "let me walk you through
+# the water cycle": a cue only for a process template (a mechanics setup needs the cues above)
+_PROCESS_CUE = re.compile(
+    r"\blet(?:'?s| us) (?:see|look at|watch|understand|explore|trace|follow) how\b"
+    r"|\blet(?:'?s| us) (?:trace|follow|track) the (?:path|flow|journey|route|movement)\b"
+    r"|\blet me (?:walk you|take you) through\b|\blet(?:'?s| us) (?:walk|go) through\b"
+    r"|\b(?:here|this) is how\b", re.IGNORECASE)
+# an announced topic ("today we will learn about the water cycle", "the next topic is the human heart"): for a process
+# template a Suggest chip at once (user 2026-10-19), never a show
+_ANNOUNCE = re.compile(
+    r"\b(?:the (?:next |new |first |second |third |main )?topic (?:is|of today)|today'?s topic|"
+    r"(?:going to|will|shall|let(?:'?s| us)|we) (?:now )?(?:learn|study|discuss|talk|read|start)(?: about| with)?|"
+    r"introduction to|chapter on|lesson on)\b", re.IGNORECASE)
 # "let's get back to the slides", "end the simulation", "back to the notes"
 _END_CUE = re.compile(
     r"\b(?:get|go|come|move|head|switch|turn|going|getting|coming)\s+back\s+to\s+(?:the\s+|our\s+)?"
@@ -74,6 +87,11 @@ _REVEAL = (("friction", re.compile(r"\bfriction\w*\b", re.I)), ("normal", re.com
 _NUMBER = re.compile(NUM, re.IGNORECASE)
 _RELATIVE_WORDS = re.compile(r"\b(?:double|triple|halve|half|twice|increase|decrease|reduce|raise|lower|remove the push|"
                              r"no push|stop pushing|frictionless|smooth|rough|no friction)\b", re.IGNORECASE)
+# S3: a step or part of any process ("then the water vapour condenses", "the left ventricle"): for the open one
+_STEP_WORDS = re.compile("|".join([f"(?:{w})" for t in TEMPLATES.values() for d in t.steps
+                                   for w in (d.words, d.weak) if w]
+                                  + [f"(?:{p.words})" for t in TEMPLATES.values() for p in t.parts]) or "(?!)",
+                         re.IGNORECASE)
 _SLOT_WORDS = re.compile(r"\b(?:" + "|".join(f"(?:{s.names})" for t in TEMPLATES.values() for s in t.slots if s.names)
                          + r")\b", re.IGNORECASE)  # whole words: the projectile's "u" is not in "you"
 
@@ -101,6 +119,20 @@ def _setup(text: str) -> str:
         if t.setup.search(text):
             return tid
     return ""
+
+
+ANNOUNCE_GAP = 40  # characters between "the topic is" and the process it names
+
+
+def _announced(tid: str, text: str) -> bool:
+    """Is the process the announced topic ("today we will learn about the water cycle"), not only mentioned beside one
+    ("the next topic is respiration, quite different from photosynthesis")?"""
+    setup = TEMPLATES[tid].setup
+    for m in _ANNOUNCE.finditer(text):
+        s = setup.search(text, m.end())
+        if s is not None and s.start() - m.end() <= ANNOUNCE_GAP and not re.search(r"[,;]", text[m.end():s.start()]):
+            return True
+    return False
 
 
 def score(tid: str, text: str) -> int:
@@ -132,7 +164,8 @@ def _values(text: str) -> dict[str, dict]:
 
 # words that set a choice or a value without a number ("in parallel", "thrown horizontally", "from a cliff")
 _WORD_VALUES = re.compile("|".join([f"(?:{rx})" for t in TEMPLATES.values() for rx, _, _ in t.said_as]
-                                   + [f"(?:{s.present})" for t in TEMPLATES.values() for s in t.slots if s.present])
+                                   + [f"(?:{s.present})" for t in TEMPLATES.values() for s in t.slots if s.present]
+                                   + [f"(?:{t.listens})" for t in TEMPLATES.values() if t.listens])
                           or "(?!)", re.IGNORECASE)
 
 
@@ -140,7 +173,7 @@ def _maybe_values(text: str) -> bool:
     """Could the line say something to an open simulation ("make it 30", "0.3", "double it", "the pushing force",
     "now connect them in parallel")?"""
     return bool(_NUMBER.search(text) or _RELATIVE_WORDS.search(text) or _SLOT_WORDS.search(text)
-                or _WORD_VALUES.search(text))
+                or _WORD_VALUES.search(text) or _STEP_WORDS.search(text))
 
 
 def detect(text: str, before: tuple[str, ...] = (), meta: bool = False) -> Detection:
@@ -155,12 +188,26 @@ def detect(text: str, before: tuple[str, ...] = (), meta: bool = False) -> Detec
         return Detection("", "values", values, reveal) if values or _maybe_values(text) else Detection()
     tid = _setup(text)
     m = _SETUP_CUE.search(text)
+    process = bool(tid) and TEMPLATES[tid].process
     if tid and m:
         return Detection(tid, "cue", values, reveal, m.group(0))
+    pm = _PROCESS_CUE.search(text) if process else None
+    if pm:
+        return Detection(tid, "cue", values, reveal, pm.group(0))
+    if process and _announced(tid, text) and not _SHOW_CUE.search(text):
+        return Detection(tid, "score", values, reveal, "announced", score=SCORE_MIN)  # a chip at once (S3)
     show = _SHOW_CUE.search(text)
-    if show:
+    proc_show = None if show else _PROCESS_CUE.search(text)
+    if show or proc_show:
         found = tid or next((x for x in (_setup(b) for b in reversed(before[-SHOW_CUE_LOOKBACK:])) if x), "")
-        if found:
+        if found and TEMPLATES[found].process and not tid:
+            # its setup only in the lines before ("... through tiny pores called stomata." "Now let's see how the
+            # process actually happens"): a Suggest chip, not a show (user 2026-10-19; V1's demo lecture unchanged);
+            # a bare "let me show you" after a process line proposes nothing (a picture, maybe; the S0 rule)
+            if proc_show:
+                return Detection(found, "score", values, reveal, proc_show.group(0), score=SCORE_MIN)
+            found = ""
+        if found and show:
             return Detection(found, "cue", values, reveal, show.group(0))
     if tid:
         s = score(tid, text)

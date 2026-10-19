@@ -20,7 +20,7 @@ export const OFFSETS = [[0, 0], ...STEPS.flatMap((d) => DIRS.map(([x, y]) => [x 
 // the drawn strokes a label must not sit on (besides the arrows): surfaces, guides, angle arcs, wedges, strings,
 // wires, waves, the marked angle and its segments. Not the hatching (texture) and not the readout's card.
 export const STROKES = ".sim-surface, .sim-guide, .sim-angle, .sim-wedge, .sim-string, .sim-wire, .sim-resistor, " +
-  ".sim-plate, .sim-wave, .sim-marked, .sim-seg";
+  ".sim-plate, .sim-wave, .sim-marked, .sim-seg, .sim-flow .line";  // S3: the process flows
 
 const hit = (a, b) => a.x < b.x + b.w + PAD && b.x < a.x + a.w + PAD && a.y < b.y + b.h + PAD && b.y < a.y + a.h + PAD;
 const inside = (a) => a.x >= 4 && a.y >= 4 && a.x + a.w <= W - 4 && a.y + a.h <= H - 4;
@@ -71,7 +71,7 @@ export function placeLabels(svg) {
   const fixed = [];
   const lines = [];  // [p, q] in stage units
   const shapes = [];
-  for (const el of svg.querySelectorAll(".sim-block, .sim-bob")) {
+  for (const el of svg.querySelectorAll(".sim-block, .sim-bob, .sim-badge, .sim-step-title, .sim-sun, .sim-cloud, .sim-tree, .sim-obstacle")) {  // S3: step badges
     const b = boxOf(svg, el);
     if (b) { fixed.push(b); shapes.push(b); }
   }
@@ -80,7 +80,7 @@ export function placeLabels(svg) {
   for (const el of svg.querySelectorAll(STROKES)) if (!el.closest(".sim-readout")) strokes.push(...segments(svg, el));
   // the readout card: as wide as its rows, in the first corner (top left, top right, bottom left) where it covers no
   // block, bob or arrow (a steep incline's block stands where the card usually is)
-  const card = svg.querySelector(":scope > .sim-readout");
+  const card = svg.querySelector(":scope > .sim-readout:not(.fixed)");
   if (card) {
     const rect = card.querySelector(".card");
     const rows = [...card.querySelectorAll(":scope > g .sim-label")].map((t) => t.getBBox());
@@ -98,6 +98,10 @@ export function placeLabels(svg) {
     const [x, y] = spots.find((p) => !covers(p)) || spots[0];
     card.setAttribute("transform", `translate(${x},${y})`);
     fixed.push({ x, y, w, h });
+  }
+  for (const el of svg.querySelectorAll(":scope > .sim-readout.fixed .card")) {  // S3: a card the scene placed
+    const b = boxOf(svg, el);
+    if (b) fixed.push(b);
   }
   // the footer: the caption stays, a note that runs into it goes up a line
   const foot = [...svg.querySelectorAll(":scope > .sim-caption")];

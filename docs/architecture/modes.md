@@ -5,7 +5,7 @@ All modes share audio → STT → understanding → `LectureState`. They differ 
 | Mode | Name | Status | Output |
 |---|---|---|---|
 | A | **Live Slides** | V1 (done) | `SlideSpec` deck |
-| B | **Concept Simulation** | V2 (S0, S1 done 2026-10-17) | a `simulation` block (`SimulationSpec`) inside a slide |
+| B | **Concept Simulation** | V2 (S0, S1 2026-10-17; S2 2026-10-18; S3 processes 2026-10-19) | a `simulation` block (`SimulationSpec`) inside a slide |
 | C | **Story Scenes** | V3 | `StoryboardSpec` (scenes: visual, caption, motion, duration) |
 
 ## Mode selection
@@ -23,7 +23,8 @@ visualization useful?" is the policy's decision (a setup with dynamics → yes; 
 - Simulation mode (S1): a shown simulation is a slide of its own and pauses slide making; the talk meanwhile becomes
   a recap slide when the teacher goes back to the slides (`presentation/recap.py`).
 - Templates are written by developers (Python solver + JS scene); the LLM never writes code or scenes. S0: block on a
-  surface, incline; S1: pendulum, projectile, DC circuit, wave, orbit, unit circle → sine. Plan to S4 (processes; semiconductors, RLC, networks) and Explore mode: F-014 §2.
+  surface, incline; S1: pendulum, projectile, DC circuit, wave, orbit, unit circle → sine; S3 (processes: discrete steps moved by
+  speech, Next / Prev, an auto-cycle): water cycle, heart, photosynthesis, Bohr atom, acid–base neutralisation. Plan to S4 (processes; semiconductors, RLC, networks) and Explore mode: F-014 §2.
 - The teacher's Full stage (`sim_full`) shows it full screen, like a zoomed image.
 
 ## Story Scenes (V3)

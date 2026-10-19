@@ -118,6 +118,26 @@ class Playback(_Model):
     rev: int = Field(default=0, ge=0)       # bumped by play / pause / step / reset / a new motion (switch)
 
 
+class Step(_Model):
+    """S3: one step of a process (evaporation, "into the right ventricle"). Every step that is drawn is drawn from the
+    start; its name is printed only once the teacher said it or went to it (Next / Prev): the truthfulness rule of the
+    values. An optional step (transpiration, runoff) is drawn only once said."""
+    id: str
+    n: int = 0                        # its number as drawn (1, 2, ...) among the drawn steps; 0 = not drawn yet
+    label: str = ""                   # its name, "" until said / the teacher's (then the template's name for it)
+    source: Optional[Literal["said", "teacher"]] = None
+    optional: bool = False
+
+
+class Cycle(_Model):
+    """S3 auto-cycle (user 2026-10-19: only after 20 s without a step word): from the step `first` at simulation time
+    `t0`, the next drawn step every `every_s` simulation seconds, round and round. Pages work out the current step from
+    their clock (closed form, like the motion), the engine from its own: steps.current()."""
+    t0: float = Field(ge=0.0)
+    first: int = Field(ge=0)
+    every_s: float = Field(default=4.0, gt=0.0)
+
+
 class SimBase(_Model):
     """Fields every template's spec has; a template subclasses it with `template: Literal[id]` and `params`."""
     template: str
@@ -133,6 +153,12 @@ class SimBase(_Model):
     annotations: list[Annotation] = Field(default_factory=list, max_length=3)
     playback: Playback = Field(default_factory=Playback)
     origin: Origin = "cue"
+    # S3 processes (discrete steps that follow the speech): [] for a motion template
+    steps: list[Step] = Field(default_factory=list)
+    step: int = Field(default=-1, ge=-1)  # the current step's index in `steps` (-1: none yet, nothing highlighted)
+    step_by: Literal["", "speech", "teacher", "auto"] = ""  # who moved it last; auto: `cycle` decides it
+    cycle: Optional[Cycle] = None
+    named: list[str] = Field(default_factory=list)  # parts the teacher named (their labels print): "left ventricle"
 
     ELEMENTS: ClassVar[tuple[str, ...]] = ()
     LABELS: ClassVar[tuple[str, ...]] = ()  # label keys beyond the elements (parts of one element: "w_par", "w_perp")
@@ -155,6 +181,13 @@ class SimBase(_Model):
             raise ValueError("shown has duplicates")
         if any(not math.isfinite(v) for v in self.drive.values()):
             raise ValueError("drive values must be finite")
+        if self.step >= len(self.steps) or (self.cycle is not None and self.cycle.first >= len(self.steps)):
+            raise ValueError("step out of range")
+        if any(s.label and s.source is None for s in self.steps):
+            raise ValueError("a step's name prints only once said or the teacher's")
+        bad = [n for n in self.named if n not in elements | set(self.LABELS)]
+        if bad or len(set(self.named)) != len(self.named):
+            raise ValueError(f"unknown or repeated part(s) in named: {bad}")
         return self
 
 
@@ -304,7 +337,7 @@ Solver = Callable[[BaseModel, dict[str, str]], Solution]
 @dataclass(frozen=True)
 class Read:
     """S2: a value of this kind said in another form, by the words around it (simulation.values.resolve). slot: the
-    slot it sets, as value * factor (or 1 / value when inverse); "" = not an input ("the string is 3 m long" is not
+    slot it sets, as value * factor (or factor / value when inverse: 60 / T for beats per minute); "" = not an input ("the string is 3 m long" is not
     the wavelength). A value changed on the way (inverse or factor != 1) is computed."""
     kind: str                 # the heard kind (time, length, ...)
     before: str               # regex on the words before the value, in its clause (end-anchored as needed)
@@ -316,6 +349,32 @@ class Read:
     @property
     def computed(self) -> bool:
         return self.inverse or self.factor != 1.0
+
+
+@dataclass(frozen=True)
+class StepDef:
+    """S3: a step of a process template, in its order. words: the regex that names it in a line ("condens\\w*")."""
+    id: str
+    label: str                # its name on the stage once said ("Condensation")
+    words: str
+    optional: bool = False    # drawn only once said (transpiration, runoff)
+    element: str = ""         # an element drawn with it once said (its arrow)
+    # a plain mention ("the rain", "water vapour rises"): names the step only when the line names no step by its own
+    # term or verb ("Some of the rain flows over the ground ... runoff" is runoff, not precipitation)
+    weak: str = ""
+
+
+@dataclass(frozen=True)
+class Part:
+    """S3: a named part of the picture (a chamber, a valve, a gas): its label prints once the teacher named it."""
+    id: str                   # a label key of the Sim (LABELS) or an element id
+    label: str
+    words: str
+
+
+# S3: template-specific values the unit-first parser cannot read (the Bohr atom's "from the third level to the
+# second", the amounts of an acid and of a base in one line): (slot, value, words as heard, position in the line)
+Parse = Callable[[str, list[Any]], list[tuple[str, Any, str, int]]]
 
 
 @dataclass(frozen=True)
@@ -357,10 +416,22 @@ class Template:
     # up | down (the slope) and with | against (the motion), simulation.values
     force_dirs: tuple[tuple[str, str, dict[str, str]], ...] = ()
     reads: tuple[Read, ...] = ()                # S2: values said in another form (Read), tried first
+    # S3 processes: steps in order (the speech moves the current one; Next / Prev; auto-cycle), named parts, and
+    # values the unit-first parser cannot read
+    steps: tuple[StepDef, ...] = ()
+    parts: tuple[Part, ...] = ()
+    parse: Optional[Parse] = None
+    every_s: float = 4.0                        # auto-cycle: simulation seconds per step
+    listens: str = ""                           # regex: words its parse reads with no number ("sodium", "an orbital"):
+                                                # such a line reaches the open simulation
 
     @property
     def kin(self) -> str:
         return self.family or self.id
+
+    @property
+    def process(self) -> bool:
+        return bool(self.steps)
 
     def slot(self, name: str) -> Slot:
         return next(s for s in self.slots if s.name == name)

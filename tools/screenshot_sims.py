@@ -108,6 +108,62 @@ SCENES = [
         "Here is the graph of one particle."], 4),
     ("graph_unknown", "Inclined plane", [
         "Imagine a block on a ramp.", "Let us see the graph."], 5),
+    # S3 processes: the current step follows the speech; a step not said is numbered, not named
+    ("water_cycle_start", "Water cycle", ["Let me show you the water cycle."], 3),
+    ("water_cycle", "Water cycle", [
+        "Let me show you the water cycle.",
+        "Heat from the sun makes water evaporate from the sea.",
+        "As the vapour rises it cools and condenses into tiny droplets, forming clouds."], 3),
+    ("water_cycle_all", "Water cycle", [
+        "Let us see how the water cycle works.",
+        "Water evaporates from the oceans, and plants release water vapour by transpiration.",
+        "The vapour condenses into clouds, and then it falls as rain.",
+        "Some water flows over the land as runoff, some soaks into the ground as groundwater.",
+        "Finally the water collects in the oceans and lakes."], 4),
+    ("heart_start", "The heart", ["Let me show you how the human heart pumps blood."], 2),
+    ("heart", "The heart", [
+        "Let me show you how the human heart pumps blood.",
+        "A normal heart beats 72 times a minute and each beat pumps out 70 mL of blood.",
+        "Deoxygenated blood from the body enters the right atrium through the vena cava.",
+        "The right atrium contracts and pushes it into the right ventricle through the tricuspid valve.",
+        "The right ventricle pumps it to the lungs through the pulmonary artery."], 1),
+    ("heart_all", "The heart", [
+        "Let us trace the path of blood through the human heart.",
+        "Blood from the body enters the right atrium, then the right ventricle, which pumps it to the lungs.",
+        "Oxygenated blood returns to the left atrium through the pulmonary veins.",
+        "It passes into the left ventricle through the mitral valve.",
+        "The left ventricle pumps it to the rest of the body through the aorta."], 1),
+    ("photosynthesis_start", "Photosynthesis", ["Let me show you how photosynthesis happens in a leaf."], 2),
+    ("photosynthesis", "Photosynthesis", [
+        "Let me show you how photosynthesis happens in a leaf.",
+        "Water is absorbed by the roots and travels up the stem.",
+        "Carbon dioxide enters the leaf through tiny pores called stomata."], 1),
+    ("photosynthesis_all", "Photosynthesis", [
+        "Let me show you how photosynthesis happens in a leaf.",
+        "Chlorophyll absorbs sunlight.",
+        "Water is absorbed by the roots and carbon dioxide enters through the stomata.",
+        "Glucose is made in the leaf and oxygen is released through the stomata.",
+        "Respiration is the reverse of this."], 1),
+    ("bohr_start", "Atoms", ["Let me show you the Bohr model of the atom."], 2),
+    ("bohr_sodium", "Atoms", [
+        "Let me show you the Bohr model of the atom.",
+        "Take sodium, atomic number 11.",
+        "The nucleus has protons and neutrons, and the electrons revolve in fixed shells, 2, 8 and 1."], 1),
+    ("bohr_hydrogen", "Atoms", [
+        "Let me show you the Bohr model of the atom.",
+        "Take hydrogen.",
+        "When the electron falls from the third level to the second, it emits a photon."], 10),
+    ("neutralisation_start", "Neutralisation", ["Let me show you a neutralisation reaction."], 2),
+    ("neutralisation", "Neutralisation", [
+        "Let me show you a neutralisation reaction.",
+        "We take 25 mL of 0.1 M hydrochloric acid in a flask; the acid gives H+ ions.",
+        "We titrate it with 0.1 molar sodium hydroxide, which gives OH- ions.",
+        "Now add 10 mL of the base.",
+        "H+ and OH- combine to form water.", "Let's look at the graph."], 2),
+    ("neutralisation_weak", "Neutralisation", [
+        "Let me show you a neutralisation reaction.",
+        "Acetic acid is a weak acid, and we add sodium hydroxide.",
+        "The salt remains in the solution."], 2),
 ]
 
 
@@ -135,7 +191,9 @@ async def build(h, topic, lines, steps):
         await talk.say(line)
     await h.settle()
     s = h.deck.live
-    await cmd(h, "sim_reset", slide_id=s.id)
+    b = next((x for x in s.blocks if x.type == "simulation"), None)
+    # a process keeps its step (Restart would clear it): pause where it is, then step the clock (S3)
+    await cmd(h, "sim_pause" if b is not None and b.sim.steps else "sim_reset", slide_id=s.id)
     for _ in range(steps):
         await cmd(h, "sim_step", slide_id=s.id)
     return h.deck.live

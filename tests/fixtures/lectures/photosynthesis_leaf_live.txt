@@ -1,0 +1,29 @@
+# Class 7 biology, ~2 minutes, written by Claude for F-014 S3 (processes). Expect: a content slide on photosynthesis;
+# "let me show you how photosynthesis happens in a leaf" opens simulation mode (plant, Sun, five steps drawn, unnamed,
+# the word equation as empty boxes); each step said moves the stage and fills its term; respiration is added only when
+# said; "artificial photosynthesis" is a trap; "let's get back to the slides" ends the mode with a recap; then the
+# slides go on (importance of plants). No numbers.
+@setup subject=Biology grade=7 topic="Photosynthesis"
+
+Good morning everyone. Today we are going to learn how green plants make their own food.
+[pause 1]
+This process is called photosynthesis. Photo means light and synthesis means putting together.
+It takes place mainly in the leaves, in the green parts that contain chlorophyll.
+[pause 1.5]
+Let me show you how photosynthesis happens in a leaf.
+First, chlorophyll absorbs sunlight. This light energy drives the whole process.
+Water is absorbed by the roots and travels up the stem to the leaf.
+Carbon dioxide enters the leaf through tiny pores called stomata.
+[pause 1]
+Inside the leaf, water and carbon dioxide combine and glucose is made.
+Oxygen is released into the air through the stomata as a by-product.
+[pause 1]
+So the word equation is: carbon dioxide plus water, in the presence of light and chlorophyll, gives glucose plus oxygen.
+Respiration is the reverse: glucose and oxygen give carbon dioxide and water, and energy is released.
+[pause 1]
+Scientists are also working on artificial photosynthesis to make solar fuels, but that happens in a lab.
+[pause 1]
+Okay, let's get back to the slides.
+[pause 1]
+Plants are the source of all our food, directly or indirectly.
+They also keep the oxygen in the air that every animal breathes.

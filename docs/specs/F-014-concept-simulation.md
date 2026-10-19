@@ -234,3 +234,51 @@ picture).
   the word "angle"; a second force's angle dropped; incline with / against fixed to one side). Open (plausible):
   "tension 40 N" not read as the pull; an exact N = 0 prints "0 N (kinetic)"; "towards the left" not a direction;
   "coefficient of friction 0.2" without "is / of"; forces are not carried on a floor / incline switch.
+
+## S3 result (2026-10-19)
+- **Process model** (`simulation/steps.py`, `SimBase.steps / step / step_by / cycle / named`): each step is drawn and
+  numbered from the start, its name printed only once said (or gone to with Next / Prev: source teacher); none is
+  highlighted until the first is said; a line naming several steps names them all, the first is current; optional
+  steps (transpiration, runoff, Bohr absorb / emit) are drawn only once said; strong words beat `weak` words ("rain",
+  "water vapour rises", "H⁺ ions" alone); after 20 s with no step word the steps cycle every 4 s (never naming);
+  parts' labels print once named. `/control`: Prev / Next and "k / n" on the sim bar (events `sim_next`, `sim_prev`).
+- **Templates (5, all built):** water cycle; heart (HR from speech, "a beat lasts 0.8 s" → 75 bpm computed; CO only
+  with HR and stroke volume said; valves open / shut with the phases); photosynthesis (word equation term by term,
+  respiration only if said); Bohr atom (Z ≤ 20 from a name or atomic number, shells 2, 8, 8, 2, config + valence;
+  energies / λ for hydrogen only; ions, orbitals, Z > 20 → notices; a jump into a full inner shell is not drawn, a
+  note says why); acid–base neutralisation (strong acids × strong bases at 25 °C: exact pH, V(eq), salt name and
+  formula; H₂SO₄ and weak ones drawn, no pH, a notice; pH–V graph only with c(acid), V(acid), c(base) said; each
+  amount tied to the chemical said nearest it; a lone volume is the base added; "5 mL more" → a notice to say the
+  total). Template hooks: `parse` (slot `"!"` = notice → `SimulationNotice`, `"~"` = a number read as nothing),
+  `listens` (a line with "sodium" and no number still reaches the open simulation).
+- **Detection:** a process shows on a cue in the same line; a setup only in the look-back lines or an announced topic
+  ("let us learn neutralization reaction", the user's live test) gives a Suggest chip. `let's` also as "lets".
+- **S2 leftovers fixed:** "tension 40 N" = the pull; an exact N = 0 prints no "(kinetic)"; "towards the left / right"
+  is a direction; "coefficient of friction 0.2" without is / of; forces carried on a floor ⇄ incline switch (the
+  `v2_eval sessions` rows that changed are exactly these carries).
+- **Browser flake (S2):** cause = the test read the server state right after a click while the command was still in
+  flight (`settle` drained only the bus). Reproduced 4/20 with a 200 ms delay injected into
+  `DisplayHub.handle_client_message`; fixed with `Harness.until(predicate)` (26/26 with the delay). Other e2e files
+  with click-then-`settle` were not audited.
+- **Also fixed:** `/api/simulations` returned at most 10 templates (13 now): the picker hid three (caught by the S2
+  dock test). `test_orbit_traps` changed by requirement: a Bohr-model line is now a `bohr_atom` cue, so the test
+  asserts "not an orbit" instead of "nothing".
+- **Reviews:** two independent subagents. (1) Water cycle / heart / photosynthesis: findings 1–14, 17 fixed with tests.
+  (2) Bohr / neutralisation: amounts given to the other chemical's slot, chemical chosen by dict order ("acetic acid
+  instead of hydrochloric acid"), "neutralise" in biology / physics opening the sim, missing "is neutralised",
+  "shells go from 2 to 3" read as a jump, a jump into a full shell, "lead us / iron rod / calcium carbonate" as atoms,
+  water dilution / spelt formulas ("H C L") / "5 mL more", concentrations of nothing named, pH to 3 s.f. (now 2
+  decimals), flask picture rounding to "no H⁺" short of equivalence, "hydrogen iodide", bare "water is H2O": all fixed
+  with tests.
+- **Open:** numbers shift when an optional step is said later (review 15); the heart's valves skip the
+  isovolumetric phases (16); "the human heart" setup is fairly broad (4); ions by symbol ("Na plus ion") give no
+  notice; "the light falls back" can name the Bohr emit step; with every amount said and no base volume, the graph
+  marks V = 0 as now; the detector's force reveal words ("pushes the blood") reach process lines (ignored: the heart
+  has no such element).
+- **Eval** (`verify_results/_eval/v2_s3_before.txt` → `_after.txt`): values 97 lines P/R unchanged (1.00); detect
+  54 → 59 lectures, show precision 1.00 (3/3 → 8/8), recall 1.00, 0 shows / chips on the negative lectures, suggest
+  moments 3/4 → 9/10 (the test21 orbit miss predates S3); no recorded biology / chemistry lecture shows; test28 and
+  the V1 neutralization live lecture give a chip only.
+- **Runtime:** simulated heart_live.txt with real Groq (session 20261019-105825-2333): 10 interpretations, 0 fallbacks,
+  topic chip → spoken cue → simulation mode, HR 72 read, steps 1 → 6 by speech in order with parts named, end cue →
+  recap slide; 23,109 tokens (prompt + completion, app usage buckets).

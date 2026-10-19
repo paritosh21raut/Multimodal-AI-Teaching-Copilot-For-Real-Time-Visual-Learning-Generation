@@ -89,6 +89,8 @@ CommandKind = Literal[
     # F-014 S1: sim_end = Back to slides (simulation mode ends, the recap follows); sim_accept / sim_dismiss {id}: the
     # Suggest chip; set_simulations {setting: auto | suggest | off} (kept in data/preferences.json)
     "sim_end", "sim_accept", "sim_dismiss", "set_simulations",
+    # F-014 S3: a process template's next / previous step {slide_id} (names that step: the teacher chose it)
+    "sim_next", "sim_prev",
 ]
 
 

@@ -18,9 +18,15 @@ import * as dcCircuit from "./dc_circuit.js";
 import * as wave from "./wave.js";
 import * as orbit from "./orbit.js";
 import * as unitCircle from "./unit_circle.js";
+import * as waterCycle from "./water_cycle.js";
+import * as heart from "./heart.js";
+import * as photosynthesis from "./photosynthesis.js";
+import * as bohrAtom from "./bohr_atom.js";
+import * as neutralisation from "./neutralisation.js";
 
 // template id -> scene module: { scene({sim, v, u, t}), motion(v) -> {a, dir, L, rest}, TWEEN: keys tweened }
-export const SCENES = { block_on_surface: blockOnSurface, incline, pendulum, projectile, dc_circuit: dcCircuit, wave, orbit, unit_circle: unitCircle };
+export const SCENES = { block_on_surface: blockOnSurface, incline, pendulum, projectile, dc_circuit: dcCircuit, wave, orbit, unit_circle: unitCircle,
+  water_cycle: waterCycle, heart, photosynthesis, bohr_atom: bohrAtom, neutralisation };
 
 const clocks = new Map();  // block id -> {rev, t, at, speed, state}
 const now = () => performance.now() / 1000;

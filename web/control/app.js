@@ -392,6 +392,11 @@ const SIM_CHOICES = {
   // S2 (user 2026-10-18): a push and a pull, each in or against the direction of motion
   block_on_surface: [["applied_dir", "Push direction", FLOOR_DIRS], ["pull_dir", "Pull direction", FLOOR_DIRS]],
   incline: [["applied_dir", "Push direction", SLOPE_DIRS], ["pull_dir", "Pull direction", SLOPE_DIRS]],
+  // S3: the acid and the base (strong ones: their pH is worked out; weak: drawn only)
+  neutralisation: [
+    ["acid", "Acid", [["hcl", "HCl"], ["hno3", "HNO₃"], ["hbr", "HBr"], ["hi", "HI"], ["hclo4", "HClO₄"], ["h2so4", "H₂SO₄"], ["weak", "weak acid"]]],
+    ["base", "Base", [["naoh", "NaOH"], ["koh", "KOH"], ["lioh", "LiOH"], ["caoh2", "Ca(OH)₂"], ["baoh2", "Ba(OH)₂"], ["weak", "weak base"]]],
+  ],
 };
 const speedLabel = (v) => (v === 0.25 ? "¼×" : v === 0.5 ? "½×" : `${v}×`);
 
@@ -408,14 +413,23 @@ function SimBar({ spec, b, send, running }) {
   const nextSpeed = SIM_SPEEDS[(SIM_SPEEDS.indexOf(speed) + 1) % SIM_SPEEDS.length] || 1;
   const [menu, setMenu, ref] = usePopover();
   const toggle = (name) => () => setMenu(menu === name ? false : name);
+  // S3: a process (discrete steps) gets Prev / Next instead of the 0.25 s step; Values only when there is a value
+  const process = (sim.steps || []).length > 0;
+  const hasValues = !t || t.slots.length > 0 || (SIM_CHOICES[sim.template] || []).length > 0;
   return html`<div class="image-bar sim-bar menu-wrap" ref=${ref}>
     <button class="icon" onClick=${cmd(playing ? "sim_pause" : "sim_play")} title=${playing ? "Pause the simulation" : "Play the simulation"}>
       ${svg(playing ? ICON.pause : ICON.play)}</button>
-    <button class="icon" onClick=${cmd("sim_step")} title="One step on (pauses)">${svg(ICON.step)}</button>
-    <button class="icon" onClick=${cmd("sim_reset")} title="Start the motion again">${svg(ICON.restart)}</button>
+    ${process
+      ? html`<div class="steps">
+          <button class="icon sim-prev" onClick=${cmd("sim_prev")} title="The previous step (shows its name)">${svg(ICON.prev)}</button>
+          <span class="count" title=${sim.step_by === "auto" ? "The steps cycle by themselves (nothing said about them for a while)" : ""}>${sim.step_by === "auto" ? "auto" : sim.step >= 0 && sim.steps[sim.step].n ? `${sim.steps[sim.step].n} / ${sim.steps.filter((s) => s.n > 0).length}` : `– / ${sim.steps.filter((s) => s.n > 0).length}`}</span>
+          <button class="icon sim-next" onClick=${cmd("sim_next")} title="The next step (shows its name)">${svg(ICON.next)}</button>
+        </div>`
+      : html`<button class="icon" onClick=${cmd("sim_step")} title="One step on (pauses)">${svg(ICON.step)}</button>`}
+    <button class="icon" onClick=${cmd("sim_reset")} title=${process ? "Start again (no step highlighted)" : "Start the motion again"}>${svg(ICON.restart)}</button>
     <button class="speed" onClick=${cmd("sim_set", { speed: nextSpeed })} title="Speed of the motion">${speedLabel(speed)}</button>
     <span class="sep"></span>
-    <button class=${menu === "values" ? "on" : ""} onClick=${toggle("values")} title="The values the simulation uses">${svg(ICON.sliders)}Values</button>
+    ${hasValues && html`<button class=${menu === "values" ? "on" : ""} onClick=${toggle("values")} title="The values the simulation uses">${svg(ICON.sliders)}Values</button>`}
     <button class=${"icon" + (menu === "show" ? " on" : "")} onClick=${toggle("show")} title="Forces and parts shown">${svg(ICON.eye)}</button>
     <button class=${"icon" + (menu === "pick" ? " on" : "")} onClick=${toggle("pick")} title="Another simulation for this slide">${svg(ICON.change)}</button>
     <button class="icon" onClick=${cmd("sim_full", { on: true })} title="Full screen on the display">${svg(ICON.full)}</button>

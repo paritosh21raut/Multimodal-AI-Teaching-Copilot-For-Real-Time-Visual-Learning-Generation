@@ -244,3 +244,12 @@ Controls send `Command` messages over the WebSocket → `CommandReceived` events
   same places. Measured by `tests/e2e/test_sim_labels_browser.py`.
 - **Graph strip** (`web/sims/graph.js`): under the motion, one or two panels from `series`; Python's ticks only; time
   lines drawn up to the clock with a dashed cursor (held when paused), V-I without a cursor; Show > Graph toggles it.
+
+## Process scenes (F-014 S3)
+- **Sim bar:** a process (a template with steps) shows Prev / Next and a step count ("2 / 5", "– / 5" before any step
+  is said, "auto" while it cycles) instead of Step; Restart clears the steps; Values is hidden for a template with no slots and no
+  choices (water cycle, photosynthesis).
+- **Stage:** a heading "Step k of n · name" (name only once said); steps not said yet are drawn, numbered, unnamed;
+  number-only badges sit on the flows; part labels print once named. A fixed Readout card (top left, `fixed`) lists
+  the said values first ("said · computed"); fixed cards are layout obstacles. Measured by
+  `tests/e2e/test_sim_process_browser.py` (labels, badges, cards, flows, shells: no overlaps, both themes).
