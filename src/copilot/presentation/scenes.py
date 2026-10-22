@@ -125,7 +125,8 @@ class SceneController:
         scene = scene.model_copy(update={"version": b.scene.version + 1})
         new = b.model_copy(update={"scene": scene})
         upd: dict[str, Any] = {"blocks": [new if x.id == b.id else x for x in spec.blocks]}
-        title = layout.title_of(scene)
+        # an emptied scene ("remove all") goes back to its cue's title, not the last thing removed
+        title = layout.title_of(scene) or (scene.title if not scene.entities else None)
         if title and spec.id not in self.e._teacher_titles and spec.title != title:
             upd["title"] = title
             m = self.e._sims.mode

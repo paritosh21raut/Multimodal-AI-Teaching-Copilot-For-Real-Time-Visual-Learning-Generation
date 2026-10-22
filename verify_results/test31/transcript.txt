@@ -1,0 +1,45 @@
+[    0.3] At a speed of 3 mps.
+[    7.7] Imagine a ball rolling at a speed of 3 mps.
+[   25.1] And the acceleration of the ball was 2 mpsw.
+[   37.6] The acceleration was 10 mpsp.
+[   53.1] If it was 30 mps square.
+[   67.2] 100 mps2
+[   83.4] If it was 3mps2.
+[  100.1] If the acceleration was zero.
+[  113.0] Imagine a square.
+[  119.8] Imagine a script.
+[  126.0] Hello.
+[  128.4] Imagine this were inside a triangle.
+[  135.9] and this triangle inside of pentagon.
+[  142.1] This pentagon inside a circle.
+[  149.3] If the pentagon was inside a circle.
+[  162.8] Remove it.
+[  168.6] Remove all the diagrams.
+[  173.5] Imagine a circle.
+[  175.7] Imagine two circles.
+[  180.7] Removal.
+[  185.1] Just keep two circles.
+[  191.7] If circle 1 is C1 and circle 2 is C2.
+[  200.3] If the circle 1 is C1 and circle 2 is C2.
+[  210.3] Now both the circles have a square inside them.
+[  219.0] Square has a rectangle inside it.
+[  226.4] The other one also.
+[  239.8] Remove all your items.
+[  246.0] Imagine a car moving at a speed of 60 kmph.
+[  253.3] Imagine a rocket moving at 600 km per hour.
+[  266.7] Imagine a train moving at 300 kmph.
+[  275.9] Trays moving at 300 kmph.
+[  283.8] The train is moving at 300 kmph.
+[  297.2] Remove the rocket and trace.
+[  304.0] Remove the trays.
+[  308.3] Remove the train.
+[  313.1] Imagine another car moving at a speed of 70 kmph.
+[  326.5] Imagine a car moving at 50 kmph.
+[  361.7] Imagine a boy running at a speed of 20 kmph.
+[  394.6] Imagine a boy running in a rain.
+[  411.2] Imagine a rocket moving at a speed of 100 kmph.
+[  437.7] Imagine a cuboid.
+[  446.6] Let us imagine a cuboid.
+[  454.9] Imagine a cube.
+[  466.4] Imagine a cone.
+[  473.3] Imagine a cylinder.

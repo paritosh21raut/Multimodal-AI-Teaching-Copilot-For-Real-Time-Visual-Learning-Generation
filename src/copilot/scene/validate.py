@@ -15,8 +15,8 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 from copilot.scene.spec import (
-    BEHAVIORS, BODY_KINDS, GEOMETRY_KINDS, ID_PATTERN, KINDS, KNOWN, MAX_ENTITIES, OPS, RELATIONS, Label, Q,
-    SceneOp, SceneSpec, Source,
+    BEHAVIORS, BODY_KINDS, GEOMETRY_KINDS, ID_PATTERN, KINDS, KNOWN, MAX_ENTITIES, OPS, RELATIONS, SOLID_KINDS, Label,
+    Q, SceneOp, SceneSpec, Source,
 )
 from copilot.simulation.values import NUM, heard, spoken_number
 
@@ -34,7 +34,7 @@ UNITS: dict[str, dict[str, float]] = {
 _ALIASES = {"metre": "m", "metres": "m", "meter": "m", "meters": "m", "centimetres": "cm", "centimeters": "cm",
             "millimetres": "mm", "kilometres": "km", "kilometers": "km", "unit": "units", "u": "units",
             "m/s2": "m/s^2", "m/s²": "m/s^2", "m/s/s": "m/s^2", "ms^-2": "m/s^2", "m s^-2": "m/s^2",
-            "kmph": "km/h", "kph": "km/h", "km/hr": "km/h", "°": "deg", "degree": "deg", "degrees": "deg",
+            "kmph": "km/h", "mps": "m/s", "mps2": "m/s^2", "mps^2": "m/s^2", "kph": "km/h", "km/hr": "km/h", "°": "deg", "degree": "deg", "degrees": "deg",
             "sec": "s", "secs": "s", "seconds": "s", "second": "s", "kilogram": "kg", "kilograms": "kg",
             "gram": "g", "grams": "g", "radians": "rad"}
 PROPS: dict[str, str] = {
@@ -55,11 +55,15 @@ _NUM_RX = re.compile(NUM, re.IGNORECASE)
 _EXPR_NUM = re.compile(r"\d+(?:\.\d+)?")
 _ID = re.compile(ID_PATTERN)
 CLOSED = ("square", "rectangle", "circle", "triangle", "polygon")
+BESIDE = ("left_of", "right_of", "above", "below")
+MOTION_PROPS = ("speed", "acceleration")  # a body's (a shape or a point given a speed is a model slip: refused)
 # the unit words after a said number -> its family ("radius 5 metres" is not a side of 5 cm)
 _FAMILY_AFTER = [(f, re.compile(rx, re.IGNORECASE)) for f, rx in (
+    # "mps square", "mps2" and a speech recogniser's "mpsw" / "mpsp" (a letter stuck to "mps") are m/s²
     ("acceleration", r"\s*(?:m/s(?:\^?2|²|\s+squared|\s+per\s+second)|m\s?s-2|"
-                     r"(?:metres?|meters?) per second (?:squared|per second))"),
-    ("speed", r"\s*(?:m/s|km/h|kmph|cm/s|(?:(?:centi|kilo)?(?:metres?|meters?)) (?:per|an?) (?:second|hour))"),
+                     r"mps(?:\s*(?:squared?|sq)\b|\^?2|²|[a-z]\b)|(?:metres?|meters?) per second (?:squared|per second))"),
+    ("speed", r"\s*(?:m/s|km/h|kmph|kph|km/hr|mps\b|cm/s|"
+              r"(?:(?:centi|kilo)?(?:metres?|meters?)|km) (?:per|an?) (?:second|hour))"),
     ("length", r"\s*(?:cm\b|mm\b|km\b|m\b|(?:centi|milli|kilo)?(?:metres?|meters?)\b|units?\b)"),
     ("angle", r"\s*(?:°|degrees?\b|deg\b|radians?\b)"),
     ("mass", r"\s*(?:kg\b|kilo(?:gram)?s?\b|grams?\b|g\b)"),
@@ -84,6 +88,8 @@ class Corpus:
         conv: list[tuple[float, str]] = []
         for line in lines:
             for m in _NUM_RX.finditer(line):
+                if m.start() > 0 and (line[m.start() - 1].isalpha() or line[m.start() - 1] in "/^"):
+                    continue  # a unit's exponent ("mps2", "m/s^2") or a name ("C1") is not a said number
                 v = spoken_number(m.group("num"))
                 if v is not None:
                     fam = next((f for f, rx in _FAMILY_AFTER if rx.match(line, m.end())), None)
@@ -113,9 +119,12 @@ def said_words(text: str, corpus: Corpus, scene: Optional[SceneSpec] = None) -> 
     one or two letters ("A", "AB") must be said as one: "point A", "called AB" (the article "a" is not a label)."""
     t = text.strip()
     if 0 < len(t) <= 2:
+        said = " ".join(corpus.lines)
+        if re.fullmatch(r"[A-Z][A-Z0-9]", t):  # "C1", "AB": said as a token, as written (not a unit like "m2")
+            return bool(re.search(rf"(?<![\w']){re.escape(t)}(?![\w'])", said))
         return bool(re.search(rf"\b(?:point|vertex|corner|side|line|called|named|letter|"
                               rf"(?:label(?:led)?|mark(?:ed)?|call)(?:\s+(?:it|this|that|them))?)\s+"
-                              rf"{re.escape(t)}\b", " ".join(corpus.lines)))
+                              rf"{re.escape(t)}\b", said))
     words = re.findall(r"[a-z0-9']+", text.lower())
     if not words:
         return False
@@ -239,6 +248,8 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
         pair = _PAIRS.get(op.kind)
         if pair is not None and (a.kind not in pair[0] or b.kind not in pair[1]):
             return None, f"{op.kind}: not for a {a.kind} and a {b.kind}"
+        if (a.kind in SOLID_KINDS or b.kind in SOLID_KINDS) and op.kind not in BESIDE:
+            return None, f"{op.kind}: not for a solid (only beside another shape)"
         if op.kind == "on" and a.kind != "point":
             return None, "on: only a point lies on something"
         chain = {r.a: r.b for r in scene.relations if r.a != a.id}  # a's own relation is replaced by this one
@@ -258,7 +269,11 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
         if not op.ids or any(scene.get(i) is None for i in op.ids):
             return None, f"focus: bad refs {op.ids!r}"
     out = Checked(op)
+    kind = op.kind if op.op == "add" else ent.kind if ent is not None else ""
     for key, raw in op.props.items():
+        if key in MOTION_PROPS and kind not in BODY_KINDS:
+            out.notes.append(f"{key}: a {kind} does not move (only ball block car particle)")
+            continue
         q, why = to_q(key, raw, corpus, ent.props.get(key) if ent is not None else None)
         if q is None:
             out.notes.append(why)

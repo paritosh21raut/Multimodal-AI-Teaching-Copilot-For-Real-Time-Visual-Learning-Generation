@@ -164,6 +164,15 @@ class Interpretation(_Lenient):
     visual: Optional[VisualHint] = None
     sim: str = ""  # F-014 S2: a simulation template id (SIM_IDS) the lines set up; "" = none (a hint, never a show)
 
+    @field_validator("meta_lines", mode="before")
+    @classmethod
+    def _meta_lines(cls, v: object) -> list[int]:
+        # line numbers only: a model that quotes the line ("Remove it.") marks nothing, it does not void the answer
+        if not isinstance(v, list):
+            return []
+        return [int(x) for x in v if isinstance(x, int) and not isinstance(x, bool)
+                or isinstance(x, str) and x.strip().isascii() and x.strip().isdigit()]
+
     @field_validator("sim", mode="before")
     @classmethod
     def _sim(cls, v: object) -> str:

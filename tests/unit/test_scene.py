@@ -536,3 +536,193 @@ async def test_a_cue_that_draws_nothing_leaves_no_empty_stage():
                                   "Consider the objects in this room."])
 def test_nouns_of_other_subjects_are_not_scene_cues(line):
     assert cue(line) is None
+
+
+# ---- test31 fixes (2026-10-22): labels, speech units, solids, many bodies, an emptied scene -----------------------
+def test_a_short_label_said_as_a_token_is_printed():
+    lines = ["If circle 1 is C1 and circle 2 is C2."]
+    s, refused = build(lines, [{"op": "add", "id": "c1", "kind": "circle", "name": "circle"},
+                               {"op": "add", "id": "c2", "kind": "circle", "name": "circle"},
+                               {"op": "label", "id": "c1", "text": "C1"}, {"op": "label", "id": "c2", "text": "C2"},
+                               {"op": "label", "id": "c2", "text": "C3"}])
+    assert [e.label.text for e in s.entities] == ["C1", "C2"] and refused == ["label 'C3' was not said"]
+    assert check(SceneOp(op="label", id="c1", text="A"), s, Corpus.of(["A ball rolls."]))[0] is None
+
+
+@pytest.mark.parametrize("line,fam", [("If it was 30 mps square.", "acceleration"), ("If it was 3mps2.", "acceleration"),
+                                      ("The acceleration was 2 mpsw.", "acceleration"), ("A ball at 3 mps.", "speed"),
+                                      ("A rocket at 600 km per hour.", "speed"), ("A car at 20 kph.", "speed")])
+def test_speech_spellings_of_units_have_their_family(line, fam):
+    assert Corpus.of([line]).numbers[0][1] == fam
+
+
+def test_a_speed_said_as_an_acceleration_is_not_printed_as_a_speed():
+    s, _ = build(["If it was 30 mps square."], [{"op": "add", "id": "b1", "kind": "ball", "name": "ball",
+                                                 "props": {"speed": [30, "m/s"]}}])
+    assert s.get("b1").props["speed"].source == "default"
+
+
+def test_km_per_hour_is_heard_as_a_speed():
+    from copilot.simulation.values import heard
+    assert [(h.kind, round(h.value, 2)) for h in heard("a rocket moving at 600 km per hour")] == [("speed", 166.67)]
+    assert [(h.kind, round(h.value, 2)) for h in heard("a car at 36 kph")] == [("speed", 10.0)]
+
+
+@pytest.mark.parametrize("kind,props,vol,area", [
+    ("cube", {"side": [4, "cm"]}, 64.0, 96.0),
+    ("cuboid", {"length": [6, "cm"], "width": [3, "cm"], "height": [4, "cm"]}, 72.0, 108.0),
+    ("cylinder", {"radius": [3, "cm"], "height": [5, "cm"]}, math.pi * 45, 2 * math.pi * 3 * 8),
+    ("cone", {"radius": [3, "cm"], "height": [4, "cm"]}, math.pi * 12, math.pi * 3 * 8),
+    ("sphere", {"diameter": [6, "cm"]}, 36 * math.pi, 36 * math.pi),
+])
+def test_solids_volume_and_surface_area_match_the_formulas(kind, props, vol, area):
+    words = " ".join(f"{k} {v[0]} cm" for k, v in props.items())
+    g = gs([f"Imagine a {kind} of {words}."], [{"op": "add", "id": "k1", "kind": kind, "name": kind, "props": props}])[0]["k1"]
+    assert g.known and math.isclose(geometry.volume(g), vol) and math.isclose(geometry.surface(g), area)
+    s, _ = build([f"Imagine a {kind} of {words}."], [{"op": "add", "id": "k1", "kind": kind, "name": kind,
+                                                      "props": props}])
+    e = s.get("k1")
+    assert e.geom.shape == "solid" and e.geom.d and e.geom.d2  # visible and hidden (dashed) edges
+    assert {d.label for d in s.derived} == {f"Volume of the {kind}", f"Surface area of the {kind}"}
+    assert all(0 <= x <= layout.W and 0 <= y <= layout.H for x, y, _ in e.geom.dims)
+
+
+def test_a_solid_without_said_sizes_is_drawn_and_prints_nothing():
+    s, _ = build(["Imagine a cone."], [{"op": "add", "id": "n1", "kind": "cone", "name": "cone"}])
+    assert s.get("n1").geom.shape == "solid" and s.derived == [] and s.get("n1").geom.dims == []
+
+
+def test_a_solid_is_only_placed_beside_another_shape():
+    s, _ = build(["Imagine a cube and a sphere inside it."],
+                 [{"op": "add", "id": "k1", "kind": "cube", "name": "cube"},
+                  {"op": "add", "id": "p1", "kind": "sphere", "name": "sphere"}])
+    no, why = check(SceneOp(op="relate", kind="inside", a="p1", b="k1"), s, Corpus.of(["a sphere inside it"]))
+    yes, _ = check(SceneOp(op="relate", kind="right_of", a="p1", b="k1"), s, Corpus.of(["a sphere beside it"]))
+    assert no is None and "solid" in why and yes is not None
+
+
+@pytest.mark.parametrize("line,world", [("Imagine a cuboid.", "geometry"), ("Let us imagine a cube.", "geometry"),
+                                        ("Imagine a cone.", "geometry"), ("Imagine a cylinder.", "geometry"),
+                                        ("Imagine a boy running at a speed of 20 kmph.", "motion"),
+                                        ("Imagine a boat crossing a river.", "motion")])
+def test_solids_and_more_moving_things_are_scene_cues(line, world):
+    assert cue(line) == world
+
+
+def _cars():
+    lines = ["Imagine a car moving at 60 kmph.", "Imagine another car moving at 70 kmph.",
+             "Imagine a car moving at 50 kmph.", "Imagine a boy running at 20 kmph."]
+    ops = []
+    for i, (kind, name, v) in enumerate([("car", "car", 60), ("car", "car", 70), ("car", "car", 50),
+                                         ("particle", "boy", 20)]):
+        ops += [{"op": "add", "id": f"m{i}", "kind": kind, "name": name, "props": {"speed": [v, "km/h"]}},
+                {"op": "behave", "kind": "move", "target": f"m{i}"}]
+    return build(lines, ops)[0]
+
+
+def test_bodies_with_the_same_name_are_told_apart_by_their_said_speed():
+    s = _cars()
+    assert [e.geom.note for e in s.entities] == ["60 km/h", "70 km/h", "50 km/h", ""]
+    assert len({d.label for d in s.derived}) == len(s.derived) == layout.MAX_DERIVED  # one row each, none alike
+    assert "Distance of the car (70 km/h)" in {d.label for d in s.derived}
+
+
+def test_many_lanes_fit_under_the_readouts_and_names_stand_in_a_column():
+    s = _cars()
+    top = layout._band(len(s.derived))
+    ys = [t.pts[0][2] - e.geom.r for t, e in zip(s.frames.tracks, s.entities)]
+    assert min(ys) >= top and all(e.geom.label_at[0] == layout.MARGIN for e in s.entities)
+    # the longest name "car 70 km/h" (~17 px a letter) ends before a car's back (1.8 r behind its centre)
+    assert all(e.geom.c[0] - 1.8 * e.geom.r >= layout.MARGIN + 17 * len("car 70 km/h") for e in s.entities)
+
+
+async def test_an_emptied_scene_goes_back_to_its_cue_title():
+    bus, deck, eng, clock, talk, replay = await scene_lecture()
+    replay.answers["Remove all the diagrams."] = '{"op":"remove","id":"s1"}\n{"op":"remove","id":"c1"}'
+    await said(bus, eng, talk, "Imagine a square of side 4 cm.")
+    await said(bus, eng, talk, "Now a circle inside it.")
+    assert deck.live.title == "Square and circle"
+    await said(bus, eng, talk, "Remove all the diagrams.")
+    assert scene_on(deck).entities == [] and deck.live.title == "Square"
+
+
+def test_meta_lines_that_quote_the_line_do_not_void_the_interpretation():
+    from copilot.core.interpretation import Interpretation
+    it = Interpretation.model_validate({"topic": "Shapes", "relation": "same_concept", "meta_lines": ["Remove it.", 2, "3"]})
+    assert it.meta_lines == [2, 3]
+
+
+def test_a_speed_on_a_point_or_shape_is_refused_not_drawn_as_still():
+    # live run 2026-10-22: "a boy running at 20 kmph" came back as a point with a speed; it never moved
+    s, refused = build(["Imagine a boy running at a speed of 20 kmph."],
+                       [{"op": "add", "id": "b1", "kind": "point", "name": "boy", "props": {"speed": [20, "km/h"]}}])
+    assert s.get("b1").props == {} and refused == ["speed: a point does not move (only ball block car particle)"]
+
+
+# ---- review of the test31 fixes ----------------------------------------------------------------------------------
+@pytest.mark.parametrize("line", ["A ball accelerates at 3 mps2.", "A ball accelerates at 3 m/s^2."])
+def test_a_units_exponent_is_not_a_said_number(line):
+    s, _ = build([line], [{"op": "add", "id": "b1", "kind": "ball", "name": "ball", "props": {"speed": [2, "m/s"]}}])
+    assert s.get("b1").props["speed"].source == "default"
+
+
+def test_mps_caret_2_is_an_acceleration_not_a_speed():
+    s, _ = build(["A ball accelerates at 4 mps^2."],
+                 [{"op": "add", "id": "b1", "kind": "ball", "name": "ball", "props": {"speed": [4, "m/s"]}}])
+    assert s.get("b1").props["speed"].source == "default"
+
+
+def test_a_cuboids_said_width_is_printed_on_the_edge_it_measures():
+    s, _ = build(["Imagine a cuboid of width 4 cm and height 3 cm."],
+                 [{"op": "add", "id": "q1", "kind": "cuboid", "name": "cuboid",
+                   "props": {"width": [4, "cm"], "height": [3, "cm"]}}])
+    g = s.get("q1").geom
+    front = sorted(g.pts[:2], key=lambda p: p[0])  # the outline starts with the front bottom edge
+    x, y, text = next(d for d in g.dims if d[2] == "4 cm")
+    assert front[0][0] < x < front[1][0] and y > front[0][1]
+
+
+def test_many_bodies_never_reach_into_the_readout_card():
+    lines = ["Eight balls roll at 1, 2, 3, 4, 5, 6, 7 and 8 m/s."]
+    ops = []
+    for i in range(8):
+        ops += [{"op": "add", "id": f"b{i}", "kind": "ball", "name": "ball", "props": {"speed": [i + 1, "m/s"]}},
+                {"op": "behave", "kind": "move", "target": f"b{i}"}]
+    s, _ = build(lines, ops)
+    top = layout._band(len(s.derived))
+    assert min(t.pts[0][2] - s.get(t.id).geom.r for t in s.frames.tracks) >= top
+
+
+def test_a_launched_body_keeps_its_name_above_it_among_many_lanes():
+    s2, _ = build(["Imagine a car moving at 60 kmph.", "Imagine another car moving at 70 kmph.",
+                   "Imagine a car moving at 50 kmph.", "A stone thrown at 20 m/s at 30 degrees."],
+                  [{"op": "add", "id": f"m{i}", "kind": "car", "name": "car", "props": {"speed": [v, "km/h"]}}
+                   for i, v in enumerate((60, 70, 50))] +
+                  [{"op": "behave", "kind": "move", "target": f"m{i}"} for i in range(3)] +
+                  [{"op": "add", "id": "s1", "kind": "ball", "name": "stone",
+                    "props": {"speed": [20, "m/s"], "angle": [30, "deg"]}},
+                   {"op": "behave", "kind": "launch", "target": "s1"}])
+    g = s2.get("s1").geom
+    assert g.label_at[0] == g.c[0] and s2.get("m0").geom.label_at[0] == layout.MARGIN
+
+
+@pytest.mark.parametrize("line", ["Imagine an inclined plane.", "Consider a plane mirror.", "Consider the xy plane.",
+                                  "Consider a bus topology network.", "Imagine the address bus of a CPU.",
+                                  "Consider a cube root.", "Picture the cones in the retina."])
+def test_look_alike_nouns_are_not_scene_cues(line):
+    assert cue(line) is None
+
+
+def test_odd_meta_lines_and_one_letter_words_are_handled():
+    from copilot.core.interpretation import Interpretation
+    it = Interpretation.model_validate({"topic": "Shapes", "relation": "same_concept", "meta_lines": ["²", 1]})
+    s, _ = build(["Imagine a square."], [{**SQ, "props": {}}])
+    assert it.meta_lines == [1]
+    assert check(SceneOp(op="label", id="s1", text="I"), s, Corpus.of(["So as I said, a square."]))[0] is None
+    assert check(SceneOp(op="label", id="s1", text="m2"), s, Corpus.of(["Its area is 12 m2."]))[0] is None
+
+
+@pytest.mark.parametrize("line,world", [("Imagine a cube of side 4 cm.", "geometry"),
+                                        ("Consider the cube of 3.", None), ("Consider the cube of x.", None)])
+def test_a_cube_of_a_size_is_a_cue_but_the_cube_of_a_number_is_not(line, world):
+    assert cue(line) == world

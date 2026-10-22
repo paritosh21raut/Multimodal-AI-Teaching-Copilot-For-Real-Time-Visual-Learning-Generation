@@ -36,6 +36,11 @@ export function Shape({ e, g, pose, focus }) {
     case "seg": return html`<line class=${cls + " sc-line"} x1=${g.pts[0][0]} y1=${g.pts[0][1]} x2=${g.pts[1][0]} y2=${g.pts[1][1]} />`;
     case "dot": return html`<circle class=${cls + " sc-dot"} cx=${g.c[0]} cy=${g.c[1]} r="9" />`;
     case "path": return html`<path class=${cls + " sc-curve"} d=${g.d} />`;
+    case "solid": return html`<g class=${cls + " sc-solid"}>
+      <polygon class="face" points=${pts(g.pts)} />
+      ${g.d2 && html`<path class="hidden-edge" d=${g.d2} />`}
+      <path class="edge" d=${g.d} />
+    </g>`;
     case "body": {
       const p = pose || { x: g.c[0], y: g.c[1], angle: 0 };
       return html`<${Body} e=${e} x=${p.x} y=${p.y} angle=${p.angle} />`;
@@ -48,9 +53,11 @@ export function Shape({ e, g, pose, focus }) {
 export function Words({ e, g, pose }) {
   if (!g) return null;
   let at = g.label_at;
-  if (g.shape === "body" && pose) at = [pose.x, pose.y - g.r - 16];
+  // a body's name rides above it, or (many lanes) stays in the names' column on the left, level with its lane
+  const column = g.shape === "body" && at && at[0] < g.c[0] - g.r;
+  if (g.shape === "body" && pose) at = column ? [at[0], pose.y + 9] : [pose.x, pose.y - g.r - 16];
   const name = e.label && e.label.source === "said" ? e.label.text : "";
-  const anchor = g.shape === "dot" || g.shape === "seg" ? "start" : g.shape === "path" ? "end" : "middle";
+  const anchor = g.shape === "dot" || g.shape === "seg" || column ? "start" : g.shape === "path" ? "end" : "middle";
   return html`
     ${at && (name || g.note) && html`<text class=${`sim-label word sc-name r-${e.look.role}`} x=${at[0]} y=${at[1]} text-anchor=${anchor} data-el=${e.id}>
       ${name && html`<tspan class="sym">${name}</tspan>`}${g.note && html`<tspan class="val computed">${(name ? " " : "") + g.note}</tspan>`}
@@ -77,6 +84,6 @@ export function StageParts({ stage }) {
     ${stage.ground && html`<g class="sc-ground">
       <rect class="sim-ground" x=${stage.ground[0]} y=${stage.ground[2]} width=${stage.ground[1] - stage.ground[0]} height="40" />
       <line class="sim-surface" x1=${stage.ground[0]} y1=${stage.ground[2]} x2=${stage.ground[1]} y2=${stage.ground[2]} />
-      ${(stage.lanes || []).map((y) => html`<line key=${y} class="sim-guide" x1=${stage.ground[0]} y1=${y + 30} x2=${stage.ground[1]} y2=${y + 30} />`)}
+      ${(stage.lanes || []).map((y) => html`<line key=${y} class="sim-guide" x1=${stage.ground[0]} y1=${y} x2=${stage.ground[1]} y2=${y} />`)}
     </g>`}`;
 }

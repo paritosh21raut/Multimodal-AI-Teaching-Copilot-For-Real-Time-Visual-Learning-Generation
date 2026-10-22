@@ -1,0 +1,429 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (7.1 s)
+[INIT]  live speech model distil-small.en ready (2.6 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.4 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_5         openai/gpt-oss-120b           111k of 200k tokens IN USE
+        GROQ_API_KEY_6         openai/gpt-oss-120b           127k of 200k tokens ok
+        GROQ_API_KEY_1         openai/gpt-oss-120b           159k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              199k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 275 lecture minutes
+
+[READY] session 20261022-160508-4dde
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+16:05:21 INFO    copilot.visuals.service: CLIP ready in 0.8 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    0.3s] At a speed of 3 mps. (800 ms)
+16:05:36 INFO    copilot.simulation.detector: [SIM] values - {}
+16:05:36 INFO    copilot.presentation.simulations: [SIM] values -: ignore (values, but no simulation is open)
+16:05:41 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Speed, Example)
+  [UNDERSTAND] Speed > Example (new_topic) acts=other hint=key_points lines=1 via groq_main#5 1806 ms
+               Teacher gave an example speed of 3 mps.
+16:05:41 INFO    copilot.presentation.engine: planner: new Speed > Example (first content slide)
+  [SLIDE] add    'Example' [facts] v1 (1 items)
+  [    7.7s] Imagine a ball rolling at a speed of 3 mps. (583 ms)
+16:05:45 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a ball rolling at a speed of 3 mps.'
+16:05:45 INFO    copilot.presentation.simulations: [SIM] scene mode on: Ball on its own slide (cue)
+  [SLIDE] add    'Ball' [simulation] v1 (1 items)
+16:05:45 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Ball' [simulation] v2 (1 items)
+  [SLIDE] update 'Ball' [simulation] v3 (1 items)
+16:05:46 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1015 tokens, first op 1.44 s, done 1.47 s
+  [UNDERSTAND] Speed > Example (same_concept) acts=explanation hint=example lines=1 via groq_main#5 1235 ms
+               A ball rolling at 3 mps is given as an example of speed.
+16:05:47 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   25.1s] And the acceleration of the ball was 2 mpsw. (641 ms)
+16:06:02 INFO    copilot.scene.detector: [SCENE] edit 'And the acceleration of the ball was 2 mpsw.'
+16:06:02 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Ball' [simulation] v4 (1 items)
+16:06:03 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1017 tokens, first op 0.78 s, done 0.80 s
+16:06:04 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: Speed, Example, Acceleration)
+  [UNDERSTAND] Speed > Acceleration (sibling_concept) acts=other hint=key_points lines=1 via groq_main#5 1642 ms
+               The ball’s acceleration is 2 meters per second squared.
+16:06:04 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   37.6s] The acceleration was 10 mpsp. (550 ms)
+16:06:14 INFO    copilot.scene.detector: [SCENE] edit 'The acceleration was 10 mpsp.'
+16:06:14 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Ball' [simulation] v5 (1 items)
+16:06:15 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1013 tokens, first op 0.88 s, done 0.89 s
+16:06:19 INFO    copilot.understanding.interpreter: dropped 1 revision(s) with unknown refs
+  [UNDERSTAND] Speed > Acceleration (same_concept) acts=- hint=key_points lines=1 via groq_main#5 1728 ms
+               Acceleration value corrected to 10 m/s².
+  [HEARD] 'mpsp' -> 'm/s²' corrected on the slide (0.5)
+16:06:19 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (2 so far)
+  [   53.1s] If it was 30 mps square. (522 ms)
+16:06:29 INFO    copilot.scene.detector: [SCENE] edit 'If it was 30 mps square.'
+16:06:29 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Ball' [simulation] v6 (1 items)
+16:06:30 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1114 tokens, first op 1.17 s, done 1.19 s
+  [UNDERSTAND] Speed > Acceleration (elaboration) acts=other hint=key_points lines=1 via groq_main#6 1643 ms
+               Shows a hypothetical acceleration of 30 m/s².
+  [HEARD] 'mps square' -> 'm/s²' corrected on the slide (0.5)
+16:06:32 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   67.2s] 100 mps2 (465 ms)
+16:06:44 INFO    copilot.scene.detector: [SCENE] edit '100 mps2'
+16:06:44 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Ball' [simulation] v7 (1 items)
+16:06:47 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1022 tokens, first op 1.56 s, done 1.56 s
+  [   83.4s] If it was 3mps2. (522 ms)
+16:07:00 INFO    copilot.scene.detector: [SCENE] edit 'If it was 3mps2.'
+16:07:00 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Speed > Acceleration (same_concept) acts=other hint=key_points lines=1 via groq_main#5 3922 ms
+               Introduced an acceleration value of 100 meters per second squared.
+16:07:00 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [SLIDE] update 'Ball' [simulation] v8 (1 items)
+16:07:01 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1012 tokens, first op 0.89 s, done 0.89 s
+  [UNDERSTAND] Speed > Acceleration (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 1458 ms
+               Teacher mentioned a hypothetical acceleration of 3 m/s².
+16:07:03 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [  100.1s] If the acceleration was zero. (473 ms)
+16:07:15 INFO    copilot.scene.detector: [SCENE] edit 'If the acceleration was zero.'
+16:07:15 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Ball' [simulation] v9 (1 items)
+16:07:16 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1002 tokens, first op 0.91 s, done 0.92 s
+  [UNDERSTAND] Speed > Acceleration (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 1277 ms
+               Teacher noted the case when acceleration equals zero.
+16:07:19 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (6 so far)
+  [  113.0s] Imagine a square. (481 ms)
+16:07:28 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a square.'
+16:07:28 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap 1 slide(s) (6 kept, 0 dropped as parameter talk)
+16:07:28 INFO    copilot.presentation.simulations: [SIM] scene mode on: Square on its own slide (cue)
+  [SLIDE] add    'Recap: Ball' [key_points] v1 (4 items)
+  [SLIDE] add    'Square' [simulation] v1 (1 items)
+  [SLIDE] update 'Square' [simulation] v2 (1 items)
+16:07:29 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 980 tokens, first op 1.14 s, done 1.14 s
+  [  119.8s] Imagine a script. (543 ms)
+16:07:35 INFO    copilot.scene.detector: [SCENE] edit 'Imagine a script.'
+16:07:35 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'Imagine a script.'
+  [UNDERSTAND] Speed > Acceleration (digression) acts=- hint=none lines=2 via groq_main#6 1396 ms
+               Teacher asked students to imagine a square and a script.
+16:07:36 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [  126.0s] Hello. (1425 ms)
+16:07:41 INFO    copilot.scene.detector: [SCENE] edit 'Hello.'
+16:07:41 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'Hello.'
+  [  128.4s] Imagine this were inside a triangle. (490 ms)
+16:07:45 INFO    copilot.scene.detector: [SCENE] edit 'Imagine this were inside a triangle.'
+  [SLIDE] update 'Square and triangle' [simulation] v3 (1 items)
+  [SLIDE] update 'Square and triangle' [simulation] v4 (1 items)
+16:07:46 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1005 tokens, first op 1.45 s, done 1.52 s
+  [UNDERSTAND] Speed > Acceleration (same_concept) acts=- hint=none lines=2 via groq_main#6 1858 ms
+               Teacher asked students to imagine a shape inside a triangle.
+16:07:47 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [  135.9s] and this triangle inside of pentagon. (506 ms)
+16:07:52 INFO    copilot.scene.detector: [SCENE] edit 'and this triangle inside of pentagon.'
+  [SLIDE] update 'Square, triangle and pentagon' [simulation] v5 (1 items)
+  [SLIDE] update 'Square, triangle and pentagon' [simulation] v6 (1 items)
+16:07:53 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1126 tokens, first op 0.73 s, done 0.80 s
+  [UNDERSTAND] Speed > Acceleration (digression) acts=explanation hint=example lines=1 via groq_main#6 2045 ms
+               Teacher added a triangle inside a pentagon as a visual example.
+16:07:54 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  142.1s] This pentagon inside a circle. (507 ms)
+16:07:58 INFO    copilot.scene.detector: [SCENE] edit 'This pentagon inside a circle.'
+  [SLIDE] update 'Square, triangle, pentagon and circle' [simulation] v7 (1 items)
+  [SLIDE] update 'Square, triangle, pentagon and circle' [simulation] v8 (1 items)
+16:07:58 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1068 tokens, first op 0.70 s, done 0.75 s
+  [UNDERSTAND] Speed > Acceleration (elaboration) acts=explanation hint=example lines=1 via groq_main#6 1591 ms
+               Introduced a pentagon inside a circle as a visual example
+16:08:01 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  149.3s] If the pentagon was inside a circle. (563 ms)
+16:08:05 INFO    copilot.scene.detector: [SCENE] edit 'If the pentagon was inside a circle.'
+  [SLIDE] update 'Square, triangle, pentagon and circle' [simulation] v9 (1 items)
+16:08:06 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1050 tokens, first op 0.69 s, done 0.70 s
+  [UNDERSTAND] Speed > Acceleration (digression) acts=explanation hint=example lines=1 via groq_main#6 2488 ms
+               Teacher introduced a pentagon inside a circle as a visual example.
+16:08:08 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [  162.8s] Remove it. (446 ms)
+16:08:17 INFO    copilot.scene.detector: [SCENE] edit 'Remove it.'
+  [SLIDE] update 'Square, triangle and pentagon' [simulation] v10 (1 items)
+16:08:19 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1061 tokens, first op 1.64 s, done 1.66 s
+16:08:22 WARNING copilot.understanding.interpreter: interpretation from groq_main#5 invalid (schema: [{'type': 'int_parsing', 'loc': ('meta_lines', 0), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'Remove it.'}]); one repair attempt
+  [  168.6s] Remove all the diagrams. (542 ms)
+16:08:24 INFO    copilot.scene.detector: [SCENE] edit 'Remove all the diagrams.'
+  [SLIDE] update 'Triangle and pentagon' [simulation] v11 (1 items)
+  [SLIDE] update 'Pentagon' [simulation] v12 (1 items)
+  [SLIDE] update 'Pentagon' [simulation] v13 (1 items)
+16:08:25 INFO    copilot.presentation.scenes: [SCENE] call groq_main#6: 3 op(s) applied, 0 refused, 1031 tokens, first op 0.94 s, done 1.02 s
+  [UNDERSTAND] Speed > Acceleration (same_concept) acts=- hint=none lines=1 via groq_main#1 5774 ms
+               Teacher instructed to remove a previous slide element.
+16:08:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (3 so far)
+  [  173.5s] Imagine a circle. (465 ms)
+16:08:29 INFO    copilot.scene.detector: [SCENE] edit 'Imagine a circle.'
+  [UNDERSTAND] Speed > Acceleration (same_concept) acts=transition hint=none lines=1 via groq_main#1 3854 ms
+               Teacher instructed to remove all diagrams
+16:08:30 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (3 so far)
+  [  175.7s] Imagine two circles. (484 ms)
+16:08:31 INFO    copilot.scene.detector: [SCENE] edit 'Imagine two circles.'
+16:08:31 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Circle' [simulation] v14 (1 items)
+16:08:31 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 972 tokens, first op 2.34 s, done 2.38 s
+  [SLIDE] update 'Circle' [simulation] v15 (1 items)
+  [SLIDE] update 'Circle' [simulation] v16 (1 items)
+16:08:32 INFO    copilot.presentation.scenes: [SCENE] call groq_main#6: 2 op(s) applied, 0 refused, 1023 tokens, first op 0.61 s, done 0.67 s
+  [UNDERSTAND] Speed > Acceleration (same_concept) acts=explanation hint=example lines=2 via groq_main#1 2177 ms
+               Teacher asked students to imagine a circle and then two circles as visual examples.
+16:08:33 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [  180.7s] Removal. (433 ms)
+16:08:35 INFO    copilot.scene.detector: [SCENE] edit 'Removal.'
+16:08:35 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'Removal.'
+  [  185.1s] Just keep two circles. (484 ms)
+16:08:40 INFO    copilot.scene.detector: [SCENE] edit 'Just keep two circles.'
+16:08:40 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Circle' [simulation] v17 (1 items)
+16:08:42 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1007 tokens, first op 1.67 s, done 1.69 s
+  [  191.7s] If circle 1 is C1 and circle 2 is C2. (632 ms)
+16:08:48 INFO    copilot.scene.detector: [SCENE] edit 'If circle 1 is C1 and circle 2 is C2.'
+16:08:48 INFO    copilot.simulation.detector: [SIM] values - {}
+16:08:49 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'label', 'id': 'c1', 'text': 'C1'}: label 'C1' was not said
+16:08:49 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'label', 'id': 'c2', 'text': 'C2'}: label 'C2' was not said
+16:08:49 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 0 op(s) applied, 2 refused, 1012 tokens, first op 0.72 s, done 0.75 s
+  [UNDERSTAND] Speed > Acceleration (same_concept) acts=- hint=none lines=2 via groq_main#6 1484 ms
+               Teacher removed extra diagrams, keeping only two circles.
+16:08:49 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (4 so far)
+16:08:53 INFO    copilot: [STT] vocabulary prompt: 35 terms (newest: Acceleration, C1, C2)
+  [UNDERSTAND] Speed > Acceleration (same_concept) acts=definition,definition hint=definition lines=1 via groq_main#1 1525 ms
+               Teacher labeled the two circles as C1 and C2.
+16:08:53 INFO    copilot.presentation.simulations: [SIM] simulation mode: 2 piece(s) collected for the recap (6 so far)
+  [  200.3s] If the circle 1 is C1 and circle 2 is C2. (658 ms)
+16:08:58 INFO    copilot.scene.detector: [SCENE] edit 'If the circle 1 is C1 and circle 2 is C2.'
+16:08:58 INFO    copilot.simulation.detector: [SIM] values - {}
+16:08:59 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'label', 'id': 'c1', 'text': 'C1'}: label 'C1' was not said
+16:08:59 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'label', 'id': 'c2', 'text': 'C2'}: label 'C2' was not said
+16:08:59 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 0 op(s) applied, 2 refused, 1012 tokens, first op 0.80 s, done 0.84 s
+  [UNDERSTAND] Speed > Acceleration (same_concept) acts=explanation hint=key_points lines=1 via groq_main#6 2952 ms
+               Labeled the two circles as C1 and C2
+16:09:01 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (7 so far)
+  [  210.3s] Now both the circles have a square inside them. (735 ms)
+16:09:07 INFO    copilot.scene.detector: [SCENE] edit 'Now both the circles have a square inside them.'
+  [SLIDE] update 'Circle and square' [simulation] v18 (1 items)
+  [SLIDE] update 'Circle and square' [simulation] v19 (1 items)
+  [SLIDE] update 'Circle and square' [simulation] v20 (1 items)
+  [SLIDE] update 'Circle and square' [simulation] v21 (1 items)
+16:09:08 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 4 op(s) applied, 0 refused, 1064 tokens, first op 0.95 s, done 1.17 s
+16:09:09 INFO    copilot: [STT] vocabulary prompt: 36 terms (newest: C1, C2, Physics)
+  [UNDERSTAND] Physics > Acceleration (same_concept) acts=explanation hint=example lines=1 via groq_main#1 1422 ms
+               Both circles now have a square inside each
+16:09:09 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (8 so far)
+  [  219.0s] Square has a rectangle inside it. (559 ms)
+16:09:16 INFO    copilot.scene.detector: [SCENE] edit 'Square has a rectangle inside it.'
+  [SLIDE] update 'Circle, square and rectangle' [simulation] v22 (1 items)
+  [SLIDE] update 'Circle, square and rectangle' [simulation] v23 (1 items)
+16:09:17 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1042 tokens, first op 1.19 s, done 1.22 s
+  [UNDERSTAND] Physics > Acceleration (elaboration) acts=explanation hint=concept lines=1 via groq_main#6 1566 ms
+               Added that each square now contains a rectangle
+16:09:19 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (9 so far)
+  [  226.4s] The other one also. (542 ms)
+16:09:21 INFO    copilot.scene.detector: [SCENE] edit 'The other one also.'
+16:09:21 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Circle, square and rectangle' [simulation] v24 (1 items)
+  [SLIDE] update 'Circle, square and rectangle' [simulation] v25 (1 items)
+16:09:22 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1220 tokens, first op 0.95 s, done 0.97 s
+  [UNDERSTAND] Physics > Acceleration (elaboration) acts=explanation hint=concept lines=1 via groq_main#1 1359 ms
+               Added that the other circle also contains a rectangle
+16:09:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (10 so far)
+  [  239.8s] Remove all your items. (511 ms)
+16:09:35 INFO    copilot.scene.detector: [SCENE] edit 'Remove all your items.'
+  [SLIDE] update 'Circle, square and rectangle' [simulation] v26 (1 items)
+  [SLIDE] update 'Square and rectangle' [simulation] v27 (1 items)
+  [SLIDE] update 'Square and rectangle' [simulation] v28 (1 items)
+  [SLIDE] update 'Rectangle' [simulation] v29 (1 items)
+  [SLIDE] update 'Rectangle' [simulation] v30 (1 items)
+  [SLIDE] update 'Rectangle' [simulation] v31 (1 items)
+16:09:37 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 6 op(s) applied, 0 refused, 1100 tokens, first op 1.69 s, done 1.81 s
+  [UNDERSTAND] Physics > Acceleration (same_concept) acts=transition hint=none lines=1 via groq_main#5 4994 ms
+               Teacher instructed to remove all items from the slide
+16:09:42 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (10 so far)
+  [  246.0s] Imagine a car moving at a speed of 60 kmph. (653 ms)
+16:09:43 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a car moving at a speed of 60 kmph.'
+16:09:43 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap 1 slide(s) (9 kept, 2 dropped as parameter talk)
+16:09:43 INFO    copilot.presentation.simulations: [SIM] scene mode on: Car on its own slide (cue)
+  [SLIDE] add    'Recap: Rectangle' [concept] v1 (9 items)
+  [SLIDE] add    'Car' [simulation] v1 (1 items)
+16:09:43 INFO    copilot.simulation.detector: [SIM] values - {'speed': '60 kmph'}
+  [SLIDE] update 'Car' [simulation] v2 (1 items)
+  [SLIDE] update 'Car' [simulation] v3 (1 items)
+16:09:44 INFO    copilot.presentation.scenes: [SCENE] call groq_main#6: 2 op(s) applied, 0 refused, 1016 tokens, first op 0.88 s, done 0.94 s
+  [UNDERSTAND] Physics > Speed (sibling_concept) acts=explanation hint=example lines=1 via groq_main#6 2387 ms
+               Introduced a car moving at 60 kmph as a speed example.
+16:09:46 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  253.3s] Imagine a rocket moving at 600 km per hour. (633 ms)
+16:09:51 INFO    copilot.scene.detector: [SCENE] edit 'Imagine a rocket moving at 600 km per hour.'
+16:09:51 INFO    copilot.simulation.detector: [SIM] values - {'length': '600 km'}
+  [SLIDE] update 'Car and rocket' [simulation] v4 (1 items)
+  [SLIDE] update 'Car and rocket' [simulation] v5 (1 items)
+16:09:52 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1050 tokens, first op 0.76 s, done 0.81 s
+  [UNDERSTAND] Physics > Speed (elaboration) acts=explanation hint=example lines=1 via groq_main#1 1533 ms
+               Added rocket moving at 600 km/h as another speed example
+16:09:53 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  266.7s] Imagine a train moving at 300 kmph. (574 ms)
+16:10:03 INFO    copilot.scene.detector: [SCENE] edit 'Imagine a train moving at 300 kmph.'
+16:10:03 INFO    copilot.simulation.detector: [SIM] values - {'speed': '300 kmph'}
+  [SLIDE] update 'Car, rocket and train' [simulation] v6 (1 items)
+16:10:05 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1027 tokens, first op 1.31 s, done 1.33 s
+  [UNDERSTAND] Physics > Speed (elaboration) acts=explanation hint=example lines=1 via groq_main#6 1851 ms
+               Added a train moving at 300 kmph as another speed example.
+16:10:06 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [  275.9s] Trays moving at 300 kmph. (569 ms)
+16:10:12 INFO    copilot.scene.detector: [SCENE] edit 'Trays moving at 300 kmph.'
+16:10:12 INFO    copilot.simulation.detector: [SIM] values - {'speed': '300 kmph'}
+  [SLIDE] update 'Car, rocket, train and trays' [simulation] v7 (1 items)
+  [SLIDE] update 'Car, rocket, train and trays' [simulation] v8 (1 items)
+16:10:14 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1184 tokens, first op 1.94 s, done 1.98 s
+  [UNDERSTAND] Physics > Speed (elaboration) acts=explanation hint=example lines=1 via groq_main#6 1986 ms
+               Added trays moving at 300 kmph as another speed example.
+16:10:16 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [  283.8s] The train is moving at 300 kmph. (578 ms)
+16:10:21 INFO    copilot.scene.detector: [SCENE] edit 'The train is moving at 300 kmph.'
+16:10:21 INFO    copilot.simulation.detector: [SIM] values - {'speed': '300 kmph'}
+  [SLIDE] update 'Car, rocket, train and trays' [simulation] v9 (1 items)
+16:10:21 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1066 tokens, first op 0.69 s, done 0.72 s
+  [UNDERSTAND] Physics > Speed (same_concept) acts=explanation hint=example lines=1 via groq_main#1 1452 ms
+               Added the train as a speed example
+16:10:22 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [  297.2s] Remove the rocket and trace. (530 ms)
+16:10:33 INFO    copilot.scene.detector: [SCENE] edit 'Remove the rocket and trace.'
+  [SLIDE] update 'Car, train and trays' [simulation] v10 (1 items)
+16:10:35 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1035 tokens, first op 1.53 s, done 1.55 s
+  [UNDERSTAND] Physics > Speed (same_concept) acts=other hint=key_points lines=1 via groq_main#5 3411 ms
+               Teacher removed the rocket and train speed examples from the slide
+16:10:39 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (5 so far)
+  [  304.0s] Remove the trays. (576 ms)
+16:10:39 INFO    copilot.scene.detector: [SCENE] edit 'Remove the trays.'
+  [SLIDE] update 'Car and train' [simulation] v11 (1 items)
+16:10:40 INFO    copilot.presentation.scenes: [SCENE] call groq_main#6: 1 op(s) applied, 0 refused, 1011 tokens, first op 0.89 s, done 0.91 s
+  [UNDERSTAND] Physics > Speed (same_concept) acts=- hint=none lines=1 via groq_main#6 1361 ms
+               Removed trays speed example
+16:10:42 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (5 so far)
+  [  308.3s] Remove the train. (484 ms)
+16:10:43 INFO    copilot.scene.detector: [SCENE] edit 'Remove the train.'
+  [SLIDE] update 'Car' [simulation] v12 (1 items)
+16:10:44 INFO    copilot.presentation.scenes: [SCENE] call groq_main#1: 1 op(s) applied, 0 refused, 993 tokens, first op 0.69 s, done 0.70 s
+  [UNDERSTAND] Physics > Speed (same_concept) acts=- hint=none lines=1 via groq_main#1 1294 ms
+               Removed the train speed example from the slide
+16:10:47 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (5 so far)
+  [  313.1s] Imagine another car moving at a speed of 70 kmph. (577 ms)
+16:10:52 INFO    copilot.scene.detector: [SCENE] edit 'Imagine another car moving at a speed of 70 kmph.'
+16:10:52 INFO    copilot.simulation.detector: [SIM] values - {'speed': '70 kmph'}
+  [UNDERSTAND] Physics > Speed (same_concept) acts=explanation hint=example lines=1 via groq_main#6 1445 ms
+               Added a new speed example of a car traveling at 70 kmph.
+16:10:53 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (6 so far)
+  [SLIDE] update 'Car' [simulation] v13 (1 items)
+  [SLIDE] update 'Car' [simulation] v14 (1 items)
+16:10:54 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1044 tokens, first op 1.61 s, done 1.64 s
+  [  326.5s] Imagine a car moving at 50 kmph. (578 ms)
+16:11:03 INFO    copilot.scene.detector: [SCENE] edit 'Imagine a car moving at 50 kmph.'
+16:11:03 INFO    copilot.simulation.detector: [SIM] values - {'speed': '50 kmph'}
+  [SLIDE] update 'Car' [simulation] v15 (1 items)
+  [SLIDE] update 'Car' [simulation] v16 (1 items)
+16:11:05 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1051 tokens, first op 1.08 s, done 1.09 s
+  [UNDERSTAND] Physics > Speed (elaboration) acts=explanation hint=example lines=1 via groq_main#1 1718 ms
+               Added a car moving at 50 kmph as a speed example
+16:11:05 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (7 so far)
+  [  361.7s] Imagine a boy running at a speed of 20 kmph. (644 ms)
+16:11:42 INFO    copilot.scene.detector: [SCENE] edit 'Imagine a boy running at a speed of 20 kmph.'
+16:11:42 INFO    copilot.simulation.detector: [SIM] values - {'speed': '20 kmph'}
+  [SLIDE] update 'Car and boy' [simulation] v17 (1 items)
+  [SLIDE] update 'Car and boy' [simulation] v18 (1 items)
+16:11:43 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1097 tokens, first op 1.39 s, done 1.45 s
+  [UNDERSTAND] Physics > Speed (same_concept) acts=explanation hint=example lines=1 via groq_main#5 1590 ms
+               Introduced a boy running at 20 kmph as a speed example
+16:11:43 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (8 so far)
+  [  394.6s] Imagine a boy running in a rain. (536 ms)
+16:12:11 INFO    copilot.scene.detector: [SCENE] edit 'Imagine a boy running in a rain.'
+16:12:11 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Car, boy and rain' [simulation] v19 (1 items)
+16:12:13 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 1103 tokens, first op 1.49 s, done 1.50 s
+  [UNDERSTAND] Physics > Speed (elaboration) acts=explanation hint=example lines=1 via groq_main#5 1438 ms
+               Introduced a boy running in rain as a speed example.
+16:12:13 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (9 so far)
+  [  411.2s] Imagine a rocket moving at a speed of 100 kmph. (676 ms)
+16:12:29 INFO    copilot.scene.detector: [SCENE] edit 'Imagine a rocket moving at a speed of 100 kmph.'
+16:12:29 INFO    copilot.simulation.detector: [SIM] values - {'speed': '100 kmph'}
+  [SLIDE] update 'Car, boy, rain and rocket' [simulation] v20 (1 items)
+  [SLIDE] update 'Car, boy, rain and rocket' [simulation] v21 (1 items)
+16:12:30 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 1169 tokens, first op 1.25 s, done 1.27 s
+  [UNDERSTAND] Physics > Speed (same_concept) acts=explanation hint=example lines=1 via groq_main#5 1252 ms
+               Introduced a rocket moving at 100 kmph as a speed example
+16:12:30 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (10 so far)
+16:12:44 INFO    copilot.presentation.simulations: [SIM] simulation mode off (Back to slides): recap 1 slide(s) (1 kept, 9 dropped as parameter talk)
+  [SLIDE] add    'Recap: Car, boy, rain and rocket' [key_points] v1 (1 items)
+  [  437.7s] Imagine a cuboid. (464 ms)
+  [SLIDE] update 'Recap: Car, boy, rain and rocket' [key_points] v2 (2 items)
+16:12:58 INFO    copilot: [STT] vocabulary prompt: 37 terms (newest: C2, Physics, Cuboid)
+  [UNDERSTAND] Physics > Cuboid (new_topic) acts=transition hint=none lines=1 via groq_main#5 2934 ms
+               Introduced the concept of a cuboid
+16:12:58 INFO    copilot.presentation.engine: planner: noop Physics > Cuboid (new topic announced)
+  [SLIDE] update 'Recap: Car, boy, rain and rocket' [key_points] v3 (1 items)
+  [  446.6s] Let us imagine a cuboid. (482 ms)
+  [SLIDE] update 'Recap: Car, boy, rain and rocket' [key_points] v4 (2 items)
+  [UNDERSTAND] Physics > Cuboid (same_concept) acts=explanation hint=concept lines=1 via groq_main#5 2003 ms
+               Teacher introduced the idea of a cuboid
+16:13:06 INFO    copilot.presentation.engine: planner: new Physics > Cuboid (new topic confirmed (two interpretations agree))
+  [SLIDE] update 'Recap: Car, boy, rain and rocket' [key_points] v5 (1 items)
+  [SLIDE] add    'Cuboid' [key_points] v1 (1 items)
+16:13:06 INFO    copilot.presentation.engine: image search 'cuboid shape' (photo) for 'Cuboid'
+  [  454.9s] Imagine a cube. (524 ms)
+  [SLIDE] update 'Cuboid' [key_points] v2 (2 items)
+16:13:10 INFO    copilot.visuals.finder: image search 'cuboid shape': 1 slow download(s) dropped
+16:13:13 INFO    copilot.visuals.finder: image search 'cuboid shape' (photo): 5 candidate(s), 3 accepted (0 labelled), 6.89 s {'search_s': 2.3, 'download_s': 2.2, 'clip_s': 0.31, 'full_s': 2.02, 'total_s': 6.89}
+  [IMAGE] 'cuboid shape' -> File:Rendered Cuboids.png (6.9 s)
+16:13:13 INFO    copilot.presentation.engine: image 'cuboid shape' on 'Cuboid': File:Rendered Cuboids.png
+  [SLIDE] update 'Cuboid' [key_points] v3 (3 items)
+  [UNDERSTAND] Physics > Cuboid (same_concept) acts=- hint=concept lines=1 via groq_main#5 1619 ms
+               Teacher asks students to picture a cube
+16:13:13 INFO    copilot.presentation.engine: revised S1: Imagine a cube
+16:13:13 INFO    copilot.presentation.engine: planner: noop Physics > Cuboid (nothing to display)
+16:13:13 INFO    copilot.presentation.engine: no image for 'Cuboid': has an image
+  [SLIDE] update 'Cuboid' [key_points] v4 (2 items)
+  [SLIDE] update 'Cuboid' [key_points] v5 (2 items)
+  [  466.4s] Imagine a cone. (509 ms)
+  [SLIDE] update 'Cuboid' [key_points] v6 (3 items)
+  [UNDERSTAND] Physics > Cuboid (same_concept) acts=other hint=concept lines=1 via groq_main#5 1587 ms
+               Teacher asks students to picture a cone
+16:13:25 INFO    copilot.presentation.engine: revised S1: Imagine a cone
+16:13:25 INFO    copilot.presentation.engine: planner: noop Physics > Cuboid (nothing to display)
+  [SLIDE] update 'Cuboid' [key_points] v7 (2 items)
+  [SLIDE] update 'Cuboid' [key_points] v8 (2 items)
+  [  473.3s] Imagine a cylinder. (448 ms)
+  [SLIDE] update 'Cuboid' [key_points] v9 (3 items)
+  [UNDERSTAND] Physics > Cuboid (same_concept) acts=- hint=concept lines=1 via groq_main#6 1772 ms
+               Teacher asks students to picture a cylinder
+16:13:32 INFO    copilot.presentation.engine: revised S1: Imagine a cylinder
+16:13:32 INFO    copilot.presentation.engine: planner: noop Physics > Cuboid (nothing to display)
+16:13:32 INFO    copilot.presentation.engine: no image for 'Cuboid': has an image
+  [SLIDE] update 'Cuboid' [key_points] v10 (2 items)
+  [SLIDE] update 'Cuboid' [key_points] v11 (2 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261022-160508-4dde: 45 segments, 249 words, state v97, 681 events logged
+        CommandReceived=7, ConceptSignal=45, ConcernRaised=2, DeckState=16, ImageChoices=1, ImageReady=1, ImageRequested=1, InterpretRequested=41, InterpretationReady=41, LifecycleChanged=5, LiveCue=36, ModeChanged=1, RepresentationIntent=62, SimulationModeChanged=6, SimulationSettingChanged=1, SlideContextChanged=7, SlidePatch=80, StateChanged=97, TranscriptFinal=45, TranscriptPartial=136, UtteranceClassified=45, VocabularyChanged=5
+        stt: 45 published, 0 dropped, latency p50=542 ms p95=735 ms max=1425 ms
+        understanding: 41 interpretations (41 by LLM, 0 fallbacks, 1 repaired), max 8 calls/min, prompt tokens max=1972 avg=1941, latency p50=1642 ms max=5774 ms
+        presentation: 8 slides; planner ops {'new': 2, 'scene_start': 3, 'teacher_sim_end': 1, 'noop': 4}; revisions 3, corrections shown 0, shown as said 0
+        images: {'requests': 1, 'found': 1, 'none': 0}; slides with an image 1/8
+          1. [facts] Example  (v1, ['facts'])
+          2. [simulation] Ball  (v9, ['scene'])
+          3. [key_points] Recap: Ball  (v1, ['points', 'facts'])
+          4. [simulation] Rectangle  (v31, ['scene'])
+          5. [concept] Recap: Rectangle  (v1, ['points', 'definition', 'definition', 'points'])
+          6. [simulation] Car, boy, rain and rocket  (v21, ['scene'])
+          7. [key_points] Recap: Car, boy, rain and rocket  (v5, ['points'])
+          8. [key_points] Cuboid  (v11, ['points', 'image'])
+        providers: {'groq_main#5': 15, 'groq_main#6': 16, 'groq_main#1': 10}; triggers: {'pause': 39, 'max_wait': 2}; outline: ['Speed > Example, Acceleration', 'Physics > Acceleration, Speed, Cuboid']; concerns: 2
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261022-160508-4dde\session.sqlite

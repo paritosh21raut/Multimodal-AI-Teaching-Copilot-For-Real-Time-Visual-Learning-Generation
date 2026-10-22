@@ -840,6 +840,10 @@ polygon.sc-shape, circle.sc-shape:not(.sc-dot) { fill-opacity: 0.1; }
 .sc-curve { stroke-width: 5; }
 .sc-dot { fill-opacity: 1; stroke-width: 0; }
 .sc-shape.focus { stroke-width: 8; }
+/* a solid: a soft face, its visible edges, its hidden edges dashed and lighter */
+.sc-solid .face { fill-opacity: 0.1; stroke: none; }
+.sc-solid .edge { fill: none; }
+.sc-solid .hidden-edge { fill: none; stroke-width: 3; stroke-dasharray: 10 9; stroke-opacity: 0.6; }
 .sc-body circle, .sc-body rect, .sc-body path { stroke: var(--sim-block-edge); stroke-width: 4; }
 .sc-body.r-main circle, .sc-body.r-main rect, .sc-body.r-main path { fill: var(--scene-main); }
 .sc-body.r-second circle, .sc-body.r-second rect, .sc-body.r-second path { fill: var(--scene-second); }

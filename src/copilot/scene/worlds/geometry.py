@@ -9,7 +9,7 @@ import math
 from dataclasses import dataclass, field
 from typing import Optional
 
-from copilot.scene.spec import KNOWN, Entity, Q, SceneSpec
+from copilot.scene.spec import GEOMETRY_KINDS, KNOWN, SOLID_KINDS, Entity, Q, SceneSpec
 from copilot.scene.validate import UNITS
 
 P = tuple[float, float]
@@ -29,6 +29,12 @@ class G:
     known: bool = False       # its size rests on known numbers only
     placed: bool = False      # positioned by a relation (else laid out in a row)
     sized_by: str = ""        # the relation that set its size ("" = its own props)
+    # a solid (oblique projection): pts is its outline; visible and hidden edges as polylines; where each said size
+    # is printed; its sizes (s | l w h | r h) for the volume and surface area
+    edges: list[list[P]] = field(default_factory=list)
+    hidden: list[list[P]] = field(default_factory=list)
+    dim_at: dict[str, P] = field(default_factory=dict)
+    size: dict[str, float] = field(default_factory=dict)
 
     def bbox(self) -> tuple[float, float, float, float]:
         if self.kind == "circle":
@@ -46,6 +52,9 @@ class G:
     def move(self, dx: float, dy: float) -> None:
         self.c = (self.c[0] + dx, self.c[1] + dy)
         self.pts = [(x + dx, y + dy) for x, y in self.pts]
+        self.edges = [[(x + dx, y + dy) for x, y in ln] for ln in self.edges]
+        self.hidden = [[(x + dx, y + dy) for x, y in ln] for ln in self.hidden]
+        self.dim_at = {k: (x + dx, y + dy) for k, (x, y) in self.dim_at.items()}
 
     def length(self) -> float:
         (x0, y0), (x1, y1) = self.pts[0], self.pts[-1]
@@ -125,7 +134,114 @@ def _own(e: Entity, u: float) -> G:
         g.pts, g.known = [(-L / 2, 0.0), (L / 2, 0.0)], k
     elif e.kind == "point":
         g.known = True
+    elif e.kind in SOLID_KINDS:
+        _solid(g, e, u)
     return g
+
+
+# ---- solids: a textbook oblique drawing (depth at 45°, half length), hidden edges dashed -----------------------
+DEPTH = 0.5 * math.cos(math.pi / 4)   # a depth of d is drawn d * DEPTH right and up
+FLAT = 0.3                             # an ellipse seen from the side: its height / width
+
+
+def _arc(c: P, r: float, a0: float, a1: float, n: int = 24) -> list[P]:
+    """Part of the flattened circle (radius r, height FLAT * r) from angle a0 to a1."""
+    return [(c[0] + r * math.cos(a0 + (a1 - a0) * i / n), c[1] + FLAT * r * math.sin(a0 + (a1 - a0) * i / n))
+            for i in range(n + 1)]
+
+
+def _radius_of(e: Entity, u: float) -> tuple[Optional[float], bool]:
+    r, k = _val(e, "radius", u)
+    if r is None:
+        d, k = _val(e, "diameter", u)
+        r = d / 2 if d is not None else None
+    return r, k
+
+
+def _solid(g: G, e: Entity, u: float) -> None:
+    """A solid's outline, edges and size labels in world units (its base on y = 0)."""
+    if e.kind in ("cube", "cuboid"):
+        front_width = False
+        if e.kind == "cube":
+            s, k = _val(e, "side", u)
+            if s is None:
+                s, k = _val(e, "length", u)
+            l = h = d = s or DEFAULT["side"]
+            g.size, g.known = {"s": l}, k
+        else:
+            l, kl = _val(e, "length", u)
+            w, kw = _val(e, "width", u)
+            h, kh = _val(e, "height", u)
+            front_width = l is None
+            if front_width:  # "width 4 and height 3" without a length: the width runs across the front
+                l, kl, w, kw = w, kw, None, False
+            l, d, h = l or 6.0, w or 3.0, h or DEFAULT["height"]
+            g.size, g.known = {"l": l, "w": d, "h": h}, kl and kw and kh
+        o = (d * DEPTH, d * DEPTH)
+        f = [(0.0, 0.0), (l, 0.0), (l, h), (0.0, h)]
+        b = [(x + o[0], y + o[1]) for x, y in f]
+        g.pts = [f[0], f[1], b[1], b[2], b[3], f[3]]
+        g.edges = [f + [f[0]], [f[3], b[3], b[2], b[1], f[1]], [f[2], b[2]]]
+        g.hidden = [[f[0], b[0]], [b[0], b[1]], [b[0], b[3]]]
+        g.dim_at = {"side": (l / 2, 0.0), "length": (l / 2, 0.0), "height": (l + o[0], h / 2 + o[1]),
+                    "width": (l / 2, 0.0) if e.kind == "cuboid" and front_width else (l + o[0] / 2, o[1] / 2)}
+        return
+    r, kr = _radius_of(e, u)
+    r = r or DEFAULT["radius"]
+    if e.kind == "sphere":
+        circle = [(r * math.cos(2 * math.pi * i / 48), r + r * math.sin(2 * math.pi * i / 48)) for i in range(48)]
+        g.pts, g.size, g.known = circle, {"r": r}, kr
+        g.edges = [_arc((0.0, r), r, math.pi, 2 * math.pi), [(0.0, r), (r, r)]]
+        g.hidden = [_arc((0.0, r), r, 0.0, math.pi)]
+        g.dim_at = {"radius": (r / 2, r), "diameter": (r / 2, r)}
+        return
+    h, kh = _val(e, "height", u)
+    h = h or DEFAULT["height"]
+    g.size, g.known = {"r": r, "h": h}, kr and kh
+    front = _arc((0.0, 0.0), r, math.pi, 2 * math.pi)       # the near half of the base (drawn)
+    back = _arc((0.0, 0.0), r, 0.0, math.pi)                # the far half (hidden)
+    if e.kind == "cylinder":
+        top = _arc((0.0, h), r, 0.0, 2 * math.pi, 48)
+        g.pts = front + [(r, h)] + _arc((0.0, h), r, 0.0, math.pi)[1:]
+        g.edges = [front, top, [(-r, 0.0), (-r, h)], [(r, 0.0), (r, h)], [(0.0, h), (r, h)]]
+        g.hidden = [back]
+        g.dim_at = {"radius": (0.0, h - FLAT * r), "diameter": (0.0, h - FLAT * r), "height": (r, h / 2)}
+    else:  # cone: the apex over the centre of the base
+        g.pts = front + [(0.0, h)]
+        g.edges = [front, [(-r, 0.0), (0.0, h), (r, 0.0)]]
+        g.hidden = [back, [(0.0, 0.0), (r, 0.0)], [(0.0, 0.0), (0.0, h)]]
+        g.dim_at = {"radius": (r / 2, 0.0), "diameter": (r / 2, 0.0), "height": (r / 2, h / 2)}
+
+
+def volume(g: G) -> Optional[float]:
+    s = g.size
+    if g.kind == "cube":
+        return s["s"] ** 3
+    if g.kind == "cuboid":
+        return s["l"] * s["w"] * s["h"]
+    if g.kind == "cylinder":
+        return math.pi * s["r"] ** 2 * s["h"]
+    if g.kind == "cone":
+        return math.pi * s["r"] ** 2 * s["h"] / 3
+    if g.kind == "sphere":
+        return 4 / 3 * math.pi * s["r"] ** 3
+    return None
+
+
+def surface(g: G) -> Optional[float]:
+    """The total surface area (a cone's and a cylinder's include the base / both ends)."""
+    s = g.size
+    if g.kind == "cube":
+        return 6 * s["s"] ** 2
+    if g.kind == "cuboid":
+        return 2 * (s["l"] * s["w"] + s["w"] * s["h"] + s["h"] * s["l"])
+    if g.kind == "cylinder":
+        return 2 * math.pi * s["r"] * (s["r"] + s["h"])
+    if g.kind == "cone":
+        return math.pi * s["r"] * (s["r"] + math.hypot(s["r"], s["h"]))
+    if g.kind == "sphere":
+        return 4 * math.pi * s["r"] ** 2
+    return None
 
 
 def _inradius(g: G) -> tuple[P, float]:
@@ -296,12 +412,11 @@ def _construct(kind: str, a: G, e: Entity, b: G, gap: float) -> None:
 def solve(scene: SceneSpec) -> tuple[dict[str, G], str, float]:
     """Every geometric entity in world units (in the scene's base length unit), and that unit."""
     unit, u = base_unit(scene)
-    gs = {e.id: _own(e, u) for e in scene.entities if e.kind in (
-        "square", "rectangle", "circle", "triangle", "polygon", "segment", "point")}
+    gs = {e.id: _own(e, u) for e in scene.entities if e.kind in GEOMETRY_KINDS}
     ents = {e.id: e for e in scene.entities}
     rel = {r.a: r for r in scene.relations if r.a in gs and r.b in gs}
     size = max((max(g.bbox()[2] - g.bbox()[0], g.bbox()[3] - g.bbox()[1]) for g in gs.values()), default=4.0)
-    gap = 0.35 * size
+    gap = (1.0 if any(g.kind in SOLID_KINDS for g in gs.values()) else 0.35) * size  # solids: room for "h = 4 cm"
     # free shapes first, in a row; then each relation once what it rests on is solved (a cycle stays unsolved)
     roots = [i for i in gs if i not in rel]
     x = 0.0

@@ -115,7 +115,7 @@ _UNIT_SPECS: tuple[tuple[str, str], ...] = (
     ("concentration", r"(?i:molar\b|moles?\s+per\s+(?:lit(?:re|er)|dm3|dm³|cubic\s+decimet(?:re|er))\b|"
                       r"mol(?:es)?\s?/\s?(?:l|dm3|dm³)\b|mol\s?dm-?3\b)|(?<=\d)\s?M\b"),
     ("speed", r"m/s\b(?!\s*(?:squared|square|²|2\b))|(?:metres?|meters?) per second\b(?!\s*(?:squared|square|²|per))|"
-              r"km/h\b|kmph\b|kilomet(?:re|er)s? per hour\b"),
+              r"km/h\b|km/hr\b|kmph\b|kph\b|(?:kilomet(?:re|er)s?|km) (?:per|an) hour\b|mps\b(?!\s*(?:squared?|sq)\b|\s*\^\s*2|²)"),
     ("length", r"(?i:(?:centi|milli|kilo)?(?:metres?|meters?)\b(?!\s*(?:per|/)))|(?<=\d)\s?(?:cm|mm|km)\b(?!\s*/)|"
                r"(?<=\d)\s?m\b(?!\s*/)"),
     ("voltage", r"(?i:(?:kilo)?volts?\b)|(?<=\d)\s?k?V\b"),
@@ -235,7 +235,7 @@ def _factor(kind: str, unit: str) -> float:
     if kind == "force":
         return 1000.0 if u.startswith("k") else 1.0
     if kind == "speed":
-        return 1 / 3.6 if ("km" in u or "hour" in u) else 1.0
+        return 1 / 3.6 if ("km" in u or "hour" in u or u == "kph") else 1.0
     if kind == "length":
         return 0.01 if u.startswith(("c", "centi")) else 0.001 if u.startswith(("mm", "milli")) else \
             1000.0 if u.startswith(("k", "kilo")) else 1.0

@@ -5,10 +5,10 @@ Writes the engine output of a SceneSpec: each entity's `geom`, `stage` (axes, gr
 from __future__ import annotations
 
 import math
-from typing import Optional
+from typing import Any, Optional
 
 from copilot.scene.spec import (
-    BODY_KINDS, KNOWN, MAX_FRAME_POINTS, Axes, Derived, Entity, Frames, Geom, SceneSpec, Stage, Track, World,
+    BODY_KINDS, KNOWN, MAX_FRAME_POINTS, SOLID_KINDS, Axes, Derived, Entity, Frames, Geom, SceneSpec, Stage, Track, World,
 )
 from copilot.scene.worlds import geometry, motion, plot
 from copilot.simulation.base import fmt
@@ -19,6 +19,8 @@ ROW_H = 52            # one readout row (web/sims/draw.js Readout)
 MAX_DERIVED = 4
 BODY_R = 30.0         # a body's radius on the stage (px)
 LANE_GAP = 120.0       # between the lanes of bodies moving in a straight line (px)
+GUTTER = 320.0        # the names' column (at most) when there are more than two lanes (px)
+MIN_GAP = 48.0        # lanes closer than this first cost readout rows
 
 
 def world_of(scene: SceneSpec) -> World:
@@ -66,6 +68,12 @@ def _geometry(scene: SceneSpec) -> SceneSpec:
                 derived.append(Derived(id=f"{i}_r", of=i, label=_named(e, "Radius"), text=fmt(g.r) + ln))
         elif g.kind == "segment" and g.sized_by:
             derived.append(Derived(id=f"{i}_len", of=i, label=_named(e, "Length"), text=fmt(g.length()) + ln))
+        elif g.kind in SOLID_KINDS:
+            v, s = geometry.volume(g), geometry.surface(g)
+            if v is not None and s is not None:
+                derived.append(Derived(id=f"{i}_vol", of=i, label=_named(e, "Volume"),
+                                       text=fmt(v) + (f" {unit}³" if unit else "")))
+                derived.append(Derived(id=f"{i}_sa", of=i, label=_named(e, "Surface area"), text=fmt(s) + sq))
     derived = derived[:MAX_DERIVED]
     if not gs:
         return scene.model_copy(update={"derived": derived, "stage": Stage()})
@@ -76,8 +84,10 @@ def _geometry(scene: SceneSpec) -> SceneSpec:
     bw, bh = max(x1 - x0, 1e-9), max(y1 - y0, 1e-9)
     # the picture goes where it is largest: under the readout card or beside it (labels need ~50 px around)
     cw, ch = _card(derived)
-    boxes = [(MARGIN, W - MARGIN, MARGIN + 30, H - 60)] if not derived else [
-        (MARGIN, W - MARGIN, 30 + ch + 50, H - 60), (34 + cw + 60, W - MARGIN, MARGIN + 30, H - 60)]
+    # a solid's said height is printed to its right: keep room for it inside the stage
+    R = W - MARGIN - (130 if any(e.kind in SOLID_KINDS and _said(e, "height") for e in scene.entities) else 0)
+    boxes = [(MARGIN, R, MARGIN + 30, H - 60)] if not derived else [
+        (MARGIN, R, 30 + ch + 50, H - 60), (34 + cw + 60, R, MARGIN + 30, H - 60)]
     bx0, bx1, by0, by1 = max(boxes, key=lambda b: min((b[1] - b[0]) / bw, (b[3] - b[2]) / bh))
     k = min((bx1 - bx0) / bw, (by1 - by0) / bh)
     ox = bx0 + (bx1 - bx0 - bw * k) / 2 - x0 * k
@@ -101,6 +111,14 @@ def _geometry(scene: SceneSpec) -> SceneSpec:
         elif g.kind == "segment":
             a, b = px(g.pts[0]), px(g.pts[-1])
             geom = Geom(shape="seg", pts=[a, b], label_at=((a[0] + b[0]) / 2 + 12, (a[1] + b[1]) / 2 - 12))
+        elif g.kind in SOLID_KINDS:
+            def path(lines: list[list[tuple[float, float]]]) -> str:
+                return " ".join("M" + " L".join("%s,%s" % px(p) for p in ln) for ln in lines)
+            geom = Geom(shape="solid", pts=[px(p) for p in g.pts], d=path(g.edges), d2=path(g.hidden),
+                        label_at=(top_c[0], top_c[1] - 14))
+            geom.dims = _solid_dims(e, g, px)
+            out.append(e.model_copy(update={"geom": geom}))
+            continue
         else:
             geom = Geom(shape="poly", pts=[px(p) for p in g.pts], label_at=(top_c[0], top_c[1] - 14))
         geom.dims = _dims(e, g, geom) if not g.sized_by else []
@@ -111,6 +129,24 @@ def _geometry(scene: SceneSpec) -> SceneSpec:
 def _said(e: Entity, key: str) -> str:
     q = e.props.get(key)
     return f"{fmt(q.value)} {q.unit}".strip() if q is not None and q.source in ("said", "teacher") else ""
+
+
+def _solid_dims(e: Entity, g: geometry.G, px: Any) -> list[tuple[float, float, str]]:
+    """A solid's said sizes beside the edge they measure ("r = 3 cm" on the radius, "h = 5 cm" by the side)."""
+    out: list[tuple[float, float, str]] = []
+    up = 44 if e.kind == "cylinder" else -12  # a cylinder's radius under its top rim, the others' over the line
+    for key, (dx, dy, fmt_) in {"side": (0, 34, "{}"), "length": (0, 34, "{}"), "width": (50, 26, "{}"),
+                                "height": (1, 10, "h = {}"), "radius": (0, up, "r = {}"),
+                                "diameter": (0, up, "d = {}")}.items():
+        text = _said(e, key)
+        if not text or key not in g.dim_at or (key == "diameter" and _said(e, "radius")):
+            continue
+        x, y = px(g.dim_at[key])
+        words = fmt_.format(text)
+        if dx == 1:  # the height to the right of the edge it measures: half the words' width (~17 px a letter) + 16
+            dx = 16 + 8.5 * len(words)
+        out.append((round(x + dx, 1), round(y + dy, 1), words))
+    return out
 
 
 def _dims(e: Entity, g: geometry.G, geom: Geom) -> list[tuple[float, float, str]]:
@@ -207,32 +243,56 @@ def _ticks(lo: float, hi: float, step: float) -> list[float]:
 def _motion(scene: SceneSpec) -> SceneSpec:
     bodies = [e for e in scene.entities if e.kind in BODY_KINDS]
     paths = motion.solve(scene, bodies)
+    # bodies with the same said name ("car", "another car") are told apart by their said speed, printed beside the name
+    names = [e.label.text.lower() for e in bodies if e.label.source == "said" and e.label.text]
+    tag = {e.id: _said(e, "speed") for e in bodies
+           if e.label.source == "said" and names.count(e.label.text.lower()) > 1}
+
+    def named(e: Entity, what: str) -> str:
+        return _named(e, what) + (f" ({tag[e.id]})" if tag.get(e.id) else "")
+
+    shown = [p for p in paths if p.known and p.kind != "rest" and scene.get(p.id) is not None]
     derived: list[Derived] = []
-    for p in paths:
+    for p in shown if len(shown) <= MAX_DERIVED // 2 else shown[-MAX_DERIVED:]:
         e = scene.get(p.id)
-        if e is None or not p.known or p.kind == "rest" or len(derived) + 2 > MAX_DERIVED:
-            continue
-        derived.append(Derived(id=f"{p.id}_v", of=p.id, label=_named(e, "Speed"), live="v", unit="m/s"))
-        if p.kind == "move":
-            derived.append(Derived(id=f"{p.id}_x", of=p.id, label=_named(e, "Distance"), live="x", unit="m"))
-    top = _band(len(derived))
+        assert e is not None
+        accel = p.kind == "move" and any(abs(q[3] - p.pts[0][3]) > 1e-9 for q in p.pts)
+        if len(shown) <= MAX_DERIVED // 2 or p.kind != "move" or accel:
+            derived.append(Derived(id=f"{p.id}_v", of=p.id, label=named(e, "Speed"), live="v", unit="m/s"))
+        if p.kind == "move" and (len(shown) <= MAX_DERIVED // 2 or not accel):
+            # many bodies: one row each (a steady speed was said: its distance; a changing one: its speed)
+            derived.append(Derived(id=f"{p.id}_x", of=p.id, label=named(e, "Distance"), live="x", unit="m"))
     lanes = sum(1 for p in paths if p.kind in ("move", "rest"))
+    ground = H - MARGIN - 20
+    # many lanes: fewer readout rows (the oldest go first) before the lanes get closer than MIN_GAP
+    while derived and lanes > 1 and (ground - _band(len(derived)) - 2 * BODY_R - 10) / (lanes - 1) < MIN_GAP:
+        derived.pop(0)
+    top = _band(len(derived))
     xmax = max([max(q[1] for q in p.pts) for p in paths] + [1.0])
     ymax = max([max(q[2] for q in p.pts) for p in paths] + [0.0])
-    ground = H - MARGIN - 20
-    span_y = ground - top - 40 - max(0, lanes - 1) * LANE_GAP
-    k = (W - 2 * MARGIN - 2 * BODY_R) / xmax
+    # lanes fit between the readout card and the ground: closer together (and smaller bodies) when there are many
+    gap = LANE_GAP if lanes < 2 else max(24.0, min(LANE_GAP, (ground - top - 2 * BODY_R - 10) / (lanes - 1)))
+    r = BODY_R if gap >= LANE_GAP else round(max(10.0, min(BODY_R, gap * 0.4)), 1)
+    span_y = ground - top - 40 - max(0, lanes - 1) * gap
+    # many lanes: the names stand in a column on the left (as wide as the longest name, ~17 px a letter), not over the
+    # lane above; a car reaches 1.8 r behind its centre
+    in_lane = {p.id for p in paths if p.kind in ("move", "rest")}
+    words = [len(e.label.text) + (len(tag[e.id]) + 1 if tag.get(e.id) else 0) for e in bodies
+             if e.id in in_lane and e.label.source == "said"]
+    gutter = min(GUTTER, max(words, default=0) * 17.0 + 30) if lanes > 2 else 0.0
+    back = 1.8 * r if any(e.kind == "car" for e in bodies) else r
+    k = (W - 2 * MARGIN - gutter - back - r) / xmax
     if ymax > 0:
         k = min(k, max(span_y, 60) / ymax)
-    x0 = MARGIN + BODY_R
-    lane_y = [ground - BODY_R - i * LANE_GAP for i in range(lanes)]
+    x0 = MARGIN + gutter + back
+    lane_y = [ground - r - i * gap for i in range(lanes)]
     tracks = []
     for p in paths:
-        base = lane_y[p.lane] if p.kind in ("move", "rest") and lane_y else ground - BODY_R
+        base = lane_y[p.lane] if p.kind in ("move", "rest") and lane_y else ground - r
         pts = []
         for t, x, y, v in p.pts:
             X, Y = x0 + x * k, base - y * k
-            pts.append((round(t, 3), round(X, 1), round(Y, 1), round(-math.degrees(x * k / BODY_R) % 360, 1),
+            pts.append((round(t, 3), round(X, 1), round(Y, 1), round(-math.degrees(x * k / r) % 360, 1),
                         round(v, 3), round(abs(x - p.pts[0][1]), 3)))
         tracks.append(Track(id=p.id, pts=pts))
     assert sum(len(t.pts) for t in tracks) <= MAX_FRAME_POINTS
@@ -244,11 +304,12 @@ def _motion(scene: SceneSpec) -> SceneSpec:
             out.append(e.model_copy(update={"geom": None}))
             continue
         _, X, Y, _, _, _ = tr.pts[0]
-        out.append(e.model_copy(update={"geom": Geom(shape="body", c=(X, Y), r=BODY_R,
-                                                     label_at=(X, Y - BODY_R - 16))}))
+        out.append(e.model_copy(update={"geom": Geom(shape="body", c=(X, Y), r=r, note=tag.get(e.id, ""),
+                                                     label_at=(MARGIN, Y + 9) if gutter and e.id in in_lane
+                                                     else (X, Y - r - 16))}))
     trails = [(t.id, " ".join(f"{'L' if i else 'M'}{q[1]},{q[2]}" for i, q in enumerate(t.pts)))
               for t, p in zip(tracks, paths) if p.kind in ("launch", "fall")]
-    stage = Stage(ground=(MARGIN, W - MARGIN, ground), lanes=lane_y[1:] if lanes > 1 else [], trails=trails)
+    stage = Stage(ground=(MARGIN, W - MARGIN, ground), lanes=[round(y + gap / 2, 1) for y in lane_y[1:]], trails=trails)
     return scene.model_copy(update={"entities": out, "derived": derived, "stage": stage,
                                     "frames": Frames(period=round(period, 3), hold=1.0, tracks=tracks)})
 

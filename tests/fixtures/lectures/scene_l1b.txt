@@ -1,0 +1,37 @@
+# F-015 L1 fixes from test31, ~1.5 minutes. Expect: "a ball at 3 mps" opens a motion scene (3 m/s); "30 mps square"
+# is an acceleration (30 m/s², not a speed); two circles labelled C1 and C2 (said as tokens, now printed); "remove all
+# the diagrams" empties the scene and the title goes back to the cue's; three cars at 60 / 70 / 50 kmph and a boy at
+# 20 kmph: names in a column, each car tagged with its said speed, one readout row per body, no overlap; a cuboid
+# (6 x 3 x 4 cm) and a cylinder (r 3 cm, h 5 cm) with hidden edges dashed, volume and surface area computed.
+@setup subject=Physics grade=9 topic="Shapes and motion"
+
+Today we will look at motion and then at shapes.
+[pause 1]
+Imagine a ball rolling at a speed of 3 mps.
+[pause 2.5]
+If the acceleration was 30 mps square.
+[pause 3]
+Let's get back to the slides.
+[pause 1.5]
+Imagine two circles.
+[pause 2.5]
+If circle 1 is C1 and circle 2 is C2.
+[pause 2.5]
+Remove all the diagrams.
+[pause 2.5]
+Imagine a car moving at a speed of 60 kmph.
+[pause 2.5]
+Imagine another car moving at a speed of 70 kmph.
+[pause 2.5]
+Imagine a car moving at 50 kmph.
+[pause 2.5]
+Imagine a boy running at a speed of 20 kmph.
+[pause 3]
+Let's get back to the slides.
+[pause 1.5]
+Imagine a cuboid of length 6 cm, width 3 cm and height 4 cm.
+[pause 2.5]
+Now a cylinder of radius 3 cm and height 5 cm beside it.
+[pause 3]
+Let's get back to the slides.
+[pause 2]

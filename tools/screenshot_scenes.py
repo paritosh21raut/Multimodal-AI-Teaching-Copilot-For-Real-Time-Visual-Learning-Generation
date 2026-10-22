@@ -69,6 +69,36 @@ SCENES = [
          '{"op":"add","id":"c1","kind":"car","name":"car","props":{"speed":[10,"m/s"]}}\n{"op":"behave","kind":"move","target":"c1"}\n'
          '{"op":"add","id":"b1","kind":"ball","name":"ball","props":{"speed":[5,"m/s"]}}\n{"op":"behave","kind":"move","target":"b1"}'),
     ], 8),
+    ("solids", "Mensuration", [  # test31: "imagine a cuboid / cube / cone / cylinder"
+        ("Imagine a cube of side 4 cm.",
+         '{"op":"add","id":"k1","kind":"cube","name":"cube","props":{"side":[4,"cm"]}}'),
+        ("Now a cuboid 6 cm long, 3 cm wide and 4 cm high.",
+         '{"op":"add","id":"q1","kind":"cuboid","name":"cuboid","props":{"length":[6,"cm"],"width":[3,"cm"],"height":[4,"cm"]}}'),
+        ("Now a cylinder of radius 3 cm and height 5 cm.",
+         '{"op":"add","id":"y1","kind":"cylinder","name":"cylinder","props":{"radius":[3,"cm"],"height":[5,"cm"]}}'),
+    ], 0),
+    ("cone_sphere_no_numbers", "Mensuration", [
+        ("Imagine a cone and a sphere.",
+         '{"op":"add","id":"n1","kind":"cone","name":"cone"}\n{"op":"add","id":"p1","kind":"sphere","name":"sphere"}'),
+    ], 0),
+    ("circles_c1_c2", "Geometry", [  # test31: "if circle 1 is C1 and circle 2 is C2" was refused
+        ("Imagine two circles.",
+         '{"op":"add","id":"c1","kind":"circle","name":"circle"}\n{"op":"add","id":"c2","kind":"circle","name":"circle"}'),
+        ("If circle 1 is C1 and circle 2 is C2.",
+         '{"op":"label","id":"c1","text":"C1"}\n{"op":"label","id":"c2","text":"C2"}'),
+    ], 0),
+    ("five_bodies", "Kinematics", [  # test31: three cars, a boy, a rocket: crowded lanes, one "car" readout per car
+        ("Imagine a car moving at a speed of 60 kmph.",
+         '{"op":"add","id":"c1","kind":"car","name":"car","props":{"speed":[60,"km/h"]}}\n{"op":"behave","kind":"move","target":"c1"}'),
+        ("Imagine another car moving at a speed of 70 kmph.",
+         '{"op":"add","id":"c2","kind":"car","name":"car","props":{"speed":[70,"km/h"]}}\n{"op":"behave","kind":"move","target":"c2"}'),
+        ("Imagine a car moving at 50 kmph.",
+         '{"op":"add","id":"c3","kind":"car","name":"car","props":{"speed":[50,"km/h"]}}\n{"op":"behave","kind":"move","target":"c3"}'),
+        ("Imagine a boy running at a speed of 20 kmph.",
+         '{"op":"add","id":"p1","kind":"particle","name":"boy","props":{"speed":[20,"km/h"]}}\n{"op":"behave","kind":"move","target":"p1"}'),
+        ("Imagine a rocket moving at a speed of 100 kmph.",
+         '{"op":"add","id":"b2","kind":"ball","name":"rocket","props":{"speed":[100,"km/h"]}}\n{"op":"behave","kind":"move","target":"b2"}'),
+    ], 4),
     ("stone_launched", "Projectiles", [
         ("Imagine a stone thrown at 20 m/s at 30 degrees.",
          '{"op":"add","id":"s1","kind":"ball","name":"stone","props":{"speed":[20,"m/s"],"angle":[30,"deg"]}}\n'

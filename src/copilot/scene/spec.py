@@ -21,7 +21,8 @@ KNOWN: frozenset[str] = frozenset({"said", "teacher", "computed"})
 
 # Drawing kinds are parts, not templates (no topic logic). L1 engines draw these; the rest of F-015's list comes
 # with the L2 / L3 worlds (a kind no engine draws yet is refused, never drawn as something else).
-GEOMETRY_KINDS = ("square", "rectangle", "circle", "triangle", "polygon", "point", "segment")
+SOLID_KINDS = ("cube", "cuboid", "cylinder", "cone", "sphere")  # drawn as a textbook projection (hidden edges dashed)
+GEOMETRY_KINDS = ("square", "rectangle", "circle", "triangle", "polygon", "point", "segment") + SOLID_KINDS
 PLOT_KINDS = ("curve",)
 BODY_KINDS = ("ball", "block", "car", "particle")
 KINDS: tuple[str, ...] = GEOMETRY_KINDS + PLOT_KINDS + BODY_KINDS
@@ -59,11 +60,12 @@ class Look(_Model):
 
 class Geom(_Model):
     """Engine output in stage px (1100 x 740, y down): what the renderer draws for one entity."""
-    shape: Literal["rect", "circle", "poly", "seg", "path", "dot", "body"]
+    shape: Literal["rect", "circle", "poly", "seg", "path", "dot", "body", "solid"]
     pts: list[tuple[float, float]] = Field(default_factory=list)  # poly / seg corners, rect: [x, y] + [w, h]
     c: Optional[tuple[float, float]] = None   # circle / dot / body centre
     r: float = 0.0
-    d: str = ""                               # path data (a sampled curve)
+    d: str = ""                               # path data (a sampled curve; a solid's visible edges)
+    d2: str = ""                              # a solid's hidden edges (drawn dashed)
     angle: float = 0.0                        # rect / body rotation (degrees)
     label_at: Optional[tuple[float, float]] = None
     note: str = ""                            # a computed value printed beside the label ("(2, 4)" on a curve)

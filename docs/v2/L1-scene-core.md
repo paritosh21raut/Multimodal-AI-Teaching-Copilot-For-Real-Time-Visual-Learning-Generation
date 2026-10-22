@@ -51,3 +51,5 @@ after the call starts, 8 ops applied, 0 refused; run total 28.3k tokens (ledger;
 empty-stream retries, a bug fixed after the run. Review: 11 of 12 findings fixed with tests (unit-family said check,
 unitless lengths, stream reset on retry, cue that draws nothing closes, cycle check, short labels, client fmt);
 not re-run live. Tests: fast 1624, browser 125 + 3 scene. Contact sheets: `artifacts/scenes/sheet_{light,dark}.png`.
+**L1b (test31):** "C1" labels, speech units, solids (V + SA), many bodies, emptied-scene title. Live
+`scene_l1b.txt`: 11 calls, 13.0k tok, 0 refused. Pictures, rain–man, river–boat, belts → L2a.

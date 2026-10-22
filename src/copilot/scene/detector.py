@@ -32,10 +32,15 @@ _CUE = re.compile(r"\b(?:imagine|picture|suppose|consider|visuali[sz]e|draw|sket
                   r"let(?:'?s| us) (?:say|draw|take|consider|imagine|picture|plot))\b", re.IGNORECASE)
 NOUNS: dict[str, str] = {  # drawable noun (regex) -> its world
     r"squares?|rectangles?|circles?|triangles?|polygons?|hexagons?|pentagons?|octagons?|diagonals?|"
-    r"chords?|radius|diameter|tangents?|line segments?|segments?|points? [A-Z]\b|bisectors?": "geometry",
+    r"chords?|radius|diameter|tangents?|line segments?|segments?|points? [A-Z]\b|bisectors?|"
+    r"cubes?\b(?!\s+(?:roots?\b|of\s+(?:\d|a number\b|the number\b|[a-z]\b)))|cuboids?|cylinders?|cones?\b(?!\s+(?:cells?|in the (?:retina|eye))\b)|"
+    r"spheres?": "geometry",
     r"graph of (?:y|f|the (?:function|line|curve|equation))|plot of|parabola|function (?:f|y)\b|f of x|"
     r"y\s*(?:=|equals)|sine (?:wave|curve)|straight line y": "plot",
     r"balls?|blocks?|cars?|trains?|stones?|particles?|rockets?|bullets?|carts?|bikes?|marbles?|projectiles?|"
+    r"trucks?|boats?|ships?|(?:aero|air)planes?|bicycles?|cyclists?|runners?|"
+    r"(?:bus|buses|planes?) (?:moving|travel+ing|going|running|flying|taking off|landing)|"
+    r"(?:boy|girl|man|woman|person) (?:running|walking|moving|cycling|riding)|"
     r"(?:an? |the )?(?:object|body|box) (?:moving|thrown|dropped|falling|rolling|sliding|launched|travel+ing)": "motion",
 }
 _NOUN = [(re.compile(rf"\b(?:{rx})", re.IGNORECASE), w) for rx, w in NOUNS.items()]

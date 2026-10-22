@@ -40,9 +40,14 @@ kinds: {" ".join(KINDS)}
 props, as [number, unit], ONLY numbers the teacher said (leave a prop out if its number was not said):
  side width height radius diameter length base (cm m mm km, or "" for none) | sides (count) | x y xmin xmax (plain)
  speed (m/s km/h) | acceleration (m/s^2; negative when slowing down) | angle (deg) | height for a fall (m)
+ solids: cube (side) | cuboid (length width height) | cylinder, cone (radius or diameter, height) | sphere (radius)
+speech units: "mps" = m/s; "mps square", "mps2", "m p s squared" (or "mps" plus a stray letter: "mpsw") = m/s^2;
+ "kmph", "km per hour" = km/h
 curve: "expr" is y in terms of x, e.g. {{"op":"add","id":"f1","kind":"curve","name":"parabola","expr":"x^2-3"}}
 relations (a is placed by b): {" ".join(RELATIONS)}
  inscribed_in = a fits exactly inside b; around = a encloses b exactly; on = point a lies on b
+anything that moves is a body: car for a vehicle (car, train, bus, boat, rocket, plane), particle for a person or an
+ animal, ball for a ball or a stone, block for a box; never a point or a shape
 behaviours (of ball block car particle): {" ".join(BEHAVIORS)}
  move = straight line (speed, acceleration on the body); launch = thrown at an angle (speed, angle); fall = dropped
  from a height (height)
@@ -67,6 +72,8 @@ Lines: Imagine a ball rolling at 3 metres per second.
 Scene: b1 ball "ball" speed=3 m/s; b1 move
 Lines: Now it slows down at 0.5 metres per second squared.
 {{"op":"set","id":"b1","props":{{"acceleration":[-0.5,"m/s^2"]}}}}
+Lines: Imagine a cylinder of radius 3 cm and height 5 cm.
+{{"op":"add","id":"y1","kind":"cylinder","name":"cylinder","props":{{"radius":[3,"cm"],"height":[5,"cm"]}}}}
 Lines: Consider the graph of y equals x squared, and mark the point where x is 2.
 {{"op":"add","id":"f1","kind":"curve","name":"graph","expr":"x^2"}}
 {{"op":"add","id":"p1","kind":"point","props":{{"x":[2,""]}}}}
