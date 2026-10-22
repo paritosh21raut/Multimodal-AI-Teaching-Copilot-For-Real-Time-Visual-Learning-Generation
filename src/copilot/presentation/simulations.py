@@ -28,6 +28,7 @@ from __future__ import annotations
 import dataclasses
 
 import logging
+import re
 import uuid
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Optional
@@ -123,6 +124,15 @@ class SimulationController:
     def collecting(self) -> bool:
         return self.mode is not None
 
+    def about_open(self, title: str) -> bool:
+        """An announced title that is a part of the running simulation ("the graph of the capacitor voltage"): not a
+        new topic. Its graph, or a word of the template's own lexicon (S4: found in the live RLC run)."""
+        if self.mode is None:
+            return False
+        t = registry.TEMPLATES.get(self.mode.template)
+        return bool(re.search(r"\b(?:graph|plot|curve)\b", title, re.IGNORECASE)) and t is not None and bool(
+            t.lexicon.search(title)) or bool(t is not None and t.setup.search(title))
+
     # ---- lookup ---------------------------------------------------------------------------------------------
     def _block(self, block_id: str) -> tuple[Optional[SlideSpec], Optional[SimulationBlock]]:
         spec = self.e._spec(self.where.get(block_id, ""))
@@ -207,7 +217,8 @@ class SimulationController:
                 if isinstance(v, (int, float)) and slot in params:
                     params[slot] = float(v)
             friction = "friction" in sim.shown or last == "mu" or getattr(sim.params, "mu", 0) > 0
-            r = resolve(t, line, last, friction_context=friction, params=params)
+            r = resolve(t, line, last, friction_context=friction, params=params,
+                        state={**sim.params.model_dump(), "_src": dict(sim.param_source)})
             if r.why:
                 log.info("[SIM] %r -> %s", line[:80], "; ".join(r.why))
             last = r.last or last
@@ -248,7 +259,7 @@ class SimulationController:
     def _steps(self, sim: SimBase, lines: list[str], block_id: str) -> SimBase:
         """S3: the steps and parts the lines name (a process template): the current step follows the speech."""
         t = registry.template_of(sim)
-        if not t.steps and not t.parts:
+        if not t.process and not t.parts:
             return sim
         for line in lines:
             upd = steps.said(sim, t, line)
@@ -476,8 +487,9 @@ class SimulationController:
         if m is None:
             return
         spec, b = self._block(m.block_id)
-        if spec is None or b is None or not registry.template_of(b.sim).steps:
-            return
+        t = registry.template_of(b.sim) if b is not None else None
+        if spec is None or t is None or not (t.steps or t.step_defs) or t.ordered:
+            return  # an ordered template (routing) never cycles: the cycle would reach the answer
         sim = b.sim
         if sim.step_by == "auto" or sim.playback.state != "playing":
             return

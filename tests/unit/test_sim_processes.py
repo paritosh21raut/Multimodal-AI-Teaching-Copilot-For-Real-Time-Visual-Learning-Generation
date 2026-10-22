@@ -662,3 +662,47 @@ def test_bohr_review_jump_into_full_shell():
     assert "n_from" not in s.drive and "full" in next(x.text for x in s.derived if x.id == "jump_note")
     s = registry.build("bohr_atom", [("z", 11, "said"), ("n_from", 3, "said"), ("n_to", 4, "said")])
     assert s.drive["n_to"] == 4 and s.drive["emits"] == 0  # the outer electron, up: drawn
+
+
+# ---- S4: the cheap S3 leftovers -------------------------------------------------------------------------------------
+def test_s4_no_now_mark_without_a_base_volume_and_the_acids_ph_is_named():
+    s = registry.build("neutralisation", NEUT)  # every amount said, no volume of base: the acid's own pH, no mark
+    ph = next(x for x in s.derived if x.id == "ph")
+    assert ph.label == "pH of the acid" and ph.text == "1.00"
+    assert s.series and s.series[0].lines[0].mark is None
+    s = registry.build("neutralisation", NEUT + [("base_ml", 0, "said")])  # "before any base is added": marked
+    assert next(x for x in s.derived if x.id == "ph").label == "pH" and s.series[0].lines[0].mark[0] == 0
+
+
+@pytest.mark.parametrize("line", ["Sodium forms the Na plus ion.", "Chlorine gains an electron and becomes Cl minus.",
+                                  "Magnesium gives Mg 2+ ions."])
+def test_s4_an_ion_by_its_symbol_is_a_notice_not_the_atom(line):
+    got, refused = _bohr(line)
+    assert "z" not in got and any("neutral atom" in x for x in refused)
+
+
+def test_s4_sodium_is_still_the_atom():
+    got, refused = _bohr("Take sodium, which has 11 electrons.")
+    assert got.get("z") == 11 and not refused
+
+
+@pytest.mark.parametrize("line,named", [
+    ("The light falls back into the room.", False),
+    ("The price falls back to a lower level.", False),
+    ("The electron falls back to the ground state.", True),
+    ("Then it returns to a lower level.", True),
+    ("The atom emits a photon.", True),
+])
+def test_s4_bohr_emit_needs_an_electron(line, named):
+    t = registry.TEMPLATES["bohr_atom"]
+    assert ("emit" in steps.heard_steps(t, line, registry.build("bohr_atom"))) == named
+
+
+def test_s4_an_optional_step_said_later_never_renumbers_the_main_steps():
+    a, b = walk("water_cycle", ["First the sun heats the sea and the water evaporates.",
+                                "Plants lose water from their leaves, which we call transpiration."])
+    tags = {x.id: x.tag for x in a.steps if x.n}
+    assert [x.tag for x in a.steps if x.n] == ["1", "2", "3", "4"]
+    after = {x.id: x.tag for x in b.steps if x.n}
+    assert all(after[k] == v for k, v in tags.items())  # the main steps keep their numbers
+    assert sorted(set(after.values()) - set(tags.values())) == ["1b"]  # transpiration after evaporation

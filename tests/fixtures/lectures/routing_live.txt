@@ -1,0 +1,33 @@
+# Computer networks (B.Tech), ~2 minutes, written by Claude for F-014 S4 (hard topics). Expect: a content slide on
+# routers; "a social network of friends" and "neural network" are traps; "let me show you Dijkstra's algorithm" opens
+# simulation mode (a sample network drawn, no costs, no steps); the links said one by one (9 links, A-F); "the shortest
+# path from A to F" gives the source and the target: the steps are visit A, C, B, D, E, F, then the path; the teacher
+# walks them by name; Bellman-Ford is a notice; the path A → C → B → D → E → F, cost 12; back to the slides.
+@setup subject="Computer Science" grade=college topic="Network routing"
+
+Good morning. Today we look at how routers find the best route for a packet.
+[pause 1]
+The internet is not like your social network of friends, and it is not a neural network either.
+Each router keeps a routing table that says where to send a packet next.
+[pause 1.5]
+Let me show you Dijkstra's algorithm.
+Here A to B costs 4, A to C costs 2 and B to C costs 1.
+The link between B and D has a cost of 5, and C to D is 8.
+C to E is 10, D to E is 2, D to F is 6 and E to F is 2.
+[pause 1]
+Let us find the shortest path from A to F.
+First we visit A, and its neighbours B and C get distances 4 and 2.
+C has the smallest distance, so next we visit C.
+Through C, B improves to 3, D gets 10 and E gets 12.
+[pause 1]
+Now we pick B, and D improves to 8.
+Then we visit D, and E improves to 10 while F gets 14.
+Next we visit E, and F improves to 12.
+Finally we visit F.
+[pause 1]
+In Bellman-Ford routers share distance vectors instead, but that is for next class.
+So the shortest path is A, C, B, D, E, F with a total cost of 12, and we send the packets along it.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 1]
+Routers run this algorithm again whenever a link fails.

@@ -2,6 +2,7 @@
 // The slide is drawn by the same renderer as the projector, at 1920x1080, then measured and photographed.
 import { html, render } from "../vendor/htm-preact-standalone.mjs";
 import { Slide } from "../shared/slide.js";
+import { stillSpec } from "../sims/runtime.js";
 
 const root = document.getElementById("root");
 const frame = () => new Promise((r) => requestAnimationFrame(() => r()));
@@ -9,7 +10,8 @@ const frame = () => new Promise((r) => requestAnimationFrame(() => r()));
 window.showSlide = async (spec, theme) => {
   document.documentElement.dataset.theme = theme;
   render(null, root);
-  render(html`<div class="stage"><${Slide} key=${spec.id} spec=${spec} /></div>`, root);
+  // S4: a simulation is photographed at its still moment, frozen (one frame, the same on every export)
+  render(html`<div class="stage"><${Slide} key=${spec.id} spec=${stillSpec(spec)} /></div>`, root);
   await document.fonts.ready;
   await Promise.all([...root.querySelectorAll("img")].map((img) => (img.complete ? 0
     : new Promise((r) => { img.addEventListener("load", r, { once: true }); img.addEventListener("error", r, { once: true }); }))));

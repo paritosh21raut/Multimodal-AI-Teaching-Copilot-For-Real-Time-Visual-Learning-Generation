@@ -80,8 +80,9 @@ def spoken_number(s: str) -> Optional[float]:
 @dataclass(frozen=True)
 class Heard:
     kind: str           # mass | angle | force | speed | length | voltage | resistance | current | frequency | time |
-    #                     mu | g | force_dir | rough
-    value: float = 0.0  # in the slot's unit (kg, degrees, N, m/s, m, V, Ω, A, Hz, s, -, m/s²)
+    #                     mu | g | force_dir | rough; S3 rate | volume | concentration; S4 temperature | pressure |
+    #                     inductance | capacitance
+    value: float = 0.0  # in the slot's unit (kg, degrees, N, m/s, m, V, Ω, A, Hz, s, -, m/s²; K, kPa, H, F, mL)
     said: str = ""      # the words as heard ("five kilograms")
     text: str = ""      # a force's direction (force, force_dir): up | down (the slope), with | against (the motion)
     role: str = ""      # force, force_dir: push | pull (S2: two forces; "" = not said, the push)
@@ -95,14 +96,22 @@ _AFTER_DIGIT = r"(?<=\d)\s?"
 _UNIT_SPECS: tuple[tuple[str, str], ...] = (
     ("mass", r"kg\b|kgs\b|kilo(?:gram)?s?\b(?![- ]?(?:ohm|newton|watt|volt|metre|meter|hertz|joule))|grams?\b|gm\b|"
              r"tonnes?\b|tons?\b"),
+    # S4: a temperature ("300 K", "27 degrees Celsius", "27 °C"), before the angle so "°C" is never an angle
+    ("temperature", r"(?i:degrees?\s+(?:celsius|centigrade)\b|kelvins?\b)|°\s?C\b|(?<=\d)\s?K\b(?!\s*(?:resistors?|ohms?|Ω|resistance))"),
     ("angle", r"°|degrees?\b|deg\b"),
     ("force", r"(?i:kilo ?newtons?\b|newtons?\b)|(?<=\d)\s?kN\b|(?<=\d)\s?N(?:m|f|F)?\b|(?<=\d)\s?N\.? ?m\b"),
     # S3: a beat rate ("72 beats per minute", "72 bpm", "beats 72 times a minute"), a volume ("25 mL", "70
     # millilitres", "1.5 litres", "25 cm3"), a concentration ("0.1 M", "0.1 molar", "0.1 moles per litre"); before the
     # length, so "25 cm3" / "0.1 M" are never metres
     ("rate", r"(?i:beats?\s+(?:per|a|each|every)\s+minute\b|bpm\b|times\s+(?:per|a|each|every)\s+minute\b)"),
-    ("volume", r"(?i:millilit(?:re|er)s?\b|lit(?:re|er)s?\b(?!\s*per)|cubic\s+centimet(?:re|er)s?\b|cc\b)|"
-               r"(?<=\d)\s?(?:mL|ml|cm3|cm³|L|dm3|dm³)\b"),
+    ("volume", r"(?i:millilit(?:re|er)s?\b|lit(?:re|er)s?\b(?!\s*per)|cubic\s+centimet(?:re|er)s?\b|cc\b|"
+               r"cubic\s+met(?:re|er)s?\b)|(?<=\d)\s?(?:mL|ml|cm3|cm³|L|dm3|dm³|m3|m³)(?![\w/])"),
+    # S4: pressure in kPa ("100 kPa", "1 atm", "2 bar", "760 mm of mercury"), inductance in H ("10 mH", "0.5 henry"),
+    # capacitance in F ("100 µF", "10 nanofarads"; a bare "F" is Fahrenheit or a force: never read)
+    ("pressure", r"(?i:(?:kilo|mega)?pascals?\b|atmospheres?\b|atm\b|bars?\b(?!\s+(?:of|graph|chart|magnet))|"
+                 r"(?:millimet(?:re|er)s?|mm)\s+of\s+mercury\b|mm\s?(?:of\s)?Hg\b)|(?<=\d)\s?[kM]?Pa\b"),
+    ("inductance", r"(?i:(?:milli|micro)?\s?henr(?:y|ys|ies)\b)|(?<=\d)\s?[mµu]?H\b"),
+    ("capacitance", r"(?i:(?:micro|nano|pico|milli)\s?farads?\b|farads?\b)|(?<=\d)\s?[µunpm]F\b"),
     ("concentration", r"(?i:molar\b|moles?\s+per\s+(?:lit(?:re|er)|dm3|dm³|cubic\s+decimet(?:re|er))\b|"
                       r"mol(?:es)?\s?/\s?(?:l|dm3|dm³)\b|mol\s?dm-?3\b)|(?<=\d)\s?M\b"),
     ("speed", r"m/s\b(?!\s*(?:squared|square|²|2\b))|(?:metres?|meters?) per second\b(?!\s*(?:squared|square|²|per))|"
@@ -111,13 +120,15 @@ _UNIT_SPECS: tuple[tuple[str, str], ...] = (
                r"(?<=\d)\s?m\b(?!\s*/)"),
     ("voltage", r"(?i:(?:kilo)?volts?\b)|(?<=\d)\s?k?V\b"),
     ("resistance", r"(?:kilo[- ]?)?ohms?\b|k?Ω|(?<=\d)\s?k(?=\s*ohm)"),
-    ("current", r"(?i:(?:milli)?amp(?:ere)?s?\b)|(?<=\d)\s?m?A\b"),
-    ("frequency", r"(?:kilo)?hertz\b|(?<=\d)\s?k?Hz\b"),
+    ("current", r"(?i:(?:milli|micro|nano|pico)?\s?amp(?:ere)?s?\b)|(?<=\d)\s?[mµunp]?A\b"),
+    ("frequency", r"(?:kilo|mega)?hertz\b|(?<=\d)\s?[kM]?Hz\b"),
     ("time", r"(?i:seconds?\b|secs?\b|milliseconds?\b)|(?<=\d)\s?s\b|(?<=\d)\s?ms\b"),
 )
 _UNIT_RX = [(k, re.compile(rf"{NUM}\s*(?P<u>{u})", re.IGNORECASE if k not in ("force", "voltage", "current",
                                                                                      "length", "time", "volume",
-                                                                                     "concentration") else 0))
+                                                                                     "concentration", "temperature",
+                                                                                     "pressure", "inductance",
+                                                                                     "capacitance") else 0))
             for k, u in _UNIT_SPECS]
 # case-sensitive kinds still accept their spelled-out unit in any case ("Newtons", "Volts")
 _ANY_UNIT = re.compile(r"\s*(?:" + "|".join(u for _, u in _UNIT_SPECS) + r"|percent|%)", re.IGNORECASE)
@@ -228,12 +239,25 @@ def _factor(kind: str, unit: str) -> float:
     if kind == "length":
         return 0.01 if u.startswith(("c", "centi")) else 0.001 if u.startswith(("mm", "milli")) else \
             1000.0 if u.startswith(("k", "kilo")) else 1.0
-    if kind in ("voltage", "resistance", "frequency"):
+    if kind == "frequency":
+        return 1e6 if unit.strip().startswith("M") or u.startswith("mega") else 1000.0 if u.startswith("k") else 1.0
+    if kind in ("voltage", "resistance"):
         return 1000.0 if u.startswith("k") else 1.0
     if kind == "volume":  # in mL: a millilitre = a cubic centimetre; a litre = a cubic decimetre = 1000 mL
+        if u.startswith(("m3", "m³", "cubicmet")):
+            return 1e6
         return 1.0 if u.startswith(("m", "c")) else 1000.0
-    if kind == "current":
-        return 0.001 if u.startswith("m") else 1.0
+    if kind in ("current", "inductance", "capacitance"):  # A, H, F
+        return 1e-6 if u.startswith(("µ", "u", "micro")) else 1e-3 if u.startswith("m") else \
+            1e-9 if u.startswith("n") else 1e-12 if u.startswith("p") else 1.0
+    if kind == "pressure":  # in kPa
+        if u.startswith("atm"):
+            return 101.325
+        if u.startswith("bar"):
+            return 100.0
+        if "mercury" in u or "hg" in u:
+            return 0.133322
+        return 1000.0 if unit.strip().startswith("M") or u.startswith("mega") else 1.0 if u.startswith("k") else 1e-3
     if kind == "time":
         return 0.001 if u.startswith("m") else 1.0
     return 1.0
@@ -288,6 +312,10 @@ def heard(text: str) -> list[Heard]:
                     d = _direction(_clause(t, verb, verb + 1), t) if verb >= 0 else ""
                 put(Heard("force", v * _factor(kind, unit), m.group(0), start=m.start(), loose=not pushed,
                           odd_unit=odd, role=role, text=d), m.span())
+                continue
+            if kind == "temperature":  # in K: Celsius + 273.15
+                c = bool(re.search(r"celsius|centigrade|°", unit, re.IGNORECASE))
+                put(Heard(kind, v + 273.15 if c else v, m.group(0), start=m.start()), m.span())
                 continue
             put(Heard(kind, v * _factor(kind, unit), m.group(0), start=m.start()), m.span())
     for m in _MU.finditer(t):
@@ -359,16 +387,20 @@ def _steps(t: "Template", line: str, last: Optional[str], items: list[Heard], pa
         if slot is None or slot not in t.slot_map:
             continue
         verb = m.group("verb").lower()
+        # S4: a signed slot now negative (a reverse bias of 5 V) is spoken as its size: "increase it to 10 V" = −10
+        sign = -1.0 if t.slot_map[slot].lo < 0 and params.get(slot, 0.0) < 0 else 1.0
         if m.group("prep").lower() == "by":
             cur = params.get(slot)
             if cur is None:
                 continue
             if verb.startswith(("increase", "raise", "adjust")):
-                v = cur + v
+                v = sign * (abs(cur) + v)
             elif verb.startswith(("reduce", "decrease", "lower")):
-                v = cur - v
+                v = sign * max(0.0, abs(cur) - v) + 0.0  # (no −0) a size: reducing a reverse bias stops at 0, never turns forward
             else:
                 continue
+        else:
+            v = sign * v
         out.append((slot, v, m.group(0), m.start("num"), "relative (to / by)"))
     return out
 
@@ -469,10 +501,12 @@ def _slot_for_kind(t: "Template", kind: str, before: str, after: str = "") -> Op
 
 
 def resolve(t: "Template", text: str, last: Optional[str] = None, *, friction_context: bool = False,
-            params: Optional[dict[str, float]] = None, items: Optional[list[Heard]] = None) -> Resolved:
+            params: Optional[dict[str, float]] = None, items: Optional[list[Heard]] = None,
+            state: Optional[dict] = None) -> Resolved:
     """The open simulation's slot values in one line. last: the slot changed or mentioned before (a bare number or
     "double it" goes there); friction_context: friction is on the stage or was just named ("new equal to 0.2" is μ);
-    params: the current values (relative phrases)."""
+    params: the current values (relative phrases); state (S4): the open simulation's params with their sources under
+    "_src", for a template's own reading ("the refractive index of glass" is the side that is glass)."""
     line = _clean(text)
     items = heard(line) if items is None else items
     slots = t.slot_map
@@ -494,12 +528,15 @@ def resolve(t: "Template", text: str, last: Optional[str] = None, *, friction_co
         r.values.append((slot, value, said))
         r.why.append(f"{slot}: {why}")
 
-    steps = _steps(t, line, last, items, params)
+    parsed = t.parse(line, items, state or {}) if t.parse is not None else []
+    # S4: a signed value (a bias) the template read with its direction ("to 0.6 V forward") beats "set it to 0.6"
+    signed = {slot for slot, v, *_ in parsed if slot in t.slot_map and t.slot_map[slot].lo < 0}
+    steps = [x for x in _steps(t, line, last, items, params) if x[0] not in signed]
     for slot, v, said, pos, why in steps:
         take(slot, v, said, pos, why)
     stepped = {pos for *_, pos, _ in steps}
     if t.parse is not None:  # S3: the template's own reading ("from the third level to the second", amounts per chemical)
-        for slot, v, said, pos in t.parse(line, items):
+        for slot, v, said, pos in parsed:
             if slot == "!":  # a notice: heard, not drawn
                 r.refused.append(v)
                 continue
@@ -508,6 +545,11 @@ def resolve(t: "Template", text: str, last: Optional[str] = None, *, friction_co
                 continue
             if isinstance(v, str):
                 r.choices.setdefault(slot, v)
+            elif said.startswith("="):  # S4: worked out from what was said (a gas law): kept, marked computed
+                take(slot, v, said[1:], -1, "worked out by the template")
+                if slot in got:
+                    r.computed.add(slot)
+                continue
             else:
                 take(slot, v, said, pos, "the template's own reading")
             stepped.add(pos)  # that number is this value's, the unit-first reading leaves it
@@ -534,7 +576,10 @@ def resolve(t: "Template", text: str, last: Optional[str] = None, *, friction_co
                 if rd.computed and rd.slot in got:
                     r.computed.add(rd.slot)
             continue
-        if t.results is not None and h.start >= 0 and t.results.search(" ".join(line[:h.start].split()[-5:])):
+        # a result named just before ("the peak current is 2 A"), since the number before it: "the peak current is
+        # 1.4 A at 50 Hz" leaves the 50 Hz an input (S4 review)
+        prev = max((x.start + len(x.said) for x in items if 0 <= x.start < h.start), default=0)
+        if t.results is not None and h.start >= 0 and t.results.search(" ".join(line[prev:h.start].split()[-5:])):
             r.why.append(f"{h.said}: a result of the scene, not an input")
             continue
         after = line[h.start + len(h.said):] if h.start >= 0 else ""

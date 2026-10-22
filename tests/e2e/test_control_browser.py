@@ -135,7 +135,7 @@ async def test_mistake_card_shows_what_was_said_and_what_the_slide_shows():
             await cards.nth(0).locator("button", has_text="Show what I said").click()
             await h.settle()
             await cards.nth(1).locator("button", has_text="Keep what I said").click()
-            await h.settle()
+            await h.until(lambda: len([c for c in commands if c.kind == "resolve_concern"]) == 2)  # over the websocket
             got = [c.args for c in commands if c.kind == "resolve_concern"]
             assert got == [{"id": "c1", "action": "keep"}, {"id": "c2", "action": "dismiss"}]
             assert not control.errors, control.errors

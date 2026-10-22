@@ -1,0 +1,31 @@
+# Class 12 semiconductors, ~2 minutes, written by Claude for F-014 S4 (hard topics). Expect: a content slide on doping;
+# "the road junction" and "depletion of the ozone layer" are traps; "let me show you a p-n junction" opens simulation
+# mode (nothing printed yet); both sides doped at 10^16 per cubic centimetre: V_bi 0.714 V, W 430 nm (no bias, absent
+# = known), E_max 33.2 kV/cm; reverse bias of 5 V: W 1.22 µm; "increase it to 10 volts" stays reverse (W 1.66 µm);
+# the Zener line is a notice; then forward 0.6 V with I_s 10^-12 A: I = 12 mA, W 172 nm; back to the slides.
+@setup subject=Physics grade=12 topic="Semiconductor devices"
+
+Good morning. Today we study what happens where p-type and n-type silicon meet.
+[pause 1]
+A p-type crystal is doped with acceptors, so it has extra holes, and an n-type crystal is doped with donors.
+Think of it like the road junction near the school, where two streams of traffic meet.
+The depletion of the ozone layer is a different story for another day.
+[pause 1.5]
+Let me show you a p-n junction.
+Both sides are doped at ten to the power sixteen per cubic centimetre, and there is no bias yet.
+[pause 1]
+Electrons diffuse from the n side and holes from the p side, leaving fixed ions behind.
+These ions set up an electric field which stops further diffusion.
+[pause 1]
+Now apply a reverse bias of 5 volts.
+See how the depletion region becomes wider.
+Now increase it to 10 volts.
+A Zener diode would break down at a high reverse voltage, but our diode does not.
+[pause 1.5]
+Now apply a forward bias of 0.6 volts instead.
+The saturation current is 10 to the power minus 12 amperes.
+The depletion region becomes narrow, and a large current flows.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 1]
+So a diode conducts in forward bias and blocks in reverse bias.

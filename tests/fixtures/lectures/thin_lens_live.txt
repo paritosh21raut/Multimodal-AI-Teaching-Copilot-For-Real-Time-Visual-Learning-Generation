@@ -1,0 +1,26 @@
+# Physics (class 10), ~2 minutes, written by Claude for F-014 S4 (hard topics). Expect: a content slide on lenses;
+# "contact lens" and "through the lens of history" are traps; "let me show you the image formed by a convex lens"
+# opens simulation mode; f 10 cm, u 30 cm, h 2 cm: v 15 cm other side (real), m -0.5, h' 1 cm, P 10 D; the object
+# moved to 5 cm: v 10 cm on the object's side (virtual), m 2; a mirror is a notice; back to the slides.
+@setup subject="Physics" grade=10 topic="Lenses"
+
+Good morning. Today we learn how lenses form images.
+[pause 1]
+Many of you wear a contact lens, and historians look at the past through the lens of their time, but today we mean glass lenses.
+[pause 1.5]
+Let me show you the image formed by a convex lens.
+The focal length of the lens is 10 cm.
+An object 2 cm tall is placed 30 cm from the lens.
+[pause 1]
+A ray parallel to the principal axis passes through the focus after refraction.
+A ray through the optical centre goes straight on.
+The image is real, inverted and smaller than the object.
+[pause 1.5]
+Now move the object to 5 cm from the lens, inside the focal length.
+Now the image is virtual, upright and magnified, which is how a magnifying glass works.
+[pause 1]
+A concave mirror can also form such images, but mirrors are for tomorrow.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 1]
+So the lens formula connects the object distance, the image distance and the focal length.

@@ -746,3 +746,84 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .sim-ion.water circle + circle { fill: var(--sim-surface); }
 .sim-ion.cur, .sim-ion.water.cur circle:first-child { stroke: var(--sim-applied); stroke-width: 3; }
 .sim-legend .sim-ion.water { fill: var(--sim-water); }
+/* F-014 S4: RLC (coil, capacitor charge, V_C bar, AC source) */
+.sim-coil { fill: none; stroke: var(--sim-pull); stroke-width: 6; stroke-linecap: round; }
+.sim-sign { font: 700 26px var(--font-text); fill: var(--ink-2); }
+.sim-meter .frame { fill: none; stroke: var(--sim-surface); stroke-width: 3; }
+.sim-meter .fill { fill: var(--sim-normal); opacity: 0.75; }
+.sim-meter .level { stroke: var(--sim-surface); stroke-width: 4; stroke-dasharray: 6 4; }
+.sim-meter-name { font: italic 26px KaTeX_Math, "Cambria Math", serif; fill: var(--ink-2); }
+.sim-source { fill: var(--sim-card); stroke: var(--sim-surface); stroke-width: 5; }
+.sim-source-wave { fill: none; stroke: var(--sim-surface); stroke-width: 4; stroke-linecap: round; }
+.sim-note { font-size: 22px; font-weight: 650; fill: var(--muted); }  /* a footer note with units: not upper-cased ("ms") */
+.sim-ring { fill: none; stroke: var(--sim-surface); stroke-width: 2.5; stroke-dasharray: 6 8; opacity: 0.5; }
+/* S4 p-n junction */
+.sim-region.p { fill: var(--sim-friction); opacity: 0.08; } .sim-region.n { fill: var(--sim-weight); opacity: 0.08; }
+.sim-crystal { fill: none; stroke: var(--sim-surface); stroke-width: 4; }
+.sim-depletion { fill: var(--sim-wedge); opacity: 0.9; }
+.sim-region-name { font-size: 46px; font-weight: 750; fill: var(--ink); }
+.sim-ion circle { fill: var(--sim-block); stroke-width: 2.5; } .sim-ion text { font-size: 24px; font-weight: 800; }
+.sim-ion.neg circle { stroke: var(--sim-weight); } .sim-ion.neg text { fill: var(--sim-weight); }
+.sim-ion.pos circle { stroke: var(--sim-friction); } .sim-ion.pos text { fill: var(--sim-friction); }
+.sim-hole { fill: none; stroke: var(--sim-friction); stroke-width: 3.5; }
+.sim-electron { fill: var(--sim-weight); }
+.sim-hole.minority, .sim-electron.minority { opacity: 0.75; }
+/* S4 routing */
+.sim-link { stroke: var(--sim-surface); stroke-width: 5; stroke-linecap: round; opacity: 0.55; }
+.sim-link.better { stroke: var(--sim-applied); opacity: 1; stroke-width: 7; }
+.sim-link.kept { stroke: var(--sim-component); opacity: 0.8; stroke-dasharray: 10 8; }
+.sim-link.path { stroke: var(--sim-normal); opacity: 1; stroke-width: 10; }
+.sim-cost circle { fill: var(--sim-block); stroke: var(--sim-surface); stroke-width: 2.5; }
+.sim-cost text { font-size: 24px; font-weight: 700; fill: var(--ink); }
+.sim-node circle { fill: var(--sim-block); stroke: var(--sim-surface); stroke-width: 4; }
+.sim-node text { font-size: 30px; font-weight: 750; fill: var(--ink); }
+.sim-node.visited circle { fill: var(--sim-wedge); stroke: var(--sim-normal); }
+.sim-node.cur circle { stroke: var(--sim-applied); stroke-width: 7; }
+.sim-table .card { fill: var(--sim-block); stroke: var(--sim-surface); stroke-width: 2; opacity: 0.95; }
+.sim-table .head { font-size: 20px; font-weight: 700; letter-spacing: 0.06em; fill: var(--muted); text-transform: uppercase; }
+.sim-table text { font-size: 28px; fill: var(--ink); }
+.sim-table .num { font-variant-numeric: tabular-nums; }
+.sim-table .row.done text { fill: var(--muted); }
+.sim-table .row.changed text { fill: var(--sim-applied); font-weight: 750; }
+.sim-packet { fill: var(--sim-normal); stroke: var(--sim-block); stroke-width: 3; }
+/* S4 TCP */
+.sim-timeline { stroke: var(--sim-surface); stroke-width: 5; stroke-linecap: round; }
+.sim-msg line { stroke-width: 3.5; stroke-linecap: round; }
+.sim-msg .tag { font-size: 17px; font-weight: 650; }
+.sim-msg.seg line, .sim-msg.seg circle { stroke: var(--sim-weight); fill: var(--sim-weight); } .sim-msg.seg .tag { fill: var(--sim-weight); }
+.sim-msg.ack line, .sim-msg.ack circle { stroke: var(--sim-normal); fill: var(--sim-normal); } .sim-msg.ack .tag { fill: var(--sim-normal); }
+.sim-msg.hs line, .sim-msg.hs circle { stroke: var(--sim-pull); fill: var(--sim-pull); } .sim-msg.hs .tag { fill: var(--sim-pull); }
+.sim-msg.lost line { stroke-dasharray: 8 6; }
+.sim-msg .cross { font-size: 30px; font-weight: 800; fill: var(--sim-friction); }
+.sim-timer line { stroke: var(--sim-friction); stroke-width: 5; }
+.sim-timer text { font-size: 17px; font-weight: 700; fill: var(--sim-friction); }
+.sim-strip .box rect { fill: var(--sim-block); stroke: var(--sim-surface); stroke-width: 2; opacity: 0.8; }
+.sim-strip .box text { font-size: 20px; font-weight: 700; fill: var(--muted); }
+.sim-strip .box.sent rect { stroke: var(--sim-weight); stroke-width: 3; opacity: 1; } .sim-strip .box.sent text { fill: var(--sim-weight); }
+.sim-strip .box.acked rect { fill: var(--sim-normal); stroke: var(--sim-normal); opacity: 0.85; } .sim-strip .box.acked text { fill: var(--sim-block); }
+.sim-strip .win { fill: none; stroke: var(--sim-applied); stroke-width: 4; }
+
+/* S4 optics: refraction, thin lens */
+.sim-medium { fill: var(--sim-weight); }
+.sim-medium-name { font-size: 34px; font-weight: 750; fill: var(--ink-2); }
+.sim-ray { fill: none; stroke: var(--sim-applied); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+.sim-ray.faint { opacity: 0.45; stroke-width: 3; }
+.sim-ray.dashed { stroke-dasharray: 10 9; }
+.sim-light { fill: var(--sim-applied); }
+.sim-lens { fill: var(--sim-weight); fill-opacity: 0.12; stroke: var(--sim-weight); stroke-width: 4; }
+.sim-focus { fill: var(--sim-surface); }
+.sim-object, .sim-image { stroke: var(--sim-normal); stroke-width: 7; stroke-linecap: round; }
+.sim-object-head, .sim-image-head { fill: var(--sim-normal); }
+.sim-image, .sim-image-head { stroke: var(--sim-pull); fill: var(--sim-pull); }
+.sim-image.virtual { stroke-dasharray: 12 9; opacity: 0.85; } .sim-image-head.virtual { opacity: 0.85; }
+/* S4 gas under a piston */
+.sim-cylinder { fill: none; stroke: var(--sim-surface); stroke-width: 10; stroke-linejoin: round; }
+.sim-gas-fill { fill: var(--sim-weight); opacity: 0.07; }
+.sim-piston { fill: var(--sim-component); stroke: var(--sim-surface); stroke-width: 3; }
+.sim-molecule { fill: var(--sim-weight); opacity: 0.85; }
+.sim-gauge { fill: var(--sim-card); stroke: var(--sim-surface); stroke-width: 5; }
+.sim-needle { stroke: var(--sim-friction); stroke-width: 5; stroke-linecap: round; }
+.sim-needle-hub { fill: var(--sim-surface); }
+.sim-thermo { fill: var(--sim-card); stroke: var(--sim-surface); stroke-width: 4; }
+.sim-thermo-fill { fill: var(--sim-friction); }
+.sim-pipe { fill: none; stroke: var(--sim-surface); stroke-width: 6; stroke-linejoin: round; }

@@ -115,7 +115,7 @@ async def test_start_card_fits_with_many_files_and_the_speed_switch(tmp_path):
                 await control.keyboard.press("Escape")
                 await control.keyboard.press("Escape")
                 await control.click(".start-card .mode-row button:has-text('High performance')")
-                await h.settle()
+                await h.until(lambda: any(c.kind == "set_mode" and c.args == {"mode": "high"} for c in sent))
                 assert any(c.kind == "set_mode" and c.args == {"mode": "high"} for c in sent)
                 assert not control.errors, control.errors
         # the top bar pill during the lecture shows what the app says
@@ -125,7 +125,7 @@ async def test_start_card_fits_with_many_files_and_the_speed_switch(tmp_path):
         async with browser_page(f"{h.url}/control", 1600, 1000) as control:
             await control.wait_for_selector(".bar .mode-pill.on >> text=High performance")
             await control.click(".bar .mode-pill")
-            await h.settle()
+            await h.until(lambda: any(c.kind == "set_mode" and c.args == {"mode": "standard"} for c in sent))
             assert any(c.kind == "set_mode" and c.args == {"mode": "standard"} for c in sent)
             bar = await control.query_selector(".bar")
             await bar.screenshot(path=str(OUT / "mode_pill_high.png"))

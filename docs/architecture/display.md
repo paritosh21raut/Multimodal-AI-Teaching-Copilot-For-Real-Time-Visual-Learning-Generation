@@ -253,3 +253,16 @@ Controls send `Command` messages over the WebSocket → `CommandReceived` events
   number-only badges sit on the flows; part labels print once named. A fixed Readout card (top left, `fixed`) lists
   the said values first ("said · computed"); fixed cards are layout obstacles. Measured by
   `tests/e2e/test_sim_process_browser.py` (labels, badges, cards, flows, shells: no overlaps, both themes).
+
+## Hard-topic scenes + still frame (F-014 S4)
+- **Still frame:** the PPTX export page and the past-lecture viewer render a simulation slide through `stillSpec()`
+  (`web/sims/runtime.js`): each simulation block is drawn at its template's still moment (`drive.still_t`) with no
+  clock (`data-state="still"`), the same frame every time. Nothing is stored; the archive re-renders it.
+- **Values text field:** a template with a text slot (routing's links "A-B:4, B-C:1") shows a text input in Values;
+  the server checks and rewrites it (`sim_set`); if the value is still not taken 0.9 s after the change, the input gets
+  an outline (`.refused`) and a title "Not read: write it like …". TCP has a Protocol choice (TCP / Go-Back-N /
+  Selective Repeat) and Fast retransmit.
+- **Scenes** (`web/sims/`): rlc_transient, rlc_ac, pn_junction, routing, tcp, refraction, thin_lens, gas_piston.
+  Notes with units sit under the readout on the right (`.sim-note`, one per clause; the footer layout moves a note
+  that touches another). New stroke classes for label avoidance: `.sim-ray`, `.sim-lens`, `.sim-image`. Measured by
+  `tests/e2e/test_sim_hard_browser.py` (no overlaps, nothing off stage, said values present; both themes).

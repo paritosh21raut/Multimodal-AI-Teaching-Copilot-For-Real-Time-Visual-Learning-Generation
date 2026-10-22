@@ -1,0 +1,28 @@
+# Computer networks (B.Tech), ~2 minutes, written by Claude for F-014 S4 (hard topics). Expect: a content slide on the
+# transport layer; "shake hands with your neighbour" and "the sliding window technique on an array" are traps; "let me
+# show you the TCP three-way handshake" opens simulation mode (SYN, SYN-ACK, ACK, then data with W 4 / N 8 drawn but
+# not printed); window 4 and 8 segments said; segment 3 lost: 9 sent, 1 again, 6.5 RTT; Go-Back-N: 12 sent, 4 again;
+# congestion control is a notice; back to the slides.
+@setup subject="Computer Science" grade=college topic="Transport layer"
+
+Good morning. Today we study how TCP delivers data reliably over an unreliable network.
+[pause 1]
+Before a meeting you shake hands with your neighbour, and in coding you may know the sliding window technique on an array.
+TCP has its own handshake and its own sliding window.
+[pause 1.5]
+Let me show you the TCP three-way handshake.
+The client sends SYN, the server replies with SYN-ACK, and the client sends an ACK.
+[pause 1]
+Now the sender sends 8 segments with a window size of 4.
+Each ACK carries the number of the next segment the receiver expects.
+[pause 1]
+Suppose segment 3 is lost.
+The receiver keeps segments 4, 5 and 6 but keeps asking for segment 3 with duplicate ACKs.
+When the timer runs out, the sender sends segment 3 again.
+[pause 1.5]
+In Go-Back-N the receiver throws away segments 4, 5 and 6, so the sender must send all of them again.
+TCP congestion control also changes the window, but that is a topic for next week.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 1]
+So TCP uses sequence numbers, acknowledgements and timers to recover from loss.

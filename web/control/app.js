@@ -6,7 +6,7 @@ import {
 } from "../shared/slide.js";
 import { connect, initialState, reduce } from "../shared/ws.js";
 import { LETTERS, Leaderboard, OptionGrid, TimerRing, useLeft } from "../shared/assess.js";
-import { SimFull, simOf } from "../sims/runtime.js";
+import { SimFull, simOf, stillSpec } from "../sims/runtime.js";
 
 const KEYS = {
   ArrowRight: ["next"], ArrowLeft: ["prev"],
@@ -397,6 +397,13 @@ const SIM_CHOICES = {
     ["acid", "Acid", [["hcl", "HCl"], ["hno3", "HNO₃"], ["hbr", "HBr"], ["hi", "HI"], ["hclo4", "HClO₄"], ["h2so4", "H₂SO₄"], ["weak", "weak acid"]]],
     ["base", "Base", [["naoh", "NaOH"], ["koh", "KOH"], ["lioh", "LiOH"], ["caoh2", "Ca(OH)₂"], ["baoh2", "Ba(OH)₂"], ["weak", "weak base"]]],
   ],
+  // S4: the protocol (Go-Back-N / Selective Repeat) and TCP's fast retransmit
+  tcp: [["protocol", "Protocol", [["tcp", "TCP"], ["gbn", "Go-Back-N"], ["sr", "Selective Repeat"]]],
+    ["fast", "Fast retransmit (TCP)", [["off", "off"], ["on", "on"]]]],
+};
+// S4: values typed as text (Values popover): [slot, label, placeholder]; the server checks and rewrites them
+const SIM_TEXTS = {
+  routing: [["edges", "Links and costs", "A-B 4, A-C 2, B-C 1"], ["source", "From", "A"], ["target", "To", "F"]],
 };
 const speedLabel = (v) => (v === 0.25 ? "¼×" : v === 0.5 ? "½×" : `${v}×`);
 
@@ -415,14 +422,14 @@ function SimBar({ spec, b, send, running }) {
   const toggle = (name) => () => setMenu(menu === name ? false : name);
   // S3: a process (discrete steps) gets Prev / Next instead of the 0.25 s step; Values only when there is a value
   const process = (sim.steps || []).length > 0;
-  const hasValues = !t || t.slots.length > 0 || (SIM_CHOICES[sim.template] || []).length > 0;
+  const hasValues = !t || t.slots.length > 0 || (SIM_CHOICES[sim.template] || []).length > 0 || (SIM_TEXTS[sim.template] || []).length > 0;
   return html`<div class="image-bar sim-bar menu-wrap" ref=${ref}>
     <button class="icon" onClick=${cmd(playing ? "sim_pause" : "sim_play")} title=${playing ? "Pause the simulation" : "Play the simulation"}>
       ${svg(playing ? ICON.pause : ICON.play)}</button>
     ${process
       ? html`<div class="steps">
           <button class="icon sim-prev" onClick=${cmd("sim_prev")} title="The previous step (shows its name)">${svg(ICON.prev)}</button>
-          <span class="count" title=${sim.step_by === "auto" ? "The steps cycle by themselves (nothing said about them for a while)" : ""}>${sim.step_by === "auto" ? "auto" : sim.step >= 0 && sim.steps[sim.step].n ? `${sim.steps[sim.step].n} / ${sim.steps.filter((s) => s.n > 0).length}` : `– / ${sim.steps.filter((s) => s.n > 0).length}`}</span>
+          <span class="count" title=${sim.step_by === "auto" ? "The steps cycle by themselves (nothing said about them for a while)" : ""}>${sim.step_by === "auto" ? "auto" : sim.step >= 0 && sim.steps[sim.step].n ? `${sim.steps[sim.step].tag || sim.steps[sim.step].n} / ${sim.steps.filter((s) => !s.optional).length}` : `– / ${sim.steps.filter((s) => !s.optional).length}`}</span>
           <button class="icon sim-next" onClick=${cmd("sim_next")} title="The next step (shows its name)">${svg(ICON.next)}</button>
         </div>`
       : html`<button class="icon" onClick=${cmd("sim_step")} title="One step on (pauses)">${svg(ICON.step)}</button>`}
@@ -442,6 +449,18 @@ function SimBar({ spec, b, send, running }) {
       ${(SIM_CHOICES[sim.template] || []).map(([slot, label, opts]) => html`<label key=${slot} class="sim-row"><span>${label}</span>
         <select value=${sim.params[slot]} onChange=${(e) => send("sim_set", { slide_id: spec.id, slot, value: e.target.value })}>
           ${opts.map(([v, l]) => html`<option key=${v} value=${v}>${l}</option>`)}</select>
+        <b class=${"src " + (sim.param_source[slot] || "default")}>${{ said: "said", teacher: "yours" }[sim.param_source[slot]] || "not said"}</b></label>`)}
+      ${(SIM_TEXTS[sim.template] || []).map(([slot, label, hint]) => html`<label key=${slot + "@" + sim.version} class=${"sim-row text " + slot}><span>${label}</span>
+        <input type="text" defaultValue=${sim.params[slot]} placeholder=${hint}
+          onChange=${(e) => {
+            if (e.target.value === sim.params[slot]) return;
+            const el = e.target;
+            send("sim_set", { slide_id: spec.id, slot, value: el.value });
+            // taken: the server's version re-keys this row (a new input); still here a moment later: not read
+            setTimeout(() => { if (el.isConnected) { el.classList.add("refused"); el.title = `Not read: write it like ${hint}`; } }, 900);
+          }}
+          onInput=${(e) => { e.target.classList.remove("refused"); e.target.title = ""; }}
+          onKeyDown=${(e) => e.stopPropagation()} />
         <b class=${"src " + (sim.param_source[slot] || "default")}>${{ said: "said", teacher: "yours" }[sim.param_source[slot]] || "not said"}</b></label>`)}
     </div>`}
     ${menu === "show" && t && html`<div class="menu up" role="menu">
@@ -2006,7 +2025,7 @@ function LectureViewer({ id, start = 0, made, onClose, onMake, send }) {
         <div class="viewer-main">
           <div class="preview viewer-stage" ref=${box} data-theme=${lec && lec.theme ? lec.theme : "light"}>
             ${spec && html`<div class="stage" style=${{ transform: `translate(-50%, -50%) scale(${scale})` }}>
-              <${Slide} key=${spec.id} spec=${spec} /></div>`}
+              <${Slide} key=${spec.id} spec=${stillSpec(spec)} /></div>`}
             ${data && data.error && html`<p class="made-empty">${data.error}</p>`}
           </div>
           <div class="viewer-nav">

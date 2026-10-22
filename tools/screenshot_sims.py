@@ -164,6 +164,88 @@ SCENES = [
         "Let me show you a neutralisation reaction.",
         "Acetic acid is a weak acid, and we add sodium hydroxide.",
         "The salt remains in the solution."], 2),
+    # S4 hard topics: RLC (step response; resonance + phasors)
+    ("rlc_under", "RLC circuits", [
+        "Consider a series RLC circuit switched on to a 10 volt battery.",
+        "R is 10 ohms, L is 10 mH and C is 100 microfarads."], 8),
+    ("rlc_over", "RLC circuits", [
+        "Consider a series RLC circuit switched on to a 10 volt battery.",
+        "R is 50 ohms, L is 10 mH and C is 100 microfarads."], 8),
+    ("rlc_unknown", "RLC circuits", ["Let me show you the step response of a series RLC circuit."], 6),
+    ("rlc_ac", "AC circuits", [
+        "Consider a series LCR circuit connected to a 10 volt, 50 hertz AC supply.",
+        "R is 10 ohms, L is 0.1 henry and C is 100 microfarads."], 3),
+    ("rlc_ac_unknown", "AC circuits", ["Let me show you the phasor diagram of a series RLC circuit."], 2),
+    # S4: p-n junction (no bias, reverse, forward with I_s, nothing said)
+    ("pn_unbiased", "Semiconductors", [
+        "Let me show you a p-n junction.",
+        "Both sides are doped at ten to the power sixteen per cubic centimetre, with no bias."], 3),
+    ("pn_reverse", "Semiconductors", [
+        "Let me show you a p-n junction.",
+        "Both sides are doped at ten to the power sixteen per cubic centimetre.",
+        "Now apply a reverse bias of 5 volts."], 3),
+    ("pn_forward", "Semiconductors", [
+        "Let me show you a p-n junction.",
+        "The p side has 10^17 acceptors per cubic centimetre and the n side 10^16 donors per cubic centimetre.",
+        "The saturation current is 10^-12 A.", "Apply a forward bias of 0.6 V."], 3),
+    ("pn_unknown", "Semiconductors", ["Let me show you a p-n junction."], 3),
+    # S4: routing (Dijkstra): mid-run (step 3 said), the path step, nothing said
+    ("routing_step", "Computer networks", [
+        "Let me show you Dijkstra's algorithm.",
+        "A to B costs 4, A to C costs 2 and B to C costs 1.",
+        "The link between B and D has a cost of 5, and C to D is 8.",
+        "C-E is 10, D-E is 2, D to F is 6 and E to F is 2.",
+        "Let us find the shortest path from A to F.",
+        "First we visit A.", "Then we visit C, because it has the smallest distance.",
+        "Next we pick B."], 2),
+    ("routing_path", "Computer networks", [
+        "Let me show you Dijkstra's algorithm.",
+        "A to B costs 4, A to C costs 2 and B to C costs 1.",
+        "The link between B and D has a cost of 5, and C to D is 8.",
+        "C-E is 10, D-E is 2, D to F is 6 and E to F is 2.",
+        "Let us find the shortest path from A to F.",
+        "So the shortest path is A, C, B, D, E, F, and we send the packets along it."], 2),
+    ("routing_unknown", "Computer networks", ["Let me show you Dijkstra's algorithm."], 2),
+    # S4: TCP (a loss mid-run, Go-Back-N at the end, nothing said)
+    ("tcp_loss", "Computer networks", [
+        "Let me show you how TCP sends data with a sliding window.",
+        "The window size is 4 and the sender sends 8 segments.",
+        "Suppose segment 3 is lost."], 36),
+    ("tcp_gbn", "Computer networks", [
+        "Let me show you the Go-Back-N protocol.",
+        "The window size is 4 and the sender sends 8 segments.",
+        "Suppose segment 3 is lost."], 50),
+    ("tcp_unknown", "Computer networks", ["Let me show you the TCP three-way handshake."], 6),
+    # S4: optics (refraction: into glass, total internal reflection, nothing said; lens: real, virtual, concave, none)
+    ("refr_glass", "Optics", [
+        "Let me show you the refraction of light.",
+        "Light goes from air into glass at an angle of incidence of 30 degrees.",
+        "The refractive index of glass is 1.5."], 6),
+    ("refr_tir", "Optics", [
+        "Let me show you total internal reflection.",
+        "Light goes from glass into air. The refractive index of glass is 1.5.",
+        "The angle of incidence is 50 degrees."], 6),
+    ("refr_unknown", "Optics", ["Let me show you the refraction of light."], 6),
+    ("lens_real", "Optics", [
+        "Let me show you the image formed by a convex lens.",
+        "The focal length is 10 cm and the object is placed 30 cm from the lens.",
+        "The object is 2 cm tall."], 6),
+    ("lens_virtual", "Optics", [
+        "Let me show you the image formed by a convex lens of focal length 10 cm.",
+        "Now the object is placed 5 cm from the lens."], 6),
+    ("lens_concave", "Optics", [
+        "Let me show you a concave lens of focal length 10 cm.",
+        "The object is placed 30 cm from the lens."], 6),
+    ("lens_unknown", "Optics", ["Let me show you a ray diagram for a convex lens."], 6),
+    # S4: an ideal gas (a state, then heated at constant pressure; nothing said)
+    ("gas_state", "Heat and gases", [
+        "Let me show you an ideal gas in a cylinder with a piston.",
+        "The gas is at 100 kPa and 300 K and occupies 2 litres."], 6),
+    ("gas_heated", "Heat and gases", [
+        "Let me show you an ideal gas in a cylinder with a piston.",
+        "The gas is at 100 kPa and 300 K and occupies 2 litres.",
+        "It is heated to 600 K at constant pressure."], 6),
+    ("gas_unknown", "Heat and gases", ["Let me show you the ideal gas law."], 6),
 ]
 
 

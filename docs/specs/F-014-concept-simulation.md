@@ -282,3 +282,74 @@ picture).
 - **Runtime:** simulated heart_live.txt with real Groq (session 20261019-105825-2333): 10 interpretations, 0 fallbacks,
   topic chip → spoken cue → simulation mode, HR 72 read, steps 1 → 6 by speech in order with parts named, end cue →
   recap slide; 23,109 tokens (prompt + completion, app usage buckets).
+
+## S4 result (2026-10-20): hard topics
+- **Templates (8 new, 21 total; 0 LLM tokens on the simulation path):**
+  - `rlc_transient`: series RLC switched on to a DC source; ζ, f₀, the capacitor voltage / current curves, the
+    response slowed to ~4 s on stage with a "slowed: 4 s here = 10 ms real" note; `rlc_ac`: X_L, X_C, Z, I, phase
+    ("V lags I" / "leads"), f₀, phasors at 0.25 rev/s (slowed, noted). R / L / C carry between the two (family);
+    parallel RLC → notice.
+  - `pn_junction`: abrupt Si at 300 K (Ge as a said choice), V_bi and W only with both dopings said, bias forward /
+    reverse; drift / diffusion particles in SVG (Canvas was allowed, not needed); I–V numbers only with I_s said;
+    breakdown / Zener / LED → notices.
+  - `routing`: links said as letter pairs + cost (≤ 8 nodes / 14 links), Dijkstra only (distance vector /
+    Bellman-Ford → notice); the S3 step model with steps from the values (`step_defs`, one visit per node + the path),
+    **ordered**: speech moves at most one step past the furthest reached, a negated or asked line ("should we visit
+    D?") moves nothing, no auto-cycle; the path and cost print only at the path step; the links are also a Values text
+    field (checked and rewritten by the server; a refused entry gets an outline).
+  - `tcp`: handshake, sliding window W, N segments, a named lost segment, timeout + cumulative ACKs; fast retransmit
+    only if said; TCP / Go-Back-N / Selective Repeat as a choice; congestion control, flow control, FIN, a lost ACK,
+    two losses → notices. Python schedules every event (`Solution.events`, `SimEvent`); the counts printed (sent,
+    again, time in RTT) come with the note "assumed: a segment every 0.25 RTT, timeout 1.5 RTT".
+  - `refraction`: Snell at a flat boundary, media by name (air / vacuum = 1 standard; water, glass, … drawn with a
+    textbook index, printed only when said), an index tied to its medium (`n1_of` / `n2_of`: "now from glass into air"
+    moves it), θ₂, critical angle, total internal reflection, v₂ / v₁; prisms / lenses / fibres / apparent depth →
+    notices.
+  - `thin_lens`: the Cartesian (NCERT) sign convention (decision 7): u printed negative, f and v signed ("+15 cm,
+    other side (real)"), m signed with its wording; image height and power (D) when said; three principal rays,
+    virtual images by dashed extensions, a tall image draws a shorter object so the rays still meet at it; v, m, h′
+    only once the lens kind is said (convex is only drawn); "f = −20 cm" / "minus 20 cm" = concave; mirrors, the lens
+    maker's formula, combinations → notices.
+  - `gas_piston`: P V = n R T (kPa · L = J), the fourth from any three (computed); a change with the held quantity
+    said (Boyle / Charles / Gay-Lussac, "rigid container") computes the third (`"="` parse words → computed); a change
+    with nothing held, the held one changing, a result outside the drawn range, two changes that would change n →
+    held back with a notice; "increased by 100 K" is a change; four said that do not fit → notice; adiabatic / real
+    gas / mixtures → notices; molecules at √T, piston height on a log scale.
+- **Dropped:** geometry transforms (last in the order; "drop from the end"). Not started.
+- **Still frame:** each template names its still moment (`drive["still_t"]`); `stillSpec()` marks simulation blocks
+  `still`: the PPTX export page and the past-lecture viewer render that moment with no clock (`data-state="still"`).
+  No PNG is stored. Browser tests: export (tcp, rlc_transient) and the archive viewer (tcp).
+- **S3 leftovers:** optional steps numbered after their main step ("1b", mains never renumber); no pH "now" mark
+  without a base volume said, "pH of the acid" when it is 0; "Na plus" / "Cl minus" / "Mg 2+" → neutral-atom notice;
+  the Bohr emit step needs "electron(s)" / "it" (not "the light falls back").
+- **e2e audit:** the click-then-`settle` pattern (S3's flake) replaced by `Harness.until` in
+  `test_control_browser.py`, `test_control_features_browser.py` (3), `test_reference_browser.py` (2),
+  `test_review_fixes_browser.py`, `test_s2_control_browser.py` (2).
+- **Reviews (3 subagents):** (a) RLC + p-n, (b) routing + TCP (16 findings), (c) refraction + lens + gas (14
+  findings). Fixed with tests: all of (b) but #16; of (c) #1–#12 and most of #13–#14 (gas "by", law results out of
+  range, two changes with no hold, the derived fourth counted as known, an overdetermined state, lens kind gating,
+  "u =", Cartesian signs, screen / shift / "away", "image of the object", glass + water indices, "with respect to",
+  "equals", bare n, "second medium", angle-of-attack / water-wave guards, "from water to air", tall images, images
+  practically at infinity, "same size" at the printed value, derived gas values out of range, "Speed ratio").
+- **Open:** (a) "10K resistor", "10 mhz" / "kilo hertz" / "2 m H", "10 V peak" read nothing; `wave.js` formats one
+  number in JS (S1). (b) #16: TCP ACK labels 17.5 px apart at 17 px font for some W / N. (c) lens and refraction
+  tweens (an image passing real → virtual slides through the lens for 0.4 s; θ₂ jumps); "from a denser to a rarer
+  medium" (no media named) reads nothing; n₁ = 1 for an unnamed first medium rests on the default air (documented).
+- **Eval** (`verify_results/_eval/v2_s4_before.txt` → `_after.txt`): detect 59 → 66 lectures, show precision 1.00
+  (8/8 → 16/16), recall 1.00, 0 shows / chips on the negative lectures, suggest moments 9/10 unchanged; values 82
+  lines P/R 1.00 unchanged.
+- **Runtime:** simulated `rlc_live.txt` with real Groq (session 20261020-022538-3396): 11 interpretations, 0
+  fallbacks; cue → `rlc_transient` with V, R, L, C read; second cue → `rlc_ac` (V, f, R, L, C) → end cue → recap
+  slide. **It found two defects, both fixed after the run:** (1) "In a parallel RLC circuit … we will not do that
+  today" was an `rlc_ac` setup and switched the open step response to the AC simulation (now guarded in both RLC
+  templates; the notice still comes through `listens`); the fixture test missed it because a wrong switch and the later
+  real AC show give the same template sequence, so it now asserts the template at that line. (2) "Let's look at the
+  graph of the capacitor voltage" was a V1 announced topic and ended simulation mode; an announced title that is the
+  open simulation's graph or its setup is no longer a new topic (`SimulationController.about_open`). Both fixes are
+  unit-tested and fixture-tested only; not re-run live (budget).
+- **Also fixed (V1, F-013 S3b):** the KCL / KVL aliases of the equation library held backspace bytes instead of ``
+  (a heredoc slip), so "KCL" never named Kirchhoff's law; test added. Prompt tokens 11 × 1,975 avg ≈ 21.7k (+
+  completions, est. ~24k; the usage ledger kept no per-call history for the hour).
+- **Tests:** fast 1547 pass (`test_sim_hard.py` 234, S3 leftovers in `test_sim_processes.py`); browser 122 pass
+  (full suite, incl. `test_sim_hard_browser.py` 20: 8 templates × 2 themes, routing Next + links field, export and
+  archive still frames), then the 4 simulation browser files 66 pass after the live-run fixes.

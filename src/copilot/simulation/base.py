@@ -127,6 +127,27 @@ class Step(_Model):
     label: str = ""                   # its name, "" until said / the teacher's (then the template's name for it)
     source: Optional[Literal["said", "teacher"]] = None
     optional: bool = False
+    # S4: its number as printed. A main step keeps its number for good ("1", "2"); an optional step said later takes
+    # the number of the main step before it and a letter ("1b": transpiration beside evaporation), so nothing renumbers
+    tag: str = ""
+
+
+MAX_EVENTS = 400  # discrete events in one schedule (S4: packets, TCP segments, routing table rows)
+
+
+class SimEvent(_Model):
+    """S4 discrete-event schedule (F-014 §3.2), computed by Python only: a packet / segment / ACK leaving at `t` and
+    arriving at `t2` (simulation seconds; the client interpolates between them, it never simulates), or a row of a
+    table at a step (`step` >= 0: shown from that step on; routing's distances). Every printed text is `label`."""
+    kind: str                         # seg | ack | syn | synack | hs_ack | timeout | dist | hop ...
+    t: float = Field(default=0.0, ge=0.0)
+    t2: float = Field(default=0.0, ge=0.0)
+    step: int = Field(default=-1, ge=-1)
+    a: str = ""                       # from (a node, "sender")
+    b: str = ""                       # to
+    n: int = 0                        # a sequence number (segment 3)
+    label: str = ""
+    lost: bool = False                # dropped half way (drawn to the middle, then a cross)
 
 
 class Cycle(_Model):
@@ -159,6 +180,7 @@ class SimBase(_Model):
     step_by: Literal["", "speech", "teacher", "auto"] = ""  # who moved it last; auto: `cycle` decides it
     cycle: Optional[Cycle] = None
     named: list[str] = Field(default_factory=list)  # parts the teacher named (their labels print): "left ventricle"
+    events: list[SimEvent] = Field(default_factory=list, max_length=MAX_EVENTS)  # S4 discrete-event schedule
 
     ELEMENTS: ClassVar[tuple[str, ...]] = ()
     LABELS: ClassVar[tuple[str, ...]] = ()  # label keys beyond the elements (parts of one element: "w_par", "w_perp")
@@ -226,6 +248,7 @@ class Solution:
     labels: dict[str, SimLabel] = field(default_factory=dict)
     derived: list[Derived] = field(default_factory=list)
     series: list[Series] = field(default_factory=list)
+    events: list[SimEvent] = field(default_factory=list)  # S4: the discrete-event schedule (packets, segments)
 
 
 def fmt(x: float, sig: int = 3) -> str:
@@ -241,6 +264,34 @@ def fmt(x: float, sig: int = 3) -> str:
     digits = max(0, sig - 1 - math.floor(math.log10(ax)))
     s = f"{x + math.copysign(1e-12, x):.{digits}f}"  # 49.05 is 49.04999... in binary: round half up as on paper
     return s.rstrip("0").rstrip(".") if "." in s else s
+
+
+_SI = ((1e9, "G"), (1e6, "M"), (1e3, "k"), (1.0, ""), (1e-3, "m"), (1e-6, "µ"), (1e-9, "n"), (1e-12, "p"))
+
+
+def si_scale(value: float) -> tuple[float, str]:
+    """The SI prefix a value reads best in (S4: 0.0001 F -> (1e-6, "µ") for "100 µF", 5e-9 s -> ns), 1..999."""
+    a = abs(value)
+    if not (a > 0 and math.isfinite(a)):
+        return 1.0, ""
+    for k, p in _SI:
+        if a >= k * 0.9995:
+            return k, p
+    return _SI[-1]
+
+
+def si_text(value: float, unit: str) -> str:
+    """"100 µF", "4.7 kΩ", "50.3 Hz", "12.6 ms": fmt in the best prefix."""
+    k, p = si_scale(value)
+    return f"{fmt(value / k)} {p}{unit}"
+
+
+def si_value_label(symbol: str, value: float, unit: str, source: str, printable: bool) -> SimLabel:
+    """value_label with an SI prefix ("C = 100 µF")."""
+    if not printable:
+        return SimLabel(symbol=symbol)
+    return SimLabel(symbol=symbol, text=si_text(value, unit),
+                    source="computed" if source not in ("said", "teacher") else source)  # type: ignore[arg-type]
 
 
 def nice_ticks(lo: float, hi: float, n: int = 4) -> list[Tick]:
@@ -374,7 +425,9 @@ class Part:
 
 # S3: template-specific values the unit-first parser cannot read (the Bohr atom's "from the third level to the
 # second", the amounts of an acid and of a base in one line): (slot, value, words as heard, position in the line)
-Parse = Callable[[str, list[Any]], list[tuple[str, Any, str, int]]]
+# S4: the hook also gets the open simulation's params (+ "_src": their sources), {} when none: (line, items, state);
+# words starting with "=" mark a value the template worked out from what was said (a gas law): it is computed
+Parse = Callable[[str, list[Any], dict], list[tuple[str, Any, str, int]]]
 
 
 @dataclass(frozen=True)
@@ -424,6 +477,12 @@ class Template:
     every_s: float = 4.0                        # auto-cycle: simulation seconds per step
     listens: str = ""                           # regex: words its parse reads with no number ("sodium", "an orbital"):
                                                 # such a line reaches the open simulation
+    # S4: steps that depend on the values (routing: one per node in Dijkstra's order): (params, sources) -> StepDefs,
+    # in place of `steps` (simulation.steps.defs); such a template is a process (Next / Prev, auto-cycle)
+    step_defs: Optional[Callable[[Any, dict[str, str]], tuple[StepDef, ...]]] = None
+    # S4: an algorithm's steps (routing): the speech moves at most one step past the furthest reached (the path step
+    # excepted, by its own words), a negated or asked line moves nothing, and no auto-cycle (it would give the answer)
+    ordered: bool = False
 
     @property
     def kin(self) -> str:
@@ -431,7 +490,7 @@ class Template:
 
     @property
     def process(self) -> bool:
-        return bool(self.steps)
+        return bool(self.steps) or self.step_defs is not None
 
     def slot(self, name: str) -> Slot:
         return next(s for s in self.slots if s.name == name)

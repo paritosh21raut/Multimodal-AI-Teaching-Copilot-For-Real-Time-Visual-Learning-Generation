@@ -1,0 +1,26 @@
+# Physics / chemistry (class 11), ~2 minutes, written by Claude for F-014 S4 (hard topics). Expect: a content slide on
+# gases; "blood pressure" and "greenhouse gases" are traps; "let me show you an ideal gas in a cylinder with a piston"
+# opens simulation mode; 100 kPa, 300 K, 2 L: n 0.0802 mol; heated to 600 K at constant pressure: V 4 L (computed);
+# then compressed to 1 L at constant temperature: P 400 kPa (computed); "heated to 900 K" alone asks what is held;
+# an adiabatic change is a notice; back to the slides.
+@setup subject="Physics" grade=11 topic="Gas laws"
+
+Good morning. Today we study how a gas responds when we heat it or squeeze it.
+[pause 1]
+Your blood pressure and greenhouse gases are different topics, today we mean a gas in a container.
+[pause 1.5]
+Let me show you an ideal gas in a cylinder with a piston.
+The gas is at 100 kPa and 300 K and occupies 2 litres.
+[pause 1]
+Now it is heated to 600 K at constant pressure.
+The molecules move faster and push the piston up, so the volume grows.
+[pause 1.5]
+Next we compress it to 1 litre at constant temperature.
+The molecules hit the walls more often, so the pressure goes up.
+[pause 1]
+Suppose the gas is heated to 900 K.
+In an adiabatic change no heat flows in or out, but that comes later in thermodynamics.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 1]
+So P V equals n R T connects pressure, volume, temperature and the amount of gas.

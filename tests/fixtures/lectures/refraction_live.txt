@@ -1,0 +1,27 @@
+# Physics (class 10 / 12), ~2 minutes, written by Claude for F-014 S4 (hard topics). Expect: a content slide on light;
+# "refractory bricks" and "refraction of sound" are traps; "let me show you the refraction of light" opens simulation
+# mode; air into glass at 30 degrees, glass 1.5: theta2 19.5 degrees, critical angle not printed (n1 < n2); then glass
+# into air at 50 degrees: total internal reflection, critical angle 41.8 degrees; a prism is a notice; back to the slides.
+@setup subject="Physics" grade=10 topic="Refraction of light"
+
+Good morning. Today we study what happens when light passes from one medium into another.
+[pause 1]
+Furnaces are lined with refractory bricks, and sound also bends in air, but today we only talk about light.
+[pause 1.5]
+Let me show you the refraction of light.
+A ray of light goes from air into glass at an angle of incidence of 30 degrees.
+The refractive index of glass is 1.5.
+[pause 1]
+The ray bends towards the normal because glass is optically denser than air.
+Snell's law says n1 sin theta1 equals n2 sin theta2.
+[pause 1.5]
+Now the light goes from glass into air.
+Let us increase the angle of incidence to 50 degrees.
+Beyond the critical angle there is no refracted ray at all, and all the light is reflected back.
+This is total internal reflection, and optical fibres use it.
+[pause 1]
+In a prism different colours bend by different amounts, but that is dispersion, for the next class.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 1]
+So light bends towards the normal entering a denser medium and away from it leaving one.

@@ -37,6 +37,13 @@
     "fx:photosynthesis": {"note": "V1's demo lecture: the announced topic is a chip; no show (S3)", "moments": [{"template": "photosynthesis", "kind": "suggest", "line": "learn about photosynthesis"}]},
     "fx:hierarchy_live": {"moments": [{"template": "photosynthesis", "kind": "suggest", "line": "Let us study photosynthesis"}]},
     "fx:multitopic_live": {"moments": [{"template": "photosynthesis", "kind": "suggest", "line": "Let us study photosynthesis"}]},
-    "fx:human_body": {"note": "S3: a heart part of a body-systems lecture; topic talk, a chip", "moments": [{"template": "heart", "kind": "suggest", "line": "The heart has four chambers"}]}
+    "fx:human_body": {"note": "S3: a heart part of a body-systems lecture; topic talk, a chip", "moments": [{"template": "heart", "kind": "suggest", "line": "The heart has four chambers"}]},
+    "fx:rlc_live": {"note": "S4: two simulations, each after the slides resumed", "moments": [{"template": "rlc_transient", "kind": "show", "line": "Consider a series RLC circuit switched on"}, {"template": "rlc_ac", "kind": "show", "line": "Now consider an LCR circuit"}]},
+    "fx:pn_junction_live": {"note": "S4: traps road junction, ozone depletion", "moments": [{"template": "pn_junction", "kind": "show", "line": "Let me show you a p-n junction"}]},
+    "fx:routing_live": {"note": "S4: traps social network, neural network", "moments": [{"template": "routing", "kind": "show", "line": "Let me show you Dijkstra"}]},
+    "fx:tcp_live": {"note": "S4: traps shake hands, sliding window technique on an array", "moments": [{"template": "tcp", "kind": "show", "line": "Let me show you the TCP three-way handshake"}]},
+    "fx:refraction_live": {"note": "S4: traps refractory bricks, sound bends", "moments": [{"template": "refraction", "kind": "show", "line": "Let me show you the refraction of light"}]},
+    "fx:gas_piston_live": {"note": "S4: traps blood pressure, greenhouse gases", "moments": [{"template": "gas_piston", "kind": "show", "line": "Let me show you an ideal gas in a cylinder with a piston"}]},
+    "fx:thin_lens_live": {"note": "S4: traps contact lens, the lens of their time", "moments": [{"template": "thin_lens", "kind": "show", "line": "Let me show you the image formed by a convex lens"}]}
   }
 }

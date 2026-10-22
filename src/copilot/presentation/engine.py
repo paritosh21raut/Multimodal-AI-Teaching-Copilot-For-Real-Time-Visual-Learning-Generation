@@ -693,7 +693,7 @@ class PresentationEngine:
             if self._live_def is not None and self._live_def.utterance == ev.utterance:
                 self._live_def.segments.add(ev.segment_id)
         if self._sims.collecting:  # F-014 S1: no cue slides, teasers or figures while a simulation runs ...
-            if not (ev.announce and self.s.cues):
+            if not (ev.announce and self.s.cues) or self._sims.about_open(ev.announce):
                 return
             await self._sims.end(f"a new topic was announced ({ev.announce!r})")  # ... unless a new topic is announced
         if self.s.cues:

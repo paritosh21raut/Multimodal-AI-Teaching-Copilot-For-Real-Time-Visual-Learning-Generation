@@ -58,7 +58,7 @@ async def test_start_card_chapters_search_and_tiles(tmp_path):
                 starts.append(e.command.kind)
             h.bus.subscribe("t-start", on_cmd, [CommandReceived])
             await control.click(".start-card button.start")
-            await h.settle()
+            await h.until(lambda: starts[-2:] == ["chapter_create", "start"])
             assert starts[-2:] == ["chapter_create", "start"]
             plant = h.materials.chapters.chapters()[0]
             assert plant["label"] == "Chapter 1 · Plant biology" and h.materials.chapters.chapter_of("now") == plant["id"]

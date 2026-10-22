@@ -67,7 +67,7 @@ async def test_the_teacher_edits_deletes_and_adds_on_the_live_slide():
             await control.click(".edit-tools button[aria-label=Edit]")
             await control.fill(".edit-box textarea", "Black holes")
             await control.press(".edit-box textarea", "Enter")
-            await h.settle()
+            await h.until(lambda: h.deck.live.title == "Black holes" and len(h.deck.live.blocks[0].items) == 2)
             live = h.deck.live
             assert live.title == "Black holes"
             assert [i.text for i in live.blocks[0].items] == ["A supermassive black hole sits at the centre",
@@ -103,7 +103,7 @@ async def test_edit_tools_are_easy_to_reach_and_double_click_edits():
             await control.wait_for_timeout(400)
             assert await control.query_selector(".edit-tools") is not None
             await control.click(".edit-tools button[aria-label=Delete]")
-            await h.settle()
+            await h.until(lambda: len(h.deck.live.blocks[0].items) == 1)
             assert [i.text for i in h.deck.live.blocks[0].items] == ["Black hole at the centre"]
             # a double-click on a point opens its editor
             await control.dblclick(f'.preview [data-edit="{a.id}"]')
@@ -145,7 +145,7 @@ async def test_the_lecture_structure_navigates_and_the_transcript_strip_expands(
             assert "speed is distance" in (await control.text_content(".strip-head .last"))
             assert await control.query_selector(".transcript") is None   # collapsed: one line only
             await control.click(f".structure .slide-row:has-text('Chemistry')")
-            await h.settle()
+            await h.until(lambda: h.deck.live_id == first.id)
             assert h.deck.live_id == first.id
             await control.wait_for_selector(".structure .slide-row.live:has-text('Chemistry')")
             await control.click(".strip-head")

@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import math
 import re
-from typing import Any, Literal
+from typing import Any, Optional, Literal
 
 from pydantic import Field
 
@@ -167,10 +167,15 @@ def solve(p: NeutralisationParams, src: dict[str, str]) -> Solution:
     series = []
     if strong and base_ok and _src_ok(src, "acid_m", "acid_ml", "base_m"):
         ph_now = None
-        if known(src, _SLOTS, "base_ml") and (p.base_ml == 0 or _src_ok(src, "base_ml")):
+        if _src_ok(src, "base_ml"):  # a volume of base said (0 included): the pH now, marked on the curve
             ph_now = ph(p.acid, p.base, p.acid_m, p.acid_ml, p.base_m, p.base_ml)
             labels["ph"] = SimLabel(symbol="pH", text=f"{ph_now:.2f}", source="computed")  # pH: 2 decimals
             derived.append(Derived(id="ph", label="pH", symbol="pH", value=ph_now, text=labels["ph"].text))
+        elif known(src, _SLOTS, "base_ml") and p.base_ml == 0:  # no volume said: the acid's own pH, no "now" mark
+            v = ph(p.acid, p.base, p.acid_m, p.acid_ml, p.base_m, 0.0)
+            labels["ph"] = SimLabel(symbol="pH", text=f"{v:.2f}", source="computed")
+            derived.append(Derived(id="ph", label="pH of the acid", symbol="pH of the acid", value=v,
+                                   text=labels["ph"].text))
         v_end = max(2 * v_eq, p.base_ml * 1.1 if _src_ok(src, "base_ml") else 0.0)
         xs = [v_end * i / 119 for i in range(120)]
         ys = [ph(p.acid, p.base, p.acid_m, p.acid_ml, p.base_m, x) for x in xs]
@@ -203,7 +208,7 @@ _DILUTE = re.compile(r"\bwater\b|\bdilut\w*", re.IGNORECASE)
 _MORE = re.compile(r"\b(?:more|another|extra|further)\b", re.IGNORECASE)
 
 
-def parse(line: str, items: list[Any]) -> list[tuple[str, Any, str, int]]:
+def parse(line: str, items: list[Any], state: Optional[dict] = None) -> list[tuple[str, Any, str, int]]:
     """The acid and base named, and each amount tied to the chemical named nearest it ("25 mL of 0.1 M HCl ... with
     0.1 M NaOH"): (slot, value, said, pos); ("!", notice, said, pos) for a weak acid / base and H2SO4's pH; ("~", None,
     said, pos) for an amount read as nothing (the unit-first reading must not guess it: review 2026-10-19)."""

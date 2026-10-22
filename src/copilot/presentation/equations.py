@@ -107,10 +107,10 @@ LIBRARY: tuple[Equation, ...] = (
     # F-013 S3c: Kirchhoff's laws (test30 heard "Kjotch's law"); the family name shows both
     _eq("kirchhoff_current", "Kirchhoff's current law", r"\sum I_{	ext{in}} = \sum I_{	ext{out}}", "ΣI_in = ΣI_out",
         [(r"I_{	ext{in}}, I_{	ext{out}}", "I_in, I_out", "currents into and out of a junction")],
-        [_KIRCH + r" (?:current|first|junction) (?:law|rule)", r"kcl"], family="kirchhoff", search="junction node"),
+        [_KIRCH + r" (?:current|first|junction) (?:law|rule)", r"\bkcl\b"], family="kirchhoff", search="junction node"),
     _eq("kirchhoff_voltage", "Kirchhoff's voltage law", r"\sum V = 0", "ΣV = 0 (around a closed loop)",
         [("V", "V", "voltages around a closed loop")],
-        [_KIRCH + r" (?:voltage|second|loop) (?:law|rule)", r"kvl"], family="kirchhoff", search="loop circuit"),
+        [_KIRCH + r" (?:voltage|second|loop) (?:law|rule)", r"\bkvl\b"], family="kirchhoff", search="loop circuit"),
     _eq("lorentz", "Lorentz force", r"\vec{F} = q\left(\vec{E} + \vec{v} \times \vec{B}\right)", "F = q(E + v×B)",
         [("q", "q", "charge"), (r"\vec{E}", "E", "electric field"), (r"\vec{v}", "v", "velocity"), (r"\vec{B}", "B", "magnetic field")],
         [r"lorentz" + _POSS + r" force(?: (?:law|equation))?"], search="magnetic force"),

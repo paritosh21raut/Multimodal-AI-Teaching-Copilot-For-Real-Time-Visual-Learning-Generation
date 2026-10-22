@@ -57,7 +57,7 @@ async def test_the_simulation_list_shows_every_template(size):
             ART.mkdir(parents=True, exist_ok=True)
             await control.screenshot(path=str(ART / f"s2_sim_list_{size[0]}.png"))
             await control.click(".sim-picker .eq-row:has-text('Travelling wave')")
-            await h.settle()
+            await h.until(lambda: sim_of(h.deck).template == "wave")
             assert sim_of(h.deck).template == "wave"
             await display.wait_for_selector(SIM)
             assert await attr(display, "data-template") == "wave"
@@ -111,7 +111,7 @@ async def test_back_to_slides_swap_keeps_the_names():
             assert "compact" not in await c.get_attribute(".dock", "class")
             assert "Back to slides" in [t for t, w in await c.evaluate(DOCK_LABELS) if w > 0]
             await c.click(".dock button.sim-end")
-            await h.settle()
+            await h.until(lambda: h.deck.sim_mode is None)
             assert h.deck.sim_mode is None
             await c.wait_for_selector(".sim-picker > button")
             assert not c.errors, c.errors

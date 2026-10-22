@@ -1,0 +1,36 @@
+# Class 12 / first-year engineering, ~2 minutes, written by Claude for F-014 S4 (hard topics). Expect: a content slide
+# on inductors and capacitors; "this idea resonates with what we saw" is a trap (no chemistry or circuit resonance);
+# "consider a series RLC circuit switched on to a 10 volt battery" opens simulation mode (RLC step response, graphs
+# V_C(t) and I(t), nothing printed yet); R 10 ohm, L 10 mH, C 100 uF: zeta 0.5 (underdamped), f0 159 Hz, peak V_C
+# 11.6 V, peak current 546 mA; a parallel RLC circuit is a notice; "let's get back to the slides" ends the mode with a
+# recap; then the AC part: an LCR circuit on a 10 V, 50 Hz supply opens the resonance + phasor simulation: X_L 31.4
+# ohm, X_C 31.8 ohm, Z 10 ohm, I 0.999 A, phase -2.38 degrees, f0 50.3 Hz, Q 3.16; back to the slides.
+@setup subject=Physics grade=12 topic="RLC circuits"
+
+Good morning everyone. Today we will study circuits with resistors, inductors and capacitors.
+[pause 1]
+An inductor opposes a change in current, and a capacitor stores charge on its plates.
+This idea resonates with what we saw last week about energy storage.
+[pause 1.5]
+Consider a series RLC circuit switched on to a 10 volt battery.
+R is 10 ohms, L is 10 millihenry and C is 100 microfarads.
+[pause 1]
+When the switch is closed the current rises, the capacitor charges and the voltage overshoots.
+Because the damping is small the circuit is underdamped, so the capacitor voltage oscillates before it settles.
+In a parallel RLC circuit the behaviour is different, but we will not do that today.
+[pause 1]
+Let's look at the graph of the capacitor voltage.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 1]
+The damping ratio depends on R, L and C, and a larger resistance means more damping.
+[pause 1.5]
+Now consider an LCR circuit connected to a 10 volt, 50 hertz AC supply.
+The resistance is 10 ohms, the inductance is 0.1 henry and the capacitance is 100 microfarads.
+[pause 1]
+The inductive and capacitive reactances nearly cancel, so the current is close to its largest value.
+At the resonant frequency the impedance equals the resistance.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 1]
+Resonance is used in radio tuning circuits to pick one station.

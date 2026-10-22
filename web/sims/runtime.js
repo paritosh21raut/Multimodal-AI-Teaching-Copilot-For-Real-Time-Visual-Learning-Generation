@@ -23,10 +23,20 @@ import * as heart from "./heart.js";
 import * as photosynthesis from "./photosynthesis.js";
 import * as bohrAtom from "./bohr_atom.js";
 import * as neutralisation from "./neutralisation.js";
+import * as rlcTransient from "./rlc_transient.js";
+import * as rlcAc from "./rlc_ac.js";
+import * as pnJunction from "./pn_junction.js";
+import * as routing from "./routing.js";
+import * as tcp from "./tcp.js";
+import * as thinLens from "./thin_lens.js";
+import * as refraction from "./refraction.js";
+import * as gasPiston from "./gas_piston.js";
 
 // template id -> scene module: { scene({sim, v, u, t}), motion(v) -> {a, dir, L, rest}, TWEEN: keys tweened }
 export const SCENES = { block_on_surface: blockOnSurface, incline, pendulum, projectile, dc_circuit: dcCircuit, wave, orbit, unit_circle: unitCircle,
-  water_cycle: waterCycle, heart, photosynthesis, bohr_atom: bohrAtom, neutralisation };
+  water_cycle: waterCycle, heart, photosynthesis, bohr_atom: bohrAtom, neutralisation,
+  rlc_transient: rlcTransient, rlc_ac: rlcAc, pn_junction: pnJunction, routing, tcp,
+  thin_lens: thinLens, refraction, gas_piston: gasPiston };
 
 const clocks = new Map();  // block id -> {rev, t, at, speed, state}
 const now = () => performance.now() / 1000;
@@ -39,6 +49,11 @@ function clockOf(id, pb) {
   }
   return c;
 }
+// S4 still frame: a block marked still (the PPTX export, a past lecture) is drawn once, frozen at its template's
+// still moment (drive.still_t, simulation seconds; STILL_T when a template has none), no clock, no animation
+export const STILL_T = 1.2;
+export const stillSpec = (spec) => (spec && spec.blocks
+  ? { ...spec, blocks: spec.blocks.map((b) => (b.type === "simulation" ? { ...b, still: true } : b)) } : spec);
 export const simTime = (c) => (c.state === "playing" ? c.t + (now() - c.at) * c.speed : c.t);
 
 // One-dimensional textbook motion along a track of L metres, closed form and piecewise: from u0 with velocity v0 at
@@ -82,7 +97,7 @@ const TWEEN_S = 0.16;  // time constant of the geometry tween
 
 // The stage of one simulation block. full: the teacher's Full stage (bigger, same clock).
 export function SimStage({ b, full, onClick }) {
-  const sim = b.sim;
+  const sim = b.sim, still = !!b.still;
   const mod = SCENES[sim.template];
   const st = useRef(null);
   const [, setFrame] = useState(0);
@@ -112,7 +127,7 @@ export function SimStage({ b, full, onClick }) {
         if (Math.abs(d) < 1e-3 * Math.max(1, Math.abs(target))) s.v[k] = target;
         else { s.v[k] += d * (1 - Math.exp(-dt / TWEEN_S)); moving = true; }
       }
-      const playing = sim.playback.state === "playing";
+      const playing = sim.playback.state === "playing" && !still;
       if (playing || moving) setFrame((f) => f + 1);
       if (reduced) timer = setTimeout(step, 500);
       else if (playing || moving) raf = requestAnimationFrame(step);
@@ -123,8 +138,8 @@ export function SimStage({ b, full, onClick }) {
   }, [sim]);
 
   if (!mod) return html`<div class="sim-stage missing"></div>`;  // an unknown template: no picture rather than a wrong one
-  let t = simTime(clock);
-  if (reducedMotion()) t = Math.floor(t * 2) / 2;
+  let t = still ? ((sim.drive || {}).still_t ?? STILL_T) : simTime(clock);
+  if (reducedMotion() && !still) t = Math.floor(t * 2) / 2;
   s.t = t;
   s.track.update(mod.motion(sim.drive), t, restart);
   let body = null, gt = null;
@@ -139,7 +154,7 @@ export function SimStage({ b, full, onClick }) {
   return html`<div class=${"sim-stage" + (full ? " full" : "") + (onClick ? " clickable" : "") + (graph ? " with-graph" : "")} onClick=${onClick}
       title=${onClick ? "Show the simulation full screen" : undefined}>
     <svg ref=${svgRef} class="sim-svg" viewBox=${`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img"
-      aria-label=${sim.title} data-template=${sim.template} data-state=${sim.playback.state} data-t=${t.toFixed(3)}
+      aria-label=${sim.title} data-template=${sim.template} data-state=${still ? "still" : sim.playback.state} data-t=${t.toFixed(3)}
       data-u=${s.track.at(t).toFixed(4)}>
       ${body}
     </svg>

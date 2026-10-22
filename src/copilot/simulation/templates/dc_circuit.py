@@ -143,7 +143,8 @@ TEMPLATE = Template(
                      r"processing|port|postulate)|in parallel with (?:this|that|the|our) (?:project|work|course)|"
                      r"\ba series of (?!resistors|bulbs|cells|batteries)|tv series|time series|taylor series|"
                      r"fourier series|power series|neural circuit|\bbrain\b|\bneur\w+|\bmembrane\b|\bspring|"
-                     r"\bcapacitors?\b|\bregisters?\b(?! in series and)|\b(?:cpu|alu|processor)\b",
+                     r"\bcapacitors?\b|\bregisters?\b(?! in series and)|\b(?:cpu|alu|processor)\b|"
+                     r"\b(?:inductors?|inductance|rlc|lcr|r l c|l c r)\b",  # S4: the RLC templates' circuits
                      re.IGNORECASE),
     said_as=((r"\bin series\b|\bseries (?:circuit|combination|connection|arrangement)\b", "arrangement", "series"),
              (r"\bin parallel\b|\bparallel (?:circuit|combination|connection|arrangement)\b", "arrangement", "parallel")),

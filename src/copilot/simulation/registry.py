@@ -68,16 +68,23 @@ def solved(sim: SimBase, toggled: Optional[dict[str, bool]] = None, bump: bool =
     default = set(t.default_shown(sim.params, sim.param_source))  # type: ignore[attr-defined]
     toggled = toggled or {}
     # S3: a step's own element (its arrow) is drawn once the step is said; a named part prints its label
-    default |= {d.element for d, st in zip(t.steps, sim.steps) if d.element and st.source is not None}
+    said_ids = {st.id for st in sim.steps if st.source is not None}
+    default |= {d.element for d in steps.defs(t, sim) if d.element and d.id in said_ids}
     shown = [e.id for e in t.elements if toggled.get(e.id, e.id in default)]
     labels = {**sol.labels, **{p.id: SimLabel(symbol=p.label) for p in t.parts if p.id in sim.named
                                and p.id not in sol.labels}}
     data = sim.model_dump()
+    new_steps = steps.numbered(t, sim.steps, sim) if t.process else []
+    cur = sim.steps[sim.step].id if 0 <= sim.step < len(sim.steps) else None
+    ids = [x.id for x in new_steps]
     data.update(labels={k: v.model_dump() for k, v in labels.items()},
-                steps=[x.model_dump() for x in steps.numbered(t, sim.steps)] if t.steps else [],
+                steps=[x.model_dump() for x in new_steps],
                 derived=[d.model_dump() for d in sol.derived], drive=sol.drive, shown=shown,
-                series=[x.model_dump() for x in sol.series],
+                series=[x.model_dump() for x in sol.series], events=[x.model_dump() for x in sol.events],
                 version=sim.version + 1)
+    if [x.id for x in sim.steps] != ids:  # S4: the steps changed with the values (routing): the current one by its id
+        data.update(step=ids.index(cur) if cur in ids else -1, cycle=None,
+                    step_by=sim.step_by if cur in ids and sim.step_by != "auto" else "")
     if bump:
         data["playback"] = {**data["playback"], "t": 0.0, "rev": data["playback"]["rev"] + 1}
     return validate(data)
@@ -94,7 +101,7 @@ def build(template_id: str, values: Iterable[tuple[str, float, str]] = (), origi
         params[slot] = value
         sources[slot] = source
     sim = t.sim(params=t.params(**params), param_source=sources, title=t.name, origin=origin,
-                playback={"speed": speed}, steps=steps.initial(t))
+                playback={"speed": speed}, steps=steps.initial(t, t.sim(params=t.params(**params), param_source=sources)))
     return solved(sim)
 
 

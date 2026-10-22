@@ -59,6 +59,15 @@ SimBase
 | `bohr_atom` (S3) | `z` 1–20 (6, "count"; printed / drawn only when said: an element name or atomic number) · `n_from`, `n_to` 0–7 (absent) | nucleus, shells, electrons, photon, readout. Shells 2, 8, 8, 2; config + valence; a said jump: for hydrogen only ΔE = 13.6 \|1/n₁² − 1/n₂²\| eV, λ = 1239.84 / ΔE nm. Ions, orbitals, Z > 20: notices |
 | `neutralisation` (S3) | `acid_m`, `base_m` 1e-4–10 M ("concentration") · `acid_ml` 0.1–1000, `base_ml` 0–1000 (absent at 0) mL · `acid`, `base` choices (strong list, h2so4, weak) | flask, burette, ions, graph, readout. Strong acid + strong base, 25 °C, Kw 1e-14: pH (exact quadratic), V(eq), salt name + formula; H₂SO₄ and weak ones drawn, no pH (notice); pH–V graph only with c(acid), V(acid), c(base) said |
 
+| `rlc_transient` (S4) | `voltage_v` · `r_ohm` · `l_h` · `c_f` (SI prefixes) | source, resistor, inductor, capacitor, current, graph, readout. ζ, f₀, peak V_C, peak I; stage time scaled to ~4 s (`x_scale`, a "slowed" note); family `rlc` with `rlc_ac` (R, L, C carry) |
+| `rlc_ac` (S4) | `voltage_v` · `frequency_hz` · `r_ohm` · `l_h` · `c_f` | source, resistor, inductor, capacitor, phasors, graph, readout. X_L, X_C, Z, I, phase ("V lags I"), f₀, Q; phasors at 0.25 rev/s (noted) |
+| `pn_junction` (S4) | `na_cm3`, `nd_cm3` (doping) · `bias_v` (forward / reverse said) · `is_a` (I_s, absent) · `material` si \| ge | regions, depletion, ions, carriers (drift / diffusion, SVG), currents, field, battery, graph (I–V), readout. V_bi, W only with both dopings; I–V numbers only with I_s |
+| `routing` (S4) | `edges` (text "A-B:4,…", ≤ 8 nodes / 14 links) · `source`, `target` | graph, costs, table, path, packets, readout. Dijkstra; steps from the values (`step_defs`), `ordered`; path + cost only at the path step |
+| `tcp` (S4) | `window` · `segments` · `lost` (absent) · `protocol` tcp \| gbn \| sr · `fast` off \| on | handshake, data, acks, window, timers, readout. `Solution.events` schedule; counts with the "assumed" timing note |
+| `refraction` (S4) | `n1`, `n2` 1–3 (+ `n1_of`, `n2_of`: the medium each was said for) · `angle_deg` · `medium1`, `medium2` choices | media, normal, rays, angles, readout. θ₂, θc, TIR, v₂ / v₁; air / vacuum standard n = 1 |
+| `thin_lens` (S4) | `f_m` 0.01–5 · `u_m` 0.01–10 · `h_m` · `lens` convex \| concave | lens, object, rays, image, foci, readout. Cartesian signs (u < 0; f, v signed), m, h′, P (D); v, m, h′ need the lens kind said |
+| `gas_piston` (S4) | `p_kpa` · `v_ml` · `t_k` · `n_mol` · `hold` "" \| t \| p \| v | cylinder, molecules, gauge, thermometer, readout. P V = n R T, the fourth from three; a change with the held quantity said computes the third |
+
 | S2 additions | block: `pull_n`, `pull_angle_deg`, `applied_dir` / `pull_dir` forward \| back; incline: `pull_n`, `pull_dir` up \| down; `graph` element in block, incline, pendulum, projectile, dc_circuit, wave; projectile derived `v_land`; drive `lift_note` (block) | + `pull` element (rope, tail on the block) |
 
 ## Rules
@@ -101,3 +110,13 @@ SimBase
   priority), a scene in `web/sims/<id>.js` registered in `runtime.js` `SCENES` (it exports `TWEEN`, `motion()` and
   `scene({sim, v, u, at, t})`; a scene with its own time returns `dir: 0` from `motion`). Later parts (`series`, `events`,
   particle `seed`) are optional fields of a template's `Sim` model (F-014 §3.2).
+- **S4 contract additions:** `Solution.events` / `SimBase.events` (`SimEvent{kind, t, t2, step, a, b, n, label, lost}`,
+  ≤ 400, computed by Python; the client interpolates, never simulates); `Step.tag` (its printed number: mains keep
+  theirs, an optional step said later takes its main's number and a letter, "1b"); `Template.step_defs` ((params,
+  sources) → StepDefs: steps that depend on the values, routing); `Template.ordered` (speech moves at most one step past
+  the furthest reached, a negated or asked line moves nothing, no auto-cycle); the `parse` hook gets `state` (the open
+  simulation's params + `"_src"`), and a value whose words start with `"="` is one the template worked out (source
+  `computed`); `si_text` / `si_value_label` (SI prefixes: "100 µF"); `drive["still_t"]`: the still moment (export,
+  archive).
+- **Still frame (S4):** a block with `still: true` (set by the client's `stillSpec`, never stored) renders at
+  `drive.still_t` (else 1.2 s) with no clock: `data-state="still"`.

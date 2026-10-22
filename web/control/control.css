@@ -916,3 +916,10 @@ section.drop-gap { margin: 0; }
 .sim-chip button.icon { width: 28px; height: 28px; border: 0; border-radius: 999px; background: transparent; color: var(--muted);
   display: inline-grid; place-items: center; }
 .sim-chip button.icon:hover { background: var(--accent-soft); color: var(--accent); }
+/* S4: a value typed as text (routing's links): the field spans the value column */
+.sim-row.text.edges { grid-template-columns: 1fr 70px; }
+.sim-row.text.edges span { grid-column: 1 / span 2; }
+.sim-row.text.edges input { grid-column: 1; width: 100%; box-sizing: border-box; }
+
+/* S4: a typed value the server did not read (Values text field) */
+.sim-row.text input.refused { outline: 2px solid var(--accent-2); outline-offset: 1px; }

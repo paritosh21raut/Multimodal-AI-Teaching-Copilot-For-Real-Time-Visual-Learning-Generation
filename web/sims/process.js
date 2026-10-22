@@ -18,13 +18,16 @@ export function currentStep(sim, t) {
 export const stepOf = (sim, id) => (sim.steps || []).find((s) => s.id === id);
 export const stepIndex = (sim, id) => (sim.steps || []).findIndex((s) => s.id === id);
 
+// A step's printed number (S4): a main step keeps its own for good, an optional one said later is "1b" (the server's tag)
+export const stepTag = (s) => s.tag || String(s.n);
+export const mainSteps = (sim) => (sim.steps || []).filter((s) => !s.optional).length;
+
 // The heading over the picture: "Step 2 of 4 · Condensation" (the name only once said), nothing before the first step.
 export function StepTitle({ sim, cur, y = 58 }) {
-  const drawn = (sim.steps || []).filter((s) => s.n > 0);
   const s = cur >= 0 ? sim.steps[cur] : null;
   if (!s || !s.n) return null;
   return html`<text class="sim-step-title" x=${W / 2} y=${y} text-anchor="middle" data-el="steps" data-step=${s.id}>
-    <tspan class="num">${`Step ${s.n} of ${drawn.length}`}</tspan>${s.label && html`<tspan class="name">${` · ${s.label}`}</tspan>`}</text>`;
+    <tspan class="num">${`Step ${stepTag(s)} of ${mainSteps(sim)}`}</tspan>${s.label && html`<tspan class="name">${` · ${s.label}`}</tspan>`}</text>`;
 }
 
 // A step's badge: its number in a circle and, once said, its name beside it in one pill (the name never drifts away from
@@ -40,7 +43,7 @@ export function StepBadge({ sim, id, x, y, cur, anchor = "start" }) {
   const cx = anchor === "end" ? x - 26 : x + 26, x0 = anchor === "end" ? x - w : x;
   return html`<g key=${"b-" + id} class=${"sim-badge" + (on ? " cur" : "") + (name ? " named" : "")} data-step=${id} data-el=${id}>
     ${name && html`<rect class="pill" x=${x0} y=${y - PILL_H / 2} width=${w} height=${PILL_H} rx=${PILL_H / 2} />`}
-    <circle cx=${cx} cy=${y} r="22" /><text class="num" x=${cx} y=${y + 10} text-anchor="middle">${s.n}</text>
+    <circle cx=${cx} cy=${y} r=${stepTag(s).length > 1 ? 26 : 22} /><text class="num" x=${cx} y=${y + 10} text-anchor="middle">${stepTag(s)}</text>
     ${name && html`<text class="name" x=${anchor === "end" ? cx - 34 : cx + 34} y=${y + 12} text-anchor=${anchor === "end" ? "end" : "start"}
       data-source=${s.source}>${name}</text>`}
   </g>`;

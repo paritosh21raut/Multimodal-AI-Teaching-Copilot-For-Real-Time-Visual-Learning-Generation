@@ -20,7 +20,7 @@ export const OFFSETS = [[0, 0], ...STEPS.flatMap((d) => DIRS.map(([x, y]) => [x 
 // the drawn strokes a label must not sit on (besides the arrows): surfaces, guides, angle arcs, wedges, strings,
 // wires, waves, the marked angle and its segments. Not the hatching (texture) and not the readout's card.
 export const STROKES = ".sim-surface, .sim-guide, .sim-angle, .sim-wedge, .sim-string, .sim-wire, .sim-resistor, " +
-  ".sim-plate, .sim-wave, .sim-marked, .sim-seg, .sim-flow .line";  // S3: the process flows
+  ".sim-plate, .sim-wave, .sim-marked, .sim-seg, .sim-flow .line, .sim-coil, .sim-ray, .sim-lens, .sim-image";  // S3: the process flows; S4: coils, rays, lens
 
 const hit = (a, b) => a.x < b.x + b.w + PAD && b.x < a.x + a.w + PAD && a.y < b.y + b.h + PAD && b.y < a.y + a.h + PAD;
 const inside = (a) => a.x >= 4 && a.y >= 4 && a.x + a.w <= W - 4 && a.y + a.h <= H - 4;
@@ -104,7 +104,7 @@ export function placeLabels(svg) {
     if (b) fixed.push(b);
   }
   // the footer: the caption stays, a note that runs into it goes up a line
-  const foot = [...svg.querySelectorAll(":scope > .sim-caption")];
+  const foot = [...svg.querySelectorAll(":scope > .sim-caption, :scope > .sim-note")];  // S4: notes with units
   const placedFoot = [];
   for (const el of foot) {
     el.removeAttribute("transform");

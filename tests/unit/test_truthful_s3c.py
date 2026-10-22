@@ -177,6 +177,8 @@ def test_equations_the_library_was_missing_in_tests_1_30():
     from copilot.presentation import equations as Q
     assert Q.named("Kjotch's law implies") == ["kirchhoff_current", "kirchhoff_voltage"]   # test30, misheard
     assert Q.named("Apply Kirchhoff's voltage law and you") == ["kirchhoff_voltage"]
+    assert Q.named("By KCL the currents add") == ["kirchhoff_current"]  # S4: the alias held backspace bytes, never matched
+    assert Q.named("Now apply KVL round the loop") == ["kirchhoff_voltage"]
     assert Q.named("O'Hams law") == ["ohm"]                                                # test30, misheard
     assert Q.named("Pascal's law.") == ["pascal"]                                          # test2
     assert Q.named("The straight line can be represented using the equation.") == ["straight_line"]  # test23

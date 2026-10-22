@@ -143,7 +143,9 @@ class VisualHint(_Lenient):
 # in step)
 SIM_IDS = frozenset({"block_on_surface", "incline", "pendulum", "projectile", "dc_circuit", "wave", "orbit",
                      "unit_circle", "water_cycle", "heart", "photosynthesis",
-                     "bohr_atom", "neutralisation"})
+                     "bohr_atom", "neutralisation",
+                     "rlc_transient", "rlc_ac", "pn_junction", "routing", "tcp", "thin_lens", "refraction",
+                     "gas_piston"})  # S4
 
 
 class Interpretation(_Lenient):

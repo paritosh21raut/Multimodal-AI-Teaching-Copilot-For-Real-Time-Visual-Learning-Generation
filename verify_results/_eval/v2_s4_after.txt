@@ -1,0 +1,58 @@
+test21                 ann shows 0 suggest 0 | want 1 found 0
+test22                 ann shows 0 suggest 1 | want 1 found 1
+      suggest orbit             A satellite works by moving around the Earth along a path called an orbit.
+test23                 ann shows 0 suggest 1 | want 1 found 1
+      suggest unit_circle       On the unit circle, the horizontal coordinates represent cosine while the vertical coordin
+test28                 ann shows 0 suggest 1 | want 1 found 1
+      suggest water_cycle       The topic is water cycle and its role in earth geography.
+test30                     shows 0 suggest 1 | want 0 found 0
+      suggest pn_junction       the electric field between the positive and negative ions. Therefore, if additional free e
+fx:bohr_atom_live      ann shows 1 suggest 0 | want 1 found 1
+      show    bohr_atom         Let me show you the Bohr model of the atom.
+fx:electricity_live    ann shows 0 suggest 1 | want 1 found 1
+      suggest dc_circuit        In series, r equivalent equals to r1 plus r2.
+fx:gas_piston_live     ann shows 1 suggest 0 | want 1 found 1
+      show    gas_piston        Let me show you an ideal gas in a cylinder with a piston.
+fx:heart_live          ann shows 1 suggest 1 | want 1 found 1
+      suggest heart             Good morning class. Today we will study the human heart and how it pumps blood.
+      show    heart             Let me show you how the human heart pumps blood.
+fx:hierarchy_live      ann shows 0 suggest 1 | want 1 found 1
+      suggest photosynthesis    Let us study photosynthesis. Photosynthesis is the biological process where plants, algae 
+fx:human_body          ann shows 0 suggest 1 | want 1 found 1
+      suggest heart             The heart has four chambers. The two upper chambers are called atria
+fx:incline_live        ann shows 1 suggest 0 | want 1 found 1
+      show    block_on_surface  Consider a block of mass 5 kg resting on a rough floor.
+fx:incline_mode        ann shows 1 suggest 0 | want 1 found 1
+      show    block_on_surface  Consider a block of mass 5 kg resting on a rough floor.
+fx:multitopic_live     ann shows 0 suggest 1 | want 1 found 1
+      suggest photosynthesis    Let us study photosynthesis. Photosynthesis is the biological process where plants, algae 
+fx:neutralisation_titration_live ann shows 1 suggest 0 | want 1 found 1
+      show    neutralisation    Let me show you a neutralisation reaction.
+fx:neutralization_live ann shows 0 suggest 1 | want 1 found 1
+      suggest neutralisation    Let us learn neutralization reaction.
+fx:photosynthesis      ann shows 0 suggest 1 | want 1 found 1
+      suggest photosynthesis    Today we are going to learn about photosynthesis.
+fx:photosynthesis_leaf_live ann shows 1 suggest 1 | want 1 found 1
+      suggest photosynthesis    Good morning everyone. Today we are going to learn how green plants make their own food.
+      show    photosynthesis    Let me show you how photosynthesis happens in a leaf.
+fx:pn_junction_live    ann shows 1 suggest 0 | want 1 found 1
+      show    pn_junction       Let me show you a p-n junction.
+fx:refraction_live     ann shows 1 suggest 0 | want 1 found 1
+      show    refraction        Let me show you the refraction of light.
+fx:rlc_live            ann shows 2 suggest 0 | want 2 found 2
+      show    rlc_transient     Consider a series RLC circuit switched on to a 10 volt battery.
+      show    rlc_ac            Now consider an LCR circuit connected to a 10 volt, 50 hertz AC supply.
+fx:routing_live        ann shows 1 suggest 0 | want 1 found 1
+      show    routing           Let me show you Dijkstra's algorithm.
+fx:tcp_live            ann shows 1 suggest 1 | want 1 found 1
+      show    tcp               Let me show you the TCP three-way handshake.
+      suggest tcp               So TCP uses sequence numbers, acknowledgements and timers to recover from loss.
+fx:thin_lens_live      ann shows 1 suggest 0 | want 1 found 1
+      show    thin_lens         Let me show you the image formed by a convex lens.
+fx:water_cycle_live    ann shows 1 suggest 1 | want 1 found 1
+      suggest water_cycle       Good morning everyone. Today we will learn about the water cycle.
+      show    water_cycle       Let me show you the water cycle.
+20261017-200923-76c3   ann shows 1 suggest 0 | want 1 found 1
+      show    block_on_surface  Imagine a box placed on the surface.
+
+66 lectures: shows precision 1.00 (16/16), recall 1.00 (16/16), shows + suggestions on the negative lectures: 0; suggest moments raised 9/10

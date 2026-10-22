@@ -1,6 +1,6 @@
 # Current State
 
-_Last updated: 2026-10-19: **V2 Concept Simulation S3 (processes) done**: 5 process templates, 23,109 Groq tokens
+_Last updated: 2026-10-20: **V2 Concept Simulation S4 (hard topics) done**: 8 templates (geometry dropped), still frame in export + archive, ~21.7k Groq prompt tokens (one simulated RLC lecture; the simulation path itself 0). Before that, 2026-10-19: **V2 Concept Simulation S3 (processes) done**: 5 process templates, 23,109 Groq tokens
 (one simulated heart lecture; the simulation path itself 0). Before that, 2026-10-18: **V2 Concept Simulation S2 done** (part A fixes, push + pull forces, time-series graphs,
 values said in another form; the closed-list `sim` hint A/B'd, not live), 16,027 Groq tokens (A/B) + one simulated
 lecture (11 calls, ~21.7k prompt + completions, est. ~25k). Before that, 2026-10-17: **V2 Concept Simulation S1 done** (simulation mode + recap, values without the slot, 6
@@ -20,6 +20,24 @@ user's review of the paper and of group D, then the truthfulness bug below, then
 Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 
 ## Now
+- **V2 Concept Simulation S4 (hard topics) done (2026-10-20).** Details: F-014 "S4 result".
+  - **Templates (21 total, +8):** RLC step response, RLC AC (resonance, phasors), p-n junction, shortest-path routing
+    (Dijkstra, steps from the values, ordered: never ahead of the teacher), TCP (handshake, window, a named loss,
+    timeout / fast retransmit, GBN / SR; Python event schedule), refraction (indices tied to media, TIR), thin lens
+    (Cartesian signs), ideal gas under a piston (P V = n R T, gas laws by the held quantity). **Geometry transforms
+    dropped** (last in the order). Each: hand values, detector positives + traps, values tests (+ step tests),
+    ~2 min fixture (annotated), browser row both themes, screenshots looked at; three review subagents, findings fixed
+    or listed in F-014.
+  - **Still frame:** export page and past-lecture viewer render each simulation at its `still_t`, no clock, nothing
+    stored. **Values text field** (routing links) with a refused outline.
+  - **S3 leftovers fixed:** step "1b", pH mark / "pH of the acid", ion-by-symbol notice, Bohr emit words. **e2e
+    audit:** click-then-settle replaced by `Harness.until` in 5 files.
+  - **Live run** (real Groq, `rlc_live.txt`, ~21.7k prompt tokens): found two defects, fixed after (parallel-RLC line
+    switched the simulation; "graph of the capacitor voltage" ended simulation mode as a new topic); fixture- and
+    unit-tested only, not re-run live. Also a V1 fix: KCL / KVL equation aliases never matched (backspace bytes).
+  - **Tests:** fast 1547 pass; browser 122 pass (full suite), then the 4 simulation browser files 66 pass after the last fixes; `v2_eval`: detect 66 lectures, show precision 1.00 (16/16),
+    recall 1.00, 0 on negatives, chips 9/10; values 82 lines P/R 1.00 (unchanged).
+  - **Next:** the user's look (`--simulate tests/fixtures/lectures/rlc_live.txt` or any S4 fixture); Explore mode.
 - **V2 Concept Simulation S3 done (2026-10-19).** Details: F-014 "S3 result".
   - **Processes:** discrete steps moved by speech (named only once said), Prev / Next on the sim bar, an auto-cycle
     after 20 s of silence about steps (never names), parts labelled once named; process cues show in the same line,
@@ -253,7 +271,7 @@ Older detail (every round since M1): `docs/history/STATE-until-2026-10-12.md`._
 | V2 group C (quiz + test, F-011) + review fixes | 100 | verified, committed |
 | V2 group D (reference materials, F-012) | 95 | verified; speech terms unit-tested only (no real audio run) |
 | Crash recovery + soak (V1c) | 0 | marked done for now (user, 2026-10-17); not built |
-| Concept Simulation (V2, F-014) | 15 | S0 verified: 2 templates, cue path, /control, browser + simulated lecture; S1–S4 + Explore planned |
+| Concept Simulation (V2, F-014) | 75 | S0–S4 verified: 21 templates, cue path, simulation mode + recap, processes, still frame; Explore mode planned |
 | Story Scenes (V3) / Multilingual (V4) | 0 | not started |
 
 ## Verification (latest; the full log is in the history file)

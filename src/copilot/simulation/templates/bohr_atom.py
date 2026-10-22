@@ -18,7 +18,7 @@ emits a photon.
 from __future__ import annotations
 
 import re
-from typing import Any, Literal
+from typing import Any, Optional, Literal
 
 from pydantic import Field
 
@@ -49,6 +49,9 @@ _ELEMENT = re.compile(r"\b(" + "|".join(sorted(ELEMENTS_Z, key=len, reverse=True
 _ATOM_CTX = re.compile(r"\b(?:atoms?|atomic|elements?|electrons?|shells?|protons?)\b", re.IGNORECASE)
 _TAKE = re.compile(r"\b(?:take|consider|about)\s+(?:an? |the )?(?:atom of )?$", re.IGNORECASE)  # "now consider iron"
 _ION = re.compile(r"^\s*(?:ions?\b|\+|−|-\s?ion)", re.IGNORECASE)
+# an ion by its symbol: "Na plus ion", "Cl minus", "Mg 2+" (then the name said is not read as the atom)
+_ION_SYMBOL = re.compile(r"\b(?-i:[A-Z][a-z]?)\s?(?:\d\s?)?(?:\+|−|\bplus\b|\bminus\b)(?:\s?ions?\b)?(?!\s?\d)",
+                         re.IGNORECASE)
 _ORBITALS = re.compile(r"\borbitals?\b|\bsub-?shells?\b|\b[1-7]\s?[spdf]\s?(?:\d|two|one|six|ten)\b|\bquantum numbers?\b"
                        r"|\b[spdf][- ]orbitals?\b|\baufbau\b|\bhund'?s rule\b", re.IGNORECASE)
 _ORD = {"first": 1, "one": 1, "1": 1, "second": 2, "two": 2, "2": 2, "third": 3, "three": 3, "3": 3, "fourth": 4,
@@ -81,8 +84,10 @@ STEPS = (
             r"\babsorbs? (?:energy|a photon|light|heat)\b|\b(?:gets|becomes|is) excited\b|\bexcited state\b"
             r"|\bjumps? (?:up )?to (?:a )?higher\b", optional=True, element="photon"),
     StepDef("emit", "It falls back and emits a photon",
-            r"\bemits? (?:a )?(?:photon|light|energy|radiation)\b|\bfalls? back\b|\breturns? to (?:a |the )?(?:lower|ground)\b"
-            r"|\bde-?excit\w*|\bjumps? (?:back )?(?:down )?to (?:a )?lower\b|\bgives? (?:out|off) (?:a )?(?:photon|light)\b",
+            r"\bemits? (?:a )?(?:photon|light|energy|radiation)\b|\bde-?excit\w*|\bgives? (?:out|off) (?:a )?(?:photon|light)\b"
+            # falling back / to a lower level names the step only for an electron or "it" (not "the light falls back")
+            r"|\b(?:electrons?|it)\b[^.;]{0,40}?\b(?:falls? back|returns? to (?:a |the )?(?:lower|ground)|"
+            r"jumps? (?:back )?(?:down )?to (?:a )?lower)\b",
             optional=True, element="photon"),
 )
 PARTS = (
@@ -169,7 +174,7 @@ def default_shown(p: BohrParams, src: dict[str, str]) -> list[str]:
     return ["nucleus", "shells", "electrons", "readout"]
 
 
-def parse(line: str, items: list[Any]) -> list[tuple[str, Any, str, int]]:
+def parse(line: str, items: list[Any], state: Optional[dict] = None) -> list[tuple[str, Any, str, int]]:
     """The atom by name, an electron jump, and the notices (an ion, Z > 20, orbitals): ("!", text, said, pos)."""
     out: list[tuple[str, Any, str, int]] = []
     m = _ORBITALS.search(line)
@@ -180,7 +185,7 @@ def parse(line: str, items: list[Any]) -> list[tuple[str, Any, str, int]]:
         if ELEMENTS_Z[e.group(1).lower()] > MAX_Z and not _ATOM_CTX.search(line) and \
                 not _TAKE.search(line[:e.start()]):
             continue  # "the iron rod", "lead us to": not an atom
-        if _ION.match(line[e.end():]):
+        if _ION.match(line[e.end():]) or _ION_SYMBOL.search(line):
             out.append(("!", f"Heard “{e.group(0)} ion” - not drawn: the picture is a neutral atom", e.group(0), e.start()))
             continue
         out.append(("z", float(ELEMENTS_Z[e.group(1).lower()]), e.group(0), e.start()))
