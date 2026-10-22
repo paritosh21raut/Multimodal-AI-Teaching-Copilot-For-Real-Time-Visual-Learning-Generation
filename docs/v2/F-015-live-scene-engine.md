@@ -1,5 +1,8 @@
 # F-015 — Live Scene Engine (V2 Next)
 
+> **2026-10-22: the remaining plan (L2a part 2, L2b, L3, L4) is replaced by F-016 Canvas for Imagination**
+> (`F-016-canvas-for-imagination.md`). The built core below (L1, L1b, L2a part 1) stays and is reused.
+
 Whatever the teacher asks students to imagine ("imagine a ball rolling down a slope", "two balls colliding",
 "a 1 C charge brought near a field", "a square, now a circle inside it", "blood leaving the left ventricle",
 "a stack, push 3, push 5, pop") appears on the projector in real time, **with no template written for it**.

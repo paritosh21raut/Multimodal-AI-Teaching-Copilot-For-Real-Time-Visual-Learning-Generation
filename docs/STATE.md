@@ -3,9 +3,11 @@
 _Last updated 2026-10-22. History: `docs/history/STATE-2026-10-12-to-20.md` (S0–S4 detail), `docs/history/STATE-until-2026-10-12.md`. Not read by default._
 
 ## Now
-- **Next session: L2a part 2, rigid bodies** (pulleys, ropes, belts, springs, ramps, rolling, collisions) → the
-  `rigid` row of `docs/v2/L2-science-worlds.md` (its Result says what part 1 did). Then L2b:
-  `docs/v2/L2b-fields-waves-particles.md`.
+- **V2 re-planned 2026-10-22: F-016 Canvas for Imagination** (`docs/v2/F-016-canvas-for-imagination.md`): any
+  thing / place / relation / action the teacher says, real pictures (photo cutouts, 3D emoji), large, focus / zoom,
+  Auto (cues) + Imagine Mode (everything until End), safety filter, general law solvers instead of topic worlds.
+  Replaces F-015's remaining L2a part 2 / L2b / L3 / L4 (moved to `docs/history/v2-f015-superseded/`).
+- **Next session: C1 open canvas** → `docs/v2/C1-open-canvas.md`. Then C2 law solvers, C3 evaluation.
 - 2026-10-22 L2a part 1: pictures (a rocket looks like a rocket: offline icons by word / meaning, LLM glyph, the
   teacher's Picture), relative world (rain–man umbrella, river–boat shortest time / path, two trains, Seen from).
   Live `scene_l2a.txt`: all numbers right; contact sheets `artifacts/scenes/sheet_{light,dark}.png`.
