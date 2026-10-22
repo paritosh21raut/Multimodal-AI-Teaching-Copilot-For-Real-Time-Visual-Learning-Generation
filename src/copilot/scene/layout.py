@@ -10,7 +10,8 @@ from typing import Any, Optional
 from copilot.scene.spec import (
     BODY_KINDS, KNOWN, RELATIVE_KINDS, MAX_FRAME_POINTS, SOLID_KINDS, Axes, Derived, Entity, Frames, Geom, SceneSpec, Stage, Track, World,
 )
-from copilot.scene.worlds import geometry, motion, plot, relative
+from copilot.scene.spec import CANVAS_KINDS, CANVAS_RELATIONS
+from copilot.scene.worlds import canvas, geometry, motion, plot, relative
 from copilot.simulation.base import fmt
 
 W, H = 1100, 740
@@ -24,9 +25,11 @@ MIN_GAP = 48.0        # lanes closer than this first cost readout rows
 
 
 def world_of(scene: SceneSpec) -> World:
-    """relative: a river or rain, a frame of reference, or two bodies with said directions (two trains); else a body
-    moves in the motion world."""
+    """canvas (F-016): a thing or a place, a canvas relation or action; relative: a river or rain, a frame of
+    reference, or two bodies with said directions (two trains); else a body moves in the motion world."""
     bodies = [e for e in scene.entities if e.kind in BODY_KINDS]
+    if any(e.kind in CANVAS_KINDS for e in scene.entities) or any(r.kind in CANVAS_RELATIONS for r in scene.relations)             or any(b.kind not in ("move", "launch", "fall", "cross", "cross_straight") for b in scene.behaviors):
+        return "canvas"
     if any(e.kind in RELATIVE_KINDS for e in scene.entities) or scene.frame or sum(1 for e in bodies if e.dir) >= 2:
         return "relative"
     if bodies:
@@ -327,6 +330,8 @@ def solve(scene: SceneSpec) -> SceneSpec:
         return _motion(scene)
     if world == "relative":
         return relative.solve(scene, _band)
+    if world == "canvas":
+        return canvas.solve(scene, _band)
     if world == "plot":
         return _plot(scene)
     return _geometry(scene)

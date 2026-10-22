@@ -885,3 +885,58 @@ rect.sc-body.r-second, circle.sc-body.r-second { fill: var(--scene-second); stro
 .sc-ent { animation: sc-in 280ms ease-out both; transform-box: fill-box; transform-origin: center; }
 @keyframes sc-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .sc-ent { animation: none; } }
+
+/* F-016 canvas: backdrops (illustrated by place type), things (pictures, solids, placeholders, shadows), focus, effects */
+.cv-sky { fill: var(--cv-sky-bottom); stroke: none; }
+.cv-plain { stroke: none; }
+.cv-plain { fill: var(--cv-plain); }
+.cv-space { fill: var(--cv-space-bottom); }
+.cv-star { fill: #ffffff; }
+.cv-water { fill: var(--cv-water-top); opacity: 0.85; }
+.cv-surface { fill: none; stroke: var(--cv-sky-top); stroke-width: 5; opacity: 0.9; }
+.cv-ray { fill: #ffffff; opacity: 0.07; }
+.cv-bubble { fill: none; stroke: #ffffff; stroke-width: 2.5; opacity: 0.55; }
+.cv-sand { fill: var(--cv-sand); }
+.cv-cloud ellipse { fill: #ffffff; opacity: 0.85; }
+[data-theme="dark"] .cv-cloud ellipse { fill: #8a9ab0; opacity: 0.35; }
+.cv-wall { fill: var(--cv-wall); }
+.cv-window { fill: var(--cv-sky-top); stroke: var(--cv-ground-line); stroke-width: 8; }
+.cv-frame { stroke: var(--cv-ground-line); stroke-width: 6; }
+.cv-floor { fill: var(--cv-floor); }
+.cv-far { fill: var(--cv-far); }
+.cv-near { fill: var(--cv-near); }
+.cv-grass { fill: var(--cv-grass); }
+.cv-road { fill: var(--cv-road); }
+.cv-lane { stroke: #f2f2f2; stroke-width: 5; stroke-dasharray: 40 30; opacity: 0.7; }
+.cv-snow { fill: var(--cv-snow); }
+.cv-plain-ground { fill: var(--cv-ground); }
+.cv-ground-line { stroke: var(--cv-ground-line); stroke-width: 3; }
+.cv-tree rect { fill: var(--sim-wood); } .cv-tree circle { fill: var(--sim-leaf); opacity: 0.75; }
+.cv-shadow { fill: var(--cv-shadow); }
+.cv-img { animation: cv-fade 320ms ease-out; }
+@keyframes cv-fade { from { opacity: 0; } }
+.cv-placeholder { fill: var(--scene-main); fill-opacity: 0.18; stroke: var(--scene-main); stroke-opacity: 0.4; stroke-width: 3;
+  stroke-dasharray: 10 8; animation: cv-pulse 1.2s ease-in-out infinite alternate; }
+.cv-placeholder.r-second { fill: var(--scene-second); stroke: var(--scene-second); }
+.cv-placeholder.r-third { fill: var(--scene-third); stroke: var(--scene-third); }
+.cv-placeholder.r-accent { fill: var(--scene-accent); stroke: var(--scene-accent); }
+@keyframes cv-pulse { to { fill-opacity: 0.3; } }
+.cv-form .base, .cv-form .top { stroke: var(--sim-block-edge); stroke-width: 3; stroke-linejoin: round; }
+.cv-form.r-main .base { fill: var(--scene-main); } .cv-form.r-second .base { fill: var(--scene-second); }
+.cv-form.r-third .base { fill: var(--scene-third); } .cv-form.r-accent .base { fill: var(--scene-accent); }
+.cv-form.r-main .top { fill: color-mix(in srgb, var(--scene-main) 60%, #ffffff); }
+.cv-form.r-second .top { fill: color-mix(in srgb, var(--scene-second) 60%, #ffffff); }
+.cv-form.r-third .top { fill: color-mix(in srgb, var(--scene-third) 60%, #ffffff); }
+.cv-form.r-accent .top { fill: color-mix(in srgb, var(--scene-accent) 60%, #ffffff); }
+.cv-form .shade { fill: #000000; opacity: 0.22; stroke: none; }
+.cv-form .hi { fill: #ffffff; opacity: 0.35; stroke: none; }
+.cv-name .sym { font-family: inherit; font-style: normal; font-weight: 650; font-size: 34px; }
+.sc-ent.cv-dimmed { opacity: 0.28; transition: opacity 300ms; }
+.cv-fx circle, .cv-fx line { fill: none; stroke: var(--scene-accent); stroke-width: 3.5; }
+.cv-bubbles circle { stroke: var(--sim-water); }
+.cv-smoke circle { fill: var(--sim-component); stroke: none; opacity: 0.3; }
+.cv-sparks circle { fill: var(--sim-sun); stroke: none; }
+.cv-rays line { stroke: var(--sim-sun); stroke-width: 5; stroke-linecap: round; }
+.cv-arrow line { stroke: var(--scene-accent); stroke-width: 7; stroke-linecap: round; }
+.cv-arrow polygon { fill: var(--scene-accent); }
+.scene-stage .sim-svg { overflow: hidden; }  /* F-016: a focused camera never draws outside the stage */

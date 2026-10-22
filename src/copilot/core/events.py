@@ -89,6 +89,8 @@ CommandKind = Literal[
     # F-015 L2a, a live scene: scene_look {slide_id, id, icon | image | own} (a body's picture), scene_frame
     # {slide_id, id} (the relative world seen from that body; "" = the ground)
     "scene_look", "scene_frame",
+    # F-016: imagine_mode {on: bool} (/control Imagine / End: every picturable line is drawn until End)
+    "imagine_mode",
     # F-014 S1: sim_end = Back to slides (simulation mode ends, the recap follows); sim_accept / sim_dismiss {id}: the
     # Suggest chip; set_simulations {setting: auto | suggest | off} (kept in data/preferences.json)
     "sim_end", "sim_accept", "sim_dismiss", "set_simulations",
@@ -193,6 +195,7 @@ class DeckState(Event):
     zoom: Optional[str] = None  # slide whose image fills the display (teacher clicked it in /control)
     sim_full: Optional[str] = None  # slide whose simulation fills the display (F-014, the teacher's Full stage)
     sim_mode: Optional[str] = None  # F-014 S1: the simulation slide of a running simulation mode (no new slides)
+    imagine: bool = False  # F-016: Imagine Mode is on (every picturable line is drawn until the teacher's End)
 
 
 UtteranceKind = Literal["content", "classroom_management", "meta", "filler", "question_to_class"]

@@ -7,7 +7,12 @@
           noun, a number, a name in the scene) before it spends a call on it
 
 A cue for another world's noun while a scene is open is a new scene ("now imagine a ball" over a square); a cue for
-the same world is an edit ("now draw a circle inside it"). The end of a scene comes from the shared end cue
+the same world is an edit ("now draw a circle inside it").
+
+F-016 canvas: a cue word followed by any picture noun (scene.pictures.words: the emoji / icon names, places, shape
+nouns) is a cue; it is a "canvas" cue when that noun is not one of an L1 world's or a relation word ("on", "under")
+follows an object noun. Canvas cues are always published while a scene is open: the scene controller decides
+(an edit when the line refers to the open scene, else a new scene). The end of a scene comes from the shared end cue
 (simulation.detector: "let's get back to the slides"), which ends whichever mode is open.
 """
 from __future__ import annotations
@@ -22,6 +27,7 @@ from copilot.core.events import Event, RepresentationIntent, SimulationModeChang
     UtteranceClassified
 from copilot.simulation.detector import end_cue
 from copilot.simulation.values import NUM
+from copilot.scene import pictures
 
 log = logging.getLogger(__name__)
 
@@ -47,6 +53,14 @@ NOUNS: dict[str, str] = {  # drawable noun (regex) -> its world
 }
 _NOUN = [(re.compile(rf"\b(?:{rx})", re.IGNORECASE), w) for rx, w in NOUNS.items()]
 _ANY_NOUN = re.compile("|".join(rf"\b(?:{rx})" for rx in NOUNS), re.IGNORECASE)
+# the words an L1 world's noun patterns are written for (their look-alike guards stay theirs)
+_L1_WORDS = frozenset(x for rx in NOUNS for w in re.findall(r"[a-z]{3,}", rx.replace("?", " "))
+                     for x in (w, w[:-1] if w.endswith("s") else w)) - {"bus", "buses", "plane", "planes"}
+# look-alike compounds: not a thing to picture ("the address bus", "a plane mirror", "a cube root", "the cube of x")
+_LOOKALIKE = re.compile(r"\b(?:(?:address|data|control|system)\s+bus|bus\s+(?:topology|network|lines?|width)|"
+                        r"plane\s+(?:mirrors?|waves?|polari\w+)|(?:inclined|xy|x-y|cartesian|complex|coordinate|focal|"
+                        r"image|horizontal|vertical)\s+plane|cube\s+(?:roots?|of)|cones?\s+(?:cells?|in\s+the))\b",
+                        re.IGNORECASE)
 _EDIT = re.compile(r"\b(?:now|make|add|increase|decrease|double|halve|half|triple|change|move|speed(?:s)? up|"
                    r"slow(?:s)? down|accelerat\w*|decelerat\w*|remove|draw|mark|its|another|second|inside|around|"
                    r"bigger|smaller|larger|faster|slower|extend|rotate|join|connect|shade|label|put|place|replace|"
@@ -55,7 +69,8 @@ _NUMBER = re.compile(NUM, re.IGNORECASE)
 
 
 def cue(text: str) -> Optional[str]:
-    """The world of the drawable noun after a cue word in the line, or None."""
+    """The world of the drawable noun after a cue word in the line ("canvas": any other picture noun, or a relation
+    word with an object noun), or None."""
     for m in _CUE.finditer(text):
         tail = " ".join(text[m.end():].split()[:NOUN_REACH + 2])
         best: Optional[tuple[int, str]] = None
@@ -63,6 +78,20 @@ def cue(text: str) -> Optional[str]:
             n = rx.search(tail)
             if n and len(tail[:n.start()].split()) <= NOUN_REACH and (best is None or n.start() < best[0]):
                 best = (n.start(), world)
+        own = {w.lower() for x in _ANY_NOUN.finditer(tail) for w in x.group(0).split()}
+        # a noun after "as a" is a metaphor ("the human body as a machine"), after "this" / "our" the real one
+        # ("the objects in this room"): neither is imagined
+        words = re.findall(r"[a-z]+", _LOOKALIKE.sub(" ", tail).lower())
+        toks = [w for i, w in enumerate(words) if not (i and words[i - 1] in ("this", "these", "our"))
+                and not (i > 1 and words[i - 2] == "as" and words[i - 1] in ("a", "an"))]
+        # a motion problem's road or track is its ground, not a canvas ("think of a car on a straight road"); a word
+        # an L1 world judges keeps its guards ("a cube root", "an inclined plane"); "look at" focuses, never opens one
+        setting = set(pictures.PLACES["street"]) if best is not None and best[1] == "motion" else set()
+        canvas = not m.group(0).lower().startswith("look") and any(
+            t not in own and t not in setting and t not in _L1_WORDS and pictures.assets.singular(t) not in _L1_WORDS
+            and pictures.assets.singular(t) in pictures.words() for t in toks)
+        if canvas:
+            return "canvas"
         if best is not None:
             return best[1]
     return None
@@ -106,14 +135,17 @@ class SceneDetector:
                 self._text.popitem(last=False)
             return
         if isinstance(event, SimulationModeChanged):
-            self.open_world = self._cued if event.on and event.template == "scene" else None
+            # a scene opened by its cue, or by the teacher (Imagine Mode, no cue): a canvas
+            self.open_world = (self._cued or "canvas") if event.on and event.template == "scene" else None
+            self._cued = ""
             return
         assert isinstance(event, UtteranceClassified)
         text = self._text.get(event.segment_id, "")
         if event.kind != "content" or event.maybe_meta or not text or end_cue(text):
             return
         world = cue(text)
-        if world is not None and world != self.open_world:  # none open, or another world's noun: a new scene
+        if world is not None and (world != self.open_world or world == "canvas"):  # none open, another world's noun
+            # (a new scene), or a canvas cue (the controller: an edit when it refers to the open scene)
             self._cued = world
             await self._publish(event.segment_id, text, "cue")
         elif self.open_world is not None:

@@ -48,6 +48,7 @@ class Deck:
         self.zoom: Optional[str] = None
         self.sim_full: Optional[str] = None
         self.sim_mode: Optional[str] = None
+        self.imagine = False  # F-016 Imagine Mode is on (/control shows End)
 
     def attach(self) -> None:
         self._bus.subscribe("deck", self._on_command, [CommandReceived])
@@ -67,13 +68,19 @@ class Deck:
     def state_event(self) -> DeckState:
         return DeckState(
             live_id=self.live_id, slide_ids=list(self._order), following=self.following,
-            blank=self.blank, zoom=self.zoom, sim_full=self.sim_full, sim_mode=self.sim_mode,
+            blank=self.blank, zoom=self.zoom, sim_full=self.sim_full, sim_mode=self.sim_mode, imagine=self.imagine,
         )
 
     async def set_sim_mode(self, slide_id: Optional[str]) -> None:
         """The engine's simulation mode (F-014 S1): the slide it runs on, or None when it ended."""
         if self.sim_mode != slide_id:
             self.sim_mode = slide_id
+            await self._publish_state()
+
+    async def set_imagine(self, on: bool) -> None:
+        """F-016: Imagine Mode on / off (set by the scene controller)."""
+        if self.imagine != on:
+            self.imagine = on
             await self._publish_state()
 
     # ---- slide ops (planner) --------------------------------------------------------------

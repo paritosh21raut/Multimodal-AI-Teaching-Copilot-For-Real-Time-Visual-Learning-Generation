@@ -210,7 +210,7 @@ class DisplayHub:
             self._broadcast({"type": "patch", "slide_id": event.slide_id, "version": event.version, "spec": event.spec},
                             key=("patch", event.slide_id))
         elif isinstance(event, DeckState):
-            self.deck = event.model_dump(include={"live_id", "slide_ids", "following", "blank", "zoom", "sim_full", "sim_mode"})
+            self.deck = event.model_dump(include={"live_id", "slide_ids", "following", "blank", "zoom", "sim_full", "sim_mode", "imagine"})
             for sid in [s for s in self.slides if s not in event.slide_ids]:  # removed slides
                 del self.slides[sid]
             self._broadcast({"type": "deck", "deck": self.deck}, key=("deck",))

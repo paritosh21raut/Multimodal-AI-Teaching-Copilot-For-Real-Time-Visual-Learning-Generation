@@ -127,6 +127,7 @@ const ICON = {
   step: "M6 5v14M10 5l9 7-9 7z",
   restart: "M4 12a8 8 0 1 0 2.4-5.7L4 8.5M4 4v4.5h4.5",
   full: "M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5",
+  imagine: "M9 17a6 6 0 1 1 6.9-5.9A4 4 0 0 1 15 19H8a4 4 0 0 1-.6-8M18 3l.7 1.6L20.3 5l-1.6.7L18 7.3l-.7-1.6L15.7 5l1.6-.4z",  // F-016 Imagine Mode
   sliders: "M4 7h10M18 7h2M4 17h4M12 17h8M14 5v4M8 15v4",
   eye: "M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z",
   skip: "M5 5l9 7-9 7zM18 5v14",
@@ -488,7 +489,7 @@ function SceneBar({ spec, b, send, running }) {
   const [menu, setMenu, ref] = usePopover();
   const moving = !!scene.frames;
   const rows = scene.entities.flatMap((e) => Object.entries(e.props).map(([k, q]) => ({ id: `${e.id}.${k}`, who: e.name || e.kind, k, q })));
-  const bodies = scene.entities.filter((e) => e.geom && e.geom.shape === "body");
+  const bodies = scene.entities.filter((e) => e.geom && (e.geom.shape === "body" || e.geom.shape === "thing"));  // F-016: a thing too
   const frames = ["", ...scene.entities.filter((e) => e.geom && e.geom.shape === "body" || e.kind === "river").map((e) => e.id)];
   const frameName = (id) => { const e = id && scene.entities.find((x) => x.id === id); return e ? e.name || e.look.noun || e.kind : "ground"; };
   return html`<div class="image-bar sim-bar scene-bar menu-wrap" ref=${ref}>
@@ -588,6 +589,9 @@ function SimPicker({ send, disabled }) {
         ref=${(el) => el && !el.dataset.f && (el.dataset.f = "1", el.focus())}
         onInput=${(e) => setQ(e.target.value)}
         onKeyDown=${(e) => { e.stopPropagation(); if (e.key === "Enter" && found[0]) pick(found[0]); if (e.key === "Escape") setOpen(false); }} />
+      ${!q && html`<button role="menuitem" class="menu-row imagine-row" onClick=${() => { send("imagine_mode", { on: true }); setOpen(false); }}
+        title="Everything you describe is drawn on the slide until you press End">${svg(ICON.imagine)}
+        <span><b>Imagine Mode</b><em>Draw everything you describe, until End</em></span></button>`}
       ${found.map((t) => html`<button key=${t.id} role="menuitem" class="menu-row eq-row" onClick=${() => pick(t)}>
         <span><b>${t.name}</b><em>${t.subject} · ${t.slots.map((x) => x.symbol).join(", ")}</em></span></button>`)}
       ${!found.length && html`<p class="eq-none">No simulation of that name yet</p>`}
@@ -898,10 +902,12 @@ function Dock({ deck, lifecycle, send, toggle, canAdd, onAdd, theme, notesWide }
         ${svg(ICON.point)}<span>Add point</span></button>
       <${EquationPicker} send=${send} disabled=${!canAdd} />
       ${running  // in its place while one runs: the dock keeps its width (screenshot 2026-10-17)
-        ? html`<button class="sim-end on" onClick=${() => send("sim_end")}
-            title="End the simulation: slides resume, first a recap of what you taught">${svg(ICON.back)}<span>Back to slides</span></button>`
-        : html`<${SimPicker} send=${send} disabled=${!canAdd} />`}
-    </div>
+        ? deck.imagine  // F-016: Imagine Mode ends only here (End): slides resume after one recap
+          ? html`<button class="sim-end imagine on" onClick=${() => send("imagine_mode", { on: false })}
+              title="End Imagine Mode: slides resume, first a recap of what you taught">${svg(ICON.back)}<span>End</span></button>`
+          : html`<button class="sim-end on" onClick=${() => send("sim_end")}
+              title="End the simulation: slides resume, first a recap of what you taught">${svg(ICON.back)}<span>Back to slides</span></button>`
+        : html`<${SimPicker} send=${send} disabled=${!canAdd} />`}    </div>
     <button class="end" onClick=${endLecture(send)} title="End the lecture">${svg(ICON.end)}<span>End lecture</span></button>
   </div>`;
 }

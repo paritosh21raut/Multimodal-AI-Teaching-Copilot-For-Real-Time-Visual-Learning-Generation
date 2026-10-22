@@ -3,6 +3,7 @@
 // (a said name, a said size, a computed note). Colours by role (main / second / third / accent / muted), both themes.
 import { html } from "../vendor/htm-preact-standalone.mjs";
 import { ICONS } from "../vendor/icons/scene-icons.js";
+import { Thing } from "./canvas.js";
 
 const pts = (ps) => ps.map(([x, y]) => `${x},${y}`).join(" ");
 
@@ -73,6 +74,7 @@ export function Shape({ e, g, pose, focus, umbrella }) {
       ${g.d2 && html`<path class="hidden-edge" d=${g.d2} />`}
       <path class="edge" d=${g.d} />
     </g>`;
+    case "thing": return g.hidden ? null : html`<${Thing} e=${e} g=${g} pose=${pose} />`;
     case "body": {
       const p = pose || { x: g.c[0], y: g.c[1], angle: 0 };
       return html`<${Body} e=${e} x=${p.x} y=${p.y} angle=${p.angle} flip=${!!g.flip} />
@@ -84,8 +86,14 @@ export function Shape({ e, g, pose, focus, umbrella }) {
 
 // The entity's printed words: its said name (or label), a computed note ("(2, 1)"), the said sizes on the shape.
 export function Words({ e, g, pose, umbrella }) {
-  if (!g) return null;
+  if (!g || g.hidden) return null;
   let at = g.label_at;
+  // a thing's name rides above its picture (F-016)
+  // (or at its side when another thing rests on it: label_at says where, relative to its centre)
+  const side = g.shape === "thing" && at && g.wh && at[0] < g.c[0] - g.wh[0] / 2;
+  if (g.shape === "thing" && pose && g.wh) {
+    at = side ? [pose.x + at[0] - g.c[0], pose.y + at[1] - g.c[1]] : [pose.x, pose.y - (g.wh[1] * (pose.sy || 1)) / 2 - 16];
+  }
   // a body's name rides above it, or (many lanes) stays in the names' column on the left, level with its lane
   const column = g.shape === "body" && at && at[0] < g.c[0] - g.r;
   if (g.shape === "body" && pose) at = column ? [at[0], pose.y + 9] : [pose.x, pose.y - g.r - 16];
@@ -93,9 +101,9 @@ export function Words({ e, g, pose, umbrella }) {
   const left = g.shape === "body" && umbrella != null && pose;
   if (left) at = [pose.x - g.r * 1.4 - 10, pose.y + 9];
   const name = e.label && e.label.source === "said" ? e.label.text : "";
-  const anchor = left ? "end" : g.shape === "dot" || g.shape === "seg" || column ? "start" : g.shape === "path" ? "end" : "middle";
+  const anchor = left || side ? "end" : g.shape === "dot" || g.shape === "seg" || column ? "start" : g.shape === "path" ? "end" : "middle";
   return html`
-    ${at && (name || g.note) && html`<text class=${`sim-label word sc-name r-${e.look.role}`} x=${at[0]} y=${at[1]} text-anchor=${anchor} data-el=${e.id}>
+    ${at && (name || g.note) && html`<text class=${`sim-label word sc-name r-${e.look.role}${g.shape === "thing" ? " cv-name" : ""}`} x=${at[0]} y=${at[1]} text-anchor=${anchor} data-el=${e.id}>
       ${name && html`<tspan class="sym">${name}</tspan>`}${g.note && html`<tspan class="val computed">${(name ? " " : "") + g.note}</tspan>`}
     </text>`}
     ${(g.dims || []).map(([x, y, text], i) => html`<text key=${i} class="sim-label sc-dim" x=${x} y=${y} text-anchor="middle" data-el=${e.id + "-dim" + i}>

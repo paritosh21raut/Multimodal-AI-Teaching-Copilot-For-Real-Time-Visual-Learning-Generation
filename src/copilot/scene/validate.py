@@ -14,9 +14,10 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
+from copilot.scene import safety
 from copilot.scene.spec import (
-    BEHAVIORS, BODY_KINDS, DIRS, GEOMETRY_KINDS, ID_PATTERN, KINDS, KNOWN, MAX_ENTITIES, OPS, RELATIONS, RELATIVE_KINDS,
-    SOLID_KINDS, Label, Q, SceneOp, SceneSpec, Source,
+    BEHAVIORS, BODY_KINDS, CANVAS_KINDS, CANVAS_RELATIONS, DIRS, EMITS, GEOMETRY_KINDS, ID_PATTERN, KINDS, KNOWN,
+    MAX_ENTITIES, MAX_PARTS, OPS, RELATIONS, RELATIVE_KINDS, SIZES, SOLID_KINDS, Label, Q, SceneOp, SceneSpec, Source,
 )
 from copilot.simulation.values import NUM, heard, spoken_number
 
@@ -57,7 +58,12 @@ _ID = re.compile(ID_PATTERN)
 CLOSED = ("square", "rectangle", "circle", "triangle", "polygon")
 BESIDE = ("left_of", "right_of", "above", "below")
 MOTION_PROPS = ("speed", "acceleration")  # a body's (a shape or a point given a speed is a model slip: refused)
-MOVERS = BODY_KINDS + RELATIVE_KINDS        # what may have a speed and a direction (a river flows, rain falls)
+MOVERS = BODY_KINDS + RELATIVE_KINDS + ("thing",)  # what may have a speed and a direction (a river flows, rain falls)
+ACTORS = BODY_KINDS + ("thing",)            # what may act (a behaviour's target) and be placed by a canvas relation
+SPATIAL = BODY_KINDS + CANVAS_KINDS         # what a canvas relation places things by
+# a thing's said noun: letters, spaces, hyphens, apostrophes (no markup, no digits)
+_NOUN_OK = re.compile(r"^[A-Za-z][A-Za-z '\-]{0,39}$")
+_OTHER = ("follow", "chase", "orbit", "move_to", "collide")  # actions that need the other entity (`b`)
 # a moving thing said as itself: drawn as a body of this kind with the noun's picture (scene.assets), same physics
 KIND_ALIAS = {**{k: "car" for k in ("rocket", "train", "boat", "ship", "bus", "truck", "plane", "aeroplane",
                                     "airplane", "bike", "bicycle", "motorbike", "scooter", "tram", "helicopter",
@@ -122,6 +128,8 @@ class Checked:
     noun: str = ""         # a body's noun for its picture (the model's word or the kind it said: "rocket")
     dir: str = ""
     toward: str = ""
+    size: str = ""         # F-016 a thing's size word
+    text: str = ""         # F-016 a behaviour's text (emit: what; transform_into: the noun it becomes)
 
 
 def _close(a: float, b: float) -> bool:
@@ -230,6 +238,8 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
     if op.op == "add" and op.kind in KIND_ALIAS:  # "rocket" is a car body with a rocket's picture
         alias, op = op.kind, op.model_copy(update={"kind": KIND_ALIAS[op.kind]})
     ent = scene.get(op.id) if op.id else None
+    if op.op == "unsafe":  # the model refuses the lines: the controller drops this call's ops (nothing drawn)
+        return Checked(op), ""
     if op.op == "frame":
         f = scene.get(op.id) if op.id else None
         if op.id and (f is None or f.kind not in BODY_KINDS + ("river",)):
@@ -244,6 +254,12 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
             return None, f"id {op.id} is already a {ent.kind}"
         if ent is None and len(scene.entities) >= MAX_ENTITIES:
             return None, "the scene is full"
+        if op.kind in CANVAS_KINDS:
+            noun = (op.name or "").strip()
+            if not _NOUN_OK.match(noun):
+                return None, f"a {op.kind} needs its said noun as name (letters only), not {op.name!r}"
+            if safety.blocked(noun):
+                return None, f"blocked noun {noun!r} (scene.safety)"
         if op.kind == "curve":
             from copilot.scene.worlds.plot import parse
             if not op.expr:
@@ -255,6 +271,9 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
     elif op.op in ("set", "remove", "label"):
         if ent is None:
             return None, f"{op.op}: no entity {op.id!r}"
+        if op.op == "set" and op.name and ent.kind in CANVAS_KINDS and (not _NOUN_OK.match(op.name.strip())
+                                                                        or safety.blocked(op.name)):
+            return None, f"set: bad or blocked noun {op.name!r}"
         if op.op == "set" and op.expr:
             from copilot.scene.worlds.plot import parse
             try:
@@ -270,10 +289,26 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
         pair = _PAIRS.get(op.kind)
         if pair is not None and (a.kind not in pair[0] or b.kind not in pair[1]):
             return None, f"{op.kind}: not for a {a.kind} and a {b.kind}"
-        if (a.kind in SOLID_KINDS or b.kind in SOLID_KINDS) and op.kind not in BESIDE:
-            return None, f"{op.kind}: not for a solid (only beside another shape)"
-        if op.kind == "on" and a.kind != "point":
-            return None, "on: only a point lies on something"
+        if a.kind in CANVAS_KINDS or b.kind in CANVAS_KINDS or op.kind in CANVAS_RELATIONS:
+            # F-016: things, bodies and the place, never a drawn shape
+            if a.kind not in ACTORS or b.kind not in SPATIAL:
+                return None, f"{op.kind}: not for a {a.kind} and a {b.kind} (things, bodies and the place)"
+            if b.kind == "place" and op.kind not in ("at", "inside", "under", "on", "on_top_of", "above", "below"):
+                return None, f"{op.kind}: not for a place (at, inside, under, on, above, below)"
+            if op.kind == "part_of":
+                if a.kind != "thing" or b.kind != "thing":
+                    return None, "part_of: a thing's part is a thing"
+                if sum(1 for r in scene.relations if r.kind == "part_of" and r.b == b.id and r.a != a.id) >= MAX_PARTS:
+                    return None, f"part_of: {b.id} has {MAX_PARTS} parts already"
+            if op.kind == "between":
+                c = scene.get(op.c)
+                if c is None or c.id in (a.id, b.id) or c.kind not in ACTORS:
+                    return None, f"between: needs a second thing c, not {op.c!r}"
+        else:
+            if (a.kind in SOLID_KINDS or b.kind in SOLID_KINDS) and op.kind not in BESIDE:
+                return None, f"{op.kind}: not for a solid (only beside another shape)"
+            if op.kind == "on" and a.kind != "point" and not (a.kind in BODY_KINDS and b.kind in BODY_KINDS):
+                return None, "on: only a point lies on something"
         chain = {r.a: r.b for r in scene.relations if r.a != a.id}  # a's own relation is replaced by this one
         cur, seen = b.id, set()
         while cur in chain and cur not in seen:
@@ -285,12 +320,23 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
         t = scene.get(op.target)
         if op.kind not in BEHAVIORS:
             return None, f"unknown behaviour {op.kind!r}"
-        if t is None or t.kind not in BODY_KINDS:
-            return None, f"behave: {op.target!r} is not a body"
-        if op.kind in ("cross", "cross_straight") and not any(x.kind == "river" for x in scene.entities):
+        if t is None or t.kind not in ACTORS:
+            return None, f"behave: {op.target!r} is not a body or a thing"
+        if op.kind in ("cross", "cross_straight") and (t.kind not in BODY_KINDS
+                                                       or not any(x.kind == "river" for x in scene.entities)):
             return None, f"{op.kind}: there is no river to cross"
-    elif op.op == "focus":
-        if not op.ids or any(scene.get(i) is None for i in op.ids):
+        if op.kind in _OTHER:
+            o = scene.get(op.b)
+            if o is None or o.id == t.id or o.kind not in ACTORS:
+                return None, f"{op.kind}: needs another thing b, not {op.b!r}"
+        if op.kind == "emit" and op.text not in EMITS:
+            return None, f"emit: {op.text!r} is not one of {' '.join(EMITS)}"
+        if op.kind == "transform_into":
+            noun = op.text.strip()
+            if not _NOUN_OK.match(noun) or safety.blocked(noun):
+                return None, f"transform_into: bad or blocked noun {op.text!r}"
+    elif op.op == "focus":  # no ids: zoom out (the whole scene)
+        if any(scene.get(i) is None for i in op.ids):
             return None, f"focus: bad refs {op.ids!r}"
     out = Checked(op)
     kind = op.kind if op.op == "add" else ent.kind if ent is not None else ""
@@ -318,8 +364,15 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
             out.notes.append(f"dir {op.dir!r} toward {op.toward!r} refused (closed list; toward is at right angles)")
         else:
             out.dir, out.toward = op.dir, op.toward
-    if kind in BODY_KINDS and (op.op == "add" or op.name):
+    if kind in BODY_KINDS + CANVAS_KINDS and (op.op == "add" or op.name):
         out.noun = (op.name.strip() or alias)[:40]
+    if op.size:
+        if kind == "thing" and op.size in SIZES:
+            out.size = op.size
+        else:
+            out.notes.append(f"size {op.size!r} refused (a thing's: {' '.join(SIZES)})")
+    if op.op == "behave" and op.kind in ("emit", "transform_into"):
+        out.text = op.text.strip()[:40]
     if op.name:
         out.name = op.name.strip()[:40] if said_words(op.name, corpus, scene) else ""
         if not out.name:
@@ -332,6 +385,7 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
             return None, f"label {op.text!r} was not said"
         out.label = Label(text=op.text.strip()[:40], source="said")
     word = alias or op.kind
-    if op.op == "add" and (op.kind in GEOMETRY_KINDS + RELATIVE_KINDS + ("curve",) or alias) and not op.name             and said_words(word, corpus):
+    if op.op == "add" and (op.kind in GEOMETRY_KINDS + RELATIVE_KINDS + ("curve",) or alias) and not op.name \
+            and said_words(word, corpus):
         out.name = word  # "imagine a square": the teacher's word is the kind's
     return out, ""

@@ -13,14 +13,14 @@ from typing import Any, Awaitable, Callable, Optional
 
 from pydantic import ValidationError
 
-from copilot.scene.spec import BEHAVIORS, KINDS, RELATIONS, SceneOp, SceneSpec
+from copilot.scene.spec import ACTIONS, CANVAS_RELATIONS, EMITS, KINDS, SIZES, SceneOp, SceneSpec
 from copilot.simulation.base import fmt
 
 log = logging.getLogger(__name__)
 
 MAX_LINES = 4
 MAX_TOKENS = 1400      # reasoning (low) + the ops; ≤ 3k a new scene with the prompt (F-015 targets)
-EST_PROMPT = 1400
+EST_PROMPT = 2100
 TIMEOUT_S = 12.0
 
 SYSTEM = f"""You turn a teacher's spoken words into drawing operations for a live classroom diagram.
@@ -36,6 +36,7 @@ Ops (fields exactly as shown):
 {{"op":"label","id":"s1","text":"ABCD"}}
 {{"op":"focus","ids":["c1"]}}
 {{"op":"frame","id":"m1"}}   (show the scene as seen by m1; "id":"" = as seen from the ground)
+{{"op":"unsafe"}}   (ONLY this, when the lines ask for sexual, gory, hateful, self-harm or drug content)
 
 kinds: {" ".join(KINDS)}
 props, as [number, unit], ONLY numbers the teacher said (leave a prop out if its number was not said):
@@ -46,16 +47,28 @@ props, as [number, unit], ONLY numbers the teacher said (leave a prop out if its
 speech units: "mps" = m/s; "mps square", "mps2", "m p s squared" (or "mps" plus a stray letter: "mpsw") = m/s^2;
  "kmph", "km per hour" = km/h
 curve: "expr" is y in terms of x, e.g. {{"op":"add","id":"f1","kind":"curve","name":"parabola","expr":"x^2-3"}}
-relations (a is placed by b): {" ".join(RELATIONS)}
+relations of shapes (a is placed by b): inscribed_in around inside on diagonal_of radius_of diameter_of tangent_to
+ bisector_of midpoint_of left_of right_of above below
  inscribed_in = a fits exactly inside b; around = a encloses b exactly; on = point a lies on b
-anything that moves is a body: car for a vehicle (car, train, bus, boat, rocket, plane), particle for a person or an
- animal, ball for a ball or a stone, block for a box; never a point or a shape. Its name is the teacher's noun
- ("rocket", "man"): the picture follows the name
+a textbook motion problem (a ball rolls at 3 m/s, trains, a boat crossing a river, a man in the rain) uses bodies:
+ car for a vehicle, particle for a person or an animal, ball for a ball or a stone, block for a box; name = the
+ teacher's noun ("rocket", "man"): the picture follows the name
+EVERYTHING ELSE the teacher imagines is a "thing": name = the teacher's noun, as said ("laptop", "cat", "you"),
+ "size": {" ".join(SIZES)} (its size next to the others; leave it out if unsure). ONE "place" per scene = where it
+ happens (ocean, sky, space, street, room, forest, beach ...). Something you put things on (mountain, table, plane)
+ is a thing, not a place. Parts the teacher names (a bicycle's wheel): a thing with relate part_of
+relations of things: {" ".join(CANVAS_RELATIONS)} inside above below left_of right_of
+ (between also takes "c": the second thing; at / inside / under / on / above / below may take the place as b)
+actions (behave, target a thing or a body; "b" = the other thing for move_to follow chase orbit collide):
+ {" ".join(ACTIONS)} move launch fall
+ emit "text": {" ".join(EMITS)}; transform_into "text": the noun it becomes. An unknown verb: the nearest action
+ ("zooms" = fly, "drops" = fall, "tosses" = throw, "hits" = collide, "swims" = move). Thrown up: "dir":"up"
+focus: "look at / zoom into the X" = {{"op":"focus","ids":["x1"]}}; "zoom out" = {{"op":"focus","ids":[]}}
 direction (on add / set of a body, a river or rain, only when the teacher says one): "dir": east west north south up
  down; "at 30 degrees to the vertical towards the east" = "dir":"down","toward":"east" with props angle [30,"deg"]
 river: a band of water; its speed is the flow; rain: falls ("dir":"down" unless said otherwise)
 two bodies on one line: add first the one on the left (or behind), with the gap between them on it
-behaviours (of ball block car particle): {" ".join(BEHAVIORS)}
+behaviours of bodies: move launch fall cross cross_straight
  move = straight line (speed, acceleration on the body); launch = thrown at an angle (speed, angle); fall = dropped
  from a height (height); cross = a boat heads straight across the river (shortest time); cross_straight = it heads
  upstream so that it reaches the point straight opposite (shortest path)
@@ -99,7 +112,31 @@ Lines: Two trains 200 m apart run towards each other at 20 m/s and 30 m/s.
 {{"op":"add","id":"t1","kind":"car","name":"train","props":{{"speed":[20,"m/s"],"gap":[200,"m"]}},"dir":"east"}}
 {{"op":"add","id":"t2","kind":"car","name":"train","props":{{"speed":[30,"m/s"]}},"dir":"west"}}
 {{"op":"behave","kind":"move","target":"t1"}}
-{{"op":"behave","kind":"move","target":"t2"}}"""
+{{"op":"behave","kind":"move","target":"t2"}}
+Lines: Imagine a cube on a mountain.
+{{"op":"add","id":"m1","kind":"thing","name":"mountain","size":"huge"}}
+{{"op":"add","id":"c1","kind":"thing","name":"cube","size":"small"}}
+{{"op":"relate","kind":"on_top_of","a":"c1","b":"m1"}}
+Lines: Picture a bicycle under the ocean.
+{{"op":"add","id":"o1","kind":"place","name":"ocean"}}
+{{"op":"add","id":"b1","kind":"thing","name":"bicycle"}}
+{{"op":"relate","kind":"under","a":"b1","b":"o1"}}
+Lines: Imagine a laptop flying on top of an airplane.
+{{"op":"add","id":"p1","kind":"thing","name":"airplane","size":"large"}}
+{{"op":"add","id":"l1","kind":"thing","name":"laptop","size":"small"}}
+{{"op":"relate","kind":"on_top_of","a":"l1","b":"p1"}}
+{{"op":"behave","kind":"fly","target":"p1"}}
+Lines: Suppose you throw a book up in the air.
+{{"op":"add","id":"k1","kind":"thing","name":"book","dir":"up"}}
+{{"op":"behave","kind":"throw","target":"k1"}}
+Lines: Imagine you're on a bus and it brakes.
+{{"op":"add","id":"u1","kind":"thing","name":"bus","size":"large"}}
+{{"op":"add","id":"y1","kind":"thing","name":"you","size":"small"}}
+{{"op":"relate","kind":"inside","a":"y1","b":"u1"}}
+{{"op":"behave","kind":"brake","target":"u1"}}
+Scene: u1 thing "bus"; y1 thing "you"; y1 inside u1; u1 brake
+Lines: Look at the person inside.
+{{"op":"focus","ids":["y1"]}}"""
 
 
 def context(scene: Optional[SceneSpec]) -> str:
@@ -112,12 +149,16 @@ def context(scene: Optional[SceneSpec]) -> str:
                          if q.source != "default")
         expr = f" expr={e.expr}" if e.expr else ""
         way = f" dir={e.dir}" + (f" toward={e.toward}" if e.toward else "") if e.dir else ""
-        parts.append(f"{e.id} {e.kind}" + (f' "{e.name}"' if e.name else "") + (f" {props}" if props else "") + expr
-                     + way)
-    parts += [f"{r.a} {r.kind} {r.b}" for r in scene.relations]
-    parts += [f"{b.target} {b.kind}" for b in scene.behaviors]
+        name = e.name or e.look.noun  # a thing's noun, said or not (the model refers to it)
+        parts.append(f"{e.id} {e.kind}" + (f' "{name}"' if name else "") + (f" {e.size}" if e.size else "")
+                     + (f" {props}" if props else "") + expr + way)
+    parts += [f"{r.a} {r.kind} {r.b}" + (f" {r.c}" if r.c else "") for r in scene.relations]
+    parts += [f"{b.target} {b.kind}" + (f" {b.b}" if b.b else "") + (f" {b.text}" if b.text else "")
+              for b in scene.behaviors]
     if scene.frame:
         parts.append(f"seen by {scene.frame}")
+    if scene.focus:
+        parts.append("focus " + " ".join(scene.focus))
     return "; ".join(parts)
 
 

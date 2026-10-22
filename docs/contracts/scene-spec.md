@@ -94,3 +94,27 @@ A new entity fades/grows in (CSS `sc-in`, 280 ms); a changed geometry tweens fro
 `/control` commands on a scene's slide: `sim_play sim_pause sim_step sim_reset sim_set{speed} sim_remove sim_full`,
 `scene_look{id, icon|image|own}` (Picture), `scene_frame{id}` (Seen from); `sim_end` ends the mode. Values lists the
 props and their source (read only). `GET /api/scene/pictures?q=` lists icons for a word.
+
+## Canvas (F-016 C1, `worlds/canvas.py`)
+- Kinds `thing` (any said noun: `name` required, letters only, `scene.safety` blocklist; `size` tiny small medium large
+  huge) and `place` (one per scene; a new one replaces it and takes its relations). A thing or place, a canvas relation
+  or a canvas action → `world:"canvas"`; old scenes keep their worlds.
+- Relations: `on_top_of under in_front_of behind near between(c) holding attached_to part_of at` + `on inside above
+  below left_of right_of around` for things / bodies; a place takes `at inside under on on_top_of above below`. Parts:
+  `part_of` ≤ 4 per thing, `geom.hidden` until focused. Carried (`on on_top_of inside holding attached_to part_of`)
+  things move with b; loose riders (`on on_top_of inside`) lean ≤ 22° and slide when b brakes.
+- Actions (`behave`, target a thing or body, `b` for move_to follow chase orbit collide, `text` for emit
+  `bubbles rings rays smoke waves sparks` / transform_into noun): fall throw bounce move fly drive walk slide roll
+  carry push pull brake stop use `motion.py` kinematics (readouts only when every input is known); the rest are drawn.
+  One motion + one emit per thing. `{"op":"unsafe"}`: the call's ops are dropped, the scene is put back.
+- Sizes: main ≥ 35 % of the stage height, nothing < 8 %, a carried thing ≤ 60 % of its carrier (inside ≤ 45 %).
+- Engine output: `geom{shape:"thing", c, wh, z, hidden, ground, flip}`, `Track.sa` (scale x, scale y, opacity per
+  sample), `stage.backdrop{type, name, ground, surface}` (types: plain sky space water mountain street nature indoors
+  beach desert snow), `stage.effects[{of, kind, dir}]`, `stage.camera` (focus: x y w h, ≤ 3×, stage aspect; one
+  moving focused thing: the renderer follows it; `focus ids:[]` zooms out).
+- Pictures (`scene.pictures`): teacher pick → cached `data/assets/pictures/<slug>.png` (`/scene-pic/`) → Fluent 3D
+  emoji (`fluent3d.json`, MIT, fetched in a thread, re-encoded, atomic write) → icon → glyph; a shape noun → `look.form`
+  (shaded solid). `look.emoji / form / to_noun / to_icon / to_emoji`. Placeholder until a picture lands.
+- Imagine Mode: `imagine_mode{on}` (Deck `imagine`); a canvas slide at once; lines pass `pictures.picturable` (0 tok),
+  ≤ 3 per call; a canvas cue that does not refer to the open scene starts the next scene in the same mode; spoken end
+  cues, new topics and the quiet timeout do not end it; End (or Back to slides) → one recap.

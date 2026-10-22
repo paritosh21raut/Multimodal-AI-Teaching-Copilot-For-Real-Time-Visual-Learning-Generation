@@ -145,6 +145,16 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
         return FileResponse(media.root / name, media_type="image/jpeg",
                             headers={"Cache-Control": "public, max-age=86400"})
 
+    @app.get("/scene-pic/{name}")
+    async def scene_picture(name: str):
+        # F-016: a scene thing's cached picture (scene.pictures re-encoded it as PNG): by its slug, never a path
+        from copilot.scene.pictures import PICS_DIR, SLUG
+
+        stem = name[:-4] if name.endswith(".png") else ""
+        if not SLUG.fullmatch(stem) or not (PICS_DIR / name).is_file():
+            return Response(status_code=404)
+        return FileResponse(PICS_DIR / name, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
+
     @app.post("/api/upload")
     async def upload(request: Request):
         """The teacher's own image (drag & drop / Add image in /control). Stores a validated, re-encoded copy and

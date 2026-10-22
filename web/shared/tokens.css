@@ -209,3 +209,48 @@
   --sim-electron: #6aa8ff;
   --sim-nucleus: #ff7a6b;
 }
+
+/* F-016 canvas backdrops (illustrated by place type): soft, low-contrast so the pictures stand out; both themes */
+:root,
+[data-theme="light"] {
+  --cv-sky-top: #a9d2f5;
+  --cv-sky-bottom: #e8f3fd;
+  --cv-ground: #d9cdb8;
+  --cv-ground-line: #b7a789;
+  --cv-grass: #b9dba5;
+  --cv-far: #b6c3d4;
+  --cv-near: #9fb0c5;
+  --cv-water-top: #4f9be0;
+  --cv-water-bottom: #1d4f8f;
+  --cv-sand: #e9d6a6;
+  --cv-space-top: #0b1026;
+  --cv-space-bottom: #1d2550;
+  --cv-wall: #efe7da;
+  --cv-floor: #c8a77c;
+  --cv-road: #8d939c;
+  --cv-snow: #f4f8fc;
+  --cv-plain: #f3f5f8;
+  --cv-shadow: rgba(20, 25, 35, 0.22);
+  --cv-dim: rgba(255, 255, 255, 0.55);
+}
+[data-theme="dark"] {
+  --cv-sky-top: #12263f;
+  --cv-sky-bottom: #24405f;
+  --cv-ground: #3a3326;
+  --cv-ground-line: #5b5040;
+  --cv-grass: #2c4a2a;
+  --cv-far: #2b3a50;
+  --cv-near: #34465f;
+  --cv-water-top: #13406e;
+  --cv-water-bottom: #071c36;
+  --cv-sand: #5a4d31;
+  --cv-space-top: #03050f;
+  --cv-space-bottom: #0e1430;
+  --cv-wall: #2a2e36;
+  --cv-floor: #4a3a28;
+  --cv-road: #3d424a;
+  --cv-snow: #5c6878;
+  --cv-plain: #161a22;
+  --cv-shadow: rgba(0, 0, 0, 0.45);
+  --cv-dim: rgba(10, 12, 18, 0.6);
+}

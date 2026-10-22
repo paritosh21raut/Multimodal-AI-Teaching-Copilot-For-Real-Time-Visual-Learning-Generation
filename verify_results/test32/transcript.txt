@@ -1,0 +1,53 @@
+[    0.9] Imagine you are reading a book under a tree.
+[   10.2] An apple fell from the tree on the ground.
+[   23.0] Back to the slides.
+[   27.7] Imagine you are at the top of a mountain.
+[   34.9] Imagine yourself at the top of the mountain.
+[   40.8] and you throw a bicycle on the ground.
+[   50.3] From the mountain.
+[   61.3] Come back to slides.
+[   75.8] Imagine a cuboid.
+[   83.3] Inside the keyboard is a spear.
+[   90.2] Inside the cuboid is a sphere.
+[   99.0] Back to the slide.
+[  104.4] Let's get back to the slide.
+[  110.3] Imagine a
+[  112.0] Cubeoid.
+[  118.5] Imagine a cuboid.
+[  123.3] Inside this cuboid, you have a spear.
+[  132.7] Let's get back to the slides.
+[  137.2] Imagine a cylinder.
+[  142.2] On the top of the cylinder you have a cone.
+[  147.6] The cone is at the top of the cylinder.
+[  155.9] Back to the slides.
+[  165.8] Imagine yourself standing at the top of a building.
+[  175.9] Imagine yourself at the top of a building.
+[  194.2] Back to the slides.
+[  200.5] Let's get back to the slides.
+[  209.1] Let's get back to the stats.
+[  216.4] Imagine you are riding a car in the space.
+[  229.2] You are riding a car in this space.
+[  238.4] Imagine you are riding a rocket in the space.
+[  256.0] Imagine a dog on Mars.
+[  264.8] Imagine a dog on the moon.
+[  273.1] Back to the slides.
+[  277.3] Let's go back to the slides.
+[  284.1] Imagine a dog on the moon.
+[  292.3] Imagine a cat on top of the dog.
+[  299.4] On the top of the cat, there's a rat.
+[  311.0] The dog is sitting on a man.
+[  321.9] Let's come back to the slides.
+[  329.2] Imagine a bird on a tree.
+[  337.9] With our kids.
+[  345.9] Imagine the bird with her feet.
+[  352.3] Kids!
+[  364.5] Imagine a boy playing basketball.
+[  387.9] Imagine you are in a rocket going to the sun.
+[  403.7] Imagine you are walking on the moon.
+[  408.6] Imagine you are walking on the moon.
+[  431.4] Imagine a dog running after a cat.
+[  446.7] Imagine a cat running after a rat.
+[  473.3] Imagine a ball rolling on a table.
+[  501.7] Imagine you are...
+[  504.5] Imagine you are standing with a tall stick in your hand.
+[  519.1] Imagine you are reading a book.

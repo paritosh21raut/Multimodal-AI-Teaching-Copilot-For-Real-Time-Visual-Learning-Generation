@@ -39,8 +39,21 @@ slide within the latency targets, are edited by the next lines, and can be focus
 Fixture `tests/fixtures/lectures/canvas_c1.txt` (goal sentences + edits + one Imagine Mode stretch + focus), about
 25k tokens. Report tokens after.
 
+## Split (user 2026-10-22)
+Part 1: contract, director, validator, canvas world, sizing, camera, safety, Imagine Mode, renderer, emoji + icons,
+illustrated backdrops, tests, contact sheets. **Part 2:** photo cutouts (V1 search + CLIP + u2netp matting, model in
+`models/u2netp/`), photo backdrops, the part magnifier, an `@command` directive in `sim/simulator.py` (Imagine Mode in
+a fixture), fixture `canvas_c1.txt`, the live run (~25k tokens), latency (sentence end → first shape).
+
 ## Stop point
 Stop when the goal sentences work live and the suites pass. Solvers (fields, waves, rigid) are C2.
 
 ## Result
-_(fill in ≤ 1 KB)_
+Part 1 (2026-10-22), replay-verified, not live yet: the 5 goal sentences + focus + Imagine Mode render through the real
+detector → controller → validator → canvas world → renderer (`tools/screenshot_canvas.py`, sheets
+`artifacts/canvas/sheet_{light,dark}.png`); real Fluent 3D pictures (fetched, cached), backdrops by place, the bus
+rider leans / slides on braking, throw = motion.py launch, focus zooms (camera follows a moving thing). Decisions
+(user: ok to all): part split; things/places → canvas world, motion.py for kinematics; Imagine Mode = one mode, many
+scene slides, one recap; blocklist keeps physics/biology words; emoji index from GitHub (MIT); drawn actions, collide
+stops at contact (C2 rigid). Spec change: "Imagine you are in a library" is now a canvas cue (L1 test updated).
+Reviewed: 10 findings fixed (brake readout needs a said deceleration, blocklist, whole-word names, Imagine slides). Suites: STATE.

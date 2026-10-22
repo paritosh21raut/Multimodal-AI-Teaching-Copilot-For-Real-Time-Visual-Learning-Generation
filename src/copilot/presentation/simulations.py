@@ -77,6 +77,7 @@ class SimMode:
     last: Optional[str] = None         # the slot changed or mentioned last (a bare number goes there)
     origin: str = "cue"
     kind: str = "simulation"           # F-015: "scene" (a live scene runs in the same mode: one at a time)
+    imagine: bool = False              # F-016 Imagine Mode: only the teacher's End (or Back to slides) ends it
 
 
 @dataclass
@@ -293,7 +294,9 @@ class SimulationController:
             return
         m = self.mode
         if m is not None and m.kind != "simulation":  # F-015: a scene is open; only the shared end cue is for it
-            if ev.strength == "end":
+            if ev.strength == "end" and m.imagine:
+                log.info("[SIM] Imagine Mode: the end cue %r is ignored (End ends it)", ev.text[:60])
+            elif ev.strength == "end":
                 await self.end(f"heard {ev.text[:60]!r}")
             return
         if m is not None and self._block(m.block_id)[1] is None:  # its slide went away (removed by the teacher)
@@ -500,7 +503,7 @@ class SimulationController:
     async def tick(self) -> None:
         """Ticker: a forgotten simulation ends after SAFETY_S; a Suggest chip expires."""
         now = self.e.now()
-        if self.mode is not None and now - self.mode.heard_at > SAFETY_S:
+        if self.mode is not None and not self.mode.imagine and now - self.mode.heard_at > SAFETY_S:
             await self.end(f"{int(SAFETY_S // 60)} min without a word about the simulation")
             await self.e.bus.publish(SimulationNotice(  # "" = whichever slide /control shows
                 slide_id="", text=f"Back to slides: nothing about the simulation for {int(SAFETY_S // 60)} min"))

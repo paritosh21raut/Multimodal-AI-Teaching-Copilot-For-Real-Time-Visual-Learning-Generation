@@ -135,3 +135,48 @@ async def test_a_river_crossing_draws_the_band_and_the_boat_crosses_it():
             y1 = await page.eval_on_selector(f"{STAGE} .sc-ent[data-id='b1'] .pic-back", "e => +e.getAttribute('cy')")
             assert y1 < y0 - 20  # it moves across (up the stage)
             assert not page.errors, page.errors
+
+
+# ---- F-016 C1 canvas ----------------------------------------------------------------------------------------------
+@pytest.mark.parametrize("theme", ["light", "dark"])
+async def test_a_canvas_draws_its_place_its_things_in_depth_order_and_focus_zooms(theme):
+    from tests.unit.test_canvas import ANSWERS as CANVAS
+
+    async with display_harness(theme) as h:
+        async with browser_page(f"{h.url}/display") as page:
+            eng, talk = await lecture(h)
+            eng._scenes.compiler = ReplayCompiler({**CANVAS, "Look at the cube.": '{"op":"focus","ids":["c1"]}'})
+            eng._scenes.fetch_pictures = False
+            await say(h, eng, talk, "Imagine a cube on a mountain.")
+            await say(h, eng, talk, "Now imagine it on the moon.")
+            await wait_for_slide(page, h.deck.live.id)
+            await page.wait_for_selector(f"{STAGE} .cv-backdrop")
+            assert await ids(page) == ["m1", "c1"]  # the cube on top is drawn after the mountain
+            pics = await page.eval_on_selector_all(f"{STAGE} .cv-thing", "es => es.map(e => e.dataset.pic)")
+            assert "form:cube" in pics
+            assert await page.eval_on_selector(STAGE, "e => e.getAttribute('viewBox')") == "0.0 0.0 1100.0 740.0"
+            await say(h, eng, talk, "Look at the cube.")
+            await page.wait_for_function(f"document.querySelector('{STAGE}').dataset.camera === 'focus'")
+            await page.wait_for_timeout(900)  # the camera eases in
+            vb = [float(v) for v in (await page.eval_on_selector(STAGE, "e => e.getAttribute('viewBox')")).split()]
+            assert vb[2] < 1100 and abs(vb[2] / vb[3] - 1100 / 740) < 0.01
+            dim = await page.eval_on_selector(f"{STAGE} .sc-ent[data-id='m1']", "e => e.classList.contains('cv-dimmed')")
+            assert dim
+            assert not page.errors, page.errors
+
+
+async def test_imagine_mode_starts_from_the_simulation_menu_and_end_stops_it():
+    async with display_harness() as h:
+        eng, _ = await lecture(h)
+        async with browser_page(f"{h.url}/control", 1536, 730) as c:
+            await c.wait_for_selector(".sim-picker > button")
+            await c.click(".sim-picker > button")
+            await c.click(".sim-picker .imagine-row")
+            await h.until(lambda: h.deck.imagine)
+            assert h.deck.sim_mode == h.deck.live.id
+            await c.wait_for_selector(".dock button.sim-end.imagine")
+            assert "compact" not in await c.get_attribute(".dock", "class")  # the dock keeps its names
+            await c.click(".dock button.sim-end.imagine")
+            await h.until(lambda: not h.deck.imagine)
+            assert h.deck.sim_mode is None
+            assert not c.errors, c.errors

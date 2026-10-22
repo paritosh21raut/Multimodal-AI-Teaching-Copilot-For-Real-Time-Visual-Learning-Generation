@@ -292,7 +292,7 @@ def test_the_context_is_compact_and_bounded():
     ("Let's plot y equals sin x.", "plot"),
     ("Imagine a ball moving at 3 metres per second.", "motion"),
     ("Think of a car on a straight road.", "motion"),
-    ("Imagine you are in a library.", None),
+    ("Imagine you are in a library.", "canvas"),  # F-016 (2026-10-22): a said place is drawn (was None in L1)
     ("Look at the slide again.", None),
     ("A square has four equal sides.", None),
 ])

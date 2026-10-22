@@ -23,6 +23,8 @@ import numpy as np
 
 from copilot.scene.spec import BODY_KINDS, Entity, SceneSpec
 
+PICTURED = BODY_KINDS + ("thing",)  # F-016: a thing's icon / glyph is its fallback picture (scene.pictures first)
+
 log = logging.getLogger(__name__)
 
 ICONS_JS = Path(__file__).resolve().parents[3] / "web" / "vendor" / "icons" / "scene-icons.js"
@@ -126,12 +128,19 @@ class Pictures:
         return list(dict.fromkeys(out))[:k]
 
     def resolve(self, scene: SceneSpec, glyph_dir: Optional[Path] = None) -> SceneSpec:
-        """Each body's picture for its noun (the teacher's pick is kept); a cached glyph when no icon matches."""
+        """Each body's / thing's picture for its noun (the teacher's pick is kept); a cached glyph when no icon
+        matches. A thing drawn as a solid (look.form) needs none; a thing that turns into another gets that one's icon."""
         ents: list[Entity] = []
         changed = False
         for e in scene.entities:
             lk = e.look
-            if e.kind not in BODY_KINDS or lk.pick == "teacher" or not lk.noun or lk.icon or lk.glyph:
+            if e.kind == "thing" and lk.to_noun and not lk.to_icon and not lk.to_emoji:
+                to = self.match(lk.to_noun)
+                if to:
+                    lk = lk.model_copy(update={"to_icon": to})
+                    e = e.model_copy(update={"look": lk})
+                    changed = True
+            if e.kind not in PICTURED or lk.pick == "teacher" or not lk.noun or lk.icon or lk.glyph or lk.form:
                 ents.append(e)
                 continue
             icon = self.match(lk.noun)
@@ -146,8 +155,8 @@ class Pictures:
 def needs_glyph(e: Entity) -> bool:
     """A body whose said noun has no icon and no glyph yet (and is not one its kind's drawing shows)."""
     lk = e.look
-    return (e.kind in BODY_KINDS and lk.pick == "auto" and bool(lk.noun) and not lk.icon and not lk.glyph
-            and head(lk.noun) not in OWN)
+    return (e.kind in PICTURED and lk.pick == "auto" and bool(lk.noun) and not lk.icon and not lk.glyph
+            and not lk.emoji and not lk.form and head(lk.noun) not in OWN)
 
 
 # ---- LLM glyphs --------------------------------------------------------------------------------------------------

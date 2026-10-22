@@ -342,6 +342,14 @@ class App:
                 if embedder is not None:  # the icons' vectors once, off the event loop (not on the first noun)
                     await asyncio.to_thread(self.presentation._scenes.pictures.warm)
                 self.presentation._scenes.glyph_dir = PROJECT_ROOT / "data" / "assets" / "glyphs"
+                # F-016: a thing's Fluent 3D picture, by word, else by meaning (1.6k names embedded in the background)
+                from copilot.scene.pictures import Emoji
+
+                self.presentation._scenes.emoji = Emoji(embedder)
+                self.presentation._scenes.pics_dir = PROJECT_ROOT / "data" / "assets" / "pictures"
+                if embedder is not None:
+                    self._emoji_warm = asyncio.create_task(asyncio.to_thread(self.presentation._scenes.emoji.warm),
+                                                           name="scene:emoji-warm")
                 print(f"[INIT]  scenes: {'on' if self._router is not None else 'off (no LLM configured)'}", flush=True)
             self._init_images()
 

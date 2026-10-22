@@ -394,6 +394,8 @@ class PresentationEngine:
                     await self._on_edit(event.command.kind, event.command.args)
                 elif event.command.kind == "show_equation":
                     await self._show_equation(str(event.command.args.get("id") or ""))
+                elif event.command.kind == "imagine_mode":  # F-016: /control Imagine / End
+                    await self._scenes.on_command("imagine_mode", event.command.args)
                 elif event.command.kind.startswith(("sim_", "scene_")) and event.command.kind != "sim_full":
                     kind, args = event.command.kind, event.command.args
                     if kind != "sim_end" and self._scenes.owns(kind, args):  # F-015: a scene's slide / chip
@@ -705,8 +707,9 @@ class PresentationEngine:
             if self._live_def is not None and self._live_def.utterance == ev.utterance:
                 self._live_def.segments.add(ev.segment_id)
         if self._sims.collecting:  # F-014 S1: no cue slides, teasers or figures while a simulation runs ...
-            if not (ev.announce and self.s.cues) or self._sims.about_open(ev.announce):
-                return
+            m = self._sims.mode
+            if not (ev.announce and self.s.cues) or self._sims.about_open(ev.announce) or m is not None and m.imagine:
+                return  # (F-016: Imagine Mode ends only by the teacher's End)
             await self._sims.end(f"a new topic was announced ({ev.announce!r})")  # ... unless a new topic is announced
         if self.s.cues:
             if ev.announce:

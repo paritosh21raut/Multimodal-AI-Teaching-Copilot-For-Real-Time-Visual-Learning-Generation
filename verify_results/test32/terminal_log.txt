@@ -1,0 +1,537 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (6.7 s)
+[INIT]  live speech model distil-small.en ready (1.7 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.4 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_2         openai/gpt-oss-120b            85k of 200k tokens IN USE
+        GROQ_API_KEY_3         openai/gpt-oss-120b           136k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b           188k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~16.4 h
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~16.4 h
+        GROQ_API_KEY_1         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~16.4 h
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              197k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 201 lecture minutes
+
+[READY] session 20261022-211422-502a
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+21:14:33 INFO    copilot.visuals.service: CLIP ready in 0.8 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    0.9s] Imagine you are reading a book under a tree. (717 ms)
+21:14:48 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are reading a book under a tree.'
+21:14:48 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Tree' [simulation] v2 (1 items)
+  [SLIDE] update 'Tree and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Tree, you and book' [simulation] v4 (1 items)
+  [SLIDE] update 'Tree, you and book' [simulation] v5 (1 items)
+  [SLIDE] update 'Tree, you and book' [simulation] v6 (1 items)
+21:14:49 INFO    copilot.presentation.scenes: [SCENE] call groq_main#2: 5 op(s) applied, 0 refused, 2726 tokens, first op 0.92 s, done 1.14 s
+21:14:50 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Literature, Imagery)
+  [UNDERSTAND] Literature > Imagery (new_topic) acts=explanation hint=example lines=1 via groq_main#2 1628 ms
+               Teacher invites students to picture reading a book under a tree.
+21:14:50 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   10.2s] An apple fell from the tree on the ground. (588 ms)
+21:14:57 INFO    copilot.scene.detector: [SCENE] edit 'An apple fell from the tree on the ground.'
+  [SLIDE] update 'Tree, you, book and apple' [simulation] v7 (1 items)
+21:14:58 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'relate', 'kind': 'from', 'a': 'a1', 'b': 't1'}: unknown relation 'from'
+  [SLIDE] update 'Tree, you, book and apple' [simulation] v8 (1 items)
+21:14:58 INFO    copilot.presentation.scenes: [SCENE] call groq_main#2: 2 op(s) applied, 1 refused, 2693 tokens, first op 1.05 s, done 1.16 s
+21:14:58 INFO    copilot.presentation.scenes: [SCENE] picture 'red apple': /scene-pic/red-apple.png
+  [SLIDE] update 'Tree, you, book and apple' [simulation] v9 (1 items)
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#3 1472 ms
+               Provides a concrete visual image of an apple falling from a tree.
+21:14:58 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   23.0s] Back to the slides. (489 ms)
+21:15:07 INFO    copilot.simulation.detector: [SIM] end - ('Back to the slides') {}
+21:15:07 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard 'Back to the slides.'): recap 1 slide(s) (2 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Tree, you, book and apple' [key_points] v1 (2 items)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=transition hint=none lines=1 via groq_main#2 1399 ms
+               Teacher returns to the slides
+21:15:11 INFO    copilot.presentation.engine: planner: noop Literature > Imagery (nothing to display)
+  [   27.7s] Imagine you are at the top of a mountain. (554 ms)
+21:15:14 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are at the top of a mountain.'
+21:15:14 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Mountain' [simulation] v2 (1 items)
+21:15:15 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 1 op(s) applied, 0 refused, 2594 tokens, first op 0.81 s, done 0.83 s
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#3 1686 ms
+               Teacher asks students to picture a mountain scene
+21:15:16 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   34.9s] Imagine yourself at the top of the mountain. (553 ms)
+21:15:20 INFO    copilot.scene.detector: [SCENE] cue 'Imagine yourself at the top of the mountain.'
+  [SLIDE] update 'Mountain and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Mountain and you' [simulation] v4 (1 items)
+21:15:21 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 2 op(s) applied, 0 refused, 2628 tokens, first op 0.88 s, done 0.89 s
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#2 3888 ms
+               Teacher asks students to picture a mountain scene
+21:15:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   40.8s] and you throw a bicycle on the ground. (539 ms)
+21:15:26 INFO    copilot.scene.detector: [SCENE] edit 'and you throw a bicycle on the ground.'
+  [SLIDE] update 'Mountain, you and bicycle' [simulation] v5 (1 items)
+  [SLIDE] update 'Mountain, you and bicycle' [simulation] v6 (1 items)
+21:15:27 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 2 op(s) applied, 0 refused, 2648 tokens, first op 0.83 s, done 0.84 s
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#4 1338 ms
+               Adds a new visual prompt of throwing a bicycle on the ground
+21:15:28 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   50.3s] From the mountain. (488 ms)
+21:15:35 INFO    copilot.scene.detector: [SCENE] edit 'From the mountain.'
+21:15:35 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 0 op(s) applied, 0 refused, 2593 tokens, first op -, done 0.75 s
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 4237 ms
+               Teacher adds that the perspective is from the mountain.
+21:15:41 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [   61.3s] Come back to slides. (576 ms)
+21:15:46 INFO    copilot.simulation.detector: [SIM] end - ('Come back to slides') {}
+21:15:46 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard 'Come back to slides.'): recap 1 slide(s) (2 kept, 2 dropped as parameter talk)
+  [SLIDE] add    'Recap: Mountain, you and bicycle' [key_points] v1 (2 items)
+  [SLIDE] update 'Recap: Mountain, you and bicycle' [key_points] v2 (3 items)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=transition hint=none lines=1 via groq_main#4 1284 ms
+               Teacher returns to the slides
+21:15:49 INFO    copilot.presentation.engine: planner: noop Literature > Imagery (nothing to display)
+  [SLIDE] update 'Recap: Mountain, you and bicycle' [key_points] v3 (2 items)
+  [   75.8s] Imagine a cuboid. (532 ms)
+21:16:00 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a cuboid.'
+21:16:00 INFO    copilot.presentation.simulations: [SIM] scene mode on: Cuboid on its own slide (cue)
+  [SLIDE] add    'Cuboid' [simulation] v1 (1 items)
+  [SLIDE] update 'Cuboid' [simulation] v2 (1 items)
+21:16:03 INFO    copilot.presentation.scenes: [SCENE] call groq_main#2: 1 op(s) applied, 0 refused, 2583 tokens, first op 2.61 s, done 2.61 s
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#3 1145 ms
+               Teacher asks students to imagine a cuboid as an imagery prompt
+21:16:03 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   83.3s] Inside the keyboard is a spear. (525 ms)
+21:16:08 INFO    copilot.scene.detector: [SCENE] edit 'Inside the keyboard is a spear.'
+  [SLIDE] update 'Cuboid and keyboard' [simulation] v3 (1 items)
+  [SLIDE] update 'Cuboid, keyboard and spear' [simulation] v4 (1 items)
+  [SLIDE] update 'Cuboid, keyboard and spear' [simulation] v5 (1 items)
+21:16:09 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 3 op(s) applied, 0 refused, 2632 tokens, first op 1.06 s, done 1.14 s
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#3 1080 ms
+               Introduced a new imagery example: “Inside the keyboard is a spear.”
+21:16:10 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+21:16:10 INFO    copilot.presentation.scenes: [SCENE] picture 'keyboard': /scene-pic/keyboard.png
+  [SLIDE] update 'Cuboid, keyboard and spear' [simulation] v6 (1 items)
+21:16:10 INFO    copilot.scene.assets: [SCENE] glyph 'spear': 39 chars (359 tokens)
+  [SLIDE] update 'Cuboid, keyboard and spear' [simulation] v7 (1 items)
+  [   90.2s] Inside the cuboid is a sphere. (574 ms)
+21:16:16 INFO    copilot.scene.detector: [SCENE] edit 'Inside the cuboid is a sphere.'
+  [SLIDE] update 'Cuboid, keyboard, spear and sphere' [simulation] v8 (1 items)
+21:16:17 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'relate', 'kind': 'inside', 'a': 's2', 'b': 'c1'}: inside: not for a solid (only beside another shape)
+21:16:17 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 1 op(s) applied, 1 refused, 2643 tokens, first op 1.11 s, done 1.12 s
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#2 3830 ms
+               Introduced a new imagery prompt: inside the cuboid is a sphere.
+21:16:20 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   99.0s] Back to the slide. (489 ms)
+21:16:23 INFO    copilot.scene.detector: [SCENE] edit 'Back to the slide.'
+21:16:23 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'Back to the slide.'
+  [  104.4s] Let's get back to the slide. (551 ms)
+21:16:29 INFO    copilot.simulation.detector: [SIM] end - ('get back to the slide') {}
+21:16:29 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's get back to the slide."): recap 1 slide(s) (3 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Cuboid, keyboard, spear and sphere' [key_points] v1 (3 items)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=- hint=none lines=2 via groq_main#3 1311 ms
+               No new content added; teacher returned to the slide.
+21:16:31 INFO    copilot.presentation.engine: planner: noop Literature > Imagery (nothing to display)
+  [  110.3s] Imagine a (406 ms)
+  [SLIDE] update 'Recap: Cuboid, keyboard, spear and sphere' [key_points] v2 (4 items)
+  [  112.0s] Cubeoid. (450 ms)
+  [SLIDE] update 'Recap: Cuboid, keyboard, spear and sphere' [key_points] v3 (4 items)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=- hint=key_points lines=2 via groq_main#2 1200 ms
+               Teacher prompts students to imagine a cuboid as an imagery example.
+21:16:39 INFO    copilot.presentation.engine: revised S1: Imagine a cuboid
+21:16:39 INFO    copilot.presentation.engine: planner: noop Literature > Imagery (nothing to display)
+  [SLIDE] update 'Recap: Cuboid, keyboard, spear and sphere' [key_points] v4 (3 items)
+  [SLIDE] update 'Recap: Cuboid, keyboard, spear and sphere' [key_points] v5 (3 items)
+  [  118.5s] Imagine a cuboid. (494 ms)
+21:16:43 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a cuboid.'
+21:16:43 INFO    copilot.presentation.simulations: [SIM] scene mode on: Cuboid on its own slide (cue)
+  [SLIDE] add    'Cuboid' [simulation] v1 (1 items)
+  [SLIDE] update 'Cuboid' [simulation] v2 (1 items)
+21:16:44 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 1 op(s) applied, 0 refused, 2583 tokens, first op 0.67 s, done 0.69 s
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1724 ms
+               Teacher asks students to imagine a cuboid as an imagery prompt.
+21:16:47 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  123.3s] Inside this cuboid, you have a spear. (591 ms)
+21:16:49 INFO    copilot.scene.detector: [SCENE] edit 'Inside this cuboid, you have a spear.'
+  [SLIDE] update 'Cuboid and spear' [simulation] v3 (1 items)
+21:16:50 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'relate', 'kind': 'inside', 'a': 's1', 'b': 'c1'}: inside: not for a thing and a cuboid (things, bodies and the place)
+21:16:50 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 1 op(s) applied, 1 refused, 2617 tokens, first op 0.70 s, done 0.78 s
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#2 4530 ms
+               Teacher gives another cuboid imagery example with a spear inside.
+21:16:54 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  132.7s] Let's get back to the slides. (532 ms)
+21:16:57 INFO    copilot.simulation.detector: [SIM] end - ('get back to the slides') {}
+21:16:57 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's get back to the slides."): recap 1 slide(s) (1 kept, 1 dropped as parameter talk)
+  [SLIDE] add    'Recap: Cuboid and spear' [key_points] v1 (1 items)
+  [SLIDE] update 'Recap: Cuboid and spear' [key_points] v2 (2 items)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=transition hint=none lines=1 via groq_alt#2 772 ms
+               Teacher directs attention back to the presentation slides.
+21:16:58 INFO    copilot.presentation.engine: planner: noop Literature > Imagery (nothing to display)
+  [SLIDE] update 'Recap: Cuboid and spear' [key_points] v3 (1 items)
+  [  137.2s] Imagine a cylinder. (442 ms)
+21:17:02 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a cylinder.'
+21:17:02 INFO    copilot.presentation.simulations: [SIM] scene mode on: Cylinder on its own slide (cue)
+  [SLIDE] add    'Cylinder' [simulation] v1 (1 items)
+  [SLIDE] update 'Cylinder' [simulation] v2 (1 items)
+21:17:02 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 1 op(s) applied, 0 refused, 2582 tokens, first op 0.64 s, done 0.67 s
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#4 1290 ms
+               Introduced a new imagery prompt: imagine a cylinder.
+21:17:05 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  142.2s] On the top of the cylinder you have a cone. (571 ms)
+21:17:08 INFO    copilot.scene.detector: [SCENE] edit 'On the top of the cylinder you have a cone.'
+  [SLIDE] update 'Cylinder and cone' [simulation] v3 (1 items)
+21:17:08 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'relate', 'kind': 'on_top_of', 'a': 'n1', 'b': 'c1'}: on_top_of: not for a cone and a cylinder (things, bodies and the place)
+21:17:08 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 1 op(s) applied, 1 refused, 2619 tokens, first op 0.48 s, done 0.55 s
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#2 1923 ms
+               Added a cylinder imagery prompt with a cone on top
+21:17:10 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  147.6s] The cone is at the top of the cylinder. (643 ms)
+21:17:13 INFO    copilot.scene.detector: [SCENE] edit 'The cone is at the top of the cylinder.'
+21:17:14 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'relate', 'kind': 'on_top_of', 'a': 'n1', 'b': 'c1'}: on_top_of: not for a cone and a cylinder (things, bodies and the place)
+21:17:14 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 0 op(s) applied, 1 refused, 2605 tokens, first op 0.70 s, done 0.70 s
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_alt#2 4441 ms
+               Teacher describes the spatial relationship between the cone and cylinder in the imagery prompt.
+21:17:18 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [  155.9s] Back to the slides. (500 ms)
+21:17:20 INFO    copilot.simulation.detector: [SIM] end - ('Back to the slides') {}
+21:17:20 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard 'Back to the slides.'): recap 1 slide(s) (1 kept, 2 dropped as parameter talk)
+  [SLIDE] add    'Recap: Cylinder and cone' [key_points] v1 (1 items)
+  [SLIDE] update 'Recap: Cylinder and cone' [key_points] v2 (2 items)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=transition hint=none lines=1 via groq_main#2 4262 ms
+               Teacher returns to the slide presentation
+21:17:27 INFO    copilot.presentation.engine: planner: noop Literature > Imagery (nothing to display)
+  [SLIDE] update 'Recap: Cylinder and cone' [key_points] v3 (1 items)
+  [  165.8s] Imagine yourself standing at the top of a building. (570 ms)
+21:17:33 INFO    copilot.scene.detector: [SCENE] cue 'Imagine yourself standing at the top of a building.'
+21:17:33 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+21:17:33 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Building' [simulation] v2 (1 items)
+  [SLIDE] update 'Building and yourself' [simulation] v3 (1 items)
+  [SLIDE] update 'Building and yourself' [simulation] v4 (1 items)
+21:17:34 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 3 op(s) applied, 0 refused, 2657 tokens, first op 0.83 s, done 0.94 s
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#4 1312 ms
+               Teacher adds a new imagery prompt: standing atop a building.
+21:17:34 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+21:17:34 INFO    copilot.presentation.scenes: [SCENE] picture 'office building': /scene-pic/office-building.png
+  [SLIDE] update 'Building and yourself' [simulation] v5 (1 items)
+21:17:34 INFO    copilot.scene.assets: [SCENE] glyph 'yourself': 27 chars (354 tokens)
+  [SLIDE] update 'Building and yourself' [simulation] v6 (1 items)
+  [  175.9s] Imagine yourself at the top of a building. (589 ms)
+21:17:42 INFO    copilot.scene.detector: [SCENE] cue 'Imagine yourself at the top of a building.'
+21:17:42 INFO    copilot.simulation.detector: [SIM] values - {}
+21:17:43 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 0 op(s) applied, 0 refused, 2650 tokens, first op -, done 1.05 s
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#2 3982 ms
+               Introduced a new imagery prompt of standing atop a building.
+21:17:46 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  194.2s] Back to the slides. (629 ms)
+21:17:59 INFO    copilot.simulation.detector: [SIM] end - ('Back to the slides') {}
+21:17:59 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard 'Back to the slides.'): recap none (0 kept, 2 dropped as parameter talk)
+  [  200.5s] Let's get back to the slides. (563 ms)
+21:18:05 INFO    copilot.simulation.detector: [SIM] end - ('get back to the slides') {}
+21:18:05 INFO    copilot.presentation.simulations: [SIM] end -: ignore (back to the slides, but no simulation is running)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=- hint=none lines=2 via groq_main#2 1606 ms
+               Teacher returns to the slide presentation
+21:18:07 INFO    copilot.presentation.engine: planner: noop Literature > Imagery (nothing to display)
+  [  209.1s] Let's get back to the stats. (648 ms)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=transition hint=none lines=1 via groq_main#2 5148 ms
+               Teacher signals returning to the statistics slide
+21:18:20 INFO    copilot.presentation.engine: planner: noop Literature > Imagery (nothing to display)
+  [  216.4s] Imagine you are riding a car in the space. (568 ms)
+21:18:23 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are riding a car in the space.'
+21:18:23 INFO    copilot.presentation.simulations: [SIM] scene mode on: Car on its own slide (cue)
+  [SLIDE] add    'Car' [simulation] v1 (1 items)
+  [SLIDE] update 'Space' [simulation] v2 (1 items)
+  [SLIDE] update 'Space and car' [simulation] v3 (1 items)
+  [SLIDE] update 'Space and car' [simulation] v4 (1 items)
+21:18:24 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 3 op(s) applied, 0 refused, 2738 tokens, first op 0.95 s, done 1.01 s
+21:18:25 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Imagery' -> same_concept
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=concept lines=1 via groq_main#3 1726 ms
+               Added a new imagery prompt: riding a car in space
+21:18:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  229.2s] You are riding a car in this space. (592 ms)
+21:18:35 INFO    copilot.scene.detector: [SCENE] edit 'You are riding a car in this space.'
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#2 1006 ms
+               Added a new imagery prompt of riding a car in space
+21:18:36 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [SLIDE] update 'Space, car and you' [simulation] v5 (1 items)
+  [SLIDE] update 'Space, car and you' [simulation] v6 (1 items)
+21:18:36 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 2 op(s) applied, 0 refused, 2662 tokens, first op 1.66 s, done 1.70 s
+  [  238.4s] Imagine you are riding a rocket in the space. (648 ms)
+21:18:45 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are riding a rocket in the space.'
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1112 ms
+               Added a new imagery prompt of riding a rocket in space
+21:18:46 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [SLIDE] update 'Space, car, you and rocket' [simulation] v7 (1 items)
+  [SLIDE] update 'Space, car, you and rocket' [simulation] v8 (1 items)
+21:18:48 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 2 op(s) applied, 0 refused, 2690 tokens, first op 2.25 s, done 2.30 s
+21:18:48 INFO    copilot.presentation.scenes: [SCENE] picture 'rocket': /scene-pic/rocket.png
+  [SLIDE] update 'Space, car, you and rocket' [simulation] v9 (1 items)
+  [  256.0s] Imagine a dog on Mars. (540 ms)
+21:19:02 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a dog on Mars.'
+21:19:02 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap 1 slide(s) (2 kept, 1 dropped as parameter talk)
+21:19:02 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Recap: Space, car, you and rocket' [key_points] v1 (2 items)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Mars' [simulation] v2 (1 items)
+  [SLIDE] update 'Mars and dog' [simulation] v3 (1 items)
+  [SLIDE] update 'Mars and dog' [simulation] v4 (1 items)
+21:19:03 INFO    copilot.presentation.scenes: [SCENE] call groq_main#2: 3 op(s) applied, 0 refused, 2650 tokens, first op 1.14 s, done 1.41 s
+21:19:06 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Imagery' -> same_concept
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#3 2103 ms
+               Introduced the imagery prompt “Imagine a dog on Mars.”
+21:19:06 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  264.8s] Imagine a dog on the moon. (540 ms)
+21:19:10 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a dog on the moon.'
+  [SLIDE] update 'Dog and moon' [simulation] v5 (1 items)
+  [SLIDE] update 'Dog and moon' [simulation] v6 (1 items)
+  [SLIDE] update 'Dog and moon' [simulation] v7 (1 items)
+21:19:11 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 3 op(s) applied, 0 refused, 2656 tokens, first op 0.97 s, done 1.05 s
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#2 2207 ms
+               Introduced a new imagery prompt: imagine a dog on the moon.
+21:19:12 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  273.1s] Back to the slides. (495 ms)
+21:19:18 INFO    copilot.simulation.detector: [SIM] end - ('Back to the slides') {}
+21:19:18 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard 'Back to the slides.'): recap none (0 kept, 2 dropped as parameter talk)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=transition hint=none lines=1 via groq_main#3 1577 ms
+               Teacher returned to the slide presentation without adding new content
+21:19:21 INFO    copilot.presentation.engine: planner: noop Literature > Imagery (nothing to display)
+  [  277.3s] Let's go back to the slides. (580 ms)
+21:19:22 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+21:19:22 INFO    copilot.presentation.simulations: [SIM] end -: ignore (back to the slides, but no simulation is running)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=transition hint=none lines=1 via groq_main#2 5006 ms
+               Teacher signals returning to the slides
+21:19:29 INFO    copilot.presentation.engine: planner: noop Literature > Imagery (nothing to display)
+  [  284.1s] Imagine a dog on the moon. (524 ms)
+21:19:29 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a dog on the moon.'
+21:19:29 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Moon' [simulation] v2 (1 items)
+  [SLIDE] update 'Moon and dog' [simulation] v3 (1 items)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1053 ms
+               Added a new imagery prompt: imagine a dog on the moon
+21:19:30 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [SLIDE] update 'Moon and dog' [simulation] v4 (1 items)
+21:19:30 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 3 op(s) applied, 0 refused, 2639 tokens, first op 1.09 s, done 1.19 s
+  [  292.3s] Imagine a cat on top of the dog. (594 ms)
+21:19:38 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a cat on top of the dog.'
+  [SLIDE] update 'Moon, dog and cat' [simulation] v5 (1 items)
+  [SLIDE] update 'Moon, dog and cat' [simulation] v6 (1 items)
+21:19:39 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 2 op(s) applied, 0 refused, 2634 tokens, first op 0.72 s, done 0.78 s
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1567 ms
+               Introduced a new imagery prompt: imagine a cat on top of the dog.
+21:19:39 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  299.4s] On the top of the cat, there's a rat. (729 ms)
+21:19:45 INFO    copilot.scene.detector: [SCENE] edit "On the top of the cat, there's a rat."
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#2 1222 ms
+               Added a new imagery prompt featuring a rat on top of a cat.
+21:19:46 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [SLIDE] update 'Moon, dog, cat and rat' [simulation] v7 (1 items)
+  [SLIDE] update 'Moon, dog, cat and rat' [simulation] v8 (1 items)
+21:19:47 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 2 op(s) applied, 0 refused, 2650 tokens, first op 1.72 s, done 1.75 s
+21:19:48 INFO    copilot.presentation.scenes: [SCENE] picture 'rat': /scene-pic/rat.png
+  [SLIDE] update 'Moon, dog, cat and rat' [simulation] v9 (1 items)
+  [  311.0s] The dog is sitting on a man. (563 ms)
+21:19:57 INFO    copilot.scene.detector: [SCENE] edit 'The dog is sitting on a man.'
+  [SLIDE] update 'Moon, dog, cat, rat and man' [simulation] v10 (1 items)
+  [SLIDE] update 'Moon, dog, cat, rat and man' [simulation] v11 (1 items)
+21:19:58 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 2 op(s) applied, 0 refused, 2689 tokens, first op 1.01 s, done 1.05 s
+21:19:58 INFO    copilot.presentation.scenes: [SCENE] picture 'man': /scene-pic/man.png
+  [SLIDE] update 'Moon, dog, cat, rat and man' [simulation] v12 (1 items)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#2 6122 ms
+               Added another imagery prompt: the dog is sitting on a man.
+21:20:03 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [  321.9s] Let's come back to the slides. (563 ms)
+21:20:07 INFO    copilot.simulation.detector: [SIM] end - ('come back to the slides') {}
+21:20:07 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's come back to the slides."): recap 1 slide(s) (2 kept, 2 dropped as parameter talk)
+  [SLIDE] add    'Recap: Moon, dog, cat, rat and man' [key_points] v1 (2 items)
+  [SLIDE] update 'Recap: Moon, dog, cat, rat and man' [key_points] v2 (3 items)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=transition hint=none lines=1 via groq_main#4 840 ms
+               Teacher signals returning to the slides
+21:20:08 INFO    copilot.presentation.engine: planner: noop Literature > Imagery (nothing to display)
+  [SLIDE] update 'Recap: Moon, dog, cat, rat and man' [key_points] v3 (2 items)
+  [  329.2s] Imagine a bird on a tree. (530 ms)
+21:20:15 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a bird on a tree.'
+21:20:15 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Tree' [simulation] v2 (1 items)
+  [SLIDE] update 'Tree and bird' [simulation] v3 (1 items)
+  [SLIDE] update 'Tree and bird' [simulation] v4 (1 items)
+21:20:16 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 3 op(s) applied, 0 refused, 2619 tokens, first op 0.86 s, done 0.94 s
+21:20:16 INFO    copilot.presentation.scenes: [SCENE] picture 'bird': /scene-pic/bird.png
+  [SLIDE] update 'Tree and bird' [simulation] v5 (1 items)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#2 4371 ms
+               Teacher added a new imagery prompt: imagine a bird on a tree.
+21:20:19 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  337.9s] With our kids. (568 ms)
+21:20:22 INFO    copilot.scene.detector: [SCENE] edit 'With our kids.'
+21:20:22 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'With our kids.'
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=- hint=none lines=1 via groq_main#4 1254 ms
+               Teacher addressed the class
+21:20:26 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (1 so far)
+  [  345.9s] Imagine the bird with her feet. (673 ms)
+21:20:31 INFO    copilot.scene.detector: [SCENE] cue 'Imagine the bird with her feet.'
+  [SLIDE] update 'Tree, bird and feet' [simulation] v6 (1 items)
+  [SLIDE] update 'Tree, bird and feet' [simulation] v7 (1 items)
+21:20:33 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 2 op(s) applied, 0 refused, 2622 tokens, first op 1.20 s, done 1.27 s
+21:20:33 INFO    copilot.presentation.scenes: [SCENE] picture 'foot': /scene-pic/foot.png
+  [SLIDE] update 'Tree, bird and feet' [simulation] v8 (1 items)
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#2 4187 ms
+               Added a new imagery prompt about a bird's feet
+21:20:36 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  352.3s] Kids! (481 ms)
+21:20:36 INFO    copilot.scene.detector: [SCENE] edit 'Kids!'
+21:20:36 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'Kids!'
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=- hint=none lines=1 via groq_main#4 1098 ms
+               Teacher called attention to the class
+21:20:39 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (2 so far)
+  [  364.5s] Imagine a boy playing basketball. (568 ms)
+21:20:50 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a boy playing basketball.'
+21:20:50 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap none (0 kept, 2 dropped as parameter talk)
+21:20:50 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Boy' [simulation] v2 (1 items)
+  [SLIDE] update 'Boy and basketball' [simulation] v3 (1 items)
+21:20:51 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 2 op(s) applied, 0 refused, 2640 tokens, first op 0.77 s, done 0.83 s
+21:20:51 INFO    copilot.presentation.scenes: [SCENE] picture 'boy': /scene-pic/boy.png
+  [SLIDE] update 'Boy and basketball' [simulation] v4 (1 items)
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#2 1110 ms
+               Added a new basketball imagery prompt
+21:20:57 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  387.9s] Imagine you are in a rocket going to the sun. (631 ms)
+21:21:15 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are in a rocket going to the sun.'
+21:21:15 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap none (0 kept, 1 dropped as parameter talk)
+21:21:15 INFO    copilot.presentation.simulations: [SIM] scene mode on: Rocket on its own slide (cue)
+  [SLIDE] add    'Rocket' [simulation] v1 (1 items)
+21:21:15 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Rocket' [simulation] v2 (1 items)
+21:21:16 INFO    copilot.presentation.scenes: [SCENE] call groq_main#2: 1 op(s) applied, 0 refused, 2596 tokens, first op 0.92 s, done 0.92 s
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#3 1278 ms
+               Added a new imagery prompt about traveling in a rocket toward the sun
+21:21:16 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  403.7s] Imagine you are walking on the moon. (661 ms)
+21:21:29 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are walking on the moon.'
+21:21:29 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap none (0 kept, 1 dropped as parameter talk)
+21:21:29 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Moon' [simulation] v2 (1 items)
+  [SLIDE] update 'Moon and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Moon and you' [simulation] v4 (1 items)
+21:21:30 INFO    copilot.presentation.scenes: [SCENE] call groq_main#2: 3 op(s) applied, 0 refused, 2708 tokens, first op 1.14 s, done 1.25 s
+21:21:31 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Imagery' -> same_concept
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#3 1455 ms
+               Introduced a moon‑walking imagery prompt
+21:21:31 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  408.6s] Imagine you are walking on the moon. (587 ms)
+21:21:43 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are walking on the moon.'
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1398 ms
+               Added a moon‑walking imagery prompt
+21:21:44 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [SLIDE] update 'Moon and you' [simulation] v5 (1 items)
+21:21:44 INFO    copilot.presentation.scenes: [SCENE] call groq_main#3: 1 op(s) applied, 0 refused, 2650 tokens, first op 1.45 s, done 1.47 s
+  [  431.4s] Imagine a dog running after a cat. (572 ms)
+21:21:58 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a dog running after a cat.'
+21:21:58 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap none (0 kept, 2 dropped as parameter talk)
+21:21:58 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Dog' [simulation] v2 (1 items)
+  [SLIDE] update 'Dog and cat' [simulation] v3 (1 items)
+  [SLIDE] update 'Dog and cat' [simulation] v4 (1 items)
+21:21:59 INFO    copilot.presentation.scenes: [SCENE] call groq_main#2: 3 op(s) applied, 0 refused, 2653 tokens, first op 0.91 s, done 1.06 s
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=1 via groq_main#3 1710 ms
+               Added a new imagery prompt about a dog running after a cat
+21:22:00 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  446.7s] Imagine a cat running after a rat. (571 ms)
+21:22:12 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a cat running after a rat.'
+  [SLIDE] update 'Dog, cat and rat' [simulation] v5 (1 items)
+  [SLIDE] update 'Dog, cat and rat' [simulation] v6 (1 items)
+21:22:14 INFO    copilot.presentation.scenes: [SCENE] call groq_main#2: 2 op(s) applied, 0 refused, 2717 tokens, first op 1.12 s, done 1.22 s
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#3 1334 ms
+               Added a new cat‑chasing‑rat imagery prompt
+21:22:14 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  473.3s] Imagine a ball rolling on a table. (588 ms)
+21:22:39 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a ball rolling on a table.'
+21:22:39 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap 1 slide(s) (1 kept, 1 dropped as parameter talk)
+21:22:39 INFO    copilot.presentation.simulations: [SIM] scene mode on: Ball on its own slide (cue)
+  [SLIDE] add    'Recap: Dog, cat and rat' [key_points] v1 (1 items)
+  [SLIDE] add    'Ball' [simulation] v1 (1 items)
+21:22:39 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Table' [simulation] v2 (1 items)
+  [SLIDE] update 'Table and ball' [simulation] v3 (1 items)
+  [SLIDE] update 'Table and ball' [simulation] v4 (1 items)
+21:22:40 INFO    copilot.presentation.scenes: [SCENE] call groq_main#2: 3 op(s) applied, 0 refused, 2683 tokens, first op 1.06 s, done 1.16 s
+21:22:40 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Imagery' -> same_concept
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#3 1222 ms
+               Introduced a new imagery prompt of a ball rolling on a table
+21:22:40 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+21:22:41 INFO    copilot.scene.assets: [SCENE] glyph 'table': 65 chars (289 tokens)
+  [SLIDE] update 'Table and ball' [simulation] v5 (1 items)
+  [  501.7s] Imagine you are... (514 ms)
+21:23:07 INFO    copilot.scene.detector: [SCENE] edit 'Imagine you are...'
+21:23:07 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'Imagine you are...'
+  [  504.5s] Imagine you are standing with a tall stick in your hand. (609 ms)
+21:23:11 INFO    copilot.scene.detector: [SCENE] edit 'Imagine you are standing with a tall stick in your hand.'
+21:23:11 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'Imagine you are standing with a tall stick in your hand.'
+21:23:11 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Literature > Imagery (elaboration) acts=explanation hint=example lines=2 via groq_main#2 1409 ms
+               Introduced a new imagery prompt of standing with a tall stick.
+21:23:12 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  519.1s] Imagine you are reading a book. (528 ms)
+21:23:24 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are reading a book.'
+21:23:24 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap 1 slide(s) (1 kept, 1 dropped as parameter talk)
+21:23:24 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Recap: Table and ball' [key_points] v1 (1 items)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Book' [simulation] v2 (1 items)
+21:23:25 INFO    copilot.presentation.scenes: [SCENE] call groq_main#2: 1 op(s) applied, 0 refused, 2648 tokens, first op 0.88 s, done 0.89 s
+  [UNDERSTAND] Literature > Imagery (same_concept) acts=explanation hint=example lines=1 via groq_main#2 5354 ms
+               Teacher prompted students to imagine reading a book as an imagery exercise
+21:23:30 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+[END]   finishing lecture understanding (0 buffered lines) ...
+21:23:32 INFO    copilot.presentation.simulations: [SIM] simulation mode off (the lecture ended): recap none (0 kept, 1 dropped as parameter talk)
+[ENDED] session 20261022-211422-502a: 53 segments, 326 words, state v124, 871 events logged
+        CommandReceived=7, ConceptSignal=53, DeckState=60, InterpretRequested=49, InterpretationReady=49, LifecycleChanged=5, LiveCue=45, ModeChanged=1, RepresentationIntent=55, SimulationModeChanged=32, SimulationSettingChanged=1, SlideContextChanged=18, SlidePatch=116, StateChanged=124, TranscriptFinal=53, TranscriptPartial=149, UtteranceClassified=53, VocabularyChanged=1
+        stt: 53 published, 0 dropped, latency p50=568 ms p95=673 ms max=729 ms
+        understanding: 49 interpretations (49 by LLM, 0 fallbacks, 0 repaired), max 9 calls/min, prompt tokens max=1996 avg=1944, latency p50=1472 ms max=6122 ms
+        presentation: 25 slides; planner ops {'scene_start': 16, 'noop': 11}; revisions 1, corrections shown 0, shown as said 0
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/25
+          1. [simulation] Tree, you, book and apple  (v9, ['scene'])
+          2. [key_points] Recap: Tree, you, book and apple  (v1, ['points'])
+          3. [simulation] Mountain, you and bicycle  (v6, ['scene'])
+          4. [key_points] Recap: Mountain, you and bicycle  (v3, ['points'])
+          5. [simulation] Cuboid, keyboard, spear and sphere  (v8, ['scene'])
+          6. [key_points] Recap: Cuboid, keyboard, spear and sphere  (v5, ['points'])
+          7. [simulation] Cuboid and spear  (v3, ['scene'])
+          8. [key_points] Recap: Cuboid and spear  (v3, ['points'])
+          9. [simulation] Cylinder and cone  (v3, ['scene'])
+          10. [key_points] Recap: Cylinder and cone  (v3, ['points'])
+          11. [simulation] Building and yourself  (v6, ['scene'])
+          12. [simulation] Space, car, you and rocket  (v9, ['scene'])
+          13. [key_points] Recap: Space, car, you and rocket  (v1, ['points'])
+          14. [simulation] Dog and moon  (v7, ['scene'])
+          15. [simulation] Moon, dog, cat, rat and man  (v12, ['scene'])
+          16. [key_points] Recap: Moon, dog, cat, rat and man  (v3, ['points'])
+          17. [simulation] Tree, bird and feet  (v8, ['scene'])
+          18. [simulation] Boy and basketball  (v4, ['scene'])
+          19. [simulation] Rocket  (v2, ['scene'])
+          20. [simulation] Moon and you  (v5, ['scene'])
+          21. [simulation] Dog, cat and rat  (v6, ['scene'])
+          22. [key_points] Recap: Dog, cat and rat  (v1, ['points'])
+          23. [simulation] Table and ball  (v5, ['scene'])
+          24. [key_points] Recap: Table and ball  (v1, ['points'])
+          25. [simulation] Book  (v2, ['scene'])
+        providers: {'groq_main#2': 22, 'groq_main#3': 13, 'groq_main#4': 12, 'groq_alt#2': 2}; triggers: {'pause': 49}; outline: ['Literature > Imagery']; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261022-211422-502a\session.sqlite
