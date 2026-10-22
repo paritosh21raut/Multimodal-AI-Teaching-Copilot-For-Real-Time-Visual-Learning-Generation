@@ -6,7 +6,11 @@ the only writer of the deck.
     RepresentationIntent(scene) edit -> lines collected until a pause (EDIT_PAUSE_S) or the end of a sentence, then
                                         one call; lines said during a call wait for the next one
     teacher commands                 -> sim_play / sim_pause / sim_step / sim_reset / sim_set speed / sim_remove on a
-                                        scene's slide; sim_end (Back to slides) ends whichever mode is open
+                                        scene's slide; sim_end (Back to slides) ends whichever mode is open;
+                                        scene_look {id, icon | image | own} (Picture), scene_frame {id} (Seen from)
+
+A body's picture (scene.assets): an icon for its noun at once; no icon: one glyph call in the background (cached by
+noun, at most MAX_GLYPHS per scene), the scene is patched when it arrives.
 
 The scene's slide appears at once (titled by the cue's noun); the compiler's ops stream in and each valid one is
 applied, solved (scene.layout) and committed, so the shapes morph in while the model is still writing. The LLM call
@@ -19,15 +23,16 @@ import logging
 import re
 import uuid
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional
 
 from copilot.core.events import RepresentationIntent, SimulationNotice, SimulationSuggestion
 from copilot.presentation.spec import SceneBlock, SlideSpec
-from copilot.scene import layout
+from copilot.scene import assets, layout
 from copilot.scene.compiler import SceneCompiler
 from copilot.scene.detector import _ANY_NOUN, wants_edit
 from copilot.scene.ops import apply
-from copilot.scene.spec import SceneOp, SceneSpec
+from copilot.scene.spec import BODY_KINDS, SceneOp, SceneSpec
 from copilot.scene.validate import Corpus, check
 
 if TYPE_CHECKING:
@@ -38,6 +43,7 @@ log = logging.getLogger(__name__)
 EDIT_PAUSE_S = 1.2     # lecture seconds without a line before collected edit lines are sent
 MAX_CORPUS = 30        # lines kept per scene for the said-number and label checks
 SUGGEST_S = 30.0
+MAX_GLYPHS = 2         # LLM glyph calls per scene (a noun with no icon); a cached glyph costs nothing
 
 
 @dataclass
@@ -49,6 +55,8 @@ class _Open:
     pending: list[str] = field(default_factory=list)
     last_at: float = 0.0
     task: Optional[asyncio.Task] = None
+    glyphs: set[str] = field(default_factory=set)  # nouns whose glyph was asked for
+    glyph_tasks: list[asyncio.Task] = field(default_factory=list)
 
 
 @dataclass
@@ -81,6 +89,8 @@ class SceneController:
     clocks: dict[str, _Clock] = field(default_factory=dict)
     suggestion: Optional[_Suggestion] = None
     stats: SceneStats = field(default_factory=SceneStats)
+    pictures: assets.Pictures = field(default_factory=assets.Pictures)  # the app gives it the embedder
+    glyph_dir: Optional[Path] = None             # None: assets.GLYPH_DIR
     _warned: bool = False
 
     # ---- lookup ---------------------------------------------------------------------------------------------
@@ -223,7 +233,9 @@ class SceneController:
                 for note in checked.notes:
                     log.info("[SCENE] scene.rejected %s %s: %s", op.op, op.id or op.target, note)
                 applied += 1
-                await self._replace(spec, blk, layout.solve(apply(blk.scene, checked)))
+                scene = self.pictures.resolve(apply(blk.scene, checked), self.glyph_dir)
+                await self._replace(spec, blk, layout.solve(scene))
+                self._glyphs(o, scene)
 
         try:
             topic = e._sims.mode.frame.topic if e._sims.mode is not None else ""
@@ -260,11 +272,47 @@ class SceneController:
         log.info("[SCENE] call %s: %d op(s) applied, %d refused, %d tokens, first op %s, done %.2f s",
                  res.entry, applied, rejected + len(res.bad), res.tokens, first, res.total_s)
 
+    def _glyphs(self, o: _Open, scene: SceneSpec) -> None:
+        """A body whose noun has no icon: its glyph is drawn by one call in the background (a few per scene)."""
+        if self.compiler is None or not hasattr(self.compiler, "router"):
+            return
+        for e in scene.entities:
+            noun = assets.head(e.look.noun)
+            if not assets.needs_glyph(e) or noun in o.glyphs or len(o.glyphs) >= MAX_GLYPHS:
+                continue
+            o.glyphs.add(noun)
+            o.glyph_tasks.append(asyncio.create_task(self._glyph(o, noun), name="scene:glyph"))
+
+    async def _glyph(self, o: _Open, noun: str) -> None:
+        router = getattr(self.compiler, "router", None)
+        try:
+            d = await assets.glyph(router, noun, self.glyph_dir)
+        except Exception as err:  # a failed call: the kind's own drawing stays
+            log.info("[SCENE] glyph %r failed: %s", noun, err)
+            return
+        if not d:
+            return
+        async with self.e._lock:
+            spec, b = self._block(o.slide_id)
+            if spec is None or b is None or self._live() is not o:
+                return
+            ents = [x.model_copy(update={"look": x.look.model_copy(update={"glyph": d})})
+                    if assets.needs_glyph(x) and assets.head(x.look.noun) == noun else x for x in b.scene.entities]
+            if ents != b.scene.entities:
+                await self._replace(spec, b, layout.solve(b.scene.model_copy(update={"entities": ents})))
+
     async def tick(self) -> None:
         if self.open is not None and self._live() is None:  # its mode ended (Back to slides, another one began)
             if self.open.task is not None and not self.open.task.done():
                 self.open.task.cancel()
                 log.info("[SCENE] the scene ended: its running call is cancelled")
+            for t in self.open.glyph_tasks:
+                t.cancel()
+            spec, b = self._block(self.open.slide_id)
+            if spec is not None and b is not None and not b.scene.entities:
+                # live run 2026-10-22: the cue's call failed, then "back to the slides": no empty stage is left
+                log.info("[SCENE] the scene ended before it drew anything: its slide goes")
+                await self.e._sims.take_off(spec)
             self.open = None
         o = self._live()
         if o is not None and o.pending and self.e.now() - o.last_at >= EDIT_PAUSE_S:
@@ -307,6 +355,16 @@ class SceneController:
         mine = m is not None and m.kind == "scene" and m.block_id == b.id
         if mine:
             m.heard_at = self.e.now()  # type: ignore[union-attr]
+        if kind == "scene_look":
+            await self._look(spec, b, args)
+            return
+        if kind == "scene_frame":
+            fid = str(args.get("id") or "")
+            f = b.scene.get(fid)
+            if (fid == "" or f is not None and f.kind in BODY_KINDS + ("river",)) and fid != b.scene.frame:
+                log.info("teacher: the scene seen from %r", fid or "the ground")
+                await self._replace(spec, b, layout.solve(b.scene.model_copy(update={"frame": fid})))
+            return
         if kind == "sim_remove":
             if mine:
                 await self.e._sims.end("the teacher removed the scene")
@@ -316,6 +374,30 @@ class SceneController:
         pb = next_playback(kind, b.scene.playback, self.now_t(b), args)
         if pb is not None:
             await self._replace(spec, b, b.scene.model_copy(update={"playback": pb}))
+
+
+    async def _look(self, spec: SlideSpec, b: SceneBlock, args: dict) -> None:
+        """The teacher's picture for a body: an icon of the set, an uploaded image (/media/<id>.jpg), or `own` (the
+        kind's own drawing). Kept across edits (look.pick "teacher")."""
+        e = b.scene.get(str(args.get("id") or ""))
+        if e is None or e.kind not in BODY_KINDS:
+            return
+        icon, image = str(args.get("icon") or ""), str(args.get("image") or "")
+        if icon and icon not in assets.icons():
+            log.warning("scene_look: unknown icon %r", icon)
+            return
+        if image and not _MEDIA.fullmatch(image):
+            log.warning("scene_look: bad image %r", image)
+            return
+        if not (icon or image or args.get("own")):
+            return
+        look = e.look.model_copy(update={"icon": icon, "image": image, "glyph": "", "pick": "teacher"})
+        ents = [x.model_copy(update={"look": look}) if x.id == e.id else x for x in b.scene.entities]
+        log.info("teacher: picture of %s -> %s", e.id, icon or image or "its own drawing")
+        await self._replace(spec, b, layout.solve(b.scene.model_copy(update={"entities": ents})))
+
+
+_MEDIA = re.compile(r"/media/[0-9a-f]{8,64}\.jpg")
 
 
 def _title_from(line: str) -> str:

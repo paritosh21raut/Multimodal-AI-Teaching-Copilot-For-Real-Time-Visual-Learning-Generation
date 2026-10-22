@@ -86,6 +86,9 @@ CommandKind = Literal[
     # on?}; sim_pick {slide_id, template}; sim_full {slide_id, on} is a display flag (the Deck, like zoom_image)
     "sim_show", "sim_set", "sim_play", "sim_pause", "sim_step", "sim_reset", "sim_toggle", "sim_pick", "sim_remove",
     "sim_full",
+    # F-015 L2a, a live scene: scene_look {slide_id, id, icon | image | own} (a body's picture), scene_frame
+    # {slide_id, id} (the relative world seen from that body; "" = the ground)
+    "scene_look", "scene_frame",
     # F-014 S1: sim_end = Back to slides (simulation mode ends, the recap follows); sim_accept / sim_dismiss {id}: the
     # Suggest chip; set_simulations {setting: auto | suggest | off} (kept in data/preferences.json)
     "sim_end", "sim_accept", "sim_dismiss", "set_simulations",

@@ -394,7 +394,7 @@ class PresentationEngine:
                     await self._on_edit(event.command.kind, event.command.args)
                 elif event.command.kind == "show_equation":
                     await self._show_equation(str(event.command.args.get("id") or ""))
-                elif event.command.kind.startswith("sim_") and event.command.kind != "sim_full":
+                elif event.command.kind.startswith(("sim_", "scene_")) and event.command.kind != "sim_full":
                     kind, args = event.command.kind, event.command.args
                     if kind != "sim_end" and self._scenes.owns(kind, args):  # F-015: a scene's slide / chip
                         await self._scenes.on_command(kind, args)

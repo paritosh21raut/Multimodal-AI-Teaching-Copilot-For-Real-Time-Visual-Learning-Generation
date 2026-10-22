@@ -335,6 +335,13 @@ class App:
                 self.scene_detector.attach()
                 if self._router is not None:
                     self.presentation._scenes.compiler = SceneCompiler(self._router)
+                from copilot.scene.assets import Pictures
+
+                # a body's picture: icons by word, else by meaning (the concept embedder); glyphs cached here
+                self.presentation._scenes.pictures = Pictures(embedder)
+                if embedder is not None:  # the icons' vectors once, off the event loop (not on the first noun)
+                    await asyncio.to_thread(self.presentation._scenes.pictures.warm)
+                self.presentation._scenes.glyph_dir = PROJECT_ROOT / "data" / "assets" / "glyphs"
                 print(f"[INIT]  scenes: {'on' if self._router is not None else 'off (no LLM configured)'}", flush=True)
             self._init_images()
 

@@ -15,7 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from copilot.simulation.base import Playback
 
-World = Literal["geometry", "plot", "motion", "rigid", "field", "wave", "optics", "particles", "flow", "graph"]
+World = Literal["geometry", "plot", "motion", "relative", "rigid", "field", "wave", "optics", "particles", "flow", "graph"]
 Source = Literal["said", "teacher", "computed", "default", "mentioned"]
 KNOWN: frozenset[str] = frozenset({"said", "teacher", "computed"})
 
@@ -25,11 +25,16 @@ SOLID_KINDS = ("cube", "cuboid", "cylinder", "cone", "sphere")  # drawn as a tex
 GEOMETRY_KINDS = ("square", "rectangle", "circle", "triangle", "polygon", "point", "segment") + SOLID_KINDS
 PLOT_KINDS = ("curve",)
 BODY_KINDS = ("ball", "block", "car", "particle")
-KINDS: tuple[str, ...] = GEOMETRY_KINDS + PLOT_KINDS + BODY_KINDS
+RELATIVE_KINDS = ("river", "rain")  # a flowing band of water, falling rain: they move things, they are not bodies
+KINDS: tuple[str, ...] = GEOMETRY_KINDS + PLOT_KINDS + BODY_KINDS + RELATIVE_KINDS
+# directions a velocity is said in (screen: east / right +x, north / up +y); "toward" tilts it by its `angle`
+DIRS = ("east", "west", "north", "south", "up", "down", "left", "right")
 RELATIONS = ("inscribed_in", "around", "inside", "on", "diagonal_of", "radius_of", "diameter_of", "tangent_to",
              "bisector_of", "midpoint_of", "left_of", "right_of", "above", "below")
-BEHAVIORS = ("move", "launch", "fall")
-OPS = ("add", "set", "remove", "relate", "behave", "label", "focus")
+# cross: a boat heads straight across the river (shortest time); cross_straight: it heads upstream so that it lands
+# straight opposite (shortest path)
+BEHAVIORS = ("move", "launch", "fall", "cross", "cross_straight")
+OPS = ("add", "set", "remove", "relate", "behave", "label", "focus", "frame")
 
 MAX_ENTITIES = 40
 MAX_ANNOTATIONS = 3
@@ -55,7 +60,15 @@ class Label(_Model):
 
 
 class Look(_Model):
+    """How an entity is drawn. A body's picture (scene.assets) for its said noun: an icon of the offline set, an LLM
+    glyph (cleaned path data) or the teacher's image; none of them: the kind's own drawing. The picture never changes
+    the physics. pick "teacher": chosen in /control, kept across edits."""
     role: Literal["main", "second", "third", "accent", "muted"] = "main"
+    noun: str = ""                            # the word the picture is for ("rocket")
+    icon: str = ""                            # an icon name of web/vendor/icons/scene-icons.js
+    glyph: str = ""                           # path data on the 24 x 24 grid (scene.assets.clean)
+    image: str = ""                           # the teacher's image (/media/<id>.jpg)
+    pick: Literal["auto", "teacher"] = "auto"
 
 
 class Geom(_Model):
@@ -67,6 +80,7 @@ class Geom(_Model):
     d: str = ""                               # path data (a sampled curve; a solid's visible edges)
     d2: str = ""                              # a solid's hidden edges (drawn dashed)
     angle: float = 0.0                        # rect / body rotation (degrees)
+    flip: bool = False                        # a body's picture faces left (it moves west)
     label_at: Optional[tuple[float, float]] = None
     note: str = ""                            # a computed value printed beside the label ("(2, 4)" on a curve)
     dims: list[tuple[float, float, str]] = Field(default_factory=list)  # said sizes printed on the shape ("4 cm")
@@ -81,6 +95,8 @@ class Entity(_Model):
     expr: str = ""                            # a curve: y as an expression in x (scene.worlds.plot parses it)
     expr_shown: str = ""                      # the expression as printed ("" = a number in it was not said)
     look: Look = Field(default_factory=Look)
+    dir: str = ""                             # a velocity's direction as said (DIRS; "" = the world's default)
+    toward: str = ""                          # tilted from `dir` toward this direction by the `angle` prop
     geom: Optional[Geom] = None               # engine output
 
 
@@ -120,12 +136,29 @@ class Axes(_Model):
     yticks: list[tuple[float, str]] = Field(default_factory=list)
 
 
+class Vec(_Model):
+    """A velocity drawn as an arrow (stage px), its words: whose velocity, and its speed when it is known."""
+    x0: float
+    y0: float
+    x1: float
+    y1: float
+    text: str = ""
+    role: Literal["main", "second", "third", "accent", "muted"] = "main"
+    at: Optional[tuple[float, float]] = None   # where its words stand (outside the triangle)
+    anchor: Literal["start", "middle", "end"] = "middle"
+
+
 class Stage(_Model):
     """Engine output besides the entities: plot axes, a motion world's ground line (stage px)."""
     axes: Optional[Axes] = None
     ground: Optional[tuple[float, float, float]] = None  # x0, x1, y
     lanes: list[float] = Field(default_factory=list)
     trails: list[tuple[str, str]] = Field(default_factory=list)  # (entity id, path data): a launch's / fall's whole path
+    vectors: list[Vec] = Field(default_factory=list)  # the relative world's velocity triangle
+    river: Optional[tuple[float, float, float, float]] = None  # x0, x1, y top, y bottom: the band of water
+    flow: Optional[tuple[float, float, float, float]] = None   # the river's flow arrow (x0, y0, x1, y1)
+    rain: Optional[tuple[float, float]] = None  # the streaks' angle from the vertical (deg, + leans right) and px/s
+    umbrella: Optional[tuple[str, float]] = None  # (entity id, tilt from the vertical in deg): held above that body
 
 
 class Derived(_Model):
@@ -155,6 +188,7 @@ class SceneSpec(_Model):
     stage: Stage = Field(default_factory=Stage)
     derived: list[Derived] = Field(default_factory=list)
     origin: Literal["cue", "policy", "teacher"] = "cue"
+    frame: str = ""                           # the relative world: seen from this entity ("" = the ground)
 
     def get(self, id_: str) -> Optional[Entity]:
         return next((x for x in self.entities if x.id == id_), None)
@@ -177,3 +211,5 @@ class SceneOp(_Model):
     params: dict[str, Num] = Field(default_factory=dict)
     text: str = ""
     ids: list[str] = Field(default_factory=list)
+    dir: str = ""
+    toward: str = ""

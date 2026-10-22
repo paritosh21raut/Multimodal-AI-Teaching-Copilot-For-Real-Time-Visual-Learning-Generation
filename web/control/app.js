@@ -488,6 +488,9 @@ function SceneBar({ spec, b, send, running }) {
   const [menu, setMenu, ref] = usePopover();
   const moving = !!scene.frames;
   const rows = scene.entities.flatMap((e) => Object.entries(e.props).map(([k, q]) => ({ id: `${e.id}.${k}`, who: e.name || e.kind, k, q })));
+  const bodies = scene.entities.filter((e) => e.geom && e.geom.shape === "body");
+  const frames = ["", ...scene.entities.filter((e) => e.geom && e.geom.shape === "body" || e.kind === "river").map((e) => e.id)];
+  const frameName = (id) => { const e = id && scene.entities.find((x) => x.id === id); return e ? e.name || e.look.noun || e.kind : "ground"; };
   return html`<div class="image-bar sim-bar scene-bar menu-wrap" ref=${ref}>
     ${moving && html`<button class="icon" onClick=${cmd(playing ? "sim_pause" : "sim_play")} title=${playing ? "Pause the motion" : "Play the motion"}>
       ${svg(playing ? ICON.pause : ICON.play)}</button>
@@ -496,6 +499,10 @@ function SceneBar({ spec, b, send, running }) {
     <button class="speed" onClick=${cmd("sim_set", { speed: nextSpeed })} title="Speed of the motion">${speedLabel(speed)}</button>
     <span class="sep"></span>`}
     <button class=${menu === "values" ? "on" : ""} onClick=${() => setMenu(menu === "values" ? false : "values")} title="What the scene holds">${svg(ICON.sliders)}Values</button>
+    ${bodies.length > 0 && html`<button class=${menu === "picture" ? "on" : ""} onClick=${() => setMenu(menu === "picture" ? false : "picture")}
+      title="Choose the picture of a moving thing">${svg(ICON.image)}Picture</button>`}
+    ${scene.world === "relative" && html`<button onClick=${cmd("scene_frame", { id: frames[(frames.indexOf(scene.frame) + 1) % frames.length] })}
+      title="Show the motion as seen from the ground or from one of the moving things">Seen from: ${frameName(scene.frame)}</button>`}
     <button class="icon" onClick=${cmd("sim_full", { on: true })} title="Full screen on the display">${svg(ICON.full)}</button>
     <button class="icon" onClick=${cmd("sim_remove")} title="Take the scene off this slide">${svg(ICON.remove)}</button>
     ${running && html`<span class="sep"></span><button class="sim-end" onClick=${() => send("sim_end")}
@@ -506,6 +513,48 @@ function SceneBar({ spec, b, send, running }) {
         <span class="num">${r.q.value} ${r.q.unit}</span>
         <b class=${"src " + (SRC_WORD[r.q.source] ? r.q.source : "default")}>${SRC_WORD[r.q.source] || "not said"}</b></div>`)}
     </div>`}
+    ${menu === "picture" && html`<${ScenePicture} spec=${spec} bodies=${bodies} send=${send} />`}
+  </div>`;
+}
+
+// F-015 L2a: a moving thing's picture. The icons for its noun (or a word the teacher types), its kind's own drawing,
+// or the teacher's image (uploaded, then put on the body by scene_look; the UI changes nothing itself).
+function ScenePicture({ spec, bodies, send }) {
+  const [id, setId] = useState(bodies[0].id);
+  const e = bodies.find((x) => x.id === id) || bodies[0];
+  const [q, setQ] = useState(e.look.noun || e.name || "");
+  const [found, setFound] = useState([]);
+  const [err, setErr] = useState("");
+  useEffect(() => { setQ(e.look.noun || e.name || ""); }, [id]);
+  useEffect(() => {
+    const t = setTimeout(() => fetch(`/api/scene/pictures?q=${encodeURIComponent(q)}`).then((r) => r.json())
+      .then((j) => setFound(j.results || [])).catch(() => setFound([])), 200);
+    return () => clearTimeout(t);
+  }, [q]);
+  const look = (args) => send("scene_look", { slide_id: spec.id, id: e.id, ...args });
+  const upload = async (file) => {
+    setErr("");
+    try {
+      if (!UPLOAD_TYPES.includes(file.type)) throw new Error("Use a JPEG, PNG, WebP or GIF image");
+      const r = await fetch("/api/upload", { method: "POST", body: file,
+        headers: { "Content-Type": file.type, "X-File-Name": encodeURIComponent(file.name).slice(0, 120) } });
+      const res = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(res.error || `Upload failed (${r.status})`);
+      look({ image: res.url });
+    } catch (x) { setErr(x.message); }
+  };
+  return html`<div class="menu up scene-picture" role="dialog">
+    ${bodies.length > 1 && html`<div class="pic-who">${bodies.map((b) => html`<button key=${b.id} class=${b.id === e.id ? "on" : ""}
+      onClick=${() => setId(b.id)}>${b.name || b.look.noun || b.kind}</button>`)}</div>`}
+    <input class="pic-q" value=${q} placeholder="A word: rocket, horse, boat" onInput=${(ev) => setQ(ev.target.value)} />
+    <div class="pic-grid">${found.map((ic) => html`<button key=${ic.name} title=${ic.name} class=${e.look.icon === ic.name ? "on" : ""}
+      onClick=${() => look({ icon: ic.name })}><svg viewBox="0 0 24 24" class="ico">${ic.nodes.map(([tag, a], i) => html`<${tag} key=${i} ...${a} />`)}</svg></button>`)}
+      ${found.length === 0 && html`<span class="muted">No icon for this word</span>`}</div>
+    <div class="pic-more">
+      <button onClick=${() => look({ own: true })} title="The plain drawing of its kind (ball, block, car, dot)">Plain drawing</button>
+      <label class="button">Upload image<input type="file" accept=${UPLOAD_TYPES.join(",")} hidden onChange=${(ev) => ev.target.files[0] && upload(ev.target.files[0])} /></label>
+    </div>
+    ${err && html`<div class="error">${err}</div>`}
   </div>`;
 }
 

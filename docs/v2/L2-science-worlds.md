@@ -36,4 +36,11 @@ Stop after the runtime run and the contact sheet. If the context runs long: stop
 Result, and continue rigid in a new session.
 
 ## Result
-_(fill in ≤ 1 KB)_
+2026-10-22 part 1 (pictures + relative): `scene/assets.py` (92 Tabler icons, MIT, `tools/build_scene_icons.py`; word
+then MiniLM ≥ 0.63; LLM glyph cleaned + cached, ≤ 2 / scene), said kinds (rocket, man ...) → body + picture,
+/control Picture (icons, search, plain, upload; `scene_look`) and Seen from (`scene_frame`, `frame` op);
+`worlds/relative.py`: rain–walker, river–boat (cross / cross_straight), two trains, top view; a direction not said
+never feeds a printed number (review: 6 fixes). Tests: 52 unit + 3 browser. Live `scene_l2a.txt` (~30k tokens):
+all values right, 0 refused; the first cue hit a Groq timeout → empty slide left, fixed.
+Not done: V1 web image search in Picture (upload only); **rigid (pulleys, belts, rolling, collisions, springs,
+ramps): part 2, next session** (decide: closed-form textbook cases first, pymunk only for 2D collisions).

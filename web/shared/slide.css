@@ -860,6 +860,28 @@ rect.sc-body.r-second, circle.sc-body.r-second { fill: var(--scene-second); stro
 .sc-axes .axis { stroke: var(--sim-surface); stroke-width: 3; }
 .sc-axes .tick { stroke: var(--sim-surface); stroke-width: 2; }
 .sc-axes .tick-label { font-size: 22px; fill: var(--muted); }
+/* L2a: a body's picture (an icon / glyph on a soft disc, or the teacher's image in a ring), the river, rain, the
+   velocity triangle and the umbrella */
+.sc-pic .pic-back { fill-opacity: 0.16; stroke: none !important; }
+.sc-pic .pic-lines, .sc-pic .pic-lines * { fill: none !important; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.sc-pic.r-main .pic-lines * { stroke: var(--scene-main); } .sc-pic.r-main .pic-back { fill: var(--scene-main); }
+.sc-pic.r-second .pic-lines * { stroke: var(--scene-second); } .sc-pic.r-second .pic-back { fill: var(--scene-second); }
+.sc-pic.r-third .pic-lines * { stroke: var(--scene-third); } .sc-pic.r-third .pic-back { fill: var(--scene-third); }
+.sc-pic.r-accent .pic-lines * { stroke: var(--scene-accent); } .sc-pic.r-accent .pic-back { fill: var(--scene-accent); }
+.sc-pic .pic-ring { fill: none !important; stroke: var(--scene-main) !important; stroke-width: 4; }
+.sc-river .water { fill: var(--sim-water-fill); stroke: none; }
+.sc-river .bank { fill: var(--sim-ground); stroke: none; }
+.sc-river .edge { stroke: var(--sim-water); stroke-width: 4; }
+.sc-rain line { stroke: var(--sim-water); stroke-width: 3; stroke-linecap: round; opacity: 0.55; }
+.sc-vec line { stroke-width: 5; stroke-linecap: round; }
+.sc-vec.r-main line { stroke: var(--scene-main); } .sc-vec.r-main polygon, .sc-vec.r-main text { fill: var(--scene-main); }
+.sc-vec.r-second line { stroke: var(--scene-second); } .sc-vec.r-second polygon, .sc-vec.r-second text { fill: var(--scene-second); }
+.sc-vec.r-third line { stroke: var(--scene-third); } .sc-vec.r-third polygon, .sc-vec.r-third text { fill: var(--scene-third); }
+.sc-vec.r-accent line { stroke: var(--scene-accent); } .sc-vec.r-accent polygon, .sc-vec.r-accent text { fill: var(--scene-accent); }
+.sc-vec.r-water line { stroke: var(--sim-water); } .sc-vec.r-water polygon { fill: var(--sim-water); }
+.sc-vec-word { font-size: 24px; font-weight: 600; }
+.sc-umbrella .canopy { fill: var(--scene-accent); fill-opacity: 0.85; stroke: var(--scene-accent); stroke-width: 3; }
+.sc-umbrella .handle { stroke: var(--sim-surface); stroke-width: 4; stroke-linecap: round; }
 .sc-ent { animation: sc-in 280ms ease-out both; transform-box: fill-box; transform-origin: center; }
 @keyframes sc-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .sc-ent { animation: none; } }

@@ -8,6 +8,7 @@
     behave   a behaviour; one per target
     label    the entity's printed label (said words only)
     focus    the entities to highlight
+    frame    the relative world seen from an entity ("as seen by the man"; "" = the ground)
 """
 from __future__ import annotations
 
@@ -22,7 +23,8 @@ def _entity(c: Checked, scene: SceneSpec) -> Entity:
     used = {e.look.role for e in scene.entities}
     role = next((r for r in ROLES if r not in used), ROLES[len(scene.entities) % len(ROLES)])
     return Entity(id=op.id, kind=op.kind, name=c.name, props=dict(c.props), expr=op.expr, expr_shown=c.expr_shown,
-                  label=Label(text=c.name, source="said") if c.name else Label(), look=Look(role=role))
+                  label=Label(text=c.name, source="said") if c.name else Label(), look=Look(role=role, noun=c.noun),
+                  dir=c.dir, toward=c.toward)
 
 
 def _merge(e: Entity, c: Checked) -> Entity:
@@ -33,6 +35,10 @@ def _merge(e: Entity, c: Checked) -> Entity:
             upd["label"] = Label(text=c.name, source="said")
     if c.op.expr:
         upd["expr"], upd["expr_shown"] = c.op.expr, c.expr_shown
+    if c.dir:
+        upd["dir"], upd["toward"] = c.dir, c.toward
+    if c.noun and e.look.pick == "auto" and c.noun != e.look.noun:  # a new noun: its picture is found again
+        upd["look"] = e.look.model_copy(update={"noun": c.noun, "icon": "", "glyph": "", "image": ""})
     return e.model_copy(update=upd)
 
 
@@ -51,7 +57,8 @@ def apply(scene: SceneSpec, c: Checked) -> SceneSpec:
         upd = {"entities": [e for e in ents if e.id != op.id],
                "relations": [r for r in scene.relations if op.id not in (r.a, r.b)],
                "behaviors": [b for b in scene.behaviors if b.target != op.id],
-               "focus": [f for f in scene.focus if f != op.id]}
+               "focus": [f for f in scene.focus if f != op.id],
+               **({"frame": ""} if scene.frame == op.id else {})}
     elif op.op == "relate":
         upd["relations"] = [r for r in scene.relations if r.a != op.a] + [Relation(kind=op.kind, a=op.a, b=op.b)]
     elif op.op == "behave":
@@ -64,4 +71,6 @@ def apply(scene: SceneSpec, c: Checked) -> SceneSpec:
         upd["entities"] = [e.model_copy(update={"label": c.label}) if e.id == op.id else e for e in ents]
     elif op.op == "focus":
         upd["focus"] = list(op.ids)
+    elif op.op == "frame":
+        upd["frame"] = op.id
     return scene.model_copy(update={**upd, "rev": scene.rev + 1})

@@ -40,7 +40,9 @@ NOUNS: dict[str, str] = {  # drawable noun (regex) -> its world
     r"balls?|blocks?|cars?|trains?|stones?|particles?|rockets?|bullets?|carts?|bikes?|marbles?|projectiles?|"
     r"trucks?|boats?|ships?|(?:aero|air)planes?|bicycles?|cyclists?|runners?|"
     r"(?:bus|buses|planes?) (?:moving|travel+ing|going|running|flying|taking off|landing)|"
-    r"(?:boy|girl|man|woman|person) (?:running|walking|moving|cycling|riding)|"
+    r"(?:boy|girl|man|woman|person) (?:runs|walks|running|walking|moving|cycling|riding|standing)|"
+    # the relative world (L2a) is cued like motion: a river and its boat, rain and its walker are one scene
+    r"rain(?:drops?)?\b(?!bow)|raining|rivers?|swimmers?|streams? (?:of water|flowing)|"
     r"(?:an? |the )?(?:object|body|box) (?:moving|thrown|dropped|falling|rolling|sliding|launched|travel+ing)": "motion",
 }
 _NOUN = [(re.compile(rf"\b(?:{rx})", re.IGNORECASE), w) for rx, w in NOUNS.items()]

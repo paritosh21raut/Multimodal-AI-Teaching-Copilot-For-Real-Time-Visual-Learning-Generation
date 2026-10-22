@@ -18,10 +18,15 @@ the engine output and prints only text that is in the spec.
 | behave | kind, target, params? | one behaviour per target |
 | label | id, text | printed label; `text` must be said words |
 | focus | ids | highlighted entities |
+| frame | id | the relative world seen from that body / river ("" = the ground) |
 
 Closed lists (`spec.py`): kinds `square rectangle circle triangle polygon point segment cube cuboid cylinder cone sphere
-curve ball block car particle` (L1; L2/L3 add theirs; a solid takes only `left_of right_of above below`), relations `inscribed_in around inside on diagonal_of radius_of diameter_of tangent_to
-bisector_of midpoint_of left_of right_of above below`, behaviours `move launch fall`. Ids `^[a-z][a-z0-9_]{0,15}$`.
+curve ball block car particle river rain` (L2a: river, rain; a solid takes only `left_of right_of above below`), relations `inscribed_in around inside on diagonal_of radius_of diameter_of tangent_to
+bisector_of midpoint_of left_of right_of above below`, behaviours `move launch fall cross cross_straight` (cross: a
+boat heads straight across, needs a river). A said kind (`rocket train boat person man dog stone box` ...,
+`validate.KIND_ALIAS`) becomes its body kind (car / particle / ball / block) with that noun's picture.
+Directions: `dir` (`east west north south up down left right`) and `toward` (at right angles) on add / set of a body,
+river or rain; the `angle` prop tilts `dir` toward `toward`. A direction is drawn, never printed. Ids `^[a-z][a-z0-9_]{0,15}$`.
 A number is `3` or `[3, "m/s"]`; prop keys and unit families: `validate.PROPS`, `validate.UNITS`, `validate.RANGES`.
 
 ## Validation (truthfulness, F-015 section 3)
@@ -41,14 +46,22 @@ A number is `3` or `[3, "m/s"]`; prop keys and unit families: `validate.PROPS`, 
 focus, playback (the simulations' Playback: state, speed, t, rev), frames?, stage, derived, origin}`
 
 `Entity{id, kind, name, label{text, source said|none}, props{key: Q{value, unit, source, said}}, expr, expr_shown,
-look{role main|second|third|accent|muted}, geom?}`
+look{role main|second|third|accent|muted, noun, icon, glyph, image, pick auto|teacher}, dir, toward, geom?}`, scene `frame`.
+
+Pictures (`scene.assets`, L2a): a body's `look.noun` (the model's word for it) gets an offline icon
+(`web/vendor/icons/scene-icons.js`, Tabler MIT, 92 icons: its words first, then MiniLM ≥ 0.63), else one LLM glyph
+call (path data only, cleaned, ≤ 4 KB, cached in `data/assets/glyphs/`, ≤ 2 per scene), else the kind's own drawing
+(ball, block, car, stone ... keep theirs). The picture never changes the physics. The teacher's pick (`scene_look`:
+an icon, an uploaded `/media/<id>.jpg`, or `own`) is `pick: teacher`, kept across edits.
 
 Engine output (`scene.layout`, stage px 1100 × 740, y down):
 - `geom{shape rect|circle|poly|seg|path|dot|body|solid, pts, c, r, d, d2, angle, label_at, note, dims}`: `note` a value
   beside the label (a point's computed "(2, 1)"; a body's said speed when two bodies share a name); `dims` said sizes
   printed on the shape ("4 cm", "h = 5 cm"). A solid: `pts` its outline, `d` its visible edges, `d2` its hidden edges
   (dashed), an oblique drawing (depth at 45°, half length).
-- `stage{axes?, ground?, lanes, trails}`: plot axes with Python's tick labels; the motion world's ground, the y of the
+- `stage{axes?, ground?, lanes, trails, vectors, river?, flow?, rain?, umbrella?}` (relative world: the velocity
+  triangle `Vec{x0 y0 x1 y1 text role at anchor}`, the river band and its flow arrow, rain streaks' angle and px/s,
+  the walker's umbrella tilt): plot axes with Python's tick labels; the motion world's ground, the y of the
   guide lines between lanes, a launch's / fall's whole path. Lanes fit between the readout card and the ground (closer,
   smaller bodies when many); more than two lanes: the names stand in a column on the left (`label_at` x = margin).
 - `frames{period, hold, tracks[{id, pts[[t, x, y, angle, v m/s, distance m]]}]}` ≤ 400 points in all, on a 0.05 s
@@ -58,8 +71,13 @@ Engine output (`scene.layout`, stage px 1100 × 740, y down):
   else one row per body (distance at a steady speed, speed when it changes; the latest four); `live` readouts print the nearest Python sample's v / distance (`toFixed(1)` on the
   client: the only formatting done there).
 
-## Worlds (L1)
-`world` is chosen from the kinds: a body → motion, a curve → plot, else geometry.
+## Worlds (L1, L2a)
+`world` is chosen from the kinds: a river or rain, a frame, or two bodies with a said `dir` → relative; a body →
+motion, a curve → plot, else geometry.
+- relative (`worlds/relative.py`): rain + walker (apparent rain = v rain − v walker, umbrella tilt into it, "forward /
+  backward"); river + boat (`cross`: time w / v, drift u w / v; `cross_straight`: heading asin(u / v) upstream, time
+  w / √(v² − u²), "not possible" when v ≤ u); two bodies on a line (relative speed, time to meet / catch up from
+  `gap`, time to pass from both `length`s); else a top view. Frames in display seconds (a run ≤ 6 s); readouts static.
 - geometry: own sizes from props (defaults 4 / 6×4 / r 2, drawn only); constructions set the size of `a` from `b`
   (inscribed circle r = side / 2, square in a circle side = r√2, circumcircle, incircle, diagonal, radius, diameter,
   tangent, perpendicular bisector, midpoint, beside). Known only when `b` is known. Solids: cube (side), cuboid
@@ -73,5 +91,6 @@ Engine output (`scene.layout`, stage px 1100 × 740, y down):
 ## Clock, edits, morph-in
 The clock is the simulations' (anchored when `playback.rev` changes): a patch of ops never restarts the motion.
 A new entity fades/grows in (CSS `sc-in`, 280 ms); a changed geometry tweens from what is drawn (280 ms).
-`/control` commands on a scene's slide: `sim_play sim_pause sim_step sim_reset sim_set{speed} sim_remove sim_full`;
-`sim_end` ends the mode. Values lists the props and their source (read only in L1).
+`/control` commands on a scene's slide: `sim_play sim_pause sim_step sim_reset sim_set{speed} sim_remove sim_full`,
+`scene_look{id, icon|image|own}` (Picture), `scene_frame{id}` (Seen from); `sim_end` ends the mode. Values lists the
+props and their source (read only). `GET /api/scene/pictures?q=` lists icons for a word.

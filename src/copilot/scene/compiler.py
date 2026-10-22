@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 MAX_LINES = 4
 MAX_TOKENS = 1400      # reasoning (low) + the ops; ≤ 3k a new scene with the prompt (F-015 targets)
-EST_PROMPT = 1000
+EST_PROMPT = 1400
 TIMEOUT_S = 12.0
 
 SYSTEM = f"""You turn a teacher's spoken words into drawing operations for a live classroom diagram.
@@ -35,11 +35,13 @@ Ops (fields exactly as shown):
 {{"op":"behave","kind":"move","target":"b1"}}
 {{"op":"label","id":"s1","text":"ABCD"}}
 {{"op":"focus","ids":["c1"]}}
+{{"op":"frame","id":"m1"}}   (show the scene as seen by m1; "id":"" = as seen from the ground)
 
 kinds: {" ".join(KINDS)}
 props, as [number, unit], ONLY numbers the teacher said (leave a prop out if its number was not said):
  side width height radius diameter length base (cm m mm km, or "" for none) | sides (count) | x y xmin xmax (plain)
  speed (m/s km/h) | acceleration (m/s^2; negative when slowing down) | angle (deg) | height for a fall (m)
+ gap (m: the distance between two bodies) | length (m: a train's length) | width (m: a river's width)
  solids: cube (side) | cuboid (length width height) | cylinder, cone (radius or diameter, height) | sphere (radius)
 speech units: "mps" = m/s; "mps square", "mps2", "m p s squared" (or "mps" plus a stray letter: "mpsw") = m/s^2;
  "kmph", "km per hour" = km/h
@@ -47,10 +49,16 @@ curve: "expr" is y in terms of x, e.g. {{"op":"add","id":"f1","kind":"curve","na
 relations (a is placed by b): {" ".join(RELATIONS)}
  inscribed_in = a fits exactly inside b; around = a encloses b exactly; on = point a lies on b
 anything that moves is a body: car for a vehicle (car, train, bus, boat, rocket, plane), particle for a person or an
- animal, ball for a ball or a stone, block for a box; never a point or a shape
+ animal, ball for a ball or a stone, block for a box; never a point or a shape. Its name is the teacher's noun
+ ("rocket", "man"): the picture follows the name
+direction (on add / set of a body, a river or rain, only when the teacher says one): "dir": east west north south up
+ down; "at 30 degrees to the vertical towards the east" = "dir":"down","toward":"east" with props angle [30,"deg"]
+river: a band of water; its speed is the flow; rain: falls ("dir":"down" unless said otherwise)
+two bodies on one line: add first the one on the left (or behind), with the gap between them on it
 behaviours (of ball block car particle): {" ".join(BEHAVIORS)}
  move = straight line (speed, acceleration on the body); launch = thrown at an angle (speed, angle); fall = dropped
- from a height (height)
+ from a height (height); cross = a boat heads straight across the river (shortest time); cross_straight = it heads
+ upstream so that it reaches the point straight opposite (shortest path)
 
 Rules:
 - New things get new short ids; change existing things by their id from the scene. "it" = the thing named last.
@@ -77,7 +85,21 @@ Lines: Imagine a cylinder of radius 3 cm and height 5 cm.
 Lines: Consider the graph of y equals x squared, and mark the point where x is 2.
 {{"op":"add","id":"f1","kind":"curve","name":"graph","expr":"x^2"}}
 {{"op":"add","id":"p1","kind":"point","props":{{"x":[2,""]}}}}
-{{"op":"relate","kind":"on","a":"p1","b":"f1"}}"""
+{{"op":"relate","kind":"on","a":"p1","b":"f1"}}
+Lines: Rain falls vertically at 3 m/s. A man walks east at 4 m/s. How does the rain look to him?
+{{"op":"add","id":"r1","kind":"rain","name":"rain","props":{{"speed":[3,"m/s"]}},"dir":"down"}}
+{{"op":"add","id":"m1","kind":"particle","name":"man","props":{{"speed":[4,"m/s"]}},"dir":"east"}}
+{{"op":"behave","kind":"move","target":"m1"}}
+{{"op":"frame","id":"m1"}}
+Lines: A river 100 m wide flows at 3 m/s. A boat that goes 5 m/s in still water crosses it in the shortest time.
+{{"op":"add","id":"r1","kind":"river","name":"river","props":{{"width":[100,"m"],"speed":[3,"m/s"]}}}}
+{{"op":"add","id":"b1","kind":"car","name":"boat","props":{{"speed":[5,"m/s"]}}}}
+{{"op":"behave","kind":"cross","target":"b1"}}
+Lines: Two trains 200 m apart run towards each other at 20 m/s and 30 m/s.
+{{"op":"add","id":"t1","kind":"car","name":"train","props":{{"speed":[20,"m/s"],"gap":[200,"m"]}},"dir":"east"}}
+{{"op":"add","id":"t2","kind":"car","name":"train","props":{{"speed":[30,"m/s"]}},"dir":"west"}}
+{{"op":"behave","kind":"move","target":"t1"}}
+{{"op":"behave","kind":"move","target":"t2"}}"""
 
 
 def context(scene: Optional[SceneSpec]) -> str:
@@ -89,9 +111,13 @@ def context(scene: Optional[SceneSpec]) -> str:
         props = " ".join(f"{k}={fmt(q.value)}{(' ' + q.unit) if q.unit else ''}" for k, q in list(e.props.items())[:4]
                          if q.source != "default")
         expr = f" expr={e.expr}" if e.expr else ""
-        parts.append(f"{e.id} {e.kind}" + (f' "{e.name}"' if e.name else "") + (f" {props}" if props else "") + expr)
+        way = f" dir={e.dir}" + (f" toward={e.toward}" if e.toward else "") if e.dir else ""
+        parts.append(f"{e.id} {e.kind}" + (f' "{e.name}"' if e.name else "") + (f" {props}" if props else "") + expr
+                     + way)
     parts += [f"{r.a} {r.kind} {r.b}" for r in scene.relations]
     parts += [f"{b.target} {b.kind}" for b in scene.behaviors]
+    if scene.frame:
+        parts.append(f"seen by {scene.frame}")
     return "; ".join(parts)
 
 

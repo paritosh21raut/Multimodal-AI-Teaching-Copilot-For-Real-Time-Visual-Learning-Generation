@@ -890,6 +890,20 @@ section.drop-gap { margin: 0; }
 .sim-bar button.on { background: var(--accent-soft); color: var(--accent); }
 .sim-bar .menu.up { right: 0; left: auto; bottom: calc(100% + 8px); }
 .sim-values { min-width: 360px; padding: 10px 12px; display: grid; gap: 8px; }
+/* F-015 L2a: a moving thing's picture */
+.scene-picture { width: 340px; padding: 10px 12px; display: grid; gap: 8px; }
+.scene-picture .pic-who { display: flex; flex-wrap: wrap; gap: 6px; }
+.scene-picture .pic-who button { height: 28px; padding: 0 10px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; }
+.scene-picture .pic-who button.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.scene-picture .pic-q { height: 32px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 0 10px; font: inherit; }
+.scene-picture .pic-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; min-height: 48px; align-items: center; }
+.scene-picture .pic-grid button { height: 46px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); display: grid; place-items: center; padding: 0; }
+.scene-picture .pic-grid button.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.scene-picture .pic-grid svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.scene-picture .pic-grid .muted { grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
+.scene-picture .pic-more { display: flex; gap: 8px; }
+.scene-picture .pic-more > * { flex: 1; height: 32px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; display: grid; place-items: center; cursor: pointer; }
+.scene-picture .error { color: var(--danger, #c2362a); font-size: 13px; }
 .sim-row { display: grid; grid-template-columns: 1fr 96px 70px; align-items: center; gap: 8px; font-size: 13px; }
 .sim-row i { font-family: KaTeX_Math, "Cambria Math", serif; font-size: 15px; }
 .sim-row em { color: var(--muted); font-style: normal; }

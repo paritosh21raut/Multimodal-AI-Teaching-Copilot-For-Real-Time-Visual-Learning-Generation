@@ -23,6 +23,8 @@ export function fmt(x) {
   const s = x.toFixed(Math.max(0, 2 - Math.floor(Math.log10(ax))));
   return s.includes(".") ? s.replace(/0+$/, "").replace(/\.$/, "") : s;
 }
+// what a body is drawn as (tests and screenshots read it): its picture, else its kind's own drawing
+const picOf = (e) => { const l = e.look || {}; return l.image ? "image" : l.icon ? "icon:" + l.icon : l.glyph ? "glyph" : "kind"; };
 const reducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // a geometry's numbers as one flat list (same shape and size: tweenable)
@@ -112,15 +114,16 @@ export function SceneStage({ b, full, onClick }) {
     return p ? { id: d.id, symbol: d.label, text: `${fmt(d.live === "v" ? p.v : p.s)} ${d.unit}` } : null;
   }).filter(Boolean);
   const drawn = scene.entities.map((e) => ({ e, g: geomOf(e) }));
+  const umb = scene.stage.umbrella;
   return html`<div class=${"sim-stage scene-stage" + (full ? " full" : "") + (onClick ? " clickable" : "")} onClick=${onClick}
       title=${onClick ? "Show the scene full screen" : undefined}>
     <svg ref=${svgRef} class="sim-svg" viewBox=${`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" role="img"
       aria-label=${scene.title} data-template="scene" data-world=${scene.world} data-rev=${scene.rev}
       data-state=${still ? "still" : scene.playback.state} data-t=${t.toFixed(3)}>
-      <${StageParts} stage=${scene.stage} />
-      ${drawn.map(({ e, g }) => g && html`<g key=${e.id} class="sc-ent" data-id=${e.id} data-kind=${e.kind}>
-        <${Shape} e=${e} g=${g} pose=${tracks[e.id]} focus=${focus.has(e.id)} /></g>`)}
-      ${drawn.map(({ e, g }) => g && html`<g key=${"w-" + e.id} class="sc-ent sc-words"><${Words} e=${e} g=${g} pose=${tracks[e.id]} /></g>`)}
+      <${StageParts} stage=${scene.stage} t=${t} />
+      ${drawn.map(({ e, g }) => g && html`<g key=${e.id} class="sc-ent" data-id=${e.id} data-kind=${e.kind} data-pic=${picOf(e)}>
+        <${Shape} e=${e} g=${g} pose=${tracks[e.id]} focus=${focus.has(e.id)} umbrella=${umb && umb[0] === e.id ? umb[1] : null} /></g>`)}
+      ${drawn.map(({ e, g }) => g && html`<g key=${"w-" + e.id} class="sc-ent sc-words"><${Words} e=${e} g=${g} pose=${tracks[e.id]} umbrella=${umb && umb[0] === e.id ? umb[1] : null} /></g>`)}
       ${rows.length > 0 && html`<${Readout} sim=${{ derived: rows }} />`}
     </svg>
   </div>`;

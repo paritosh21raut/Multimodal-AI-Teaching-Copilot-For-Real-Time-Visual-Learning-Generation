@@ -440,6 +440,15 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
 
         return JSONResponse({"results": [describe(t) for t in sim_search(q[:100])]})
 
+    @app.get("/api/scene/pictures")
+    async def scene_pictures(request: Request, q: str = ""):
+        """F-015 L2a: /control Picture, the offline icons for a word (scene.assets: its words and Tabler's tags)."""
+        if not trusted(request):
+            return JSONResponse({"error": "teacher only"}, status_code=403)
+        from copilot.scene.assets import search as icon_search
+
+        return JSONResponse({"results": icon_search(q[:60])})
+
     @app.get("/api/assess")
     async def assess_list(request: Request, lecture: str = ""):
         if not trusted(request):

@@ -15,8 +15,8 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 from copilot.scene.spec import (
-    BEHAVIORS, BODY_KINDS, GEOMETRY_KINDS, ID_PATTERN, KINDS, KNOWN, MAX_ENTITIES, OPS, RELATIONS, SOLID_KINDS, Label,
-    Q, SceneOp, SceneSpec, Source,
+    BEHAVIORS, BODY_KINDS, DIRS, GEOMETRY_KINDS, ID_PATTERN, KINDS, KNOWN, MAX_ENTITIES, OPS, RELATIONS, RELATIVE_KINDS,
+    SOLID_KINDS, Label, Q, SceneOp, SceneSpec, Source,
 )
 from copilot.simulation.values import NUM, heard, spoken_number
 
@@ -41,7 +41,7 @@ PROPS: dict[str, str] = {
     "side": "length", "width": "length", "height": "length", "radius": "length", "diameter": "length",
     "length": "length", "base": "length", "sides": "count", "x": "number", "y": "number", "xmin": "number",
     "xmax": "number", "speed": "speed", "acceleration": "acceleration", "angle": "angle", "time": "time",
-    "mass": "mass", "start": "length",
+    "mass": "mass", "start": "length", "gap": "length",
 }
 # base-unit ranges: a number outside is refused (a mishearing or a model slip), never clipped
 RANGES: dict[str, tuple[float, float]] = {
@@ -57,6 +57,17 @@ _ID = re.compile(ID_PATTERN)
 CLOSED = ("square", "rectangle", "circle", "triangle", "polygon")
 BESIDE = ("left_of", "right_of", "above", "below")
 MOTION_PROPS = ("speed", "acceleration")  # a body's (a shape or a point given a speed is a model slip: refused)
+MOVERS = BODY_KINDS + RELATIVE_KINDS        # what may have a speed and a direction (a river flows, rain falls)
+# a moving thing said as itself: drawn as a body of this kind with the noun's picture (scene.assets), same physics
+KIND_ALIAS = {**{k: "car" for k in ("rocket", "train", "boat", "ship", "bus", "truck", "plane", "aeroplane",
+                                    "airplane", "bike", "bicycle", "motorbike", "scooter", "tram", "helicopter",
+                                    "submarine", "jet", "vehicle")},
+              **{k: "particle" for k in ("person", "man", "woman", "boy", "girl", "child", "swimmer", "runner",
+                                         "cyclist", "animal", "dog", "cat", "horse", "bird", "fish", "insect")},
+              **{k: "ball" for k in ("stone", "rock", "marble", "bullet", "projectile")},
+              **{k: "block" for k in ("box", "crate", "brick", "cart", "trolley")}}
+_AXIS = {"east": (1, 0), "right": (1, 0), "west": (-1, 0), "left": (-1, 0), "north": (0, 1), "up": (0, 1),
+         "south": (0, -1), "down": (0, -1)}
 # the unit words after a said number -> its family ("radius 5 metres" is not a side of 5 cm)
 _FAMILY_AFTER = [(f, re.compile(rx, re.IGNORECASE)) for f, rx in (
     # "mps square", "mps2" and a speech recogniser's "mpsw" / "mpsp" (a letter stuck to "mps") are m/s²
@@ -108,6 +119,9 @@ class Checked:
     label: Optional[Label] = None
     expr_shown: str = ""   # a curve's expression as printed ("" = a number in it was not said)
     notes: list[str] = field(default_factory=list)  # props refused (the op itself applies)
+    noun: str = ""         # a body's noun for its picture (the model's word or the kind it said: "rocket")
+    dir: str = ""
+    toward: str = ""
 
 
 def _close(a: float, b: float) -> bool:
@@ -212,7 +226,15 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
     """(Checked, "") or (None, why the op is refused)."""
     if op.op not in OPS:
         return None, f"unknown op {op.op!r}"
+    alias = ""
+    if op.op == "add" and op.kind in KIND_ALIAS:  # "rocket" is a car body with a rocket's picture
+        alias, op = op.kind, op.model_copy(update={"kind": KIND_ALIAS[op.kind]})
     ent = scene.get(op.id) if op.id else None
+    if op.op == "frame":
+        f = scene.get(op.id) if op.id else None
+        if op.id and (f is None or f.kind not in BODY_KINDS + ("river",)):
+            return None, f"frame: {op.id!r} is not a body or a river"
+        return Checked(op), ""
     if op.op == "add":
         if not _ID.match(op.id or ""):
             return None, f"bad id {op.id!r}"
@@ -265,13 +287,15 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
             return None, f"unknown behaviour {op.kind!r}"
         if t is None or t.kind not in BODY_KINDS:
             return None, f"behave: {op.target!r} is not a body"
+        if op.kind in ("cross", "cross_straight") and not any(x.kind == "river" for x in scene.entities):
+            return None, f"{op.kind}: there is no river to cross"
     elif op.op == "focus":
         if not op.ids or any(scene.get(i) is None for i in op.ids):
             return None, f"focus: bad refs {op.ids!r}"
     out = Checked(op)
     kind = op.kind if op.op == "add" else ent.kind if ent is not None else ""
     for key, raw in op.props.items():
-        if key in MOTION_PROPS and kind not in BODY_KINDS:
+        if key in MOTION_PROPS and kind not in MOVERS or key == "acceleration" and kind in RELATIVE_KINDS:
             out.notes.append(f"{key}: a {kind} does not move (only ball block car particle)")
             continue
         q, why = to_q(key, raw, corpus, ent.props.get(key) if ent is not None else None)
@@ -286,6 +310,16 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
             out.notes.append(why)
         else:
             out.params[key] = q
+    if op.dir or op.toward:
+        if kind not in MOVERS:
+            out.notes.append(f"dir: a {kind} does not move")
+        elif op.dir not in DIRS or op.toward and (op.toward not in DIRS or _AXIS[op.toward][0] * _AXIS[op.dir][0]
+                                                  + _AXIS[op.toward][1] * _AXIS[op.dir][1] != 0):
+            out.notes.append(f"dir {op.dir!r} toward {op.toward!r} refused (closed list; toward is at right angles)")
+        else:
+            out.dir, out.toward = op.dir, op.toward
+    if kind in BODY_KINDS and (op.op == "add" or op.name):
+        out.noun = (op.name.strip() or alias)[:40]
     if op.name:
         out.name = op.name.strip()[:40] if said_words(op.name, corpus, scene) else ""
         if not out.name:
@@ -297,6 +331,7 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
         if not said_words(op.text, corpus, scene):
             return None, f"label {op.text!r} was not said"
         out.label = Label(text=op.text.strip()[:40], source="said")
-    if op.op == "add" and op.kind in GEOMETRY_KINDS + ("curve",) and not op.name and said_words(op.kind, corpus):
-        out.name = op.kind  # "imagine a square": the teacher's word is the kind's
+    word = alias or op.kind
+    if op.op == "add" and (op.kind in GEOMETRY_KINDS + RELATIVE_KINDS + ("curve",) or alias) and not op.name             and said_words(word, corpus):
+        out.name = word  # "imagine a square": the teacher's word is the kind's
     return out, ""

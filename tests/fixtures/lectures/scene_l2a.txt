@@ -1,0 +1,28 @@
+# F-015 L2a, ~1.5 minutes. Expect: a rocket drawn as a rocket and a train as a train (test31: "a rocket is a car");
+# rain falling vertically at 3 m/s and a man walking at 4 m/s: umbrella tilt 53.1° forward, rain seen by the man 5 m/s,
+# streaks slanted when seen by the man; a river 100 m wide at 3 m/s and a boat at 5 m/s: shortest time 20 s, drift
+# 60 m, then straight opposite: heading 36.9° upstream, 25 s; two trains 200 m apart at 20 and 30 m/s: meet in 4 s.
+@setup subject=Physics grade=11 topic="Relative velocity"
+
+Today we will look at relative velocity.
+[pause 1]
+Imagine a rocket moving at a speed of 100 metres per second and a train moving at 30 metres per second.
+[pause 3]
+Let's get back to the slides.
+[pause 1.5]
+Imagine rain falling vertically at 3 metres per second, and a man walking at 4 metres per second.
+[pause 3]
+How does the rain look to the man?
+[pause 3]
+Let's get back to the slides.
+[pause 1.5]
+Imagine a river 100 metres wide flowing at 3 metres per second, and a boat that moves at 5 metres per second heading straight across.
+[pause 3.5]
+Now the boat wants to reach the point straight opposite.
+[pause 3]
+Let's get back to the slides.
+[pause 1.5]
+Imagine two trains 200 metres apart running towards each other at 20 metres per second and 30 metres per second.
+[pause 3.5]
+Let's get back to the slides.
+[pause 2]

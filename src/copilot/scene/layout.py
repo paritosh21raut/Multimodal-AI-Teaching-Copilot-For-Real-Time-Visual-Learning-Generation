@@ -8,9 +8,9 @@ import math
 from typing import Any, Optional
 
 from copilot.scene.spec import (
-    BODY_KINDS, KNOWN, MAX_FRAME_POINTS, SOLID_KINDS, Axes, Derived, Entity, Frames, Geom, SceneSpec, Stage, Track, World,
+    BODY_KINDS, KNOWN, RELATIVE_KINDS, MAX_FRAME_POINTS, SOLID_KINDS, Axes, Derived, Entity, Frames, Geom, SceneSpec, Stage, Track, World,
 )
-from copilot.scene.worlds import geometry, motion, plot
+from copilot.scene.worlds import geometry, motion, plot, relative
 from copilot.simulation.base import fmt
 
 W, H = 1100, 740
@@ -24,7 +24,12 @@ MIN_GAP = 48.0        # lanes closer than this first cost readout rows
 
 
 def world_of(scene: SceneSpec) -> World:
-    if any(e.kind in BODY_KINDS for e in scene.entities):
+    """relative: a river or rain, a frame of reference, or two bodies with said directions (two trains); else a body
+    moves in the motion world."""
+    bodies = [e for e in scene.entities if e.kind in BODY_KINDS]
+    if any(e.kind in RELATIVE_KINDS for e in scene.entities) or scene.frame or sum(1 for e in bodies if e.dir) >= 2:
+        return "relative"
+    if bodies:
         return "motion"
     if any(e.kind == "curve" for e in scene.entities):
         return "plot"
@@ -320,6 +325,8 @@ def solve(scene: SceneSpec) -> SceneSpec:
     scene = scene.model_copy(update={"world": world})
     if world == "motion":
         return _motion(scene)
+    if world == "relative":
+        return relative.solve(scene, _band)
     if world == "plot":
         return _plot(scene)
     return _geometry(scene)

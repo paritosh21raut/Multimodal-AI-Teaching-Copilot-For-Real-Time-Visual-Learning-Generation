@@ -104,6 +104,44 @@ SCENES = [
          '{"op":"add","id":"s1","kind":"ball","name":"stone","props":{"speed":[20,"m/s"],"angle":[30,"deg"]}}\n'
          '{"op":"behave","kind":"launch","target":"s1"}'),
     ], 4),
+    # L2a: pictures for the said noun, the relative world
+    ("pictures", "Kinematics", [
+        ("Imagine a train moving at 20 m/s, a plane at 50 m/s and a horse at 10 m/s.",
+         '{"op":"add","id":"t1","kind":"car","name":"train","props":{"speed":[20,"m/s"]}}\n{"op":"behave","kind":"move","target":"t1"}\n'
+         '{"op":"add","id":"p1","kind":"plane","props":{"speed":[50,"m/s"]}}\n{"op":"behave","kind":"move","target":"p1"}\n'
+         '{"op":"add","id":"h1","kind":"particle","name":"horse","props":{"speed":[10,"m/s"]}}\n{"op":"behave","kind":"move","target":"h1"}'),
+    ], 6),
+    ("rain_man_ground", "Relative velocity", [
+        ("Imagine rain falling vertically at 3 m/s and a man walking at 4 m/s.",
+         '{"op":"add","id":"r1","kind":"rain","name":"rain","props":{"speed":[3,"m/s"]},"dir":"down"}\n'
+         '{"op":"add","id":"m1","kind":"particle","name":"man","props":{"speed":[4,"m/s"]},"dir":"east"}\n'
+         '{"op":"behave","kind":"move","target":"m1"}'),
+    ], 4),
+    ("rain_man_seen_by_man", "Relative velocity", [
+        ("Imagine rain falling vertically at 3 m/s and a man walking at 4 m/s.",
+         '{"op":"add","id":"r1","kind":"rain","name":"rain","props":{"speed":[3,"m/s"]},"dir":"down"}\n'
+         '{"op":"add","id":"m1","kind":"particle","name":"man","props":{"speed":[4,"m/s"]},"dir":"east"}\n'
+         '{"op":"behave","kind":"move","target":"m1"}'),
+        ("How does the rain look to the man?", '{"op":"frame","id":"m1"}'),
+    ], 4),
+    ("river_shortest_time", "Relative velocity", [
+        ("Imagine a river 100 m wide flowing at 3 m/s, and a boat at 5 m/s heading straight across.",
+         '{"op":"add","id":"r1","kind":"river","name":"river","props":{"width":[100,"m"],"speed":[3,"m/s"]}}\n'
+         '{"op":"add","id":"b1","kind":"car","name":"boat","props":{"speed":[5,"m/s"]}}\n'
+         '{"op":"behave","kind":"cross","target":"b1"}'),
+    ], 8),
+    ("river_shortest_path", "Relative velocity", [
+        ("Imagine a river 100 m wide flowing at 3 m/s; the boat at 5 m/s must reach the point straight opposite.",
+         '{"op":"add","id":"r1","kind":"river","name":"river","props":{"width":[100,"m"],"speed":[3,"m/s"]}}\n'
+         '{"op":"add","id":"b1","kind":"car","name":"boat","props":{"speed":[5,"m/s"]}}\n'
+         '{"op":"behave","kind":"cross_straight","target":"b1"}'),
+    ], 8),
+    ("two_trains", "Relative velocity", [
+        ("Imagine two trains 200 m apart running towards each other at 20 m/s and 30 m/s.",
+         '{"op":"add","id":"t1","kind":"car","name":"train","props":{"speed":[20,"m/s"],"gap":[200,"m"]},"dir":"east"}\n'
+         '{"op":"add","id":"t2","kind":"car","name":"train","props":{"speed":[30,"m/s"]},"dir":"west"}\n'
+         '{"op":"behave","kind":"move","target":"t1"}\n{"op":"behave","kind":"move","target":"t2"}'),
+    ], 6),
 ]
 
 
@@ -176,6 +214,19 @@ async def capture(theme: str) -> list[tuple[str, Path]]:
                     p = OUT / f"{theme}_control_values.png"
                     await control.screenshot(path=str(p))
                     shots.append(("control: Values", p))
+                    if control.errors:
+                        print(theme, "control console errors:", control.errors)
+            if name == "rain_man_seen_by_man":
+                async with browser_page(f"{h.url}/control", 1600, 1000) as control:
+                    await wait_for_slide(control, s.id)
+                    await control.wait_for_selector(".scene-bar")
+                    await control.wait_for_timeout(2500)
+                    await control.click(".scene-bar button:has-text('Picture')")
+                    await control.wait_for_selector(".scene-picture .pic-grid button")
+                    await control.wait_for_timeout(400)
+                    p = OUT / f"{theme}_control_picture.png"
+                    await control.screenshot(path=str(p))
+                    shots.append(("control: Picture, Seen from", p))
                     if control.errors:
                         print(theme, "control console errors:", control.errors)
     return shots
