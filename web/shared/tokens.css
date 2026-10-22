@@ -155,6 +155,18 @@
   --sim-card: rgba(28, 33, 42, 0.9);
 }
 
+/* Live scenes (F-015): colour by role, from the simulation palette of the theme (main, second, third, accent); on
+   every themed element, since a var() in a custom property resolves where it is declared */
+:root,
+[data-theme="light"],
+[data-theme="dark"] {
+  --scene-main: var(--sim-weight);
+  --scene-second: var(--sim-normal);
+  --scene-third: var(--sim-pull);
+  --scene-accent: var(--sim-applied);
+  --scene-muted: var(--sim-component);
+}
+
 /* S3 processes: water, vapour, the Sun, leaves, blood (oxygen-rich / -poor), ions, electrons; both themes */
 :root,
 [data-theme="light"] {

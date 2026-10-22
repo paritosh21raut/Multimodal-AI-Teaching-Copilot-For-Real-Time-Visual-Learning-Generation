@@ -1,0 +1,30 @@
+# F-015 L1 Live Scene Engine, ~1.5 minutes. Expect: a content slide on squares; "imagine a square of side 4 centimetres"
+# opens scene mode (a square, "4 cm" on it, area 16 cm²); the circle inside it (inscribed: radius 2 cm, area 12.6 cm²)
+# and its diagonal (5.66 cm) are added on the same slide, nothing restarts; "let's get back to the slides" ends it with
+# a recap of the root-two remark; then a slide on speed; "imagine a ball moving at 3 metres per second" opens a motion
+# scene (speed 3 m/s, distance live); "it speeds up at 2 metres per second squared" adds the acceleration without
+# restarting the clock (speed then grows: 3 + 2t); back to the slides. Templates do not start by themselves.
+@setup subject=Mathematics grade=9 topic="Shapes and motion"
+
+Good morning everyone. Today we will look at shapes and then at motion.
+[pause 1]
+A square has four equal sides and four right angles.
+[pause 1.5]
+Imagine a square of side 4 centimetres.
+[pause 2.5]
+Now a circle inside it, touching all four sides.
+[pause 2.5]
+Now draw its diagonal.
+[pause 2.5]
+The diagonal is longer than the side by a factor of root two.
+[pause 1.5]
+Okay, let's get back to the slides.
+[pause 2]
+Speed tells us how fast an object moves, and acceleration tells us how fast the speed changes.
+[pause 1.5]
+Imagine a ball moving at 3 metres per second.
+[pause 3]
+Now it speeds up at 2 metres per second squared.
+[pause 4]
+Let's get back to the slides.
+[pause 2]

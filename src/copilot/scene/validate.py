@@ -1,0 +1,287 @@
+"""Checks every SceneOp before it touches a scene (F-015 section 3). A bad op is refused with a reason (logged as
+scene.rejected by the controller), never repaired by guessing:
+
+- refs: an id must exist (or be new for `add`); kinds, relations and behaviours come from closed lists.
+- numbers: each must match a quantity heard in the scene's lines (simulation.values: digits and spoken numbers);
+  otherwise it is kept as `default`: drawn, never printed. "double it" of a known value is `computed`.
+- units: each prop has a unit family; an unknown unit or an out-of-range value refuses that prop (logged).
+- labels: a name or label prints only words the teacher said (in the lines or already in the scene).
+"""
+from __future__ import annotations
+
+import math
+import re
+from dataclasses import dataclass, field
+from typing import Any, Optional
+
+from copilot.scene.spec import (
+    BEHAVIORS, BODY_KINDS, GEOMETRY_KINDS, ID_PATTERN, KINDS, KNOWN, MAX_ENTITIES, OPS, RELATIONS, Label, Q,
+    SceneOp, SceneSpec, Source,
+)
+from copilot.simulation.values import NUM, heard, spoken_number
+
+# family -> unit -> factor to the family's base unit (m, m/s, m/s², degrees, s, kg, plain number)
+UNITS: dict[str, dict[str, float]] = {
+    "length": {"": 1.0, "m": 1.0, "cm": 0.01, "mm": 0.001, "km": 1000.0, "units": 1.0},
+    "speed": {"m/s": 1.0, "km/h": 1 / 3.6, "cm/s": 0.01},
+    "acceleration": {"m/s^2": 1.0},
+    "angle": {"deg": 1.0, "rad": 180 / math.pi},
+    "time": {"s": 1.0, "ms": 0.001, "min": 60.0},
+    "mass": {"kg": 1.0, "g": 0.001},
+    "count": {"": 1.0},
+    "number": {"": 1.0},
+}
+_ALIASES = {"metre": "m", "metres": "m", "meter": "m", "meters": "m", "centimetres": "cm", "centimeters": "cm",
+            "millimetres": "mm", "kilometres": "km", "kilometers": "km", "unit": "units", "u": "units",
+            "m/s2": "m/s^2", "m/s²": "m/s^2", "m/s/s": "m/s^2", "ms^-2": "m/s^2", "m s^-2": "m/s^2",
+            "kmph": "km/h", "kph": "km/h", "km/hr": "km/h", "°": "deg", "degree": "deg", "degrees": "deg",
+            "sec": "s", "secs": "s", "seconds": "s", "second": "s", "kilogram": "kg", "kilograms": "kg",
+            "gram": "g", "grams": "g", "radians": "rad"}
+PROPS: dict[str, str] = {
+    "side": "length", "width": "length", "height": "length", "radius": "length", "diameter": "length",
+    "length": "length", "base": "length", "sides": "count", "x": "number", "y": "number", "xmin": "number",
+    "xmax": "number", "speed": "speed", "acceleration": "acceleration", "angle": "angle", "time": "time",
+    "mass": "mass", "start": "length",
+}
+# base-unit ranges: a number outside is refused (a mishearing or a model slip), never clipped
+RANGES: dict[str, tuple[float, float]] = {
+    "length": (1e-6, 1e7), "speed": (0.0, 1e4), "acceleration": (-1e3, 1e3), "angle": (0.0, 360.0),
+    "time": (1e-3, 3600.0), "mass": (1e-6, 1e6), "count": (3, 12), "number": (-1e6, 1e6),
+}
+_RELATIVE = ((re.compile(r"\b(?:double|twice|two times)\b", re.I), 2.0),
+             (re.compile(r"\b(?:triple|three times|thrice)\b", re.I), 3.0),
+             (re.compile(r"\b(?:half|halve[sd]?)\b", re.I), 0.5))
+_NUM_RX = re.compile(NUM, re.IGNORECASE)
+_EXPR_NUM = re.compile(r"\d+(?:\.\d+)?")
+_ID = re.compile(ID_PATTERN)
+CLOSED = ("square", "rectangle", "circle", "triangle", "polygon")
+# the unit words after a said number -> its family ("radius 5 metres" is not a side of 5 cm)
+_FAMILY_AFTER = [(f, re.compile(rx, re.IGNORECASE)) for f, rx in (
+    ("acceleration", r"\s*(?:m/s(?:\^?2|²|\s+squared|\s+per\s+second)|m\s?s-2|"
+                     r"(?:metres?|meters?) per second (?:squared|per second))"),
+    ("speed", r"\s*(?:m/s|km/h|kmph|cm/s|(?:(?:centi|kilo)?(?:metres?|meters?)) (?:per|an?) (?:second|hour))"),
+    ("length", r"\s*(?:cm\b|mm\b|km\b|m\b|(?:centi|milli|kilo)?(?:metres?|meters?)\b|units?\b)"),
+    ("angle", r"\s*(?:°|degrees?\b|deg\b|radians?\b)"),
+    ("mass", r"\s*(?:kg\b|kilo(?:gram)?s?\b|grams?\b|g\b)"),
+    ("time", r"\s*(?:s\b|secs?\b|seconds?\b|ms\b|minutes?\b)"),
+)]
+_HEARD_FAMILY = {"speed": "speed", "length": "length", "angle": "angle", "mass": "mass", "time": "time"}
+
+
+@dataclass
+class Corpus:
+    """What the teacher said during this scene (bounded by the controller): the said-number and label checks."""
+    lines: list[str] = field(default_factory=list)
+    # every number as said (digits or words) with the unit family of the words after it (None: a bare number)
+    numbers: list[tuple[float, Optional[str]]] = field(default_factory=list)
+    # values.heard in its slot units, with their family (36 km/h -> 10 m/s, speed)
+    converted: list[tuple[float, str]] = field(default_factory=list)
+    text: str = ""
+
+    @classmethod
+    def of(cls, lines: list[str]) -> "Corpus":
+        nums: list[tuple[float, Optional[str]]] = []
+        conv: list[tuple[float, str]] = []
+        for line in lines:
+            for m in _NUM_RX.finditer(line):
+                v = spoken_number(m.group("num"))
+                if v is not None:
+                    fam = next((f for f, rx in _FAMILY_AFTER if rx.match(line, m.end())), None)
+                    nums.append((v, fam))
+            conv += [(h.value, _HEARD_FAMILY[h.kind]) for h in heard(line) if h.kind in _HEARD_FAMILY]
+        return cls(list(lines), nums, conv, " ".join(lines).lower())
+
+
+@dataclass
+class Checked:
+    """A valid op, normalised: numbers as Q with their source; name / label only when said."""
+    op: SceneOp
+    props: dict[str, Q] = field(default_factory=dict)
+    params: dict[str, Q] = field(default_factory=dict)
+    name: str = ""
+    label: Optional[Label] = None
+    expr_shown: str = ""   # a curve's expression as printed ("" = a number in it was not said)
+    notes: list[str] = field(default_factory=list)  # props refused (the op itself applies)
+
+
+def _close(a: float, b: float) -> bool:
+    return math.isclose(a, b, rel_tol=1e-6, abs_tol=1e-9)
+
+
+def said_words(text: str, corpus: Corpus, scene: Optional[SceneSpec] = None) -> bool:
+    """Every word of `text` was said (a plural / singular form counts) or is already a name in the scene. A label of
+    one or two letters ("A", "AB") must be said as one: "point A", "called AB" (the article "a" is not a label)."""
+    t = text.strip()
+    if 0 < len(t) <= 2:
+        return bool(re.search(rf"\b(?:point|vertex|corner|side|line|called|named|letter|"
+                              rf"(?:label(?:led)?|mark(?:ed)?|call)(?:\s+(?:it|this|that|them))?)\s+"
+                              rf"{re.escape(t)}\b", " ".join(corpus.lines)))
+    words = re.findall(r"[a-z0-9']+", text.lower())
+    if not words:
+        return False
+    known = corpus.text + " " + " ".join(e.name.lower() for e in (scene.entities if scene else []))
+    return all(re.search(rf"\b{re.escape(w)}(?:e?s)?\b", known) or (w.endswith("s") and re.search(
+        rf"\b{re.escape(w[:-1])}\b", known)) for w in words)
+
+
+def number_source(v: float, corpus: Corpus, current: Optional[Q] = None, fam: Optional[str] = None,
+                  base: Optional[float] = None) -> Source:
+    """said: the number was heard bare or with a unit of the prop's family (its sign may come from words: "slows
+    down at 2"); computed: a heard value of that family in another unit (compared in base units), or "double it" of a
+    known value; else default (drawn, never printed)."""
+    if any(_close(abs(v), abs(n)) and (f is None or fam is None or f == fam or fam in ("number", "count"))
+           for n, f in corpus.numbers):
+        return "said"
+    b = v if base is None else base
+    if any(_close(abs(b), abs(n)) and f == fam for n, f in corpus.converted):
+        return "computed"
+    if current is not None and current.source in KNOWN:
+        last = corpus.lines[-1] if corpus.lines else ""
+        for rx, k in _RELATIVE:
+            if rx.search(last) and _close(v, current.value * k):
+                return "computed"
+    return "default"
+
+
+def _unit(raw: Any) -> str:
+    u = str(raw or "").strip()
+    return _ALIASES.get(u.lower(), _ALIASES.get(u, u))
+
+
+def to_q(key: str, raw: Any, corpus: Corpus, current: Optional[Q] = None) -> tuple[Optional[Q], str]:
+    """One prop: (Q, "") or (None, why refused)."""
+    fam = PROPS.get(key)
+    if fam is None:
+        return None, f"unknown prop {key!r}"
+    if isinstance(raw, list):
+        if not raw or len(raw) > 2:
+            return None, f"{key}: bad value {raw!r}"
+        val, unit = raw[0], _unit(raw[1] if len(raw) > 1 else "")
+    else:
+        val, unit = raw, ""
+    if isinstance(val, bool) or not isinstance(val, (int, float)) or not math.isfinite(float(val)):
+        return None, f"{key}: not a number {val!r}"
+    if unit not in UNITS[fam]:
+        if fam in ("speed", "acceleration", "angle", "time", "mass") and unit == "":
+            unit = next(iter(UNITS[fam]))  # "speed 3" in a motion scene: its base unit
+        else:
+            return None, f"{key}: unit {unit!r} is not a {fam} unit"
+    base = float(val) * UNITS[fam][unit]
+    lo, hi = RANGES[fam]
+    if not lo <= base <= hi or (fam == "count" and base != int(base)):
+        return None, f"{key}: {val} {unit} out of range"
+    if current is not None and current.unit == unit and _close(current.value, float(val)):
+        return current, ""  # restated: keeps its source
+    src = number_source(float(val), corpus, current if current is not None and current.unit == unit else None,
+                        fam, base)
+    return Q(value=float(val), unit=unit, source=src), ""
+
+
+def expr_numbers_said(expr: str, corpus: Corpus) -> bool:
+    """A curve's expression is printed only when each of its numbers was said ("x squared" says the 2)."""
+    for m in _EXPR_NUM.finditer(expr):
+        v = float(m.group(0))
+        if any(_close(v, n) for n, _ in corpus.numbers):
+            continue
+        if v == 2 and re.search(r"\bsquare[ds]?\b", corpus.text) or v == 3 and re.search(r"\bcube[ds]?\b",
+                                                                                          corpus.text):
+            continue
+        return False
+    return True
+
+
+_PAIRS: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {  # relation -> (kinds of a, kinds of b)
+    "inscribed_in": (CLOSED, CLOSED), "around": (CLOSED, CLOSED),
+    "diagonal_of": (("segment",), ("square", "rectangle", "polygon")),
+    "radius_of": (("segment",), ("circle",)), "diameter_of": (("segment",), ("circle",)),
+    "tangent_to": (("segment",), ("circle",)), "bisector_of": (("segment",), ("segment",)),
+    "midpoint_of": (("point",), ("segment",)),
+}
+
+
+def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Checked], str]:
+    """(Checked, "") or (None, why the op is refused)."""
+    if op.op not in OPS:
+        return None, f"unknown op {op.op!r}"
+    ent = scene.get(op.id) if op.id else None
+    if op.op == "add":
+        if not _ID.match(op.id or ""):
+            return None, f"bad id {op.id!r}"
+        if op.kind not in KINDS:
+            return None, f"kind {op.kind!r} is not drawn (yet)"
+        if ent is not None and ent.kind != op.kind:
+            return None, f"id {op.id} is already a {ent.kind}"
+        if ent is None and len(scene.entities) >= MAX_ENTITIES:
+            return None, "the scene is full"
+        if op.kind == "curve":
+            from copilot.scene.worlds.plot import parse
+            if not op.expr:
+                return None, "a curve needs expr"
+            try:
+                parse(op.expr)
+            except ValueError as err:
+                return None, f"expr refused: {err}"
+    elif op.op in ("set", "remove", "label"):
+        if ent is None:
+            return None, f"{op.op}: no entity {op.id!r}"
+        if op.op == "set" and op.expr:
+            from copilot.scene.worlds.plot import parse
+            try:
+                parse(op.expr)
+            except ValueError as err:
+                return None, f"expr refused: {err}"
+    elif op.op == "relate":
+        a, b = scene.get(op.a), scene.get(op.b)
+        if op.kind not in RELATIONS:
+            return None, f"unknown relation {op.kind!r}"
+        if a is None or b is None or a.id == b.id:
+            return None, f"relate: bad refs {op.a!r}, {op.b!r}"
+        pair = _PAIRS.get(op.kind)
+        if pair is not None and (a.kind not in pair[0] or b.kind not in pair[1]):
+            return None, f"{op.kind}: not for a {a.kind} and a {b.kind}"
+        if op.kind == "on" and a.kind != "point":
+            return None, "on: only a point lies on something"
+        chain = {r.a: r.b for r in scene.relations if r.a != a.id}  # a's own relation is replaced by this one
+        cur, seen = b.id, set()
+        while cur in chain and cur not in seen:
+            seen.add(cur)
+            cur = chain[cur]
+        if cur == a.id:
+            return None, f"relate: {a.id} would be placed by itself (a cycle through {b.id})"
+    elif op.op == "behave":
+        t = scene.get(op.target)
+        if op.kind not in BEHAVIORS:
+            return None, f"unknown behaviour {op.kind!r}"
+        if t is None or t.kind not in BODY_KINDS:
+            return None, f"behave: {op.target!r} is not a body"
+    elif op.op == "focus":
+        if not op.ids or any(scene.get(i) is None for i in op.ids):
+            return None, f"focus: bad refs {op.ids!r}"
+    out = Checked(op)
+    for key, raw in op.props.items():
+        q, why = to_q(key, raw, corpus, ent.props.get(key) if ent is not None else None)
+        if q is None:
+            out.notes.append(why)
+        else:
+            out.props[key] = q
+    beh = next((x for x in scene.behaviors if x.target == op.target and x.kind == op.kind), None)
+    for key, raw in op.params.items():
+        q, why = to_q(key, raw, corpus, beh.params.get(key) if beh is not None else None)
+        if q is None:
+            out.notes.append(why)
+        else:
+            out.params[key] = q
+    if op.name:
+        out.name = op.name.strip()[:40] if said_words(op.name, corpus, scene) else ""
+        if not out.name:
+            out.notes.append(f"name {op.name!r} not said: not printed")
+    if op.expr:
+        from copilot.scene.worlds.plot import pretty
+        out.expr_shown = pretty(op.expr) if expr_numbers_said(op.expr, corpus) else ""
+    if op.op == "label":
+        if not said_words(op.text, corpus, scene):
+            return None, f"label {op.text!r} was not said"
+        out.label = Label(text=op.text.strip()[:40], source="said")
+    if op.op == "add" and op.kind in GEOMETRY_KINDS + ("curve",) and not op.name and said_words(op.kind, corpus):
+        out.name = op.kind  # "imagine a square": the teacher's word is the kind's
+    return out, ""

@@ -76,9 +76,13 @@ _Built as "V2" (groups A–D); renamed 2026-10-17 when Concept Simulation became
   0-token replay · **S2** relative phrases, graphs, readouts, optional LLM field · **S3** processes · **S4** hard
   topics (p-n junction, RLC transients / resonance / phasors, networks: packets, routing, TCP) · **Explore mode**
   for students on /view (later).
+- **V2 Next — F-015 Live Scene Engine** (`docs/v2/`, planned 2026-10-22): open-vocabulary scenes from speech, no
+  templates. The LLM emits typed SceneOps; Python engines compute. **L1** scene core (geometry, plot, motion) · **L2**
+  science worlds (rigid, field, wave/optics, particles) + nouns not built in · **L3** any subject (flow, graph) + continuity + teacher
+  panel · **L4** benchmark + baseline + ablations (paper 2). Templates: teacher pick only.
 
 ## V3 — Story Scenes mode
-- Narrative detection → a storyboard of scenes (retrieved and optionally locally generated stills),
+- Reuses the F-015 SceneSpec (`docs/v3/V3-story-outline.md`). Narrative detection → a storyboard of scenes (retrieved and optionally locally generated stills),
   procedural camera motion, captions, timeline. See ADR-0006.
 
 ## V4 — Multilingual

@@ -476,6 +476,39 @@ function SimBar({ spec, b, send, running }) {
   </div>`;
 }
 
+// F-015: the bar of a live scene: the same playback controls; Values lists what the scene holds (read only in L1:
+// each value with where it came from, a default marked "not said": drawn, never printed); no template picker.
+const SRC_WORD = { said: "said", teacher: "yours", computed: "computed" };
+function SceneBar({ spec, b, send, running }) {
+  const scene = b.scene;
+  const cmd = (kind, args = {}) => () => send(kind, { slide_id: spec.id, ...args });
+  const playing = scene.playback.state === "playing";
+  const speed = scene.playback.speed;
+  const nextSpeed = SIM_SPEEDS[(SIM_SPEEDS.indexOf(speed) + 1) % SIM_SPEEDS.length] || 1;
+  const [menu, setMenu, ref] = usePopover();
+  const moving = !!scene.frames;
+  const rows = scene.entities.flatMap((e) => Object.entries(e.props).map(([k, q]) => ({ id: `${e.id}.${k}`, who: e.name || e.kind, k, q })));
+  return html`<div class="image-bar sim-bar scene-bar menu-wrap" ref=${ref}>
+    ${moving && html`<button class="icon" onClick=${cmd(playing ? "sim_pause" : "sim_play")} title=${playing ? "Pause the motion" : "Play the motion"}>
+      ${svg(playing ? ICON.pause : ICON.play)}</button>
+    <button class="icon" onClick=${cmd("sim_step")} title="One step on (pauses)">${svg(ICON.step)}</button>
+    <button class="icon" onClick=${cmd("sim_reset")} title="Start the motion again">${svg(ICON.restart)}</button>
+    <button class="speed" onClick=${cmd("sim_set", { speed: nextSpeed })} title="Speed of the motion">${speedLabel(speed)}</button>
+    <span class="sep"></span>`}
+    <button class=${menu === "values" ? "on" : ""} onClick=${() => setMenu(menu === "values" ? false : "values")} title="What the scene holds">${svg(ICON.sliders)}Values</button>
+    <button class="icon" onClick=${cmd("sim_full", { on: true })} title="Full screen on the display">${svg(ICON.full)}</button>
+    <button class="icon" onClick=${cmd("sim_remove")} title="Take the scene off this slide">${svg(ICON.remove)}</button>
+    ${running && html`<span class="sep"></span><button class="sim-end" onClick=${() => send("sim_end")}
+      title="End the scene: slides resume, first a recap of what you taught">${svg(ICON.back)}Back to slides</button>`}
+    ${menu === "values" && html`<div class="menu up sim-values" role="dialog">
+      ${rows.length === 0 && html`<div class="sim-row"><span>Nothing with a value yet</span></div>`}
+      ${rows.map((r) => html`<div key=${r.id} class="sim-row"><span>${r.who} · ${r.k}</span>
+        <span class="num">${r.q.value} ${r.q.unit}</span>
+        <b class=${"src " + (SRC_WORD[r.q.source] ? r.q.source : "default")}>${SRC_WORD[r.q.source] || "not said"}</b></div>`)}
+    </div>`}
+  </div>`;
+}
+
 // One value of the Values popover: a number field in the slot's range, and where its value came from.
 function SimValue({ sl, sim, onSet }) {
   const src = sim.param_source[sl.name] || "default";
@@ -632,7 +665,7 @@ function SimSettingPill({ setting, send }) {
 function SuggestChip({ suggestion, send }) {
   if (!suggestion) return null;
   return html`<div class="sim-chip" role="status" title=${suggestion.text}>
-    ${svg(ICON.sim)}<span>Show the <b>${suggestion.name}</b> simulation?</span>
+    ${svg(ICON.sim)}<span>${suggestion.template === "scene" ? html`Draw the <b>${suggestion.name}</b> scene?` : html`Show the <b>${suggestion.name}</b> simulation?`}</span>
     <button class="primary" onClick=${() => send("sim_accept", { id: suggestion.id })}>Show</button>
     <button class="icon" onClick=${() => send("sim_dismiss", { id: suggestion.id })} aria-label="Not now" title="Not now">${svg(ICON.remove)}</button>
   </div>`;
@@ -759,7 +792,7 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
     ${zoomed && html`<button class="back" onClick=${() => send("unzoom_image")} title="Back to the slide (Esc)">
       ${svg(ICON.back)}<span>Back to slide</span><kbd>Esc</kbd></button>`}
     ${spec && spec.layout !== "title" && !zoomed && !simFull && !drag && !onScreen && (sim
-      ? html`<${SimBar} spec=${spec} b=${sim} send=${send} running=${!!(deck && deck.sim_mode === spec.id)} />`
+      ? html`<${sim.type === "scene" ? SceneBar : SimBar} spec=${spec} b=${sim} send=${send} running=${!!(deck && deck.sim_mode === spec.id)} />`
       : html`<${ImageBar} spec=${spec} image=${image} choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`)}
     <${NotesOnScreen} shown=${notesShown} send=${send} />
     ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} notes=${notes} mode=${mode} simSetting=${simSetting} send=${send} />`}

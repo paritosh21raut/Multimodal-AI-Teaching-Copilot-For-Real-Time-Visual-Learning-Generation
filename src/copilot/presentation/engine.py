@@ -58,6 +58,7 @@ from copilot.presentation.content import Piece, clean, pieces_and_chain
 from copilot.presentation.deck import Deck
 from copilot.core.memory import is_child_facet, same_subject, same_title, short_name, title_key, titles_match
 from copilot.presentation.planner import Decision, Frame, Signal, Working, decide
+from copilot.presentation.scenes import SceneController
 from copilot.presentation.simulations import SimulationController
 from copilot.core.interpretation import VisualHint
 from copilot.presentation.spec import DefinitionBlock, ImageBlock, ItemImage, SlideSpec
@@ -95,6 +96,8 @@ class PresentationSettings:
     shift_threshold: float = 0.75
     title_slide: bool = True
     simulations: str = "auto"  # F-014: auto (a spoken cue shows one) | suggest (a /control chip) | off
+    templates_auto: bool = True  # F-015: a spoken cue starts a template (config: off; the teacher's pick still works)
+    scenes: bool = True          # F-015: live scenes from spoken cues (an LLM call each; follows `simulations`)
 
     @classmethod
     def from_config(cls, config: Config) -> "PresentationSettings":
@@ -332,7 +335,8 @@ class PresentationEngine:
         self._teacher: set[str] = set()
         self._teacher_titles: set[str] = set()
         self._dismissed: dict[str, list[str]] = {}
-        self._sims = SimulationController(self)  # F-014 Concept Simulation
+        self._sims = SimulationController(self)  # F-014 Concept Simulation (owns the one visual mode)
+        self._scenes = SceneController(self)     # F-015 Live Scene Engine (runs in that mode)
 
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
@@ -343,6 +347,8 @@ class PresentationEngine:
         self._tasks = [asyncio.create_task(self._ticker(), name="presentation:ticker")]
 
     async def stop(self) -> None:
+        if self._scenes.open is not None and self._scenes.open.task is not None:
+            self._scenes.open.task.cancel()  # F-015: a scene call still streaming
         for t in self._tasks:
             t.cancel()
         if self._tasks:
@@ -389,9 +395,14 @@ class PresentationEngine:
                 elif event.command.kind == "show_equation":
                     await self._show_equation(str(event.command.args.get("id") or ""))
                 elif event.command.kind.startswith("sim_") and event.command.kind != "sim_full":
-                    await self._sims.on_command(event.command.kind, event.command.args)
+                    kind, args = event.command.kind, event.command.args
+                    if kind != "sim_end" and self._scenes.owns(kind, args):  # F-015: a scene's slide / chip
+                        await self._scenes.on_command(kind, args)
+                    else:
+                        await self._sims.on_command(kind, args)
             elif isinstance(event, RepresentationIntent):
                 await self._sims.on_intent(event)
+                await self._scenes.on_intent(event)
             elif isinstance(event, TranscriptFinal):  # what was said, for named equations (F-013 S3)
                 self._said[event.segment.id] = event.segment.text
                 while len(self._said) > MAX_SIGNALS:
@@ -426,6 +437,7 @@ class PresentationEngine:
                         await self._clear_provisional()
                     await self._expire_cues()
                     await self._sims.tick()
+                    await self._scenes.tick()
             except asyncio.CancelledError:
                 raise
             except Exception:

@@ -1,10 +1,11 @@
 """OpenAI-compatible chat-completions client (Groq and Ollama expose /v1/chat/completions)."""
 from __future__ import annotations
 
+import json
 import re
 import time
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 import httpx
 
@@ -117,7 +118,9 @@ class OpenAICompatProvider:
         return self.cfg.name
 
     async def complete(self, messages: list[dict[str, str]], *, max_tokens: int, timeout: float,
-                       temperature: float = 0.2) -> LLMResponse:
+                       temperature: float = 0.2, on_text: Optional[Callable[[str], None]] = None) -> LLMResponse:
+        """One chat completion. on_text (F-015): stream it (SSE, plain text, no JSON mode) and pass each piece of
+        text as it arrives; the whole text and the usage are still returned at the end."""
         body: dict[str, Any] = {
             "model": self.cfg.model,
             "messages": messages,
@@ -125,16 +128,22 @@ class OpenAICompatProvider:
             "max_tokens": min(max_tokens, self.cfg.max_output_tokens or max_tokens),
             **self.cfg.extra,
         }
-        if self.cfg.json_mode:
+        if on_text is not None:
+            body["stream"] = True
+        elif self.cfg.json_mode:
             body["response_format"] = {"type": "json_object"}
         headers = {"Authorization": f"Bearer {self._key}"} if self._key else {}
         url = self.cfg.base_url.rstrip("/") + "/chat/completions"
         t0 = time.perf_counter()
+        to = httpx.Timeout(timeout, connect=min(timeout, 2.0))
         try:
-            resp = await self._client.post(
-                url, json=body, headers=headers,
-                timeout=httpx.Timeout(timeout, connect=min(timeout, 2.0)),
-            )
+            if on_text is not None:
+                async with self._client.stream("POST", url, json=body, headers=headers, timeout=to) as resp:
+                    if resp.status_code >= 400:
+                        await resp.aread()
+                    _check_status(resp)
+                    return await _read_stream(resp, on_text, t0)
+            resp = await self._client.post(url, json=body, headers=headers, timeout=to)
         except (httpx.ConnectError, httpx.ConnectTimeout) as e:
             # nothing listening (on Windows a refused localhost connect can surface as ConnectTimeout): cool down
             raise Unavailable(f"connect failed: {type(e).__name__}") from e
@@ -143,15 +152,7 @@ class OpenAICompatProvider:
         except httpx.HTTPError as e:  # TransportError, DecodingError, TooManyRedirects, ...
             raise Transient(f"http error: {type(e).__name__}") from e
         latency = (time.perf_counter() - t0) * 1000
-
-        if resp.status_code == 429:
-            raise rate_limited(resp)
-        if resp.status_code >= 500:
-            raise Transient(f"{resp.status_code} {resp.text[:200]}")
-        if resp.status_code >= 400:
-            if "json_validate_failed" in resp.text:
-                raise InvalidOutput(f"{resp.status_code} json_validate_failed")
-            raise Rejected(f"{resp.status_code} {resp.text[:300]}")
+        _check_status(resp)
         try:
             data = resp.json()
         except ValueError as e:
@@ -168,17 +169,67 @@ class OpenAICompatProvider:
             content = "".join(p.get("text", "") for p in content if isinstance(p, dict))
         if not isinstance(content, str) or not content.strip():
             raise InvalidOutput("empty content")
-        text = content
         usage = data.get("usage") if isinstance(data.get("usage"), dict) else {}
-        remaining = resp.headers.get("x-ratelimit-remaining-tokens")
+        return _response(content, usage, resp, latency)
+
+
+def _check_status(resp: httpx.Response) -> None:
+    if resp.status_code == 429:
+        raise rate_limited(resp)
+    if resp.status_code >= 500:
+        raise Transient(f"{resp.status_code} {resp.text[:200]}")
+    if resp.status_code >= 400:
+        if "json_validate_failed" in resp.text:
+            raise InvalidOutput(f"{resp.status_code} json_validate_failed")
+        raise Rejected(f"{resp.status_code} {resp.text[:300]}")
+
+
+def _response(text: str, usage: dict, resp: httpx.Response, latency: float) -> LLMResponse:
+    remaining = resp.headers.get("x-ratelimit-remaining-tokens")
+    try:
+        remaining_f = float(remaining) if remaining is not None else None
+    except ValueError:
+        remaining_f = None
+    return LLMResponse(
+        text=text,
+        prompt_tokens=_int(usage.get("prompt_tokens")),
+        completion_tokens=_int(usage.get("completion_tokens")),
+        latency_ms=latency,
+        remaining_tokens=remaining_f,
+    )
+
+
+async def _read_stream(resp: httpx.Response, on_text: Callable[[str], None], t0: float) -> LLMResponse:
+    """Server-sent events of an OpenAI-compatible stream: `data: {chunk}` lines, `data: [DONE]` at the end. The usage
+    comes in the last chunk (`usage`, or Groq's `x_groq.usage`). An empty answer is valid here (a streamed caller
+    may ask for "nothing to change" as no output, F-015); one cut off by the token limit is not."""
+    parts: list[str] = []
+    usage: dict = {}
+    finish = ""
+    async for line in resp.aiter_lines():
+        if not line.startswith("data:"):
+            continue
+        data = line[5:].strip()
+        if data == "[DONE]":
+            break
         try:
-            remaining_f = float(remaining) if remaining is not None else None
+            chunk = json.loads(data)
         except ValueError:
-            remaining_f = None
-        return LLMResponse(
-            text=text,
-            prompt_tokens=_int(usage.get("prompt_tokens")),
-            completion_tokens=_int(usage.get("completion_tokens")),
-            latency_ms=latency,
-            remaining_tokens=remaining_f,
-        )
+            continue
+        if not isinstance(chunk, dict):
+            continue
+        if chunk.get("error") and not chunk.get("choices"):
+            raise Transient(f"error in stream: {str(chunk['error'])[:200]}")
+        u = chunk.get("usage") or (chunk.get("x_groq") or {}).get("usage")
+        if isinstance(u, dict):
+            usage = u
+        for ch in chunk.get("choices") or []:
+            finish = (ch or {}).get("finish_reason") or finish
+            piece = ((ch or {}).get("delta") or {}).get("content")
+            if isinstance(piece, str) and piece:
+                parts.append(piece)
+                on_text(piece)
+    text = "".join(parts)
+    if finish == "length" and not text.strip():
+        raise InvalidOutput("the token limit ended the stream before any text")
+    return _response(text, usage, resp, (time.perf_counter() - t0) * 1000)

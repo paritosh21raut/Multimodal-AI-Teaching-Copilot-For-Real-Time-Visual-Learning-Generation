@@ -43,6 +43,7 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
   # definition gets `image` { url, alt, image_id, aspect } (F-013 S4): its picture when concepts stand side by side
   callout      { kind: note|tip|key, text }
   simulation   { sim: SimulationSpec }       # F-014 (V2): docs/contracts/simulation-spec.md
+  scene        { scene: SceneSpec }          # F-015 (V2 Next): docs/contracts/scene-spec.md
   storyboard   { scenes[] }                  # V3
 ```
 
@@ -83,6 +84,8 @@ Block (discriminated by `type`), each with a stable `id` and items with stable i
   1100 px column (`composer.SIM_COLUMN_PX`), the other blocks stacked beside it in 540 px (`slide.js` `splitBlocks`);
   its height is the body budget. Not content: no teacher item, not in the prompt or correction targets. The deck's
   `sim_full` (slide id) shows it full stage on /display (navigating ends it).
+- `scene` (F-015): a live scene; every rule of `simulation` above holds for it (the same visual column, layout,
+  stage, `sim_full`, sim bar; one stage per slide: a simulation or a scene).
 - F-013 S3a (no schema change): "Label: …" points of one shape become `groups` / `facts` / member `definition`
   blocks; `timeline` events are dated; a secondary block with `about` renders with its definition card, never in the
   aside (`composer._split` = slide.js `splitBlocks`); slide.js `titleNames` folds plurals and ignores a bracketed acronym.

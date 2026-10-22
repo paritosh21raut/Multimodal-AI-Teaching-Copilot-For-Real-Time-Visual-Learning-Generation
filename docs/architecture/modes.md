@@ -30,6 +30,10 @@ visualization useful?" is the policy's decision (a setup with dynamics → yes; 
 - A still frame of each simulation (its `still_t` moment, no clock) in the PPTX export and the archive viewer.
 - The teacher's Full stage (`sim_full`) shows it full screen, like a zoomed image.
 
+## Live Scene Engine (V2 Next) → `docs/v2/F-015-live-scene-engine.md`
+- `visual_kind = scene`: open-vocabulary scenes from speech, with no templates. The LLM emits typed SceneOps, a validator checks them, Python
+  world engines compute, and a generic renderer draws. Templates start only when the teacher picks one in /control.
+
 ## Story Scenes (V3)
 - First version: a storyboard of 3–6 scenes from retrieved images (or teacher images) with Ken Burns motion,
   captions, and a timeline, synchronized to the narration. See ADR-0006 for why this is not generative video. It

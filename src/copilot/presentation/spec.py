@@ -6,6 +6,7 @@ from typing import Annotated, Literal, Optional, Union
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from copilot.core.events import new_id
+from copilot.scene.spec import SceneSpec
 from copilot.simulation.registry import SimulationSpec
 
 Layout = Literal[
@@ -226,11 +227,20 @@ class SimulationBlock(_Model):
     sim: SimulationSpec
 
 
+class SceneBlock(_Model):
+    """A live scene (F-015, docs/contracts/scene-spec.md): drawn from SceneOps the lecture stated, in the simulation
+    layout's visual column. Not teacher text. Its id stays the same while the scene is edited (the clients keep its
+    clock)."""
+    type: Literal["scene"] = "scene"
+    id: str = Field(default_factory=new_id)
+    scene: SceneSpec
+
+
 Block = Annotated[
     Union[
         DefinitionBlock, PointsBlock, ProcessBlock, ComparisonBlock, TimelineBlock, HierarchyBlock,
         CauseEffectBlock, FormulaBlock, ExampleBlock, CalloutBlock, ImageBlock, FactsBlock, GroupsBlock,
-        SimulationBlock,
+        SimulationBlock, SceneBlock,
     ],
     Field(discriminator="type"),
 ]

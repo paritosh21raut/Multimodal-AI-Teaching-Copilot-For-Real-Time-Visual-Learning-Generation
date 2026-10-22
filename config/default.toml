@@ -29,6 +29,8 @@ provisional = true         # fast path: keyword teaser on the live slide until t
 provisional_ttl_s = 20.0
 title_slide = true         # title slide at LIVE when an expected topic is given
 simulations = "auto"       # F-014: auto (a spoken cue shows one) | suggest (a /control chip) | off; the teacher's switch wins (data/preferences.json)
+templates_auto = false     # F-015 (2026-10-22): the 21 templates start only when the teacher picks one in /control
+scenes = true              # F-015: "imagine a square..." draws a live scene (one LLM call per cue / edit; follows `simulations`)
 
 [images]
 enabled = true             # automatic images (F-007b); the teacher's own images work either way

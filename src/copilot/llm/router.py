@@ -146,9 +146,13 @@ class LLMRouter:
                 log.exception("llm failure hook raised")
 
     async def complete(self, messages: list[dict[str, str]], *, est_tokens: int, max_tokens: int,
-                       deadline: float, timeout_s: Optional[float] = None) -> RouterResult:
+                       deadline: float, timeout_s: Optional[float] = None,
+                       on_text: Optional[Callable[[Optional[str]], None]] = None) -> RouterResult:
         """Try entries in order until one returns text. `deadline` is a time.monotonic() value.
-        timeout_s: per HTTP attempt instead of the live default (F-010: writing study material takes longer)."""
+        timeout_s: per HTTP attempt instead of the live default (F-010: writing study material takes longer).
+        on_text (F-015): stream the answer, each piece of text as it arrives; on_text(None) before every attempt
+        (a retry or the next key streams again from the start: the caller resets its parser). Usage is recorded as
+        for any call."""
         st = self.settings
         if timeout_s is not None:
             from dataclasses import replace
@@ -179,7 +183,7 @@ class LLMRouter:
                 if refusal in ("rpm", "tpm"):
                     busy.append(entry)
                 continue
-            result = await self._call(entry, messages, max_tokens, budget, deadline, attempts, st)
+            result = await self._call(entry, messages, max_tokens, budget, deadline, attempts, st, on_text)
             if result is not None:
                 return result
         # nothing could take the call now: rather than lose the content to the fallback, wait for the entry that
@@ -193,7 +197,7 @@ class LLMRouter:
                 await asyncio.sleep(wait + 0.05)
                 refusal = entry.limiter.admit(budget)
                 if refusal is None:
-                    result = await self._call(entry, messages, max_tokens, budget, deadline, attempts, st)
+                    result = await self._call(entry, messages, max_tokens, budget, deadline, attempts, st, on_text)
                     if result is not None:
                         return result
                 else:
@@ -202,7 +206,8 @@ class LLMRouter:
 
     async def _call(self, entry: Entry, messages: list[dict[str, str]], max_tokens: int, budget: int,
                     deadline: float, attempts: list[str],
-                    st: Optional[RouterSettings] = None) -> Optional[RouterResult]:
+                    st: Optional[RouterSettings] = None,
+                    on_text: Optional[Callable[[Optional[str]], None]] = None) -> Optional[RouterResult]:
         """One admitted entry: the call with its retries. None = failed (go on to the next entry)."""
         st = st or self.settings
         for attempt in range(st.retries + 1):
@@ -217,9 +222,12 @@ class LLMRouter:
             err: Optional[LLMError] = None
             try:
                 # httpx timeouts are per phase (a trickling body resets them): enforce a hard total limit
+                stream = {"on_text": on_text} if on_text is not None else {}
+                if on_text is not None:
+                    on_text(None)  # a new stream: what an earlier attempt sent is void
                 resp = await asyncio.wait_for(
-                    entry.provider.complete(messages, max_tokens=max_tokens, timeout=limit), timeout=limit + 0.5
-                )
+                    entry.provider.complete(messages, max_tokens=max_tokens, timeout=limit, **stream),
+                    timeout=limit + 0.5)
             except asyncio.TimeoutError:
                 err = Transient(f"no complete response within {limit + 0.5:.1f}s")
             except LLMError as e:

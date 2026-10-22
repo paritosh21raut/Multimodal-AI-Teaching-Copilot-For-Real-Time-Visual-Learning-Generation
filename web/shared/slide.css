@@ -827,3 +827,35 @@ sub { font-size: 0.68em; line-height: 0; vertical-align: -0.28em; }
 .sim-thermo { fill: var(--sim-card); stroke: var(--sim-surface); stroke-width: 4; }
 .sim-thermo-fill { fill: var(--sim-friction); }
 .sim-pipe { fill: none; stroke: var(--sim-surface); stroke-width: 6; stroke-linejoin: round; }
+
+/* Live scenes (F-015): one stroke weight, colour by role, a soft fill for closed shapes; new parts morph in */
+.sc-shape { fill: none; stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
+polygon.sc-shape, circle.sc-shape:not(.sc-dot) { fill-opacity: 0.1; }
+.sc-shape.r-main { stroke: var(--scene-main); fill: var(--scene-main); }
+.sc-shape.r-second { stroke: var(--scene-second); fill: var(--scene-second); }
+.sc-shape.r-third { stroke: var(--scene-third); fill: var(--scene-third); }
+.sc-shape.r-accent { stroke: var(--scene-accent); fill: var(--scene-accent); }
+.sc-shape.r-muted { stroke: var(--scene-muted); fill: var(--scene-muted); }
+.sc-line, .sc-curve { fill: none !important; }
+.sc-curve { stroke-width: 5; }
+.sc-dot { fill-opacity: 1; stroke-width: 0; }
+.sc-shape.focus { stroke-width: 8; }
+.sc-body circle, .sc-body rect, .sc-body path { stroke: var(--sim-block-edge); stroke-width: 4; }
+.sc-body.r-main circle, .sc-body.r-main rect, .sc-body.r-main path { fill: var(--scene-main); }
+.sc-body.r-second circle, .sc-body.r-second rect, .sc-body.r-second path { fill: var(--scene-second); }
+.sc-body.r-third circle, .sc-body.r-third rect, .sc-body.r-third path { fill: var(--scene-third); }
+.sc-body.r-accent circle, .sc-body.r-accent rect, .sc-body.r-accent path { fill: var(--scene-accent); }
+rect.sc-body.r-main, circle.sc-body.r-main { fill: var(--scene-main); stroke: var(--sim-block-edge); stroke-width: 4; }
+rect.sc-body.r-second, circle.sc-body.r-second { fill: var(--scene-second); stroke: var(--sim-block-edge); stroke-width: 4; }
+.sc-body .wheel { fill: var(--sim-surface) !important; }
+.sc-body .spoke { stroke: var(--sim-block); stroke-width: 4; stroke-linecap: round; }
+.sc-name.r-main .sym { fill: var(--scene-main); } .sc-name.r-second .sym { fill: var(--scene-second); }
+.sc-name.r-third .sym { fill: var(--scene-third); } .sc-name.r-accent .sym { fill: var(--scene-accent); }
+.sc-expr .val { font-family: KaTeX_Main, "Cambria Math", serif; font-style: italic; }
+.sc-dim .val { font-weight: 600; fill: var(--ink-2); }
+.sc-axes .axis { stroke: var(--sim-surface); stroke-width: 3; }
+.sc-axes .tick { stroke: var(--sim-surface); stroke-width: 2; }
+.sc-axes .tick-label { font-size: 22px; fill: var(--muted); }
+.sc-ent { animation: sc-in 280ms ease-out both; transform-box: fill-box; transform-origin: center; }
+@keyframes sc-in { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .sc-ent { animation: none; } }

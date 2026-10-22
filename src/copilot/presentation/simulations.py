@@ -45,7 +45,7 @@ from copilot.presentation.planner import Frame
 from copilot.presentation.recap import recap_pieces
 from copilot.presentation.spec import SimulationBlock, SlideSpec
 from copilot.simulation import registry, steps
-from copilot.simulation.base import SimBase, fmt, known
+from copilot.simulation.base import Playback, SimBase, fmt, known
 from copilot.simulation.policy import decide
 from copilot.simulation.values import resolve
 
@@ -76,6 +76,7 @@ class SimMode:
     collected: list[Piece] = field(default_factory=list)
     last: Optional[str] = None         # the slot changed or mentioned last (a bare number goes there)
     origin: str = "cue"
+    kind: str = "simulation"           # F-015: "scene" (a live scene runs in the same mode: one at a time)
 
 
 @dataclass
@@ -129,6 +130,8 @@ class SimulationController:
         new topic. Its graph, or a word of the template's own lexicon (S4: found in the live RLC run)."""
         if self.mode is None:
             return False
+        if getattr(self.mode, "kind", "simulation") == "scene":  # F-015: "the graph of y equals x squared" is the open scene's
+            return self.e._scenes.about(title)
         t = registry.TEMPLATES.get(self.mode.template)
         return bool(re.search(r"\b(?:graph|plot|curve)\b", title, re.IGNORECASE)) and t is not None and bool(
             t.lexicon.search(title)) or bool(t is not None and t.setup.search(title))
@@ -188,9 +191,13 @@ class SimulationController:
 
     async def _take_off(self, block_id: str) -> None:
         spec, b = self._block(block_id)
-        if spec is None:
-            return
-        rest = spec.model_copy(update={"blocks": [x for x in spec.blocks if x.type != "simulation"]})
+        if spec is not None:
+            await self.take_off(spec)
+
+    async def take_off(self, spec: SlideSpec) -> None:
+        """The slide's stage goes (a simulation, F-015 a scene): the slide keeps its other blocks, or goes itself."""
+        from copilot.presentation.composer import STAGES
+        rest = spec.model_copy(update={"blocks": [x for x in spec.blocks if x.type not in STAGES]})
         if rest.blocks:
             from copilot.presentation.composer import without_simulation
             await self.e._commit(without_simulation(spec))
@@ -285,6 +292,10 @@ class SimulationController:
         if ev.visual_kind != "simulation":
             return
         m = self.mode
+        if m is not None and m.kind != "simulation":  # F-015: a scene is open; only the shared end cue is for it
+            if ev.strength == "end":
+                await self.end(f"heard {ev.text[:60]!r}")
+            return
         if m is not None and self._block(m.block_id)[1] is None:  # its slide went away (removed by the teacher)
             await self.end("the simulation's slide was removed")
             m = None
@@ -316,6 +327,8 @@ class SimulationController:
                 # where ... water"): only a spoken cue switches; the line still talks to the open one
                 action = dataclasses.replace(action, kind="update", reason="a process switches only on a cue")
                 tid = m.template
+        if action.kind in ("show", "suggest") and not self.e.s.templates_auto:
+            action = dataclasses.replace(action, kind="ignore", reason="templates start only by the teacher's pick")
         log.info("[SIM] %s %s: %s (%s)", ev.strength, tid or "-", action.kind, action.reason)
         if action.kind == "ignore":
             return
@@ -356,12 +369,13 @@ class SimulationController:
             log.info("[SIM] %s %s: %s", action.kind, sim.template, {s: v for s, v, _ in vals})
 
     # ---- simulation mode ------------------------------------------------------------------------------------
-    async def start(self, tid: str, lines: list[str], *, origin: str, reveal: Optional[list[str]] = None,
-                    cue_segment: str = "") -> None:
-        """Simulation mode: the simulation on a new slide of its own; the slides wait until it ends."""
+    async def begin(self, key: str, kind: str, block_id: str, title: str, origin: str, cue_segment: str = ""
+                    ) -> SimMode:
+        """The shared start of a visual mode (a simulation, F-015 a scene): the running one ends, slides waiting go
+        first, the cue slide goes; the mode exists before its slide (its values are read against it)."""
         e = self.e
         if self.mode is not None:
-            await self.end("another simulation was started")
+            await self.end(f"another {kind} was started")
         self.ended = None
         await self._clear_suggestion()
         while e._pending:  # slides waiting for the dwell time go first: the simulation comes after them
@@ -370,33 +384,46 @@ class SimulationController:
             await e._clear_provisional()
         await e._drop_cue(keep_working=True)
         frame = self._topic_frame()
+        self.mode = SimMode(block_id, "", key, frame, e._working_id,
+                            e._seg_order.get(cue_segment, e._seg_n + 1), e.now(), [title], origin=origin, kind=kind)
+        return self.mode
+
+    async def place(self, mode: SimMode, block: Any, title: str, reason: str) -> SlideSpec:
+        """The mode's own slide (only the stage, titled, under the topic's crumb); the deck and /control learn the
+        mode is on."""
+        e = self.e
+        frame = mode.frame
+        spec = with_simulation(frame_slide(frame.topic, title, continuation_of=e._working_id), block)
+        spec = spec.model_copy(update={"title": title})
+        from copilot.presentation.engine import SlideMeta  # the engine imports this module
+
+        await e._open(spec, SlideMeta(Frame(frame.topic, title), is_title=True), exempt=True)
+        e._working_id = spec.id
+        mode.slide_id = spec.id
+        await e.deck.set_sim_mode(spec.id)
+        await e.bus.publish(SimulationModeChanged(on=True, slide_id=spec.id, template=mode.template, reason=reason))
+        log.info("[SIM] %s mode on: %s on its own slide (%s)", mode.kind, title, mode.origin)
+        return spec
+
+    async def start(self, tid: str, lines: list[str], *, origin: str, reveal: Optional[list[str]] = None,
+                    cue_segment: str = "") -> None:
+        """Simulation mode: the simulation on a new slide of its own; the slides wait until it ends."""
+        e = self.e
         sim = registry.build(tid, origin=origin)  # type: ignore[arg-type]
         block = SimulationBlock(sim=sim)
+        mode = await self.begin(tid, "simulation", block.id, sim.title, origin, cue_segment)
         self.revealed[block.id] = set(reveal or ())
-        mode = SimMode(block.id, "", tid, frame, e._working_id,
-                       e._seg_order.get(cue_segment, e._seg_n + 1), e.now(), [sim.title], origin=origin)
-        self.mode = mode
         lines = [x for x in lines if x]
         self.stepped[block.id] = e.now()  # the auto-cycle waits from the show
         # the steps from the cue line only: the talk before the show is not a walk through the picture
         sim = registry.with_values(self._steps(sim, lines[-1:], block.id), await self._values(sim, lines, ""),
                                    self._toggles(block.id))
         block = block.model_copy(update={"sim": sim})
-        spec = with_simulation(frame_slide(frame.topic, sim.title, continuation_of=e._working_id), block)
-        spec = spec.model_copy(update={"title": sim.title})
-        from copilot.presentation.engine import SlideMeta  # the engine imports this module
-
-        await e._open(spec, SlideMeta(Frame(frame.topic, sim.title), is_title=True), exempt=True)
-        e._working_id = spec.id
-        mode.slide_id = spec.id
+        spec = await self.place(mode, block, sim.title, "spoken cue" if origin == "cue" else origin)
         self.where[block.id] = spec.id
         self._anchor(block)
-        self.removed.discard(self._key(frame.topic, tid))
+        self.removed.discard(self._key(mode.frame.topic, tid))
         self.shown += 1
-        await e.deck.set_sim_mode(spec.id)
-        await e.bus.publish(SimulationModeChanged(on=True, slide_id=spec.id, template=tid,
-                                                  reason="spoken cue" if origin == "cue" else origin))
-        log.info("[SIM] simulation mode on: %s on its own slide (%s)", sim.title, origin)
 
     def split_early(self, ev: InterpretationReady, pieces: list[Piece]) -> tuple[list[Piece], list[Piece]]:
         """Pieces of lines said before the simulation's cue (they belong on the slide before it) and the rest."""
@@ -573,11 +600,10 @@ class SimulationController:
             return
         if kind == "sim_set":
             if "speed" in args:
-                speed = _num(args.get("speed"))
-                if speed is None or not SPEEDS[0] <= speed <= SPEEDS[-1]:
-                    return
-                new_pb = pb.model_copy(update={"speed": speed, "t": t_now, "rev": pb.rev + 1})
-                await self._replace(spec, b, sim.model_copy(update={"playback": new_pb, "version": sim.version + 1}))
+                new_pb = next_playback(kind, pb, t_now, args)
+                if new_pb is not None:
+                    await self._replace(spec, b, sim.model_copy(update={"playback": new_pb,
+                                                                        "version": sim.version + 1}))
                 return
             slot = str(args.get("slot") or "")
             fields = type(sim.params).model_fields
@@ -612,17 +638,8 @@ class SimulationController:
                 self.stepped[b.id] = self.e.now()
                 await self._replace(spec, b, registry.solved(sim.model_copy(update=upd), self._toggles(b.id)))
             return
-        update: Optional[dict[str, Any]] = None
-        if kind == "sim_play" and pb.state != "playing":
-            update = {"state": "playing", "t": t_now}
-        elif kind == "sim_pause" and pb.state == "playing":
-            update = {"state": "paused", "t": t_now}
-        elif kind == "sim_step":
-            update = {"state": "paused", "t": t_now + STEP_S}
-        elif kind == "sim_reset":
-            update = {"t": 0.0}
-        if update is not None:
-            new_pb = pb.model_copy(update={**update, "rev": pb.rev + 1})
+        new_pb = next_playback(kind, pb, t_now, args)
+        if new_pb is not None:
             extra: dict[str, Any] = {}
             if sim.steps and kind == "sim_reset":  # S3: a process starts again with no step highlighted (names stay)
                 extra = {"step": -1, "step_by": "", "cycle": None}
@@ -644,6 +661,25 @@ class SimulationController:
             return
         await self.start(tid, [], origin="teacher")
         log.info("teacher sim_show %s", tid)
+
+
+def next_playback(kind: str, pb: Playback, t_now: float, args: dict) -> Optional[Playback]:
+    """The clock after a teacher's command (play / pause / step / reset / a speed), shared by simulations and scenes
+    (F-015); None = no change. Every change bumps rev: the clients re-anchor at `t`."""
+    update: Optional[dict[str, Any]] = None
+    if kind == "sim_set" and "speed" in args:
+        speed = _num(args.get("speed"))
+        if speed is not None and SPEEDS[0] <= speed <= SPEEDS[-1]:
+            update = {"speed": speed, "t": t_now}
+    elif kind == "sim_play" and pb.state != "playing":
+        update = {"state": "playing", "t": t_now}
+    elif kind == "sim_pause" and pb.state == "playing":
+        update = {"state": "paused", "t": t_now}
+    elif kind == "sim_step":
+        update = {"state": "paused", "t": t_now + STEP_S}
+    elif kind == "sim_reset":
+        update = {"t": 0.0}
+    return pb.model_copy(update={**update, "rev": pb.rev + 1}) if update is not None else None
 
 
 def _num(v: Any) -> Optional[float]:

@@ -20,7 +20,8 @@ export const OFFSETS = [[0, 0], ...STEPS.flatMap((d) => DIRS.map(([x, y]) => [x 
 // the drawn strokes a label must not sit on (besides the arrows): surfaces, guides, angle arcs, wedges, strings,
 // wires, waves, the marked angle and its segments. Not the hatching (texture) and not the readout's card.
 export const STROKES = ".sim-surface, .sim-guide, .sim-angle, .sim-wedge, .sim-string, .sim-wire, .sim-resistor, " +
-  ".sim-plate, .sim-wave, .sim-marked, .sim-seg, .sim-flow .line, .sim-coil, .sim-ray, .sim-lens, .sim-image";  // S3: the process flows; S4: coils, rays, lens
+  ".sim-plate, .sim-wave, .sim-marked, .sim-seg, .sim-flow .line, .sim-coil, .sim-ray, .sim-lens, .sim-image, " +
+  ".sc-shape:not(.sc-dot), .sc-axes .axis";  // F-015: a live scene's shapes, curves and axes  // S3: the process flows; S4: coils, rays, lens
 
 const hit = (a, b) => a.x < b.x + b.w + PAD && b.x < a.x + a.w + PAD && a.y < b.y + b.h + PAD && b.y < a.y + a.h + PAD;
 const inside = (a) => a.x >= 4 && a.y >= 4 && a.x + a.w <= W - 4 && a.y + a.h <= H - 4;
@@ -71,7 +72,7 @@ export function placeLabels(svg) {
   const fixed = [];
   const lines = [];  // [p, q] in stage units
   const shapes = [];
-  for (const el of svg.querySelectorAll(".sim-block, .sim-bob, .sim-badge, .sim-step-title, .sim-sun, .sim-cloud, .sim-tree, .sim-obstacle")) {  // S3: step badges
+  for (const el of svg.querySelectorAll(".sim-block, .sim-bob, .sim-badge, .sim-step-title, .sim-sun, .sim-cloud, .sim-tree, .sim-obstacle, .sc-body")) {  // S3: step badges
     const b = boxOf(svg, el);
     if (b) { fixed.push(b); shapes.push(b); }
   }

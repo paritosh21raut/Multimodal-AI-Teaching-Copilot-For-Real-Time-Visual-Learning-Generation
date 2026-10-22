@@ -379,7 +379,7 @@ class AssessState(Event):
     now: float = 0.0   # server clock when made (pages count `left` down from their receipt)
 
 
-VisualKind = Literal["simulation", "story"]
+VisualKind = Literal["simulation", "scene", "story"]  # scene: F-015 Live Scene Engine
 
 
 class RepresentationIntent(Event):
@@ -391,8 +391,9 @@ class RepresentationIntent(Event):
     visual_kind: VisualKind = "simulation"
     template: str = ""          # template id; "" = values for whichever simulation is open
     # cue: "consider a block ..."; setup: a template noun alone; score (S1): a strong setup without a cue (a Suggest
-    # chip); values: quantities only; end (S1): "let's get back to the slides" (simulation mode ends)
-    strength: Literal["cue", "setup", "score", "values", "end"] = "cue"
+    # chip); values: quantities only; end (S1): "let's get back to the slides" (simulation mode ends); edit (F-015): a
+    # line said while a scene is open (the scene controller decides whether it changes the scene)
+    strength: Literal["cue", "setup", "score", "values", "end", "edit"] = "cue"
     values: dict[str, dict[str, Any]] = Field(default_factory=dict)
     reveal: list[str] = Field(default_factory=list)  # element ids the line names ("friction opposes it")
     origin: Literal["cue", "policy", "llm", "teacher"] = "cue"

@@ -327,6 +327,15 @@ class App:
 
             self.sim_detector = SimulationDetector(self.bus)  # F-014: spoken cue -> RepresentationIntent (0 tokens)
             self.sim_detector.attach()
+            if settings.scenes:  # F-015: "imagine a square ..." -> a live scene (one LLM call per cue / edit)
+                from copilot.scene.compiler import SceneCompiler
+                from copilot.scene.detector import SceneDetector
+
+                self.scene_detector = SceneDetector(self.bus)
+                self.scene_detector.attach()
+                if self._router is not None:
+                    self.presentation._scenes.compiler = SceneCompiler(self._router)
+                print(f"[INIT]  scenes: {'on' if self._router is not None else 'off (no LLM configured)'}", flush=True)
             self._init_images()
 
     def _init_images(self) -> None:

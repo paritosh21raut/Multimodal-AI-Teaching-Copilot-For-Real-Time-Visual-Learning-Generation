@@ -343,8 +343,8 @@ export const partLabel = (n) => (n ? ROMAN[n] || String(n) : "");
 
 function splitBlocks(blocks, members) {
   // F-014: a simulation has the visual column (composer.SIM_COLUMN_PX); the other blocks stack beside it
-  const sim = blocks.find((b) => b.type === "simulation");
-  if (sim) return { main: blocks.filter((b) => b.type !== "simulation" && b.type !== "image"), aside: [], sim };
+  const sim = blocks.find((b) => b.type === "simulation" || b.type === "scene");  // F-015: a scene too
+  if (sim) return { main: blocks.filter((b) => b.type !== "simulation" && b.type !== "scene" && b.type !== "image"), aside: [], sim };
   const image = blocks.find((b) => b.type === "image");
   if (image) {
     const rest = blocks.filter((b) => b.type !== "image");

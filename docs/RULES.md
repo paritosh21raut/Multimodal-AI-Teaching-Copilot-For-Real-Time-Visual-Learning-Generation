@@ -41,6 +41,8 @@
 - Write a short feature spec in `docs/specs/` before building a non-trivial feature.
 - Record significant decisions as ADRs in `docs/decisions/`.
 - Keep every doc short. Prefer tables and lists over prose.
+- Size limits (token budget): `STATE.md` ≤ 3 KB, a spec ≤ 8 KB, a session card ≤ 5 KB. Results and history go to
+  `docs/history/`, never appended to specs.
 
 ## Cost
 - No paid APIs or tools. No Gemini. Free tiers (Groq) and local models only. (OpenRouter removed 2026-10-06, user: its free model answered 404.)

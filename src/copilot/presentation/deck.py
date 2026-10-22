@@ -34,7 +34,7 @@ def _has_image(spec: SlideSpec) -> bool:
 
 
 def _has_sim(spec: SlideSpec) -> bool:
-    return any(b.type == "simulation" for b in spec.blocks)
+    return any(b.type in ("simulation", "scene") for b in spec.blocks)
 
 
 class Deck:

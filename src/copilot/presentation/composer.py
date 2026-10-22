@@ -47,14 +47,16 @@ MEMBER_GAP_PX = 36          # member cards / concept columns (slide.css .def-pai
 ITEM_IMAGE_PX = 210         # F-013 S4: a concept card's picture + its gap (slide.css .def-img: 190 + 20)
 SIM_COLUMN_PX = 1100        # F-014: the simulation column (mirrors slide.js SIM_COLUMN, ~65 % of the body); the
                             # slide's other blocks stack in the rest (540 px), like the text beside an image
-MEDIA = ("image", "simulation")  # the visual column's blocks: never teacher text, never moved by split_to_fit
+MEDIA = ("image", "simulation", "scene")  # the visual column's blocks: never teacher text, never moved by split_to_fit
+STAGES = ("simulation", "scene")  # a live stage (F-014 simulation, F-015 scene): the simulation layout
 LAYOUT_FOR = {"definition": "definition", "points": "key_points", "steps": "process_flow",
               "comparison": "comparison", "timeline": "timeline", "formula": "formula", "causes": "cause_effect",
               "example": "example", "facts": "facts", "groups": "groups", "tree": "hierarchy"}
 BLOCK_LAYOUT = {"definition": "definition", "points": "key_points", "process": "process_flow",
                 "comparison": "comparison", "timeline": "timeline", "formula": "formula",
                 "cause_effect": "cause_effect", "example": "example", "callout": "concept", "facts": "facts",
-                "groups": "groups", "hierarchy": "hierarchy", "image": "concept", "simulation": "simulation"}
+                "groups": "groups", "hierarchy": "hierarchy", "image": "concept", "simulation": "simulation",
+                "scene": "simulation"}
 LARGE = {"process", "comparison", "timeline", "cause_effect", "formula", "hierarchy"}
 FULL_WIDTH = LARGE | {"facts", "groups"}  # mirrors FULL_WIDTH_PRIMARY in slide.js: no aside next to these
 SECONDARY = ("example", "callout")
@@ -299,8 +301,13 @@ def sim_of(spec: SlideSpec) -> Optional[SimulationBlock]:
     return next((b for b in spec.blocks if b.type == "simulation"), None)
 
 
+def stage_of(spec: SlideSpec) -> Optional[Block]:
+    """The slide's live stage: a simulation (F-014) or a scene (F-015) block."""
+    return next((b for b in spec.blocks if b.type in STAGES), None)
+
+
 def content_width(spec: SlideSpec) -> float:
-    if sim_of(spec) is not None:
+    if stage_of(spec) is not None:
         return BODY_WIDTH_PX - SIM_COLUMN_PX - IMAGE_GAP_PX
     img = image_of(spec)
     return BODY_WIDTH_PX - image_column_px(img.aspect, img.large) - IMAGE_GAP_PX if img is not None else BODY_WIDTH_PX
@@ -378,7 +385,7 @@ def block_height(b: Block, width: float = BODY_WIDTH_PX, narrow: bool = False) -
     if b.type == "image":
         col = image_column_px(b.aspect, b.large)
         return min(BODY_BUDGET_PX, col / max(0.2, b.aspect))
-    if b.type == "simulation":
+    if b.type in STAGES:
         return BODY_BUDGET_PX  # the stage fills the body height
     return 120
 
@@ -387,8 +394,8 @@ def _split(blocks: list, members: bool = False) -> tuple[list, list]:
     """(main, aside) exactly as slide.js splitBlocks lays them out. With an image (image layout) everything else is
     the content column and the image is alone in its column. Member cards take the full width (no aside). A
     simulation (F-014) is a visual column like an image."""
-    if any(b.type == "simulation" for b in blocks):
-        return [b for b in blocks if b.type not in MEDIA], [b for b in blocks if b.type == "simulation"][:1]
+    if any(b.type in STAGES for b in blocks):
+        return [b for b in blocks if b.type not in MEDIA], [b for b in blocks if b.type in STAGES][:1]
     if any(b.type == "image" for b in blocks):
         return [b for b in blocks if b.type != "image"], [b for b in blocks if b.type == "image"][:1]
     if len(blocks) < 2 or members or any(b.type in FULL_WIDTH for b in blocks) \
@@ -599,7 +606,7 @@ def with_simulation(spec: SlideSpec, block: SimulationBlock) -> SlideSpec:
 
 
 def without_simulation(spec: SlideSpec) -> SlideSpec:
-    return _with_layout(spec.model_copy(update={"blocks": [b for b in spec.blocks if b.type != "simulation"]}))
+    return _with_layout(spec.model_copy(update={"blocks": [b for b in spec.blocks if b.type not in STAGES]}))
 
 
 _SPLIT_LISTS = {"points": "items", "facts": "facts", "process": "steps"}
@@ -695,7 +702,7 @@ def _with_layout(spec: SlideSpec) -> SlideSpec:
     if not spec.blocks:
         return spec
     defs = [b for b in spec.blocks if b.type == "definition"]
-    if any(b.type == "simulation" for b in spec.blocks):
+    if any(b.type in STAGES for b in spec.blocks):
         layout = "simulation"
     elif len(defs) > 1:
         layout = "concept"
