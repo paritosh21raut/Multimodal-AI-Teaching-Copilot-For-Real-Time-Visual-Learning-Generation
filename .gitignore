@@ -32,3 +32,6 @@ Thumbs.db
 .vscode/
 .idea/
 config/local.toml
+
+# D1 image-gen venv downloads
+tools/imggen/wheels/
