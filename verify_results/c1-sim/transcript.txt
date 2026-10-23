@@ -1,0 +1,18 @@
+[    0.0] Today we will imagine a few scenes.
+[    3.8] Imagine a boy holding a book.
+[    9.2] Imagine a dog on the moon.
+[   14.6] Now a cat sits on top of the dog.
+[   21.2] Let's get back to the slide.
+[   25.1] Imagine a cuboid with a sphere inside it.
+[   31.3] Back to the slides.
+[   34.4] Imagine you are in a rocket going to the sun.
+[   41.9] Imagine a bird on a tree.
+[   47.3] Look at its feet.
+[   51.9] Back to the slides.
+[   55.0] Imagine you're on a bus and it brakes.
+[   61.7] Look at the person inside.
+[   66.7] Back to the slides.
+[   69.8] A laptop is flying on top of an airplane.
+[   76.4] So what do you think?
+[   80.4] A fish swims under the ocean near a bicycle.
+[   88.5] That is how imagination helps us picture physics.

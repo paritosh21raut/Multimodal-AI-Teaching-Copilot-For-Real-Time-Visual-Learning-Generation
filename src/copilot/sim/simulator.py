@@ -1,6 +1,10 @@
 """Lecture simulator: a script file → timed TranscriptFinal events (spec: docs/specs/F-001-foundation.md).
 
 Stands in for audio capture + STT so the rest of the pipeline can be tested without a microphone.
+
+`@command <kind> key=value ...` (F-016 C1 part 2): a teacher's button press, published as CommandReceived after the
+pause before the next line (as a teacher presses it: once the line before was heard and handled; "@command
+imagine_mode on=true" presses Imagine; values true / false / numbers are typed). After the last line: at the end.
 """
 from __future__ import annotations
 
@@ -12,7 +16,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 from copilot.core.bus import EventBus
-from copilot.core.events import AudioLevel, TranscriptFinal, TranscriptSegment
+from copilot.core.events import AudioLevel, Command, CommandReceived, TranscriptFinal, TranscriptSegment
 
 VAD_TICK_S = 0.2        # lecture seconds between simulated AudioLevel events (as the mic pipeline, ~5 Hz)
 MIN_VAD_TICK_WALL_S = 0.02
@@ -26,12 +30,23 @@ class ScriptUtterance:
     pause_before: float = 0.0
     expect: dict[str, str] = field(default_factory=dict)
     line_no: int = 0
+    commands: list[tuple[str, dict]] = field(default_factory=list)  # pressed before this line is said
+
+
+def _typed(v: str) -> object:
+    if v.lower() in ("true", "false"):
+        return v.lower() == "true"
+    try:
+        return float(v) if "." in v else int(v)
+    except ValueError:
+        return v
 
 
 @dataclass
 class LectureScript:
     setup: dict[str, str]
     utterances: list[ScriptUtterance]
+    tail: list[tuple[str, dict]] = field(default_factory=list)  # commands after the last line
 
 
 class ScriptError(ValueError):
@@ -54,6 +69,7 @@ def parse_script(source: Union[str, Path]) -> LectureScript:
     utterances: list[ScriptUtterance] = []
     pending_pause = 0.0
     pending_expect: dict[str, str] = {}
+    pending_cmds: list[tuple[str, dict]] = []
     for line_no, raw in enumerate(text.splitlines(), start=1):
         line = raw.strip()
         if not line or line.startswith("#"):
@@ -64,15 +80,22 @@ def parse_script(source: Union[str, Path]) -> LectureScript:
         if line.startswith("@expect"):
             pending_expect.update(_parse_kv(line[len("@expect"):], line_no))
             continue
+        if line.startswith("@command"):
+            parts = line[len("@command"):].split(None, 1)
+            if not parts:
+                raise ScriptError(f"line {line_no}: @command needs a kind")
+            args = _parse_kv(parts[1], line_no) if len(parts) > 1 else {}
+            pending_cmds.append((parts[0], {k: _typed(v) for k, v in args.items()}))
+            continue
         if line.startswith("@"):
             raise ScriptError(f"line {line_no}: unknown directive {line.split()[0]}")
         m = _PAUSE.match(line)
         if m:
             pending_pause += float(m.group(1))
             continue
-        utterances.append(ScriptUtterance(line, pending_pause, pending_expect, line_no))
-        pending_pause, pending_expect = 0.0, {}
-    return LectureScript(setup, utterances)
+        utterances.append(ScriptUtterance(line, pending_pause, pending_expect, line_no, pending_cmds))
+        pending_pause, pending_expect, pending_cmds = 0.0, {}, []
+    return LectureScript(setup, utterances, pending_cmds)
 
 
 def utterance_duration(text: str, wpm: float, min_s: float) -> float:
@@ -121,7 +144,15 @@ class LectureSimulator:
 
     async def run(self, stop: Optional[asyncio.Event] = None) -> None:
         clock = 0.0
-        for seg in self.timeline():
+        for u, seg in zip(self._script.utterances, self.timeline()):
+            if u.commands:  # the pause first, then the press, then the line is spoken
+                if self._vad:
+                    if await self._speak(clock, seg.model_copy(update={"end": seg.start}), stop):
+                        return
+                elif await self._sleep((seg.start - clock) / self._speed, stop):
+                    return
+                clock = seg.start
+                await self._press(u.commands)
             if self._vad:
                 if await self._speak(clock, seg, stop):
                     return
@@ -133,6 +164,14 @@ class LectureSimulator:
                     return
             await self._bus.publish(TranscriptFinal(segment=seg))
             self.published += 1
+        if self._script.tail:  # a moment for the last line to be handled, then the press
+            if await self._sleep(1.0 / self._speed, stop):
+                return
+            await self._press(self._script.tail)
+
+    async def _press(self, commands: list[tuple[str, dict]]) -> None:
+        for kind, args in commands:
+            await self._bus.publish(CommandReceived(command=Command(kind=kind, args=args)))  # type: ignore[arg-type]
 
     async def _sleep(self, wait: float, stop: Optional[asyncio.Event]) -> bool:
         """Sleep wall time; True if a stop was requested."""

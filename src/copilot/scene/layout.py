@@ -25,9 +25,16 @@ MIN_GAP = 48.0        # lanes closer than this first cost readout rows
 
 
 def world_of(scene: SceneSpec) -> World:
-    """canvas (F-016): a thing or a place, a canvas relation or action; relative: a river or rain, a frame of
+    """canvas (F-016): a thing or a place, a canvas relation or action (an empty scene opened as a canvas stays one);
+    relative: a river or rain, a frame of
     reference, or two bodies with said directions (two trains); else a body moves in the motion world."""
     bodies = [e for e in scene.entities if e.kind in BODY_KINDS]
+    if not scene.entities and scene.world == "canvas":  # opened by a canvas cue / Imagine Mode: the full-slide stage
+        return "canvas"
+    solids = {e.id for e in scene.entities if e.kind in SOLID_KINDS}
+    measured = any(e.props for e in scene.entities if e.id in solids)  # review: said sizes keep their numbers (geometry)
+    if not measured and any(r.a in solids and r.kind not in ("left_of", "right_of", "above", "below") for r in scene.relations):
+        return "canvas"  # a solid on / inside another (the geometry world puts solids side by side only)
     if any(e.kind in CANVAS_KINDS for e in scene.entities) or any(r.kind in CANVAS_RELATIONS for r in scene.relations)             or any(b.kind not in ("move", "launch", "fall", "cross", "cross_straight") for b in scene.behaviors):
         return "canvas"
     if any(e.kind in RELATIVE_KINDS for e in scene.entities) or scene.frame or sum(1 for e in bodies if e.dir) >= 2:

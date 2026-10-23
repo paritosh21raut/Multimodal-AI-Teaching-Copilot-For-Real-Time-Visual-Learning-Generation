@@ -1,0 +1,1039 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (7.3 s)
+[INIT]  live speech model distil-small.en ready (5.9 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.2 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_3         openai/gpt-oss-120b            71k of 200k tokens IN USE
+        GROQ_API_KEY_4         openai/gpt-oss-120b           125k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~10 min
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~10 min
+        GROQ_API_KEY_1         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~10 min
+        GROQ_API_KEY_2         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~3.7 h
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              173k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              191k of 200k tokens ok
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              192k of 200k tokens ok
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              192k of 200k tokens ok
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              197k of 200k tokens ok
+        enough for about 167 lecture minutes
+
+[READY] session 20261023-132748-fb33
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+13:28:03 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    0.7s] Imagine you are playing football. (504 ms)
+13:28:17 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are playing football.'
+13:28:17 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+13:28:18 WARNING copilot.llm.router: llm groq_main#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+  [SLIDE] update 'Football' [simulation] v2 (1 items)
+  [SLIDE] update 'Football and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Football and you' [simulation] v4 (1 items)
+13:28:19 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 3 op(s) applied, 0 refused, 3171 tokens, first op 1.80 s, done 1.89 s, line -> first shape 1.80 s
+13:28:21 WARNING copilot.understanding.interpreter: interpretation from groq_main#4 invalid (schema: [{'type': 'value_error', 'loc': ('topic',), 'msg': 'Value error, topic must not be blank', 'input': '', 'ctx': {'error': ValueError('topic must not be blank')}}]); one repair attempt
+13:28:22 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, General, Analogy)
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_main#4 2490 ms
+               Introduced a football analogy
+13:28:22 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [    8.6s] With you dog. (350 ms)
+13:28:24 INFO    copilot.scene.detector: [SCENE] edit 'With you dog.'
+  [SLIDE] update 'Football, you and dog' [simulation] v5 (1 items)
+  [SLIDE] update 'Football, you and dog' [simulation] v6 (1 items)
+13:28:25 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 2 op(s) applied, 0 refused, 3062 tokens, first op 0.75 s, done 0.83 s, line -> first shape 0.74 s
+  [UNDERSTAND] General > Analogy (elaboration) acts=explanation hint=example lines=1 via groq_alt#2 1334 ms
+               Introduced a dog analogy.
+13:28:27 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   14.3s] Good dog sees a cat. (420 ms)
+13:28:30 INFO    copilot.scene.detector: [SCENE] edit 'Good dog sees a cat.'
+13:28:31 WARNING copilot.llm.router: llm groq_alt#2 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m467cwmfekpbk61ygfeq61s2` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 4148,
+13:28:31 WARNING copilot.llm.router: llm groq_alt#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+  [SLIDE] update 'Football, you, dog and cat' [simulation] v7 (1 items)
+  [SLIDE] update 'Football, you, dog and cat' [simulation] v8 (1 items)
+13:28:31 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 2 op(s) applied, 0 refused, 3077 tokens, first op 1.09 s, done 1.14 s, line -> first shape 1.10 s
+  [UNDERSTAND] General > Analogy (elaboration) acts=explanation hint=example lines=1 via groq_alt#4 1028 ms
+               Introduced a specific example of a good dog seeing a cat.
+13:28:33 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   20.6s] And it runs to the cat. (401 ms)
+13:28:37 INFO    copilot.scene.detector: [SCENE] edit 'And it runs to the cat.'
+13:28:39 WARNING copilot.llm.router: llm groq_main#4 failed: connect failed: ConnectTimeout
+  [SLIDE] update 'Football, you, dog and cat' [simulation] v9 (1 items)
+13:28:44 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 1 op(s) applied, 0 refused, 3072 tokens, first op 6.70 s, done 6.72 s, line -> first shape 6.72 s
+  [   28.7s] If the cat runs... (386 ms)
+13:28:45 INFO    copilot.scene.detector: [SCENE] edit 'If the cat runs...'
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_alt#5 7462 ms
+               Described the dog running to the cat in the analogy.
+13:28:45 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [SLIDE] update 'Football, you, dog and cat' [simulation] v10 (1 items)
+13:28:45 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 1 op(s) applied, 0 refused, 3064 tokens, first op 0.75 s, done 0.77 s, line -> first shape 0.76 s
+  [   30.5s] Away from the dog. (372 ms)
+13:28:46 INFO    copilot.scene.detector: [SCENE] edit 'Away from the dog.'
+  [SLIDE] update 'Football, you, dog and cat' [simulation] v11 (1 items)
+13:28:47 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#6: 1 op(s) applied, 0 refused, 3074 tokens, first op 1.11 s, done 1.12 s, line -> first shape 1.12 s
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=narrative lines=2 via groq_alt#2 1341 ms
+               Described the cat running away from the dog in the analogy.
+13:28:48 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [   39.6s] Let's come back to the slide. (393 ms)
+13:28:55 INFO    copilot.simulation.detector: [SIM] end - ('come back to the slide') {}
+13:28:55 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's come back to the slide."): recap 1 slide(s) (5 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Football, you, dog and cat' [key_points] v1 (5 items)
+13:28:56 WARNING copilot.llm.router: llm groq_alt#4 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m47n5jhaek9sdgt85z510g09` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 5045,
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#5 1416 ms
+               Teacher directs attention back to the slide.
+13:28:57 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [   43.5s] Imagine a dog. (338 ms)
+13:28:59 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a dog.'
+13:28:59 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Dog' [simulation] v2 (1 items)
+13:29:00 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#6: 1 op(s) applied, 0 refused, 3027 tokens, first op 0.73 s, done 0.73 s, line -> first shape 0.73 s
+  [   45.0s] Flying a rocket. (374 ms)
+13:29:01 INFO    copilot.scene.detector: [SCENE] edit 'Flying a rocket.'
+13:29:01 WARNING copilot.llm.router: llm groq_alt#6 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m47xjbhhevysb56eb0nn7z1f` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 4385,
+  [SLIDE] update 'Dog and rocket' [simulation] v3 (1 items)
+  [SLIDE] update 'Dog and rocket' [simulation] v4 (1 items)
+13:29:02 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#1: 2 op(s) applied, 0 refused, 3046 tokens, first op 1.06 s, done 1.09 s, line -> first shape 1.07 s
+13:29:03 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=2 via groq_alt#2 1613 ms
+               Introduced a new analogy involving a dog flying a rocket.
+13:29:03 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   50.5s] The dog is flying the rocket. (449 ms)
+13:29:07 INFO    copilot.scene.detector: [SCENE] edit 'The dog is flying the rocket.'
+13:29:07 WARNING copilot.llm.router: llm groq_alt#5 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m4800crme1rsrmqcnrkr6mwq` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 4252,
+13:29:07 INFO    copilot.llm.router: llm: every model is at its per-minute limit; waiting 0.7 s for groq_alt#1
+  [SLIDE] update 'Dog and rocket' [simulation] v5 (1 items)
+13:29:08 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#1: 1 op(s) applied, 0 refused, 3044 tokens, first op 1.01 s, done 1.05 s, line -> first shape 1.03 s
+13:29:08 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#3: skipped (cooldown 250s); groq_main#4: skipped (cooldown 32s); groq_main#5: skipped (daily quota spent); groq_main#6: skipped (daily quota spent); groq_main#1: skipped (daily quota spent); groq_main#2: skipped (daily quota spent); groq_alt#2: skipped (tpm); groq_alt#3: skipped (cooldown 264s); groq_alt#4: skipped (tpm); groq_alt#5: skipped (cooldown 3s); groq_alt#6: skipped (tpm); groq_alt#1: skipped (tpm); groq_alt#1: skipped (tpm)
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#3: skipped (cooldown 250s); groq_main#4: skipped (cooldown 32s);  692 ms
+13:29:08 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   59.4s] And asteroid hits the rocket. (405 ms)
+13:29:16 INFO    copilot.scene.detector: [SCENE] edit 'And asteroid hits the rocket.'
+13:29:16 WARNING copilot.llm.router: llm groq_alt#1 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m1y7z7r3esjaek71dw1q6b5z` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 4329,
+13:29:16 INFO    copilot.llm.router: llm: every model is at its per-minute limit; waiting 0.7 s for groq_alt#4
+  [SLIDE] update 'Dog, rocket and asteroid' [simulation] v6 (1 items)
+  [SLIDE] update 'Dog, rocket and asteroid' [simulation] v7 (1 items)
+13:29:18 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 2 op(s) applied, 0 refused, 3070 tokens, first op 1.88 s, done 1.91 s, line -> first shape 1.88 s
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=narrative lines=1 via groq_alt#2 1010 ms
+               Described an asteroid hitting the rocket in the analogy.
+13:29:19 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   66.0s] Astrohead hits the rocket. (351 ms)
+13:29:22 INFO    copilot.scene.detector: [SCENE] edit 'Astrohead hits the rocket.'
+  [SLIDE] update 'Dog, rocket, asteroid and Astrohead' [simulation] v8 (1 items)
+  [SLIDE] update 'Dog, rocket, asteroid and Astrohead' [simulation] v9 (1 items)
+13:29:23 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#6: 2 op(s) applied, 0 refused, 3084 tokens, first op 0.56 s, done 0.64 s, line -> first shape 0.59 s
+13:29:23 INFO    copilot.visuals.finder: image search 'asteroid' (photo): 8 candidate(s), 3 accepted (0 labelled), 5.79 s {'search_s': 1.88, 'download_s': 1.28, 'clip_s': 0.19, 'full_s': 2.41, 'total_s': 5.79}
+13:29:24 INFO    copilot.scene.photos: [SCENE] photo 'Astrohead': none (no usable candidates)
+13:29:24 INFO    copilot.scene.photos: [SCENE] photo 'asteroid': /scene-pic/photo-asteroid.png (File:243 ida crop.jpg)
+  [SLIDE] update 'Dog, rocket, asteroid and Astrohead' [simulation] v10 (1 items)
+13:29:24 INFO    copilot.scene.assets: [SCENE] glyph 'astrohead': 139 chars (265 tokens)
+  [SLIDE] update 'Dog, rocket, asteroid and Astrohead' [simulation] v11 (1 items)
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=narrative lines=1 via groq_alt#5 866 ms
+               Described Astrohead hitting the rocket in the analogy.
+13:29:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [   75.0s] The asteroid hits the rocket. (389 ms)
+13:29:32 INFO    copilot.scene.detector: [SCENE] edit 'The asteroid hits the rocket.'
+13:29:32 WARNING copilot.presentation.scenes: [SCENE] the call failed: groq_main#3: skipped (cooldown 226s); groq_main#4: skipped (cooldown 8s); groq_main#5: skipped (daily quota spent); groq_main#6: skipped (daily quota spent); groq_main#1: skipped (daily quota spent); groq_main#2: skipped (daily quota spent); groq_alt#2: skipped (tpm); groq_alt#3: skipped (cooldown 239s); groq_alt#4: skipped (tpm); groq_alt#5: skipped (tpm); groq_alt#6: skipped (tpm); groq_alt#1: skipped (tpm)
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=narrative lines=1 via groq_alt#2 4625 ms
+               Described the asteroid hitting the rocket in the analogy.
+13:29:38 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [   83.0s] Let's come back to this slide. (416 ms)
+13:29:39 INFO    copilot.scene.detector: [SCENE] edit "Let's come back to this slide."
+  [SLIDE] update 'Dog, rocket, asteroid and Astrohead' [simulation] v12 (1 items)
+13:29:39 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#1: 1 op(s) applied, 0 refused, 3066 tokens, first op 0.53 s, done 0.53 s, line -> first shape 0.53 s
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#4 820 ms
+               Teacher directs attention back to the current slide.
+13:29:40 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (5 so far)
+  [   89.7s] Let's go back to the slides. (391 ms)
+13:29:46 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+13:29:46 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slides."): recap 1 slide(s) (4 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Dog, rocket, asteroid and Astrohead' [key_points] v1 (4 items)
+  [SLIDE] update 'Recap: Dog, rocket, asteroid and Astrohead' [key_points] v2 (5 items)
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_main#4 1292 ms
+               Teacher returns attention to the slide
+13:29:48 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [SLIDE] update 'Recap: Dog, rocket, asteroid and Astrohead' [key_points] v3 (4 items)
+  [   99.2s] Imagine a box placed on an inclined plane. (362 ms)
+13:29:56 INFO    copilot.simulation.detector: [SIM] cue incline ('Imagine a') {}
+13:29:56 INFO    copilot.presentation.simulations: [SIM] cue incline: ignore (templates start only by the teacher's pick)
+13:29:58 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=concept lines=1 via groq_main#4 1557 ms
+               Introduced a box on an inclined plane as a new analogy example.
+13:29:58 INFO    copilot.presentation.engine: planner: new General > Analogy (new topic confirmed (boundary cue/shift))
+  [SLIDE] add    'Analogy' [key_points] v1 (1 items)
+13:29:58 INFO    copilot.presentation.engine: image search 'box on inclined plane' (diagram) for 'Analogy'
+13:30:03 INFO    copilot.visuals.webpages: web page https://physicstasks.eu/509/a-box-on-an-inclined-plane: ConnectError
+13:30:05 INFO    copilot.visuals.webpages: web pages for 'box on inclined plane': 3 page(s), 0 named picture(s)
+  [  108.0s] Imagine a box placed on an inclined plane. (540 ms)
+13:30:05 INFO    copilot.simulation.detector: [SIM] cue incline ('Imagine a') {}
+  [SLIDE] update 'Analogy' [key_points] v2 (2 items)
+13:30:05 INFO    copilot.presentation.simulations: [SIM] cue incline: ignore (templates start only by the teacher's pick)
+13:30:07 INFO    copilot.visuals.finder: image search 'box on inclined plane': 1 slow download(s) dropped
+  [UNDERSTAND] General > Analogy (same_concept) acts=- hint=key_points lines=1 via groq_main#4 2295 ms
+               Reiterated the box on an inclined plane analogy.
+13:30:08 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [SLIDE] update 'Analogy' [key_points] v3 (1 items)
+13:30:09 INFO    copilot.visuals.finder: image search 'box on inclined plane' (diagram, labels preferred): 7 candidate(s), 2 accepted (0 labelled), 10.36 s {'search_s': 6.41, 'download_s': 2.07, 'clip_s': 0.18, 'full_s': 1.68, 'total_s': 10.36}
+  [IMAGE] 'box on inclined plane' -> File:Caisse plan incline glissement cone frottement isolement seul.svg (10.4 s)
+13:30:09 INFO    copilot.presentation.engine: image 'box on inclined plane' on 'Analogy': File:Caisse plan incline glissement cone frottement isolement seul.svg
+  [SLIDE] update 'Analogy' [key_points] v4 (2 items)
+  [  116.9s] Let us imagine a box placed on an inclined plane. (484 ms)
+13:30:15 INFO    copilot.simulation.detector: [SIM] cue incline ('Let us imagine') {}
+  [SLIDE] update 'Analogy' [key_points] v5 (3 items)
+13:30:15 INFO    copilot.presentation.simulations: [SIM] cue incline: ignore (templates start only by the teacher's pick)
+  [  121.8s] of angle 30 degree. (328 ms)
+13:30:18 INFO    copilot.simulation.detector: [SIM] values - {'angle': '30 degree'}
+  [SLIDE] update 'Analogy' [key_points] v6 (3 items)
+13:30:18 INFO    copilot.presentation.simulations: [SIM] values -: ignore (values, but no simulation is open)
+  [UNDERSTAND] General > Analogy (same_concept) acts=- hint=key_points lines=1 via groq_main#4 2457 ms
+               Reiterated the box on an inclined plane analogy.
+13:30:18 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1869 ms
+               Specified the inclined plane angle as 30 degrees.
+13:30:22 INFO    copilot.presentation.engine: revised S1: Box on an inclined plane of angle 30°
+13:30:22 INFO    copilot.presentation.engine: planner: update General > Analogy (same frame)
+13:30:22 INFO    copilot.presentation.engine: no image for 'Analogy': has an image
+  [SLIDE] update 'Analogy' [key_points] v7 (2 items)
+  [SLIDE] update 'Analogy' [key_points] v8 (2 items)
+  [  130.5s] Imagine a box of mass 10kg placed on a surface. (394 ms)
+13:30:29 INFO    copilot.simulation.detector: [SIM] cue block_on_surface ('Imagine a') {'mass': '10kg'}
+  [SLIDE] update 'Analogy' [key_points] v9 (3 items)
+13:30:29 INFO    copilot.presentation.simulations: [SIM] cue block_on_surface: ignore (templates start only by the teacher's pick)
+  [UNDERSTAND] General > Analogy (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#2 1696 ms
+               Specified the box mass as 10 kg in the analogy.
+13:30:31 INFO    copilot.presentation.engine: planner: update General > Analogy (same frame)
+13:30:31 INFO    copilot.presentation.engine: no image for 'Analogy': has an image
+  [SLIDE] update 'Analogy' [key_points] v10 (2 items)
+  [SLIDE] update 'Analogy' [key_points] v11 (3 items)
+  [  156.0s] Imagine you are riding a bicycle. (365 ms)
+13:30:53 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are riding a bicycle.'
+13:30:53 INFO    copilot.presentation.simulations: [SIM] scene mode on: Bicycle on its own slide (cue)
+  [SLIDE] add    'Bicycle' [simulation] v1 (1 items)
+  [SLIDE] update 'Bicycle' [simulation] v2 (1 items)
+  [SLIDE] update 'Bicycle and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Bicycle and you' [simulation] v4 (1 items)
+13:30:54 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 3 op(s) applied, 0 refused, 3063 tokens, first op 1.24 s, done 1.34 s, line -> first shape 1.24 s
+13:30:54 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_alt#2 1375 ms
+               Introduced a bicycle riding scenario as a new analogy example.
+13:30:54 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  163.2s] If you are riding a bicycle. (381 ms)
+13:31:00 INFO    copilot.scene.detector: [SCENE] edit 'If you are riding a bicycle.'
+  [UNDERSTAND] General > Analogy (same_concept) acts=- hint=none lines=1 via groq_alt#2 1122 ms
+               Teacher reiterates the bicycle riding analogy.
+13:31:01 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (1 so far)
+  [SLIDE] update 'Bicycle and you' [simulation] v5 (1 items)
+13:31:01 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 1 op(s) applied, 0 refused, 3050 tokens, first op 1.50 s, done 1.52 s, line -> first shape 1.51 s
+13:31:02 INFO    copilot.presentation.scenes: [SCENE] picture 'person walking': /scene-pic/person-walking.png
+  [SLIDE] update 'Bicycle and you' [simulation] v6 (1 items)
+  [  171.1s] If you are riding a bicycle. (495 ms)
+13:31:08 INFO    copilot.scene.detector: [SCENE] edit 'If you are riding a bicycle.'
+  [SLIDE] update 'Bicycle' [simulation] v7 (1 items)
+13:31:09 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 1 op(s) applied, 0 refused, 3043 tokens, first op 0.84 s, done 0.84 s, line -> first shape 0.84 s
+13:31:10 WARNING copilot.llm.router: llm groq_alt#2 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m467cwmfekpbk61ygfeq61s2` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 5101,
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#4 2140 ms
+               Teacher reiterates the bicycle riding analogy.
+13:31:10 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (1 so far)
+  [  182.0s] Imagine you are riding a bicycle. (362 ms)
+13:31:18 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are riding a bicycle.'
+  [SLIDE] update 'Bicycle and you' [simulation] v8 (1 items)
+  [SLIDE] update 'Bicycle and you' [simulation] v9 (1 items)
+13:31:19 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 2 op(s) applied, 0 refused, 3055 tokens, first op 0.75 s, done 0.91 s, line -> first shape 0.74 s
+13:31:21 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_main#4 2280 ms
+               Introduced riding a bicycle as a new analogy example
+13:31:21 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  187.6s] Let's go back to the slides. (356 ms)
+13:31:23 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+13:31:23 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slides."): recap 1 slide(s) (1 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Bicycle and you' [key_points] v1 (1 items)
+  [UNDERSTAND] General > Analogy (same_concept) acts=- hint=none lines=1 via groq_alt#4 673 ms
+               Teacher instructs class to return to the presentation slides.
+13:31:25 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [  193.0s] Imagine you are walking on moon. (345 ms)
+13:31:29 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are walking on moon.'
+13:31:29 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+13:31:30 WARNING copilot.llm.router: llm groq_alt#4 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m47n5jhaek9sdgt85z510g09` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 4657,
+13:31:30 INFO    copilot.scene.photos: [SCENE] place photo 'moon': none (no wide photo)
+  [SLIDE] update 'Moon' [simulation] v2 (1 items)
+  [SLIDE] update 'Moon and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Moon and you' [simulation] v4 (1 items)
+  [SLIDE] update 'Moon and you' [simulation] v5 (1 items)
+13:31:30 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 4 op(s) applied, 0 refused, 3088 tokens, first op 1.22 s, done 1.34 s, line -> first shape 1.22 s
+13:31:31 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: General, Analogy, Moon Walking Analogy)
+  [UNDERSTAND] General > Moon Walking Analogy (sibling_concept) acts=explanation hint=example lines=1 via groq_alt#2 1547 ms
+               Introduced walking on the moon as a new analogy example.
+13:31:31 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  202.6s] Let's go back to the slides. (390 ms)
+13:31:39 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+13:31:39 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slides."): recap 1 slide(s) (1 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Moon and you' [key_points] v1 (1 items)
+  [SLIDE] update 'Recap: Moon and you' [key_points] v2 (2 items)
+  [UNDERSTAND] General > Moon Walking Analogy (same_concept) acts=transition hint=none lines=1 via groq_main#4 1066 ms
+               Teacher asks to return to the slides
+13:31:40 INFO    copilot.presentation.engine: planner: noop General > Moon Walking Analogy (nothing to display)
+  [SLIDE] update 'Recap: Moon and you' [key_points] v3 (1 items)
+  [  206.3s] Imagine you jump on moon. (335 ms)
+13:31:42 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you jump on moon.'
+13:31:42 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Moon' [simulation] v2 (1 items)
+  [SLIDE] update 'Moon and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Moon and you' [simulation] v4 (1 items)
+13:31:44 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'behave', 'kind': 'jump', 'target': 'y1'}: unknown behaviour 'jump'
+13:31:44 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 3 op(s) applied, 1 refused, 3087 tokens, first op 1.33 s, done 1.55 s, line -> first shape 1.33 s
+  [UNDERSTAND] General > Moon Walking Analogy (same_concept) acts=explanation hint=example lines=1 via groq_alt#2 2175 ms
+               Introduced jumping on the moon as an analogy example.
+13:31:47 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  212.3s] If you jump on Moon, (457 ms)
+13:31:48 INFO    copilot.scene.detector: [SCENE] edit 'If you jump on Moon,'
+13:31:50 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'behave', 'kind': 'jump', 'target': 'y1'}: unknown behaviour 'jump'
+13:31:50 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 0 op(s) applied, 1 refused, 3042 tokens, first op 0.69 s, done 0.70 s, line -> first shape -
+  [  216.9s] If you are jumping on Mars. (422 ms)
+13:31:53 INFO    copilot.scene.detector: [SCENE] edit 'If you are jumping on Mars.'
+  [SLIDE] update 'You and mars' [simulation] v5 (1 items)
+  [SLIDE] update 'You and mars' [simulation] v6 (1 items)
+  [SLIDE] update 'You and mars' [simulation] v7 (1 items)
+13:31:54 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 3 op(s) applied, 0 refused, 3085 tokens, first op 1.00 s, done 1.09 s, line -> first shape 0.99 s
+13:31:56 INFO    copilot: [STT] vocabulary prompt: 34 terms (newest: Analogy, Moon Walking Analogy, Jumping Analogy)
+  [UNDERSTAND] General > Jumping Analogy (sibling_concept) acts=explanation hint=concept lines=2 via groq_main#4 2095 ms
+               Teacher presented jumping analogies for the Moon and Mars
+13:31:56 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+13:32:01 INFO    copilot.visuals.finder: image search 'surface of Mars' (photo): 6 candidate(s), 2 accepted (0 labelled), 6.82 s {'search_s': 1.74, 'download_s': 0.96, 'clip_s': 0.15, 'full_s': 3.95, 'total_s': 6.82}
+13:32:01 INFO    copilot.scene.photos: [SCENE] place photo 'mars': /media/d0b8e81c9c8f6912.jpg (File:Artist’s impression of Mars four billion years ago.jpg)
+  [SLIDE] update 'You and mars' [simulation] v8 (1 items)
+  [  231.2s] Let's go back to the slide. (400 ms)
+13:32:07 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slide') {}
+13:32:07 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slide."): recap 1 slide(s) (3 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: You and mars' [key_points] v1 (3 items)
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#2 1117 ms
+               Teacher instructs class to return to the presentation slides.
+13:32:09 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [  234.1s] (dropped: filler_hallucination) Thanks for watching!
+  [  239.3s] Imagine you are playing with the sun. (349 ms)
+13:32:16 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are playing with the sun.'
+13:32:16 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+13:32:16 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Sun' [simulation] v2 (1 items)
+13:32:17 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 1 op(s) applied, 0 refused, 3062 tokens, first op 1.17 s, done 1.17 s, line -> first shape 1.17 s
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_alt#2 2513 ms
+               Teacher introduces a new analogy involving playing with the sun.
+13:32:18 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  247.1s] Imagine you're hitting the sun with your bat. (448 ms)
+13:32:24 INFO    copilot.scene.detector: [SCENE] cue "Imagine you're hitting the sun with your bat."
+13:32:24 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Sun and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Sun, you and bat' [simulation] v4 (1 items)
+  [SLIDE] update 'Sun, you and bat' [simulation] v5 (1 items)
+  [SLIDE] update 'Sun, you and bat' [simulation] v6 (1 items)
+13:32:25 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 4 op(s) applied, 0 refused, 3098 tokens, first op 0.76 s, done 1.00 s, line -> first shape 0.76 s
+13:32:26 INFO    copilot.presentation.scenes: [SCENE] picture 'bat': /scene-pic/bat.png
+  [SLIDE] update 'Sun, you and bat' [simulation] v7 (1 items)
+13:32:26 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_alt#5 1396 ms
+               Teacher introduces an analogy of hitting the sun with a bat.
+13:32:26 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  255.2s] Imagine you are hitting the sun with a cricket bat. (491 ms)
+13:32:32 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are hitting the sun with a cricket bat.'
+13:32:32 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1946 ms
+               Introduced hitting the sun with a cricket bat as a new analogy
+13:32:35 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [  263.5s] Imagine you jump from a building. (404 ms)
+13:32:41 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you jump from a building.'
+13:32:41 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap 1 slide(s) (3 kept, 0 dropped as parameter talk)
+13:32:41 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Recap: Sun, you and bat' [key_points] v1 (3 items)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+13:32:41 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Building' [simulation] v2 (1 items)
+  [SLIDE] update 'Building and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Building and you' [simulation] v4 (1 items)
+  [SLIDE] update 'Building and you' [simulation] v5 (1 items)
+13:32:42 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 4 op(s) applied, 0 refused, 3088 tokens, first op 1.17 s, done 1.31 s, line -> first shape 1.18 s
+13:32:43 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_alt#4 1816 ms
+               Teacher introduces a new analogy involving jumping from a building.
+13:32:43 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  271.7s] You jump from a building. (362 ms)
+13:32:48 INFO    copilot.scene.detector: [SCENE] edit 'You jump from a building.'
+13:32:48 INFO    copilot.simulation.detector: [SIM] values - {}
+13:32:48 WARNING copilot.llm.router: llm groq_alt#5 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m4800crme1rsrmqcnrkr6mwq` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 4962,
+  [SLIDE] update 'Building and you' [simulation] v6 (1 items)
+13:32:49 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#6: 1 op(s) applied, 0 refused, 3046 tokens, first op 1.33 s, done 1.39 s, line -> first shape 1.33 s
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1356 ms
+               Introduced jumping from a building as an analogy example
+13:32:51 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  280.7s] Let's go back to the slide. (467 ms)
+13:32:57 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slide') {}
+13:32:57 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slide."): recap 1 slide(s) (2 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Building and you' [key_points] v1 (2 items)
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#2 1080 ms
+               Teacher instructs class to return to the presentation slides.
+13:32:58 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [  288.1s] Imagine you throw a ball from a building. (366 ms)
+13:33:05 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you throw a ball from a building.'
+13:33:05 INFO    copilot.presentation.simulations: [SIM] scene mode on: Ball on its own slide (cue)
+  [SLIDE] add    'Ball' [simulation] v1 (1 items)
+13:33:05 INFO    copilot.simulation.detector: [SIM] setup projectile {}
+  [SLIDE] update 'Building' [simulation] v2 (1 items)
+  [SLIDE] update 'Building and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Building and you' [simulation] v4 (1 items)
+  [SLIDE] update 'Building, you and ball' [simulation] v5 (1 items)
+  [SLIDE] update 'Building, you and ball' [simulation] v6 (1 items)
+  [  291.1s] In the air. (426 ms)
+13:33:06 INFO    copilot.scene.detector: [SCENE] edit 'In the air.'
+13:33:06 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'In the air.'
+  [SLIDE] update 'Building, you and ball' [simulation] v7 (1 items)
+13:33:06 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 6 op(s) applied, 0 refused, 3130 tokens, first op 1.23 s, done 1.45 s, line -> first shape 1.24 s
+  [UNDERSTAND] General > Analogy (elaboration) acts=explanation hint=example lines=2 via groq_main#4 2444 ms
+               Introduced throwing a ball from a building as an analogy
+13:33:09 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  301.5s] Let's go back to the slide. (396 ms)
+13:33:18 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slide') {}
+13:33:18 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slide."): recap 1 slide(s) (1 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Building, you and ball' [key_points] v1 (1 items)
+13:33:19 WARNING copilot.llm.router: llm groq_main#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#2 1313 ms
+               Teacher instructs class to return to the presentation slides.
+13:33:19 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [  307.1s] Imagine a bird sitting on a tree. (496 ms)
+13:33:24 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a bird sitting on a tree.'
+13:33:24 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Tree' [simulation] v2 (1 items)
+  [SLIDE] update 'Tree and bird' [simulation] v3 (1 items)
+  [SLIDE] update 'Tree and bird' [simulation] v4 (1 items)
+13:33:24 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 3 op(s) applied, 0 refused, 3078 tokens, first op 0.52 s, done 0.58 s, line -> first shape 0.52 s
+13:33:25 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1531 ms
+               Introduced a bird‑on‑a‑tree analogy
+13:33:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  312.1s] Let's look at its feet. (374 ms)
+13:33:28 INFO    copilot.scene.detector: [SCENE] edit "Let's look at its feet."
+13:33:28 INFO    copilot.understanding.service: [CUE] announce 'Feet'
+13:33:28 INFO    copilot.presentation.simulations: [SIM] simulation mode off (a new topic was announced ('Feet')): recap 1 slide(s) (1 kept, 0 dropped as parameter talk)
+13:33:28 INFO    copilot.presentation.engine: cue: 'Feet' shown at once (pending)
+  [SLIDE] add    'Recap: Tree and bird' [key_points] v1 (1 items)
+  [SLIDE] add    'Feet' [concept] v1 (0 items)
+13:33:28 INFO    copilot.presentation.scenes: [SCENE] the scene ended: its running call is cancelled
+  [UNDERSTAND] General > Analogy (elaboration) acts=transition hint=none lines=1 via groq_alt#2 939 ms
+               Teacher directs attention to the feet of the bird in the analogy.
+13:33:31 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [  318.6s] Imagine a bird sitting on a tree. (417 ms)
+13:33:36 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a bird sitting on a tree.'
+13:33:36 INFO    copilot.presentation.engine: cue: 'Feet' came to nothing; its slide was removed
+13:33:36 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+13:33:36 WARNING copilot.llm.router: llm groq_alt#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+13:33:37 WARNING copilot.llm.router: llm groq_alt#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+  [SLIDE] update 'Tree' [simulation] v2 (1 items)
+  [SLIDE] update 'Tree and bird' [simulation] v3 (1 items)
+  [SLIDE] update 'Tree and bird' [simulation] v4 (1 items)
+13:33:37 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 3 op(s) applied, 0 refused, 3078 tokens, first op 1.11 s, done 1.20 s, line -> first shape 1.11 s
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_alt#6 1501 ms
+               Introduced a bird sitting on a tree as an analogy.
+13:33:38 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  324.3s] If you look at its feet, (386 ms)
+13:33:40 INFO    copilot.scene.detector: [SCENE] edit 'If you look at its feet,'
+  [SLIDE] update 'Tree, bird and feet' [simulation] v5 (1 items)
+  [SLIDE] update 'Tree, bird and feet' [simulation] v6 (1 items)
+  [SLIDE] update 'Tree, bird and feet' [simulation] v7 (1 items)
+13:33:43 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 3 op(s) applied, 0 refused, 3073 tokens, first op 0.97 s, done 1.09 s, line -> first shape 2.34 s
+  [  328.6s] If we zoom into its feet, (399 ms)
+13:33:45 INFO    copilot.scene.detector: [SCENE] edit 'If we zoom into its feet,'
+  [  330.9s] If we zoom into his eyes. (431 ms)
+13:33:47 INFO    copilot.scene.detector: [SCENE] edit 'If we zoom into his eyes.'
+13:33:47 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'If we zoom into his eyes.'
+  [SLIDE] update 'Tree, bird and feet' [simulation] v8 (1 items)
+13:33:47 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 1 op(s) applied, 0 refused, 3056 tokens, first op 1.28 s, done 1.30 s, line -> first shape 2.70 s
+  [UNDERSTAND] General > Analogy (elaboration) acts=explanation hint=key_points lines=3 via groq_alt#2 1258 ms
+               Teacher directs attention to specific details of the bird analogy, specifically its feet and eyes.
+13:33:49 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  336.7s] If you look at its eyes, (381 ms)
+13:33:53 INFO    copilot.scene.detector: [SCENE] edit 'If you look at its eyes,'
+  [SLIDE] update 'Tree, bird, feet and eyes' [simulation] v9 (1 items)
+  [SLIDE] update 'Tree, bird, feet and eyes' [simulation] v10 (1 items)
+  [SLIDE] update 'Tree, bird, feet and eyes' [simulation] v11 (1 items)
+13:33:55 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#6: 3 op(s) applied, 0 refused, 3097 tokens, first op 0.86 s, done 0.88 s, line -> first shape 2.12 s
+13:33:56 INFO    copilot.presentation.scenes: [SCENE] picture 'eyes': /scene-pic/eyes.png
+  [SLIDE] update 'Tree, bird, feet and eyes' [simulation] v12 (1 items)
+  [UNDERSTAND] General > Analogy (elaboration) acts=explanation hint=concept lines=1 via groq_main#4 1483 ms
+               Teacher highlights the bird’s eyes as part of the analogy
+13:34:07 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [  351.0s] Imagine a dog. (380 ms)
+13:34:07 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a dog.'
+13:34:07 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap 1 slide(s) (4 kept, 0 dropped as parameter talk)
+13:34:07 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Recap: Tree, bird, feet and eyes' [key_points] v1 (4 items)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Dog' [simulation] v2 (1 items)
+13:34:07 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 1 op(s) applied, 0 refused, 3027 tokens, first op 0.50 s, done 0.52 s, line -> first shape 0.49 s
+  [  358.6s] If it is chasing a rat. (379 ms)
+13:34:15 INFO    copilot.scene.detector: [SCENE] edit 'If it is chasing a rat.'
+13:34:15 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'If it is chasing a rat.'
+13:34:16 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=2 via groq_alt#4 1285 ms
+               Introduced a dog chasing a rat as a new analogy.
+13:34:16 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  365.8s] If the dog is chasing a rat. (390 ms)
+13:34:22 INFO    copilot.scene.detector: [SCENE] edit 'If the dog is chasing a rat.'
+  [SLIDE] update 'Dog and rat' [simulation] v3 (1 items)
+  [SLIDE] update 'Dog and rat' [simulation] v4 (1 items)
+13:34:24 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 2 op(s) applied, 0 refused, 3049 tokens, first op 1.27 s, done 1.31 s, line -> first shape 1.27 s
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#2 2475 ms
+               Teacher introduces a dog chasing a rat as an analogy.
+13:34:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (1 so far)
+  [  379.6s] Imagine a rat cooking food. (431 ms)
+13:34:36 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a rat cooking food.'
+  [SLIDE] update 'Dog, rat and food' [simulation] v5 (1 items)
+13:34:37 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'behave', 'kind': 'cook', 'b': 'f1', 'target': 'r1'}: unknown behaviour 'cook'
+13:34:37 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 1 op(s) applied, 1 refused, 3064 tokens, first op 0.81 s, done 0.86 s, line -> first shape 0.82 s
+13:34:37 INFO    copilot.presentation.scenes: [SCENE] picture 'canned food': /scene-pic/canned-food.png
+  [SLIDE] update 'Dog, rat and food' [simulation] v6 (1 items)
+13:34:41 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_alt#2 2988 ms
+               Introduced a rat cooking food as a new analogy.
+13:34:41 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  410.0s] Imagine you are a king. (445 ms)
+13:35:06 INFO    copilot.scene.detector: [SCENE] edit 'Imagine you are a king.'
+13:35:06 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'Imagine you are a king.'
+  [UNDERSTAND] General > Analogy (elaboration) acts=transition hint=none lines=1 via groq_main#4 2145 ms
+               Teacher asks students to imagine being a king.
+13:35:10 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (2 so far)
+  [  420.4s] Let's go back to the frames. (391 ms)
+13:35:16 INFO    copilot.scene.detector: [SCENE] edit "Let's go back to the frames."
+  [SLIDE] update 'Dog, rat and food' [simulation] v7 (1 items)
+13:35:18 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 1 op(s) applied, 0 refused, 3041 tokens, first op 1.50 s, done 1.51 s, line -> first shape 1.50 s
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#2 1365 ms
+               Teacher directs students to return to the visual frames.
+13:35:18 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (2 so far)
+  [  425.5s] Let's go back to the slides. (388 ms)
+13:35:22 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+13:35:22 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slides."): recap 1 slide(s) (2 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Dog, rat and food' [key_points] v1 (2 items)
+  [SLIDE] update 'Recap: Dog, rat and food' [key_points] v2 (3 items)
+  [UNDERSTAND] General > Analogy (same_concept) acts=- hint=none lines=1 via groq_main#4 1095 ms
+               Teacher returns to the slides
+13:35:23 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [SLIDE] update 'Recap: Dog, rat and food' [key_points] v3 (2 items)
+  [  433.1s] Imagine you are cooking food. (324 ms)
+13:35:29 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are cooking food.'
+13:35:29 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'You' [simulation] v2 (1 items)
+  [SLIDE] update 'You and food' [simulation] v3 (1 items)
+  [SLIDE] update 'You and food' [simulation] v4 (1 items)
+13:35:31 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'behave', 'kind': 'cook', 'target': 'y1'}: unknown behaviour 'cook'
+13:35:31 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 3 op(s) applied, 1 refused, 3085 tokens, first op 2.03 s, done 2.20 s, line -> first shape 2.03 s
+  [UNDERSTAND] General > Analogy (elaboration) acts=transition hint=none lines=1 via groq_alt#2 5098 ms
+               Teacher introduces a new analogy involving cooking food.
+13:35:36 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [  441.2s] Let's go back to the slides. (456 ms)
+13:35:38 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+13:35:38 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slides."): recap none (0 kept, 0 dropped as parameter talk)
+  [SLIDE] update 'Recap: Dog, rat and food' [key_points] v4 (3 items)
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_main#4 1148 ms
+               Teacher returns to the slides
+13:35:39 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [SLIDE] update 'Recap: Dog, rat and food' [key_points] v5 (2 items)
+  [  451.4s] Imagine you have a box in your hand. (396 ms)
+  [SLIDE] update 'Recap: Dog, rat and food' [key_points] v6 (3 items)
+13:35:52 WARNING copilot.llm.router: llm groq_alt#2 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m467cwmfekpbk61ygfeq61s2` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 5003,
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_alt#4 4536 ms
+               Teacher introduces a new analogy involving holding a box.
+13:35:53 INFO    copilot.presentation.engine: planner: continue General > Analogy (new facet)
+  [SLIDE] update 'Recap: Dog, rat and food' [key_points] v7 (2 items)
+  [SLIDE] add    'Analogy' [key_points] v1 (1 items)
+13:35:53 INFO    copilot.presentation.engine: image search 'holding a box' (photo) for 'Analogy'
+  [  460.3s] Imagine you have a box in your hand. (428 ms)
+  [SLIDE] update 'Analogy' [key_points] v2 (2 items)
+13:35:57 INFO    copilot.visuals.finder: image search 'holding a box': 3 slow download(s) dropped
+13:35:58 INFO    copilot.visuals.finder: image search 'holding a box' (photo): 4 candidate(s), 1 accepted (0 labelled), 5.36 s {'search_s': 2.56, 'download_s': 1.91, 'clip_s': 0.13, 'full_s': 0.73, 'total_s': 5.36}
+  [IMAGE] 'holding a box' -> File:Lawrence Alma-Tadema 10.jpeg (5.4 s)
+13:35:58 INFO    copilot.presentation.engine: image 'holding a box' on 'Analogy': File:Lawrence Alma-Tadema 10.jpeg
+  [SLIDE] update 'Analogy' [key_points] v3 (3 items)
+  [UNDERSTAND] General > Analogy (same_concept) acts=- hint=key_points lines=1 via groq_main#4 1309 ms
+               Restated the box analogy phrase.
+13:35:59 INFO    copilot.presentation.engine: revised S1: Imagine you have a box in your hand.
+13:35:59 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [SLIDE] update 'Analogy' [key_points] v4 (2 items)
+  [SLIDE] update 'Analogy' [key_points] v5 (2 items)
+  [  468.0s] When you drop the box, (358 ms)
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 2185 ms
+               Added continuation of the box analogy when the box is dropped.
+13:36:18 INFO    copilot.presentation.engine: revised S1: Imagine you have a box in your hand; when you drop the box
+13:36:18 INFO    copilot.presentation.engine: planner: update General > Analogy (same frame)
+13:36:18 INFO    copilot.presentation.engine: no image for 'Analogy': has an image
+  [SLIDE] update 'Analogy' [key_points] v6 (2 items)
+  [  494.9s] Imagine you are reading a book. (364 ms)
+13:36:31 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are reading a book.'
+13:36:31 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'You' [simulation] v2 (1 items)
+  [SLIDE] update 'You and book' [simulation] v3 (1 items)
+  [SLIDE] update 'You and book' [simulation] v4 (1 items)
+13:36:33 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 3 op(s) applied, 0 refused, 3070 tokens, first op 1.28 s, done 1.36 s, line -> first shape 1.29 s
+13:36:34 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=concept lines=1 via groq_main#4 1985 ms
+               Teacher asks students to imagine reading a book as a new analogy.
+13:36:34 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  523.3s] Imagine you are drinking water. (378 ms)
+13:37:00 INFO    copilot.scene.detector: [SCENE] edit 'Imagine you are drinking water.'
+13:37:00 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'You, book and water' [simulation] v5 (1 items)
+13:37:01 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'behave', 'kind': 'drink', 'target': 'y1'}: unknown behaviour 'drink'
+13:37:01 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 1 op(s) applied, 1 refused, 3104 tokens, first op 1.28 s, done 1.30 s, line -> first shape 1.29 s
+13:37:02 INFO    copilot.presentation.scenes: [SCENE] picture 'potable water': /scene-pic/potable-water.png
+  [SLIDE] update 'You, book and water' [simulation] v6 (1 items)
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_main#5 1126 ms
+               Introduced a drinking‑water analogy
+13:37:03 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  530.2s] Let's go back to the slides. (397 ms)
+13:37:06 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+13:37:06 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slides."): recap 1 slide(s) (1 kept, 1 dropped as parameter talk)
+  [SLIDE] add    'Recap: You, book and water' [key_points] v1 (1 items)
+  [SLIDE] update 'Recap: You, book and water' [key_points] v2 (2 items)
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_main#5 1234 ms
+               Teacher returns to the slides
+13:37:08 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [SLIDE] update 'Recap: You, book and water' [key_points] v3 (1 items)
+  [  536.6s] Imagine you are swimming. (364 ms)
+13:37:13 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are swimming.'
+13:37:13 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'You' [simulation] v2 (1 items)
+13:37:14 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 1 op(s) applied, 0 refused, 3044 tokens, first op 1.34 s, done 1.34 s, line -> first shape 1.34 s
+13:37:16 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1515 ms
+               Introduced a swimming analogy for the concept.
+13:37:16 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  544.4s] Imagine you are swimming. (414 ms)
+13:37:20 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are swimming.'
+13:37:20 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap none (0 kept, 1 dropped as parameter talk)
+13:37:20 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'You' [simulation] v2 (1 items)
+13:37:21 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'behave', 'kind': 'swim', 'target': 'p1'}: unknown behaviour 'swim'
+13:37:21 INFO    copilot.presentation.scenes: [SCENE] call groq_main#6: 1 op(s) applied, 1 refused, 3034 tokens, first op 0.88 s, done 0.91 s, line -> first shape 0.88 s
+13:37:24 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Swimming Analogy' -> same_concept
+13:37:24 INFO    copilot: [STT] vocabulary prompt: 35 terms (newest: Moon Walking Analogy, Jumping Analogy, Swimming Analogy)
+  [UNDERSTAND] General > Swimming Analogy (same_concept) acts=explanation hint=concept lines=1 via groq_main#5 1682 ms
+               Introduces a swimming analogy for the concept.
+13:37:24 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  549.9s] Let's go back to the slides. (380 ms)
+13:37:26 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+13:37:26 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slides."): recap none (0 kept, 1 dropped as parameter talk)
+  [SLIDE] update 'Recap: You, book and water' [key_points] v4 (2 items)
+  [UNDERSTAND] General > Analogy (same_concept) acts=transition hint=none lines=1 via groq_main#6 1119 ms
+               Teacher returns to the slides
+13:37:28 INFO    copilot.presentation.engine: planner: noop General > Analogy (nothing to display)
+  [SLIDE] update 'Recap: You, book and water' [key_points] v5 (1 items)
+  [  574.9s] Imagine you are... (336 ms)
+  [SLIDE] update 'Recap: You, book and water' [key_points] v6 (2 items)
+  [  577.5s] Driving a rocket in the space. (352 ms)
+  [SLIDE] update 'Recap: You, book and water' [key_points] v7 (2 items)
+13:37:57 INFO    copilot.understanding.interpreter: dropped 1 revision(s) with unknown refs
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=2 via groq_main#4 2128 ms
+               Added a rocket‑driving analogy to illustrate the concept
+13:37:57 INFO    copilot.presentation.engine: planner: continue General > Analogy (new facet)
+  [SLIDE] update 'Recap: You, book and water' [key_points] v8 (1 items)
+  [SLIDE] add    'Analogy' [key_points] v1 (1 items)
+13:37:57 INFO    copilot.presentation.engine: no image 'box in hand' on 'Analogy': not about the slide (similarity 0.07)
+  [  584.5s] Imagine you are in a rocket in this space. (404 ms)
+13:38:02 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are in a rocket in this space.'
+13:38:02 INFO    copilot.presentation.simulations: [SIM] scene mode on: Rocket on its own slide (cue)
+  [SLIDE] add    'Rocket' [simulation] v1 (1 items)
+13:38:04 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Rocket Analogy' -> same_concept
+13:38:04 INFO    copilot: [STT] vocabulary prompt: 36 terms (newest: Jumping Analogy, Swimming Analogy, Rocket Analogy)
+  [UNDERSTAND] General > Rocket Analogy (same_concept) acts=explanation hint=example lines=1 via groq_main#5 1494 ms
+               Introduced a rocket analogy to illustrate the concept
+13:38:04 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [SLIDE] update 'Space' [simulation] v2 (1 items)
+  [SLIDE] update 'Space and rocket' [simulation] v3 (1 items)
+  [SLIDE] update 'Space, rocket and you' [simulation] v4 (1 items)
+  [SLIDE] update 'Space, rocket and you' [simulation] v5 (1 items)
+  [SLIDE] update 'Space, rocket and you' [simulation] v6 (1 items)
+13:38:05 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 5 op(s) applied, 0 refused, 3181 tokens, first op 2.14 s, done 2.39 s, line -> first shape 2.14 s
+13:38:09 INFO    copilot.visuals.finder: image search 'outer space stars nebula' (photo): 8 candidate(s), 3 accepted (0 labelled), 4.31 s {'search_s': 1.37, 'download_s': 1.65, 'clip_s': 0.19, 'full_s': 1.07, 'total_s': 4.31}
+13:38:09 INFO    copilot.scene.photos: [SCENE] place photo 'space': none (no wide photo)
+  [  593.3s] You are going to the Sun. (383 ms)
+13:38:09 INFO    copilot.scene.detector: [SCENE] edit 'You are going to the Sun.'
+13:38:09 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Space, rocket, you and sun' [simulation] v7 (1 items)
+  [SLIDE] update 'Space, rocket, you and sun' [simulation] v8 (1 items)
+13:38:10 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 3084 tokens, first op 1.06 s, done 1.14 s, line -> first shape 1.06 s
+13:38:11 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Analogy' -> same_concept
+  [UNDERSTAND] General > Analogy (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1431 ms
+               Introduced a Sun‑travel analogy
+13:38:11 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  603.7s] UC Mercury (345 ms)
+13:38:19 INFO    copilot.scene.detector: [SCENE] edit 'UC Mercury'
+13:38:19 INFO    copilot.presentation.scenes: [SCENE] not an edit: 'UC Mercury'
+13:38:20 INFO    copilot.simulation.detector: [SIM] values - {}
+  [  610.0s] You will see Mercury. (417 ms)
+13:38:26 INFO    copilot.scene.detector: [SCENE] edit 'You will see Mercury.'
+13:38:26 INFO    copilot.simulation.detector: [SIM] values - {}
+13:38:27 WARNING copilot.llm.router: llm groq_main#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+13:38:27 WARNING copilot.llm.router: llm groq_main#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+  [SLIDE] update 'Space, rocket, you, sun and Mercury' [simulation] v9 (1 items)
+13:38:27 INFO    copilot.presentation.scenes: [SCENE] call groq_main#6: 1 op(s) applied, 0 refused, 3049 tokens, first op 1.16 s, done 1.20 s, line -> first shape 1.18 s
+13:38:29 INFO    copilot: [STT] vocabulary prompt: 37 terms (newest: Swimming Analogy, Rocket Analogy, Mercury)
+  [UNDERSTAND] General > Mercury (sibling_concept) acts=explanation hint=concept lines=2 via groq_main#4 2116 ms
+               Introduced Mercury as a new example.
+  [HEARD] 'UC' -> 'Mercury' corrected on the slide (0.5)
+13:38:29 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+13:38:32 INFO    copilot.visuals.finder: image search 'Mercury': 3 slow download(s) dropped
+13:38:32 INFO    copilot.visuals.finder: image search 'Mercury' (photo): 4 candidate(s), 1 accepted (0 labelled), 4.97 s {'search_s': 3.54, 'download_s': 0.94, 'clip_s': 0.13, 'full_s': 0.36, 'total_s': 4.97}
+13:38:33 INFO    copilot.scene.photos: [SCENE] photo 'Mercury': /scene-pic/photo-mercury.png (File:Mercury in true color.jpg)
+  [SLIDE] update 'Space, rocket, you, sun and Mercury' [simulation] v10 (1 items)
+  [  625.2s] You will see Venus. (444 ms)
+13:38:42 INFO    copilot.scene.detector: [SCENE] edit 'You will see Venus.'
+  [SLIDE] update 'Space, rocket, you, sun, Mercury and Venus' [simulation] v11 (1 items)
+13:38:43 INFO    copilot.presentation.scenes: [SCENE] call groq_main#1: 1 op(s) applied, 0 refused, 3057 tokens, first op 1.20 s, done 1.23 s, line -> first shape 1.22 s
+13:38:45 INFO    copilot: [STT] vocabulary prompt: 38 terms (newest: Rocket Analogy, Mercury, Venus)
+  [UNDERSTAND] General > Venus (sibling_concept) acts=explanation hint=example lines=1 via groq_main#4 1211 ms
+               Introduced Venus as a new example.
+13:38:45 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+13:38:46 INFO    copilot.visuals.finder: image search 'Venus' (photo): 8 candidate(s), 3 accepted (0 labelled), 3.62 s {'search_s': 1.8, 'download_s': 0.91, 'clip_s': 0.2, 'full_s': 0.69, 'total_s': 3.62}
+13:38:47 INFO    copilot.scene.photos: [SCENE] photo 'Venus': /scene-pic/photo-venus.png (File:Venus from Mariner 10.jpg)
+  [SLIDE] update 'Space, rocket, you, sun, Mercury and Venus' [simulation] v12 (1 items)
+  [  636.3s] You will see certain (433 ms)
+13:38:52 INFO    copilot.scene.detector: [SCENE] edit 'You will see certain'
+13:38:55 INFO    copilot.presentation.scenes: [SCENE] call groq_main#1: 0 op(s) applied, 0 refused, 3032 tokens, first op -, done 1.05 s, line -> first shape -
+  [  648.5s] Let's go back to the slides. (448 ms)
+13:39:04 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+13:39:04 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slides."): recap 1 slide(s) (3 kept, 1 dropped as parameter talk)
+  [SLIDE] add    'Recap: Space, rocket, you, sun, Mercury and Venus' [key_points] v1 (3 items)
+  [UNDERSTAND] General > Venus (same_concept) acts=- hint=none lines=1 via groq_main#4 1721 ms
+               Teacher begins a new statement
+13:39:06 INFO    copilot.presentation.engine: planner: noop General > Venus (nothing to display)
+  [  653.6s] Imagine you are going (377 ms)
+  [UNDERSTAND] General > Venus (same_concept) acts=- hint=none lines=1 via groq_alt#2 1659 ms
+               Teacher instructs to return to the slides.
+13:39:10 INFO    copilot.presentation.engine: planner: noop General > Venus (nothing to display)
+  [  655.2s] Towards the Black Hole (330 ms)
+  [SLIDE] update 'Recap: Space, rocket, you, sun, Mercury and Venus' [key_points] v2 (4 items)
+  [  665.1s] Imagine a black hole. (336 ms)
+13:39:21 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a black hole.'
+13:39:21 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] update 'Recap: Space, rocket, you, sun, Mercury and Venus' [key_points] v3 (3 items)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Black hole' [simulation] v2 (1 items)
+13:39:22 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 1 op(s) applied, 0 refused, 3003 tokens, first op 1.06 s, done 1.06 s, line -> first shape 1.07 s
+13:39:22 INFO    copilot: [STT] vocabulary prompt: 40 terms (newest: Venus, Black Holes, Introduction)
+  [UNDERSTAND] Black Holes > Introduction (new_topic) acts=transition hint=none lines=3 via groq_alt#2 1115 ms
+               Teacher introduces a new topic: black holes.
+13:39:22 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+13:39:23 INFO    copilot.presentation.scenes: [SCENE] picture 'hole': /scene-pic/hole.png
+  [SLIDE] update 'Black hole' [simulation] v3 (1 items)
+  [  674.3s] Let's go back to the slides. (391 ms)
+13:39:31 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+13:39:31 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slides."): recap none (0 kept, 0 dropped as parameter talk)
+  [SLIDE] update 'Recap: Space, rocket, you, sun, Mercury and Venus' [key_points] v4 (4 items)
+  [UNDERSTAND] Black Holes > Introduction (same_concept) acts=transition hint=none lines=1 via groq_alt#2 1196 ms
+               Teacher instructs students to return to the slides.
+13:39:33 INFO    copilot.presentation.engine: planner: noop Black Holes > Introduction (nothing to display)
+  [SLIDE] update 'Recap: Space, rocket, you, sun, Mercury and Venus' [key_points] v5 (3 items)
+  [  684.1s] Imagine you are riding a bus. (353 ms)
+13:39:41 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are riding a bus.'
+13:39:41 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Bus' [simulation] v2 (1 items)
+  [SLIDE] update 'Bus and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Bus and you' [simulation] v4 (1 items)
+13:39:42 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 3 op(s) applied, 0 refused, 3070 tokens, first op 0.86 s, done 0.94 s, line -> first shape 0.87 s
+13:39:43 INFO    copilot: [STT] vocabulary prompt: 41 terms (newest: Black Holes, Introduction, Bus Analogy)
+  [UNDERSTAND] Black Holes > Bus Analogy (sibling_concept) acts=explanation hint=example lines=1 via groq_main#4 1573 ms
+               Introduces a bus riding analogy for black holes.
+13:39:43 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  690.7s] The bus is moving at a speed of 30 kmph. (416 ms)
+13:39:49 INFO    copilot.scene.detector: [SCENE] edit 'The bus is moving at a speed of 30 kmph.'
+13:39:49 INFO    copilot.simulation.detector: [SIM] values - {'speed': '30 kmph'}
+13:39:50 WARNING copilot.llm.router: llm groq_alt#2 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m467cwmfekpbk61ygfeq61s2` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 4303,
+13:39:50 WARNING copilot.llm.router: llm groq_alt#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+13:39:50 WARNING copilot.llm.router: llm groq_alt#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+  [SLIDE] update 'Bus and you' [simulation] v5 (1 items)
+  [SLIDE] update 'Bus and you' [simulation] v6 (1 items)
+  [UNDERSTAND] Black Holes > Bus Analogy (elaboration) acts=explanation hint=narrative lines=1 via groq_alt#4 1588 ms
+               Teacher specifies the bus speed as 30 kmph in the analogy.
+13:39:51 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+13:39:51 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 2 op(s) applied, 0 refused, 3070 tokens, first op 1.92 s, done 1.94 s, line -> first shape 1.93 s
+  [  699.7s] And you jump from the bus. (407 ms)
+13:39:56 INFO    copilot.scene.detector: [SCENE] edit 'And you jump from the bus.'
+13:39:56 WARNING copilot.llm.router: llm groq_alt#4 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m47n5jhaek9sdgt85z510g09` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 4329,
+13:39:57 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'behave', 'kind': 'jump', 'target': 'y1'}: unknown behaviour 'jump'
+13:39:57 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 0 op(s) applied, 1 refused, 3052 tokens, first op 1.81 s, done 1.81 s, line -> first shape -
+  [UNDERSTAND] Black Holes > Bus Analogy (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 2335 ms
+               Teacher adds that you jump from the bus in the analogy.
+13:39:58 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [  706.0s] Jumping Analogy, Bus Analogy, (482 ms)
+13:40:03 INFO    copilot.scene.detector: [SCENE] edit 'Jumping Analogy, Bus Analogy,'
+13:40:05 WARNING copilot.presentation.scenes: [SCENE] unsafe: the model refused 'Jumping Analogy, Bus Analogy,'; the scene is put back
+  [SLIDE] update 'Bus and you' [simulation] v7 (1 items)
+13:40:05 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 0 op(s) applied, 0 refused, 3044 tokens, first op 0.66 s, done 0.67 s, line -> first shape -
+  [  713.3s] Let's go back to the slide. (413 ms)
+13:40:09 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slide') {}
+13:40:09 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slide."): recap 1 slide(s) (2 kept, 1 dropped as parameter talk)
+  [SLIDE] add    'Recap: Bus and you' [key_points] v1 (2 items)
+  [UNDERSTAND] Black Holes > Bus Analogy (same_concept) acts=- hint=none lines=2 via groq_alt#2 877 ms
+               Teacher instructs students to return to the slides.
+13:40:10 INFO    copilot.presentation.engine: planner: noop Black Holes > Bus Analogy (nothing to display)
+  [  717.5s] Imagine a ball rolling on an inclined plane. (392 ms)
+13:40:15 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a ball rolling on an inclined plane.'
+13:40:15 INFO    copilot.presentation.simulations: [SIM] scene mode on: Ball on its own slide (cue)
+  [SLIDE] add    'Ball' [simulation] v1 (1 items)
+13:40:15 INFO    copilot.simulation.detector: [SIM] cue incline ('Imagine a') {}
+  [SLIDE] update 'Inclined plane' [simulation] v2 (1 items)
+  [SLIDE] update 'Inclined plane and ball' [simulation] v3 (1 items)
+  [SLIDE] update 'Inclined plane and ball' [simulation] v4 (1 items)
+  [SLIDE] update 'Inclined plane and ball' [simulation] v5 (1 items)
+13:40:16 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 4 op(s) applied, 0 refused, 3092 tokens, first op 0.59 s, done 0.78 s, line -> first shape 0.59 s
+13:40:17 INFO    copilot: [STT] vocabulary prompt: 42 terms (newest: Introduction, Bus Analogy, Inclined Plane Analogy)
+  [UNDERSTAND] Black Holes > Inclined Plane Analogy (sibling_concept) acts=explanation hint=example lines=1 via groq_main#4 1885 ms
+               Introduced a ball rolling on an inclined plane as a new analogy for black holes.
+13:40:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  724.2s] An inclined plane. (375 ms)
+13:40:20 INFO    copilot.scene.detector: [SCENE] edit 'An inclined plane.'
+13:40:20 INFO    copilot.simulation.detector: [SIM] setup incline {}
+  [SLIDE] update 'Inclined plane and ball' [simulation] v6 (1 items)
+13:40:21 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 1 op(s) applied, 0 refused, 3051 tokens, first op 0.70 s, done 0.70 s, line -> first shape 0.70 s
+  [UNDERSTAND] Black Holes > Inclined Plane Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#2 1328 ms
+               Teacher references the inclined plane analogy.
+13:40:23 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (1 so far)
+  [  742.5s] Imagine you are tied to a helicopter. (432 ms)
+13:40:39 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are tied to a helicopter.'
+13:40:39 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap 1 slide(s) (1 kept, 0 dropped as parameter talk)
+13:40:39 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Recap: Inclined plane and ball' [key_points] v1 (1 items)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Helicopter' [simulation] v2 (1 items)
+  [SLIDE] update 'Helicopter and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Helicopter and you' [simulation] v4 (1 items)
+13:40:41 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 3 op(s) applied, 0 refused, 3058 tokens, first op 1.08 s, done 1.17 s, line -> first shape 1.08 s
+13:40:41 INFO    copilot: [STT] vocabulary prompt: 43 terms (newest: Bus Analogy, Inclined Plane Analogy, Helicopter Analogy)
+  [UNDERSTAND] Black Holes > Helicopter Analogy (sibling_concept) acts=explanation hint=narrative lines=1 via groq_alt#2 981 ms
+               Teacher introduces a new analogy involving being tied to a helicopter.
+13:40:41 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+13:40:41 INFO    copilot.presentation.scenes: [SCENE] picture 'helicopter': /scene-pic/helicopter.png
+  [SLIDE] update 'Helicopter and you' [simulation] v5 (1 items)
+  [  749.8s] Imagine you are flying this helicopter. (375 ms)
+13:40:46 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are flying this helicopter.'
+  [SLIDE] update 'Helicopter and you' [simulation] v6 (1 items)
+13:40:48 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 1 op(s) applied, 0 refused, 3043 tokens, first op 1.81 s, done 1.81 s, line -> first shape 1.80 s
+  [UNDERSTAND] Black Holes > Helicopter Analogy (same_concept) acts=explanation hint=narrative lines=1 via groq_alt#5 1825 ms
+               Teacher asks students to imagine flying the helicopter in the analogy.
+13:40:48 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  765.4s] Let's go back to the slides. (407 ms)
+13:41:01 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+13:41:01 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slides."): recap none (0 kept, 2 dropped as parameter talk)
+  [SLIDE] update 'Recap: Inclined plane and ball' [key_points] v2 (2 items)
+  [UNDERSTAND] Black Holes > Helicopter Analogy (same_concept) acts=transition hint=none lines=1 via groq_main#4 1511 ms
+               Teacher tells students to return to the slides
+13:41:03 INFO    copilot.presentation.engine: planner: noop Black Holes > Helicopter Analogy (nothing to display)
+  [SLIDE] update 'Recap: Inclined plane and ball' [key_points] v3 (1 items)
+  [  778.2s] Imagine you are driving a car in the rain. (430 ms)
+13:41:15 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are driving a car in the rain.'
+13:41:15 INFO    copilot.presentation.simulations: [SIM] scene mode on: Car on its own slide (cue)
+  [SLIDE] add    'Car' [simulation] v1 (1 items)
+13:41:15 INFO    copilot.simulation.detector: [SIM] values - {}
+13:41:17 INFO    copilot: [STT] vocabulary prompt: 44 terms (newest: Inclined Plane Analogy, Helicopter Analogy, Car Analogy)
+  [UNDERSTAND] Black Holes > Car Analogy (sibling_concept) acts=transition hint=narrative lines=1 via groq_alt#2 1304 ms
+               Teacher introduces a new analogy involving driving a car in the rain.
+13:41:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [SLIDE] update 'Car' [simulation] v2 (1 items)
+  [SLIDE] update 'Car' [simulation] v3 (1 items)
+  [SLIDE] update 'Car and rain' [simulation] v4 (1 items)
+13:41:17 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 3 op(s) applied, 0 refused, 3098 tokens, first op 2.03 s, done 2.14 s, line -> first shape 2.04 s
+  [  792.5s] Let's go back to the slide. (456 ms)
+13:41:29 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slide') {}
+13:41:29 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slide."): recap none (0 kept, 0 dropped as parameter talk)
+  [  796.1s] Imagine you are playing football in the rain. (390 ms)
+13:41:33 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are playing football in the rain.'
+13:41:33 INFO    copilot.presentation.simulations: [SIM] scene mode on: Rain on its own slide (cue)
+  [SLIDE] add    'Rain' [simulation] v1 (1 items)
+13:41:33 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Rain' [simulation] v2 (1 items)
+  [SLIDE] update 'Rain and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Rain, you and football' [simulation] v4 (1 items)
+  [SLIDE] update 'Rain, you and football' [simulation] v5 (1 items)
+13:41:36 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 4 op(s) applied, 0 refused, 3095 tokens, first op 2.88 s, done 2.91 s, line -> first shape 2.89 s
+13:41:36 WARNING copilot.llm.router: llm groq_alt#2 failed: no complete response within 6.5s (retrying)
+13:41:36 WARNING copilot.llm.router: llm groq_alt#2 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m467cwmfekpbk61ygfeq61s2` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 4979,
+  [UNDERSTAND] Black Holes > Car Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#4 7976 ms
+               Teacher instructs students to return to the current slide.
+13:41:37 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+13:41:39 INFO    copilot: [STT] vocabulary prompt: 45 terms (newest: Helicopter Analogy, Car Analogy, Football Analogy)
+  [UNDERSTAND] Black Holes > Football Analogy (sibling_concept) acts=explanation hint=example lines=1 via groq_main#4 1495 ms
+               Teacher introduces a football-in‑rain analogy for black holes
+13:41:39 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  803.8s] Imagine you are playing football in the rain. (497 ms)
+13:41:40 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are playing football in the rain.'
+13:41:40 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Rain, you and football' [simulation] v6 (1 items)
+  [SLIDE] update 'Rain, you and football' [simulation] v7 (1 items)
+  [SLIDE] update 'Rain, you and football' [simulation] v8 (1 items)
+  [SLIDE] update 'Rain, you and football' [simulation] v9 (1 items)
+13:41:41 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 4 op(s) applied, 0 refused, 3119 tokens, first op 0.66 s, done 0.78 s, line -> first shape 0.66 s
+  [UNDERSTAND] Black Holes > Football Analogy (same_concept) acts=transition hint=narrative lines=1 via groq_alt#4 1040 ms
+               Teacher introduces the football-in-rain analogy for black holes.
+13:41:42 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (1 so far)
+  [  814.4s] Let's go back to the slides. (461 ms)
+13:41:51 INFO    copilot.simulation.detector: [SIM] end - ('go back to the slides') {}
+13:41:51 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's go back to the slides."): recap none (0 kept, 1 dropped as parameter talk)
+  [SLIDE] update 'Recap: Inclined plane and ball' [key_points] v4 (2 items)
+13:41:53 WARNING copilot.understanding.interpreter: interpretation from groq_main#4 invalid (schema: [{'type': 'value_error', 'loc': ('topic',), 'msg': 'Value error, topic must not be blank', 'input': '', 'ctx': {'error': ValueError('topic must not be blank')}}, {'type': 'missing', 'loc': ('relation',), 'msg': 'Field required', 'input': {'meta_lines': [1], 'representation_hint': 'none', 'topic': '', 'subtopic': ''}}]); one repair attempt
+  [UNDERSTAND] Black Holes > Football Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#2 4946 ms
+               Teacher instructs students to return to the slides.
+13:41:56 INFO    copilot.presentation.engine: planner: noop Black Holes > Football Analogy (nothing to display)
+  [SLIDE] update 'Recap: Inclined plane and ball' [key_points] v5 (1 items)
+  [  820.1s] Imagine you are working on your laptop. (382 ms)
+13:41:56 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are working on your laptop.'
+13:41:56 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'You' [simulation] v2 (1 items)
+  [SLIDE] update 'You and laptop' [simulation] v3 (1 items)
+  [SLIDE] update 'You and laptop' [simulation] v4 (1 items)
+13:41:57 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 3 op(s) applied, 0 refused, 3072 tokens, first op 0.51 s, done 0.61 s, line -> first shape 0.52 s
+  [UNDERSTAND] Black Holes > Football Analogy (elaboration) acts=explanation hint=narrative lines=1 via groq_alt#4 1577 ms
+               Teacher asks students to imagine working on a laptop.
+13:41:58 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  825.9s] And the two-row U-Laptop in the head. (482 ms)
+13:42:03 INFO    copilot.scene.detector: [SCENE] edit 'And the two-row U-Laptop in the head.'
+13:42:03 INFO    copilot.simulation.detector: [SIM] values - {}
+13:42:03 INFO    copilot.presentation.scenes: [SCENE] scene.rejected (not an op) {"op": "set", "id": "l1", "props": {"size": "small"}}: Input should be a valid number, unable to parse string as a number
+13:42:03 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 0 op(s) applied, 1 refused, 3047 tokens, first op -, done 0.55 s, line -> first shape -
+  [UNDERSTAND] Black Holes > Football Analogy (same_concept) acts=- hint=none lines=1 via groq_alt#6 850 ms
+               Teacher instructs students to visualize a laptop in their head.
+13:42:04 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (1 so far)
+  [  833.1s] And if you throw your laptop in the air. (440 ms)
+13:42:10 INFO    copilot.scene.detector: [SCENE] edit 'And if you throw your laptop in the air.'
+  [SLIDE] update 'You and laptop' [simulation] v5 (1 items)
+13:42:11 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 1 op(s) applied, 0 refused, 3090 tokens, first op 1.19 s, done 1.20 s, line -> first shape 1.20 s
+  [UNDERSTAND] Black Holes > Football Analogy (elaboration) acts=explanation hint=narrative lines=1 via groq_alt#2 3034 ms
+               Teacher introduces the action of throwing a laptop in the air.
+13:42:13 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  843.5s] With the initial velocity of 30 meter per second at an angle of 30 degree. (467 ms)
+13:42:23 INFO    copilot.scene.detector: [SCENE] edit 'With the initial velocity of 30 meter per second at an angle of 30 degree.'
+13:42:23 INFO    copilot.simulation.detector: [SIM] values - {'speed': '30 meter per second', 'angle': '30 degree'}
+  [SLIDE] update 'You and laptop' [simulation] v6 (1 items)
+13:42:24 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 1 op(s) applied, 0 refused, 3072 tokens, first op 1.33 s, done 1.34 s, line -> first shape 1.33 s
+13:42:30 WARNING copilot.llm.router: llm groq_alt#2 failed: connect failed: ConnectTimeout
+  [UNDERSTAND] Black Holes > Football Analogy (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 5477 ms
+               Teacher specifies the initial velocity and launch angle for the analogy.
+13:42:32 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [  855.9s] If we improve it with the initial velocity of 60 meter per speed. (584 ms)
+13:42:35 INFO    copilot.scene.detector: [SCENE] edit 'If we improve it with the initial velocity of 60 meter per speed.'
+13:42:35 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'You and laptop' [simulation] v7 (1 items)
+13:42:36 WARNING copilot.llm.router: llm groq_alt#4 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m47n5jhaek9sdgt85z510g09` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 5168,
+13:42:36 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 1 op(s) applied, 0 refused, 3044 tokens, first op 0.80 s, done 0.81 s, line -> first shape 0.80 s
+  [UNDERSTAND] Black Holes > Football Analogy (elaboration) acts=explanation hint=key_points lines=1 via groq_alt#5 1451 ms
+               Teacher specifies an initial velocity of 60 meters per second for the analogy.
+  [HEARD] 'speed' -> 'second' corrected on the slide (0.8)
+13:42:37 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [  876.7s] Let's get back to the slides. (436 ms)
+13:42:53 INFO    copilot.simulation.detector: [SIM] end - ('get back to the slides') {}
+13:42:53 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's get back to the slides."): recap 1 slide(s) (1 kept, 4 dropped as parameter talk)
+  [SLIDE] add    'Recap: You and laptop' [key_points] v1 (1 items)
+  [SLIDE] update 'Recap: You and laptop' [key_points] v2 (2 items)
+  [UNDERSTAND] Black Holes > Football Analogy (same_concept) acts=transition hint=none lines=1 via groq_alt#5 999 ms
+               Teacher instructs students to return to the presentation slides.
+13:42:54 INFO    copilot.presentation.engine: planner: noop Black Holes > Football Analogy (nothing to display)
+  [SLIDE] update 'Recap: You and laptop' [key_points] v3 (1 items)
+  [  898.4s] Imagine a pendulum. (379 ms)
+13:43:14 INFO    copilot.simulation.detector: [SIM] cue pendulum ('Imagine a') {}
+  [SLIDE] update 'Recap: You and laptop' [key_points] v4 (2 items)
+13:43:14 INFO    copilot.presentation.simulations: [SIM] cue pendulum: ignore (templates start only by the teacher's pick)
+  [  900.0s] (dropped: filler_hallucination) Thank you.
+  [UNDERSTAND] Black Holes > Football Analogy (same_concept) acts=explanation hint=narrative lines=1 via groq_alt#4 898 ms
+               Teacher introduces a pendulum for the analogy.
+13:43:18 INFO    copilot.presentation.engine: planner: update General > Recap: You and laptop (new topic not yet confirmed)
+13:43:18 INFO    copilot.presentation.engine: image hint 'Recap: You and laptop' for 'Recap: You and laptop': a thing in a topic with pictures
+  [SLIDE] update 'Recap: You and laptop' [key_points] v5 (1 items)
+  [SLIDE] update 'Recap: You and laptop' [key_points] v6 (2 items)
+13:43:18 INFO    copilot.presentation.engine: image search 'Recap: You and laptop' (photo) for 'Recap: You and laptop'
+13:43:20 INFO    copilot.presentation.engine: image 'Recap: You and laptop': none (no usable candidates)
+  [IMAGE] 'Recap: You and laptop' -> none (no usable candidates) (1.4 s)
+  [  904.2s] Imagine a pendulum. (340 ms)
+13:43:20 INFO    copilot.simulation.detector: [SIM] cue pendulum ('Imagine a') {}
+  [SLIDE] update 'Recap: You and laptop' [key_points] v7 (3 items)
+13:43:20 INFO    copilot.presentation.simulations: [SIM] cue pendulum: ignore (templates start only by the teacher's pick)
+  [UNDERSTAND] Black Holes > Football Analogy (same_concept) acts=- hint=none lines=1 via groq_alt#4 634 ms
+               Teacher reiterates the instruction to imagine a pendulum.
+13:43:23 INFO    copilot.presentation.engine: planner: noop Black Holes > Football Analogy (nothing to display)
+  [SLIDE] update 'Recap: You and laptop' [key_points] v8 (2 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261023-132748-fb33: 101 segments, 602 words, state v241, 1650 events logged
+        CommandReceived=5, ConceptSignal=101, ConcernRaised=2, DeckState=98, ImageChoices=2, ImageReady=3, ImageRequested=3, InterpretRequested=89, InterpretationReady=89, LLMCallFailed=25, LifecycleChanged=3, LiveCue=91, ModeChanged=1, RepresentationIntent=113, SimulationModeChanged=46, SimulationSettingChanged=1, SlideContextChanged=47, SlidePatch=223, StateChanged=239, TranscriptFinal=101, TranscriptPartial=252, UtteranceClassified=101, UtteranceDropped=2, VocabularyChanged=13
+        stt: 101 published, 2 dropped, latency p50=393 ms p95=495 ms max=584 ms
+        understanding: 89 interpretations (88 by LLM, 1 fallbacks, 2 repaired), max 9 calls/min, prompt tokens max=2018 avg=1963, latency p50=1495 ms max=7976 ms
+        presentation: 43 slides; planner ops {'scene_start': 23, 'noop': 23, 'new': 1, 'update': 4, 'cue_slide': 1, 'continue': 2}; revisions 3, corrections shown 0, shown as said 0
+        scenes: 61 calls, 187217 tokens, 120 ops, 8 refused; line -> first shape p50 1.18 s p90 2.12 s
+        images: {'requests': 3, 'found': 2, 'none': 1}; slides with an image 2/42
+          1. [simulation] Football, you, dog and cat  (v11, ['scene'])
+          2. [key_points] Recap: Football, you, dog and cat  (v1, ['points'])
+          3. [simulation] Dog, rocket, asteroid and Astrohead  (v12, ['scene'])
+          4. [key_points] Recap: Dog, rocket, asteroid and Astrohead  (v3, ['points'])
+          5. [key_points] Analogy  (v11, ['points', 'image'])
+          6. [simulation] Bicycle and you  (v9, ['scene'])
+          7. [key_points] Recap: Bicycle and you  (v1, ['points'])
+          8. [simulation] Moon and you  (v5, ['scene'])
+          9. [key_points] Recap: Moon and you  (v3, ['points'])
+          10. [simulation] You and mars  (v8, ['scene'])
+          11. [key_points] Recap: You and mars  (v1, ['points'])
+          12. [simulation] Sun, you and bat  (v7, ['scene'])
+          13. [key_points] Recap: Sun, you and bat  (v1, ['points'])
+          14. [simulation] Building and you  (v6, ['scene'])
+          15. [key_points] Recap: Building and you  (v1, ['points'])
+          16. [simulation] Building, you and ball  (v7, ['scene'])
+          17. [key_points] Recap: Building, you and ball  (v1, ['points'])
+          18. [simulation] Tree and bird  (v4, ['scene'])
+          19. [key_points] Recap: Tree and bird  (v1, ['points'])
+          20. [simulation] Tree, bird, feet and eyes  (v12, ['scene'])
+          21. [key_points] Recap: Tree, bird, feet and eyes  (v1, ['points'])
+          22. [simulation] Dog, rat and food  (v7, ['scene'])
+          23. [key_points] Recap: Dog, rat and food  (v7, ['points'])
+          24. [simulation] You and food  (v4, ['scene'])
+          25. [key_points] Analogy  (v6, ['points', 'image'])
+          26. [simulation] You, book and water  (v6, ['scene'])
+          27. [key_points] Recap: You, book and water  (v8, ['points'])
+          28. [simulation] You  (v2, ['scene'])
+          29. [simulation] You  (v2, ['scene'])
+          30. [key_points] Analogy  (v1, ['points'])
+          31. [simulation] Space, rocket, you, sun, Mercury and Venus  (v12, ['scene'])
+          32. [key_points] Recap: Space, rocket, you, sun, Mercury and Venus  (v5, ['points'])
+          33. [simulation] Black hole  (v3, ['scene'])
+          34. [simulation] Bus and you  (v7, ['scene'])
+          35. [key_points] Recap: Bus and you  (v1, ['points'])
+          36. [simulation] Inclined plane and ball  (v6, ['scene'])
+          37. [key_points] Recap: Inclined plane and ball  (v5, ['points'])
+          38. [simulation] Helicopter and you  (v6, ['scene'])
+          39. [simulation] Car and rain  (v4, ['scene'])
+          40. [simulation] Rain, you and football  (v9, ['scene'])
+          41. [simulation] You and laptop  (v7, ['scene'])
+          42. [key_points] Recap: You and laptop  (v8, ['points'])
+        providers: {'groq_main#4': 31, 'groq_alt#2': 29, 'groq_alt#4': 13, 'groq_alt#5': 8, 'groq_alt#6': 2, 'groq_main#5': 4, 'groq_main#6': 1}; triggers: {'pause': 84, 'max_wait': 5}; outline: ['General > Analogy, Moon Walking Analogy, Mercury, Venus', 'Black Holes > Introduction, Bus Analogy, Inclined Plane Analogy, Helicopter Analogy, Car Analogy, Football Analogy']; concerns: 2
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261023-132748-fb33\session.sqlite

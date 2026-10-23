@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 MAX_LINES = 4
 MAX_TOKENS = 1400      # reasoning (low) + the ops; ≤ 3k a new scene with the prompt (F-015 targets)
-EST_PROMPT = 2100
+EST_PROMPT = 2400
 TIMEOUT_S = 12.0
 
 SYSTEM = f"""You turn a teacher's spoken words into drawing operations for a live classroom diagram.
@@ -54,9 +54,12 @@ a textbook motion problem (a ball rolls at 3 m/s, trains, a boat crossing a rive
  car for a vehicle, particle for a person or an animal, ball for a ball or a stone, block for a box; name = the
  teacher's noun ("rocket", "man"): the picture follows the name
 EVERYTHING ELSE the teacher imagines is a "thing": name = the teacher's noun, as said ("laptop", "cat", "you"),
- "size": {" ".join(SIZES)} (its size next to the others; leave it out if unsure). ONE "place" per scene = where it
- happens (ocean, sky, space, street, room, forest, beach ...). Something you put things on (mountain, table, plane)
- is a thing, not a place. Parts the teacher names (a bicycle's wheel): a thing with relate part_of
+ "size": {" ".join(SIZES)} ONLY when the teacher says one ("a giant apple", "a tiny elephant"; the engine knows
+ usual sizes). ONE "place" per scene = where it happens (ocean, sky, space, street, room, forest, beach, moon, mars
+ ...); things standing ON the moon / mars: that is the place. Something you put things on (mountain, table, plane) is
+ a thing, not a place. Parts the teacher names (a bird's feet, a bicycle's wheel): a thing with relate part_of, and
+ focus on it. A solid (cube cuboid sphere cylinder cone) next to things or on / inside another solid keeps its kind
+ and takes the relations of things. Riding / sitting in a vehicle: inside it; on a horse or a bike: on it
 relations of things: {" ".join(CANVAS_RELATIONS)} inside above below left_of right_of
  (between also takes "c": the second thing; at / inside / under / on / above / below may take the place as b)
 actions (behave, target a thing or a body; "b" = the other thing for move_to follow chase orbit collide):
@@ -75,6 +78,8 @@ behaviours of bodies: move launch fall cross cross_straight
 
 Rules:
 - New things get new short ids; change existing things by their id from the scene. "it" = the thing named last.
+- A thing said again is the SAME thing (never a second copy): "imagine a dog on mars ... a dog on the moon" = the
+  place changes (add the new place: it replaces the old one).
 - name = the teacher's own word for the thing ("ball", "diagonal"); never invent names.
 - Only what the lines ask for. Nothing to draw or change: output nothing.
 
@@ -114,29 +119,47 @@ Lines: Two trains 200 m apart run towards each other at 20 m/s and 30 m/s.
 {{"op":"behave","kind":"move","target":"t1"}}
 {{"op":"behave","kind":"move","target":"t2"}}
 Lines: Imagine a cube on a mountain.
-{{"op":"add","id":"m1","kind":"thing","name":"mountain","size":"huge"}}
-{{"op":"add","id":"c1","kind":"thing","name":"cube","size":"small"}}
+{{"op":"add","id":"m1","kind":"thing","name":"mountain"}}
+{{"op":"add","id":"c1","kind":"thing","name":"cube"}}
 {{"op":"relate","kind":"on_top_of","a":"c1","b":"m1"}}
 Lines: Picture a bicycle under the ocean.
 {{"op":"add","id":"o1","kind":"place","name":"ocean"}}
 {{"op":"add","id":"b1","kind":"thing","name":"bicycle"}}
 {{"op":"relate","kind":"under","a":"b1","b":"o1"}}
 Lines: Imagine a laptop flying on top of an airplane.
-{{"op":"add","id":"p1","kind":"thing","name":"airplane","size":"large"}}
-{{"op":"add","id":"l1","kind":"thing","name":"laptop","size":"small"}}
+{{"op":"add","id":"p1","kind":"thing","name":"airplane"}}
+{{"op":"add","id":"l1","kind":"thing","name":"laptop"}}
 {{"op":"relate","kind":"on_top_of","a":"l1","b":"p1"}}
 {{"op":"behave","kind":"fly","target":"p1"}}
 Lines: Suppose you throw a book up in the air.
 {{"op":"add","id":"k1","kind":"thing","name":"book","dir":"up"}}
 {{"op":"behave","kind":"throw","target":"k1"}}
 Lines: Imagine you're on a bus and it brakes.
-{{"op":"add","id":"u1","kind":"thing","name":"bus","size":"large"}}
-{{"op":"add","id":"y1","kind":"thing","name":"you","size":"small"}}
+{{"op":"add","id":"u1","kind":"thing","name":"bus"}}
+{{"op":"add","id":"y1","kind":"thing","name":"you"}}
 {{"op":"relate","kind":"inside","a":"y1","b":"u1"}}
 {{"op":"behave","kind":"brake","target":"u1"}}
 Scene: u1 thing "bus"; y1 thing "you"; y1 inside u1; u1 brake
 Lines: Look at the person inside.
-{{"op":"focus","ids":["y1"]}}"""
+{{"op":"focus","ids":["y1"]}}
+Lines: Imagine a boy holding a book.
+{{"op":"add","id":"b1","kind":"thing","name":"boy"}}
+{{"op":"add","id":"k1","kind":"thing","name":"book"}}
+{{"op":"relate","kind":"holding","a":"k1","b":"b1"}}
+Lines: Imagine you are in a rocket going to the sun.
+{{"op":"add","id":"s1","kind":"place","name":"space"}}
+{{"op":"add","id":"r1","kind":"thing","name":"rocket"}}
+{{"op":"add","id":"y1","kind":"thing","name":"you"}}
+{{"op":"relate","kind":"inside","a":"y1","b":"r1"}}
+{{"op":"add","id":"u1","kind":"thing","name":"sun"}}
+{{"op":"behave","kind":"move_to","target":"r1","b":"u1"}}
+Lines: Imagine a bird on a tree. Look at its feet.
+{{"op":"add","id":"t1","kind":"thing","name":"tree"}}
+{{"op":"add","id":"b1","kind":"thing","name":"bird"}}
+{{"op":"relate","kind":"on_top_of","a":"b1","b":"t1"}}
+{{"op":"add","id":"f1","kind":"thing","name":"feet"}}
+{{"op":"relate","kind":"part_of","a":"f1","b":"b1"}}
+{{"op":"focus","ids":["f1"]}}"""
 
 
 def context(scene: Optional[SceneSpec]) -> str:

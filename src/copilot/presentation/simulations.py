@@ -378,7 +378,7 @@ class SimulationController:
         first, the cue slide goes; the mode exists before its slide (its values are read against it)."""
         e = self.e
         if self.mode is not None:
-            await self.end(f"another {kind} was started")
+            await self.end(f"another {kind} was started", back=False)
         self.ended = None
         await self._clear_suggestion()
         while e._pending:  # slides waiting for the dwell time go first: the simulation comes after them
@@ -445,8 +445,9 @@ class SimulationController:
             log.info("[SIM] simulation mode: %d piece(s) collected for the recap (%d so far)", len(pieces),
                      len(self.mode.collected))
 
-    async def end(self, reason: str) -> list[str]:
-        """Slides resume: the recap first (if anything worth keeping was said). Returns the recap slide ids."""
+    async def end(self, reason: str, back: bool = True) -> list[str]:
+        """Slides resume: the recap first (if anything worth keeping was said). Returns the recap slide ids. back:
+        with nothing to recap, the slide before comes back (False when a new slide / scene / topic follows at once)."""
         m, self.mode = self.mode, None
         if m is None:
             return []
@@ -466,6 +467,8 @@ class SimulationController:
             e._working_id = last
         else:
             e._working_id = m.before_id if e._spec(m.before_id) is not None else None
+            if back and e._working_id is not None:  # nothing to recap: the slide before comes back (test32)
+                await e.deck.show(e._working_id)
         self.ended = Ended(m.start_seq, e._seg_n + 1, m.frame, name, m.slide_id, last)
         items = sum(max(1, len(p.texts) + len(p.pairs)) for p in kept)
         await e.bus.publish(SimulationModeChanged(on=False, slide_id=m.slide_id, template=m.template, reason=reason,

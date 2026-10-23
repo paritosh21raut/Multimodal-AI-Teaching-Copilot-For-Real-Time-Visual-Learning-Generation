@@ -36,6 +36,10 @@ scenes = true              # F-015: "imagine a square..." draws a live scene (on
 enabled = true             # automatic images (F-007b); the teacher's own images work either way
 cache_dir = "data/cache/images"
 clip_dir = "models/clip"
+# F-016 C1 part 2: real photos on the canvas (search + CLIP + u2netp cutout, models/u2netp, fetched once).
+# "fill": a photo only for a noun with no 3D picture (table, spear ...); "first": photos before 3D pictures; "off"
+scene_photos = "fill"
+scene_place_photos = true  # a place's backdrop is a landscape photo when one is found (else illustrated)
 budget_s = 8.0             # whole search (sources + downloads + CLIP); after that: no image
 min_similarity = 0.22      # CLIP int8 cosine floor (labelled set, F-007b)
 min_margin = 0.01          # over the best generic distractor ("a logo", "a map", ...)

@@ -23,6 +23,7 @@ from tests.unit.test_simulation import Lines  # noqa: E402
 pytestmark = pytest.mark.browser
 
 STAGE = ".slide:not(.is-leaving) .sim-col .scene-stage .sim-svg"
+CANVAS_STAGE = ".slide.layout-canvas:not(.is-leaving) .canvas-stage .scene-stage .sim-svg"
 
 
 async def lecture(h):
@@ -49,8 +50,8 @@ async def say(h, eng, talk, line):
     await h.settle()
 
 
-async def ids(page):
-    return await page.eval_on_selector_all(f"{STAGE} .sc-ent[data-id]", "es => es.map(e => e.dataset.id)")
+async def ids(page, stage=STAGE):
+    return await page.eval_on_selector_all(f"{stage} .sc-ent[data-id]", "es => es.map(e => e.dataset.id)")
 
 
 @pytest.mark.parametrize("theme", ["light", "dark"])
@@ -150,16 +151,17 @@ async def test_a_canvas_draws_its_place_its_things_in_depth_order_and_focus_zoom
             await say(h, eng, talk, "Imagine a cube on a mountain.")
             await say(h, eng, talk, "Now imagine it on the moon.")
             await wait_for_slide(page, h.deck.live.id)
+            STAGE = CANVAS_STAGE  # test32: the canvas is the whole slide, not a column beside the text
             await page.wait_for_selector(f"{STAGE} .cv-backdrop")
-            assert await ids(page) == ["m1", "c1"]  # the cube on top is drawn after the mountain
+            assert await ids(page, STAGE) == ["m1", "c1"]  # the cube on top is drawn after the mountain
             pics = await page.eval_on_selector_all(f"{STAGE} .cv-thing", "es => es.map(e => e.dataset.pic)")
             assert "form:cube" in pics
-            assert await page.eval_on_selector(STAGE, "e => e.getAttribute('viewBox')") == "0.0 0.0 1100.0 740.0"
+            assert await page.eval_on_selector(STAGE, "e => e.getAttribute('viewBox')") == "0.0 0.0 1920.0 1080.0"
             await say(h, eng, talk, "Look at the cube.")
             await page.wait_for_function(f"document.querySelector('{STAGE}').dataset.camera === 'focus'")
             await page.wait_for_timeout(900)  # the camera eases in
             vb = [float(v) for v in (await page.eval_on_selector(STAGE, "e => e.getAttribute('viewBox')")).split()]
-            assert vb[2] < 1100 and abs(vb[2] / vb[3] - 1100 / 740) < 0.01
+            assert vb[2] < 1920 and abs(vb[2] / vb[3] - 1920 / 1080) < 0.01
             dim = await page.eval_on_selector(f"{STAGE} .sc-ent[data-id='m1']", "e => e.classList.contains('cv-dimmed')")
             assert dim
             assert not page.errors, page.errors

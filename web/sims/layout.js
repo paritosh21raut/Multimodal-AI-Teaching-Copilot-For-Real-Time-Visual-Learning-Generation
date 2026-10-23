@@ -10,7 +10,10 @@
 //      that overlaps a fixed thing or a label placed before it tries OFFSETS in their fixed order and takes the first
 //      free spot inside the stage; the spot it had before comes right after its home (little flicker while the block
 //      slides). A label that finds no free spot within reach stays where the scene put it (brought inside the stage).
-import { H, W } from "./draw.js";
+import { H as SIM_H, W as SIM_W } from "./draw.js";
+
+// the stage placeLabels works in (a sim: 1100 x 740; a canvas scene: the whole slide, 1920 x 1080)
+let W = SIM_W, H = SIM_H;
 
 const PAD = 3;         // boxes closer than this count as touching
 const STEPS = [26, 52, 78, 104, 140, 180];
@@ -67,8 +70,9 @@ export function segments(svg, el) {
   return pts.slice(1).map((q, i) => [pts[i], q]);
 }
 
-export function placeLabels(svg) {
+export function placeLabels(svg, size = [SIM_W, SIM_H]) {
   if (!svg || typeof svg.getScreenCTM !== "function") return;
+  [W, H] = size;
   const fixed = [];
   const lines = [];  // [p, q] in stage units
   const shapes = [];

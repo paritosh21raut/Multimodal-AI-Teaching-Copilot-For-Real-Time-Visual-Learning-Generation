@@ -35,9 +35,8 @@ slide within the latency targets, are edited by the next lines, and can be focus
 - Imagine Mode: lines without picturable words make no LLM call; End returns to slides + recap.
 - browser: contact sheet per theme (goal sentences + focus + magnifier); runtime: one simulated lecture.
 
-## Live run (state before running)
-Fixture `tests/fixtures/lectures/canvas_c1.txt` (goal sentences + edits + one Imagine Mode stretch + focus), about
-25k tokens. Report tokens after.
+## Live run
+Done 2026-10-23 (`canvas_c1.txt`): see Result.
 
 ## Split (user 2026-10-22)
 Part 1: contract, director, validator, canvas world, sizing, camera, safety, Imagine Mode, renderer, emoji + icons,
@@ -49,11 +48,14 @@ a fixture), fixture `canvas_c1.txt`, the live run (~25k tokens), latency (senten
 Stop when the goal sentences work live and the suites pass. Solvers (fields, waves, rigid) are C2.
 
 ## Result
-Part 1 (2026-10-22), replay-verified, not live yet: the 5 goal sentences + focus + Imagine Mode render through the real
-detector → controller → validator → canvas world → renderer (`tools/screenshot_canvas.py`, sheets
-`artifacts/canvas/sheet_{light,dark}.png`); real Fluent 3D pictures (fetched, cached), backdrops by place, the bus
-rider leans / slides on braking, throw = motion.py launch, focus zooms (camera follows a moving thing). Decisions
-(user: ok to all): part split; things/places → canvas world, motion.py for kinematics; Imagine Mode = one mode, many
-scene slides, one recap; blocklist keeps physics/biology words; emoji index from GitHub (MIT); drawn actions, collide
-stops at contact (C2 rigid). Spec change: "Imagine you are in a library" is now a canvas cue (L1 test updated).
-Reviewed: 10 findings fixed (brake readout needs a said deceleration, blocklist, whole-word names, Imagine slides). Suites: STATE.
+Part 1 (2026-10-22), replay-verified, reviewed (10 fixes): goal sentences, focus, Imagine Mode, Fluent 3D pictures,
+backdrops, bus rider lean, motion.py throw. Detail: git 0b7e57b.
+
+Part 2 + test32 fixes (2026-10-23), reviewed (9 of 11 fixed): canvas = the whole slide (1920×1080, title chip);
+real relative sizes (`scene/sizes.py`, ^0.55, fill-scale); held thing in the hand; solids on / inside things (glass);
+part magnifier; whole-body posed people; moon / mars; "imagine you are …" cue; "back to the slide"; no-recap end
+shows the slide before; photo cutouts (u2netp + matte checks + CLIP distractors, "fill": only nouns with no 3D
+picture) + place photo backdrops; `@command` in fixtures (pressed after the pause); latency stat. Live
+`canvas_c1.txt` (verify_results/c1-sim): rocket+you+sun, bird+feet magnifier, bus brake + focus OK; boy/dog lost to
+429s + a 401 key; Imagine stretch merged into the bus scene (simulator ordering, fixed, unit-tested only); cuboid
+`inscribed_in` → now inside. Scene calls 9, 27.7k tok; line → first shape p50 2.11 s, p90 2.49 s.

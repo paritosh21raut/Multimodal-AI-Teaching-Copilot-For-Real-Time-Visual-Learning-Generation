@@ -407,6 +407,17 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick, onSimClick }
   }
   const members = spec.layout === "members";
   const { main, below, aside, image, sim } = splitBlocks(spec.blocks, members);
+  // F-016 (test32): a canvas scene IS the slide: its stage fills it edge to edge, the title floats over the top left
+  if (sim && sim.type === "scene" && sim.scene && sim.scene.world === "canvas") {
+    return html`<section data-slide=${spec.id} class=${`slide layout-canvas ${phase}`} style=${style}>
+      <div class="canvas-stage"><${SimStage} key=${sim.id} b=${sim}
+        onClick=${onSimClick ? () => onSimClick(sim) : undefined} /></div>
+      <header class="slide-head canvas-head">
+        ${spec.subtitle && html`<div class="crumb"><span>${spec.subtitle}</span></div>`}
+        <h1 class="slide-title"><span data-edit="title">${rich(spec.title)}</span></h1>
+      </header>
+    </section>`;
+  }
   const defs = spec.blocks.filter((b) => b.type === "definition" && !b.provisional);
   const liveDef = spec.blocks.find((b) => b.type === "definition" && b.provisional);  // F-013 S1b: being said
   const liveInTitle = liveDef && titleNames(spec.title, liveDef.term);

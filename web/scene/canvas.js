@@ -1,25 +1,28 @@
-// The canvas world's drawing (F-016, docs/contracts/scene-spec.md): a thing's picture, the place's illustrated
-// backdrop and drawn effects. Every position comes from Python (geom, frames); nothing here measures anything, and
-// no text is printed here (a thing's said name is drawn by kinds.js Words).
+// The canvas world's drawing (F-016, docs/contracts/scene-spec.md): a thing's picture, the place's backdrop (a photo
+// or an illustration), drawn effects and the part magnifier. Every position comes from Python (geom, frames, stage);
+// nothing here measures anything, and no text is printed here except a part's said name under its magnifier (a
+// thing's said name is drawn by kinds.js Words).
 import { html } from "../vendor/htm-preact-standalone.mjs";
 import { ICONS } from "../vendor/icons/scene-icons.js";
 
-const W = 1100, H = 740;
-// fixed, evenly spread patterns (golden ratio): a still frame and a paused scene are reproducible
-const spread = (n, w, h, seed = 0) => Array.from({ length: n }, (_, i) => [(((i + seed) * 0.6180339) % 1) * w, ((i * 0.7548776 + seed * 0.13) % 1) * h]);
-const STARS = spread(90, W, H, 3);
-const BUBBLES = spread(22, W, 1, 7);
+// the canvas stage: the whole 1920 x 1080 slide, 1:1 (scene.worlds.canvas W, H; stage.size)
+export const CANVAS = [1920, 1080];
+// fixed, evenly spread patterns (golden ratio) on a unit square: a still frame and a paused scene are reproducible
+const spread = (n, seed = 0) => Array.from({ length: n }, (_, i) => [(((i + seed) * 0.6180339) % 1), ((i * 0.7548776 + seed * 0.13) % 1)]);
+const STARS = spread(140, 3);
+const BUBBLES = spread(30, 7);
+const CRATERS = spread(9, 5);
 
 // ---- a thing's picture ------------------------------------------------------------------------------------------
-// One picture in a w x h box centred on (0, 0): the teacher's image, a Fluent 3D emoji, a shaded solid for a shape
-// noun, an icon or a glyph; none yet: a soft placeholder (the picture cross-fades in when it lands).
-function Pic({ lk, w, h, role, emoji, icon, opacity = 1 }) {
-  const href = lk.image || emoji;
+// One picture in a w x h box centred on (0, 0): the teacher's image, a photo cutout, a Fluent 3D emoji, a shaded solid
+// for a shape noun, an icon or a glyph; none yet: a soft placeholder (the picture cross-fades in when it lands).
+function Pic({ lk, w, h, role, emoji, icon, opacity = 1, glass = false }) {
+  const href = lk.image || lk.photo || emoji;
   if (href) {
     return html`<image key=${href} class="cv-img" href=${href} x=${-w / 2} y=${-h / 2} width=${w} height=${h}
       preserveAspectRatio="xMidYMid meet" opacity=${opacity} />`;
   }
-  if (lk.form) return html`<${Form} form=${lk.form} w=${w} h=${h} role=${role} opacity=${opacity} />`;
+  if (lk.form) return html`<${Form} form=${lk.form} w=${w} h=${h} role=${role} opacity=${opacity} glass=${glass} />`;
   const ic = icon && ICONS[icon];
   if (ic || lk.glyph) {
     const s = Math.min(w, h) / 24;
@@ -32,9 +35,10 @@ function Pic({ lk, w, h, role, emoji, icon, opacity = 1 }) {
     rx=${Math.min(w, h) * 0.2} opacity=${opacity} />`;
 }
 
-// A shape noun drawn as a shaded solid (light from the top left), in the thing's role colour.
-function Form({ form, w, h, role, opacity }) {
-  const cls = `cv-form r-${role}`;
+// A shape noun drawn as a shaded solid (light from the top left), in the thing's role colour; glass: something is
+// inside it, so it is drawn see-through.
+function Form({ form, w, h, role, opacity, glass }) {
+  const cls = `cv-form r-${role}${glass ? " glass" : ""}`;
   const s = Math.min(w, h) * 0.46;
   if (form === "sphere" || form === "hemisphere") {
     return html`<g class=${cls} opacity=${opacity}><circle class="base" cx="0" cy="0" r=${s} />
@@ -61,6 +65,9 @@ function Form({ form, w, h, role, opacity }) {
     <rect class="base" x=${-a} y=${-b + d * 0.2} width=${2 * a - d} height=${2 * b} /></g>`;
 }
 
+const picKind = (lk) => (lk.image ? "image" : lk.photo ? "photo" : lk.emoji ? "emoji" : lk.form ? "form:" + lk.form
+  : lk.icon ? "icon:" + lk.icon : lk.glyph ? "glyph" : "placeholder");
+
 // A thing at its pose: picture, shadow on the ground, lean / spin (angle), mirrored when it moves west, squash and
 // fade (sa). transform_into: the second picture fades in as the first fades out.
 export function Thing({ e, g, pose }) {
@@ -74,20 +81,42 @@ export function Thing({ e, g, pose }) {
   let shadow = null;
   if (g.ground != null) {
     const lift = Math.max(0, g.ground - (p.y + h / 2));
-    const k = Math.max(0.25, 1 - lift / 500);
-    shadow = html`<ellipse class="cv-shadow" cx=${p.x} cy=${g.ground - 4} rx=${w * 0.36 * k} ry=${10 * k} opacity=${morph ? 1 : a} />`;
+    const k = Math.max(0.25, 1 - lift / 700);
+    shadow = html`<ellipse class="cv-shadow" cx=${p.x} cy=${g.ground - 4} rx=${w * 0.36 * k} ry=${14 * k} opacity=${morph ? 1 : a} />`;
   }
-  return html`<g class=${"cv-thing r-" + role} data-pic=${lk.image ? "image" : lk.emoji ? "emoji" : lk.form ? "form:" + lk.form : lk.icon ? "icon:" + lk.icon : lk.glyph ? "glyph" : "placeholder"}>
+  return html`<g class=${"cv-thing r-" + role} data-pic=${picKind(lk)}>
     ${shadow}
     <g transform=${tf} opacity=${morph ? 1 : a}>
-      <${Pic} lk=${lk} w=${w} h=${h} role=${role} emoji=${lk.emoji} icon=${lk.icon} opacity=${morph ? a : 1} />
-      ${morph && html`<${Pic} lk=${{ ...lk, image: "", form: "" }} w=${w} h=${h} role=${role} emoji=${lk.to_emoji} icon=${lk.to_icon} opacity=${1 - a} />`}
+      <${Pic} lk=${lk} w=${w} h=${h} role=${role} emoji=${lk.emoji} icon=${lk.icon} opacity=${morph ? a : 1} glass=${!!g.glass} />
+      ${morph && html`<${Pic} lk=${{ ...lk, image: "", photo: "", form: "" }} w=${w} h=${h} role=${role} emoji=${lk.to_emoji} icon=${lk.to_icon} opacity=${1 - a} />`}
     </g>
   </g>`;
 }
 
+// ---- a focused part ---------------------------------------------------------------------------------------------
+// The part's picture enlarged in an inset circle, a ring where it is on its whole and a leader line between them;
+// its said name under the inset.
+export function Magnifier({ m, e }) {
+  const lk = e.look || {};
+  const [ax, ay] = m.at, [cx, cy] = m.c, r = m.r;
+  const d = Math.hypot(cx - ax, cy - ay) || 1, ring = r * 0.22;
+  const ux = (cx - ax) / d, uy = (cy - ay) / d;
+  const name = e.label && e.label.source === "said" ? e.label.text : "";
+  return html`<g class="cv-magnifier" data-el=${"mag-" + e.id} data-pic=${picKind(lk)}>
+    <circle class="cv-mag-spot" cx=${ax} cy=${ay} r=${ring} />
+    <line class="cv-mag-lead" x1=${ax + ux * ring} y1=${ay + uy * ring} x2=${cx - ux * r} y2=${cy - uy * r} />
+    <clipPath id=${"mag-clip-" + e.id}><circle cx=${cx} cy=${cy} r=${r} /></clipPath>
+    <circle class="cv-mag-back" cx=${cx} cy=${cy} r=${r} />
+    <g clip-path=${`url(#mag-clip-${e.id})`}><g transform=${`translate(${cx} ${cy})`}>
+      <${Pic} lk=${lk} w=${r * 1.5} h=${r * 1.5} role=${lk.role || "main"} emoji=${lk.emoji} icon=${lk.icon} />
+    </g></g>
+    <circle class="cv-mag-ring" cx=${cx} cy=${cy} r=${r} />
+    ${name && html`<text class="sim-label word sc-name cv-name cv-mag-name" x=${cx} y=${cy + r + 52} text-anchor="middle"><tspan class="sym">${name}</tspan></text>`}
+  </g>`;
+}
+
 // ---- the place --------------------------------------------------------------------------------------------------
-const hills = (y, amp, n, seed) => {
+const hills = (W, H, y, amp, n, seed) => {
   let d = `M0,${H} L0,${y}`;
   for (let i = 0; i <= n; i++) {
     const x = (i / n) * W, k = ((i * 0.618 + seed) % 1);
@@ -96,44 +125,64 @@ const hills = (y, amp, n, seed) => {
   return d + ` L${W},${H} Z`;
 };
 
-export function Backdrop({ bd, t = 0 }) {
+function Stars({ W, H, t, below }) {
+  return STARS.map(([u, v], i) => {
+    const y = v * (below || H);
+    return html`<circle key=${"s" + i} class="cv-star" cx=${u * W} cy=${y} r=${i % 7 === 0 ? 3 : 1.6}
+      opacity=${0.5 + 0.5 * Math.abs(Math.sin(t * 1.3 + i))} />`;
+  });
+}
+
+export function Backdrop({ bd, t = 0, W = CANVAS[0], H = CANVAS[1] }) {
   if (!bd) return null;
   const g = bd.ground, typ = bd.type;
-  const sky = html`<rect class="cv-sky" x="0" y="0" width=${W} height=${H} />`;
   const ground = (cls) => g != null && html`<rect class=${cls} x="0" y=${g} width=${W} height=${H - g} />
     <line class="cv-ground-line" x1="0" y1=${g} x2=${W} y2=${g} />`;
+  // C1b: a landscape photo of the place, dimmed for contrast (the things stand on Python's ground line)
+  if (bd.photo) {
+    return html`<g class=${"cv-backdrop cv-photo cv-" + typ} data-place=${typ} data-photo="1">
+      <image class="cv-img" href=${bd.photo} x="0" y="0" width=${W} height=${H} preserveAspectRatio="xMidYMid slice" />
+      <rect class="cv-photo-dim" x="0" y="0" width=${W} height=${H} /></g>`;
+  }
+  const sky = html`<rect class="cv-sky" x="0" y="0" width=${W} height=${H} />`;
   let body;
   if (typ === "space") {
-    body = html`<rect class="cv-space" x="0" y="0" width=${W} height=${H} />
-      ${STARS.map(([x, y], i) => html`<circle key=${i} class="cv-star" cx=${x} cy=${y} r=${i % 7 === 0 ? 2.6 : 1.4}
-        opacity=${0.5 + 0.5 * Math.abs(Math.sin(t * 1.3 + i))} />`)}`;
+    body = html`<rect class="cv-space" x="0" y="0" width=${W} height=${H} /><${Stars} W=${W} H=${H} t=${t} />`;
+  } else if (typ === "moon" || typ === "mars") {
+    // the black sky with stars (moon) or a dusky one (mars) over a cratered grey / red ground
+    body = html`<rect class=${typ === "moon" ? "cv-space" : "cv-mars-sky"} x="0" y="0" width=${W} height=${H} />
+      ${typ === "moon" && html`<${Stars} W=${W} H=${H} t=${t} below=${g} />`}
+      <path class=${typ === "moon" ? "cv-moon-far" : "cv-mars-far"} d=${hills(W, H, g - 40, 110, 7, 0.3)} />
+      ${ground(typ === "moon" ? "cv-moon-ground" : "cv-mars-ground")}
+      ${CRATERS.map(([u, v], i) => html`<ellipse key=${"c" + i} class="cv-crater" cx=${u * W} cy=${g + 30 + v * (H - g - 50)}
+        rx=${40 + (i % 3) * 30} ry=${10 + (i % 3) * 6} />`)}`;
   } else if (typ === "water") {
     const s = bd.surface;
     body = html`${sky}<rect class="cv-water" x="0" y=${s} width=${W} height=${H - s} />
-      <path class="cv-surface" d=${Array.from({ length: 23 }, (_, i) => `${i ? "L" : "M"}${i * 50},${s + 6 * Math.sin(i * 0.9 + t * 2)}`).join(" ")} />
-      ${[0.15, 0.4, 0.7].map((k, i) => html`<polygon key=${"ray" + i} class="cv-ray" points=${`${W * k},${s} ${W * k + 60},${s} ${W * k + 200},${g} ${W * k + 80},${g}`} />`)}
-      ${BUBBLES.map(([x], i) => { const y = g - ((t * 60 + i * 37) % (g - s)); return html`<circle key=${"b" + i} class="cv-bubble" cx=${x + 8 * Math.sin(t * 2 + i)} cy=${y} r=${3 + (i % 4)} />`; })}
+      <path class="cv-surface" d=${Array.from({ length: Math.ceil(W / 50) + 1 }, (_, i) => `${i ? "L" : "M"}${i * 50},${s + 6 * Math.sin(i * 0.9 + t * 2)}`).join(" ")} />
+      ${[0.15, 0.4, 0.7].map((k, i) => html`<polygon key=${"ray" + i} class="cv-ray" points=${`${W * k},${s} ${W * k + 90},${s} ${W * k + 300},${g} ${W * k + 120},${g}`} />`)}
+      ${BUBBLES.map(([u], i) => { const y = g - ((t * 70 + i * 41) % (g - s)); return html`<circle key=${"b" + i} class="cv-bubble" cx=${u * W + 8 * Math.sin(t * 2 + i)} cy=${y} r=${3 + (i % 4)} />`; })}
       ${ground("cv-sand")}`;
   } else if (typ === "sky") {
-    body = html`${sky}${[[120, 160, 1], [520, 110, 1.4], [860, 210, 0.9], [320, 420, 1.1], [760, 520, 1.3]].map(([x, y, k], i) => {
-      const cx = ((x + t * 12 * k) % (W + 300)) - 150;
+    body = html`${sky}${[[0.1, 0.2, 1.3], [0.45, 0.13, 1.8], [0.78, 0.28, 1.2], [0.3, 0.55, 1.4], [0.68, 0.68, 1.7]].map(([u, v, k], i) => {
+      const cx = ((u * W + t * 14 * k) % (W + 400)) - 200, y = v * H;
       return html`<g key=${i} class="cv-cloud"><ellipse cx=${cx} cy=${y} rx=${90 * k} ry=${30 * k} /><ellipse cx=${cx - 40 * k} cy=${y + 8} rx=${50 * k} ry=${24 * k} /><ellipse cx=${cx + 45 * k} cy=${y + 6} rx=${55 * k} ry=${22 * k} /></g>`;
     })}`;
   } else if (typ === "indoors") {
     body = html`<rect class="cv-wall" x="0" y="0" width=${W} height=${H} />
-      <rect class="cv-window" x="780" y="90" width="200" height="160" rx="6" /><line class="cv-frame" x1="880" y1="90" x2="880" y2="250" />
+      <rect class="cv-window" x=${W * 0.72} y="160" width="300" height="230" rx="8" /><line class="cv-frame" x1=${W * 0.72 + 150} y1="160" x2=${W * 0.72 + 150} y2="390" />
       ${ground("cv-floor")}`;
   } else {
-    const back = typ === "mountain" ? html`<path class="cv-far" d=${hills(g - 120, 300, 6, 0.2)} /><path class="cv-near" d=${hills(g - 40, 180, 9, 0.6)} />`
-      : typ === "street" ? html`${[30, 170, 300, 440, 600, 730, 860, 975].map((x, i) => html`<rect key=${i} class="cv-far" x=${x} y=${g - 140 - (i * 53) % 170} width="110" height=${140 + (i * 53) % 170 + 2} />`)}`
-      : typ === "nature" ? html`<path class="cv-far" d=${hills(g - 60, 90, 5, 0.4)} />${[80, 240, 860, 1000].map((x, i) => html`<g key=${i} class="cv-tree"><rect x=${x - 6} y=${g - 70} width="12" height="70" /><circle cx=${x} cy=${g - 95} r="42" /></g>`)}`
-      : typ === "beach" ? html`<rect class="cv-water" x="0" y=${g - 70} width=${W} height="70" />`
-      : typ === "desert" ? html`<path class="cv-sand" d=${hills(g - 30, 70, 4, 0.3)} />`
+    const back = typ === "mountain" ? html`<path class="cv-far" d=${hills(W, H, g - 160, 420, 7, 0.2)} /><path class="cv-near" d=${hills(W, H, g - 50, 240, 11, 0.6)} />`
+      : typ === "street" ? html`${Array.from({ length: 13 }, (_, i) => html`<rect key=${i} class="cv-far" x=${30 + i * 148} y=${g - 200 - (i * 73) % 240} width="128" height=${200 + (i * 73) % 240 + 2} />`)}`
+      : typ === "nature" ? html`<path class="cv-far" d=${hills(W, H, g - 80, 130, 6, 0.4)} />${[0.05, 0.16, 0.84, 0.95].map((u, i) => html`<g key=${i} class="cv-tree"><rect x=${u * W - 8} y=${g - 100} width="16" height="100" /><circle cx=${u * W} cy=${g - 135} r="58" /></g>`)}`
+      : typ === "beach" ? html`<rect class="cv-water" x="0" y=${g - 100} width=${W} height="100" />`
+      : typ === "desert" ? html`<path class="cv-sand" d=${hills(W, H, g - 40, 100, 5, 0.3)} />`
       : null;
     const floor = typ === "street" ? "cv-road" : typ === "nature" || typ === "mountain" ? "cv-grass"
       : typ === "beach" || typ === "desert" ? "cv-sand" : typ === "snow" ? "cv-snow" : "cv-plain-ground";
     body = html`${typ === "plain" ? html`<rect class="cv-plain" x="0" y="0" width=${W} height=${H} />` : sky}${back}${ground(floor)}
-      ${typ === "street" && g != null && html`<line class="cv-lane" x1="0" y1=${g + 35} x2=${W} y2=${g + 35} />`}`;
+      ${typ === "street" && g != null && html`<line class="cv-lane" x1="0" y1=${g + 45} x2=${W} y2=${g + 45} />`}`;
   }
   return html`<g class=${"cv-backdrop cv-" + typ} data-place=${typ}>${body}</g>`;
 }

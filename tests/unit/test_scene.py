@@ -592,13 +592,25 @@ def test_a_solid_without_said_sizes_is_drawn_and_prints_nothing():
     assert s.get("n1").geom.shape == "solid" and s.derived == [] and s.get("n1").geom.dims == []
 
 
-def test_a_solid_is_only_placed_beside_another_shape():
-    s, _ = build(["Imagine a cube and a sphere inside it."],
-                 [{"op": "add", "id": "k1", "kind": "cube", "name": "cube"},
-                  {"op": "add", "id": "p1", "kind": "sphere", "name": "sphere"}])
-    no, why = check(SceneOp(op="relate", kind="inside", a="p1", b="k1"), s, Corpus.of(["a sphere inside it"]))
-    yes, _ = check(SceneOp(op="relate", kind="right_of", a="p1", b="k1"), s, Corpus.of(["a sphere beside it"]))
-    assert no is None and "solid" in why and yes is not None
+def test_a_solid_inside_or_on_another_is_a_canvas_scene():
+    # test32: "inside the cuboid is a sphere", "a cone on top of the cylinder" (beside stays the geometry world)
+    adds = [{"op": "add", "id": "k1", "kind": "cuboid", "name": "cuboid"},
+            {"op": "add", "id": "p1", "kind": "sphere", "name": "sphere"}]
+    s, refused = build(["Imagine a cuboid. Inside the cuboid is a sphere."],
+                       adds + [{"op": "relate", "kind": "inside", "a": "p1", "b": "k1"}])
+    k, p = s.get("k1").geom, s.get("p1").geom
+    assert not refused and s.world == "canvas" and s.get("p1").look.form == "sphere" and k.glass
+    assert p.c == k.c and p.wh[1] <= 0.5 * k.wh[1] and p.z > k.z                # in its middle, in front
+    s, refused = build(["Imagine a cylinder. On the top of the cylinder you have a cone."],
+                       [{"op": "add", "id": "y1", "kind": "cylinder", "name": "cylinder"},
+                        {"op": "add", "id": "n1", "kind": "cone", "name": "cone"},
+                        {"op": "relate", "kind": "on_top_of", "a": "n1", "b": "y1"}])
+    y, n = s.get("y1").geom, s.get("n1").geom
+    assert not refused and s.world == "canvas" and n.c[0] == y.c[0] and n.c[1] < y.c[1]
+    s, _ = build(["Imagine a cube and a sphere beside it."],
+                 adds[:1] + [{"op": "add", "id": "p1", "kind": "sphere", "name": "sphere"},
+                             {"op": "relate", "kind": "right_of", "a": "p1", "b": "k1"}])
+    assert s.world == "geometry"
 
 
 @pytest.mark.parametrize("line,world", [("Imagine a cuboid.", "geometry"), ("Let us imagine a cube.", "geometry"),

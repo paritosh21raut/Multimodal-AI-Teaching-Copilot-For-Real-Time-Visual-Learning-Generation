@@ -43,7 +43,7 @@ PLACES: dict[str, tuple[str, ...]] = {
     "water": ("ocean", "sea", "underwater", "river", "lake", "pond", "aquarium", "pool", "swimming pool", "water",
               "seabed", "sea bed", "ocean floor", "deep sea"),
     "sky": ("sky", "air", "clouds", "cloud", "atmosphere"),
-    "space": ("space", "outer space", "universe", "galaxy", "orbit", "solar system", "moon surface"),
+    "space": ("space", "outer space", "universe", "galaxy", "orbit", "solar system"),
     "mountain": ("mountain", "mountains", "hill", "hills", "valley", "cliff", "volcano"),
     "street": ("street", "road", "city", "town", "highway", "traffic", "bridge", "railway", "track", "station"),
     "nature": ("forest", "jungle", "park", "garden", "field", "farm", "meadow", "grass", "countryside", "village"),
@@ -52,6 +52,8 @@ PLACES: dict[str, tuple[str, ...]] = {
     "beach": ("beach", "shore", "coast", "island"),
     "desert": ("desert", "sand dunes"),
     "snow": ("snow", "ice", "arctic", "antarctica", "glacier", "north pole", "south pole"),
+    "moon": ("moon", "lunar surface", "the moon's surface"),
+    "mars": ("mars", "red planet", "martian surface"),
 }
 # lines that may need the canvas (Imagine Mode): a relation word, a motion verb (0 tokens)
 SPATIAL = re.compile(r"\b(?:on top of|on|under(?:neath)?|beneath|inside|in(?:to)?|above|below|over|behind|"
@@ -83,7 +85,9 @@ ALIAS = {"book": "closed book", "car": "automobile", "plane": "airplane", "aerop
          "cup": "hot beverage", "bottle": "baby bottle", "train": "locomotive", "cloud": "cloud", "wave": "water wave",
          "bike": "bicycle", "cycle": "bicycle", "ship": "passenger ship", "person": "person standing",
          "kid": "child", "flower": "blossom", "mug": "hot beverage", "student": "student", "rain": "cloud with rain",
-         "you": "person standing", "me": "person standing", "teacher": "teacher", "passenger": "person standing"}
+         "you": "person standing", "me": "person standing", "teacher": "teacher", "passenger": "person standing",
+         "yourself": "person standing", "myself": "person standing", "boy": "person standing",
+         "girl": "woman standing", "man": "man standing", "woman": "woman standing"}
 
 @lru_cache(maxsize=1)
 def index() -> dict[str, str]:
@@ -129,6 +133,30 @@ def picturable(text: str, names: Optional[list[str]] = None) -> bool:
     if any(t in words() for t in toks) or UNIT_NUM.search(text) or MOTION.search(text):
         return True
     return any(n and re.search(rf"\b{re.escape(n.lower())}(?:e?s)?\b", low) for n in (names or []))
+
+
+# a person, drawn whole (not a face): the emoji set's "<who> standing / walking / running ..." by what they do (test32:
+# "a boy playing basketball" was a face, "yourself" had no picture)
+PEOPLE = {"man": "man", "woman": "woman", "girl": "woman", "lady": "woman", "boy": "person", "kid": "person",
+          "child": "person", "you": "person", "yourself": "person", "me": "person", "myself": "person", "i": "person",
+          "we": "person", "person": "person", "student": "person", "passenger": "person", "people": "person",
+          "human": "person", "player": "person", "friend": "person", "he": "man", "she": "woman", "rider": "person",
+          "traveller": "person", "traveler": "person", "driver": "person", "runner": "person", "walker": "person"}
+POSE = {"walk": "walking", "carry": "walking", "move": "walking", "push": "walking", "pull": "walking",
+        "chase": "running", "follow": "running", "run": "running", "throw": "bouncing ball", "bounce": "bouncing ball"}
+
+
+def person(noun: str, action: str = "", holds: str = "") -> str:
+    """The whole-body picture for a person noun ("" = not a person): by the action, else standing (a held ball stays
+    its own picture in the hand: "bouncing ball" would draw a second ball)."""
+    who = PEOPLE.get(" ".join(re.findall(r"[a-z]+", noun.lower())), "")
+    if not who:
+        return ""
+    pose = POSE.get(action, "")
+    for name in (f"{who} {pose}" if pose else "", f"{who} standing", "person standing"):
+        if name and name in index():
+            return name
+    return ""
 
 
 def place_type(name: str) -> str:

@@ -1,0 +1,222 @@
+> python -m copilot --simulate tests/fixtures/lectures/canvas_c1.txt --no-wait --no-open
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.7 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_2         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~4.0 h
+        GROQ_API_KEY_3         openai/gpt-oss-120b            71k of 200k tokens IN USE
+        GROQ_API_KEY_4         openai/gpt-oss-120b           140k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~28 min
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~28 min
+        GROQ_API_KEY_1         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~28 min
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              185k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 174 lecture minutes
+
+[READY] session 20261023-131003-773c
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        subject=Physics grade=9 topic=Imagination
+[LIVE]  lecture started. Type q + Enter to end.
+  [SLIDE] add    'Imagination' [title] v1 (0 items)
+13:10:07 INFO    copilot.visuals.service: CLIP ready in 1.0 s (CPU)
+  [    0.0s] Today we will imagine a few scenes.
+  [    3.8s] Imagine a boy holding a book.
+13:10:12 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a boy holding a book.'
+13:10:12 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+13:10:12 WARNING copilot.llm.router: LLM groq_main now uses GROQ_API_KEY_3 (GROQ_API_KEY_2 is spent)
+13:10:16 WARNING copilot.llm.router: llm groq_main#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+13:10:17 WARNING copilot.llm.router: llm groq_main#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+  [    9.2s] Imagine a dog on the moon.
+13:10:18 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a dog on the moon.'
+13:10:18 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap none (0 kept, 0 dropped as parameter talk)
+13:10:18 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [UNDERSTAND] Imagination > Scenes (new_topic) acts=- hint=none lines=2 via groq_main#4 4518 ms
+               Teacher introduced imaginative scenes, starting with a boy holding a book
+13:10:19 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+13:10:19 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 0 op(s) applied, 0 refused, 3049 tokens, first op 7.33 s, done 7.34 s, line -> first shape -
+  [   14.6s] Now a cat sits on top of the dog.
+13:10:24 INFO    copilot.scene.detector: [SCENE] edit 'Now a cat sits on top of the dog.'
+13:10:25 WARNING copilot.llm.router: llm groq_main#4 failed: timeout after 6.0s (ReadTimeout) (retrying)
+13:10:28 WARNING copilot.llm.router: llm groq_main#4 failed: 429 {"error":{"message":"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m47n5jhaek9sdgt85z510g09` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5875, Req
+  [   21.2s] Let's get back to the slide.
+13:10:30 INFO    copilot.simulation.detector: [SIM] end - ('get back to the slide') {}
+13:10:30 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Let's get back to the slide."): recap none (0 kept, 0 dropped as parameter talk)
+13:10:30 INFO    copilot.presentation.scenes: [SCENE] the scene ended: its running call is cancelled
+13:10:30 INFO    copilot.presentation.scenes: [SCENE] the scene ended before it drew anything: its slide goes
+  [UNDERSTAND] Imagination > Scenes (same_concept) acts=explanation hint=example lines=1 via groq_alt#2 10194 ms
+               Teacher provided an example of an imaginative scene: a dog on the moon.
+13:10:30 INFO    copilot.presentation.simulations: [SIM] 1 late piece(s) of the simulation: 1 to its recap, 0 dropped
+13:10:30 INFO    copilot.presentation.engine: planner: noop Imagination > Scenes (nothing to display)
+  [SLIDE] add    'Recap: Scene' [key_points] v1 (1 items)
+  [UNDERSTAND] Imagination > Scenes (same_concept) acts=explanation hint=example lines=1 via groq_alt#2 1211 ms
+               Teacher added a cat sitting on the dog to the imaginative scene.
+13:10:31 INFO    copilot.presentation.simulations: [SIM] 1 late piece(s) of the simulation: 1 to its recap, 0 dropped
+13:10:31 INFO    copilot.presentation.engine: planner: noop Imagination > Scenes (nothing to display)
+  [SLIDE] update 'Recap: Scene' [key_points] v2 (2 items)
+  [   25.1s] Imagine a cuboid with a sphere inside it.
+13:10:34 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a cuboid with a sphere inside it.'
+13:10:34 INFO    copilot.presentation.simulations: [SIM] scene mode on: Cuboid on its own slide (cue)
+  [SLIDE] add    'Cuboid' [simulation] v1 (1 items)
+13:10:34 WARNING copilot.llm.router: llm groq_alt#2 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m467cwmfekpbk61ygfeq61s2` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 6250,
+13:10:35 WARNING copilot.llm.router: llm groq_alt#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+  [UNDERSTAND] Imagination > Scenes (same_concept) acts=transition hint=none lines=1 via groq_alt#4 1990 ms
+               Teacher directed attention back to the slide.
+13:10:36 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+13:10:36 WARNING copilot.llm.router: llm groq_alt#3 failed: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+
+  [SLIDE] update 'Cuboid' [simulation] v2 (1 items)
+  [SLIDE] update 'Cuboid and sphere' [simulation] v3 (1 items)
+13:10:37 INFO    copilot.presentation.scenes: [SCENE] scene.rejected {'op': 'relate', 'kind': 'inscribed_in', 'a': 's1', 'b': 'c1'}: inscribed_in: not for a sphere and a cuboid
+13:10:37 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#4: 2 op(s) applied, 1 refused, 3080 tokens, first op 2.50 s, done 2.77 s, line -> first shape 2.49 s
+  [UNDERSTAND] Imagination > Scenes (same_concept) acts=explanation hint=example lines=1 via groq_alt#4 1091 ms
+               Teacher introduced a new imaginative scene involving a cuboid and a sphere.
+13:10:39 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   31.3s] Back to the slides.
+13:10:39 INFO    copilot.simulation.detector: [SIM] end - ('Back to the slides') {}
+13:10:39 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard 'Back to the slides.'): recap 1 slide(s) (1 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Cuboid and sphere' [key_points] v1 (1 items)
+  [SLIDE] update 'Recap: Cuboid and sphere' [key_points] v2 (2 items)
+  [   34.4s] Imagine you are in a rocket going to the sun.
+13:10:44 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are in a rocket going to the sun.'
+13:10:44 INFO    copilot.presentation.simulations: [SIM] scene mode on: Rocket on its own slide (cue)
+  [SLIDE] update 'Recap: Cuboid and sphere' [key_points] v3 (1 items)
+  [SLIDE] add    'Rocket' [simulation] v1 (1 items)
+13:10:44 INFO    copilot.simulation.detector: [SIM] values - {}
+13:10:46 INFO    copilot.presentation.scenes: [SCENE] scene.rejected add p1: name 'space' not said: not printed
+  [SLIDE] update 'Rocket' [simulation] v2 (1 items)
+  [SLIDE] update 'Rocket' [simulation] v3 (1 items)
+  [SLIDE] update 'Rocket and you' [simulation] v4 (1 items)
+  [SLIDE] update 'Rocket and you' [simulation] v5 (1 items)
+  [SLIDE] update 'Rocket, you and sun' [simulation] v6 (1 items)
+  [SLIDE] update 'Rocket, you and sun' [simulation] v7 (1 items)
+13:10:47 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 6 op(s) applied, 0 refused, 3109 tokens, first op 2.11 s, done 2.69 s, line -> first shape 2.11 s
+  [UNDERSTAND] Imagination > Scenes (same_concept) acts=explanation hint=narrative lines=2 via groq_alt#5 1634 ms
+               Teacher introduced a new imaginative scene of a rocket going to the sun.
+13:10:47 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   41.9s] Imagine a bird on a tree.
+13:10:50 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a bird on a tree.'
+13:10:50 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap 1 slide(s) (1 kept, 0 dropped as parameter talk)
+13:10:50 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Recap: Rocket, you and sun' [key_points] v1 (1 items)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Tree' [simulation] v2 (1 items)
+  [SLIDE] update 'Tree and bird' [simulation] v3 (1 items)
+  [SLIDE] update 'Tree and bird' [simulation] v4 (1 items)
+13:10:51 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 3 op(s) applied, 0 refused, 3073 tokens, first op 0.74 s, done 0.92 s, line -> first shape 0.74 s
+13:10:51 INFO    copilot.visuals.finder: image search 'outer space stars nebula': 8 slow download(s) dropped
+13:10:51 INFO    copilot.scene.photos: [SCENE] place photo 'space': none (downloads failed)
+  [UNDERSTAND] Imagination > Scenes (same_concept) acts=explanation hint=example lines=1 via groq_alt#2 1702 ms
+               Teacher introduced a new imaginative scene of a bird on a tree.
+13:10:53 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   47.3s] Look at its feet.
+13:10:55 INFO    copilot.scene.detector: [SCENE] edit 'Look at its feet.'
+13:10:56 WARNING copilot.llm.router: llm groq_alt#4 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m47n5jhaek9sdgt85z510g09` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 4543,
+  [SLIDE] update 'Tree, bird and feet' [simulation] v5 (1 items)
+  [SLIDE] update 'Tree, bird and feet' [simulation] v6 (1 items)
+  [SLIDE] update 'Tree, bird and feet' [simulation] v7 (1 items)
+13:10:58 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#5: 3 op(s) applied, 0 refused, 3079 tokens, first op 2.47 s, done 2.92 s, line -> first shape 2.47 s
+  [   51.9s] Back to the slides.
+13:10:59 INFO    copilot.simulation.detector: [SIM] end - ('Back to the slides') {}
+13:10:59 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard 'Back to the slides.'): recap 1 slide(s) (1 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Tree, bird and feet' [key_points] v1 (1 items)
+  [SLIDE] update 'Recap: Tree, bird and feet' [key_points] v2 (2 items)
+  [UNDERSTAND] Imagination > Scenes (elaboration) acts=explanation,transition hint=key_points lines=2 via groq_alt#6 2418 ms
+               Teacher directed students to observe the bird's feet in the scene.
+13:11:03 INFO    copilot.presentation.simulations: [SIM] 1 late piece(s) of the simulation: 1 to its recap, 0 dropped
+13:11:03 INFO    copilot.presentation.engine: planner: noop Imagination > Scenes (nothing to display)
+  [SLIDE] update 'Recap: Tree, bird and feet' [key_points] v3 (1 items)
+  [SLIDE] update 'Recap: Tree, bird and feet' [key_points] v4 (2 items)
+  [   55.0s] Imagine you're on a bus and it brakes.
+13:11:04 INFO    copilot.scene.detector: [SCENE] cue "Imagine you're on a bus and it brakes."
+13:11:04 INFO    copilot.presentation.simulations: [SIM] scene mode on: Scene on its own slide (cue)
+  [SLIDE] add    'Scene' [simulation] v1 (1 items)
+  [SLIDE] update 'Bus' [simulation] v2 (1 items)
+  [SLIDE] update 'Bus and you' [simulation] v3 (1 items)
+  [SLIDE] update 'Bus and you' [simulation] v4 (1 items)
+  [SLIDE] update 'Bus and you' [simulation] v5 (1 items)
+13:11:06 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#6: 4 op(s) applied, 0 refused, 3091 tokens, first op 0.97 s, done 1.69 s, line -> first shape 0.97 s
+13:11:08 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Scenes' -> same_concept
+  [UNDERSTAND] Imagination > Scenes (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 2476 ms
+               Teacher introduced a new imaginative scene of a bus braking.
+13:11:08 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   61.7s] Look at the person inside.
+13:11:10 INFO    copilot.scene.detector: [SCENE] edit 'Look at the person inside.'
+  [SLIDE] update 'Bus and you' [simulation] v6 (1 items)
+13:11:12 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#2: 1 op(s) applied, 0 refused, 3040 tokens, first op 2.31 s, done 2.33 s, line -> first shape 2.32 s
+  [   66.7s] Back to the slides.
+13:11:14 INFO    copilot.presentation.scenes: teacher: Imagine Mode on
+13:11:14 INFO    copilot.simulation.detector: [SIM] end - ('Back to the slides') {}
+13:11:14 INFO    copilot.presentation.simulations: [SIM] Imagine Mode: the end cue 'Back to the slides.' is ignored (End ends it)
+  [UNDERSTAND] Imagination > Scenes (same_concept) acts=transition hint=none lines=2 via groq_alt#4 2113 ms
+               Teacher directed students to observe a person inside the scene and return to the slides.
+13:11:18 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (1 so far)
+  [   69.8s] A laptop is flying on top of an airplane.
+13:11:19 INFO    copilot.scene.detector: [SCENE] edit 'A laptop is flying on top of an airplane.'
+13:11:20 WARNING copilot.llm.router: llm groq_alt#5 failed: 429 {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01m4800crme1rsrmqcnrkr6mwq` service tier `on_demand` on input tokens per minute (ITPM): Limit 7000, Used 4133,
+  [SLIDE] update 'Bus, you and airplane' [simulation] v7 (1 items)
+  [SLIDE] update 'Bus, you, airplane and laptop' [simulation] v8 (1 items)
+  [SLIDE] update 'Bus, you, airplane and laptop' [simulation] v9 (1 items)
+  [SLIDE] update 'Bus, you, airplane and laptop' [simulation] v10 (1 items)
+13:11:22 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#6: 4 op(s) applied, 0 refused, 3116 tokens, first op 1.56 s, done 2.27 s, line -> first shape 1.56 s
+13:11:24 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Scenes' -> same_concept
+  [UNDERSTAND] Imagination > Scenes (same_concept) acts=explanation hint=example lines=1 via groq_main#4 3449 ms
+               Introduced a new imaginative scene of a laptop flying on an airplane
+13:11:24 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   76.4s] So what do you think?
+13:11:24 INFO    copilot.scene.detector: [SCENE] edit 'So what do you think?'
+  [SLIDE] update 'Bus, you, airplane and laptop' [simulation] v11 (1 items)
+13:11:25 INFO    copilot.presentation.scenes: [SCENE] call groq_alt#1: 1 op(s) applied, 0 refused, 3068 tokens, first op 0.69 s, done 0.70 s, line -> first shape 0.69 s
+  [   80.4s] A fish swims under the ocean near a bicycle.
+13:11:30 INFO    copilot.presentation.scenes: teacher: Imagine Mode ended
+13:11:30 INFO    copilot.presentation.simulations: [SIM] simulation mode off (Imagine Mode ended): recap 1 slide(s) (1 kept, 1 dropped as parameter talk)
+13:11:30 INFO    copilot.scene.detector: [SCENE] edit 'A fish swims under the ocean near a bicycle.'
+  [SLIDE] add    'Recap: Bus, you, airplane and laptop' [key_points] v1 (1 items)
+13:11:30 INFO    copilot.simulation.detector: [SIM] values - {}
+13:11:30 INFO    copilot.presentation.simulations: [SIM] values -: ignore (values, but no simulation is open)
+  [UNDERSTAND] Imagination > Scenes (same_concept) acts=explanation hint=example lines=2 via groq_alt#2 2112 ms
+               Teacher introduced a new imaginative scene of a fish swimming near a bicycle.
+13:11:33 INFO    copilot.presentation.engine: planner: continue Imagination > Scenes (new facet)
+13:11:33 INFO    copilot.presentation.engine: slide 'Scenes' waits for the min dwell time
+13:11:33 INFO    copilot.presentation.engine: no image 'dog on moon' on 'Scenes': not about the slide (similarity 0.18)
+[END]   finishing lecture understanding (0 buffered lines) ...
+  [   88.5s] That is how imagination helps us picture physics.
+  [UNDERSTAND] Imagination > Scenes (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1580 ms
+               Teacher explained that imagination helps us picture physics.
+13:11:39 INFO    copilot.presentation.engine: planner: update Imagination > Scenes (same frame)
+13:11:39 INFO    copilot.presentation.engine: no image 'dog on moon' on 'Scenes': not about the slide (similarity 0.21)
+  [SLIDE] add    'Scenes' [key_points] v1 (2 items)
+[ENDED] session 20261023-131003-773c: 18 segments, 118 words, state v43, 254 events logged
+        CommandReceived=3, ConceptSignal=18, DeckState=30, InterpretRequested=13, InterpretationReady=13, LLMCallFailed=9, LifecycleChanged=5, ModeChanged=1, RepresentationIntent=18, SimulationModeChanged=12, SimulationSettingChanged=1, SlideContextChanged=8, SlidePatch=43, StateChanged=43, TranscriptFinal=18, UtteranceClassified=18, VocabularyChanged=1
+        understanding: 13 interpretations (13 by LLM, 0 fallbacks, 0 repaired), max 9 calls/min, prompt tokens max=1990 avg=1932, latency p50=2112 ms max=10194 ms
+        presentation: 13 slides; planner ops {'title': 1, 'scene_start': 6, 'noop': 3, 'continue': 1, 'update': 1}; revisions 0, corrections shown 0, shown as said 0
+        scenes: 9 calls, 27705 tokens, 24 ops, 1 refused; line -> first shape p50 2.11 s p90 2.49 s
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/12
+          1. [title] Imagination  (v1, [])
+          2. [simulation] Scene  (v1, ['scene'])
+          3. [key_points] Recap: Scene  (v2, ['points'])
+          4. [simulation] Cuboid and sphere  (v3, ['scene'])
+          5. [key_points] Recap: Cuboid and sphere  (v3, ['points'])
+          6. [simulation] Rocket, you and sun  (v7, ['scene'])
+          7. [key_points] Recap: Rocket, you and sun  (v1, ['points'])
+          8. [simulation] Tree, bird and feet  (v7, ['scene'])
+          9. [key_points] Recap: Tree, bird and feet  (v4, ['points'])
+          10. [simulation] Bus, you, airplane and laptop  (v11, ['scene'])
+          11. [key_points] Recap: Bus, you, airplane and laptop  (v1, ['points'])
+          12. [key_points] Scenes  (v1, ['points'])
+        providers: {'groq_main#4': 4, 'groq_alt#2': 4, 'groq_alt#4': 3, 'groq_alt#5': 1, 'groq_alt#6': 1}; triggers: {'pause': 11, 'boundary': 1, 'flush': 1}; outline: ['Imagination > Scenes']; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261023-131003-773c\session.sqlite

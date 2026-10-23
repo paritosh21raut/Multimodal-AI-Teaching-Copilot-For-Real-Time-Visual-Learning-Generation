@@ -17,7 +17,7 @@ from typing import Any, Optional
 from copilot.scene import safety
 from copilot.scene.spec import (
     BEHAVIORS, BODY_KINDS, CANVAS_KINDS, CANVAS_RELATIONS, DIRS, EMITS, GEOMETRY_KINDS, ID_PATTERN, KINDS, KNOWN,
-    MAX_ENTITIES, MAX_PARTS, OPS, RELATIONS, RELATIVE_KINDS, SIZES, SOLID_KINDS, Label, Q, SceneOp, SceneSpec, Source,
+    MAX_ENTITIES, MAX_PARTS, OPS, RELATIONS, RELATIVE_KINDS, SIZES, SOLID_KINDS, Entity, Label, Q, SceneOp, SceneSpec, Source,
 )
 from copilot.simulation.values import NUM, heard, spoken_number
 
@@ -59,8 +59,10 @@ CLOSED = ("square", "rectangle", "circle", "triangle", "polygon")
 BESIDE = ("left_of", "right_of", "above", "below")
 MOTION_PROPS = ("speed", "acceleration")  # a body's (a shape or a point given a speed is a model slip: refused)
 MOVERS = BODY_KINDS + RELATIVE_KINDS + ("thing",)  # what may have a speed and a direction (a river flows, rain falls)
-ACTORS = BODY_KINDS + ("thing",)            # what may act (a behaviour's target) and be placed by a canvas relation
-SPATIAL = BODY_KINDS + CANVAS_KINDS         # what a canvas relation places things by
+# what may act (a behaviour's target) and be placed by a canvas relation; a solid too (test32: "inside the cuboid is a
+# sphere", "a cone on top of the cylinder": the canvas draws it as a shaded solid)
+ACTORS = BODY_KINDS + ("thing",) + SOLID_KINDS
+SPATIAL = BODY_KINDS + CANVAS_KINDS + SOLID_KINDS  # what a canvas relation places things by
 # a thing's said noun: letters, spaces, hyphens, apostrophes (no markup, no digits)
 _NOUN_OK = re.compile(r"^[A-Za-z][A-Za-z '\-]{0,39}$")
 _OTHER = ("follow", "chase", "orbit", "move_to", "collide")  # actions that need the other entity (`b`)
@@ -230,6 +232,13 @@ _PAIRS: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {  # relation -> (k
 }
 
 
+def canvas_solids(kind: str, a: Entity, b: Entity) -> bool:
+    """A solid on / inside / under another solid or a thing: a canvas relation (the geometry world only puts solids
+    side by side)."""
+    return (a.kind in SOLID_KINDS or b.kind in SOLID_KINDS) and kind not in BESIDE and a.kind in ACTORS \
+        and b.kind in SPATIAL
+
+
 def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Checked], str]:
     """(Checked, "") or (None, why the op is refused)."""
     if op.op not in OPS:
@@ -287,9 +296,13 @@ def check(op: SceneOp, scene: SceneSpec, corpus: Corpus) -> tuple[Optional[Check
         if a is None or b is None or a.id == b.id:
             return None, f"relate: bad refs {op.a!r}, {op.b!r}"
         pair = _PAIRS.get(op.kind)
+        if op.kind == "inscribed_in" and pair is not None and a.kind in SOLID_KINDS and b.kind in SOLID_KINDS \
+                and (a.kind not in pair[0] or b.kind not in pair[1]):
+            op = op.model_copy(update={"kind": "inside"})  # C1 live: "a cuboid with a sphere inside it" came as this
+            pair = None
         if pair is not None and (a.kind not in pair[0] or b.kind not in pair[1]):
             return None, f"{op.kind}: not for a {a.kind} and a {b.kind}"
-        if a.kind in CANVAS_KINDS or b.kind in CANVAS_KINDS or op.kind in CANVAS_RELATIONS:
+        if a.kind in CANVAS_KINDS or b.kind in CANVAS_KINDS or op.kind in CANVAS_RELATIONS or canvas_solids(op.kind, a, b):
             # F-016: things, bodies and the place, never a drawn shape
             if a.kind not in ACTORS or b.kind not in SPATIAL:
                 return None, f"{op.kind}: not for a {a.kind} and a {b.kind} (things, bodies and the place)"

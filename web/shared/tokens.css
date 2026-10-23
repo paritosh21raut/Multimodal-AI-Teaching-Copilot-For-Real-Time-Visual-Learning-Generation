@@ -232,6 +232,11 @@
   --cv-plain: #f3f5f8;
   --cv-shadow: rgba(20, 25, 35, 0.22);
   --cv-dim: rgba(255, 255, 255, 0.55);
+  --cv-moon: #c9c9cc;
+  --cv-moon-far: #a9a9ae;
+  --cv-mars: #c8693e;
+  --cv-mars-far: #a9542f;
+  --cv-mars-sky: #e9b48f;
 }
 [data-theme="dark"] {
   --cv-sky-top: #12263f;
@@ -253,4 +258,9 @@
   --cv-plain: #161a22;
   --cv-shadow: rgba(0, 0, 0, 0.45);
   --cv-dim: rgba(10, 12, 18, 0.6);
+  --cv-moon: #6c6c72;
+  --cv-moon-far: #4d4d53;
+  --cv-mars: #7a3a20;
+  --cv-mars-far: #5c2b17;
+  --cv-mars-sky: #3a2219;
 }

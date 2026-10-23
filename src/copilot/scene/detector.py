@@ -61,6 +61,12 @@ _LOOKALIKE = re.compile(r"\b(?:(?:address|data|control|system)\s+bus|bus\s+(?:to
                         r"plane\s+(?:mirrors?|waves?|polari\w+)|(?:inclined|xy|x-y|cartesian|complex|coordinate|focal|"
                         r"image|horizontal|vertical)\s+plane|cube\s+(?:roots?|of)|cones?\s+(?:cells?|in\s+the))\b",
                         re.IGNORECASE)
+# "imagine you are on a mountain", "imagine yourself at the top of a building": the listener in a scene (test32: "imagine
+# you are standing with a tall stick in your hand" had no picture noun and was lost)
+_YOU = re.compile(r"^\W*(?:that\s+)?(?:you(?:'re|\s+are|\s+were)|yourself|yourselves)\s+(?:\w+ly\s+)?(?:standing|"
+                  r"sitting|lying|walking|running|riding|driving|flying|floating|swimming|climbing|jumping|falling|"
+                  r"holding|carrying|throwing|reading|playing|sleeping|on|in|at|inside|under|near|beside|above)\b",
+                  re.IGNORECASE)  # review: "imagine you are given a triangle" is geometry, "... solving" nothing
 _EDIT = re.compile(r"\b(?:now|make|add|increase|decrease|double|halve|half|triple|change|move|speed(?:s)? up|"
                    r"slow(?:s)? down|accelerat\w*|decelerat\w*|remove|draw|mark|its|another|second|inside|around|"
                    r"bigger|smaller|larger|faster|slower|extend|rotate|join|connect|shade|label|put|place|replace|"
@@ -72,6 +78,7 @@ def cue(text: str) -> Optional[str]:
     """The world of the drawable noun after a cue word in the line ("canvas": any other picture noun, or a relation
     word with an object noun), or None."""
     for m in _CUE.finditer(text):
+        you = m.group(0).lower().startswith(("imagine", "picture", "visuali")) and _YOU.search(text[m.end():])
         tail = " ".join(text[m.end():].split()[:NOUN_REACH + 2])
         best: Optional[tuple[int, str]] = None
         for rx, world in _NOUN:
@@ -90,7 +97,7 @@ def cue(text: str) -> Optional[str]:
         canvas = not m.group(0).lower().startswith("look") and any(
             t not in own and t not in setting and t not in _L1_WORDS and pictures.assets.singular(t) not in _L1_WORDS
             and pictures.assets.singular(t) in pictures.words() for t in toks)
-        if canvas:
+        if canvas or (you and (best is None or best[1] == "motion")):  # the listener in a scene (a vehicle: canvas)
             return "canvas"
         if best is not None:
             return best[1]

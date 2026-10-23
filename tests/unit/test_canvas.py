@@ -42,7 +42,7 @@ def test_a_cube_rests_on_the_mountain_top_and_both_are_readable():
     mx, my, mw, mh = box(s, "m1")
     cx, cy, cw, ch = box(s, "c1")
     assert mh >= 0.35 * H and ch >= 0.08 * H and ch <= 0.6 * mh       # main >= 35 %, nothing < 8 %
-    assert cx == mx and math.isclose(cy + ch / 2, my - mh / 2 + 0.06 * mh, abs_tol=0.2)  # resting on its top
+    assert cx == mx and math.isclose(cy + ch / 2, my - mh / 2 + canvas.ON_TOP * mh, abs_tol=0.2)  # resting on its top
     assert s.get("c1").look.form == "cube" and s.get("c1").geom.z > s.get("m1").geom.z
 
 
@@ -61,7 +61,7 @@ def test_a_laptop_on_a_flying_airplane_sits_on_its_top_and_moves_with_it():
                   beh("fly", "p1")])
     px, py, pw, ph = box(s, "p1")
     lx, ly, lw, lh = box(s, "l1")
-    assert ly + lh / 2 <= py - ph / 2 + 0.06 * ph + 0.2
+    assert ly + lh / 2 <= py - ph / 2 + canvas.ON_TOP * ph + 0.2
     tr = {t.id: t for t in s.frames.tracks}
     for a, b in zip(tr["p1"].pts, tr["l1"].pts):  # carried: the same displacement at every sample
         assert math.isclose(a[1] - px, b[1] - lx, abs_tol=0.11) and math.isclose(a[2] - py, b[2] - ly, abs_tol=0.11)
@@ -114,12 +114,15 @@ def test_focus_makes_a_camera_box_and_zoom_out_clears_it():
     assert s.stage.camera is None and not refused
 
 
-def test_a_part_is_hidden_until_it_is_focused():
+def test_a_focused_part_opens_the_magnifier_at_its_place_on_the_whole():
     ops = [thing("b1", "bicycle"), thing("w1", "wheel", "small"), rel("part_of", "w1", "b1")]
     s, _ = build(["A bicycle and its wheel."], ops)
-    assert s.get("w1").geom.hidden
+    assert s.get("w1").geom.hidden and s.stage.magnifier is None
     s, _ = build(["A bicycle and its wheel. Zoom into the wheel."], ops + [{"op": "focus", "ids": ["w1"]}])
-    assert not s.get("w1").geom.hidden and s.stage.camera is not None
+    m, (bx, by, bw, bh) = s.stage.magnifier, box(s, "b1")
+    assert s.get("w1").geom.hidden and s.stage.camera is None and m.of == "w1"   # the inset, not the camera
+    assert m.at[0] == bx and by < m.at[1] <= by + bh / 2                         # a wheel: the bottom of the bicycle
+    assert m.r >= 0.2 * H and abs(m.c[0] - bx) > m.r                              # beside the whole, not over it
 
 
 @pytest.mark.parametrize("kind, check_", [
@@ -346,3 +349,239 @@ async def test_an_empty_imagine_stage_goes_when_the_first_scene_opens(tmp_path):
     await said(bus, eng, talk, "Now imagine a rocket in space.")
     assert deck.live.id != empty and empty not in [x.id for x in deck.slides]
     assert eng._sims.mode.imagine and eng._sims.mode.names == [deck.live.title]
+
+
+# ---- test32 fixes (2026-10-23) ---------------------------------------------------------------------------------------
+def test_one_thing_alone_fills_the_slide_and_two_keep_their_real_size_order():
+    s, _ = build(["Imagine a book."], [thing("k1", "book")])
+    _, _, _, h = box(s, "k1")
+    room = canvas.GROUND - canvas.TOP - 50
+    assert h >= 0.8 * room and s.stage.size == (canvas.W, canvas.H)          # full size at first
+    s, _ = build(["Imagine a boy holding a book."], [thing("b1", "boy"), thing("k1", "book"),
+                                                     rel("holding", "k1", "b1")])
+    bx, by, bw, bh = box(s, "b1")
+    kx, ky, kw, kh = box(s, "k1")
+    assert 0.25 * bh <= kh <= 0.6 * bh and bh >= 0.6 * room                 # a book is clearly smaller, both readable
+    assert bx < kx < bx + bw / 2 + kw and by - bh / 2 < ky < by + bh / 2      # in his hand, beside his middle
+
+
+def test_a_stack_and_a_mountain_keep_their_order_and_fit_the_stage():
+    s, _ = build(["A dog on a man, a cat on the dog, a rat on the cat."],
+                 [thing("n1", "man"), thing("d1", "dog"), thing("c1", "cat"), thing("r1", "rat"),
+                  rel("on_top_of", "d1", "n1"), rel("on_top_of", "c1", "d1"), rel("on_top_of", "r1", "c1")])
+    hs = [box(s, i)[3] for i in ("n1", "d1", "c1", "r1")]
+    assert hs == sorted(hs, reverse=True) and hs[-1] >= canvas.MIN_H * canvas.H
+    assert min(box(s, i)[1] - box(s, i)[3] / 2 for i in ("n1", "d1", "c1", "r1")) >= canvas.TOP   # under the title
+    s, _ = build(["Imagine yourself at the top of a mountain."],
+                 [thing("m1", "mountain"), thing("y1", "yourself"), rel("on_top_of", "y1", "m1")])
+    assert box(s, "y1")[3] <= 0.3 * box(s, "m1")[3]
+
+
+def test_a_person_is_drawn_whole_and_posed_by_what_they_do():
+    assert pictures.person("boy") == "person standing" and pictures.person("yourself") == "person standing"
+    assert pictures.person("you", "walk") == "person walking" and pictures.person("woman", "chase") == "woman running"
+    assert pictures.person("dog") == "" and pictures.place_type("the moon") == "moon"
+
+
+async def test_engine_kinds_get_pictures_too(tmp_path):
+    # test32: "car" and "basketball" came as the motion kinds car / ball and stayed placeholders
+    (tmp_path / "automobile.png").write_bytes(_png())
+    (tmp_path / "person-standing.png").write_bytes(_png())
+    ANSWERS["Imagine you are riding a car in the space."] = (
+        '{"op":"add","id":"s1","kind":"place","name":"space"}\n{"op":"add","id":"c1","kind":"car","name":"car"}\n'
+        '{"op":"add","id":"y1","kind":"thing","name":"you"}\n{"op":"relate","kind":"inside","a":"y1","b":"c1"}')
+    ANSWERS["Imagine you are riding a rocket in the space."] = (
+        '{"op":"add","id":"s1","kind":"place","name":"space"}\n{"op":"add","id":"r1","kind":"thing","name":"rocket"}')
+    bus, deck, eng, clock, talk, replay = await canvas_lecture(tmp_path)
+    await said(bus, eng, talk, "Imagine you are riding a car in the space.")
+    s = scene_on(deck)
+    assert s.world == "canvas" and s.get("c1").look.emoji == "/scene-pic/automobile.png"
+    assert s.get("y1").look.emoji == "/scene-pic/person-standing.png"
+    first = deck.live.id
+    await said(bus, eng, talk, "Imagine you are riding a rocket in the space.")   # "you" is not the open scene's
+    assert deck.live.id != first and scene_on(deck).get("r1") is not None
+
+
+async def test_a_canvas_cue_opens_a_full_slide_canvas_at_once(tmp_path):
+    bus, deck, eng, clock, talk, replay = await canvas_lecture(tmp_path)
+    eng._scenes.compiler = None  # the model has not answered yet: the stage alone
+    async with eng._lock:
+        await eng._scenes.start(["Imagine you are standing with a tall stick in your hand."], origin="cue")
+    s = scene_on(deck)
+    assert s.world == "canvas" and s.entities == [] and s.stage.size == (canvas.W, canvas.H)   # no layout jump later
+    from copilot.scene.detector import cue
+    assert cue("Imagine you are standing with a tall stick in your hand.") == "canvas"
+    assert cue("Imagine yourself at the top of a building.") == "canvas" and cue("Suppose you are given a matrix.") is None
+
+
+def test_back_to_the_slide_ends_a_scene():
+    from copilot.simulation.detector import end_cue
+    assert end_cue("Back to the slide.") and end_cue("Let's get back to the slide.")
+    assert not end_cue("We will go back to the slides later.")
+
+
+async def test_an_end_with_nothing_to_recap_shows_the_slide_before(tmp_path):
+    bus, deck, eng, clock, talk, replay = await canvas_lecture(tmp_path)
+    before = deck.live.id
+    await said(bus, eng, talk, "Imagine a cube on a mountain.")
+    assert deck.live.id != before
+    eng._sims.mode.collected.clear()                           # nothing worth a recap was said
+    await said(bus, eng, talk, "Let's get back to the slides.")
+    assert deck.sim_mode is None and deck.live.id == before and deck.following
+
+
+def test_a_photo_matte_must_be_one_whole_object():
+    import numpy as np
+    from copilot.scene.photos import judge
+    a = np.zeros((100, 100), np.uint8)
+    a[20:80, 30:70] = 255
+    assert judge(a) == ""
+    two = np.zeros((100, 100), np.uint8)
+    two[20:40, 10:30] = 255
+    two[60:80, 60:80] = 255
+    assert "several" in judge(two)                              # players, two spears, chairs
+    trunk = a.copy()
+    trunk[:, 45:55] = 255
+    assert "cut off" in judge(trunk)                            # a tree trunk running out of the photo
+    assert "share" in judge(np.full((100, 100), 255, np.uint8))
+
+
+class _Photos:
+    def __init__(self):
+        self.asked = []
+
+    @staticmethod
+    def wanted(noun):
+        from copilot.scene.photos import Photos
+        return Photos.wanted(noun)
+
+    def cached(self, noun):
+        return ""
+
+    def cached_place(self, name):
+        return ""
+
+    async def thing(self, noun):
+        self.asked.append(noun)
+        return f"/scene-pic/photo-{noun}.png"
+
+    async def place(self, name):
+        self.asked.append("place:" + name)
+        return "/media/0123456789abcdef.jpg"
+
+
+async def test_a_noun_with_no_3d_picture_gets_a_photo_and_a_place_its_backdrop(tmp_path):
+    ANSWERS["Imagine a man with a spear in the desert."] = (
+        '{"op":"add","id":"d0","kind":"place","name":"desert"}\n{"op":"add","id":"m1","kind":"thing","name":"man"}\n'
+        '{"op":"add","id":"s1","kind":"thing","name":"spear"}\n{"op":"relate","kind":"holding","a":"s1","b":"m1"}')
+    bus, deck, eng, clock, talk, replay = await canvas_lecture(tmp_path)
+    eng._scenes.photos = ph = _Photos()
+    eng._scenes.fetch_pictures = True
+    eng._scenes.emoji = pictures.Emoji()
+    await said(bus, eng, talk, "Imagine a man with a spear in the desert.")
+    o = eng._scenes.open
+    import asyncio
+    await asyncio.gather(*[t for t in o.glyph_tasks if t.get_name() == "scene:photo"])
+    await bus.drain()
+    s = scene_on(deck)
+    assert "man" not in ph.asked and "spear" in ph.asked                    # a person: never a photo; spear: no emoji
+    assert s.get("s1").look.photo == "/scene-pic/photo-spear.png"
+    assert s.stage.backdrop.photo == "/media/0123456789abcdef.jpg" and s.stage.backdrop.type == "desert"
+
+
+def test_a_command_line_in_a_fixture_presses_a_button():
+    from copilot.sim.simulator import parse_script
+    sc = parse_script("Hello.\n@command imagine_mode on=true\nA dog in a garden.\n@command imagine_mode on=false\n")
+    assert sc.utterances[1].commands == [("imagine_mode", {"on": True})] and sc.tail == [("imagine_mode", {"on": False})]
+
+
+async def test_a_scene_that_drew_nothing_goes_when_the_next_cue_opens_a_scene(tmp_path):
+    # C1 live run: the boy's call was still running when the dog's cue came; its empty slide stayed in the deck
+    import asyncio
+
+    class Slow(ReplayCompiler):
+        async def compile(self, lines, scene, topic, on_op):
+            if lines and lines[-1].startswith("Imagine a boy"):
+                await asyncio.sleep(30)  # the model has not answered yet
+            return await super().compile(lines, scene, topic, on_op)
+
+    bus, deck, eng, clock, talk, replay = await canvas_lecture(tmp_path)
+    eng._scenes.compiler = Slow(ANSWERS)
+    await talk.say("Imagine a boy holding a book.")
+    await bus.drain()
+    empty = deck.live.id
+    assert eng._scenes.open is not None and scene_on(deck).entities == []
+    await said(bus, eng, talk, "Imagine a cube on a mountain.")
+    assert empty not in [x.id for x in deck.slides] and scene_on(deck).get("m1") is not None
+
+
+def test_a_sphere_inscribed_in_a_cuboid_is_drawn_inside_it():
+    # C1 live run: "a cuboid with a sphere inside it" came as inscribed_in, refused, and the two stood side by side
+    from copilot.scene import layout
+    from copilot.scene.ops import apply
+    from copilot.scene.spec import SceneSpec
+    from copilot.scene.validate import Corpus, check
+    s = SceneSpec()
+    for op in (SceneOp(op="add", id="c1", kind="cuboid", name="cuboid"),
+               SceneOp(op="add", id="s1", kind="sphere", name="sphere"),
+               SceneOp(op="relate", kind="inscribed_in", a="s1", b="c1")):
+        ok, why = check(op, s, Corpus.of(["Imagine a cuboid with a sphere inside it."]))
+        assert ok is not None, why
+        s = apply(s, ok)
+    assert [(r.kind, r.a, r.b) for r in s.relations] == [("inside", "s1", "c1")]
+    out = layout.solve(s)
+    assert out.world == "canvas" and out.get("c1").geom.glass
+
+
+@pytest.mark.parametrize("line, world", [("Imagine you are given a triangle with sides 3, 4, 5.", "geometry"),
+                                         ("Imagine we are solving a quadratic.", None),
+                                         ("Imagine you are solving a quadratic.", None),
+                                         ("Imagine you are in a rocket going to the sun.", "canvas"),
+                                         ("Imagine a car moving at 20 metres per second.", "motion")])
+def test_you_in_a_scene_is_a_canvas_only_when_nothing_else_decides(line, world):
+    from copilot.scene.detector import cue
+    assert cue(line) == world
+
+
+def test_a_measured_solid_keeps_the_geometry_world_and_its_numbers():
+    # review: "a cube of side 4 cm with a sphere inside it" must not lose the said 4 cm and the computed volume
+    from copilot.scene import layout
+    from copilot.scene.ops import apply
+    from copilot.scene.spec import SceneSpec
+    from copilot.scene.validate import Corpus, check
+    lines = ["Imagine a cube of side 4 cm with a sphere inside it."]
+    s = SceneSpec()
+    for op in (SceneOp(op="add", id="c1", kind="cube", name="cube", props={"side": [4, "cm"]}),
+               SceneOp(op="add", id="s1", kind="sphere", name="sphere"),
+               SceneOp(op="relate", kind="inside", a="s1", b="c1")):
+        ok, why = check(op, s, Corpus.of(lines))
+        assert ok is not None, why
+        s = apply(s, ok)
+    assert layout.world_of(s) == "geometry"
+    out = layout.solve(s)
+    assert any("4 cm" in (e.geom.note or "") or any("4 cm" in d[2] for d in (e.geom.dims or []))
+               for e in out.entities if e.geom)
+
+
+async def test_a_failed_photo_search_is_tried_again_but_a_judged_miss_is_not(tmp_path):
+    # review: a slow / failed search must not block the noun's photo for the whole lecture
+    from types import SimpleNamespace
+
+    from copilot.scene.photos import Photos
+
+    class Finder:
+        def __init__(self, images):
+            self.images, self.calls = images, 0
+            self.cache = SimpleNamespace(path=lambda i: f"/nowhere/{i}.jpg")
+
+        async def find(self, q, kind):
+            self.calls += 1
+            return SimpleNamespace(images=self.images, reason="budget")
+
+    f = Finder([])
+    ph = Photos(f, matting=object(), pics_dir=tmp_path)
+    assert await ph.thing("table") == "" and await ph.thing("table") == "" and f.calls == 2   # asked again
+    f = Finder([SimpleNamespace(id="x1", title="t", aspect=1.0)])
+    ph = Photos(f, matting=object(), pics_dir=tmp_path)
+    assert await ph.thing("table") == "" and await ph.thing("table") == "" and f.calls == 1   # judged: once
+    assert await ph.place("table") == "" and f.calls == 2 and "table" in ph.place_misses      # places apart

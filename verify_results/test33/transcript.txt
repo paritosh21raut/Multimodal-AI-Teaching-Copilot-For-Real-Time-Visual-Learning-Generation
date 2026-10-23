@@ -1,0 +1,101 @@
+[    0.7] Imagine you are playing football.
+[    8.6] With you dog.
+[   14.3] Good dog sees a cat.
+[   20.6] And it runs to the cat.
+[   28.7] If the cat runs...
+[   30.5] Away from the dog.
+[   39.6] Let's come back to the slide.
+[   43.5] Imagine a dog.
+[   45.0] Flying a rocket.
+[   50.5] The dog is flying the rocket.
+[   59.4] And asteroid hits the rocket.
+[   66.0] Astrohead hits the rocket.
+[   75.0] The asteroid hits the rocket.
+[   83.0] Let's come back to this slide.
+[   89.7] Let's go back to the slides.
+[   99.2] Imagine a box placed on an inclined plane.
+[  108.0] Imagine a box placed on an inclined plane.
+[  116.9] Let us imagine a box placed on an inclined plane.
+[  121.8] of angle 30 degree.
+[  130.5] Imagine a box of mass 10kg placed on a surface.
+[  156.0] Imagine you are riding a bicycle.
+[  163.2] If you are riding a bicycle.
+[  171.1] If you are riding a bicycle.
+[  182.0] Imagine you are riding a bicycle.
+[  187.6] Let's go back to the slides.
+[  193.0] Imagine you are walking on moon.
+[  202.6] Let's go back to the slides.
+[  206.3] Imagine you jump on moon.
+[  212.3] If you jump on Moon,
+[  216.9] If you are jumping on Mars.
+[  231.2] Let's go back to the slide.
+[  239.3] Imagine you are playing with the sun.
+[  247.1] Imagine you're hitting the sun with your bat.
+[  255.2] Imagine you are hitting the sun with a cricket bat.
+[  263.5] Imagine you jump from a building.
+[  271.7] You jump from a building.
+[  280.7] Let's go back to the slide.
+[  288.1] Imagine you throw a ball from a building.
+[  291.1] In the air.
+[  301.5] Let's go back to the slide.
+[  307.1] Imagine a bird sitting on a tree.
+[  312.1] Let's look at its feet.
+[  318.6] Imagine a bird sitting on a tree.
+[  324.3] If you look at its feet,
+[  328.6] If we zoom into its feet,
+[  330.9] If we zoom into his eyes.
+[  336.7] If you look at its eyes,
+[  351.0] Imagine a dog.
+[  358.6] If it is chasing a rat.
+[  365.8] If the dog is chasing a rat.
+[  379.6] Imagine a rat cooking food.
+[  410.0] Imagine you are a king.
+[  420.4] Let's go back to the frames.
+[  425.5] Let's go back to the slides.
+[  433.1] Imagine you are cooking food.
+[  441.2] Let's go back to the slides.
+[  451.4] Imagine you have a box in your hand.
+[  460.3] Imagine you have a box in your hand.
+[  468.0] When you drop the box,
+[  494.9] Imagine you are reading a book.
+[  523.3] Imagine you are drinking water.
+[  530.2] Let's go back to the slides.
+[  536.6] Imagine you are swimming.
+[  544.4] Imagine you are swimming.
+[  549.9] Let's go back to the slides.
+[  574.9] Imagine you are...
+[  577.5] Driving a rocket in the space.
+[  584.5] Imagine you are in a rocket in this space.
+[  593.3] You are going to the Sun.
+[  603.7] UC Mercury
+[  610.0] You will see Mercury.
+[  625.2] You will see Venus.
+[  636.3] You will see certain
+[  648.5] Let's go back to the slides.
+[  653.6] Imagine you are going
+[  655.2] Towards the Black Hole
+[  665.1] Imagine a black hole.
+[  674.3] Let's go back to the slides.
+[  684.1] Imagine you are riding a bus.
+[  690.7] The bus is moving at a speed of 30 kmph.
+[  699.7] And you jump from the bus.
+[  706.0] Jumping Analogy, Bus Analogy,
+[  713.3] Let's go back to the slide.
+[  717.5] Imagine a ball rolling on an inclined plane.
+[  724.2] An inclined plane.
+[  742.5] Imagine you are tied to a helicopter.
+[  749.8] Imagine you are flying this helicopter.
+[  765.4] Let's go back to the slides.
+[  778.2] Imagine you are driving a car in the rain.
+[  792.5] Let's go back to the slide.
+[  796.1] Imagine you are playing football in the rain.
+[  803.8] Imagine you are playing football in the rain.
+[  814.4] Let's go back to the slides.
+[  820.1] Imagine you are working on your laptop.
+[  825.9] And the two-row U-Laptop in the head.
+[  833.1] And if you throw your laptop in the air.
+[  843.5] With the initial velocity of 30 meter per second at an angle of 30 degree.
+[  855.9] If we improve it with the initial velocity of 60 meter per speed.
+[  876.7] Let's get back to the slides.
+[  898.4] Imagine a pendulum.
+[  904.2] Imagine a pendulum.

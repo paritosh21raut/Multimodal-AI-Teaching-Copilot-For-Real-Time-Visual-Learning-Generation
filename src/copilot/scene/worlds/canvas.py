@@ -5,12 +5,18 @@ graph of things, one place, relation primitives and action primitives, composed 
     relations  -> positions: on / on_top_of rest on b's top; under / below; inside a place's medium (under the ocean)
                   or a thing; above (airborne); behind / in_front_of (z, scale); left_of / right_of / near / between;
                   holding / attached_to / part_of and things resting on or inside b move with b
-    sizes      -> F-016 §4: by the `size` word and readability, not true scale: the main thing >= 35 % of the stage's
-                  height, nothing < 8 %; a thing on / inside / held by another is at most 60 % of it
+    sizes      -> F-016 §4 + test32: the canvas is the whole slide (1920 x 1080 stage px, the title floats on it). Each
+                  thing's typical size (scene.sizes: a boy > a book), compressed (^GAMMA, the smallest >= MIN_RATIO of the
+                  biggest) so both stay readable; then everything is scaled up to fill the stage (one thing alone:
+                  FILL of its height; something that moves leaves room to move); nothing < 8 %
+    solids     -> a cube, cuboid, sphere ... in a canvas scene is a thing drawn as a shaded solid (look.form); a thing
+                  inside a solid sits in its middle and the solid is drawn see-through
+    parts      -> a part (part_of) is not drawn on the stage; focused, it is shown enlarged in a magnifier inset with a
+                  leader line from where it is on its whole (feet at the bottom, a head at the top ...)
     actions    -> frames: fall / throw / move (fly, drive, walk, slide, roll, carry, push, pull) / brake are motion.py's
                   kinematics (real arcs, real stopping), scaled to the stage; the others are drawn motions (bob, spin,
                   grow, orbit ...). Brake: loose riders (on / inside the braking thing) lean and slide forward (inertia)
-    focus      -> stage.camera, a view box around the focused things (<= 3x); a focused part is shown
+    focus      -> stage.camera, a view box around the focused things (<= 3x); a focused part: stage.magnifier
 
 A number is printed only when every input of its motion is known (said or computed), as in the motion world."""
 from __future__ import annotations
@@ -19,19 +25,28 @@ import math
 from dataclasses import dataclass, field
 from typing import Callable, Optional
 
-from copilot.scene import pictures
+from copilot.scene import pictures, sizes
 from copilot.scene.spec import (
-    BODY_KINDS, KNOWN, Backdrop, Behavior, Derived, Effect, Entity, Frames, Geom, Q, SceneSpec, Stage, Track,
+    BODY_KINDS, KNOWN, SOLID_KINDS, Backdrop, Behavior, Derived, Effect, Entity, Frames, Geom, Look, Magnifier, Q,
+    SceneSpec, Stage, Track,
 )
 from copilot.scene.worlds import motion
 
-W, H = 1100.0, 740.0
-MARGIN = 40.0
-SIZE_H = {"tiny": 0.10, "small": 0.17, "medium": 0.26, "large": 0.38, "huge": 0.55}
-MIN_H, MAIN_H, CHILD_MAX = 0.08, 0.35, 0.6
-GROUND = H - 70.0
-SURFACE, FLOOR = 150.0, H - 50.0
-GAP = 50.0
+W, H = 1920.0, 1080.0      # the whole slide (the stage is drawn 1:1 on the 1920 x 1080 slide)
+MARGIN = 48.0
+TOP = 150.0                # the title floats over the top left: things start below it
+MIN_H, CHILD_MAX = 0.08, 0.75
+GAMMA = 0.55               # typical sizes compressed: a book next to a boy is ~0.4 of him, not 0.16
+MIN_RATIO = 0.2            # the smallest thing next to the biggest
+FILL = 0.84                # one thing alone: this share of the room's height
+MOVING_FILL = 0.6          # ... when something moves along (it needs room to move across)
+FLYING_FILL = 0.42         # ... when something is thrown, falls or circles (room above and around it)
+GROUND = H - 100.0
+SURFACE, FLOOR = 210.0, H - 70.0
+GAP = 70.0
+HAND = (0.13, 0.12)        # a standing person's right hand, from the middle of their picture (share of its w, h)
+ON_TOP = 0.1               # a thing on another sinks this far into its box (pictures have a margin at the top)
+SPAN = 0.6 * W             # a move-like run's length at most (px)
 RUN_S = motion.RUN_S
 BRAKE_AT = 1.0            # a braking thing cruises this long first (s)
 LEAN_MAX = 22.0           # a loose rider's lean (deg) at the strongest braking
@@ -91,11 +106,12 @@ def backdrop(scene: SceneSpec) -> Optional[Backdrop]:
     place = next((e for e in scene.entities if e.kind == "place"), None)
     typ = pictures.place_type(place.look.noun or place.name) if place is not None else "plain"
     name = place.label.text if place is not None and place.label.source == "said" else ""
+    photo = place.look.photo if place is not None else ""
     if typ == "water":
-        return Backdrop(type="water", name=name, ground=FLOOR, surface=SURFACE)
+        return Backdrop(type="water", name=name, ground=FLOOR, surface=SURFACE, photo=photo)
     if typ in ("sky", "space"):
-        return Backdrop(type=typ, name=name)  # type: ignore[arg-type]
-    return Backdrop(type=typ, name=name, ground=GROUND)  # type: ignore[arg-type]
+        return Backdrop(type=typ, name=name, photo=photo)  # type: ignore[arg-type]
+    return Backdrop(type=typ, name=name, ground=GROUND, photo=photo)  # type: ignore[arg-type]
 
 
 def _sign(e: Entity) -> float:
@@ -157,7 +173,7 @@ def _motion_act(e: Entity, b: Behavior, box: Box, ground: Optional[float], top: 
         return Act(f, p.T, p.known, "launch", sign=sign)
     # move-like: along the ground (or the air), real speed / acceleration, the run fits the stage
     x_end = max(abs(pts[-1][1]), 1e-6)
-    span = min(W - 2 * MARGIN - box.w, 640.0)
+    span = max(min(W - 2 * MARGIN - box.w, SPAN), 120.0)
     k = span / x_end
     start = -span / 2
     verb = b.kind
@@ -202,7 +218,7 @@ def _brake_act(e: Entity, b: Behavior, box: Box, sign: float) -> Act:
     t_stop = BRAKE_AT + v0 / -a
     T = max(RUN_S, t_stop + 0.8)
     x_end = v0 * BRAKE_AT + v0 * v0 / (2 * -a)
-    span = min(W - 2 * MARGIN - box.w, 640.0)
+    span = max(min(W - 2 * MARGIN - box.w, SPAN), 120.0)
     k = span / x_end
 
     def x_at(t: float) -> tuple[float, float]:
@@ -296,44 +312,70 @@ def _relations(scene: SceneSpec) -> dict[str, tuple[str, str, str]]:
     return {r.a: (r.kind, r.b, r.c) for r in scene.relations}
 
 
-def _heights(scene: SceneSpec, things: list[Entity], rel: dict[str, tuple[str, str, str]]) -> dict[str, float]:
+def _ratios(things: list[Entity], rel: dict[str, tuple[str, str, str]]) -> dict[str, float]:
+    """Each thing's height next to the biggest (1.0): typical sizes compressed; a thing on / held by / inside another
+    at most CHILD_MAX of it (a rider smaller than its carrier)."""
     ids = {e.id for e in things}
-    own = {e.id: SIZE_H.get(e.size or "medium", SIZE_H["medium"]) * H for e in things}
-    roots = [e.id for e in things if rel.get(e.id, ("", "", ""))[1] not in ids]
-    main = next(iter(roots), None)
-    if main is not None:
-        own[main] = max(own[main], MAIN_H * H)
+    m = {e.id: max(sizes.typical(e.look.noun or e.name, e.size), 1e-3) for e in things}
+    big = max(m.values(), default=1.0)
+    own = {i: max(MIN_RATIO, (v / big) ** GAMMA) for i, v in m.items()}
     out: dict[str, float] = {}
 
-    def h(i: str, depth: int = 0) -> float:
+    def r(i: str, depth: int = 0) -> float:
         if i in out:
             return out[i]
         v = own[i]
         kind, b, _ = rel.get(i, ("", "", ""))
         if b in ids and kind in CARRIED + ("under",) and depth < 40:
-            v = min(v, CHILD_MAX * h(b, depth + 1))
-        out[i] = max(v, MIN_H * H)
-        return out[i]
+            v = min(v, CHILD_MAX * r(b, depth + 1))
+        out[i] = v
+        return v
     for e in things:
-        h(e.id)
+        r(e.id)
     return out
 
 
 def _layout(scene: SceneSpec, things: list[Entity], bd: Optional[Backdrop], top: float) -> dict[str, Box]:
+    """Typical sizes, then one scale for all that fills the stage (a few passes: the stacks and rows are measured)."""
     rel = _relations(scene)
+    ratios = _ratios(things, rel)
+    floor = bd.ground if bd is not None and bd.ground is not None else H - MARGIN
+    room_h = max(floor - top - 50, 200.0)        # 50: a name above the tallest
+    kinds = {b.kind for b in scene.behaviors}
+    flying = bool(kinds & {"throw", "launch", "fall", "bounce", "orbit"})
+    moving = bool(kinds & set(ALONG + ("follow", "chase")))
+    cap = (FLYING_FILL if flying else MOVING_FILL if moving else FILL) * room_h
+    scale = cap
+    boxes: dict[str, Box] = {}
+    for _ in range(6):
+        boxes = _arrange(scene, things, bd, top, {i: v * scale for i, v in ratios.items()}, rel)
+        shown = [b for i, b in boxes.items() if rel.get(i, ("", "", ""))[0] != "part_of"]  # a part: the magnifier
+        if not shown:
+            break
+        x0 = min(b.cx - b.w / 2 for b in shown)
+        x1 = max(b.cx + b.w / 2 for b in shown)
+        y0 = min(b.top for b in shown)
+        y1 = max(b.bottom for b in shown)
+        k = min((W - 2 * MARGIN) / max(x1 - x0, 1.0), (floor - top - 40) / max(y1 - y0, 1.0))
+        new = min(cap, scale * min(k, 1.5))
+        if abs(new - scale) < 0.02 * scale:
+            break
+        scale = new
+    return boxes
+
+
+def _arrange(scene: SceneSpec, things: list[Entity], bd: Optional[Backdrop], top: float, hs: dict[str, float],
+             rel: dict[str, tuple[str, str, str]]) -> dict[str, Box]:
     ids = {e.id for e in things}
-    hs = _heights(scene, things, rel)
+    hs = {i: max(v, MIN_H * H) for i, v in hs.items()}
     acts = {b.target: b.kind for b in scene.behaviors if b.kind != "emit"}
     ground = bd.ground if bd is not None else None
     water = bd is not None and bd.type == "water"
+    forms = {e.id for e in things if e.look.form}
+    people = {e.id for e in things if pictures.person(e.look.noun or e.name)}
     roots = [e for e in things if rel.get(e.id, ("", "", ""))[1] not in ids]
-    # roots side by side; too wide: every size shrinks (never below MIN_H)
+    # roots side by side, as wide as they are tall (pictures are square)
     total = sum(hs[e.id] for e in roots) + GAP * max(0, len(roots) - 1)
-    room = W - 2 * MARGIN
-    if total > room:
-        f = room / total
-        hs = {i: max(v * f, MIN_H * H) for i, v in hs.items()}
-        total = sum(hs[e.id] for e in roots) + GAP * max(0, len(roots) - 1)
     boxes: dict[str, Box] = {}
     x = (W - total) / 2
     for e in roots:
@@ -345,8 +387,10 @@ def _layout(scene: SceneSpec, things: list[Entity], bd: Optional[Backdrop], top:
             cy = SURFACE
         elif water and kind in ("", "inside", "under", "at", "on"):
             cy = FLOOR - h / 2                   # under the ocean: in the water, resting on the sea floor
-        elif air:
-            cy = max(top + h / 2 + 10, min(H * 0.42, (ground or H) - h / 2 - 60)) if ground is not None else H / 2
+        elif air and ground is not None:         # in the air above the ground, under the title band
+            cy = max(top + h / 2 + 50, min(H * 0.45, ground - h / 2 - 80))
+        elif air:                                # sky, space: in the middle of the room
+            cy = top + (H - MARGIN - top) / 2
         else:
             cy = ground - h / 2                  # type: ignore[operator]
         boxes[e.id] = Box(x + h / 2, cy, h, h, 0, air)
@@ -360,18 +404,18 @@ def _layout(scene: SceneSpec, things: list[Entity], bd: Optional[Backdrop], top:
             if b not in boxes or (kind == "between" and c not in boxes):
                 left.append(e)
                 continue
-            boxes[e.id] = _place(kind, hs[e.id], boxes[b], boxes.get(c), ground)
+            boxes[e.id] = _place(kind, hs[e.id], boxes[b], boxes.get(c), ground, b in forms, b in people)
         if len(left) == len(pending):
             break
         pending = left
     for e in pending:  # unreachable (cycles are refused): beside the stage's middle
         boxes[e.id] = Box(W / 2, H / 2, hs[e.id], hs[e.id])
-    # a stack that rises above the top band comes down (an airborne root), or shrinks
+    # a stack that rises above the top band comes down (an airborne root)
     for e in roots:
         tree = [i for i in boxes if _root_of(i, rel, ids) == e.id]
         hi = min(boxes[i].top for i in tree)
-        if hi < top:
-            d = top - hi
+        if hi < top + 40:
+            d = top + 40 - hi
             for i in tree:
                 boxes[i].cy += d
     return boxes
@@ -385,24 +429,32 @@ def _root_of(i: str, rel: dict[str, tuple[str, str, str]], ids: set[str]) -> str
     return i
 
 
-def _place(kind: str, h: float, b: Box, c: Optional[Box], ground: Optional[float]) -> Box:
+def _place(kind: str, h: float, b: Box, c: Optional[Box], ground: Optional[float], in_form: bool = False,
+           person: bool = False) -> Box:
     w = h
     if kind in ("on", "on_top_of"):
-        return Box(b.cx, b.top - h / 2 + 0.06 * b.h, w, h, b.z + 1, b.air)
+        return Box(b.cx, b.top - h / 2 + ON_TOP * b.h, w, h, b.z + 1, b.air)
     if kind == "above":
         return Box(b.cx, b.top - h / 2 - GAP, w, h, b.z, True)
     if kind in ("under", "below"):
         if kind == "under" and not b.air and ground is not None:
-            return Box(b.cx, b.bottom - h / 2, w, h, b.z + 1)       # under the table: on the floor beneath it
+            # under a tree / a table: on the ground beneath it, a person a little off its middle, in front
+            return Box(b.cx + (0.18 * b.w if h > 0.5 * b.h else 0.0), b.bottom - h / 2, w, h, b.z + 1)
         cy = b.bottom + h / 2 + (GAP if kind == "below" else 10)
         if ground is not None:
             cy = min(cy, ground - h / 2)
         return Box(b.cx, cy, w, h, b.z, b.air)
-    if kind == "inside":  # in a vehicle / a box: in its upper middle (a window), smaller than it
+    if kind == "inside":
+        if in_form:  # inside a cube / a sphere: in its middle, the solid drawn see-through
+            h = min(h, 0.5 * b.h)
+            return Box(b.cx, b.cy, h, h, b.z + 1, b.air)
+        # in a vehicle / a box: in its upper middle (a window), smaller than it
         h = min(h, 0.45 * b.h)
         return Box(b.cx + 0.08 * b.w, b.cy - 0.12 * b.h, h, h, b.z + 1, b.air)
-    if kind in ("holding", "attached_to"):
-        return Box(b.cx + 0.4 * b.w, b.cy - 0.05 * b.h, w, h, b.z + 1, b.air)
+    if kind == "holding" and person:  # in a person's hand: their body is ~a third of the picture's square
+        return Box(b.cx + HAND[0] * b.w + 0.3 * h, b.cy + HAND[1] * b.h, w, h, b.z + 1, b.air)
+    if kind in ("holding", "attached_to"):  # in the hand: at its side, a little below the middle
+        return Box(b.cx + 0.25 * b.w + 0.3 * h, b.cy + 0.08 * b.h, w, h, b.z + 1, b.air)
     if kind == "part_of":
         return Box(b.cx, b.cy, w, h, b.z + 1, b.air)
     if kind == "in_front_of":
@@ -419,13 +471,58 @@ def _place(kind: str, h: float, b: Box, c: Optional[Box], ground: Optional[float
     return Box(b.cx + side * (b.w / 2 + gap + w / 2), b.bottom - h / 2, w, h, b.z, b.air)
 
 
+# where a part is on its whole (fractions of the whole's width and height from its centre); else its middle
+_PART_AT: dict[tuple[float, float], tuple[str, ...]] = {
+    (0.0, 0.42): ("foot", "feet", "leg", "legs", "wheel", "wheels", "tyre", "tire", "paw", "paws", "hoof", "hooves",
+                  "root", "roots", "base", "shoe", "shoes", "claw", "claws", "toe", "toes"),
+    (0.0, -0.38): ("head", "hair", "hat", "roof", "cap", "ear", "ears", "eye", "eyes", "nose", "mouth", "beak", "face",
+                   "horn", "horns", "crown", "leaf", "leaves", "top", "antenna", "chimney", "lid", "tip"),
+    (-0.4, 0.0): ("tail",),
+    (0.38, 0.05): ("hand", "hands", "arm", "arms", "finger", "fingers", "handle"),
+    (0.1, -0.08): ("wing", "wings", "fin", "fins", "window", "windows", "door", "engine", "heart", "chest", "body"),
+}
+PART_AT = {w: at for at, ws in _PART_AT.items() for w in ws}
+
+
+def _magnifier(scene: SceneSpec, boxes: dict[str, Box], rel: dict[str, tuple[str, str, str]], top: float,
+               flips: dict[str, bool]) -> Optional[Magnifier]:
+    """The first focused part: an inset on the side away from its whole, a leader line from where it is on it."""
+    part = next((i for i in scene.focus if rel.get(i, ("", "", ""))[0] == "part_of" and rel[i][1] in boxes), None)
+    if part is None:
+        return None
+    e = scene.get(part)
+    whole = boxes[rel[part][1]]
+    noun = (e.look.noun or e.name) if e is not None else ""
+    fx, fy = PART_AT.get(noun.lower(), PART_AT.get(pictures.assets.head(noun), (0.0, 0.0)))
+    if flips.get(rel[part][1]):
+        fx = -fx
+    at = (round(whole.cx + fx * whole.w, 1), round(whole.cy + fy * whole.h, 1))
+    r = round(0.24 * H, 1)
+    cx = W - MARGIN - r if whole.cx < W / 2 else MARGIN + r
+    return Magnifier(of=part, at=at, c=(round(cx, 1), round(top + r + 10, 1)), r=r)
+
+
 # ---- solve --------------------------------------------------------------------------------------------------------
 def _named(e: Entity, what: str) -> str:
     return f"{what} of the {e.label.text}" if e.label.source == "said" and e.label.text else what
 
 
-def solve(scene: SceneSpec, band: Callable[[int], float]) -> SceneSpec:
-    things = [e for e in scene.entities if e.kind == "thing" or e.kind in BODY_KINDS]
+def _as_things(scene: SceneSpec) -> SceneSpec:
+    """A solid in a canvas scene ("a sphere inside the cuboid", "a cone on the cylinder") is a thing drawn as a shaded
+    solid: placed by the canvas relations like any other thing."""
+    ents = [e.model_copy(update={"look": e.look.model_copy(update={"form": e.kind, "noun": e.look.noun or e.kind})})
+            if e.kind in SOLID_KINDS and e.look.form != e.kind and e.look.pick != "teacher" else e for e in scene.entities]
+    return scene.model_copy(update={"entities": ents})
+
+
+def band(n_derived: int) -> float:
+    """Where things may start: under the title, and under the readout card when there is one."""
+    return TOP + (34 + n_derived * 52 + 24 if n_derived else 0)
+
+
+def solve(scene: SceneSpec, _band: Optional[Callable[[int], float]] = None) -> SceneSpec:
+    scene = _as_things(scene)
+    things = [e for e in scene.entities if e.kind == "thing" or e.kind in BODY_KINDS or e.kind in SOLID_KINDS]
     bd = backdrop(scene)
     beh = {b.target: b for b in scene.behaviors if b.kind != "emit"}
     rel = _relations(scene)
@@ -433,12 +530,13 @@ def solve(scene: SceneSpec, band: Callable[[int], float]) -> SceneSpec:
     physics = {i: b for i, b in beh.items() if b.kind in ("fall", "throw", "launch", "bounce") + ALONG}
     plan = Plan()
     ground = bd.ground if bd is not None else None
-    boxes = _layout(scene, things, bd, MARGIN)
+    top = band(0)
+    boxes = _layout(scene, things, bd, top)
     plan.boxes = boxes
     ents = {e.id: e for e in things}
     for i, b in physics.items():
         if i in boxes:
-            plan.acts[i] = _motion_act(ents[i], b, boxes[i], ground, MARGIN)
+            plan.acts[i] = _motion_act(ents[i], b, boxes[i], ground, top)
     derived: list[Derived] = []
     for i, a in plan.acts.items():
         e = ents[i]
@@ -462,7 +560,8 @@ def solve(scene: SceneSpec, band: Callable[[int], float]) -> SceneSpec:
         if i in boxes and b.kind in ("follow", "chase"):
             plan.acts[i] = _follow_act(ents[i], b, boxes[i], plan)
     frames = _frames(scene, things, plan, rel)
-    hidden = {r.a for r in scene.relations if r.kind == "part_of"} - set(scene.focus)
+    hidden = {r.a for r in scene.relations if r.kind == "part_of"}  # a focused part: the magnifier
+    glass = {r.b for r in scene.relations if r.kind == "inside" and r.b in ents and ents[r.b].look.form}
     # a thing with another resting on / above / held by it has its name at its side (the one on top has the top)
     topped = {r.b for r in scene.relations if r.kind in ("on", "on_top_of", "above", "holding", "attached_to", "inside")
               and r.a in boxes}
@@ -478,14 +577,17 @@ def solve(scene: SceneSpec, band: Callable[[int], float]) -> SceneSpec:
                                                         and bx.cy < (bd.surface or 0) + bx.h) else None
         out.append(e.model_copy(update={"geom": Geom(
             shape="thing", c=(round(bx.cx, 1), round(bx.cy, 1)), r=round(bx.h / 2, 1),
-            wh=(round(bx.w, 1), round(bx.h, 1)), z=bx.z, hidden=e.id in hidden, flip=flip, ground=shadow,
+            wh=(round(bx.w, 1), round(bx.h, 1)), z=bx.z, hidden=e.id in hidden, glass=e.id in glass, flip=flip,
+            ground=shadow,
             label_at=(round(bx.cx - bx.w / 2 - 14, 1), round(bx.cy + 12, 1)) if e.id in topped
             else (round(bx.cx, 1), round(bx.top - 16, 1)))}))
     effects = [Effect(of=b.target, kind=b.text) for b in scene.behaviors  # type: ignore[arg-type]
                if b.kind == "emit" and b.target in boxes]
     effects += [Effect(of=b.target, kind=b.kind, dir=0.0 if _sign(ents[b.target]) > 0 else 180.0)  # type: ignore[arg-type]
                 for b in scene.behaviors if b.kind in ("push", "pull") and b.target in boxes]
-    stage = Stage(backdrop=bd, effects=effects, camera=camera(scene, boxes, frames))
+    flips = {e.id: bool(e.geom and e.geom.flip) for e in out}
+    stage = Stage(backdrop=bd, effects=effects, camera=camera(scene, boxes, frames, rel), size=(W, H),
+                  magnifier=_magnifier(scene, boxes, rel, top, flips))
     return scene.model_copy(update={"entities": out, "derived": derived, "stage": stage, "frames": frames})
 
 
@@ -552,11 +654,13 @@ def _rider(t: float, ca: Act, carrier_w: float) -> tuple[float, float]:
     return lean, slide
 
 
-def camera(scene: SceneSpec, boxes: dict[str, Box], frames: Optional[Frames]) -> Optional[tuple[float, float, float,
-                                                                                               float]]:
+def camera(scene: SceneSpec, boxes: dict[str, Box], frames: Optional[Frames],
+           rel: Optional[dict[str, tuple[str, str, str]]] = None) -> Optional[tuple[float, float, float, float]]:
     """The focused things' view box at their laid-out place, padded, at most MAX_ZOOM, the stage's aspect; None: all.
-    One focused thing that moves: the renderer keeps the box centred on it (the camera follows)."""
-    ids = [i for i in scene.focus if i in boxes]
+    One focused thing that moves: the renderer keeps the box centred on it (the camera follows). A focused part is
+    shown by the magnifier, not the camera."""
+    rel = rel or {}
+    ids = [i for i in scene.focus if i in boxes and rel.get(i, ("", "", ""))[0] != "part_of"]
     if not ids:
         return None
     xs0, ys0, xs1, ys1 = [], [], [], []

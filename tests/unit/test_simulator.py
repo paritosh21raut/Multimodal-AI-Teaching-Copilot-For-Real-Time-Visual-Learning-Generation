@@ -66,3 +66,29 @@ async def test_vad_mode_publishes_voice_during_utterances_and_silence_in_pauses(
     n_pause = int(2.5 / 0.2)
     assert not any(after[: n_pause - 1]) and all(after[n_pause + 1:])
     assert segs[1].start - segs[0].end == pytest.approx(2.5)
+
+
+@pytest.mark.parametrize("vad", [False, True])
+async def test_a_command_is_pressed_after_the_pause_not_with_the_line_before(vad):
+    # C1 live run: Imagine was pressed at once after "Back to the slides." and the end cue was ignored
+    import asyncio
+
+    from copilot.core.events import CommandReceived, TranscriptFinal
+
+    bus = EventBus()
+    seen = []
+    loop = asyncio.get_running_loop()
+
+    async def watch(e):
+        seen.append((type(e).__name__, loop.time()))
+
+    bus.subscribe("watch", watch, [TranscriptFinal, CommandReceived])
+    script = parse_script("Back to the slides.\n[pause 2]\n@command imagine_mode on=true\nA dog in a garden.\n"
+                          "[pause 1]\n@command imagine_mode on=false\n")
+    sim = LectureSimulator(bus, script, speed=10.0, vad=vad)
+    await sim.run()
+    await bus.drain()
+    kinds = [k for k, _ in seen]
+    assert kinds == ["TranscriptFinal", "CommandReceived", "TranscriptFinal", "CommandReceived"]
+    assert seen[1][1] - seen[0][1] >= 0.15      # the 2 s pause (at 10x) passed before the press
+    assert seen[3][1] - seen[2][1] >= 0.08      # the end press waits for the last line to be handled

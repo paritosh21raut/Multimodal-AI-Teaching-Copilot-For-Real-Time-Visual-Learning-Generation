@@ -101,20 +101,30 @@ props and their source (read only). `GET /api/scene/pictures?q=` lists icons for
   or a canvas action → `world:"canvas"`; old scenes keep their worlds.
 - Relations: `on_top_of under in_front_of behind near between(c) holding attached_to part_of at` + `on inside above
   below left_of right_of around` for things / bodies; a place takes `at inside under on on_top_of above below`. Parts:
-  `part_of` ≤ 4 per thing, `geom.hidden` until focused. Carried (`on on_top_of inside holding attached_to part_of`)
+  `part_of` ≤ 4 per thing; a focused part opens `stage.magnifier{of, at, c, r}` (an inset circle, a leader line to
+  `at` on the whole). A solid (cube ...) with a thing relation is a canvas `look.form`; one with a thing inside is
+  `geom.glass`. Carried (`on on_top_of inside holding attached_to part_of`)
   things move with b; loose riders (`on on_top_of inside`) lean ≤ 22° and slide when b brakes.
 - Actions (`behave`, target a thing or body, `b` for move_to follow chase orbit collide, `text` for emit
   `bubbles rings rays smoke waves sparks` / transform_into noun): fall throw bounce move fly drive walk slide roll
   carry push pull brake stop use `motion.py` kinematics (readouts only when every input is known); the rest are drawn.
   One motion + one emit per thing. `{"op":"unsafe"}`: the call's ops are dropped, the scene is put back.
-- Sizes: main ≥ 35 % of the stage height, nothing < 8 %, a carried thing ≤ 60 % of its carrier (inside ≤ 45 %).
+- Stage: the whole slide (`stage.size` 1920 × 1080, the title floats top left; other worlds keep 1100 × 740).
+- Sizes (test32): typical metres per noun (`scene/sizes.py`; a said size scales it), compressed ^0.55, the smallest ≥
+  0.2 of the biggest; the layout is scaled to fill the stage (≤ 84 %; moving along 60 %, thrown / falling / orbiting
+  42 %). One thing alone fills the slide; a boy holding a book: the book in his hand, ~⅓ his height.
 - Engine output: `geom{shape:"thing", c, wh, z, hidden, ground, flip}`, `Track.sa` (scale x, scale y, opacity per
-  sample), `stage.backdrop{type, name, ground, surface}` (types: plain sky space water mountain street nature indoors
-  beach desert snow), `stage.effects[{of, kind, dir}]`, `stage.camera` (focus: x y w h, ≤ 3×, stage aspect; one
+  sample), `stage.backdrop{type, name, ground, surface, photo}` (types: plain sky space water mountain street
+  nature indoors beach desert snow moon mars), `stage.effects[{of, kind, dir}]`, `stage.camera` (focus: x y w h, ≤ 3×, stage aspect; one
   moving focused thing: the renderer follows it; `focus ids:[]` zooms out).
 - Pictures (`scene.pictures`): teacher pick → cached `data/assets/pictures/<slug>.png` (`/scene-pic/`) → Fluent 3D
   emoji (`fluent3d.json`, MIT, fetched in a thread, re-encoded, atomic write) → icon → glyph; a shape noun → `look.form`
-  (shaded solid). `look.emoji / form / to_noun / to_icon / to_emoji`. Placeholder until a picture lands.
+  (shaded solid). `look.emoji / form / to_noun / to_icon / to_emoji`. Placeholder until a picture lands. A person
+  is a whole-body emoji posed by their action (standing / walking / running), never a photo.
+- Photos (C1 part 2, `scene/photos.py`, `images.scene_photos` fill | first | off): a noun with no 3D picture → V1
+  search → u2netp matte (one whole object: share, edges, ≤ 1 cut side, solid, one piece) → CLIP names it ahead of
+  distractors → `look.photo` (photo-<slug>.png); a place → a wide photo → `backdrop.photo` (drawn dimmed). Both in the
+  background, ≤ 6 per scene; none: the picture ladder stays. Render order: image → photo → emoji → icon → glyph.
 - Imagine Mode: `imagine_mode{on}` (Deck `imagine`); a canvas slide at once; lines pass `pictures.picturable` (0 tok),
   ≤ 3 per call; a canvas cue that does not refer to the open scene starts the next scene in the same mode; spoken end
   cues, new topics and the quiet timeout do not end it; End (or Back to slides) → one recap.

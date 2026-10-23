@@ -370,6 +370,15 @@ class App:
         self.images.attach()
         self.bus.subscribe("terminal_images", self._print_image, [ImageReady])
         print("[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background", flush=True)
+        mode = str(self.config.get("images", "scene_photos", "fill"))
+        scenes = getattr(self.presentation, "_scenes", None) if self.presentation is not None else None
+        if scenes is not None and mode != "off":  # F-016 C1 part 2: photo cutouts and place photos on the canvas
+            from copilot.scene.photos import Photos
+
+            scenes.photos = Photos(self.images.finder)
+            scenes.photo_first = mode == "first"
+            scenes.place_photos = bool(self.config.get("images", "scene_place_photos", True))
+            print(f"[INIT]  scene photos: {mode} (u2netp cutouts, CPU)", flush=True)
 
     async def _print_image(self, event: Event) -> None:
         if isinstance(event, ImageReady):
@@ -821,6 +830,12 @@ class App:
                 print(f"        presentation: {ps.slides} slides; planner ops {dict(ps.ops)}; "
                       f"revisions {ps.revisions}, corrections shown {ps.corrections_shown}, "
                       f"shown as said {ps.shown_as_said}", flush=True)
+                sc = self.presentation._scenes.stats
+                if sc.calls:  # F-016: scene calls, tokens, the line's end -> its first shape
+                    sh = sorted(sc.shape_s)
+                    p = (lambda q: f"{sh[min(len(sh) - 1, int(q * len(sh)))]:.2f} s" if sh else "-")
+                    print(f"        scenes: {sc.calls} calls, {sc.tokens} tokens, {sc.ops} ops, {sc.rejected} refused; "
+                          f"line -> first shape p50 {p(0.5)} p90 {p(0.9)}", flush=True)
                 if self.images is not None:
                     shown = sum(1 for sp in self.deck.slides if any(b.type == "image" for b in sp.blocks))
                     print(f"        images: {self.images.stats}; slides with an image {shown}/{len(self.deck.slides)}",

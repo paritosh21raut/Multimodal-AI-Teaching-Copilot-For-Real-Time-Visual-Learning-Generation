@@ -930,7 +930,7 @@ rect.sc-body.r-second, circle.sc-body.r-second { fill: var(--scene-second); stro
 .cv-form.r-accent .top { fill: color-mix(in srgb, var(--scene-accent) 60%, #ffffff); }
 .cv-form .shade { fill: #000000; opacity: 0.22; stroke: none; }
 .cv-form .hi { fill: #ffffff; opacity: 0.35; stroke: none; }
-.cv-name .sym { font-family: inherit; font-style: normal; font-weight: 650; font-size: 34px; }
+.cv-name .sym { font-family: inherit; font-style: normal; font-weight: 650; font-size: calc(36px * var(--cam-k, 1)); }
 .sc-ent.cv-dimmed { opacity: 0.28; transition: opacity 300ms; }
 .cv-fx circle, .cv-fx line { fill: none; stroke: var(--scene-accent); stroke-width: 3.5; }
 .cv-bubbles circle { stroke: var(--sim-water); }
@@ -940,3 +940,22 @@ rect.sc-body.r-second, circle.sc-body.r-second { fill: var(--scene-second); stro
 .cv-arrow line { stroke: var(--scene-accent); stroke-width: 7; stroke-linecap: round; }
 .cv-arrow polygon { fill: var(--scene-accent); }
 .scene-stage .sim-svg { overflow: hidden; }  /* F-016: a focused camera never draws outside the stage */
+/* F-016 (test32): a canvas scene is the whole slide; the title floats over its top left */
+.slide.layout-canvas { padding: 0; display: block; gap: 0; }
+.layout-canvas .canvas-stage { position: absolute; inset: 0; }
+.layout-canvas .canvas-stage .sim-stage, .sim-full .sim-stage.canvas { width: 100%; height: 100%; }
+.layout-canvas .canvas-head { position: absolute; left: 40px; top: 28px; z-index: 2; max-width: 62%; gap: 6px;
+  padding: 14px 28px 16px; border-radius: 20px; background: color-mix(in srgb, var(--bg) 80%, transparent);
+  backdrop-filter: blur(6px); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08); }
+.layout-canvas .slide-title { font-size: 52px; }
+.layout-canvas .crumb { font-size: 18px; }
+.cv-moon-ground { fill: var(--cv-moon); } .cv-moon-far { fill: var(--cv-moon-far); }
+.cv-mars-ground { fill: var(--cv-mars); } .cv-mars-far { fill: var(--cv-mars-far); } .cv-mars-sky { fill: var(--cv-mars-sky); }
+.cv-crater { fill: #000000; opacity: 0.14; }
+.cv-photo-dim { fill: var(--cv-dim); opacity: 0.5; }
+.cv-form.glass .base, .cv-form.glass .top { fill-opacity: 0.32; }
+.cv-form.glass .shade { opacity: 0.08; }
+.cv-mag-back { fill: var(--surface); }
+.cv-mag-ring { fill: none; stroke: var(--scene-accent); stroke-width: 7; }
+.cv-mag-spot { fill: none; stroke: var(--scene-accent); stroke-width: 6; }
+.cv-mag-lead { stroke: var(--scene-accent); stroke-width: 5; stroke-dasharray: 14 10; }

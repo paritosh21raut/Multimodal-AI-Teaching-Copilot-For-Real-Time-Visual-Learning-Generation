@@ -78,6 +78,60 @@ SCENES = [
          '{"op":"relate","kind":"left_of","a":"b1","b":"d1"}\n{"op":"behave","kind":"roll","target":"b1","dir":"west"}\n'
          '{"op":"behave","kind":"chase","target":"d1","b":"b1"}'),
     ], 5),
+    # test32 (2026-10-23): full size alone, realistic sizes together, solids in / on solids, the part magnifier
+    ("book_alone", "Imagination", False, [
+        ("Imagine you are reading a book.", '{"op":"add","id":"k1","kind":"thing","name":"book"}'),
+    ], 0),
+    ("boy_holding_book", "Imagination", False, [
+        ("Imagine a boy holding a book.",
+         '{"op":"add","id":"b1","kind":"thing","name":"boy"}\n{"op":"add","id":"k1","kind":"thing","name":"book"}\n'
+         '{"op":"relate","kind":"holding","a":"k1","b":"b1"}'),
+    ], 0),
+    ("reading_under_tree", "Imagination", False, [
+        ("Imagine you are reading a book under a tree.",
+         '{"op":"add","id":"t1","kind":"thing","name":"tree"}\n{"op":"add","id":"y1","kind":"thing","name":"you"}\n'
+         '{"op":"relate","kind":"under","a":"y1","b":"t1"}\n{"op":"add","id":"k1","kind":"thing","name":"book"}\n'
+         '{"op":"relate","kind":"holding","a":"k1","b":"y1"}\n{"op":"add","id":"g1","kind":"place","name":"park"}'),
+    ], 0),
+    ("stack_on_moon", "Imagination", False, [
+        ("Imagine a dog on the moon.",
+         '{"op":"add","id":"m0","kind":"place","name":"moon"}\n{"op":"add","id":"d1","kind":"thing","name":"dog"}'),
+        ("Imagine a cat on top of the dog.",
+         '{"op":"add","id":"c1","kind":"thing","name":"cat"}\n{"op":"relate","kind":"on_top_of","a":"c1","b":"d1"}'),
+        ("On the top of the cat, there's a rat.",
+         '{"op":"add","id":"r1","kind":"thing","name":"rat"}\n{"op":"relate","kind":"on_top_of","a":"r1","b":"c1"}'),
+        ("The dog is sitting on a man.",
+         '{"op":"add","id":"n1","kind":"thing","name":"man"}\n{"op":"relate","kind":"on_top_of","a":"d1","b":"n1"}'),
+    ], 0),
+    ("sphere_in_cuboid", "Shapes", False, [
+        ("Imagine a cuboid.", '{"op":"add","id":"k1","kind":"cuboid","name":"cuboid"}'),
+        ("Inside the cuboid is a sphere.",
+         '{"op":"add","id":"s1","kind":"sphere","name":"sphere"}\n{"op":"relate","kind":"inside","a":"s1","b":"k1"}'),
+    ], 0),
+    ("cone_on_cylinder", "Shapes", False, [
+        ("Imagine a cylinder.", '{"op":"add","id":"y1","kind":"cylinder","name":"cylinder"}'),
+        ("On the top of the cylinder you have a cone.",
+         '{"op":"add","id":"n1","kind":"cone","name":"cone"}\n{"op":"relate","kind":"on_top_of","a":"n1","b":"y1"}'),
+    ], 0),
+    ("rocket_to_sun", "Imagination", False, [
+        ("Imagine you are in a rocket going to the sun.",
+         '{"op":"add","id":"s0","kind":"place","name":"space"}\n{"op":"add","id":"r1","kind":"thing","name":"rocket"}\n'
+         '{"op":"add","id":"y1","kind":"thing","name":"you"}\n{"op":"relate","kind":"inside","a":"y1","b":"r1"}\n'
+         '{"op":"add","id":"u1","kind":"thing","name":"sun"}\n{"op":"behave","kind":"move_to","target":"r1","b":"u1"}'),
+    ], 4),
+    ("bird_feet_magnifier", "Imagination", False, [
+        ("Imagine a bird on a tree.",
+         '{"op":"add","id":"t1","kind":"thing","name":"tree"}\n{"op":"add","id":"b1","kind":"thing","name":"bird"}\n'
+         '{"op":"relate","kind":"on_top_of","a":"b1","b":"t1"}'),
+        ("Imagine the bird with her feet.",
+         '{"op":"add","id":"f1","kind":"thing","name":"feet"}\n{"op":"relate","kind":"part_of","a":"f1","b":"b1"}\n'
+         '{"op":"focus","ids":["f1"]}'),
+    ], 0),
+    ("boy_basketball", "Imagination", False, [
+        ("Imagine a boy playing basketball.",
+         '{"op":"add","id":"b1","kind":"thing","name":"boy"}\n{"op":"add","id":"a1","kind":"ball","name":"basketball"}\n'
+         '{"op":"relate","kind":"holding","a":"a1","b":"b1"}'),
+    ], 0),
     ("sun_rays_and_spin", "Imagination", False, [
         ("Imagine the sun in space giving out light, and a planet spinning.",
          '{"op":"add","id":"s0","kind":"place","name":"space"}\n{"op":"add","id":"s1","kind":"thing","name":"sun","size":"large"}\n'

@@ -359,7 +359,7 @@ class PresentationEngine:
         """Lecture ending: put slides still waiting for the dwell time into the deck; nothing provisional stays."""
         async with self._lock:
             if self._sims.collecting:  # F-014 S1: the lecture ended during a simulation: its recap still comes
-                await self._sims.end("the lecture ended")
+                await self._sims.end("the lecture ended", back=False)
             while self._pending:
                 await self._add_to_deck(self._pending.pop(0))
             ld, self._live_def = self._live_def, None
@@ -655,7 +655,7 @@ class PresentationEngine:
 
     async def _force_new(self) -> None:
         self.stats.ops["force_new"] += 1
-        if self._sims.collecting and await self._sims.end("the teacher's New slide"):
+        if self._sims.collecting and await self._sims.end("the teacher's New slide", back=False):
             return  # the recap is the new slide
         if self._pending:  # the teacher wants the next slide now
             while self._pending:
@@ -710,7 +710,8 @@ class PresentationEngine:
             m = self._sims.mode
             if not (ev.announce and self.s.cues) or self._sims.about_open(ev.announce) or m is not None and m.imagine:
                 return  # (F-016: Imagine Mode ends only by the teacher's End)
-            await self._sims.end(f"a new topic was announced ({ev.announce!r})")  # ... unless a new topic is announced
+            # ... unless a new topic is announced
+            await self._sims.end(f"a new topic was announced ({ev.announce!r})", back=False)
         if self.s.cues:
             if ev.announce:
                 await self._on_announce(ev)

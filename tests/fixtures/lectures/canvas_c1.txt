@@ -1,0 +1,45 @@
+# F-016 C1 live check (~2.5 minutes). Expect: each scene on the whole slide, the title floating top left; a boy clearly
+# taller than the book in his hand; a dog on a grey moon with a cat on it (one dog, the same scene); "back to the slide"
+# (singular) ends it; a sphere inside a see-through cuboid; you inside a rocket in space and the sun; a bird on a tree
+# and its feet in a magnifier; the bus brakes and you lean forward, then the camera on you; Imagine Mode (pressed by
+# @command): a laptop on a flying airplane, a fish near a bicycle under the ocean, then End -> one recap.
+@setup subject=Physics grade=9 topic="Imagination"
+
+Today we will imagine a few scenes.
+[pause 1]
+Imagine a boy holding a book.
+[pause 3]
+Imagine a dog on the moon.
+[pause 3]
+Now a cat sits on top of the dog.
+[pause 3]
+Let's get back to the slide.
+[pause 1.5]
+Imagine a cuboid with a sphere inside it.
+[pause 3]
+Back to the slides.
+[pause 1.5]
+Imagine you are in a rocket going to the sun.
+[pause 3.5]
+Imagine a bird on a tree.
+[pause 3]
+Look at its feet.
+[pause 3]
+Back to the slides.
+[pause 1.5]
+Imagine you're on a bus and it brakes.
+[pause 3.5]
+Look at the person inside.
+[pause 3]
+Back to the slides.
+[pause 1.5]
+@command imagine_mode on=true
+A laptop is flying on top of an airplane.
+[pause 3]
+So what do you think?
+[pause 2]
+A fish swims under the ocean near a bicycle.
+[pause 3.5]
+@command imagine_mode on=false
+[pause 1]
+That is how imagination helps us picture physics.

@@ -70,7 +70,7 @@ _END_CUE = re.compile(
     r"\b(?:get|go|come|move|head|switch|turn|going|getting|coming)\s+back\s+to\s+(?:the\s+|our\s+)?"
     r"(?:slides?|notes|lecture|theory|board|presentation|topic|lesson)\b"
     r"|\b(?:end|close|stop|exit|finish|leave|quit)\s+(?:the|this|our)\s+(?:simulation|animation|demo(?:nstration)?)\b"
-    r"|^\W*(?:ok(?:ay)?\W+|so\W+|now\W+|right\W+)*back to (?:the\s+)?(?:slides|notes|lecture|theory)\b"
+    r"|^\W*(?:ok(?:ay)?\W+|so\W+|now\W+|right\W+)*back to (?:the\s+)?(?:slides?|notes|lecture|theory)\b"
     r"|\b(?:enough|that's (?:it|all)) (?:with|for|of) (?:the|this) simulation\b"
     r"|\breturn to (?:the\s+)?(?:slides|notes|lecture)\b", re.IGNORECASE)
 _END_LATER = re.compile(r"\b(?:later|afterwards|after (?:this|that|the break)|in a (?:minute|moment|bit|while)|"

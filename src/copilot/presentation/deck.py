@@ -109,6 +109,15 @@ class Deck:
             await self._publish_state()
         return added
 
+    async def show(self, slide_id: str) -> None:
+        """Back to an earlier slide while following (a simulation ended with nothing to recap): it is on screen and
+        the next new slide is shown as usual. Not following (the teacher navigated): nothing moves."""
+        if slide_id in self._slides and self.following and self.live_id != slide_id:
+            self.live_id = slide_id
+            self.zoom = None
+            self.sim_full = None
+            await self._publish_state()
+
     async def update(self, spec: SlideSpec) -> SlideSpec:
         old = self._slides.get(spec.id)
         if old is None:

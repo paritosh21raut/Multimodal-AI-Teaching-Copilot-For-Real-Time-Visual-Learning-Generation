@@ -85,6 +85,7 @@ class Look(_Model):
     glyph: str = ""                           # path data on the 24 x 24 grid (scene.assets.clean)
     image: str = ""                           # the teacher's image (/media/<id>.jpg)
     emoji: str = ""                           # F-016: a Fluent 3D picture, cached (/scene-pic/<slug>.png)
+    photo: str = ""                           # F-016 C1b: a photo cutout (background removed), cached (/scene-pic/)
     form: str = ""                            # F-016: a shape noun drawn as a shaded solid (cube, sphere, ...)
     to_noun: str = ""                         # transform_into: the noun it becomes and that noun's picture
     to_icon: str = ""
@@ -93,7 +94,7 @@ class Look(_Model):
 
 
 class Geom(_Model):
-    """Engine output in stage px (1100 x 740, y down): what the renderer draws for one entity."""
+    """Engine output in stage px (1100 x 740, y down; a canvas: Stage.size): what the renderer draws for one entity."""
     shape: Literal["rect", "circle", "poly", "seg", "path", "dot", "body", "solid", "thing"]
     pts: list[tuple[float, float]] = Field(default_factory=list)  # poly / seg corners, rect: [x, y] + [w, h]
     c: Optional[tuple[float, float]] = None   # circle / dot / body centre
@@ -107,7 +108,8 @@ class Geom(_Model):
     dims: list[tuple[float, float, str]] = Field(default_factory=list)  # said sizes printed on the shape ("4 cm")
     wh: Optional[tuple[float, float]] = None  # a thing's picture box (w, h) centred on c
     z: int = 0                                # drawing order (behind < 0 < in front)
-    hidden: bool = False                      # a part, drawn only when it is focused
+    hidden: bool = False                      # a part: not drawn on the stage (a focused part: the magnifier)
+    glass: bool = False                       # a shape with something inside it: drawn see-through
     ground: Optional[float] = None            # y of the ground under it (its shadow), None: no shadow
 
 
@@ -192,14 +194,26 @@ class Stage(_Model):
     backdrop: Optional["Backdrop"] = None     # F-016 the place
     camera: Optional[tuple[float, float, float, float]] = None  # F-016 focus: the view box (x, y, w, h), None = all
     effects: list["Effect"] = Field(default_factory=list)
+    size: Optional[tuple[float, float]] = None  # F-016 the stage's own size (a canvas fills the slide), None: 1100 x 740
+    magnifier: Optional["Magnifier"] = None   # F-016 a focused part, shown enlarged in an inset
 
 
 class Backdrop(_Model):
     """F-016: the place drawn behind a canvas scene (an illustrated backdrop by its type)."""
-    type: Literal["plain", "sky", "space", "water", "mountain", "street", "nature", "indoors", "beach", "desert", "snow"]
+    type: Literal["plain", "sky", "space", "water", "mountain", "street", "nature", "indoors", "beach", "desert", "snow",
+                  "moon", "mars"]
     name: str = ""                            # the said place ("" = not printed)
+    photo: str = ""                           # C1b: a landscape photo of the place (/media/<id>.jpg), drawn dimmed
     ground: Optional[float] = None            # y of the ground / sea floor (None: no ground, e.g. sky, space)
     surface: Optional[float] = None           # y of the water's surface (water)
+
+
+class Magnifier(_Model):
+    """F-016: a focused part (part_of) in an inset circle, a leader line from where it is on its whole."""
+    of: str                                   # the part's id
+    at: tuple[float, float]                   # where the part is on its whole (stage px)
+    c: tuple[float, float]                    # the inset's centre
+    r: float                                  # the inset's radius
 
 
 class Effect(_Model):

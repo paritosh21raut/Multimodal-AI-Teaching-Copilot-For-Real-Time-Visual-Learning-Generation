@@ -1,0 +1,19 @@
+{
+  "name": "c1-sim",
+  "source": "web",
+  "note": "F-016 C1 part 2 live fixture canvas_c1.txt",
+  "session_id": "20261023-131003-773c",
+  "date": "2026-10-23 13:12",
+  "title": "",
+  "minutes": 1.5,
+  "utterances": 18,
+  "slides": 12,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": [
+    "--simulate",
+    "tests/fixtures/lectures/canvas_c1.txt",
+    "--no-wait",
+    "--no-open"
+  ]
+}

@@ -10,7 +10,7 @@ import { H, W, Readout } from "../sims/draw.js";
 import { placeLabels } from "../sims/layout.js";
 import { clockOf, simTime } from "../sims/runtime.js";
 import { Shape, StageParts, Words } from "./kinds.js";
-import { Backdrop, Effect } from "./canvas.js";
+import { Backdrop, Effect, Magnifier, CANVAS } from "./canvas.js";
 
 const TWEEN_MS = 280;
 const CAMERA_MS = 650;  // F-016 focus: the view eases to the focused things
@@ -26,7 +26,7 @@ export function fmt(x) {
   return s.includes(".") ? s.replace(/0+$/, "").replace(/\.$/, "") : s;
 }
 // what a body is drawn as (tests and screenshots read it): its picture, else its kind's own drawing
-const picOf = (e) => { const l = e.look || {}; return l.image ? "image" : l.emoji ? "emoji" : l.form ? "form:" + l.form : l.icon ? "icon:" + l.icon : l.glyph ? "glyph" : "kind"; };
+const picOf = (e) => { const l = e.look || {}; return l.image ? "image" : l.photo ? "photo" : l.emoji ? "emoji" : l.form ? "form:" + l.form : l.icon ? "icon:" + l.icon : l.glyph ? "glyph" : "kind"; };
 const reducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // a geometry's numbers as one flat list (same shape and size: tweenable)
@@ -72,7 +72,8 @@ export function SceneStage({ b, full, onClick }) {
   const s = st.current;
   const svgRef = useRef(null);
   const [, setFrame] = useState(0);
-  useLayoutEffect(() => placeLabels(svgRef.current));
+  const size = useRef([W, H]);
+  useLayoutEffect(() => placeLabels(svgRef.current, size.current));
   const clock = clockOf(b.id, scene.playback);
 
   // a changed geometry starts a tween from what is drawn now
@@ -127,14 +128,17 @@ export function SceneStage({ b, full, onClick }) {
     .sort((a, b) => ((a.g && a.g.z) || 0) - ((b.g && b.g.z) || 0));
   const umb = scene.stage.umbrella;
   const canvas = scene.world === "canvas";
+  // F-016: a canvas is the whole slide (Python's stage size, 1920 x 1080), drawn 1:1; the other worlds 1100 x 740
+  const [SW, SH] = canvas ? scene.stage.size || CANVAS : [W, H];
+  size.current = [SW, SH];
   const dimmed = canvas && focus.size > 0;
-  let target = scene.stage.camera || [0, 0, W, H];
+  let target = scene.stage.camera || [0, 0, SW, SH];
   // one focused thing that moves: the camera follows it (Python sized the box at its laid-out place)
   const fid = scene.stage.camera && focus.size === 1 ? [...focus][0] : null;
   const fe = fid && scene.entities.find((x) => x.id === fid);
   if (fe && fe.geom && tracks[fid]) {
     const [x, y, w, h] = target, dx = tracks[fid].x - fe.geom.c[0], dy = tracks[fid].y - fe.geom.c[1];
-    target = [Math.min(Math.max(x + dx, 0), W - w), Math.min(Math.max(y + dy, 0), H - h), w, h];
+    target = [Math.min(Math.max(x + dx, 0), SW - w), Math.min(Math.max(y + dy, 0), SH - h), w, h];
   }
   const following = !!(fe && tracks[fid]);
   if (!s.cam || (!following && JSON.stringify(s.cam.to) !== JSON.stringify(target))
@@ -146,20 +150,24 @@ export function SceneStage({ b, full, onClick }) {
   const ck = still ? 1 : Math.min(1, (n - s.cam.start) / CAMERA_MS);
   s.cam.now = s.cam.from.map((v, i) => v + (s.cam.to[i] - v) * ease(ck));
   const fxOf = (id) => (scene.stage.effects || []).filter((f) => f.of === id);
-  return html`<div class=${"sim-stage scene-stage" + (full ? " full" : "") + (onClick ? " clickable" : "")} onClick=${onClick}
+  const zoom = canvas ? s.cam.now[2] / SW : 1;  // names keep their size on screen while the camera zooms in
+  const mag = canvas && scene.stage.magnifier;
+  const magE = mag && scene.entities.find((x) => x.id === mag.of);
+  return html`<div class=${"sim-stage scene-stage" + (canvas ? " canvas" : "") + (full ? " full" : "") + (onClick ? " clickable" : "")} onClick=${onClick}
       title=${onClick ? "Show the scene full screen" : undefined}>
     <svg ref=${svgRef} class="sim-svg" viewBox=${canvas ? s.cam.now.map((v) => v.toFixed(1)).join(" ") : `0 0 ${W} ${H}`}
-      preserveAspectRatio="xMidYMid meet" role="img"
+      preserveAspectRatio=${canvas ? "xMidYMid slice" : "xMidYMid meet"} role="img" style=${canvas ? { "--cam-k": zoom.toFixed(3) } : undefined}
       aria-label=${scene.title} data-template="scene" data-world=${scene.world} data-rev=${scene.rev}
       data-state=${still ? "still" : scene.playback.state} data-t=${t.toFixed(3)} data-camera=${scene.stage.camera ? "focus" : "all"}>
-      <${Backdrop} bd=${scene.stage.backdrop} t=${t} />
+      <${Backdrop} bd=${scene.stage.backdrop} t=${t} W=${SW} H=${SH} />
       <${StageParts} stage=${scene.stage} t=${t} />
       ${drawn.map(({ e, g }) => g && html`<g key=${e.id} class=${"sc-ent" + (dimmed && !focus.has(e.id) ? " cv-dimmed" : "")} data-id=${e.id} data-kind=${e.kind} data-pic=${picOf(e)}>
         <${Shape} e=${e} g=${g} pose=${tracks[e.id]} focus=${focus.has(e.id)} umbrella=${umb && umb[0] === e.id ? umb[1] : null} />
         ${fxOf(e.id).map((fx, i) => html`<${Effect} key=${"fx" + i} fx=${fx} g=${g} pose=${tracks[e.id] || { x: g.c[0], y: g.c[1] }} t=${t} />`)}</g>`)}
       ${drawn.map(({ e, g }) => g && html`<g key=${"w-" + e.id} class=${"sc-ent sc-words" + (dimmed && !focus.has(e.id) ? " cv-dimmed" : "")}><${Words} e=${e} g=${g} pose=${tracks[e.id]} umbrella=${umb && umb[0] === e.id ? umb[1] : null} /></g>`)}
-      ${rows.length > 0 && html`<g transform=${canvas ? `translate(${s.cam.now[0]} ${s.cam.now[1]}) scale(${s.cam.now[2] / W})` : undefined}>
-        <${Readout} sim=${{ derived: rows }} /></g>`}
+      ${magE && html`<${Magnifier} m=${mag} e=${magE} />`}
+      ${rows.length > 0 && html`<g transform=${canvas ? `translate(${s.cam.now[0]} ${s.cam.now[1]}) scale(${zoom})` : undefined}>
+        ${canvas ? html`<${Readout} sim=${{ derived: rows }} x=${48} y=${150} />` : html`<${Readout} sim=${{ derived: rows }} />`}</g>`}
     </svg>
   </div>`;
 }
