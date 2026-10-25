@@ -73,9 +73,10 @@ export const PROPS = {
       R(-w * 0.3, h * 0.3 - 0.04, w * 0.3, h * 0.3 + 0.02, '#B8A88E')]; } },
   desk: { draw: (w, h) => [R(-w / 2 + 0.05, 0, -w / 2 + 0.1, h - 0.05, '#8E5B3A'), R(w / 2 - 0.1, 0, w / 2 - 0.05, h - 0.05, '#8E5B3A'),
     R(w / 2 - 0.45, h * 0.55, w / 2 - 0.08, h - 0.05, '#A06B45'), R(-w / 2, h - 0.05, w / 2, h, '#B07A4F', 0.02)] },
-  chair: { draw: (w, h, st) => { const s = st.seat_h || h * 0.52, c = '#8E5B3A';
-    return [R(-w / 2 + 0.02, 0, -w / 2 + 0.06, s, shade(c, 0.8)), R(w / 2 - 0.06, 0, w / 2 - 0.02, s, shade(c, 0.8)),
-      R(-w / 2, s - 0.05, w / 2, s, c, 0.02), R(-w / 2, s, -w / 2 + 0.05, h, c, 0.02), R(-w / 2, h - 0.12, -w / 2 + 0.05, h - 0.02, shade(c, 1.15))]; } },
+  // the backrest is 0.11 w wide: its inner face is the anchor seat_back (-0.39 w), where a sitter's hips go
+  chair: { draw: (w, h, st) => { const s = st.seat_h || h * 0.52, c = '#8E5B3A', bp = w * 0.11, lg = w * 0.09;
+    return [R(-w / 2 + lg * 0.3, 0, -w / 2 + lg * 1.3, s, shade(c, 0.8)), R(w / 2 - lg * 1.3, 0, w / 2 - lg * 0.3, s, shade(c, 0.8)),
+      R(-w / 2, s - 0.05, w / 2, s, c, 0.02), R(-w / 2, s, -w / 2 + bp, h, c, 0.02), R(-w / 2 - 0.01, h - 0.16, -w / 2 + bp + 0.01, h - 0.02, shade(c, 1.15), 0.02)]; } },
   bulb: { dynamic: true, draw: (w, h, st, ctx) => { const on = !!st.on, g = 0.85 + 0.15 * Math.sin((ctx.t || 0) * 5);
     return [...(on ? [C(0, h * 0.62, w * 1.4 * g, '#FFE27A', { opacity: '0.35' })] : []), C(0, h * 0.62, w / 2, on ? '#FFF3B0' : '#EDEFF2'),
       Open([[-w * 0.2, h * 0.42], [-w * 0.1, h * 0.7], [0, h * 0.42], [w * 0.1, h * 0.7], [w * 0.2, h * 0.42]], w * 0.05, on ? '#E08A00' : '#9AA0A6'),

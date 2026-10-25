@@ -100,7 +100,7 @@
    },
    "vec": [-125, 0],
    "role": "friction",
-   "label": "f"
+   "label": "f_r"
   },
   {
    "kind": "arrow",

@@ -79,20 +79,33 @@ class Scenes:
         return x + d * q[0] * self.h(who), q[1] * self.h(who)
 
     def lap(self, fr, who: str, mirror: bool = False):
-        """The socket `lap` in the figure's frame (metres): the thighs' underside halfway from hip to knee; the thigh
-        half-width as web/stage/people.js draws it (0.044 x limb scale x height)."""
+        """The socket `lap` in the figure's frame (metres): halfway from hip to knee, at the thigh's lowest point; the
+        thigh half-width as web/stage/people.js draws it (0.044 at the hip, 0.032 at the knee, x limb scale x height)."""
         j, h, c = self.m.ji, self.h(who), self.cast[who]
         side = "l" if fr[j["thigh_l"]][1] < fr[j["thigh_r"]][1] else "r"
         hip, knee = fr[j["thigh_" + side]], fr[j["calf_" + side]]
-        lw = 1.22 * c.get("build", 1) * (0.9 if c["child"] else 1)
-        return (-1 if mirror else 1) * (hip[0] + knee[0]) / 2 * h, min(hip[1], knee[1]) * h - 0.044 * lw * h
+        lw = 1.22 * (c.get("build") or 1) * (0.9 if c["child"] else 1)
+        return (-1 if mirror else 1) * (hip[0] + knee[0]) / 2 * h, min(hip[1] * h - 0.044 * lw * h, knee[1] * h - 0.032 * lw * h)
 
-    def reach(self, clip: str, who: str, y: float, side: str = "r", mirror: bool = False, rel=None, frac: float = 0.95) -> float:
+    def leaned(self, fr, lean: float):
+        """The frame with the body above the shins turned back by `lean` degrees about the feet (as people.js `lean`;
+        facing +x, so back is -x). Only the upper body is used here (the knees are re-solved in the browser)."""
+        j = self.m.ji
+        fa, fb = fr[j["foot_l"]], fr[j["foot_r"]]
+        px, py = (fa[0] + fb[0]) / 2, min(fa[1], fb[1])
+        c, s = math.cos(math.radians(lean)), math.sin(math.radians(lean))
+        shin = {j[n] for n in ("calf_l", "foot_l", "ball_l", "calf_r", "foot_r", "ball_r")}
+        return [q if i in shin else [px + (q[0] - px) * c - (q[1] - py) * s, py + (q[0] - px) * s + (q[1] - py) * c, q[2]]
+                for i, q in enumerate(fr)]
+
+    def reach(self, clip: str, who: str, y: float, side: str = "r", mirror: bool = False, rel=None, frac: float = 0.95,
+              lean: float = 0.0) -> float:
         """The furthest forward x (metres, the figure facing +x) a hand reaches at height y in every frame of the clip,
         measured from rel(frame) (default the origin): an IK target there is always reachable (the hand lands on it)."""
         h, j = self.h(who), self.m.ji
         best = math.inf
         for fr in self.m.clips[clip]["frames"]:
+            fr = self.leaned(fr, lean) if lean else fr
             ox, oy = rel(fr) if rel else (0.0, 0.0)
             sh, el, pm = fr[j["upperarm_" + side]], fr[j["lowerarm_" + side]], self.m.palm(fr, side)
             arm = (math.dist(sh[:2], el[:2]) + math.dist(el[:2], pm)) * h * frac
@@ -125,7 +138,7 @@ class Scenes:
             "tracks": tracks,
             "overlays": [
                 {"kind": "arrow", "at": {"entity": "box", "anchor": "face_l", "dx": 0.03}, "vec": [150, 0], "role": "applied", "label": "F"},
-                {"kind": "arrow", "at": {"entity": "box", "anchor": "bottom", "dx": 0.12, "dy": 0.04}, "vec": [-125, 0], "role": "friction", "label": "f"},
+                {"kind": "arrow", "at": {"entity": "box", "anchor": "bottom", "dx": 0.12, "dy": 0.04}, "vec": [-125, 0], "role": "friction", "label": "f_r"},
                 {"kind": "arrow", "at": {"entity": "box", "anchor": "top", "dx": -0.2, "dy": 0.16}, "vec": [150, 0], "role": "velocity", "label": "v"},
             ],
             "frame": view(250, 0.2, 820), "keyframes": [r(period * 0.15), r(period * 0.5), r(period * 0.85)],
@@ -167,7 +180,7 @@ class Scenes:
         t_walk = (stop - x0) / v
         tc = self.t_of(put, self.c[put]["events"]["contact"])
         t_let = t_walk + tc
-        bw, bh, off = 0.5, 0.4, (0.1, 0.02)
+        bw, bh, off = 0.5, 0.4, (0.12, 0.17)  # the hands under the bottom edge (the near one drawn in front)
         pr, pl = self.palm(put, tc, "r", stop, who, loop=False), self.palm(put, tc, "l", stop, who, loop=False)
         bxm, bym = (pr[0] + pl[0]) / 2 + off[0], (pr[1] + pl[1]) / 2 + off[1]
         top = bym - bh / 2  # the table top is where the clip's hands put the box down
@@ -192,13 +205,18 @@ class Scenes:
 
     # ---------- 4 tug of war ----------
     def tug(self):
-        # the rope drifts left at a steady speed; the winning (left) team steps back with it, feet locked; the losing
-        # team digs in (the same clip, unlocked) and is dragged: its feet skid, as a losing team's do
-        ry, rate = 1.0, 0.35
+        # everyone faces the rope and leans back (a walk turned back about the feet: feet ahead, knees toward the rope).
+        # The rope drifts left; the winning (left) team walks backwards with it (the walk reversed, feet locked); the
+        # losing team digs in mid-stride and is dragged: its feet skid, as a losing team's do. (The reference's mirrored
+        # push bent the knees away from the rope.)
+        ry, vr, lean, clip = 0.95, 0.2, 30, "Walk_Loop"
         team = [("man", -1.0), ("man3", -1.9), ("woman3", -2.8), ("man2", 1.0), ("woman", 1.9), ("woman2", 2.8)]
-        period = self.whole("Push_Loop", 9.0, rate)
-        v = {w: self.stride("Push_Loop", w) * rate for w, _ in team}
-        vr = min(v[w] for w, off in team if off < 0)  # the rope (and the left team) at the slowest winner's step
+        period = 7.5
+        dur, j, cont = self.c[clip]["dur"], self.m.ji, self.c[clip]["contact"]
+        frames = self.m.clips[clip]["frames"]
+        # the losers' braced stance: the widest frame with both feet planted (no foot hangs in the air)
+        brace = max((i for i in range(len(frames)) if cont["l"][i] != "0" and cont["r"][i] != "0"),
+                    key=lambda i: abs(frames[i][j["foot_l"]][0] - frames[i][j["foot_r"]][0]))
         ts = steps(0, period, 1 / 12)
         c = [(t, -vr * t) for t in ts]
         ents = [{"id": "rope", "draw": "rope", "xform": {"y": r(ry - 0.025), "size": [7.2, 0.05]}, "state": {"marker": True}}]
@@ -209,11 +227,11 @@ class Scenes:
             ents.append({"id": pid, "draw": f"cast:{who}", "xform": {"dir": d}})
             tracks.append({"id": pid, "kind": "path", "samples": [[r(t), r(x + off), 0] for t, x in c]})
             win = off < 0
-            tracks.append({"id": pid, "kind": "clip", "clip": "Push_Loop", "mirror": True, "loop": True, "t0": 0,
-                           "rate": r(rate * vr / v[who] if win else rate), "lock": win, "t_offset": r(i * 0.6)})
-            # the grips: as far forward as the leaning-back (mirrored push) arms reach in every frame (the reference's
-            # fixed 0.62 / 0.48 m were out of reach, so its hands fell short of the rope)
-            for hand, k in (("r", self.reach("Push_Loop", who, ry, "r", True)), ("l", self.reach("Push_Loop", who, ry, "l", True, frac=0.85))):
+            tracks.append({"id": pid, "kind": "clip", "clip": clip, "loop": True, "t0": 0, "lean": lean,
+                           "rate": r(-vr / self.stride(clip, who)) if win else 0, "lock": win,
+                           "t_offset": r(dur * (i * 0.37 % 1) if win else self.t_of(clip, brace))})
+            # the grips: as far forward as the leaning arms reach in every frame (the hands land on the rope)
+            for hand, k in (("r", self.reach(clip, who, ry, "r", lean=lean)), ("l", self.reach(clip, who, ry, "l", frac=0.85, lean=lean))):
                 tracks.append({"id": pid, "kind": "ik", "hand": hand, "target": {"entity": "rope", "anchor": "centre", "dx": r(off + d * k)}})
         return {
             "caption": "Tug of war: the left team pulls harder, so the rope moves left.", "backdrop": {"id": "outdoor"}, "period": period,

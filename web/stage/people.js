@@ -41,6 +41,19 @@ export function pose(fr, at, L, ik = {}, lock = false) {
   const JI = joints(), h = at.h, d = at.dir || 1, th = ((at.rot || 0) * Math.PI) / 180, c = Math.cos(th), s = Math.sin(th);
   const mir = fr.mirror ? -1 : 1;
   const local = fr.map((q) => [d * q[0] * h, q[1] * h]);
+  // lean (deg, + = back): the body above the shins turns about the feet, the feet stay planted and the knees re-bend
+  // on their own side (a tug-of-war stance from a walk: feet ahead, knees toward the rope, the torso back)
+  if (at.lean) {
+    const fa = local[JI.foot_l], fb = local[JI.foot_r], pv = [(fa[0] + fb[0]) / 2, Math.min(fa[1], fb[1])];
+    const ph = (d * at.lean * Math.PI) / 180, cs = Math.cos(ph), sn = Math.sin(ph), old = local.map((q) => q.slice());
+    const shin = new Set(['calf_l', 'foot_l', 'ball_l', 'calf_r', 'foot_r', 'ball_r'].map((n) => JI[n]));
+    local.forEach((q, i) => { if (!shin.has(i)) { const x = q[0] - pv[0], y = q[1] - pv[1]; local[i] = [pv[0] + x * cs - y * sn, pv[1] + x * sn + y * cs]; } });
+    for (const side of ['l', 'r']) {
+      const hp = old[JI['thigh_' + side]], kn = old[JI['calf_' + side]], an = old[JI['foot_' + side]];
+      [local[JI['calf_' + side]]] = ik2(local[JI['thigh_' + side]], an, Math.hypot(kn[0] - hp[0], kn[1] - hp[1]), Math.hypot(an[0] - kn[0], an[1] - kn[1]),
+        [kn[0] - (hp[0] + an[0]) / 2, kn[1] - (hp[1] + an[1]) / 2]);
+    }
+  }
   const lk = lock ? lockAt(fr.clip, fr) : null;
   const W = (p) => [at.x + p[0] * c - p[1] * s, (at.y || 0) + p[0] * s + p[1] * c];
   const J = local.map(W);
@@ -73,15 +86,18 @@ export function pose(fr, at, L, ik = {}, lock = false) {
   const side = (fr[JI.thigh_l][1] < fr[JI.thigh_r][1]) ? 'l' : 'r';
   // lap: the thighs' underside, halfway from hip to knee, in the figure's own frame (then placed like the joints)
   const lhip = local[JI['thigh_' + side]], lknee = local[JI['calf_' + side]];
-  const lapLocal = [(lhip[0] + lknee[0]) / 2, Math.min(lhip[1], lknee[1]) - thighHalf(L, h)];
-  const sp3 = local[JI.spine_03];
+  // the thigh tapers (half-width 0.044 at the hip, 0.032 at the knee, x limb scale x height): its lowest point
+  const lapLocal = [(lhip[0] + lknee[0]) / 2, Math.min(lhip[1] - thighHalf(L, h), lknee[1] - thighHalf(L, h) * 0.032 / 0.044)];
+  const sp3 = local[JI.spine_03], pl = local[JI.pelvis];
+  // hips: the seat's back edge of a sitting figure (behind the pelvis by the torso's back half-depth, at lap height)
+  const hipsLocal = [pl[0] - d * 0.075 * lw * h, lapLocal[1]];
   const sockets = {
     hand_r: hands.r, hand_l: hands.l, hands: lerp(hands.r, hands.l, 0.5),
     head_top: [hc[0] + v[0] * r * 1.05, hc[1] + v[1] * r * 1.05],
-    lap: W(lapLocal), back: W([sp3[0] - d * 0.085 * lw * h, sp3[1]]),
+    lap: W(lapLocal), hips: W(hipsLocal), back: W([sp3[0] - d * 0.085 * lw * h, sp3[1]]),
     feet: [at.x, at.y || 0],
   };
-  return { J, h, d, rot: at.rot || 0, sockets, lapLocal, hc, r, ik, shadow: at.shadow !== false, groundY: at.groundY || 0 };
+  return { J, h, d, rot: at.rot || 0, sockets, lapLocal, hipsLocal, hc, r, ik, shadow: at.shadow !== false, groundY: at.groundY || 0 };
 }
 
 // the figure's box on screen-independent world metres (for label nudging)
@@ -177,6 +193,7 @@ export function draw(ps, L) {
   else if (hs_ === 'bun') out.push(P.path(smooth([...cap(55, 215, 1.07), at(-0.5, -0.05), at(0.15, 0.6), at(0.7, 0.58)]), L.hair), P.circle(at(-0.78, 0.82), r * 0.42, L.hair));
   else if (hs_ === 'ponytail') out.push(P.path(smooth([...cap(55, 215, 1.08), at(-0.55, -0.05), at(0.1, 0.62), at(0.7, 0.6)]), L.hair), P.circle(at(-0.88, 0.5), r * 0.22, shade(L.hair, 1.3)));
   else if (hs_ === 'curly') { for (let a = 40; a <= 230; a += 24) out.push(P.circle(at(Math.cos(a * Math.PI / 180) * 0.98, Math.sin(a * Math.PI / 180) * 0.98), r * 0.36, L.hair)); out.push(P.path(smooth([...cap(60, 210, 0.95), at(-0.4, 0.0), at(0.2, 0.55)]), L.hair)); }
+  else if (hs_ === 'quiff') out.push(P.path(smooth([...cap(100, 215, 1.08), at(-0.55, -0.05), at(0.1, 0.6), at(0.72, 0.62), at(0.98, 0.95), at(0.7, 1.32), at(0.15, 1.24)]), L.hair));
   else if (hs_ === 'bald') out.push(P.path(smooth([...cap(150, 215, 1.04), at(-0.55, -0.1), at(-0.75, 0.25)]), L.hair));
   if (hs_ !== 'bald' && hs_ !== 'curly') out.push(P.path(smooth([...ring(85, 140, 0.88, 6), ...ring(85, 140, 0.76, 6).reverse()]), shade(L.hair, 1.6), { opacity: '0.45' }));
   // face
@@ -193,6 +210,7 @@ export function draw(ps, L) {
     const g = at(0.55, 0.1), a = at(0.3, 0.12), b = at(-0.12, 0.12);
     out.push(P.circle(g, r * 0.25, 'rgba(255,255,255,0.25)', { stroke: '#2b2522', 'stroke-width': F(r * 0.06) }), P.line(a, b, r * 0.06, '#2b2522'));
   }
+  out.armAt = out.length;  // the near arm: drawn in front of anything the figure holds (player.js)
   arm('_r', false);
   return out;
 }

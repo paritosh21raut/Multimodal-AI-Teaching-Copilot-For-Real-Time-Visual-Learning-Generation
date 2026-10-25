@@ -10,7 +10,8 @@ _Last updated 2026-10-26. History in `docs/history/` (not read by default)._
   F-016 C2/C3 and D1* style work superseded (C1 canvas = ratings baseline).
 - Look history: `docs/v2/V2-LOOK-SAMPLES.md`. Accuracy first; look polish rounds after E2 and E4.
   **E1 built and tested (2026-10-26; card Result). Gate: user judges `artifacts/stage/sheet_{cast,props,
-  backdrops,patches}.png` → a ≤ 10-item look list for the P-round; then E2 `docs/v2/E2-stage-core.md`.**
+  backdrops,patches}.png`. Round 1 fixes done: clouds, carry hold, sitting, skin range, man2 hair, f_r label, tug
+  stance (lean). Then E2 `docs/v2/E2-stage-core.md`.**
 
 ## Done and verified
 | Part | Status |
@@ -31,11 +32,11 @@ _Last updated 2026-10-26. History in `docs/history/` (not read by default)._
   leaves the band. Motion readouts: the latest four rows only.
 - Groq: GROQ_API_KEY_3 answers 401 Invalid API Key (user: replace it in .env); 8k TPM per model → 429s live.
 - Streamed usage: a non-Groq endpoint may report 0 tokens.
-- Lines said just before a cue can land in the recap, not a slide before the scene (F-014 `split_early`).
+- Lines said just before a cue can land in the recap (F-014 `split_early`).
 - Latency (C1 live): line → first shape p50 2.11 s, p90 2.49 s (scene calls only).
 - Scenes: no still frame in the PPTX export yet.
 - After the S4 live run, two template fixes are fixture/unit-tested only.
-- Not reproduced: mic overflow lag; unbounded STT queue if Whisper lags.
+- Not reproduced: mic overflow lag; STT queue growth.
 
 ## User actions pending
 - Judge the E1 gate sheets in `artifacts/stage/`. Replace GROQ_API_KEY_3 in .env (401). Look at `artifacts/canvas/sheet_{light,dark}.png`, `c1_live_sheet.png`.

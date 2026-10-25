@@ -74,7 +74,11 @@ export function drawOverlays(list, ctx) {
       out.push(...pr);
       if (o.label) {
         const u = norm([b[0] - a[0], b[1] - a[1]]);
-        labels.push({ x: b[0] + (o.lx != null ? o.lx : u[0] * 18 + 10), y: b[1] + (o.ly != null ? o.ly : u[1] * 18 + 14), s: o.label, c, size: o.size || 42 });
+        // by default past the tip, clear of the head: a left-pointing arrow's label ends left of it, an up / down one
+        // is centred above / below it (the reference's +10 px put the label on a left-pointing head)
+        const sz = o.size || 42, anchor = o.lx != null ? 'start' : u[0] < -0.4 ? 'end' : u[0] > 0.4 ? 'start' : 'middle';
+        labels.push({ x: b[0] + (o.lx != null ? o.lx : u[0] * 26), y: b[1] + (o.ly != null ? o.ly : u[1] * 26 + (u[1] > 0.4 ? sz * 0.8 : u[1] < -0.4 ? -6 : sz * 0.32)),
+          s: o.label, c, size: sz, anchor });
       }
     } else if (o.kind === 'path') {
       const pts = o.of ? (ctx.track(o.of) || []).filter((q) => !o.upto || q[0] <= ctx.t).map((q) => [q[1], q[2]]) : o.pts;

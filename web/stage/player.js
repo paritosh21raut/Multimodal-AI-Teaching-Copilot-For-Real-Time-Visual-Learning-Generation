@@ -9,6 +9,7 @@ import * as people from './people.js';
 import { B, VH } from './style.js';
 import { F, el, markup, reconcile, setAttr, setMarkup } from './svg.js';
 
+const HOLD = new Set(['hand_r', 'hand_l', 'hands']);  // sockets that mean 'held in the hand(s)'
 const FAR = 0.6;  // the far row: drawn behind, at 0.6 scale, standing a little up the backdrop
 const ease3 = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
 const rotv = (p, deg) => { const a = (deg * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a); return [p[0] * c - p[1] * s, p[0] * s + p[1] * c]; };
@@ -37,17 +38,21 @@ export class Player {
     }
     for (const s of Object.values(this.byId)) for (const k of ['clips', 'socket']) s[k].sort((a, b) => (a.t0 || 0) - (b.t0 || 0));  // the latest started wins
     // DOM: one <g> per entity, kept across patches
-    for (const [id, d] of this.ents) if (!this.byId[id]) { d.g.remove(); this.ents.delete(id); }
+    for (const [id, d] of this.ents) if (!this.byId[id]) { d.g.remove(); if (d.arm) d.arm.remove(); this.ents.delete(id); }
     for (const e of patch.entities || []) {
       const pane = this.panes[e.pane || 0], layer = (e.xform && e.xform.row === 'far') ? pane.far : pane.near;
       let d = this.ents.get(e.id);
       if (!d || d.draw !== e.draw || d.layer !== layer) {
         if (d) d.g.remove();
+        if (d && d.arm) d.arm.remove();
         const g = el('g', { 'data-id': e.id, class: 'st-ent' }, layer);
         d = { g, inner: el('g', {}, g), draw: e.draw, layer, key: null };
+        // a person's near arm: its own group, after whatever the person holds (the hand shows on the held thing)
+        if (e.draw.startsWith('cast:')) d.arm = el('g', { 'data-arm': e.id, class: 'st-arm' }, layer);
         this.ents.set(e.id, d);
-      } else layer.appendChild(d.g);  // keep the patch's order (later = in front)
+      }
     }
+    this.order = null;
     // backdrops / frames per pane
     const panes = patch.view === 'split' ? patch.panes : [{ backdrop: patch.backdrop, frame: patch.frame, camera: patch.camera }];
     this.paneDefs = panes;
@@ -121,6 +126,7 @@ export class Player {
         const local = sk.child_socket ? this.localSocket(id, sk.child_socket, tt, { ...o, rot: 0 }) : [0, 0];
         const q = add(pt, rotv([-local[0], -local[1]], rot));
         o.x = q[0]; o.y = q[1]; o.rot = rot; o.attached = true;
+        if (HOLD.has(sk.socket) && (sk.t1 == null || t <= sk.t1) && this.kind(sk.parent) === 'person') o.heldBy = sk.parent;
       }
     }
     this.visiting.delete(key);
@@ -138,7 +144,7 @@ export class Player {
     const k = this.kind(id);
     if (k === 'person') {
       const ps = this.posePerson(id, t, { ...o, x: 0, y: 0, rot: 0 }, false);
-      return name === 'lap' ? ps.lapLocal : ps.sockets[name] || [0, 0];
+      return name === 'lap' ? ps.lapLocal : name === 'hips' ? ps.hipsLocal : ps.sockets[name] || [0, 0];
     }
     if (k === 'prop') {
       const row = this.cat.props[this.byId[id].e.draw], a = (row && row.anchors && row.anchors[name]) || [0, 0], [w, h] = this.sizeOf(id, o);
@@ -181,7 +187,7 @@ export class Player {
     let pose = fr(cur);
     const prev = cs.pop();
     if (cur.blend && prev && t - cur.t0 < cur.blend) pose = blend(fr(prev), pose, ease3((t - cur.t0) / cur.blend));
-    return { fr: pose, lock: !!cur.lock };
+    return { fr: pose, lock: !!cur.lock, lean: cur.lean || 0 };
   }
 
   posePerson(id, t, o, withIk) {
@@ -189,7 +195,7 @@ export class Player {
     if (this.memo.has(key)) return this.memo.get(key);
     const e = this.byId[id].e, L = people.castRow(e.draw.slice(5));
     const h = (e.xform && e.xform.h) || people.defaultHeight(L);
-    const { fr, lock } = this.clipPose(id, t);
+    const { fr, lock, lean } = this.clipPose(id, t);
     const ik = {};
     if (withIk) for (const k of this.byId[id].ik) {
       if (t < (k.t0 || 0) || (k.t1 != null && t > k.t1)) continue;
@@ -198,7 +204,7 @@ export class Player {
       if (k.pad) p = [p[0] - o.dir * people.handRadius(L, h * o.scale), p[1]];
       ik[k.hand] = p;
     }
-    const ps = people.pose(fr, { x: o.x, y: o.y, rot: o.rot, dir: o.dir, h: h * o.scale, shadow: !o.attached && e.shadow !== false, groundY: o.far ? o.y : 0 }, L, ik, lock);
+    const ps = people.pose(fr, { x: o.x, y: o.y, rot: o.rot, dir: o.dir, h: h * o.scale, lean, shadow: !o.attached && e.shadow !== false, groundY: o.far ? o.y : 0 }, L, ik, lock);
     ps.ikTargets = ik;
     this.memo.set(key, ps);
     return ps;
@@ -210,7 +216,7 @@ export class Player {
     if (this.applyAt == null) this.applyAt = tRaw;
     const t = this.time(tRaw);
     this.t = t; this.memo = new Map(); this.visiting = new Set();
-    const figures = this.panes.map(() => []);
+    const figures = this.panes.map(() => []), held = [];
     this.drawn = {};
     for (let i = 0; i < this.paneDefs.length; i++) {
       const pane = this.panes[i], cam = this.camera(i, tRaw), def = this.paneDefs[i];
@@ -222,10 +228,14 @@ export class Player {
     for (const e of this.patch.entities || []) {
       const d = this.ents.get(e.id), o = this.place(e.id, t), k = this.kind(e.id);
       setAttr(d.g, 'opacity', String(o.opacity));
+      if (o.heldBy) held.push([o.heldBy, e.id]);
       if (k === 'person') {
         const ps = this.posePerson(e.id, t, o, true), L = people.castRow(e.draw.slice(5));
         setAttr(d.g, 'transform', '');
-        reconcile(d.inner, people.draw(ps, L));
+        setAttr(d.arm, 'opacity', String(o.opacity));
+        const prims = people.draw(ps, L);
+        reconcile(d.inner, prims.slice(0, prims.armAt));
+        reconcile(d.arm, prims.slice(prims.armAt));
         const bb = people.bounds(ps), pane = this.panes[e.pane || 0];
         const a = pane.proj([bb[0], bb[3]]), b = pane.proj([bb[2], bb[1]]);
         figures[e.pane || 0].push([a[0], a[1], b[0], b[1]]);
@@ -244,6 +254,7 @@ export class Player {
         else { const key = JSON.stringify([w, h, o.state]); if (d.key !== key) { d.key = key; setMarkup(d.inner, markup(prims)); } }
       }
     }
+    this.stack(held);
     // overlays per pane; pane 'all' (and the patch's badges) on the stage-wide layer
     const all = [...(this.patch.overlays || []).filter((o) => o.pane === 'all'), ...(this.patch.badges || []).map((b) => ({ kind: 'badge', text: b }))];
     if (this.top) {
@@ -256,6 +267,23 @@ export class Player {
       const { prims } = drawOverlays(list, { t, w: pane.w, h: VH, proj: pane.proj, figures: figures[i],
         resolve: (a) => this.resolve(a, t), track: (id) => this.byId[id] && this.byId[id].path && this.byId[id].path.samples });
       reconcile(pane.over, prims);
+    }
+  }
+
+  // DOM order: the patch's order (later = in front), a person's near arm after it, a held thing between the two;
+  // moved only when who holds what changes
+  stack(held) {
+    const key = held.map((p) => p.join('>')).join(',');
+    if (key === this.order) return;
+    this.order = key;
+    const by = new Map(), child = new Set(held.map((p) => p[1]));
+    for (const [pa, c] of held) { if (!by.has(pa)) by.set(pa, []); by.get(pa).push(c); }
+    for (const e of this.patch.entities || []) {
+      if (child.has(e.id)) continue;
+      const d = this.ents.get(e.id);
+      d.layer.appendChild(d.g);
+      for (const c of by.get(e.id) || []) d.layer.appendChild(this.ents.get(c).g);
+      if (d.arm) d.layer.appendChild(d.arm);
     }
   }
 

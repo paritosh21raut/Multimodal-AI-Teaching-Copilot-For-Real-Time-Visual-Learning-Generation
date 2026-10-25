@@ -18,14 +18,30 @@ const ground = (w, h, gy, color = T.ground, rough = false) => {
   if (rough) for (let i = 0; i < 70; i++) s += circ(hash(i) * w, gy + 18 + hash(i + 9) * Math.max(0, h - gy - 24), 3 + hash(i + 3) * 4, shade(color, 0.85));
   return s;
 };
+// a cumulus cloud (screen px): lobes on a flat base, a darker underside, a lit crown; w wide, base at y
+const PUFF = [[-0.36, 0.15], [-0.17, 0.23], [0.06, 0.29], [0.27, 0.21], [0.41, 0.13]];
+const cloud = (cx, y, w, [lit, body, shadow], seed = 0) => {
+  const lobes = PUFF.map(([u, r], i) => [cx + u * w, r * w * (0.85 + 0.3 * hash(seed + i))]);
+  const shape = (dy, k, fill) => lobes.map(([x, r]) => circ(x, y - r * 0.62 + dy, r * k, fill)).join('') +
+    `<rect x="${F(cx - 0.47 * w)}" y="${F(y - 0.16 * w + dy)}" width="${F(0.94 * w)}" height="${F(0.16 * w)}" rx="${F(0.08 * w)}" fill="${fill}"/>`;
+  return shape(0.05 * w, 1, shadow) + shape(0, 1, body) +
+    lobes.slice(1, 4).map(([x, r]) => circ(x - r * 0.18, y - r * 0.82, r * 0.62, lit)).join('');
+};
 const stars = (w, hmax, n, seed = 0) => { let s = ''; for (let i = 0; i < n; i++) s += circ(hash(i + seed) * w, hash(i + 7 + seed) * hmax, 1.5 + hash(i + 2 + seed) * 2, '#ffffff', `opacity="${F(0.5 + 0.5 * hash(i + 4))}"`); return s; };
 
 export const BACKDROPS = {
   outdoor: (w, h, gy, st, id) => {
     const grey = st.sky === 'overcast';
-    let s = sky(w, h, id, grey ? '#AFC3D3' : T.skyTop, grey ? '#E3ECEF' : T.skyBottom) + hills(w, gy);
-    if (grey) for (let i = 0; i < 7; i++) s += circ(i * w / 6.2 + 60, 40 + hash(i) * 30, 90 + hash(i + 4) * 40, '#DCE4EA');
-    return s + ground(w, h, gy);
+    let s = sky(w, h, id, grey ? '#9DB0C1' : T.skyTop, grey ? '#DCE3E8' : T.skyBottom);
+    // overcast: three rows of clouds, far (small, pale, low) to near (big, darker, overlapping the top edge)
+    if (grey) [[0.5, 0.09, 4, ['#E3E9ED', '#D3DBE2', '#C6D0D8']], [0.27, 0.16, 3, ['#E2E8EC', '#C9D2DA', '#B3BFCA']],
+      [0.07, 0.3, 4, ['#DCE3E8', '#BCC7D1', '#A2B0BE']]].forEach(([yf, wf, n, tone], row) => {
+      for (let i = 0; i < n; i++) {
+        const k = row * 20 + i, cw = wf * w * (0.8 + 0.4 * hash(k + 5));
+        s += cloud((i + 0.25 + 0.5 * hash(k)) * w / n, Math.min(gy - 140, gy * yf + 60 * hash(k + 9)) + cw * 0.12, cw, tone, k);
+      }
+    });
+    return s + hills(w, gy) + ground(w, h, gy);
   },
   park: (w, h, gy, st, id) => sky(w, h, id, T.skyTop, T.skyBottom) + hills(w, gy) +
     [0.12, 0.3, 0.72, 0.9].map((u, i) => circ(u * w, gy - 40, 46 + 14 * hash(i), '#9CC98A') + circ(u * w + 40, gy - 30, 34, '#8EC07B')).join('') +

@@ -58,6 +58,9 @@ def test_cast_has_twelve_varied_people():
             "shoes", "build", "height_m"}
     for c in CAST:
         assert keys <= set(c), c["id"]
+        # natural skin, fair to medium-dark (user, 2026-10-26): perceived lightness 0.299 R + 0.587 G + 0.114 B >= 120
+        r, g, b = (int(c["skin"][i:i + 2], 16) for i in (1, 3, 5))
+        assert 0.299 * r + 0.587 * g + 0.114 * b >= 120 and r > g > b, (c["id"], c["skin"])
         assert c["bottom_type"] in ("pants", "skirt", "shorts") and 1.0 < c["height_m"] < 2.0
 
 

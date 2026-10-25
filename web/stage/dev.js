@@ -1,8 +1,8 @@
 // Dev hooks for the stage: line-ups, prop grids and backdrop panels for the contact sheets, the kit check and probes
 // for the browser tests. Sheet patches are made here (dev only); lecture patches come from Python.
 import { BACKDROPS, PROPS, SPECIES } from './kit/index.js';
-import { clip, clipNames, duration } from './motion.js';
-import { castIds, castRow, defaultHeight } from './people.js';
+import { clip, clipNames, duration, sample } from './motion.js';
+import { castIds, castRow, defaultHeight, pose } from './people.js';
 import { Stage, loadStage } from './stage.js';
 import { VH, VW } from './style.js';
 import { NS } from './svg.js';
@@ -26,7 +26,7 @@ export function lineup(id) {
   const L = castRow(id), h = defaultHeight(L), gap = 1.6 * Math.max(1, h / 1.78) + 0.05, ents = [], tracks = [], overlays = [];
   const pid = (k) => `${id}_${k}`;
   const xs = [0, 1, 2, 3, 4, 5].map((i) => (i - 2.5) * gap);
-  const push = clip('Push_Loop'), thr = clip('OverhandThrow'), sit = clip('Sitting_Idle_Loop');
+  const push = clip('Push_Loop'), thr = clip('OverhandThrow');
   // walk
   ents.push({ id: pid('walk'), draw: `cast:${id}`, xform: { x: xs[0] } });
   tracks.push({ id: pid('walk'), kind: 'clip', clip: 'Walk_Loop', t_offset: 0.25 });
@@ -44,13 +44,13 @@ export function lineup(id) {
   // carry
   ents.push({ id: pid('carry'), draw: `cast:${id}`, xform: { x: xs[3] - 0.15 } }, { id: pid('box'), draw: 'crate', xform: { size: [0.42, 0.34] } });
   tracks.push({ id: pid('carry'), kind: 'clip', clip: 'Walk_Carry_Loop', t_offset: 0.5 },
-    { id: pid('box'), kind: 'socket', parent: pid('carry'), socket: 'hands', child_socket: 'centre', offset: [0.1, 0.02], t0: 0 });
-  // sit: on a chair whose seat is where the clip's thighs are
-  const seat = sit.seat_h * h - 0.044 * 1.22 * (L.build || 1) * (L.child ? 0.9 : 1) * h;
-  ents.push({ id: pid('chair'), draw: 'chair', xform: { x: xs[4], size: [0.45, seat / cat.props.chair.anchors.seat[1]] } });
+    { id: pid('box'), kind: 'socket', parent: pid('carry'), socket: 'hands', child_socket: 'centre', offset: [0.1, 0.14], t0: 0 });  // the hands under the bottom edge
+  // sit: on a chair whose seat is where the clip's thighs are (the socket hips at that frame), feet on the floor
+  const seat = pose(sample('Sitting_Idle_Loop', 0.3, true), { x: 0, y: 0, h, dir: 1 }, L).hipsLocal[1];
+  ents.push({ id: pid('chair'), draw: 'chair', xform: { x: xs[4] - 0.1, size: [Math.max(0.4, 0.26 * h), seat / cat.props.chair.anchors.seat[1]] } });
   ents.push({ id: pid('sit'), draw: `cast:${id}`, xform: { x: xs[4] } });
   tracks.push({ id: pid('sit'), kind: 'clip', clip: 'Sitting_Idle_Loop', t_offset: 0.3 },
-    { id: pid('sit'), kind: 'socket', parent: pid('chair'), socket: 'seat', child_socket: 'lap', inherit: false, t0: 0 });
+    { id: pid('sit'), kind: 'socket', parent: pid('chair'), socket: 'seat_back', child_socket: 'hips', inherit: false, t0: 0 });  // back against the backrest
   // jump: mid-air
   ents.push({ id: pid('jump'), draw: `cast:${id}`, xform: { x: xs[5], y: 0.35 } });
   tracks.push({ id: pid('jump'), kind: 'clip', clip: 'Jump_Loop', t_offset: 0.2 });

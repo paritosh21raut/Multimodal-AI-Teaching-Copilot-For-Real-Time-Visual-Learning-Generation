@@ -13,8 +13,8 @@
    "id": "table",
    "draw": "table",
    "xform": {
-    "x": 0.6366,
-    "size": [1.5, 0.627]
+    "x": 0.6566,
+    "size": [1.5, 0.777]
    }
   },
   {
@@ -78,7 +78,7 @@
    "parent": "woman",
    "socket": "hands",
    "child_socket": "centre",
-   "offset": [0.1, 0.02],
+   "offset": [0.12, 0.17],
    "t0": 0,
    "t1": 5.453
   }
