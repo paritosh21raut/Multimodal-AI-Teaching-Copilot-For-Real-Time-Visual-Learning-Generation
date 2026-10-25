@@ -1,0 +1,6 @@
+<!doctype html><html><head><meta charset="utf-8"><title>bake</title>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/jsm/"}}</script>
+</head><body><script type="module">
+import { bakeAll } from './rig.js';
+bakeAll(24).then(r => { window.__bake = r; document.title = 'done'; }, e => { console.error(e); document.title = 'error:' + e; });
+</script></body></html>

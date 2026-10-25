@@ -1,0 +1,136 @@
+{
+ "rev": 1,
+ "source": "hand-made (E1, reference closed forms); E2 makes patches from ops",
+ "name": "rain",
+ "caption": "Rain falls straight down on a man walking; to him it comes at an angle.",
+ "view": "side",
+ "backdrop": {
+  "id": "outdoor",
+  "state": {
+   "sky": "overcast"
+  }
+ },
+ "period": 3.999,
+ "entities": [
+  {
+   "id": "rain",
+   "draw": "rain",
+   "xform": {
+    "x": 0.2,
+    "size": [7.6, 4.2]
+   },
+   "state": {
+    "speed": 7.0,
+    "drops": 90
+   }
+  },
+  {
+   "id": "man",
+   "draw": "cast:man"
+  }
+ ],
+ "tracks": [
+  {
+   "id": "man",
+   "kind": "path",
+   "samples": [
+    [0, -2.9, 0],
+    [3.999, 0.7623, 0]
+   ]
+  },
+  {
+   "id": "man",
+   "kind": "clip",
+   "clip": "Walk_Loop",
+   "rate": 1,
+   "loop": true,
+   "lock": true,
+   "t0": 0
+  }
+ ],
+ "overlays": [
+  {
+   "kind": "words",
+   "screen": [48, 66],
+   "text": "“Rain falls straight down on a man walking; to him it comes at an angle.”",
+   "size": 30,
+   "color": "#5d6672",
+   "weight": 400
+  },
+  {
+   "kind": "arrow",
+   "at": {
+    "entity": "man",
+    "anchor": "head_top",
+    "dx": -0.1,
+    "dy": 0.25
+   },
+   "vec": [150, 0],
+   "role": "velocity",
+   "label": "v_m",
+   "lx": 10,
+   "ly": 14
+  },
+  {
+   "kind": "card",
+   "screen": [1080, 120],
+   "w": 470,
+   "h": 400,
+   "title": "SEEN BY THE MAN",
+   "title_size": 19,
+   "title_color": "#5d6672",
+   "vectors": [
+    {
+     "from": [330, 70],
+     "to": [330, 300],
+     "role": "weight",
+     "label": "v_r",
+     "lx": 14,
+     "ly": -60
+    },
+    {
+     "from": [330, 300],
+     "to": [180, 300],
+     "role": "velocity",
+     "label": "−v_m",
+     "dashed": true,
+     "lx": -20,
+     "ly": 46
+    },
+    {
+     "from": [330, 70],
+     "to": [180, 300],
+     "role": "applied",
+     "label": "v_rm",
+     "lx": -120,
+     "ly": -70
+    }
+   ]
+  },
+  {
+   "kind": "words",
+   "screen": [1104, 496],
+   "text": "tan θ = v<tspan baseline-shift=\"sub\" font-size=\"0.62em\">m</tspan> / v<tspan baseline-shift=\"sub\" font-size=\"0.62em\">r</tspan>",
+   "size": 26,
+   "halo": false
+  },
+  {
+   "kind": "words",
+   "screen": [1362, 310],
+   "text": "θ",
+   "size": 34,
+   "anchor": "middle",
+   "halo": false
+  }
+ ],
+ "badges": [
+  "Illustrative"
+ ],
+ "frame": {
+  "cx": 0.0,
+  "cy": 1.5217,
+  "s": 230,
+  "ease_ms": 0
+ },
+ "keyframes": [0.7998, 1.9995, 3.1992]
+}

@@ -1,0 +1,437 @@
+1. Diagnosis: What Was Fundamentally Wrong, What Was Right, and the Root Problem
+What was fundamentally wrong
+a) Generative image models as the asset layer (your step 6d). This was the clearest dead end. SD-Turbo on a 4 GB laptop sharing VRAM with Whisper will never give you consistent characters, consistent style, and multi-view riggable assets at 2-second latency. The numbers you measured (11.6 s under contention, style ignored, character drift) are not tuning problems; they are structural. A diffusion model generates a sample from a distribution; you need a deterministic asset instance with stable topology. Reject this entirely for V2.
+
+b) Hand-shaping 3D primitives to match 2D art (your step 6f). You correctly observed that motion, arrows and faces were good, but the body looked bad. This was not a failure of three.js or of your skill; it was a failure of scope. You were trying to be a character artist and an animation engineer and a real-time systems engineer simultaneously. The motion system was right; the asset source was wrong. Drop the idea that you must model the character. Use a professionally modelled, rigged character and make it yours through shader and animation retargeting.
+
+c) The 2D cut-out puppet multi-view pipeline (your step 6g, current). This is the most painful dead end because it almost works for one character. The requirement that every character, animal, vehicle and object needs matching front/side/back/¾ sheets is an infinite content-authoring problem. You are one person. You cannot manually measure joint data for thousands of assets. This approach cannot scale and will consume the rest of the project. Drop it.
+
+d) Treating "open vocabulary" as "generate anything visually." You conflated semantic open vocabulary (the system can understand and represent any concept) with visual open vocabulary (the system can render a novel visual asset for any concept). The first is achievable with an LLM and a flexible scene graph. The second is not achievable live on your hardware, and arguably not necessary for explanation. A labelled geometric proxy, a retrieved 3D asset, or a stylized icon can represent "bicycle" or "airplane" without generating a photorealistic mesh.
+
+What was right but badly executed
+a) The deterministic core and physics solvers. This is your strongest asset. The LLM should never compute a number. Keep this. It is a genuine differentiator and a source of correctness.
+
+b) LLM as a gated reasoning service producing structured scene operations. This is correct. The problem was not the gating; it was the target schema of those operations. You were asking the LLM to describe visual assets ("add a photo cutout of a man") rather than semantic roles and relationships ("add a humanoid agent in a pushing pose, target the box, apply force F for duration t"). The schema needs to change, not the architecture.
+
+c) The live face/expression system and motion clips. These were good. The issue was that they were attached to a poor body. A good rigged body with retargeted clips and your existing face system will work.
+
+d) The camera and arrow/trajectory system. Keep these. They are renderer-level and style-agnostic.
+
+The root problem
+You are lacking a visual grammar: a closed but extensible set of archetypes (humanoid, quadruped, vehicle, container, surface, field, geometric primitive), affordances (pushable, throwable, walkable, breakable, etc.), and relations (on, under, behind, holding, etc.) that the LLM can compose into scenes, and that a deterministic compiler can instantiate with actual assets, animations, and physics. Without this grammar, every new sentence is a new content-generation problem. With it, every sentence is a composition problem over a bounded vocabulary, and novelty is handled by fallback proxies and retrieval.
+
+The missing layer is not an image generator or a better 2D rig. It is the semantic-to-visual compiler and a curated, style-consistent asset library with a clear fallback for the long tail.
+
+2. Architectures Evaluated (5 Options with Trade-offs)
+Option A: Rigged 3D Archetype Library + Retargeted Motion + Toon Shader + Procedural Physics (Recommended)
+How it works. You maintain a curated library of rigged humanoid and animal characters from CC0 packs (KayKit, Quaternius, 100 Avatars) plus a library of props and primitives. Every asset is normalized to a shared skeleton (or retargeted via Mixamo/Blender) and a shared material pipeline: a toon shader with outline, consistent palette, and unlit/semi-lit shading. The LLM outputs a scene graph of archetypes, attributes, relations, actions, and camera directives. A compiler resolves each entity to the best asset (exact match, embedding retrieval, or labelled proxy), attaches a physics body with parameters from the solver, and selects an animation clip based on the verb and affordance. A physics tick (or precomputed trajectory) drives root motion and limb IK. The renderer is three.js or a game engine.
+
+Quality. High for a stylized educational 3D look. This can look like a clean diagrammatic explainer, not Kurzgesagt. Kurzgesagt is hand-animated 2D with enormous artistic labor; you will not match that. But you can match the clarity and consistency of a well-made physics diagram or a low-poly educational simulation. The KayKit packs are already stylized and consistent within their own style; a global toon shader unifies everything .
+
+Latency. Excellent. Asset loading and skinned mesh rendering in three.js are cheap on a 4 GB GPU. A few skinned characters with 10–20 bones each require around 0.75 MB of bone matrices per character and are well within budget . The bottleneck is LLM latency (~200–500 ms on Groq for a constrained JSON response) and asset resolution (embedding lookup, not generation). First visual in under 2 s is achievable.
+
+VRAM/Cost. Negligible GPU for rendering. The GPU is already used by Whisper; keep it that way. Do not run diffusion in parallel. Asset storage is small (low-poly packs are megabytes). Free.
+
+Coverage. Good for humans, common animals, vehicles, furniture, tools, and geometric objects. Weak for highly specific or unusual objects ("a 1905 Bern patent office desk"). This is where retrieval and proxies come in.
+
+Consistency. Excellent. Characters are the same mesh every time. Style is enforced by the shader, not by the asset source. This solves your drift problem completely.
+
+V3 fit. Excellent. The same characters and props carry across scenes. A storyboard is just a sequence of scene graphs with persistent entity IDs. Camera pans and transitions are renderer-level. This is the right foundation for V3.
+
+Main risk. The visual style may be perceived as "game-like" or "low-poly" rather than "explainer-quality." This is a perception risk, not a technical one. Mitigate with art direction: a strong toon shader, good composition, typography, and motion design can make low-poly look intentional and premium. Also, you must build the retargeting pipeline once; after that, it scales.
+
+Option B: 2D Vector Rig (Rive/Spine) + Programmatic Scene Composition
+How it works. Author a small set of 2D vector characters in Rive or Spine, each with a state machine (idle, walk, push, throw). The LLM composes scenes as 2D sprites/vector instances on a canvas, with physics solvers driving transforms. Rive is GPU-accelerated and extremely performant (118–120 FPS in benchmarks, versus 42 FPS for Lottie in the same test) . Rive's state machines are ideal for reactive character behavior .
+
+Quality. Very high if you have a Rive/Spine artist. The Duolingo-style flat vector look is achievable and reads as professional. But you do not have an artist, and authoring a multi-pose rig for every character and animal is the same content-authoring trap you are already in. Rive requires layered vector artwork rigged with bones; it cannot magically convert generated images into interactive meshes .
+
+Latency. Excellent (GPU-rendered vectors).
+
+VRAM/Cost. Low. Rive runtime is ~140 KB; Spine has licensing costs. Free path limited.
+
+Coverage. Poor without an artist. You would be building a 2D asset library by hand, which is slower than using a 3D CC0 library.
+
+Consistency. Excellent within the authored set, but the set is tiny.
+
+V3 fit. Good for stories if you have the characters. You won't, unless you invest months in art.
+
+Main risk. Content bottleneck. Unless you hire a 2D rigger/animator, this is slower than Option A.
+
+Option C: Manim-Style Programmatic STEM Scenes + LLM Code Generation (for math/physics only)
+How it works. The LLM generates constrained Manim or Manim-like scene code for mathematical and physical diagrams (integration strips, vectors, fields, orbits). A sandboxed renderer produces frames. There is active research here: EduVid-LLM uses a "Director" LLM to produce JSON plans and an "Animator" LLM to synthesize Manim code with a debugging loop .
+
+Quality. Excellent for STEM diagrams. 3Blue1Brown quality is achievable because the content is geometric and the engine is purpose-built.
+
+Latency. Not live. Manim renders frames offline; it is not a real-time engine. You could pre-render common animations, but that violates the live, open-ended requirement. A live JS vector engine (Rive or a custom SVG engine) could approximate some of this, but not with Manim's expressiveness.
+
+VRAM/Cost. CPU rendering; no GPU benefit.
+
+Coverage. Narrow to STEM. Does not help with "a bicycle under the ocean."
+
+Consistency. Style is inherently consistent (same engine, same palette).
+
+V3 fit. Poor for narrative stories; good for math interludes.
+
+Main risk. Not live. Reject for V2 as the primary renderer, but keep a "STEM diagram mode" that uses a deterministic 2D vector solver for equations, plots, and fields. This is a valuable feature and a strong research contribution, but it is not the whole canvas.
+
+Option D: Generative Backdrops/Props + Rigged Characters (Hybrid)
+How it works. Use SD-Turbo/LCM with a LoRA or IP-Adapter to generate static backdrops (a classroom, a landscape, a city) and occasional props, while characters and interactive objects come from the rigged 3D library. Composite in three.js.
+
+Quality. Can add visual richness, but risks style clash. Backdrops are easier to keep consistent because they are static and not the focus of action.
+
+Latency. On a 4 GB GPU with Whisper running, generation will spike latency. You would need to generate backdrops asynchronously and cache them, or generate at low resolution and upscale with a shader.
+
+VRAM/Cost. High contention. SDXL-Turbo needs ~10 GB; SD-Turbo/LCM-LoRA can run in 4 GB but slowly under contention . Cloud free tiers are too slow for per-line use.
+
+Coverage. Broad for static imagery, but characters remain the hard part.
+
+Consistency. Medium. Backdrops can drift; use a fixed seed and a style LoRA.
+
+V3 fit. Medium. Backgrounds can carry across scenes, but the characters still need to be rigged assets.
+
+Main risk. This is a distraction from the core problem. Add it only after the core scene compiler works, and only for static backdrops, not for actable objects.
+
+Option E: Text-to-Motion Diffusion Models (Research-Grade, Not Live)
+How it works. Use a text-to-motion model (e.g., from the text-to-motion literature) to generate skeletal motion from a verb phrase, then retarget to your character .
+
+Quality. Potentially high for novel verbs, but current models are not reliable enough for live, first-try use. They are also heavy and slow.
+
+Latency. Too slow for 2 s on a 4 GB laptop. These are research models, often requiring a GPU with more VRAM.
+
+VRAM/Cost. High.
+
+Coverage. Broad for human motion, but not for object interactions or non-human entities.
+
+Consistency. Motion style may drift; needs a style constraint.
+
+V3 fit. Medium.
+
+Main risk. It adds latency and failure modes without solving the asset problem. Postpone this to a later version or a paid-GPU path. Do not make it the core animation system.
+
+3. Recommended Approach: A Fixed Version of Your Architecture, Not a New One
+Follow a hybrid of Option A and Option C, with Option D as an optional garnish.
+
+Keep: the deterministic core, the LLM-as-gated-service pattern, the physics solvers, the camera/arrow/trajectory system, your live face system (attached to a good rig), and the WebSocket/three.js rendering architecture.
+
+Drop: SD-Turbo as the primary asset source, the 2D cut-out puppet pipeline, the hand-modelled primitive character, and the idea of "generating a picture for every noun."
+
+Add: a curated rigged 3D asset library with retargeted animations, a global toon shader for style unification, a semantic asset resolver (exact match → embedding retrieval → labelled proxy), and a scene compiler that maps LLM scene graphs to asset instances, physics bodies, and animation clips.
+
+Change the LLM schema: from "visual operations" to "semantic scene graph with archetypes and affordances."
+
+Which features to drop, change, or add
+Feature	Decision	Reason
+"Open vocabulary" as visual generation	Drop	Impossible live. Redefine as semantic open vocabulary with visual fallbacks.
+Per-line image generation	Drop	Latency, inconsistency, VRAM contention.
+Multi-view 2D puppet sheets	Drop	Infinite authoring cost, manual joint measurement.
+Hand-modelled 3D primitive character	Drop	Poor quality, no convergence.
+21 hand-built simulation templates	Keep, but demote	Useful as "accelerators" for common topics, not the primary path.
+Physics solvers	Keep and expand	Core differentiator.
+LLM scene operations	Keep, change schema	Correct pattern, wrong target.
+Imagine Mode	Keep	Good UX; works with any renderer.
+Safety filter	Keep	Necessary.
+"Kurzgesagt quality" for arbitrary content	Mark as not achievable live	Be honest in the paper. Aim for "clean educational 3D" instead.
+Camera focus/zoom	Keep	Renderer-level, cheap, high impact.
+Story Scenes (V3)	Design for it now	Persistent entity IDs and scene graph sequencing make V3 almost free.
+What is not possible live on this hardware: photorealistic or hand-drawn explainer quality for arbitrary, previously unseen concepts with consistent characters, generated from speech in 2 seconds. The closest achievable version is a stylized, diagrammatic 3D world with a consistent toon look, correct physics, and a bounded but extensible visual vocabulary, where the intelligence is in the semantic mapping and simulation, not in pixel synthesis. State this plainly in the paper; it is a defensible and honest claim.
+
+4. Concrete Tools, Models, Libraries and Asset Sources
+Free 4 GB path (now)
+Characters (CC0, rigged, animated):
+
+KayKit Character Pack: Adventurers — 5 rigged, textured, animated characters with 75 animations and 25+ accessories, CC0, FBX/glTF . This is your best starting point.
+
+KayKit Animations pack — additional CC0 humanoid clips, compatible with other humanoids .
+
+Quaternius Ultimate Animated Character Pack — 50+ animated characters, CC0/public domain, FBX/OBJ/Blend . Great for coverage of animals, monsters, robots.
+
+100 Avatars R1 + R2 (Polygonal Mind) — 167 rigged humanoids, CC0, FBX/glTF, Mixamo-compatible .
+
+Mixamo — free with an Adobe account; thousands of animation clips that can be applied to humanoid rigs. Licence permits commercial use but not redistribution of the animations as a standalone library. Use it to retarget motion onto your CC0 characters.
+
+Props and environments:
+
+Kenney — CC0 asset packs (nature, city, space, food, furniture). Consistent low-poly style .
+
+Poly Pizza — 10,600+ low-poly models, CC0/CC BY per model .
+
+Objaverse / Objaverse-XL — 800K–10M+ 3D objects; use CLIP-based text-to-3D retrieval to find the long tail . This is your open-vocabulary fallback for static props.
+
+Rendering and animation:
+
+three.js 0.160 — you already have it. Use SkeletonUtils, AnimationMixer, and a custom ShaderMaterial for the toon look.
+
+Blender (free) — one-time pipeline for retargeting Mixamo clips onto KayKit/Quaternius rigs and exporting glTF.
+
+Godot 4 (optional, free) — has better animation retargeting and state-machine tooling than three.js. If you find three.js animation management painful, Godot can be the renderer with a WebSocket bridge. But it adds deployment complexity; three.js is sufficient for a scene with a handful of characters.
+
+LLM (reasoning):
+
+Groq (Llama 3.1 8B Instant / Llama 3.3 70B) — sub-200 ms TTFT for JSON extraction, deterministic schema compliance . Use structured outputs / JSON mode. Stay within your 8K tokens/min budget by sending only the last 2–3 utterances and a compact schema.
+
+Speech:
+
+faster-whisper medium.en — you already have it. Keep it on the GPU, but serialize with rendering; do not run diffusion concurrently.
+
+Embeddings for asset retrieval:
+
+CLIP ViT-B/32 or ViT-L/14 via ONNX Runtime or transformers — precompute embeddings for every asset name and render. At runtime, embed the noun and retrieve the nearest asset. This is fast on CPU or a small GPU slice.
+
+Paid / better-GPU path (later)
+A 12–24 GB GPU (RTX 3060 12 GB, 4070 Ti, 4090) unlocks:
+
+SDXL-Turbo (1–4 steps) for high-quality backdrops and static props, with a LoRA trained on your chosen style for consistency .
+
+Local text-to-motion models for novel verbs, if latency permits (still not 2 s, but acceptable for non-critical scenes).
+
+A local LLM (Llama 3.1 8B/70B via vLLM) if cloud quota becomes a bottleneck.
+
+Paid asset libraries: Quaternius paid packs, KayKit extra characters ($7.95), Adobe Mixamo (free but account-bound), Sketchfab paid models. Budget a few hundred dollars for a curated prop library rather than building everything.
+
+Rive paid plan (~$9–$18/month) if you later add a 2D STEM/diagram mode with authored vector characters.
+
+5. Open-Vocabulary Fallback Without Breaking Style
+This is the most important design decision. The answer is a three-tier resolver:
+
+Tier 1: Exact / semantic match to a curated archetype.
+The LLM normalizes the noun to an archetype label (humanoid, quadruped, vehicle, container, tool, surface, field, primitive) plus attributes (size, color, material, role). The resolver looks up the best asset in the curated library. This covers the vast majority of educational sentences.
+
+Tier 2: Embedding retrieval from a larger 3D library (Objaverse/Poly Pizza).
+For nouns outside the curated set, embed the noun with CLIP and retrieve the nearest 3D model. Apply the global toon shader on load so it matches the style, regardless of its original materials. This is the key trick: style is a renderer property, not an asset property. A retrieved photorealistic chair becomes a stylized chair when the shader flattens its shading and applies the outline.
+
+Tier 3: Labelled parametric proxy.
+If retrieval fails or the asset is unsuitable (e.g., a topological concept), generate a parametric proxy: a box, sphere, cylinder, or capsule with a label and an icon. This is not a failure; it is a deliberate visual convention. In an educational diagram, a labelled box for "the economy" or "a black box" is often clearer than a literal image. The proxy is still actable and physics-enabled.
+
+Crucially: the LLM should not be allowed to request a specific visual asset ("a photo of a bicycle"). It should output {entity: "bicycle", archetype: "vehicle", attributes: {...}}. The resolver decides the visual representation. This keeps the LLM within token budget and prevents hallucinated asset descriptions.
+
+6. LLM Scene Graph Schema (Compact, Within 8K Tokens/Min)
+Design a schema that is semantic, not visual. The LLM should output something like this (abbreviated):
+
+json
+{
+  "scene_id": "s12",
+  "entities": [
+    {
+      "id": "e1",
+      "noun": "man",
+      "archetype": "humanoid",
+      "attributes": {"role": "agent", "pose": "standing"},
+      "spatial": {"position": [0, 0, 0], "facing": "right"}
+    },
+    {
+      "id": "e2",
+      "noun": "box",
+      "archetype": "container",
+      "attributes": {"size": "medium", "material": "wood"},
+      "spatial": {"position": [1.5, 0, 0]}
+    },
+    {
+      "id": "e3",
+      "noun": "floor",
+      "archetype": "surface",
+      "attributes": {"texture": "rough"}
+    }
+  ],
+  "relations": [
+    {"type": "on", "subject": "e2", "object": "e3"},
+    {"type": "agent_of", "subject": "e1", "action": "push", "target": "e2"}
+  ],
+  "actions": [
+    {
+      "id": "a1",
+      "verb": "push",
+      "agent": "e1",
+      "patient": "e2",
+      "parameters": {"force": 50, "duration": 2.0, "direction": "right"}
+    }
+  ],
+  "camera": {"focus": "e2", "shot": "side", "zoom": 1.2},
+  "numbers_from_speech": {"force": 50, "duration": 2.0}
+}
+Rules:
+
+The LLM never emits asset URLs, shader parameters, or physics formulas. It emits semantic tags and numbers the teacher said.
+
+The schema is flat and small. Use enums for archetypes, verbs, and relations. This reduces token count and makes constrained decoding easy.
+
+Context window: send only the last 2–3 teacher utterances plus a summary of the current scene (entity IDs and types). Do not send the full transcript. The LLM's job is to emit deltas ("add a second car", "make it heavier", "now he throws it"), not to rebuild the scene from scratch.
+
+Use Groq structured outputs with a JSON schema. TTFT is under 200 ms for moderate schemas . If the schema is too complex, split into two calls: one for entity extraction, one for action/physics parameters.
+
+7. Practical Build Order and Success Test
+Phase 0 (1–2 weeks): Kill the current visual pipeline, prove the new one
+Load one KayKit character in three.js with a toon shader. Apply a simple outline and flat shading. Render at 60 FPS alongside your existing UI. This is your "style proof."
+
+Retarget 5 animations (idle, walk, push, throw, wave) from Mixamo/KayKit onto that character using Blender. Export glTF with animation clips.
+
+Build the simplest scene compiler: LLM emits {entity: "man", archetype: "humanoid", action: "walk"} → three.js spawns the character and plays the clip. Measure line-to-first-pixel latency. Target: under 2 s.
+
+Add physics: a box with a rigid body, a force solver, and your existing arrow/trajectory renderer. The character pushes the box. This is your "it acts" proof.
+
+Phase 1 (3–4 weeks): Coverage and continuity
+Build the three-tier asset resolver. Curate 20–30 archetypes (human, dog, car, ball, table, etc.) with exact matches. Add CLIP retrieval over Poly Pizza/Objaverse for the long tail. Add labelled proxy fallback.
+
+Add continuity: persistent entity IDs across utterances. "Now he throws it harder" updates the existing entity's parameters, does not spawn a new one.
+
+Add camera: focus/zoom by voice and by click. This is mostly renderer work and is high-impact.
+
+Add the safety filter at the semantic layer (block harmful archetypes/actions before asset resolution).
+
+Phase 2 (2–3 weeks): V3 readiness and polish
+Scene sequencing: a storyboard is an ordered list of scene graphs with persistent entity IDs. Add a "story mode" that advances scenes on narration cues.
+
+Visual polish: lighting, shadow, palette, typography, motion easing, anticipation/follow-through on animations. This is where "explainer quality" is won or lost.
+
+Postpone
+Local diffusion for backdrops.
+
+Text-to-motion diffusion.
+
+Photorealistic or hand-drawn styles.
+
+Thousands of assets. Curate 50–100 well-chosen archetypes and rely on retrieval/proxies.
+
+Success test: How you know it is "explainer quality"
+Do not rely on "looks wrong" gut checks. Use a structured rubric with blind raters (colleagues, students, or recruited evaluators):
+
+Criterion	Test	Pass threshold
+Semantic fidelity	Does the scene contain the entities and relations the teacher described?	≥90% of entities/relations correctly present
+Physics correctness	Do the numbers and motion match the solver?	100% on scripted physics checks
+Visual consistency	Do characters/props look like the same world across 10 consecutive lines?	Blind A/B: ≥80% say "same style"
+Action readability	Can a viewer identify the verb (push, throw, walk) without narration?	≥85% correct identification
+Latency	Line spoken → first meaningful visual	p50 ≤ 2.0 s, p95 ≤ 3.5 s
+Comprehension	Short quiz after a 5-minute live session vs. a static-slide control	Statistically significant improvement (this is your paper's evaluation)
+The last row is what makes it a research contribution, not a demo.
+
+8. What Makes This Publishable
+The novelty is not "we called an image API" or "we generated slides." The novelty is:
+
+A semantic scene compiler that grounds open-vocabulary live speech into a deterministic, physics-correct, style-consistent visual simulation using a closed-set visual grammar with a three-tier asset resolver and continuity-aware scene graph.
+
+This contributes:
+
+A formal visual grammar (archetypes, affordances, relations) for educational scenes, bridging open-vocabulary language and a bounded renderable set.
+
+A runtime architecture that separates semantic reasoning (LLM), asset resolution (retrieval + proxies), physical simulation (solvers), and rendering (toon-shaded 3D), with a latency budget suitable for live lectures.
+
+An empirical evaluation of learning outcomes in a live classroom, comparing the copilot against static slides and against a text-only AI assistant.
+
+A continuity model that allows scenes to evolve incrementally across utterances, which is absent from text-to-scene and text-to-video work.
+
+The paper is a systems and HCI/education paper, not a model paper. That is appropriate for IEEE conferences in advanced learning technologies, multimodal interfaces, or visualization.
+
+9. System Design: Components and Data Flow
+text
+[Microphone]
+    │
+    ▼
+[faster-whisper medium.en]  (GPU, serialized with rendering)
+    │ partial/final transcripts
+    ▼
+[Utterance grouper]  (buffer last 2-3 lines; detect sentence boundaries)
+    │
+    ▼
+[LLM: Groq Llama 3.1 8B Instant / 3.3 70B]  (cloud, JSON schema)
+    │ scene graph delta (entities, relations, actions, camera, speech numbers)
+    ▼
+[Safety filter]  (semantic blocklist; reject harmful archetypes/actions)
+    │
+    ▼
+[Scene compiler]
+    ├── [Entity resolver]  (exact → CLIP retrieval → labelled proxy)
+    ├── [Physics binder]  (attach solver; mass/geometry from archetype + speech)
+    ├── [Animation binder]  (verb + affordance → motion clip; retargeted skeleton)
+    └── [Continuity manager]  (persistent IDs; update vs. add)
+    │
+    ▼
+[Renderer: three.js]  (GPU)
+    ├── Toon shader + outline (global style)
+    ├── Skinned mesh animation (AnimationMixer)
+    ├── Physics tick / precomputed trajectory → root motion + IK
+    ├── Arrows, trajectories, labels, camera
+    └── WebSocket → browser display
+Rules the system should follow:
+
+The LLM never controls flow, never writes code, never computes physics. It emits a bounded scene graph.
+
+Every number shown is either from the teacher's speech (tagged) or computed by a solver. Never invent a number.
+
+Style is a renderer property. All assets pass through the same toon shader, regardless of source.
+
+Continuity is ID-based. Utterances update existing entities; they do not reset the scene unless the teacher says "new scene" or the topic changes.
+
+GPU is shared between Whisper and rendering. Do not run diffusion concurrently. Queue heavy work.
+
+The system degrades gracefully: if asset retrieval is slow, use a proxy immediately and upgrade asynchronously.
+
+V2/V3 sharing: V3 is the same pipeline with a story sequence wrapper. Entities have persistent IDs across scenes; the camera and transitions are renderer-level. The only new component is a scene sequencer that advances the scene graph on narration cues. Because V2 already uses persistent IDs and a scene compiler, V3 is an extension, not a rewrite.
+
+10. Traps and Mistakes (Including Yours)
+Traps to avoid:
+
+The "one more round of tuning" trap. You experienced this with the 3D primitive character: each round made it worse. When a visual approach fails twice, stop and change the asset source, not the shader parameters.
+
+The "generate every noun" trap. Diffusion and text-to-3D generation are not asset management systems. They will never give you consistent, riggable, multi-view assets at live latency on a 4 GB GPU.
+
+The "photorealism = quality" trap. Educational clarity does not require realism. A labelled diagram is often better than a photorealistic render. Low-poly can look premium with the right shader and motion.
+
+The "LLM as animator" trap. Do not let the LLM generate keyframes or code at runtime. It will be slow, brittle, and incorrect. Constrain it to semantic tags.
+
+The "open vocabulary = no vocabulary" trap. You need a grammar. Without it, every sentence is a new research problem.
+
+Mistakes in your current approach:
+
+You conflated semantic and visual open vocabulary.
+
+You tried to build an asset authoring pipeline instead of an asset resolution pipeline.
+
+You let the LLM describe visual operations instead of semantic roles.
+
+You underestimated the content cost of multi-view 2D rigs.
+
+You ran diffusion concurrently with Whisper and then treated the latency as a tuning problem.
+
+11. Development Tips: Build, Test, and Judge Visual Quality Efficiently
+Separate the "style proof" from the "semantic proof." First, prove that one character with a toon shader looks acceptable. Then prove that the LLM can drive that character through 10 different sentences. Do not combine these until both are stable.
+
+Use Playwright screenshots as regression tests. Capture a screenshot after each utterance and compare against a golden set. Flag style drift automatically. You already have Playwright; use it for visual regression, not just functional tests.
+
+Recruit a small blind panel. Five colleagues or students, 20 screenshots, A/B against a reference style. Ask "same world or different world?" and "can you tell what is happening?" This is faster and more reliable than your own eye.
+
+Buy, don't build, the rig and animations. Retargeting Mixamo clips to KayKit in Blender is a one-time cost of a few days. Building your own rig and animation system is a multi-month cost.
+
+Use a style board, but make it a shader board. Instead of choosing between stick figures and chalk, choose a toon shader, palette, outline width, and motion easing. These are the levers that make low-poly look intentional.
+
+Instrument latency per stage. Measure STT, LLM, resolver, and render separately. If p95 latency is high, you will know whether it is Groq quota, CLIP retrieval, or asset loading.
+
+Do not chase 144 FPS. You need 30–60 FPS stable. Your 144 FPS result on the primitive character was technically impressive but irrelevant to the goal.
+
+12. Extra Features That Would Clearly Improve the Product
+"Freeze and annotate" mode. The teacher can freeze the scene and draw on it, then resume. Low engineering cost, high pedagogical value.
+
+Side-by-side comparison. "Moon vs. Mars jump" already implies two scenes; make this a first-class feature with synchronized cameras.
+
+"Explain this number" overlay. When a solver computes a value (slant angle, friction force, jump height), show a small provenance badge: "computed by projectile solver from g=1.62 m/s²". This builds trust and is a research talking point.
+
+Student response layer. Students can click on a part of the scene on their devices to ask "what is this?" or "why is it slowing down?" The teacher sees a heatmap. This turns the canvas into an interactive learning object, not just a display.
+
+Lecture export with provenance. At the end, export the scene graph + narration as an interactive review artifact, not just a video. Students can scrub and re-play scenes.
+
+Low-confidence visual indicator. When the resolver falls back to a proxy or a poor retrieval, show a subtle "approximate" indicator. Honesty about uncertainty is better than a misleading image.
+
+Vocabulary priming (optional, not required). If the teacher wants, they can paste a short topic outline before the lecture. The system pre-warms relevant archetypes. This does not violate "no pre-lecture prep" because it is optional; the system still works from cold speech.
+
+13. Anything Else Important
+The "Kurzgesagt quality" bar is the wrong target for the paper. It will make reviewers and users judge you against hand-animated art. Aim for "clear, consistent, physically correct educational 3D" and evaluate learning outcomes, not aesthetic similarity. This is a stronger and more defensible contribution.
+
+The visual grammar is the research artifact. Document it carefully: the archetype taxonomy, the affordance mapping, the verb-to-animation mapping, the resolver thresholds. Release it as a schema/JSON spec. This is what other researchers can build on.
+
+Consider Godot if three.js animation management becomes painful. Godot has built-in animation retargeting, state machines, and IK. But it adds a deployment layer. Only switch if you hit a wall; your three.js renderer is already working.
+
+Do not let the LLM see the full transcript. Use a rolling summary and entity list. This keeps you within 8K tokens/min and prevents context drift.
+
+Plan for failure. Live lectures are messy. The system should degrade to a labelled diagram if retrieval or physics fails, not to a blank screen. A visible "thinking" state is better than a frozen slide.
+
+The biggest immediate win is deleting code. Remove the 2D puppet pipeline, the diffusion path, and the primitive character. Every week spent on those is a week not spent on the compiler. The compiler is where the novelty and the product value live.
+
+Final recommendation in one sentence: Stop generating assets; build a semantic scene compiler over a curated, toon-shaded rigged 3D archetype library with a three-tier resolver, keep your physics and LLM gating, and aim for consistent educational clarity rather than photorealistic explainer art.

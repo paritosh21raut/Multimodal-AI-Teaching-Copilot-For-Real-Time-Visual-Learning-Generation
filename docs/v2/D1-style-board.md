@@ -65,5 +65,7 @@ clips idle/walk/run/push/throw/wave/point/think, crossfades, ground clamp, 2-bon
 own outfit, pop-in; arrows F/f/v/g grow in; throw = exact projectile + dotted path; dust, hair sway,
 camera ease, far limbs 6% darker. `src/` untouched. Perf (RTX 3050, Edge, 2 men,
 1600x900): 144 fps, 1.8 ms/frame CPU (p95 2.9), 123 draw calls, 49k tris, GPU 124 MiB used in total.
-Open: dark theme hides the black hair; profile/hair shell reads helmet-like; throw shot crops the man;
-hands are plain mittens. **Stop: user judges the look**, then woman, boy, D2.
+2026-10-24 user: motion + expressions good; face, hair, body "very bad". Round 2: round face/jaw, sheet-style
+eyes/brows/hook nose, big ears, curved tapered hair tufts on a hair volume, flared sleeves, mittens, flat-soled
+shoes (perf now 0.9 ms, 155 calls, 210 MiB). Still short of the sheets: profile, hair shape, plain limbs, dark-theme hair.
+**Stop: user judges the look**, then woman, boy, D2.

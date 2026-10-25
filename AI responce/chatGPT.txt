@@ -1,0 +1,1039 @@
+Architecture Review: Live “Canvas for Imagination” for Your AI Teaching Copilot
+1. Executive verdict
+Your main problem is not the LLM, the physics engine, or the rendering speed. It is the assumption that one visual-generation approach can deliver unlimited vocabulary, consistent characters, convincing animation, scientific accuracy, and approximately two-second latency simultaneously.
+
+Those requirements pull the design in different directions.
+
+Your experiments have already demonstrated something important: speech processing, scene operations, deterministic physics, camera controls, and real-time rendering can work together. Replacing another LLM or spending more time adjusting 3D primitives will not solve the core problem.
+
+The missing component is a visual representation and asset architecture that separates what something means from how it is drawn and animated.
+
+Here is my recommended direction.
+Recommended: A hybrid, asset-driven animation engine
+UNDERSTANDING
+
+Live speech → semantic scene graph
+
+Identify entities, actions, relationships, changes and uncertainty.
+
+
+VISUAL PLANNING
+
+Scene graph → visual representation planner
+
+Choose an existing asset, a parameterized shape, a reusable animation, or a diagram.
+
+
+DETERMINISTIC SIMULATION
+
+Typed physics models and animation state machines
+
+Compute motion, trajectories, vector directions, collisions and displayed numbers.
+
+
+LIVE CLASSROOM DISPLAY
+
+One consistent renderer
+
+Characters and objects, diagrams, annotations, camera movement and transitions on the same canvas.
+
+V2 uses this engine for interactive concept simulations. V3 reuses it for multi-scene narratives and camera-directed storytelling.
+
+The decisions I would make now
+Decision	Recommendation
+LLM-generated scene operations	Keep, but enforce a typed schema and explicit uncertainty
+Deterministic physics solvers	Keep and make them a formal part of the scene representation
+21 hard-coded topic templates	Retain as reusable components, not as the whole architecture
+Emoji and unrelated photo cutouts	Stop using them together as the primary visual system
+Hand-modelled human anatomy from Three.js primitives	Stop; do not try another extensive redesign
+AI-generated character part sheets	Stop using these as the foundation for general-purpose animation
+Per-utterance image generation	Move to an optional asynchronous fallback
+Rigged, reusable characters and objects	Make these the main character-animation layer
+SVG, paths and procedural diagrams	Make these the main explanation layer
+Unrestricted video generation	Do not use it for the primary live scientific explanation
+“Anything imaginable” in explainer-video quality	Replace with compositional open vocabulary and explicitly managed fallbacks
+
+The achievable target is open-vocabulary scene composition using a bounded set of visual and physical capabilities, not unlimited bespoke animation created from scratch every time the teacher speaks.
+
+That is a meaningful distinction. A scene can depict “a bicycle under the ocean” by combining a bicycle asset, water, bubbles and spatial relationships without ever having a prebuilt bicycle-underwater template. The physics and visual styling can remain consistent even though the complete combination was never seen before.
+
+Your existing latency result—about 2.1 seconds at p50 for a first shape—is a useful baseline. The goal now is to make the resulting scene look and behave like one coherent explainer, rather than to make arbitrary assets appear slightly faster.
+2. Diagnosis: Why the approaches have failed
+2.1 The root problem is representation, not rendering
+Your experiments expose four distinct engineering problems.
+
+Problem A: Coverage versus visual consistency
+
+Emoji and photos provide broad noun coverage but have unrelated visual styles and usually lack useful animation states. Diffusion models provide stylistic freedom but do not guarantee that the same person, object, pose or geometry remains consistent across successive generations.
+
+
+
+
+Problem B: An image is not an animatable character
+
+A picture of a person pushing a box is not a representation of the person's skeleton, joint limits, hand placement, contact with the box or animation state. Moving that picture produces translation, not convincing action.
+
+
+
+
+Problem C: A scene graph is not yet a visual design
+
+The LLM can correctly identify a person, a box, a floor and a pushing action. But those semantic facts do not determine the character's pose, camera angle, silhouettes, composition, lighting, proportions or contact geometry.
+
+
+
+
+Problem D: Your compute budget makes on-demand generation the wrong default
+
+The RTX 3050 with 4 GB of VRAM is already handling Whisper Medium. Adding diffusion or a large video-generation model means memory contention, slower transcription, model-loading overhead or offloading to CPU/cloud. A fast image-generation benchmark run in isolation does not establish the same latency during a live lecture.
+
+
+
+2.2 Which previous approaches were fundamentally wrong?
+The 21 topic templates were not a bad engineering decision. They were a useful way to prove that deterministic explanations can work. The mistake was treating them as either the final product or something that had to be abandoned completely to obtain open vocabulary.
+
+A template such as projectile motion should be decomposable into reusable components: a moving rigid object, a trajectory, gravity, velocity vectors, a coordinate frame and appropriate explanatory labels. A teacher can then introduce a book, a ball or an unusual object without needing a completely new physical simulation.
+
+The open canvas was the correct architectural experiment, but incomplete as a product. It gave you a general scene graph and spatial composition. However, placing unrelated cutouts onto that canvas was effectively a visual collage generator. The canvas was open; the visual system was not coherent.
+
+The hand-built 3D person was the wrong investment. Your successful animation timings demonstrate that the engine can animate a character cheaply. They do not demonstrate that constructing attractive anatomy from spheres, cylinders and procedural facial textures is a productive route to professional illustration. Without an artist or a deliberately stylized visual design, another round of primitive tweaking is unlikely to deliver the intended quality.
+
+The multi-view AI-generated cutout sheets are also the wrong foundation. They require consistent geometry, proportions, textures, landmarks and joint positions across views. Generating those correctly for every character and then manually repairing the rig does not scale to animals, vehicles, tools and thousands of other objects.
+
+The diffusion experiment was informative, not wasted. It established that image synthesis can be useful in isolation but does not meet the combined needs of this live pipeline. Keep it available for a different role rather than trying to force it into every frame.
+2.3 The overlooked distinction: semantic vocabulary and visual vocabulary
+You need open vocabulary at the scene-understanding level, but you do not need an entirely new custom-designed visual asset for every recognized word.
+
+Suppose the teacher says:
+“A laptop is flying above an airplane while a bicycle is underwater.”
+
+A compositional system needs to identify and render:
+- A laptop, an airplane, a bicycle and an underwater environment.
+- The spatial relations “above” and “underwater.”
+- An airborne motion state and a submerged state.
+- A consistent camera, scale convention, lighting model and annotation style.
+It does not need a special laptop-above-an-airplane animation template.
+
+This is the key to making the problem tractable: open-vocabulary semantics, compositional rendering, and bounded action capabilities.
+
+Research on open-vocabulary scene graphs similarly treats explicit entities and their relationships as an intermediate representation for downstream visual reasoning, rather than treating a generated image as the entire solution. 
+
+openaccess.thecvf.com
+
+
+
+
+3. Five viable architectures, evaluated independently
+The options below are complementary in some cases, but they should not all become primary systems. The latency figures are engineering estimates for a laptop/browser deployment, not benchmark measurements for your particular application. They exclude the time spent listening for a complete speech segment and depend strongly on asset availability, LLM response time and scene complexity.
+Architecture	Visual quality	Open vocabulary	Reliable action and physics	Live suitability
+A. Vector and procedural scene grammar	High for diagrams; moderate for characters	High compositionally	Excellent for supported models	Excellent
+B. Rigged asset-driven 3D	Good to very good with a coherent asset set	High for objects; bounded actions	Excellent with a separate solver	Excellent once assets are loaded
+C. Rive/Spine-style authored 2D rigs	Potentially excellent for designed characters	Moderate	Good for curated actions; external physics needed	Excellent at runtime
+D. Diffusion-based asset generation	Potentially high individual-image quality	Very high for still images	Poor for frame-exact control	Optional, usually asynchronous
+E. Generative video	Potentially very high cinematic quality	Very high in principle	Not sufficiently dependable as a scientific authority	Unsuitable as the primary 4 GB path
+
+Architecture A — A procedural educational graphics engine
+How it works
+
+The LLM generates a scene description, not image pixels or executable Python code. A deterministic renderer constructs all visible elements using a controlled visual grammar:
+- Paths, curves, polygons, ellipses and silhouettes.
+- Text, labels, coordinate axes, arrows and vector fields.
+- Grids, mathematical plots, areas, strips and geometric transformations.
+- Procedural objects composed from reusable shapes.
+- Spatial relationships, layering and camera transforms.
+- Simple character silhouettes and carefully designed movement.
+For mathematics and physics, the engine should create geometry from data. For example, integration strips are generated from a function and an interval, not painted by the LLM.
+
+Tools: Three.js, SVG, HTML Canvas or PixiJS. PixiJS is an MIT-licensed 2D rendering engine and is suitable for high-throughput browser graphics. 
+
+GitHub
+
+
+
+
+Expected performance: Excellent. CPU-side scene construction can be very lightweight, and rendering can run continuously in the browser. There is no image-generation inference on the critical path.
+
+Strengths: This is the best foundation for exact arrows, trajectories, graphs, force diagrams, geometric relationships and continuous updates. It also supports arbitrary combinations of basic objects.
+
+Weakness: A procedural scene grammar will not make a sophisticated human face or expressive animal automatically. Procedural drawing is a good substitute for illustration only where the design is deliberately simplified.
+
+V3 compatibility: Excellent. Reusing scene objects across time and changing their positions, expressions, labels and camera framing is a natural way to produce story sequences.
+
+Verdict: Essential, but not sufficient by itself for every character-driven scene.
+Architecture B — Rigged, reusable 3D assets plus deterministic simulation
+This is my preferred character and object layer.
+
+How it works
+
+Use prebuilt, compatible 3D assets instead of manufacturing their appearance in code. Load them as GLB/glTF models, normalize their size and coordinate system, and register their capabilities in a local asset catalogue.
+
+A character asset should contain a skeleton or supported rig. Its actions are driven by animation clips such as walking, running, pointing, throwing or pushing. A state machine selects and blends clips based on scene actions. A separate animation controller coordinates the character with the objects in the scene.
+
+Three.js already supports glTF loading and animation playback, including animation blending and control through AnimationMixer. 
+
+Three.js Docs
++1
+
+
+
+
+Expected performance: Very good, assuming the models have been loaded and cached. A small scene of optimized static props, a few characters and animated paths should not require diffusion-model inference. Actual performance must be profiled alongside Whisper on your hardware.
+
+Strengths: Consistent characters, reusable action clips, multiple camera angles, controllable placement, deterministic frame-by-frame movement and good continuity across scenes.
+
+Weakness: A rig does not understand the physical meaning of every action automatically. A generic throwing clip still needs a launch point, object attachment, release event, velocity and synchronization with the solver.
+
+Likewise, a humanoid animation library does not provide a walking animation for a bicycle or a physically accurate collision response merely because those objects are in the scene.
+
+V3 compatibility: Excellent. The same actor can persist across scenes, with its identity and world-space state retained as the camera pans, zooms and transitions.
+
+Verdict: Make this the primary system for characters and physical props. Use reusable visual assets, not generated multi-view part sheets.
+Architecture C — Authored 2D character rigs
+Rive and Spine are relevant when the visual target is a polished, stylized, illustrated character rather than a photorealistic person.
+
+An artist creates a character once, rigs it and defines its movement states. The live application changes state-machine inputs and animation parameters; it does not generate the artwork for every utterance.
+
+Rive's runtimes are MIT-licensed, but its editor/export offering is subject to separate plan restrictions. Its current pricing page distinguishes free creation from paid production exports. 
+
+GitHub
++1
+
+
+
+
+Spine also offers runtime integration, but its licensing is tied to the Spine Editor license and applicable runtime terms. Budget for that rather than assuming the entire workflow is free. 
+
+en.esotericsoftware.com
++1
+
+
+
+
+Expected performance: Excellent at runtime. The main cost is the effort and expertise required to produce a polished rig and a useful library of animation states.
+
+Strengths: Controlled character design, expressive faces, a consistent visual identity and efficient playback.
+
+Weakness: Rigs do not create new visual designs simply because the LLM identifies a new noun. Each rig has a finite set of actions and constraints. A carefully designed 2D human cannot become a convincing octopus, bicycle or arbitrary mechanical assembly by changing a text prompt.
+
+V3 compatibility: Excellent for recurring characters and hand-authored stories.
+
+Verdict: A good production option if you can acquire a polished character rig. Do not make it the sole open-vocabulary system.
+Architecture D — Diffusion models as asynchronous visual assistants
+Diffusion is useful when you need a distinctive appearance for an unfamiliar object, a static background or a supplementary illustration.
+
+A generation request would include:
+- The lecture's current visual style.
+- The object or setting that needs an illustration.
+- A reference image or approved style adapter where supported.
+- A request for a transparent or easily separable background, when appropriate.
+- A separate, non-blocking result-handling pipeline.
+The renderer continues using the scene's existing assets while generation runs. A completed image can be presented as an optional illustration if it passes consistency and safety checks.
+
+IP-Adapter and ControlNet are examples of techniques for conditioning image generation on reference imagery and spatial structure. They improve controllability, but they do not turn an image generator into a guaranteed consistent character-animation system. 
+
+GitHub
++1
+
+
+
+
+Expected performance: Variable. Your own measurements already establish that GPU contention significantly increases image-generation latency.
+
+Strengths: Broader appearance vocabulary, useful for unusual objects or scenes that cannot be represented adequately by existing assets.
+
+Weakness: Inconsistent poses and geometry, potentially slow generation, difficulty with correct interactions and no guarantee that a model will respect the desired style.
+
+V3 compatibility: Moderate to good for optional background art or scene establishing images, but poor as the source of continuously controlled character motion.
+
+Verdict: Keep it as a fallback. Do not let it block the lecture or supply authoritative scientific geometry.
+Architecture E — Direct text-to-video or real-time generative video
+This is the most tempting route if the goal is an instant animation that resembles a polished explainer film. It is also the one I would reject for the core scientific engine.
+
+There is genuine research progress in streaming video generation. For example, StreamDiT reported real-time streaming at 16 FPS and 512p in its experimental setting; MotionStream reported up to 29 FPS, and LongLive reported 20.7 FPS on an NVIDIA H100. These results are evidence that the research direction is real, not evidence that the same models will achieve comparable performance on a 4 GB RTX 3050. 
+
+arxiv.org
++2
+
+
+
+
+Open video models also have materially different hardware requirements. The published HunyuanVideo repository, for instance, lists 45–60 GB of peak GPU memory for its documented original-model settings. That is far beyond your current hardware. 
+
+GitHub
+
+
+
+
+Strengths: Excellent potential for fluid, cinematic movement, broad visual variety and continuous storytelling.
+
+Weaknesses: A generated video does not inherently expose the object's exact position, collision state, velocity, force vectors or persistent physical parameters. It may depict an appealing trajectory without respecting the law or numerical result that should determine that trajectory.
+
+V3 compatibility: Potentially useful for non-authoritative establishing shots, transitions or an optional cinematic mode after the scene's facts have already been computed.
+
+Verdict: Do not use a generated video as the physics engine or the live scene's source of truth. Revisit it for optional visual enhancement when you have a suitable paid inference service or substantially better GPU capacity.
+
+4. The architecture I recommend
+Combine A and B, borrowing selected features from C and D.
+
+Your system should have one persistent scene graph, one visual representation planner, one deterministic simulation layer and one renderer. The planner chooses how to visualize each entity rather than forcing every entity through the same mechanism.
+4.1 Recommended implementation stack
+Layer	Recommendation	Reason
+Speech recognition	Keep faster-whisper Medium on the current GPU	Already working in your pipeline
+Speech event detection	Existing VAD and segmentation, with stable utterance events	Avoids treating every fragment as a new scene
+Scene understanding	Fast cloud LLM with structured JSON output	Broad vocabulary, minimal local VRAM
+Scene contracts	Pydantic models and versioned JSON operations	Validation before state mutation
+Scene state	Persistent entity graph plus deterministic event log	Continuity across live updates and story scenes
+Asset registry	Local metadata catalogue of glTF, SVG and raster assets	Fast lookup and explicit capabilities
+Character animation	Rigged GLB/glTF models and reusable clips	Consistent appearance and action
+Diagram rendering	SVG and Canvas/Three.js geometry	Exact visual marks and fast updates
+Physics	Python or TypeScript solvers with validated contracts	Computed results, not LLM guesses
+Browser rendering	Your existing Three.js/WebSocket architecture	Avoids a platform rewrite
+Optional enhancement	Async image generation and licensed static imagery	Expands appearance coverage without blocking
+Export	Existing PPTX path plus archived scene events and snapshots	Reproducible output and research evaluation
+
+Do not migrate to a completely different graphics engine just because one engine has more features. Your current browser-based Three.js renderer already works and is fast. A migration to Godot or a game engine is justified only if you need a particular authoring workflow, advanced 3D features or a significant asset-management benefit. Godot is MIT-licensed, but adopting it means creating and maintaining a second rendering integration rather than fixing the current visual-representation problem. 
+
+Godot Engine
++1
+
+
+
+4.2 Data flow from speech to pixels
+#chatgpt-mermaid-_r_io_{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;fill:rgb(237, 237, 237);}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#chatgpt-mermaid-_r_io_ .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-_r_io_ .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#chatgpt-mermaid-_r_io_ .error-icon{fill:rgb(48, 48, 48);}#chatgpt-mermaid-_r_io_ .error-text{fill:rgb(237, 237, 237);stroke:rgb(237, 237, 237);}#chatgpt-mermaid-_r_io_ .edge-thickness-normal{stroke-width:1px;}#chatgpt-mermaid-_r_io_ .edge-thickness-thick{stroke-width:3.5px;}#chatgpt-mermaid-_r_io_ .edge-pattern-solid{stroke-dasharray:0;}#chatgpt-mermaid-_r_io_ .edge-thickness-invisible{stroke-width:0;fill:none;}#chatgpt-mermaid-_r_io_ .edge-pattern-dashed{stroke-dasharray:3;}#chatgpt-mermaid-_r_io_ .edge-pattern-dotted{stroke-dasharray:2;}#chatgpt-mermaid-_r_io_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-_r_io_ .marker.cross{stroke:rgb(175, 175, 175);}#chatgpt-mermaid-_r_io_ svg{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:16px;}#chatgpt-mermaid-_r_io_ p{margin:0;}#chatgpt-mermaid-_r_io_ .label{font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";color:rgb(237, 237, 237);}#chatgpt-mermaid-_r_io_ .cluster-label text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-_r_io_ .cluster-label span{color:rgb(237, 237, 237);}#chatgpt-mermaid-_r_io_ .cluster-label span p{background-color:transparent;}#chatgpt-mermaid-_r_io_ .label text,#chatgpt-mermaid-_r_io_ span{fill:rgb(237, 237, 237);color:rgb(237, 237, 237);}#chatgpt-mermaid-_r_io_ .node rect,#chatgpt-mermaid-_r_io_ .node circle,#chatgpt-mermaid-_r_io_ .node ellipse,#chatgpt-mermaid-_r_io_ .node polygon,#chatgpt-mermaid-_r_io_ .node path{fill:rgb(9, 23, 44);stroke:rgb(31, 78, 148);stroke-width:1px;}#chatgpt-mermaid-_r_io_ .rough-node .label text,#chatgpt-mermaid-_r_io_ .node .label text,#chatgpt-mermaid-_r_io_ .image-shape .label,#chatgpt-mermaid-_r_io_ .icon-shape .label{text-anchor:middle;}#chatgpt-mermaid-_r_io_ .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#chatgpt-mermaid-_r_io_ .rough-node .label,#chatgpt-mermaid-_r_io_ .node .label,#chatgpt-mermaid-_r_io_ .image-shape .label,#chatgpt-mermaid-_r_io_ .icon-shape .label{text-align:center;}#chatgpt-mermaid-_r_io_ .node.clickable{cursor:pointer;}#chatgpt-mermaid-_r_io_ .root .anchor path{fill:rgb(175, 175, 175)!important;stroke-width:0;stroke:rgb(175, 175, 175);}#chatgpt-mermaid-_r_io_ .arrowheadPath{fill:rgb(175, 175, 175);}#chatgpt-mermaid-_r_io_ .edgePath .path{stroke:rgb(175, 175, 175);stroke-width:1px;}#chatgpt-mermaid-_r_io_ .flowchart-link{stroke:rgb(175, 175, 175);fill:none;}#chatgpt-mermaid-_r_io_ .edgeLabel{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-_r_io_ .edgeLabel p{background-color:rgb(0, 0, 0);}#chatgpt-mermaid-_r_io_ .edgeLabel rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-_r_io_ .labelBkg{background-color:rgba(0, 0, 0, 0.5);}#chatgpt-mermaid-_r_io_ .cluster rect{fill:rgb(48, 48, 48);stroke:rgba(255, 255, 255, 0.15);stroke-width:1px;}#chatgpt-mermaid-_r_io_ .cluster text{fill:rgb(237, 237, 237);}#chatgpt-mermaid-_r_io_ .cluster span{color:rgb(237, 237, 237);}#chatgpt-mermaid-_r_io_ div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";font-size:12px;background:rgb(48, 48, 48);border:1px solid rgba(255, 255, 255, 0.15);border-radius:2px;pointer-events:none;z-index:100;}#chatgpt-mermaid-_r_io_ .flowchartTitleText{text-anchor:middle;font-size:18px;fill:rgb(237, 237, 237);}#chatgpt-mermaid-_r_io_ rect.text{fill:none;stroke-width:0;}#chatgpt-mermaid-_r_io_ .icon-shape,#chatgpt-mermaid-_r_io_ .image-shape{background-color:rgb(0, 0, 0);text-align:center;}#chatgpt-mermaid-_r_io_ .icon-shape p,#chatgpt-mermaid-_r_io_ .image-shape p{background-color:rgb(0, 0, 0);padding:2px;}#chatgpt-mermaid-_r_io_ .icon-shape .label rect,#chatgpt-mermaid-_r_io_ .image-shape .label rect{opacity:0.5;background-color:rgb(0, 0, 0);fill:rgb(0, 0, 0);}#chatgpt-mermaid-_r_io_ .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#chatgpt-mermaid-_r_io_ .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#chatgpt-mermaid-_r_io_ .node .neo-node{stroke:rgb(31, 78, 148);}#chatgpt-mermaid-_r_io_ [data-look="neo"].node rect,#chatgpt-mermaid-_r_io_ [data-look="neo"].cluster rect,#chatgpt-mermaid-_r_io_ [data-look="neo"].node polygon{stroke:url(#chatgpt-mermaid-_r_io_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-_r_io_ [data-look="neo"].swimlane.cluster rect{filter:none;}#chatgpt-mermaid-_r_io_ [data-look="neo"].node path{stroke:url(#chatgpt-mermaid-_r_io_-gradient);stroke-width:1px;}#chatgpt-mermaid-_r_io_ [data-look="neo"].node .outer-path{filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-_r_io_ [data-look="neo"].node .neo-line path{stroke:rgb(31, 78, 148);filter:none;}#chatgpt-mermaid-_r_io_ [data-look="neo"].node circle{stroke:url(#chatgpt-mermaid-_r_io_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-_r_io_ [data-look="neo"].node circle .state-start{fill:#000000;}#chatgpt-mermaid-_r_io_ [data-look="neo"].icon-shape .icon{fill:url(#chatgpt-mermaid-_r_io_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-_r_io_ [data-look="neo"].icon-shape .icon-neo path{stroke:url(#chatgpt-mermaid-_r_io_-gradient);filter:drop-shadow( 1px 2px 2px rgba(185,185,185,1));}#chatgpt-mermaid-_r_io_ .node text{font-size:14px;font-weight:600;letter-spacing:normal;fill:rgb(153, 206, 255);}#chatgpt-mermaid-_r_io_ .edgeLabels text{font-size:13px;font-weight:600;letter-spacing:-0.08px;fill:rgb(153, 206, 255);}#chatgpt-mermaid-_r_io_ .node tspan[font-weight="normal"],#chatgpt-mermaid-_r_io_ .edgeLabels tspan[font-weight="normal"]{font-weight:600;}#chatgpt-mermaid-_r_io_ .edgeLabel .label rect{opacity:1;rx:13px;ry:13px;fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-width:1px;}#chatgpt-mermaid-_r_io_ .node rect,#chatgpt-mermaid-_r_io_ .node circle,#chatgpt-mermaid-_r_io_ .node ellipse,#chatgpt-mermaid-_r_io_ .node polygon,#chatgpt-mermaid-_r_io_ .node path{fill:rgb(0, 40, 77);stroke:rgba(255, 255, 255, 0.1);stroke-width:1px;}#chatgpt-mermaid-_r_io_ .node rect{rx:16px;ry:16px;}#chatgpt-mermaid-_r_io_ .node.mermaid-decision .label-container{fill:rgb(0, 14, 26);stroke:rgb(26, 62, 95);stroke-dasharray:2,2;}#chatgpt-mermaid-_r_io_ .edgePaths .flowchart-link{stroke:rgb(175, 175, 175);stroke-width:1px;stroke-linecap:round;stroke-linejoin:round;}#chatgpt-mermaid-_r_io_ .marker{fill:rgb(175, 175, 175);stroke:rgb(175, 175, 175);}#chatgpt-mermaid-_r_io_ :root{--mermaid-font-family:-apple-system-body,ui-sans-serif,-apple-system,system-ui,"Segoe UI",Helvetica,"Apple Color Emoji",Arial,sans-serif,"Segoe UI Emoji","Segoe UI Symbol";}MicrophoneVAD and WhisperUtterance and confidenceSpeech event normalizerLLM scene plannerPersistent scene graphEntity / asset catalogueVisual plannerValidated scene patchAnimation state machineDeterministic physics solversComputed state andannotationsShared scene rendererProjector canvasPPTX / scene snapshot archiveOptional asynchronous imagegeneration
+
+
+
+
+
+There are three important differences from a simple line-to-LLM-to-renderer design.
+
+First, the LLM must see the current scene state, not just the latest transcript fragment. It needs to know that “he” refers to the character already on the canvas and that “make it go faster” changes an existing object's velocity rather than creating a new object.
+
+Second, asset selection and physical reasoning must remain distinct. The renderer may choose a suitable bicycle asset, but it must not determine the bicycle's velocity from the shape of that image. The physics model provides the state; the renderer visualizes it.
+
+Third, visual enhancement cannot be a blocking dependency. If a search or generation service stalls, the scene still advances using the local renderer.
+4.3 Two execution lanes
+Use two asynchronous lanes.
+
+Lane 1: live response. Receive stable transcript events, update the current scene graph, create or modify visual elements, run the appropriate deterministic simulation and send small scene patches to the browser.
+
+Lane 2: enrichment. Search for better assets, prepare optional illustrations, refine an unfamiliar object's appearance and cache results for reuse. Enrichment may replace a temporary proxy only after the result is verified and it can be substituted without breaking the object's current state.
+
+The renderer should run continuously at its natural refresh rate. It must not ask the LLM to create a new image for each frame.
+
+This two-lane design is especially important with a free LLM service subject to quotas and rate limits. A temporary API failure should degrade the sophistication of the next scene update, not stop the classroom display.
+
+5. Visual assets: the practical solution to your main bottleneck
+I would not build a universal asset library manually, nor assume an AI model will reliably generate missing assets on demand. I would build a tiered asset system with consistent rendering rules.
+5.1 What to use now
+
+
+
+
+
+
+
+
+
+Humanoid characters: rigged models plus reusable animation clips
+
+Start with one high-quality, neutral-looking character. Use a stable rig and a limited set of well-tested actions. Adobe Mixamo offers free access to its humanoid auto-rigging and animation library, and its FAQ permits royalty-free personal, commercial and nonprofit projects within its terms. It is useful for getting an initial character moving, not for generating every kind of actor or animal. 
+
+Creative Cloud
+
+
+
+
+Download and preserve licensed assets locally, convert to GLB/glTF if required, and keep the same model and skeleton throughout the lecture.
+
+
+
+
+
+
+
+
+
+
+
+
+Props and environments: curated CC0 models
+
+Use Kenney for game-style assets and Poly Haven for 3D models, textures and HDRIs. Kenney's assets are published under CC0, and Poly Haven also publishes its assets under CC0, allowing broad reuse subject to the applicable terms. 
+
+Kenney
++1
+
+
+
+
+Select a coherent family of models and adjust materials, lighting, shadows and scale to match one visual style. Do not mix cartoon emoji, photorealistic cutouts and unrelated low-poly models in the same scene.
+
+
+
+
+
+
+
+
+
+
+
+
+Scientific geometry: generate it from data
+
+Draw arrows, forces, axes, vectors, trajectories, wave curves, graphs, field lines and integration strips from your simulation state. These should be native scene elements, not screenshots or images returned by a generative model.
+
+A single diagram grammar can support many subjects without needing a matching static diagram for every sentence.
+
+
+
+Treat the images above as examples of asset categories, not as a mandate to adopt their exact appearance. Your team should evaluate actual downloadable models, rig compatibility and license terms before adding them to the catalogue.
+5.2 How to create a coherent visual style
+Choose one style and commit to it for the first working version. I would choose stylized low-poly 3D with flat or soft-shaded materials, an orthographic camera, controlled lighting, a restrained palette and crisp scientific overlays.
+
+Why this style?
+
+It gives you a third dimension for interactions and camera movement, but it does not require photorealistic anatomy or physically realistic rendering. Reusable GLB assets already exist for many common objects, and a consistent camera and lighting setup can make different assets look more coherent.
+
+Implement a style specification in code:
+STYLE = {    "projection": "orthographic",    "lighting": "soft_directional",    "materials": "flat_or_soft_shaded",    "outline": "consistent",    "background": "warm_neutral",    "annotation_style": "clean_scientific",    "label_font": "consistent_sans_serif",}
+
+
+
+This is illustrative configuration, not a requirement to use those exact values.
+
+The important point is that the style should be enforced by the renderer and asset pipeline—not re-invented in each LLM prompt.
+
+Avoid these three mistakes:
+1. Generating new versions of the same character every time.
+2. Allowing each asset provider to determine its own lighting, proportions and background style.
+3. Trying to hide a poor asset by adding more outlines, face details and shading. If an asset is fundamentally unattractive, replace it.
+5.3 The difficult question: what about an object that does not exist in the catalogue?
+Use five fallback levels, in this order.
+Priority	Representation	Example
+1	Exact reusable asset	A bicycle uses a bicycle model
+2	Closely matching asset family	An unusual book uses an existing book with a changed texture or label
+3	Composed or parameterized object	A machine is assembled from a chassis, supports, cylinders and simple mechanical parts
+4	Stylized proxy with a label	An unrecognized instrument becomes a clearly labelled generic object
+5	Optional async image generation or search	A static decorative illustration is added when suitable art becomes available
+
+A proxy is not a failure. It is a controlled representation of uncertainty.
+
+For example, the scene may show a clearly labelled “unknown instrument” rather than silently displaying a keyboard after Whisper mistakes “spear” for “keyboard.”
+
+For animated objects, the proxy should support the same basic spatial and animation interface as an exact asset. That lets a placeholder slide, rotate or move through a solver-computed trajectory before a better visual representation arrives.
+5.4 Make the asset catalogue semantic
+Do not implement asset selection as a collection of substring matches such as if "car" in sentence.
+
+Each asset should have metadata:
+{
+  "asset_id": "prop.bicycle.generic.v1",
+  "semantic_classes": ["bicycle", "cycle", "vehicle"],
+  "visual_style": "teaching_lowpoly_v1",
+  "dimensions_m": [1.8, 0.6, 1.1],
+  "origin": "wheel_contact_plane",
+  "capabilities": ["translate", "rotate", "rigid_body"],
+  "articulation": "none",
+  "lod": "low",
+  "license_id": "asset-license-record"
+}
+
+
+This is an example schema, not a real asset record. Dimensions and capabilities must be populated from the actual model and verified metadata.
+
+Store aliases, semantic class, bounding dimensions, pivot point, rig type, available clips, physical properties, style, source URL, attribution requirements and license in an indexed catalogue.
+
+When you add an object, you are adding a visual representation with explicit capabilities, not merely adding a filename.
+5.5 Where generative models still fit
+Use local image generation during development for concept exploration, thumbnail previews and occasional assets where the fallback system cannot provide a convincing representation.
+
+For eventual paid infrastructure, an asynchronous image-generation API can expand the asset catalogue, with approval and caching. Keep the scene's identity and physical state independent of the generated pixels.
+
+If you investigate models such as Stable Fast 3D or newer image-to-3D systems, evaluate model-weight licensing separately from the code license, and measure generation, export and asset-repair time. Stability AI's community license, for example, has terms distinct from a permissive MIT code license. 
+
+GitHub
++1
+
+
+
+
+Do not make text-to-3D generation the live asset factory. Even a generated mesh needs appropriate scale, a meaningful pivot, collision geometry, a visual style, and sometimes a rig. Generating the mesh is only one portion of the work.
+
+6. Scene graph design: what the LLM should actually produce
+Your LLM should describe a scene in a small, strictly validated domain-specific language. It should never emit arbitrary Three.js code, executable Python, unrestricted SVG markup or simulation code.
+
+The ideal result describes what changed, what is known, and which registered capabilities are required.
+6.1 Keep the scene state persistent
+Maintain a canonical graph containing:
+- Stable IDs for entities.
+- Their semantic identities and selected visual representations.
+- Spatial and semantic relationships.
+- Their current transforms and animation state.
+- Physical state and references to applicable solver models.
+- Current camera target and scene layout.
+- The distinction between teacher-provided facts, retrieved facts, computed values and illustrative assumptions.
+- A versioned event log describing how the scene changed.
+Entity IDs must survive successive speech segments. “A man pushes a box” creates two entities; “now he stops” updates the man's action and the box's physical interaction. It must not create a second man merely because a new LLM request is made.
+6.2 Use operations, not complete scene rewrites
+The LLM should normally return a compact patch containing operations such as:
+
+create_entity, set_relation, set_action, set_parameter, set_physics_model, set_camera_target or remove_entity.
+
+Operations should have explicit schemas, typed references and allowable values. Reject unknown entity IDs, unsupported solver names, out-of-range numbers and malformed geometry before applying a patch.
+
+A simplified example:
+{
+  "scene_revision": 24,
+  "operations": [
+    {
+      "op": "set_action",
+      "entity_id": "person_1",
+      "action": "push",
+      "target_id": "box_1"
+    },
+    {
+      "op": "set_physics_model",
+      "entity_id": "box_1",
+      "model_id": "rigid_body_1d",
+      "parameters": {
+        "applied_force_N": {
+          "value": 12,
+          "source": "teacher"
+        },
+        "mass_kg": {
+          "value": 4,
+          "source": "teacher"
+        }
+      }
+    }
+  ]
+}
+
+
+These values are illustrative. They must not appear in an actual scene unless the teacher supplied them, they were obtained from an approved source or a clearly declared assumption was made.
+6.3 Separate semantic actions from physical laws
+There is a subtle but important issue with your proposed division of responsibilities.
+
+The LLM should interpret the utterance and select from an approved catalogue of action and solver types. It should not invent the equations or calculate their results.
+
+For example:
+- “Push the box” is an action and an interaction.
+- “The floor is rough” provides qualitative information about friction.
+- “Apply a force of 12 N to a box of mass 4 kg” provides quantitative model inputs.
+- “Calculate its acceleration” requests a result from a registered solver.
+The deterministic core then applies a known model with explicit assumptions and units. It checks whether required parameters are present and computes the output.
+
+A simple force calculation might use Newton's second law, but the example above cannot be fully evaluated from force and mass alone if the intended diagram includes all forces and the floor friction is not specified. A solver must use the defined model and assumptions rather than quietly guessing missing parameters.
+
+I would support three simulation modes:
+Mode	Behavior
+Quantitative	All required inputs are known; compute motion and show numerical results
+Qualitative	Inputs are missing; show direction, interaction and conceptual behavior without inventing numerical values
+Illustrative	Use explicit, disclosed assumptions; mark the scene as an illustrative example
+
+This is essential for educational correctness. A scene that looks precise but contains invented physical parameters is worse than a clearly simplified diagram.
+6.4 Include provenance and confidence in the contract
+Every meaningful parameter should carry its provenance:
+{
+  "value": 9.81,
+  "unit": "m/s^2",
+  "source": "approved_constant",
+  "confidence": 1.0,
+  "reference": "earth_surface_standard_gravity"
+}
+
+
+This is a schema illustration, not a statement that the value applies under every condition.
+
+The categories should distinguish:
+- teacher: explicitly stated by the teacher.
+- approved_constant: obtained from a trusted local reference table.
+- derived: computed by a deterministic solver from identified inputs.
+- assumption: added by the application, with disclosure.
+- uncertain: not reliable enough for a quantitative claim.
+This makes it possible to trace a numerical annotation back to its source and prevent the LLM from inventing values.
+6.5 Manage ambiguity explicitly
+Speech recognition is not semantic certainty. The system needs a confidence-aware process:
+1. Receive the recognized utterance and its available confidence information.
+2. Resolve references against the current entity graph.
+3. Determine whether the utterance indicates a new entity, an edit, a camera action, a physical change or an ambiguous term.
+4. Select a deterministic action or solver only when its prerequisites are satisfied.
+5. Render a provisional, clearly labelled object if the entity is uncertain.
+Do not silently transform an ambiguous speech segment into a precise scientific claim. During a live lecture, a low-confidence proxy is preferable to interrupting the teacher repeatedly. Where the uncertainty changes the explanation materially, the application should ask for clarification or leave that particular detail unresolved.
+6.6 Keep the context compact
+Your current rule of bounded context is correct.
+
+Supply the LLM with the latest stable transcript event, relevant preceding events, a compact scene-state summary and the registry of supported operations. Do not send the entire lecture history on every request.
+
+For the free-tier route, also avoid requesting lengthy chain-of-thought or verbose descriptions. Use a small, well-defined output schema, an explicit token budget, retries with backoff and deduplication by utterance/event ID.
+
+The 8k tokens/minute constraint you described is provider- and model-specific. Treat it as a rate-limit budget, not as a guarantee that every lecture update will return within two seconds. A small request may still hit a 429 or experience substantial network latency.
+
+7. Motion, character behavior and scientific correctness
+A character clip and a physics simulation solve different problems. They must be synchronized, not treated as interchangeable.
+7.1 What happens when a person pushes a box?
+The scene needs several coordinated elements:
+1. A rigged character in an appropriate push pose.
+2. A box with a stable pivot and physical state.
+3. A contact relationship between the character and box.
+4. A floor and a consistent coordinate system.
+5. The applied-force arrow, friction arrow and other relevant annotations.
+6. A solver that computes the box's motion under the specified model.
+7. A character-animation controller that adjusts the hands and body to maintain plausible contact.
+The force vectors should be computed from the physical model, not chosen independently by the animation system.
+
+Suppose the teacher then says, “Now he stops pushing.” The force model changes. The box's motion must be updated using the existing velocity and the remaining forces.
+
+If friction is present and correctly modelled, the box may decelerate. If the model specifies an ideal frictionless floor, the box does not automatically stop. The visual outcome must follow the stated model, not a conventional animation clip.
+
+For a first implementation, the contact between hands and box can be approximated with a pre-authored pose and a simple kinematic constraint. Full-body inverse kinematics and elaborate contact simulation should come later.
+7.2 What happens when a teacher says “throw a book”?
+The visual action should have a clear state transition:
+- Held: Book attached to the character's hand.
+- Throwing: Character performs a throwing animation.
+- Release: Book detaches at a defined release time and receives the computed initial velocity.
+- Flight: Physics solver updates its position and velocity.
+- Impact: Collision detection determines the contact event and subsequent state.
+If the teacher specifies initial velocity, angle and gravity, a projectile solver can calculate the trajectory. If the teacher only says “throw it upward,” the system can show an illustrative qualitative arc or ask for parameters when a quantitative answer is required.
+
+For the live engine, start with a 2D/2.5D or constrained 3D scene rather than attempting universal rigid-body dynamics. A physically correct trajectory is more valuable than a visually elaborate character rig that cannot correctly release an object.
+7.3 What about relative velocity, fields and mathematical visualization?
+These are the use cases where your system can achieve strong educational value without a large visual library.
+- Relative motion is a pair of coordinate frames plus vector relationships.
+- A falling-rain explanation needs velocity vectors, a relative-velocity calculation and camera/observer selection.
+- Integration strips are geometry generated from a function and interval.
+- A wave is a parametrized curve with phase and amplitude.
+- Electric and magnetic field diagrams can be generated from validated physical equations and plotted vector data.
+For these topics, build a small set of high-quality primitive families with good layouts and animation. They are generic components, not topic-specific finished slides.
+
+For mathematical animation, take inspiration from Manim. The community edition is MIT-licensed and designed for mathematical animations, but its offline rendering workflow should not be forced to become the universal runtime for every utterance. Reuse its mathematical and geometric approach where appropriate, and implement the genuinely live interactions in your browser scene engine. 
+
+Manim Community | Documentation
++1
+
+
+
+
+8. Concrete free-tier and paid-upgrade plan
+8.1 Free route: use the existing laptop
+Your current hardware is sufficient to build and demonstrate a meaningful version of V2, as long as it is not expected to run a large video or diffusion model alongside Whisper.
+Recommended local/cloud split
+
+Local GPU and CPU
+
+Keep Whisper on the GPU. Run VAD, schema validation, entity resolution, scene-state management, physics solvers and asset selection locally. The browser handles the live graphics and animation.
+
+
+
+Cloud LLM
+
+Use Groq or a comparable available fast inference service for compact structured scene patches. Make the provider interchangeable so that a quota failure does not require redesigning the system.
+
+
+
+Local cache and asset registry
+
+Download and validate the selected models before the lecture. Load recurring characters and common props at startup or on demand, and cache the semantic registry locally.
+
+
+
+What I would not do on this hardware:
+- Run an image or video diffusion model in parallel with Whisper.
+- Generate a new background image for every utterance.
+- Build the complete catalogue with online searches during the lesson.
+- Depend on a free image-generation API to maintain a fixed character's appearance.
+- Make a remote model call for each frame.
+For asset discovery, use Openverse when licensed photography or artwork is useful, but check the individual asset's license and attribution details. Openverse explicitly cautions that its license metadata is not a guarantee of license accuracy. 
+
+api.openverse.org
++1
+
+
+
+8.2 Paid route: what to upgrade first
+Do not start by buying a bigger GPU solely to run generative video. More VRAM would expand your options, but it would not solve the consistency, physical accuracy or asset-management issues.
+
+My upgrade priorities would be:
+
+First: reliable cloud inference. Move to a paid LLM service that provides stable latency, predictable quotas, structured output and suitable service limits. A paid image-generation API can support occasional enrichment, but remains optional.
+
+Second: professional assets. Buy or commission a coherent character and prop library, or pay for a properly authored character rig. A few polished, reusable assets can improve the product more than weeks of making procedural faces.
+
+Third: hardware. Consider a machine with substantially more VRAM only after profiling demonstrates that local inference provides a meaningful benefit. A GPU with 12–16 GB or more would provide a more practical starting point for exploring smaller local generative models than your current 4 GB card; more demanding video systems may require substantially more memory.
+
+Fourth: selected visual tools. A paid 2D rigging editor, commercial asset pack or hosted asset-generation service may be worthwhile once you know exactly which gap it addresses.
+
+Fifth: optional video generation. Explore streaming generation only for a mode that can tolerate its own latency, variability and failure cases. Keep the deterministic scene as the authoritative source.
+
+For the research project, document the actual model versions, hardware, VRAM use, API latency and costs. “Uses a generative model” is not a sufficient reproducible description.
+
+9. How V2 and V3 should share the same engine
+Do not build V2 as one application and then rewrite it for V3. Both should operate on the same scene representation.
+
+The difference is how the scene evolves.
+V2: concept simulation
+V2 should answer questions such as:
+- What physical objects are present?
+- How are they related?
+- What actions and forces are occurring?
+- What should move, and according to which model?
+- Which annotation or camera view best explains the concept?
+The scene evolves in response to live speech. Each utterance modifies the current state or triggers an action.
+V3: story scenes
+V3 adds narrative structure to the same scene graph.
+
+A story director interprets narration as scene transitions, preserves persistent entities and locations, and specifies the timeline and camera movements. It should not invent arbitrary new character assets when the narration advances.
+
+For example, consider a story about a drop of water travelling from the ocean through evaporation, condensation and precipitation.
+
+The persistent entity identity, visual representation and scene history can follow the drop across scenes. The story director can change the environment, lighting, camera framing and explanatory captions without rebuilding the whole world each time.
+
+The shared system therefore needs:
+- Stable entity IDs across scenes.
+- A representation registry that persists between scenes.
+- Scene-entry and scene-exit events.
+- A timeline supporting sequential and overlapping actions.
+- Camera transitions and focus targets.
+- Explicit scene-transition conditions and recoverable state.
+- Captions derived from the recognized narration, rather than fabricated quotations.
+There is one additional caution: a physical simulation and a narrative story may require different time models. A lecture may pause, revisit an earlier concept or ask to focus on one mechanism. V2 must allow controlled simulation stepping, pausing and resetting. V3 needs a narrative timeline that does not lose its state when the teacher pauses or adds commentary.
+
+Build the shared event log and persistent scene representation before building the story director.
+
+10. A practical implementation roadmap
+With roughly two months available for semester work, I would stop trying to solve every visual problem simultaneously. The next milestone should be one coherent, convincing animation, not a larger collection of loosely related features.
+Phase 1 — Freeze the visual target and stop asset experiments
+Goal: choose a style and a small set of real assets.
+
+Create one reference scene with the person, box, floor, force vectors, camera framing and a neutral background. Use a rigged character and a small set of matching props.
+
+Compare a few coherent candidate styles once. Evaluate their appearance at projector size—not just on a laptop at full resolution.
+
+Choose one. Freeze its palette, projection, lighting, typography, outline rules and annotation style. Build the first version's visual identity around that decision.
+
+Exit test: The static scene looks coherent before any animation begins. If it already looks poor, do not move on to more animation work.
+Phase 2 — Build a thin end-to-end scene engine
+Goal: prove that natural speech can change an existing scene.
+
+Start with three actions: add, update and animate.
+
+Implement persistent entities, stable IDs, versioned patches and an asset registry. Keep the LLM output small. Create a minimal validator that rejects malformed updates and unsupported commands.
+
+Connect the LLM output to the browser renderer. Preserve your existing working pipeline rather than rebuilding it.
+
+Exit test: “A person pushes a box,” followed by “now stop pushing,” updates the same entities. It does not recreate the entire scene or lose object state.
+Phase 3 — Add animation clips and synchronization
+Goal: make characters interact rather than move independently.
+
+Implement walking, pushing and throwing with suitable prebuilt clips. Synchronize hand contact, object attachment, release events and transitions.
+
+Initially support one character, one box, one throwable object and a fixed range of camera angles. Do not start with arbitrary animals or complex multi-character choreography.
+
+Exit test: The character appears to push the box; the box moves according to its simulation; the animation responds to changes in the physical state without visible discontinuities.
+Phase 4 — Connect deterministic physics
+Goal: distinguish scientifically correct movement from illustrative motion.
+
+Add or harden the small set of solvers required by your first benchmark: 1D motion with specified forces and friction, projectile motion, relative velocity, simple collision and a small set of mathematical plotting primitives.
+
+For each solver, specify:
+- Required inputs and units.
+- Assumptions and valid ranges.
+- Output state and uncertainty.
+- Stable test cases.
+- Which annotations can be generated from its outputs.
+Keep numerical labels and vectors coupled to solver results. When the system cannot compute a valid quantitative answer, use a clearly qualitative mode.
+
+Exit test: The displayed trajectory and numeric labels match the expected solver result within defined tolerances.
+Phase 5 — Add camera control and compositional vocabulary
+Goal: make scenes useful beyond a fixed example.
+
+Implement focus and zoom on a chosen entity, simple viewpoint changes and the ability to place additional objects. Add object classes in priority order from your evaluation set.
+
+Start with ordinary lecture concepts, then test unfamiliar combinations such as a bicycle under water. The purpose is to evaluate whether composition works without requiring a hand-authored scene for that exact phrase.
+
+Exit test: New nouns and combinations can reuse the same scene grammar and visual system, even when a generic proxy is required.
+Phase 6 — Add the V3 story director
+Goal: advance through narrative scenes using the shared scene representation.
+
+Add scene-entry events, camera transitions, persistent identities and a timeline. Do not begin with long generated video. Build a story with three or four connected scenes first.
+
+Exit test: A recurring character remains visually stable across scene transitions and retains identity and state when the narration changes the environment.
+Phase 7 — Conduct an actual classroom-quality evaluation
+Goal: determine whether the system works rather than whether it passes unit tests.
+
+Use a fixed test set, record every run and compare the rendered results. Do not use the same developer's subjective judgment after every code change as your only quality gate.
+
+A reasonable eight-week prioritization, assuming the speech and basic renderer remain stable, is:
+Period	Deliverable
+Week 1	Style decision, asset audit and benchmark definition
+Weeks 2–3	Persistent graph, typed operations and asset registry
+Weeks 4–5	Character actions, synchronized props and validated solvers
+Week 6	Camera controls, compositional fallback and latency hardening
+Week 7	Story-scene prototype and integrated tests
+Week 8	Evaluation, ablations, paper figures and failure analysis
+
+This is a proposed schedule, not a guarantee that every milestone will be complete. If the rigged character proves difficult to integrate, reduce the number of supported character actions rather than abandoning the entire architecture.
+
+11. What does “explainer quality” mean in a testable sense?
+This matters more than it might seem. Your previous loop of implementing, taking a screenshot and deciding that the scene still looks wrong can continue indefinitely if you never define measurable acceptance criteria.
+
+Use separate metrics for four dimensions.
+11.1 Semantic accuracy
+Does the scene accurately represent what the teacher said?
+
+Measure entity identification, action correctness, spatial relationship accuracy, reference resolution and the proportion of utterances that require human repair.
+
+An asset being visually attractive does not make it semantically correct.
+11.2 Visual quality
+Does the scene look like one coherent designed explainer?
+
+Rate a fixed set of samples for:
+- Style consistency.
+- Character identity and proportion stability.
+- Correct relative placement and object overlap.
+- Legibility on a projected display.
+- Visual hierarchy and camera composition.
+- Motion smoothness and meaningful contact.
+- Whether annotations improve understanding or create clutter.
+Use at least two or three independent reviewers when possible. Ask them to evaluate randomized samples without being told which implementation produced them.
+11.3 Scientific correctness
+Test the exact values and motion independently of the artwork.
+
+For a projectile, compare the trajectory against an analytical reference solution. For relative velocity, verify the frame transformation. For collisions, verify conservation or restitution under the selected model assumptions. For integration strips, verify that the displayed geometry corresponds to the sampled function and interval.
+
+Do not use an LLM judge as the only authority for the physics metric. Use deterministic tests wherever an analytical or numerical reference exists.
+11.4 Real-time behavior
+Instrument the complete pipeline with timestamps:
+- Speech-segment completion.
+- LLM request and response.
+- Scene patch validation.
+- Solver update.
+- First visible update.
+- Full scene stabilization.
+- Any subsequent asset replacement.
+Report p50 and p95 latency, failure rate, timeouts, API errors and GPU memory during concurrent operation. Measure first visible response separately from time to final scene quality.
+
+My starting acceptance targets would be:
+Metric	Initial target
+First useful visual	p50 within 2 seconds after a stable speech event
+Full scene update using cached assets	p50 within 3 seconds
+Physics correctness	All critical numerical checks pass for the defined deterministic test suite
+Visual identity	No unintended character replacement in persistent-scene tests
+Runtime reliability	No crashes or invalid scene mutations during the scripted evaluation set
+Unsupported inputs	Controlled proxy or explicit uncertainty, never silently invented scientific facts
+
+These are proposed goals to validate, not measured properties of the current code. Set realistic p95 targets after collecting baseline timings. Free-tier cloud inference prevents you from guaranteeing a hard end-to-end two-second response in every circumstance.
+11.5 Build a compact benchmark that exposes the real problem
+Use about 20–30 scripted lecture segments, including these categories:
+1. A person pushes a box and then releases it.
+2. Relative velocity of rain and a walking observer.
+3. A book thrown upward with known initial conditions.
+4. A jump under different gravitational fields.
+5. Integration strips and a changing function.
+6. A wave changing amplitude and frequency.
+7. Electric and magnetic field vectors.
+8. A second vehicle introduced during motion.
+9. “Focus on the electron” or another entity-specific camera request.
+10. An unusual object combination not explicitly represented in the catalogue.
+For each case, store the expected scene graph, expected physical results when quantitative, intended visual state and the exact utterance sequence.
+
+Run tests with clean scene state and with previously populated scenes. The second case is critical because continuity is one of your key claims.
+
+12. How to turn the system into a publishable research contribution
+The research contribution cannot simply be that the application calls an LLM and then calls an image API. That is too broad and too dependent on existing components.
+
+I would develop the paper around this central idea:
+
+An uncertainty-aware, continuity-preserving scene representation that translates live lecture speech into compositional educational animation, with deterministic physical models enforcing quantitative correctness.
+
+This is a proposed contribution; its novelty must be verified against related work before making a claim that it is the first of its kind.
+12.1 Three plausible research contributions
+Contribution A: Incremental lecture-to-scene graph generation
+
+An open-vocabulary scene graph is updated from streaming speech rather than generated from a single complete prompt. Stable entity identity, relation updates, reference resolution and bounded context are part of the method.
+
+The research question is whether maintaining persistent graph state improves entity continuity and relation accuracy compared with independently generating scene operations for each utterance.
+
+Contribution B: Semantic-to-visual representation planning
+
+A planner maps scene entities to reusable assets, visual families or parameterized procedural objects while respecting a consistent style and declared capabilities.
+
+The research question is whether a tiered asset planner provides better visual consistency and compositional coverage than unrestricted image retrieval or unrelated cutouts.
+
+Contribution C: Deterministic physics coupled to generative scene understanding
+
+The LLM identifies intended actions and selects registered model types, while verified solvers compute physical state and annotations.
+
+The research question is whether this hybrid representation reduces quantitative errors compared with explanations where the LLM directly generates numerical descriptions or unverified movement.
+12.2 Design experiments that support each claim
+Use an ablation matrix:
+Configuration	What it tests
+LLM generates fresh scene operations per segment	Baseline continuity
+Persistent scene graph enabled	Contribution A
+Persistent graph plus semantic visual planner	Contribution B
+Above plus deterministic solvers and provenance	Contribution C
+Optional generated visual assets enabled	Appearance benefit versus latency cost
+
+Measure scene-graph accuracy, continuity failures, visual ratings, numerical correctness and end-to-end latency.
+
+Include examples that fail. If a word is ambiguous or no appropriate asset exists, characterize how the system behaves. An honest analysis of unsupported concepts strengthens a paper more than a claim of universal coverage.
+12.3 Be precise about the paper's contribution
+Your paper should distinguish:
+- Existing software components.
+- Your scene schema and algorithms.
+- Your asset-planning method.
+- Your deterministic physics integration.
+- Your benchmark dataset and evaluation procedure.
+- The measured results of your own implementation.
+Use a related-work review to identify the closest streaming scene-generation, educational animation and LLM-to-graphics systems. The CVPR 2024 work on open-vocabulary scene graphs is a relevant starting point, but it is not the entire literature. 
+
+openaccess.thecvf.com
+
+
+
+
+Novelty comes from a demonstrably useful method or a rigorous evaluation, not from adding a larger number of modules.
+
+13. Traps and mistakes to avoid
+These are the dead ends I would explicitly ban in your development process.
+Trap 1: Trying to solve visual quality with more code
+You have already seen that procedural character construction can be fast and still look bad. Do not keep adding facial geometry, hair, hand shapes and texture tweaks without a designed visual reference and a clear acceptance criterion.
+
+Buy or reuse the character asset. Build the educational behavior around it.
+Trap 2: Asking the LLM to generate raw SVG or Three.js code
+LLMs can generate impressive-looking snippets, but unconstrained geometry code creates inconsistent layout, unsupported shapes, execution risks and difficult debugging.
+
+Use a safe declarative scene language. For SVG, accept only validated geometry primitives and a constrained style schema, or generate SVG server-side from trusted templates. Never inject unrestricted LLM-produced markup directly into the projector page.
+Trap 3: Assuming a rig solves every action
+A rig provides articulated motion, not semantic understanding. “Throw,” “hold,” “push” and “point at” require different constraints and object interactions.
+
+Start with a few carefully synchronized actions. Make their transitions correct before expanding the library.
+Trap 4: Treating a physics animation and a visual animation as the same system
+A character animation can look plausible while violating the simulated physical state. Conversely, a correct simulation can produce an awkward animation when the visual controller does not understand contacts or joint constraints.
+
+Physics must determine the authoritative object state. Animation follows it.
+Trap 5: Making every speech segment a fresh scene
+This destroys continuity, increases model calls and can cause new asset loads on every update.
+
+Track persistent entities. Use patch operations, idempotent event IDs and a compact scene-state summary.
+Trap 6: Trying to achieve complete open vocabulary through images alone
+A photograph or generated image does not automatically support rotation, joint articulation, physical interaction, scale normalization or arbitrary camera angles.
+
+Open vocabulary needs a compositional fallback, not just a larger image search index.
+Trap 7: Evaluating quality using only screenshots
+A screenshot does not reveal whether a character's hand loses contact, whether a trajectory changes incorrectly, whether an object pops into a new pose or whether a camera transition breaks continuity.
+
+Every visual test should include a short recording, a final-state screenshot and an expected-state comparison.
+Trap 8: Continuing to add templates until coverage feels sufficient
+Use templates as reusable explanatory components and validated reference cases, not as the full architecture.
+
+The acceptance test for open vocabulary is whether the engine can compose known capabilities to represent an unfamiliar combination—not whether you have added another topic-specific template.
+
+14. Additional features that would make the product valuable to teachers
+I would prioritize features that improve the explanation rather than those that merely make the rendering more elaborate.
+
+
+
+
+
+
+
+
+
+Interactive focus and explanation
+
+A teacher can click an object or say “focus on the electron,” and the system moves the camera, dims unrelated components and emphasizes the selected entity. Existing labels, coordinates and physical state remain consistent.
+
+
+
+
+
+
+
+
+
+
+
+
+Before-and-after comparison
+
+Let the teacher change one parameter and show the result side by side. For example, compare a jump under two gravity values or motion with and without friction. Both views should use the same solver and scale conventions.
+
+
+
+
+
+
+
+
+
+
+
+
+Explainable annotations
+
+Every important label, arrow or equation can be inspected. The system knows whether it represents a teacher-provided fact, a computed result or an illustrative assumption. This also helps with research reproducibility.
+
+
+
+
+
+
+
+
+
+
+
+
+Teacher-controlled presentation
+
+Add pause, step, replay, reset, pin scene, hide annotations and return to slides. A live visualization should not make the teacher feel that the software has taken control of the lecture.
+
+
+
+Other useful additions are:
+- An uncertainty indicator for misrecognized or unsupported terms.
+- A “show assumptions” control for quantitative scenes.
+- A replay mode that reconstructs the scene from recorded utterance events.
+- A scene snapshot that teachers can save to PPTX or a lesson archive.
+- A student prediction mode in which the class predicts what will happen before the simulation proceeds.
+- A safety layer that filters unsuitable content and limits dangerous or misleading demonstrations to appropriate educational representations.
+Do not show all of these at once on the projector. Most are teacher controls or optional explanation layers.
+15. System rules I would enforce in code
+Turn the following into explicit architectural invariants and regression tests.
+
+Rule 1: The scene graph is authoritative. The browser may maintain a synchronized rendering copy, but no image-generation response or animation clip is allowed to overwrite authoritative physics state.
+
+Rule 2: Unknown concepts degrade gracefully. If no exact asset exists, select a controlled proxy. Never invent a scientific property merely to make the illustration appear complete.
+
+Rule 3: All numerical annotations have provenance. Each displayed physical value must originate from the teacher, an approved reference, a declared assumption or a deterministic computation.
+
+Rule 4: Character identity is persistent. Appearance, rig, visual style and entity ID remain stable unless a meaningful, explicit change is requested.
+
+Rule 5: LLM output is untrusted input. Validate operations and parameter values before they modify state. The LLM cannot create arbitrary code, select an unregistered solver or bypass safety validation.
+
+Rule 6: The core display survives service failure. A cloud timeout, asset search failure or unavailable generative model must not terminate the renderer or corrupt the current scene.
+
+Rule 7: Time is measured end to end. Separate speech segmentation delay, inference delay, simulation delay and rendering delay. Do not report the rendering FPS as evidence of lecture-to-visual latency.
+
+Rule 8: Every scene can be reproduced. Store enough information to replay the sequence: speech events, validated operations, model and solver versions, random seeds where relevant, inputs, state transitions and asset versions.
+
+Rule 9: The same representations serve V2 and V3. The story director can add temporal sequencing and narrative structure, but it does not create a separate scene model or bypass deterministic solvers.
+
+16. My final recommendations
+If I were responsible for the next development sprint, I would make five decisions and avoid reopening them without new evaluation evidence.
+1. Keep your current live pipeline and browser renderer. Do not rewrite the working speech-to-scene flow merely to try another engine.
+2. Stop developing human anatomy from primitive geometry. Choose one polished, compatible rigged character and a small set of props.
+3. Make procedural geometry the authoritative language of scientific explanation. Trajectories, forces, graphs, vectors and mathematical constructions are generated from data.
+4. Build a persistent, typed scene graph and asset planner. This is the central integration point for arbitrary vocabulary, continuity, animation and physics.
+5. Move image generation off the critical path. Keep it as an optional enhancement, never as a prerequisite for a scene to work.
+The important compromise is that you will not immediately achieve a fully animated, explainer-quality representation of every object and action that a teacher can imagine. A general-purpose system with that coverage, stylistic consistency and physical correctness is beyond what you should promise on the current hardware and timeline.
+
+You can, however, make substantial progress toward the vision: build a visually coherent educational scene from live speech, compose unfamiliar combinations of objects, preserve their identities across the lesson and explain the relevant physical or mathematical behavior correctly.
+
+That is already a much stronger V2 than a collection of templates or a canvas of generated stickers.
+
+The single best next milestone: implement the complete “person pushes a box, then stops pushing” scenario with one reused rigged character, one box asset, persistent scene state, a deterministic friction model, synchronized contact animation and computed force vectors. Record the result, test it against defined physical cases and compare the visual quality with a fixed reference.
+
+Do not add new topics until that one scene is convincingly correct and coherent. If this architecture succeeds on the box, you have a reusable foundation for projectile motion, relative velocity, collision demonstrations, waves and eventually story scenes. If it fails, you will have identified the specific weakness in your asset, scene-graph, animation or physics integration rather than discovering another limitation after building a larger system.

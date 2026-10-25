@@ -1,0 +1,174 @@
+PROMPT: REQUEST FOR SOLUTION DESIGN - LIVE "CANVAS FOR IMAGINATION" FOR A LECTURE COPILOT
+(copy everything below this line into the chatbot)
+------------------------------------------------------------------------------------------------
+
+You are a senior AI systems architect with deep experience in real-time graphics, procedural animation, generative
+image/video models, LLM tool-use, and educational media production. I am an AI developer building a research
+system, and I am stuck on its core visual problem. Please read the full context, then give me an honest, technical,
+practical answer. Do not be polite about bad ideas - tell me what is wrong.
+
+=== 0. YOU ARE NOT BOUND TO OUR APPROACH ===
+Our past work below is context, not a requirement. Evaluate independently, based only on what we want to achieve.
+- You do NOT have to use our approach, our architecture, or any tool we used. Our path is not the only or final one.
+- You may propose a completely different system. If a totally new approach is better, say so and design it.
+- You may also say "go back to approach X and fix it this way" - that is equally welcome.
+- You may drop features, add features, or say plainly that a feature is not possible (or not possible live).
+- Tell us clearly which of our approaches to drop and which to follow.
+The only two things that MUST hold: (1) it works LIVE during a lecture, from the teacher's speech, and (2) it
+actually EXPLAINS the concept correctly to students. Everything else (style, tools, stack, rules, scope) is open.
+
+=== 1. THE PROJECT ===
+"Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation". A laptop app listens to a teacher's live
+lecture through a microphone and shows a live educational display on the classroom projector. Nothing is prepared
+in advance: no script, no topic list, no slides given beforehand. Everything comes from live speech.
+
+It is also a research project: each version is meant to become an IEEE conference paper, so the approach needs a
+clear novelty (e.g. "open-vocabulary, continuity-aware scene graph from live speech + exact law solvers", not
+"we called an image API").
+
+Versions:
+- V1 (DONE, works live): live slides. Speech -> text -> LLM understanding -> a deterministic planner builds and
+  updates slides (titles, bullets, formulas, images from Wikimedia/Openverse, quizzes, PPTX export).
+- V2 (CURRENT, STUCK): "Concept Simulation / Canvas for Imagination" - draw and animate what the teacher says.
+- V3 (NEXT): "Story Scenes" - live narration becomes a moving storyboard.
+- V4 (later): multilingual lectures reusing the same core.
+
+=== 2. MY VISION FOR V2: "CANVAS FOR IMAGINATION" ===
+When the teacher describes something, it appears on the slide within ~2 seconds as a clean, animated,
+explainer-quality scene - as if a Kurzgesagt, TED-Ed, 3Blue1Brown or Veritasium animator were drawing live along
+with the teacher. Not stickers on a slide; a real scene that acts.
+
+Examples of what the teacher might say, and what should appear:
+- "A man pushes a box across a rough floor" -> a man in a pushing pose, box sliding, friction and applied force
+  arrows (each its own colour), the box decelerating correctly when he stops pushing.
+- "Rain falls vertically, but a man walking forward feels it slanted" -> walking man, rain, then the same scene
+  "seen from the man", with velocity vectors; the slant angle computed, not guessed.
+- "An electron orbits the nucleus... now focus on the electron" -> atom animation, camera zooms to the electron.
+- "Throw a book in the air" -> a character actually throws it; exact projectile path drawn as a dotted line.
+- "If you jumped on the Moon and then on Mars" -> two side-by-side jumps with correct heights for each gravity.
+- "Split the area under the curve into thin strips" -> 3Blue1Brown-style integration strips that get thinner.
+- "A lightning rod protects a building", "the solar system", "two cars collide", "a wave on a string",
+  "electric and magnetic fields of a wave".
+- Odd, non-educational ones too: "a bicycle under the ocean", "a laptop flying on top of an airplane".
+
+Required qualities:
+- OPEN VOCABULARY: anything said - things, places, people, animals, actions, relations ("on", "under",
+  "holding", "behind"). No hard-coded topic scenes.
+- ONE CONSISTENT STYLE per lecture, textbook/explainer quality. Style itself is fully open (flat 2D, 3D, realistic,
+  vector) - whatever works best. Characters must not drift (same face, same body) across frames and scenes.
+- REAL ACTIONS: characters walk, run, push, pull, throw, hold, point, wave, think; live faces (blink, gaze,
+  expressions, talking). Objects have correct relative real-world sizes but stay readable.
+- CORRECT PHYSICS: the LLM only states WHAT is in the scene; deterministic Python law solvers (kinematics,
+  projectile, relative motion, forces/friction, collisions, fields, waves, rigid bodies, orbits) compute HOW it
+  moves and every number shown. Never display a number the teacher didn't say or code didn't compute.
+- CONTINUITY: the scene evolves as the teacher continues ("now he throws it harder", "add a second car").
+- CAMERA: any angle, focus/zoom on a part, by voice or by teacher click on a control page.
+- Drawn on the slide itself (whole slide = canvas), never a separate screen. "Imagine Mode" button: every line is
+  drawn until the teacher presses End, then slides resume.
+- Safety filter for inappropriate content.
+
+=== 3. V3 VISION: "STORY SCENES" ===
+When the teacher narrates ("In 1905 a young clerk in Bern...", "A drop of water starts in the ocean...",
+"Imagine you are a red blood cell..."), a storyboard plays along with the narration: scenes with captions only from
+the said words, camera pans/zooms, transitions, and the SAME characters and places carried across scenes. It reuses
+V2's scene graph, assets, renderer and continuity. So whatever asset/character system V2 uses must also support
+multi-scene stories with consistent characters.
+
+=== 4. CONSTRAINTS (facts about our situation; you may argue that one should change) ===
+- Real time: line spoken -> first visual in ~2 s; full scene within a few seconds. Live only, no pre-lecture prep.
+- Hardware now: one laptop, NVIDIA RTX 3050 4 GB VRAM, which already runs faster-whisper medium.en (STT) live.
+- Budget now: free tiers only (Groq LLM free tier, several keys, ~8k tokens/min per model, 429s under load;
+  free Cloudflare Workers AI / HuggingFace). LATER: a paid API and/or better GPU is planned - please give a free
+  path AND a "when we pay" path.
+- Our current design rules (reasons: reliability and correct numbers; open to change if you justify it): the LLM
+  is a gated reasoning service inside a deterministic core; it never controls flow, never writes code at runtime,
+  never computes physics; bounded context (never the whole transcript).
+- We currently avoid Gemini and Ollama-style local LLMs as the main reasoner (bad past experience).
+
+=== 5. STACK WE HAVE ===
+Python 3.10-3.12, FastAPI + WebSocket, browser display page (HTML canvas/SVG, three.js 0.160), faster-whisper
+(GPU), Groq (Llama / gpt-oss models, JSON scene operations), pydantic contracts, Playwright (browser tests and
+screenshots), pytest (~1800 tests). Pictures: Microsoft Fluent 3D emoji, Wikimedia/Openverse search + CLIP
+ranking + u2netp ONNX background removal, SD-Turbo locally, reference art sheets generated with a chatbot.
+
+=== 6. WHAT WE HAVE BUILT AND TRIED (in order) ===
+a) 21 hand-built simulation TEMPLATES (incline, pendulum, circuits, waves, orbits, Bohr atom, heart, pH, ...),
+   auto-triggered by cue words. Accurate and live-verified, but only covers pre-built topics. Not imagination.
+b) Scene core with topic "worlds" (geometry, plots, motion, relative motion) + trigger words. Accurate, but
+   anything outside the coded worlds falls through. Still restricts imagination.
+c) Open canvas: LLM turns each line into scene ops (add thing/place, relation, action), rendered with 3D emoji,
+   photo cutouts, backdrops, a real-size table, focus camera, Imagine Mode, safety filter. Runs live (line ->
+   first shape p50 2.1 s). RESULT: looks like separate stickers pasted on a slide. Each picture has one fixed pose,
+   styles are mixed (emoji next to photos), a person cannot actually throw or push, wrong word sense sometimes,
+   photo search ~5 s cold.
+d) Image generation: SD-Turbo locally = 0.41 s/image alone but 11.6 s while Whisper shares the GPU; ignores style
+   prompts; every image looks different; the same character changes between frames; cannot give consistent
+   animation frames. Cloud free tiers looked at but too slow/limited for per-line generation.
+e) Style board: 7 code-drawn styles (stick figure, chalk, flat vector, ...). All rejected as not good enough.
+   We then made reference sheets (characters in all poses, body parts, face expressions, animals, objects) with a
+   chatbot image generator and chose that flat style.
+f) Character built in code as a flat-unlit 3D model in three.js (spheres/cylinders + canvas-texture live face),
+   with clips (walk, run, push, throw, wave, point, think), IK, physics arrows, dotted projectile path.
+   Motion, arrows and live expressions were GOOD (144 fps, 2 ms/frame). Face, hair and body looked "very bad";
+   a second round of tuning made it worse. Hand-shaping 3D primitives to match 2D art does not converge.
+g) CURRENT: 2D cut-out puppets cut from the reference sheets (each body part a separate image, rigged and animated
+   by our engine, faces from expression sheets), 3D world kept for physics and camera. The side view looks like
+   the sheet. BUT every view (front, side, back, top, 8 angles) needs its own matching part sheets; the AI-made
+   sheets drift in scale, colour and proportions, their joint data is wrong, so each part needs manual measuring.
+   And this is one man - we would need women, children, animals, vehicles, thousands of objects.
+
+=== 7. WHY WE THINK WE KEEP FAILING ===
+- Coverage vs consistency: "anything" needs a picture of anything in any pose in one style. Fixed assets (emoji,
+  photos, templates) are consistent-ish but limited; generated images cover anything but are inconsistent and slow.
+  Nothing so far gives both.
+- Animation needs rigged, multi-view assets. Photos, emoji and AI images are single frames - movable, not actable.
+- No artist or 3D modeller on the team, no rigged asset library; code-made art looks amateur.
+- 4 GB VRAM shared with live STT; free LLM quota; ~2 s latency budget rules out heavy generation per line.
+- Ambiguous language and STT errors (e.g. "spear" heard as "keyboard"); odd combinations have no reference.
+- The quality bar ("explainer video" look) is high and subjective: each round passes tests but fails the eye.
+What works well already: speech -> LLM scene ops, the physics solvers, the camera, arrows/trajectories, the
+deterministic core, and live code-drawn faces/motion. What is missing is the visual ASSET + ANIMATION layer.
+
+=== 8. WHAT I WANT FROM YOU ===
+Answer as an independent expert reviewing a stuck project - judge from our goal, not from our current code.
+Please cover:
+1. Diagnosis: which of our approaches were fundamentally wrong, which were right but badly executed, and what is
+   the real root problem. Where exactly are we lacking?
+2. Several possible architectures (not just one; 3-5), e.g. rigged asset libraries (CC0 low-poly 3D packs +
+   Mixamo-style retargeted animations), parametric/procedural vector characters, SVG generated by LLM, a
+   consistent-character image model (LoRA/IP-Adapter/ControlNet poses), video generation, Rive/Spine/Lottie-style
+   2D rigs, Manim-style programmatic scenes, game engines, hybrids - or something better. For each: how it works
+   end to end, quality you can expect, latency, VRAM/cost, coverage of open vocabulary, consistency of characters,
+   how it fits V3 stories, and the main risk.
+3. Your recommended approach and why (ours, a fixed version of one of ours, or a completely new one). Which of our
+   approaches to drop, which to keep. Which features to drop, change or add, and which are not possible live.
+4. Concrete tools, models, libraries and asset sources (names, licences, free vs paid), for both the free 4 GB
+   path now and the paid/better-GPU path later.
+5. How to handle words outside any library (open vocabulary fallback) without breaking the style.
+6. How the LLM should describe a scene (scene graph / schema) so the renderer and physics solvers can build it,
+   within ~8k tokens/min.
+7. A practical build order: what to build first to see a convincing result fast, what to postpone, and a
+   realistic success test (how we know it is "explainer quality").
+8. What makes this publishable: where the research novelty would be in your proposed design.
+
+9. System design: the full architecture (components, data flow from speech to pixels, what runs where - GPU, CPU,
+   cloud), the rules the system should follow, and how V2 and V3 share it.
+10. Traps and mistakes: what NOT to do, common dead ends in this kind of system, and mistakes you see in ours.
+11. Development tips: how to build, test and judge visual quality efficiently, how to avoid endless "looks wrong"
+    rounds, and which parts to buy/reuse instead of building.
+12. Extra features or ideas you recommend that would make the product clearly better for teachers and students,
+    and any other recommendations for the project and the application.
+13. Anything else important that we will need to build this system well and efficiently.
+
+HOW TO ANSWER:
+- Research first. Before proposing anything, research the current state of the art in depth (real-time
+  animation, character systems, asset libraries, generative image/video/3D models, programmatic animation like
+  Manim, text-to-scene research, educational animation tools), and evaluate each option against our goal yourself.
+  Only recommend what survives that evaluation.
+- Give a well-described, in-depth response: best-suited architecture, implementation plan, tools, all realistic
+  alternative approaches with their trade-offs, system design, rules, traps, tips, recommendations.
+- Be specific: name real tools/models/libraries with licences and free vs paid, give numbers where you can,
+  state your assumptions, and separate what you are sure of from what you are guessing.
+- Say plainly if any part of the vision is not achievable in real time on this hardware and what the closest
+  achievable version is.
+- Use clear sections and bullet points.

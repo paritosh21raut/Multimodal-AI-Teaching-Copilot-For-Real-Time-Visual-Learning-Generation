@@ -1,8 +1,9 @@
 # CLAUDE.md — Multimodal AI Teaching Copilot
 
 Listens to a live lecture and renders a continuity-aware live educational display on the projector.
-V1 = live slides (done). V2 = Concept Simulation: S0–S4 templates (done); F-015 scene core (done); **V2 Next = F-016 Canvas for
-Imagination** (any thing / place / relation / action from speech, real pictures, Imagine Mode, law solvers; no templates). V3 Story Scenes, V4 Multilingual reuse the same core.
+V1 = live slides (done). V2 = Concept Simulation: S0–S4 templates (done); F-015 scene core (done); F-016 C1 canvas (done,
+baseline); **V2 Next = F-017 Explainer Stage** (2D stage: explainer_flat look, chibi people from CC0 mocap, director + acting + laws, sessions
+E1–E5, ADR-0011). V3 Story Scenes, V4 Multilingual reuse the same stage.
 
 Branch: **`V2-Concept-Simulation`** (holds all of V1; V1 fixes go here). `CLAUDE_rebuild` = V1, untouched unless
 asked. Do not inspect other branches. Original requirements: `docs/brief/master-prompt.md` (only if in question).
@@ -26,7 +27,7 @@ asked. Do not inspect other branches. Original requirements: `docs/brief/master-
 ## Doc map (load only what the task needs)
 | Task | Load |
 |---|---|
-| V2 Next (canvas) | current card in `docs/v2/`, `docs/v2/F-016-canvas-for-imagination.md`, `docs/contracts/scene-spec.md` |
+| V2 Next (stage) | current E-card in `docs/v2/`, `docs/v2/F-017-explainer-stage.md`, `docs/contracts/stage-spec.md` |
 | Old templates (only if a card says) | `docs/specs/F-014-concept-simulation.md`, `docs/contracts/simulation-spec.md`, ADR-0010 |
 | Rules in question | `docs/RULES.md` |
 | Core / events / state | `docs/architecture/overview.md`, `docs/contracts/events.md`, `docs/contracts/lecture-state.md` |

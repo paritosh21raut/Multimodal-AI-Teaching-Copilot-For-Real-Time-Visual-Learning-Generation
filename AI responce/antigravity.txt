@@ -1,0 +1,824 @@
+Solution Design: Live "Canvas for Imagination" (V2) & "Story Scenes" (V3)
+1. Architectural Diagnosis
+1.1 What Was Fundamentally Wrong
+Local Diffusion on 4 GB VRAM alongside Real-Time STT: faster-whisper medium.en consumes 
+≈
+1.5
+–
+2.0
+ GB
+≈1.5–2.0 GB of VRAM (FP16/INT8). Loading any diffusion pipeline (even SD-Turbo with 
+≈
+2.5
+ GB
+≈2.5 GB minimum footprint) forces memory paging to host RAM, causing severe CUDA context-switching latency (
+0.41
+ s
+→
+11.6
+ s
+0.41 s→11.6 s) and audio dropouts. Diffusion models are inherently unsuited for 
+≤
+2
+ s
+≤2 s per-utterance live synthesis on edge hardware.
+2D Cut-out Puppetry from Unaligned Generative Images: Generating multi-view character sheets via 2D diffusion models produces non-isometric camera shifts, non-rigid anatomical drift, and inconsistent joint pivots. Rigging 2D cut-outs for 8 directional angles requires manual UV and skeletal registration. Scaling this to arbitrary entities (men, women, animals, objects) creates an unsustainable asset-generation bottleneck.
+Procedural Anatomy from Raw 3D Primitives: Assembling expressive characters from raw geometric primitives (THREE.CylinderGeometry, THREE.SphereGeometry) without artist-crafted deformation cages inevitably falls into the uncanny valley. Anatomical rigging requires smooth bone weight skinning, non-linear mesh deformation, and facial blendshapes—none of which converge through code-level primitive placement.
+Scraping Open Images (Wikimedia/Openverse) at Runtime: Real-time web scraping introduces unpredictable network latency (
+3
+–
+8
+ s
+3–8 s), licensing risks, arbitrary aspect ratios, and visual incoherence ("sticker collage" effect) that breaks pedagogical immersion.
+1.2 What Was Right but Poorly Grounded
+The Three.js Deterministic 3D Canvas: Using Three.js for 3D spatial management, dynamic cameras, vector arrows, and trajectory paths was the right technical choice. The error lay in treating 3D as a photo-realistic or raw primitive engine rather than using it as a geometric substrate flattened by Non-Photorealistic Rendering (NPR) into a 2D explainer aesthetic.
+Deterministic Physics Engine Driven by an LLM Gated Reasoner: Separating semantic extraction (LLM: "what is happening") from kinematic simulation (Python/Wasm: "how it mathematically behaves") is standard neuro-symbolic practice. The failure occurred downstream at the visual representation layer, not at the reasoning or physics layer.
+Delta-Driven Scene Graph Updates: Parsing incremental updates from natural language is the correct paradigm for real-time discourse. However, the scene graph lacked a formal ontology for physical affordances, IK attachment points, and fallback representations.
+1.3 The Core Root Problem
+
+The system suffers from Representation Mismatch: Attempting to solve a 3D spatial, kinematic, and continuous-motion problem using 2D static image operations (emojis, AI sheets, web cutouts).
+
+In 2D, camera rotation, occlusion, depth sorting, force vectors, and mechanical interactions require drawing thousands of discrete sprites.
+In 3D, camera transforms, depth buffering, joint articulation, and vector projections are calculated automatically via standard matrix mathematics (
+𝑀
+𝑉
+𝑃
+MVP).
+The Solution: Execute all logic, spatial arrangement, and skeletal animation in 3D, but pass the output through an NPR (Non-Photorealistic Rendering) Cel/Toon Shader pipeline. This yields the visual identity of a flat vector explainer (Kurzgesagt / TED-Ed) while retaining full 3D mechanical and spatial control.
+       Teacher Speech ("A man pushes a box...")
+                         │
+                         ▼
+             [Streaming STT (Whisper)]
+                         │
+                         ▼
+        [Fast Semantic Parser (Groq LLM)]
+                         │
+                         ▼
+      [Dynamic 3D Scene Graph (DSG) Delta]
+                         │
+           ┌─────────────┴─────────────┐
+           ▼                           ▼
+[Deterministic Physics]      [Asset & Animation Binder]
+(Forces, Trajectories)       (Rigged Retargeting, IK)
+           │                           │
+           └─────────────┬─────────────┘
+                         ▼
+              [Three.js 3D Scene Core]
+                         │
+                         ▼
+         [NPR Cel-Shader + Sobel Outline]
+                         │
+                         ▼
+      Explainer Canvas (Flat Vector Aesthetic)
+2. Evaluation of Architectural Alternatives
+Metric	Arch 1: Toon-Shaded 3D Rigged Library (Recommended)	Arch 2: 2D Skeletal Vector Rigs (Rive / Spine)	Arch 3: Programmatic Manim Code Generation	Arch 4: Streaming Video Diffusion (AnimateDiff)	Arch 5: 2D Parametric Canvas Geometry
+Pipeline	LLM 
+→
+→ Scene Graph 
+→
+→ Standard Rig + Low-Poly Assets 
+→
+→ Three.js Cel/Outline Shader	LLM 
+→
+→ State Machine Triggers 
+→
+→ Rive Runtime (WebAssembly)	LLM writes raw Python/JS animation code 
+→
+→ Headless execution	LLM 
+→
+→ Video Diffusion Model (ControlNet/Wan/SVD)	LLM emits SVG/Canvas2D paths + tweening functions
+Visual Quality	High (Matches Kurzgesagt flat vector look via NPR shaders)	Very High (Pure native 2D vector art)	High for abstract math; Poor for characters/actions	Uncanny, flickering, morphing artifacts	Low (Looks like programmer art / flash animations)
+End-to-End Latency	
+0.4
+–
+1.2
+ s
+0.4–1.2 s (Instant asset lookup + WebGL rendering)	
+0.3
+–
+0.8
+ s
+0.3–0.8 s	
+4.0
+–
+15.0
+ s
+4.0–15.0 s (Compilation, syntax recovery, loop)	
+8.0
+–
+30.0
+ s
+8.0–30.0 s (Prohibitive for live lectures)	
+0.5
+–
+1.0
+ s
+0.5–1.0 s
+Local VRAM Footprint	
+≈
+250
+ MB
+≈250 MB (Runs comfortably alongside Whisper)	
+≈
+100
+ MB
+≈100 MB (CPU/Wasm-heavy, negligible VRAM)	
+≈
+200
+ MB
+≈200 MB	
+>
+12
+ GB
+>12 GB (Instant CUDA OOM on 4 GB laptop)	
+≈
+50
+ MB
+≈50 MB
+Open Vocabulary Coverage	High (Embeddings map to assets; OOV falls back to procedural primitives)	Low (Strictly limited to manually pre-authored 2D rigs)	Medium (Fails on unmodeled physical interactions)	Infinite (Subject to generative hallucinations)	Low to Medium
+Character Consistency	100% Deterministic (Identical base meshes, parametric skins)	100% Deterministic (Pre-built characters)	Inconsistent (Shapes redefined per script)	Fails (Severe temporal drift across frames)	Medium
+Fit for V3 Storyboarding	Native (Same 3D scene graph, camera paths, persistent actors)	Medium (Requires pre-rigging story-specific characters)	Poor (Script stitching is brittle)	High concept, impossible real-time execution	Poor
+Critical Failure Mode	Missing rare 3D meshes (requires solid procedural fallback)	Authoring bottleneck (cannot rig new entities live)	Syntax/Runtime errors; LLM sandbox security risks	Temporal instability, hallucinated physics, high latency	Extremely high code maintenance; rigid aesthetics
+3. Recommended Technical Approach
+3.1 What to Drop vs. What to Keep
+DROP IMMEDIATELY:
+Local image diffusion (SD-Turbo) on the Whisper machine.
+2D cut-out sprite sheets derived from generative AI.
+Ad-hoc image scrapers (Wikimedia/Openverse/CLIP) for core dynamic actors.
+Direct procedural generation of human anatomy using raw Three.js primitives.
+Runtime executable code generation (e.g., asking LLM to emit raw Three.js/Manim scripts).
+KEEP & REFINE:
+Streaming ASR (faster-whisper) running locally on GPU.
+Gated LLM reasoning (Groq) producing strictly typed JSON Scene Graph Operations (DSG-Ops).
+Deterministic Python/Wasm physics solvers (kinematic trajectories, friction, collisions).
+Three.js client canvas with procedural vector arrows and dynamic HUD elements.
+ADD:
+A Unified Low-Poly CC0 3D Asset Warehouse (Kenney, Quaternius) converted to optimized binary glTF (.glb) with Draco compression.
+A Universal Humanoid Rig with retargeted skeletal animation clips (walk, push, throw, jump, sit, point).
+A Two-Pass Non-Photorealistic Rendering (NPR) Shader (Quantized stepped lighting + Sobel/Back-face outline) that transforms 3D models into flat vector illustrations.
+A Semantic Embedding Index (using quantized all-MiniLM-L6-v2) to map spoken nouns to asset IDs with zero network overhead in 
+<
+5
+ ms
+<5 ms.
+A 3-Tier Procedural Fallback Engine for Out-Of-Vocabulary (OOV) terms.
+3.2 Feature Scope Adjustments
+Drop from Live Scope: Generating brand-new, photorealistic, bespoke 3D meshes from text in 
+≤
+2
+ s
+≤2 s. No model currently synthesizes and rigs clean topological 3D meshes at this latency.
+Keep Live: Open-vocabulary composition of scenes, exact physical motions, variable characters (gender, clothing palette, scale), camera trajectories, vector annotations, and continuous multi-turn updates.
+4. Concrete Implementation Stack & Toolchain
+4.1 Tier 1: Zero-Cost / 4 GB VRAM Stack (Current Constraints)
+[Audio Stream] ──► [faster-whisper (INT8, GPU ~1.2GB)] ──► [Local Token Buffer]
+                                                                  │
+[Client: Three.js WebGL] ◄── [WebSocket] ◄── [FastAPI Core] ◄── [Groq API (Llama 3.3 70B)]
+       │
+  ┌────┴───────────────────────────────┐
+  ▼                                    ▼
+[NPR Shaders + glTF Assets]   [Client-Side Physics Engine (Rapier2D/3D Wasm)]
+Speech-to-Text: faster-whisper running medium.en with compute_type="int8_float16" or float16. Restrict VRAM usage to 
+≈
+1.4
+ GB
+≈1.4 GB.
+LLM Engine: Groq API using llama-3.3-70b-versatile. Configure structured JSON Schema enforcement to guarantee deterministic parsing while keeping token consumption below free-tier limits.
+Asset Database (CC0 / Public Domain):
+Quaternius: Universal Animated Humanoid Pack, Animated Animals, Low-Poly Objects (all CC0, cleanly rigged with standard skeletal hierarchies).
+Kenney: Kenney Game Assets 3D (over 4,000 unified low-poly assets, modular buildings, nature, tools, vehicles; CC0).
+Total static asset payload is 
+≈
+120
+ MB
+≈120 MB when compressed with Draco/Meshopt, cached locally in IndexedDB on the client browser.
+Frontend Visualization: Three.js (r160+) running in the browser, rendering WebGL on the local display.
+Physics / Kinematics Solver: Rapier3D (@dimforge/rapier3d-compat) compiled to WebAssembly, running inside the browser's Web Worker thread (leaves host CPU free for streaming logic).
+Semantic Retrieval Engine: Quantized ONNX model of all-MiniLM-L6-v2 running via onnxruntime-web or embedded locally in Python via fastembed (
+≈
+40
+ MB
+≈40 MB RAM, cosine similarity check over 5,000 tagged assets runs in 
+<
+4
+ ms
+<4 ms).
+4.2 Tier 2: Paid API / Dedicated GPU Stack (Scale-Up Path)
+ASR: Dedicated local server running Whisper Large-v3 via TensorRT-LLM, or low-latency cloud streaming (Deepgram Nova-2, 
+≈
+250
+ ms
+≈250 ms latency).
+LLM: Anthropic Claude 3.5 Sonnet / OpenAI GPT-4o with guaranteed rate limits and sub-second Time-To-First-Token (TTFT).
+Asynchronous Asset Synthesis: Meshy API / Tripo3D API running asynchronously in the background. If a teacher introduces an unseen complex concept ("a centrifuge separator"), the engine displays a procedural geometric proxy immediately, fetches the generated 3D mesh in 
+≈
+15
+ s
+≈15 s, applies the NPR shader, and smoothly swaps the model via cross-fade.
+5. Visual Stylization & NPR Pipeline (The "Kurzgesagt" Shader)
+
+To match the explainer-video aesthetic and conceal geometric differences across asset packs, all 3D assets are rendered using a custom Non-Photorealistic Rendering (NPR) material pipeline.
+
+       3D Mesh Geometry (glTF / Procedural Primitive)
+                             │
+            ┌────────────────┴────────────────┐
+            ▼                                 ▼
+   [Pass 1: Toon Material]          [Pass 2: Outline Pass]
+   - Quantized Diffuse Light        - Inverted Hull Mesh Expansion
+     (2-Step Step Function)           OR Screen-Space Sobel Filter
+   - Flat Vector Palette            - Uniform 1.5px Dark Stroke
+            │                                 │
+            └────────────────┬────────────────┘
+                             ▼
+               [Composited Explainer Object]
+           (Indistinguishable from 2D Vector Art)
+5.1 Three.js Custom Toon & Outline Implementation
+javascript
+import * as THREE from 'three';
+// 1. Quantized Two-Step Diffuse Lighting (GLSL Chunk)
+export function createExplainerToonMaterial(hexColor, shadowColorHex = '#1a1a2e') {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uBaseColor: { value: new THREE.Color(hexColor) },
+      uShadowColor: { value: new THREE.Color(shadowColorHex) },
+      uLightDirection: { value: new THREE.Vector3(0.5, 1.0, 0.5).normalize() }
+    },
+    vertexShader: `
+      varying vec3 vNormal;
+      void main() {
+        vNormal = normalize(normalMatrix * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uBaseColor;
+      uniform vec3 uShadowColor;
+      uniform vec3 uLightDirection;
+      varying vec3 vNormal;
+      void main() {
+        float NdotL = dot(vNormal, uLightDirection);
+        // Discrete step: flat vector shadow boundary
+        float lightIntensity = smoothstep(-0.05, 0.05, NdotL);
+        vec3 finalColor = mix(uShadowColor, uBaseColor, lightIntensity);
+        gl_FragColor = vec4(finalColor, 1.0);
+      }
+    `
+  });
+}
+// 2. Inverted Hull Vector Outline (Pass 2)
+export function attachVectorOutline(mesh, outlineColor = 0x111118, thickness = 0.03) {
+  const outlineMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      uThickness: { value: thickness },
+      uColor: { value: new THREE.Color(outlineColor) }
+    },
+    vertexShader: `
+      uniform float uThickness;
+      void main() {
+        vec3 transformed = position + normal * uThickness;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uColor;
+      void main() {
+        gl_FragColor = vec4(uColor, 1.0);
+      }
+    `,
+    side: THREE.BackSide
+  });
+  const outlineMesh = new THREE.Mesh(mesh.geometry, outlineMaterial);
+  mesh.add(outlineMesh);
+}
+
+This pipeline provides two crucial properties:
+
+Geometric Leveling: High-poly, low-poly, and procedural CSG shapes look as if they were drawn by the same vector illustrator.
+Camera Independence: The teacher can pan, zoom, and rotate the camera freely without sprite distortion or aliasing artifacts.
+6. Open-Vocabulary Fallback Strategy
+
+When a spoken noun is not present in the pre-rigged library, the system applies a deterministic 4-stage resolution pipeline:
+
+[Spoken Entity Noun]
+        │
+        ▼
+[Stage 1: Exact Match in Local Asset DB] ──(Found)──► [Load Cached glTF Asset]
+        │ (Miss)
+        ▼
+[Stage 2: Semantic Embedding Search] ──(Score > 0.82)─► [Load Closest Semantic Mesh]
+        │ (Miss)
+        ▼
+[Stage 3: Procedural CSG Assembler] ────(Success)───► [Assemble Primitive Geometry]
+        │ (Complex/Abstract)
+        ▼
+[Stage 4: Stylized Vector Billboard] ───────────────► [Project Cel-Outlined 2.5D Glyph]
+6.1 Fallback Stages
+Stage 1: Direct Token Match (
+≤
+1
+ ms
+≤1 ms) Direct hit on indexed assets (e.g., "car" 
+→
+→ kenney_sedan.glb).
+Stage 2: Vector Embedding Cosine Match (
+≤
+5
+ ms
+≤5 ms) Using the pre-computed all-MiniLM-L6-v2 index:
+"pickup truck", "suv", "limousine" 
+→
+→ maps to kenney_sedan.glb (scale adjustments applied).
+"boulder", "meteorite", "asteroid" 
+→
+→ maps to rock_large.glb.
+"canine", "wolf", "pup" 
+→
+→ maps to quaternius_dog.glb.
+Stage 3: Procedural CSG Assembly (
+≤
+10
+ ms
+≤10 ms) If no semantic match passes the similarity threshold (
+𝜏
+=
+0.82
+τ=0.82), an automated geometry builder constructs an approximation from basic shapes using metadata tags:
+Teacher says: "A cylindrical water tank of height 4 meters."
+Generator builds: THREE.CylinderGeometry(1.5, 1.5, 4.0) with a top cap and base pipe, assigned a metallic-slate toon material and outer edge outlines.
+Stage 4: Stylized 2.5D Vector Billboard (
+≤
+15
+ ms
+≤15 ms) For highly abstract or esoteric concepts ("mitochondria", "bureaucracy"):
+Query the bundled SVG vector library (FontAwesome Pro / Lucide / Noun Project icons, pre-downloaded offline).
+Extrude the 2D SVG path into a thin 3D slab using THREE.ExtrudeGeometry.
+Render with matching toon materials and silhouette outlines. The icon behaves as an interactive physical object within the 3D scene.
+7. Dynamic Scene Graph (DSG) Schema & LLM Operational Interface
+
+To stay within Groq's 
+≈
+8
+,
+000
+ tokens/min
+≈8,000 tokens/min quota, the LLM emits strict, abbreviated JSON operation deltas. It never outputs code or raw coordinates. Context stays bounded: the LLM is supplied only with the current active graph state and the latest transcribed sentence.
+
+7.1 Pydantic JSON Schema for Scene Operations
+python
+from pydantic import BaseModel, Field
+from typing import List, Optional, Literal
+class ActorState(BaseModel):
+    id: str = Field(description="Unique entity ID, e.g., 'man_1', 'box_1'")
+    entity_type: str = Field(description="Normalized noun: 'man', 'box', 'electron', 'car'")
+    label: Optional[str] = Field(None, description="Readable label shown on HUD")
+    scale: Optional[float] = Field(1.0, description="Relative real-world scale multiplier")
+class ActionOperation(BaseModel):
+    subject_id: str
+    verb: Literal["push", "pull", "throw", "walk", "collide", "orbit", "fall", "idle"]
+    target_id: Optional[str] = None
+    parameters: dict = Field(default_factory=dict, description="e.g. {'velocity': 5.0, 'angle': 45}")
+class PhysicalRelation(BaseModel):
+    source_id: str
+    relation: Literal["on_top_of", "inside", "holding", "connected_to", "next_to"]
+    target_id: str
+class SceneDelta(BaseModel):
+    op: Literal["ADD", "UPDATE", "REMOVE", "CLEAR"]
+    entities: List[ActorState] = []
+    actions: List[ActionOperation] = []
+    relations: List[PhysicalRelation] = []
+    camera_focus: Optional[str] = Field(None, description="Entity ID to focus/zoom")
+    environment: Optional[Literal["classroom", "rough_surface", "space", "vacuum", "water"]] = None
+7.2 Example Transformation
+
+Teacher Utterance: "Now he throws the book forward into the air, and let's watch its trajectory."
+
+LLM Delta Output (82 tokens):
+
+json
+{
+  "op": "UPDATE",
+  "entities": [
+    {"id": "book_1", "entity_type": "book", "scale": 0.4}
+  ],
+  "actions": [
+    {
+      "subject_id": "man_1",
+      "verb": "throw",
+      "target_id": "book_1",
+      "parameters": {"initial_speed": 8.0, "angle_deg": 40.0}
+    }
+  ],
+  "relations": [
+    {"source_id": "man_1", "relation": "holding", "target_id": "book_1"}
+  ],
+  "camera_focus": "book_1"
+}
+7.3 Kinematic & Physics Binding (Wasm / Python Core)
+State Trigger: The verb "throw" triggers the Universal Humanoid Rig's throw.anim clip via Three.js AnimationMixer.
+Animation Event: At normalized time 
+𝑡
+=
+0.42
+t=0.42 (release frame), the book entity unparents from the humanoid hand bone (mixamorig:RightHand).
+Trajectory Generation: The physics engine integrates projectile motion:
+𝑟
+⃗
+(
+𝑡
+)
+=
+𝑟
+⃗
+0
++
+𝑣
+⃗
+0
+𝑡
++
+1
+2
+𝑔
+⃗
+𝑡
+2
+r
+(t)=
+r
+0
+	​
+
++
+v
+0
+	​
+
+t+
+2
+1
+	​
+
+g
+	​
+
+t
+2
+HUD Overlays:
+A dotted curved path is drawn via THREE.LineDashedMaterial.
+Velocity components (
+𝑣
+⃗
+𝑥
+,
+𝑣
+⃗
+𝑦
+v
+x
+	​
+
+,
+v
+y
+	​
+
+) are rendered as colored vectors attached to the book's center of mass.
+If air resistance is mentioned, the trajectory updates dynamically to a drag curve (
+𝐹
+𝑑
+=
+−
+1
+2
+𝜌
+𝑣
+2
+𝐶
+𝑑
+𝐴
+F
+d
+	​
+
+=−
+2
+1
+	​
+
+ρv
+2
+C
+d
+	​
+
+A).
+8. End-to-End System Architecture
+                    TEACHER'S MICROPHONE
+                             │
+                             ▼
+ ┌─────────────────────────────────────────────────────────┐
+ │ HOST MACHINE (RTX 3050 4GB VRAM)                        │
+ │                                                         │
+ │ 1. Streaming Audio Buffer (PyAudio, 16kHz Chunked)      │
+ │ 2. STT: faster-whisper (medium.en, INT8, ~1.4GB VRAM)    │
+ │    Latency: ~250-400ms per utterance segment            │
+ │                                                         │
+ │ 3. Gated Reasoning Service (FastAPI Async)              │
+ │    - Bounded Sliding Window Transcript Buffer           │
+ │    - Grammar/Schema Guardrails                          │
+ └───────────────────────────┬─────────────────────────────┘
+                             │ HTTPS / Token Stream
+                             ▼
+ ┌─────────────────────────────────────────────────────────┐
+ │ CLOUD LLM ENGINE (Groq Free Tier)                       │
+ │ Model: llama-3.3-70b-versatile                           │
+ │ Output: Strictly Validated SceneDelta JSON              │
+ │ Latency: ~300-500ms TTFT                                │
+ └───────────────────────────┬─────────────────────────────┘
+                             │ WebSocket Event
+                             ▼
+ ┌─────────────────────────────────────────────────────────┐
+ │ CLIENT APPLICATION (Browser / WebGL Canvas on Projector)│
+ │                                                         │
+ │ 1. Scene Orchestrator & State Store                     │
+ │    - Entity Registry & Lifetime Manager                 │
+ │    - Incremental Dynamic Scene Graph (DSG)              │
+ │                                                         │
+ │ 2. Physics & Kinematics Engine (Rapier3D Wasm)         │
+ │    - Solves: Collisions, Projectiles, Vectors           │
+ │    - Frequency: Fixed 60Hz Step                         │
+ │                                                         │
+ │ 3. Character Animation Controller                       │
+ │    - Universal Humanoid Rig Loader                      │
+ │    - Cross-Fading Animation Mixer (Walk/Push/Throw)     │
+ │    - FABRIK / Two-Bone IK Solver (Hand Contact Points)  │
+ │                                                         │
+ │ 4. Asset Resolution & Cache (IndexedDB)                 │
+ │    - Kenney / Quaternius Low-Poly glTF Library          │
+ │    - Local ONNX Semantic Embeddings Matcher             │
+ │    - Procedural Geometry Fallback Assembler             │
+ │                                                         │
+ │ 5. Rendering Pipeline (Three.js WebGL)                  │
+ │    - Pass 1: Quantized Two-Step Toon Shader             │
+ │    - Pass 2: Inverted Hull Back-Face Outlines           │
+ │    - Pass 3: HUD Dynamic Physics Arrows & Trajectories │
+ └─────────────────────────────────────────────────────────┘
+8.1 Runtime Latency Budget breakdown
+Audio Capture to Transcription Chunk: 
+≈
+350
+ ms
+≈350 ms
+Groq LLM Inference & JSON Extraction: 
+≈
+450
+ ms
+≈450 ms
+WebSocket Serialization & Client Ingestion: 
+≈
+15
+ ms
+≈15 ms
+Asset Retrieval & Geometry Instantiation: 
+≈
+25
+ ms
+≈25 ms (cached memory)
+Animation Blending & Physics Solver Warm-Up: 
+≈
+16
+ ms
+≈16 ms (single frame)
+Total End-to-End Latency: 
+≈
+856
+ ms
+≈856 ms (Comfortably below the 
+2.0
+ s
+2.0 s operational threshold).
+9. Academic Novelty & IEEE Publishability
+
+To position this research for top-tier publication (e.g., IEEE Transactions on Learning Technologies (TLT), IEEE Transactions on Visualization and Computer Graphics (TVCG), or IEEE ICRA/IROS), the paper must not frame the system as simple prompt chaining. It should formalize the architecture around four technical contributions:
+
+                      ACADEMIC CONTRIBUTIONS
+                                │
+   ┌────────────────────┬───────┴────────────┬────────────────────┐
+   ▼                    ▼                    ▼                    ▼
+[Formalism:       [Pedagogical         [Style Invariant     [Empirical
+ Dynamic Scene    Grounding:           NPR Synthesis:       Validation:
+ Graph (DSG)]     Neuro-Symbolic       Multi-Tier           Cognitive Load &
+                  Kinematic Binding]   Asset Grounding]     Real-Time ASR Bench]
+1. Incremental Dynamic Scene Graphs (DSG) with Discursive Coreference Resolution
+
+Formalize an algebra for real-time visual discourse. Define how spoken ellipsis ("now harder", "add another", "reverse it") maps to deterministic delta mutations (
+Δ
+𝐺
+=
+⟨
+𝑉
+Δ
+,
+𝐸
+Δ
+⟩
+ΔG=⟨V
+Δ
+	​
+
+,E
+Δ
+	​
+
+⟩) over an active spatio-temporal scene graph without regenerating the visual context.
+
+2. Neuro-Symbolic Pedagogical Invariant Enforcement
+
+Address the hallucination problem in educational technology. Introduce a verification layer that intercepts LLM assertions and forces visual parameters to obey verified physical formulations (e.g., validating projectile equations, Newton-Euler rigid body dynamics, and electromagnetic vector alignments) before rendering.
+
+3. Multi-Fidelity Asset Grounding with Stylistic NPR Invariance
+
+Formalize the mapping of open-vocabulary spoken language to a mixed asset space (skeletal rigged meshes, procedurally assembled CSG shapes, and extruded vector glyphs) while guaranteeing that an NPR shader maintains visual coherence across all entities.
+
+4. Empirical Evaluation Protocol
+Quantitative: Latency distribution (
+𝑝
+50
+,
+𝑝
+95
+p
+50
+	​
+
+,p
+95
+	​
+
+), frame consistency under load, semantic grounding precision on a standardized physics corpus.
+Qualitative/Pedagogical: Dual-cohort student evaluation measuring conceptual retention and cognitive load (using the NASA-TLX framework) comparing standard slides against the live dynamic canvas.
+10. Practical Step-by-Step Build Order
+[Phase 1: Visual Proof-of-Concept] (Week 1-2)
+Three.js Canvas + NPR Toon/Outline Shader + Universal Humanoid Rig
+       │
+       ▼
+[Phase 2: Semantic Asset Matching & Kinematic Binding] (Week 3-4)
+Local ONNX Embedding Matcher + Rapier3D Wasm Physics Engine
+       │
+       ▼
+[Phase 3: Real-Time Audio & Discourse Ingestion] (Week 5-6)
+faster-whisper + Groq Structured Delta Parser + Coreference Resolver
+       │
+       ▼
+[Phase 4: V3 Storyboarding Extensions] (Week 7-8)
+Multi-Scene Transitions + Persistent Character Anchoring
+Phase 1: Visual Proof-of-Concept (The "Anti-Sticker" Test)
+Goal: Create a Three.js scene containing one Quaternius humanoid character and one box on a flat ground plane.
+Implement the custom two-step createExplainerToonMaterial and the inverted hull outline pass.
+Verify that the character and box share the visual aesthetic of a flat vector illustration (Kurzgesagt-style).
+Wire up basic animation transitions: idle 
+→
+→ walk 
+→
+→ push.
+Success Gate: Take a screenshot. If it looks like a 3D video game model or a flat pasted sticker, stop and calibrate the shader thresholds until it reads as a clean vector graphic.
+Phase 2: Semantic Asset Matching & Kinematic Binding
+Download and convert 300 core Kenney/Quaternius models to Draco-compressed .glb format.
+Build a local JSON dictionary with pre-computed text embeddings using all-MiniLM-L6-v2.
+Implement the procedural CSG fallback for geometric shapes (cylinders, blocks, spheres).
+Integrate Rapier3D to compute force vectors, acceleration curves, and projectile arcs.
+Success Gate: Input a raw JSON payload: {"action": "push", "actor": "man", "target": "crate"}. The character must walk up, make contact via IK hand positioning, push the crate, and display colored force and friction vectors.
+Phase 3: Real-Time Audio & Discourse Ingestion
+Connect the streaming faster-whisper Python pipeline to the Groq API.
+Restrict LLM input to the active scene graph state and the latest sentence window.
+Stream the parsed SceneDelta JSON over WebSockets to the Three.js client.
+Success Gate: Speak into the microphone: "A cart moves along a smooth surface, then a second cart collides with it." The scene must render on screen within 
+2
+ s
+2 s with correct momentum transfer.
+Phase 4: V3 Storyboarding Extensions
+Implement camera shot transitions: Wide 
+→
+→ Over-the-shoulder 
+→
+→ Close-up Pan.
+Add persistent character state tracking: Store character appearance attributes (skin color, scale, clothing tint) in a global registry so they persist across scene transitions.
+Add subtitle banners rendered directly on the bottom third of the canvas, synchronized with narration chunks.
+11. Common Traps, Anti-Patterns & Engineering Guidelines
+11.1 What NOT to Do (Architectural Anti-Patterns)
+Never Let the LLM Write Render Code: Do not instruct the LLM to emit Three.js, Canvas2D, or Manim code at runtime. Even high-tier models introduce syntax errors, undefined variables, and inconsistent coordinate assumptions that break real-time execution. The LLM must output only structured data deltas.
+Avoid Generating Multi-View Sprite Sheets: Do not attempt to generate 2D character sheets from diffusion models and slice them for animation. You will spend months fighting joint alignment issues, perspective distortion, and style drift.
+Do Not Poll the Backend: Use bi-directional WebSockets. The client should never poll the backend for state updates.
+Never Block Whisper's GPU Pipeline: Do not allocate PyTorch tensors or run other ML inference tasks on the laptop's GPU while faster-whisper is listening. This triggers VRAM swapping, increasing transcription latency from 
+300
+ ms
+300 ms to over 
+10
+ s
+10 s.
+11.2 Best Practices for Visual Quality
+Use an Orthographic or Low-FOV Camera: Set the Three.js camera field of view (FOV) to 
+25
+∘
+–
+30
+∘
+25
+∘
+–30
+∘
+, or use an OrthographicCamera. Extreme perspective distortion shatters the flat vector illusion; flatter projection matrices reinforce the 2D explainer look.
+Maintain a Consistent Color Palette: Map all dynamic asset materials to a curated 16-color palette (e.g., Nord or Solarized-inspired pastel and vector tones). When importing assets from external libraries, discard their embedded textures and replace them with solid colors from your palette linked to the NPR toon shader.
+Clamp Dynamic Force Vectors: Normalize arrow visualization lengths logarithmically. An unconstrained physical force vector will easily shoot off-screen during high-energy collisions, obscuring the primary educational content.
+12. Pedagogical Features to Enhance Educational Value
+Dual-Perspective Relative Motion Split: When the teacher discusses frames of reference (e.g., "Rain falling vertically while a person runs"), split the Three.js viewport into two synchronized viewports using renderer.setScissor:
+Viewport A (Stationary Ground Observer): Rain vectors fall at 
+−
+90
+∘
+−90
+∘
+; character moves at 
++
+𝑣
+𝑖
+^
++v
+i
+^
+.
+Viewport B (Moving Runner's Frame): Character remains centered; rain vectors fall at an angle 
+𝜃
+=
+tan
+⁡
+−
+1
+(
+𝑣
+man
+/
+𝑣
+rain
+)
+θ=tan
+−1
+(v
+man
+	​
+
+/v
+rain
+	​
+
+).
+Interactive Time Scrubbing & Freezing: Provide a minimalist floating UI button on the teacher's control interface to pause the physical simulation, orbit the 3D camera around a frozen collision or trajectory, and inspect force vectors in three dimensions.
+Automatic Contrast & Saliency Dimming: When the teacher says "Focus on the electron", animate non-essential entities (nucleus, orbital paths, labels) to 
+20
+%
+20% opacity while highlighting the target entity with an energetic rim shader.
+Pedagogical Invariant HUD (Real-Time Equations): Render live, auto-updating LaTeX formulas on an overlay canvas using KaTeX. When a projectile is thrown, display the kinematics formula with values updating in lockstep with the simulation:
+𝑦
+(
+𝑡
+)
+=
+(
+8.0
+⋅
+sin
+⁡
+40
+∘
+)
+𝑡
+−
+1
+2
+(
+9.8
+)
+𝑡
+2
+y(t)=(8.0⋅sin40
+∘
+)t−
+2
+1
+	​
+
+(9.8)t
+2
+13. Summary & Immediate Next Steps
+Component	Immediate Implementation Action	Expected Output
+Stylization Core	Build Three.js scene with custom 2-step Toon + Inverted Hull shader	Flat vector Kurzgesagt visual quality from standard 3D meshes
+Character Layer	Load a Quaternius CC0 Humanoid with standard animation clips	Deterministic walking, pushing, and throwing actions
+Reasoning Layer	Deploy the Pydantic SceneDelta schema on Groq using Llama 3.3 70B	Fast, structured JSON generation under token limits
+Asset Matching	Build local dictionary of Kenney/Quaternius models indexed by embeddings	Open-vocabulary semantic asset resolution in 
+<
+5
+ ms
+<5 ms
+Physics Solver	Wire Rapier3D Wasm into client worker thread	Verified trajectories and dynamic force vector HUDs
+
+This hybrid architecture resolves the tension between open-vocabulary flexibility and stylistic consistency: 3D handles the spatial mechanics and animation, while the NPR shader pipeline guarantees a unified, clean vector aesthetic for the live lecture display.

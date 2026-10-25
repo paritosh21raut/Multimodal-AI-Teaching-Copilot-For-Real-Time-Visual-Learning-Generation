@@ -1,0 +1,457 @@
+Verdict
+Your core architecture is right: live speech → constrained LLM scene graph → deterministic physics/animation → real-time renderer. What is failing is not your AI pipeline; it is your attempt to make an open-vocabulary, explainer-quality, fully animated visual asset system on one laptop with no artist, no asset library, and a 4 GB GPU.
+
+The honest answer: you cannot get “Kurzgesagt/TED-Ed quality for anything said, with real character action, in 2 seconds, on a 4 GB RTX 3050” using per-line image/video generation. That goal conflates three different products: an infinite illustration generator, a game-quality animation engine, and a live teaching visualizer. Drop the first two as the primary path; build a retrieval-first, rig-based 3D “explainer theatre” with a tightly constrained generated fallback.
+
+1. Diagnosis
+What was fundamentally wrong
+Approach	Verdict	Why
+21 hand-coded simulations	Right, but too narrow	Excellent for correctness and latency; useless as a general “imagination” system.
+Topic “worlds” + trigger words	Right idea, wrong abstraction	You need a general scene representation, not topic-specific triggers.
+Emoji/photo cutout canvas	Wrong for your quality bar	Static assets cannot act; mixed visual sources destroy style coherence.
+SD-Turbo per line	Wrong for live animation	It solves illustration, not temporal identity, rigging, or physics. Your observed 11.6 s under GPU contention confirms it cannot meet the 2 s target.
+AI-generated reference sheets → 2D puppets	Wrong execution path	You are manually reconstructing a game-art pipeline: multi-view sheets, joint metadata, consistent proportions, animation poses. That is artist work, not prompt work.
+Code-built 3D character from primitives	Right instinct, wrong asset source	Motion/camera/arrows worked; hand-sculpting appealing characters from spheres/cylinders will not converge without an artist.
+The real root problem
+You lack an actable asset layer: assets that are already styled, rigged, multi-pose, semantically tagged, physically scalable, and reusable across scenes.
+
+Your current systems each solve one side:
+
+Emoji/photos: broad coverage, no action.
+
+Generated images: broad coverage, no consistency or action.
+
+Hand-coded puppets: action, no coverage.
+
+Simulation templates: correctness, no openness.
+
+The missing system is a curated, license-safe, rigged 3D asset library plus a semantic retrieval/indexing layer plus procedural composition. This is the approach used implicitly by real-time scene-generation research: LLMs infer scene graphs/layouts, then a graphics pipeline renders and animates them; recent work explicitly separates semantic scene graphs, spatial constraints, asset retrieval, and rendering.
+
+2. Architecture options
+Option A — Rigged 3D asset theatre recommended
+Idea: Build a persistent 3D “explainer stage” in your existing three.js app. The LLM emits a scene graph; a deterministic resolver retrieves rigged glTF assets; physics and animation controllers drive them.
+
+Renderer: three.js + GLTFLoader + AnimationMixer; glTF supports meshes, skins, morph targets, and animation clips, and three.js can play those clips directly.
+
+Characters: CC0 low-poly rigged humans/animals from Quaternius and Kenney; Quaternius explicitly ships animated, textured glTF/FBX characters under CC0, and Kenney’s animated-character packs are CC0 as well.
+
+Motion: a local animation library: idle, walk, run, push, pull, throw, point, wave, sit, think, jump, fall. Mixamo can supply humanoid clips and auto-rigging, but audit its terms before redistributing assets; use it primarily as a production tool, not as a bundled asset source unless your legal review permits it.
+
+Objects: curated CC0 packs for boxes, vehicles, furniture, tools, science apparatus, buildings, planets, circuits, animals.
+
+Style: one non-photoreal toon/flat-shaded style: unlit or toon materials, soft shadows optional, consistent palette, outline optional.
+
+Expected quality: clean, readable, “interactive textbook / low-poly explainer” quality. Not literally Kurzgesagt, but far better than emoji stickers and dramatically more professional than code primitives.
+
+Latency: excellent. Local asset retrieval is milliseconds; glTF loading is the main cost, solved by preloading a hot set and caching.
+
+VRAM: low. A 4 GB GPU can run Whisper and render hundreds of low-poly objects; generation is not in the hot path.
+
+Open vocabulary: high for common educational nouns/actions; incomplete for rare or absurd entities.
+
+Character consistency: excellent, because the same glTF character and material set is reused.
+
+V3 fit: excellent. A story is simply a sequence of scene-graph states with persistent entity IDs, locations, and camera targets.
+
+Main risk: asset coverage and art direction. You must curate rather than generate.
+
+Option B — 2D vector rig system, Rive/Lottie-like
+Idea: Use professionally designed 2D vector rigs with skeletal animation, controlled by your scene graph.
+
+Runtime: Rive’s runtimes are open source under MIT and can control animations in web apps.
+
+Assets: You would need to buy or commission a small character/object rig library, or use a designer tool such as Rive/Spine/Lottie.
+
+Renderer: Browser-native, crisp on projectors, very cheap at runtime.
+
+Quality: Potentially the closest to TED-Ed/Kurzgesagt if you buy good art.
+
+Latency: Excellent after assets load.
+
+Coverage: Poor unless you commission a large library. A vector rig for “bicycle under ocean” does not exist unless someone makes it.
+
+Consistency: Excellent within the purchased library.
+
+V3 fit: Very good.
+
+Main risk: Cost and authoring bottleneck. This is the best paid path if you can afford a small art budget; it is a poor free path.
+
+Option C — LLM-generated SVG / programmatic vector scenes
+Idea: LLM emits a constrained SVG/Canvas scene program: shapes, layout, simple transforms, labels, arrows. Your renderer executes it.
+
+Quality: Good for graphs, geometry, circuits, fields, waves, integration strips, block diagrams. Bad for humans, animals, and natural scenes.
+
+Latency: Excellent.
+
+Coverage: High for abstract/mathematical concepts; low for narrative/physical scenes.
+
+Consistency: Good if you impose a design system: fixed palette, stroke widths, fonts, icon grammar.
+
+V3 fit: Moderate; good for explanatory panels, weak for character stories.
+
+Main risk: LLM-produced SVG often becomes visually messy. Do not let the model freely draw; give it a small component grammar.
+
+Option D — Consistent-character image generation
+Idea: Use SDXL/Flux-style models with character LoRA/IP-Adapter/ControlNet pose conditioning to make consistent frames, then interpolate or animate them.
+
+Reality on your hardware: Not viable as the primary live path. Your RTX 3050 has only 4 GB VRAM and already contends with Whisper; SD-Turbo already degraded from 0.41 s alone to 11.6 s under load. Character identity, multi-view pose consistency, object interaction, and readable physics annotation remain unsolved at this latency/cost tier.
+
+Use it only for: offline asset expansion, background plates, teacher-selected “deep dive” illustrations, or non-live exports.
+
+Main risk: It will consume your project. Image generation is seductive but does not produce an animation system.
+
+Option E — Text-to-video generation
+Idea: Send each utterance to a video model and display the result.
+
+Verdict: Drop for V2 live mode. Current consumer-grade video generation is too slow, too expensive, too inconsistent, and cannot reliably preserve physics, labels, characters, or continuity across an evolving lecture. It may become useful later for V3 “story scenes” as optional non-live cinematic cutaways, but not as the live classroom canvas.
+
+Option F — Game engine: Unity/Godot
+Idea: Move rendering/animation to Unity or Godot; Python remains the speech/LLM/physics orchestrator.
+
+Verdict: Possible, but unnecessary now. Your three.js renderer already achieves 144 fps and 2 ms/frame for motion, arrows, and expressions. Changing engines would cost months and not fix your actual bottleneck: assets. Revisit only if you need advanced IK, cloth, particles, or console-grade rendering.
+
+3. Recommended system
+Build Option A, with Option C as a second rendering mode for abstract concepts.
+
+Keep
+Live Whisper pipeline.
+
+Bounded-context LLM reasoning.
+
+Pydantic scene-operation contracts.
+
+Deterministic physics solvers.
+
+Camera, arrows, trajectories, focus/zoom.
+
+Imagine Mode and slide integration.
+
+Safety filter.
+
+Three.js renderer.
+
+Drop or demote
+Drop: SD-Turbo as a live per-line visual generator.
+
+Drop: photo search as a primary object source; it introduces style chaos and latency.
+
+Drop: AI-generated multi-view puppet sheets.
+
+Demote: emoji to fallback icons only, never main characters or central educational objects.
+
+Postpone: realistic faces, lip sync, detailed hair, full-body facial performance, arbitrary camera angles, photorealism.
+
+Change
+Replace “any image of anything” with “any recognizable, correctly behaving educational stand-in.”
+
+Replace “exact real-world size always” with “relative size correct within a readability budget.” A human and a bus should have plausible proportions; a virus and a planet should use explicit scale annotations.
+
+Replace “every view needs its own sheet” with 3D assets, which inherently support camera movement.
+
+Replace “LLM imagines the scene” with LLM selects/composes from a typed asset and action ontology.
+
+Not achievable live on current hardware
+Unique, style-consistent generated artwork for every spoken noun.
+
+High-fidelity character animation from text in ~2 seconds.
+
+Reliable video-generation continuity.
+
+Perfect open-vocabulary object coverage.
+
+Exact “Kurzgesagt animator” visual quality without professional art.
+
+The closest achievable version is: a polished low-poly 3D explainer stage with a growing curated asset library, procedural vector overlays for math/physics, and generated images only as delayed enrichment.
+
+4. Concrete tools and assets
+Free path now
+Layer	Tool / source	License / cost	Use
+Speech	faster-whisper medium.en	Local, free	Keep
+Reasoner	Groq Llama / gpt-oss	Free tier, rate-limited	Scene graph only
+Renderer	three.js 0.160	MIT	Existing canvas
+3D format	glTF / GLB	Open standard	Asset interchange
+Characters	Quaternius Universal Base Characters	CC0	Rigged, animated humans 
+Characters	Kenney Animated Characters	CC0	Additional rigged humanoids 
+Objects	Kenney asset kits	CC0	Vehicles, props, buildings, platformer/sci-fi kits 
+Animals/props	Quaternius packs	CC0	Farm animals, RPG/props, etc. 
+Physics	Your existing solvers; optionally Rapier.js	MIT/Apache-style	Deterministic motion and contact
+Vector overlays	SVG / Canvas2D / three.js lines	Free	Arrows, graphs, fields, formulas
+Asset indexing	SQLite + FTS5 + CLIP embeddings	Free	Semantic retrieval
+Safety	LLM classifier + blocklist + image/text checks	Free	Pre-render gate
+Paid / better-GPU path later
+Layer	Option	Role
+Reasoner	GPT-5-class / Claude / Gemini paid API	Better disambiguation and scene planning
+Asset expansion	Blender + Mixamo + purchased asset packs	Build proprietary library
+Illustration	SDXL/Flux on 12–24 GB GPU or paid API	Backgrounds, rare objects, slide stills
+Character consistency	LoRA / IP-Adapter / ControlNet	Generate new library assets offline, not live
+Art	Commission 20–50 rigged characters and 300–1,000 props	Highest-leverage spend
+2D polish	Rive/Spine designer assets	Premium explainer look
+Rive’s runtime is MIT-licensed and royalty-free, so it is technically safe to adopt later; the cost is in the designed animation files, not the runtime.
+
+5. Open-vocabulary fallback
+Use a four-tier resolver. Never show a random mismatched image just because a noun was recognized.
+
+Exact rigged asset: “man”, “car”, “box”, “ball”, “electron”, “planet”.
+
+Semantic family: “motorcycle” → vehicle rig with changed proportions/colour; “puppy” → dog rig with child scale.
+
+Parametric primitive: “sphere”, “ramp”, “wave”, “magnet”, “circuit element”, “graph”.
+
+Abstract token: a labelled, style-consistent placeholder: rounded 3D token, icon, or vector glyph with the word rendered beneath it.
+
+Example: teacher says “a quantum tunneling barrier.” If no asset exists, show a labelled translucent barrier object, not a wrong stock photo. This preserves trust and keeps the scene explainable.
+
+For rare nouns, enqueue an offline job: generate/reference an asset, human-review it, add it to the indexed library. Over a semester, coverage grows without compromising live quality.
+
+6. Scene schema
+Keep the LLM output small, typed, and patch-based. Do not ask it to write renderer code or physics equations.
+
+json
+{
+  "utterance_id": "u_042",
+  "scene_patch": {
+    "add": [
+      {
+        "id": "man_1",
+        "type": "human",
+        "asset_query": "adult male casual",
+        "pose": "standing",
+        "position": [-2, 0, 0],
+        "facing": "+x"
+      },
+      {
+        "id": "box_1",
+        "type": "object",
+        "asset_query": "wooden crate",
+        "position": [0, 0, 0],
+        "mass_kg": 10
+      }
+    ],
+    "relations": [
+      {"subject": "man_1", "predicate": "pushes", "object": "box_1"}
+    ],
+    "actions": [
+      {
+        "actor": "man_1",
+        "verb": "push",
+        "target": "box_1",
+        "duration_s": 3,
+        "applied_force_n": 20
+      }
+    ],
+    "environment": {
+      "ground": "rough_concrete",
+      "friction_mu": 0.35
+    },
+    "overlays": [
+      {"kind": "force_arrow", "target": "box_1", "vector": "applied_force", "color": "blue"},
+      {"kind": "force_arrow", "target": "box_1", "vector": "friction", "color": "red"}
+    ],
+    "camera": {
+      "shot": "medium",
+      "focus": "box_1"
+    },
+    "unknown_terms": []
+  }
+}
+Rules
+The LLM may choose asset queries, relations, actions, camera intent, and unknown terms.
+
+It may not invent numeric results.
+
+If the teacher states a number, put it in given_quantities; the solver validates dimensions and uses it.
+
+Every entity has a persistent id, enabling “now he throws it harder” to become a patch, not a new scene.
+
+Every action maps to an animation primitive plus a physics policy.
+
+If the action has no rig clip, use a composed fallback: move root, rotate limbs procedurally, or show an iconified action arrow.
+
+This matches the broader text-to-3D research pattern: LLM-derived scene graphs and layouts feed a separate rendering/simulation pipeline rather than generating pixels directly.
+
+7. Build order
+Phase 1 — Make one scene excellent 1–2 weeks
+Build the “man pushes box on rough floor” demo end to end:
+
+CC0 rigged human.
+
+CC0 crate.
+
+Ground, friction, applied force, deceleration.
+
+Push animation, force arrows, velocity readout.
+
+Persistent scene state.
+
+Camera focus.
+
+Success test: from a spoken sentence, first meaningful visual appears in under 2 seconds; box motion and displayed numbers match the solver; the same man remains visually identical after five follow-up commands.
+
+Phase 2 — Asset ontology and resolver 2–4 weeks
+Create 100–300 curated CC0 assets.
+
+Tag each with: name, synonyms, category, size, mass estimate, rig clips, material style, license, preview thumbnail.
+
+Build local semantic search: exact tag → synonym → CLIP embedding → fallback token.
+
+Preload the top 50 likely classroom assets.
+
+Phase 3 — General action layer 4–8 weeks
+Support 15–25 reusable actions:
+
+move, push, pull, throw, drop, jump, collide, orbit, wave, point, hold, follow, rotate, grow, split, connect, heat, shine, flow.
+
+Each action has:
+
+Required entities.
+
+Animation clip or procedural fallback.
+
+Physics solver.
+
+Overlay annotations.
+
+Continuity patch semantics.
+
+Phase 4 — V3 story mode
+Reuse the same scene graph. Add:
+
+Scene boundaries inferred from discourse markers.
+
+Persistent characters/places across scenes.
+
+Caption text restricted to teacher utterances.
+
+Camera transitions: pan, zoom, cut, focus.
+
+Storyboard timeline stored as an editable scene-state sequence.
+
+8. Research novelty
+Do not claim “we generate educational animations with an LLM.” That is not novel.
+
+Frame the contribution as:
+
+A continuity-aware, physics-grounded scene-graph compiler for live lecture visualization.
+
+Specific claims you can defend:
+
+Open-vocabulary but grounded visualization: speech is mapped to a typed asset/action ontology with explicit unknown-term fallback, rather than unconstrained image synthesis.
+
+Deterministic physics binding: natural-language actions are compiled into solver-backed motion policies; displayed quantities are computed, not hallucinated.
+
+Live incremental scene state: utterances produce reversible patches over a persistent entity/relationship graph, enabling continuity without regenerating scenes.
+
+Hybrid rendering policy: rigged 3D assets for actable entities, procedural vector overlays for quantitative concepts, and safe abstraction for unknown terms.
+
+Latency-aware orchestration: STT, LLM, retrieval, physics, and rendering are scheduled under a real-time budget on consumer hardware.
+
+Evaluate with metrics: first-visual latency, scene-edit success rate, physics correctness, entity persistence, style-consistency score, teacher interruption rate, and student comprehension/preference.
+
+9. Full system design
+text
+Microphone
+   ↓
+faster-whisper, GPU, streaming partial/final transcripts
+   ↓
+Utterance segmenter + safety filter
+   ↓
+Bounded-context LLM planner, Groq now / paid API later
+   ↓ JSON scene patch
+Scene-state store, persistent entities, relations, world state
+   ↓
+Deterministic compiler
+   ├─ Asset resolver: tags → synonyms → CLIP → fallback token
+   ├─ Physics planner: kinematics, forces, projectiles, fields, waves
+   ├─ Animation planner: clips, transitions, root motion, IK constraints
+   └─ Overlay planner: arrows, labels, graphs, equations
+   ↓
+Renderer command stream, WebSocket
+   ↓
+Browser three.js stage
+   ├─ 3D rigged actors/objects
+   ├─ Procedural vector overlay layer
+   ├─ Camera controller
+   └─ Slide/Imagine Mode compositor
+   ↓
+Projector
+Where things run
+GPU: Whisper only, plus browser WebGL through the laptop GPU.
+
+CPU: segmentation, retrieval, physics, compiler, WebSocket server.
+
+Cloud: LLM reasoning only; optionally delayed image generation.
+
+Browser: rendering, animation mixing, camera, overlays.
+
+Hard rules
+LLM never writes runtime code.
+
+LLM never computes physics.
+
+No number appears unless spoken or solver-derived.
+
+No unsupported action silently “works”; use a visible, honest abstraction.
+
+Every visual change must be a patch with an undo/rollback path.
+
+A failed retrieval must degrade to a labelled abstraction, not a wrong picture.
+
+10. Traps
+Do not chase universal generation. It will consume the project and still fail consistency.
+
+Do not mix visual families. One asset style per lecture; enforce it in the asset manifest.
+
+Do not build a puppet pipeline from AI sheets. You are recreating character art and rigging manually.
+
+Do not let the LLM choose camera angles freely. Use a small grammar: wide, medium, close-up, focus, over-shoulder, top-down.
+
+Do not render ambiguous physics. If friction, mass, or initial velocity is unknown, show qualitative motion or ask the teacher through a non-intrusive control.
+
+Do not treat “open vocabulary” as “correct depiction of anything.” Correct abstraction beats incorrect realism.
+
+Do not optimize image quality before interaction quality. A clean moving scene that follows the teacher is more valuable than a beautiful static image.
+
+Do not put generation in the 2-second path. Use it asynchronously or offline.
+
+11. Development and evaluation tips
+Build a golden utterance set: 100 real lecture lines covering physics, biology, math, history, and absurd cases.
+
+For each, define required entities, relations, action, physics invariant, and camera intent.
+
+Use Playwright screenshots only as regression checks; judge quality with a fixed rubric:
+
+Readability at 3 m.
+
+Correct causal motion.
+
+Correct labels/arrows.
+
+Character consistency.
+
+Style coherence.
+
+Latency.
+
+Use a “three-strike” rule: if an asset needs more than three manual fixes, replace it with a better library asset or a labelled abstraction.
+
+Buy/reuse assets before building them. Your highest-value purchase is not a bigger model; it is a small, coherent, rigged asset library.
+
+Keep a visible “Imagination Confidence” state internally: exact asset, family match, procedural, or abstract. Log it for the paper.
+
+12. Extra product ideas
+Teacher control pad: pause imagination, undo last scene, force camera focus, approve an ambiguous interpretation.
+
+Concept trail: a small timeline showing how the current scene evolved from prior utterances.
+
+Student replay: after class, export an interactive scene with captions and computed values.
+
+Misconception mode: when the teacher says something physically inconsistent, visualize both the stated claim and the corrected model, clearly labelled.
+
+Concept snapshots: automatically save each stable scene as a slide-ready PNG/SVG with citations to the utterance timestamp.
+
+Multilingual reuse: keep the scene graph language-neutral; translate only captions and UI strings.
+
+Bottom line
+Your best path is not better image generation. It is to stop trying to generate an animator and instead build a live, physics-grounded explainer game engine powered by a curated rigged 3D asset library, a typed scene graph, deterministic solvers, and disciplined visual abstraction.
+
+That will not literally match Kurzgesagt tomorrow, but it can produce a credible, live, publishable system: a classroom canvas where what the teacher says appears, moves correctly, stays consistent, and explains the concept—within the hardware and latency you actually have.

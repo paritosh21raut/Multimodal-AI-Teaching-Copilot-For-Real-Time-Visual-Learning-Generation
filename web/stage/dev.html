@@ -1,0 +1,18 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>stage dev</title><link rel="icon" href="data:,">
+<style>html,body{margin:0;height:100%;background:#fff;font-family:"Segoe UI",Arial,sans-serif}#host{width:100vw;height:100vh}</style>
+</head><body><div id="host"></div>
+<script type="module">
+// Dev page for the explainer stage (not used by the app): tools/stage/shoot.py and tests/e2e/test_stage_browser.py
+// drive it through window.stageDev. ?patch=<url>&t=<s> shows one patch; ?play=1 animates it.
+import * as dev from './dev.js';
+window.stageDev = dev;
+await dev.ready;
+const q = new URLSearchParams(location.search);
+if (q.get('patch')) {
+  const p = await (await fetch(q.get('patch'))).json();
+  dev.show(p, Number(q.get('t') || 0));
+  if (q.get('play')) { const t0 = performance.now(); dev.stage.play(() => (performance.now() - t0) / 1000); }
+}
+document.title = 'ready';
+</script></body></html>

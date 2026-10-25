@@ -1,0 +1,17 @@
+{
+ "about": "F-017 cast (contract §9): 6 m, 6 f; children and elders; skin tones, hair, outfits vary. A new person gets a new row; 'the same man' keeps his. height_m is the drawn height.",
+ "cast": [
+  {"id": "man", "sex": "m", "child": false, "skin": "#E9B591", "hair": "#2E2B29", "hair_style": "short", "beard": false, "glasses": false, "top": "#3E8E9E", "sleeve": "long", "bottom": "#3B4A6B", "bottom_type": "pants", "shoes": "#4A3F38", "build": 1.0, "height_m": 1.78},
+  {"id": "man2", "sex": "m", "child": false, "skin": "#8D5A3B", "hair": "#1F1B18", "hair_style": "bald", "beard": true, "glasses": false, "top": "#F2C14E", "sleeve": "short", "bottom": "#4A4E69", "bottom_type": "pants", "shoes": "#3A3330", "build": 1.12, "height_m": 1.8},
+  {"id": "man3", "sex": "m", "child": false, "skin": "#C68A64", "hair": "#3A2A20", "hair_style": "curly", "beard": false, "glasses": true, "top": "#7B6CD9", "sleeve": "long", "bottom": "#2F3E46", "bottom_type": "pants", "shoes": "#E8E4DC", "build": 1.0, "height_m": 1.75},
+  {"id": "man4", "sex": "m", "child": false, "skin": "#5C3A28", "hair": "#141110", "hair_style": "short", "beard": false, "glasses": false, "top": "#C1272D", "sleeve": "short", "bottom": "#C9B28A", "bottom_type": "shorts", "shoes": "#2F80ED", "build": 0.95, "height_m": 1.74},
+  {"id": "woman", "sex": "f", "child": false, "skin": "#C98E6B", "hair": "#4A2E20", "hair_style": "long", "beard": false, "glasses": false, "top": "#E07A5F", "sleeve": "short", "bottom": "#3D5A80", "bottom_type": "pants", "shoes": "#5A4A42", "build": 1.0, "height_m": 1.66},
+  {"id": "woman2", "sex": "f", "child": false, "skin": "#F1C7A5", "hair": "#2B1D14", "hair_style": "bun", "beard": false, "glasses": false, "top": "#7FB069", "sleeve": "long", "bottom": "#5B5F97", "bottom_type": "skirt", "shoes": "#4A3F38", "build": 1.0, "height_m": 1.64},
+  {"id": "woman3", "sex": "f", "child": false, "skin": "#7A4B32", "hair": "#1C1410", "hair_style": "ponytail", "beard": false, "glasses": false, "top": "#F28FAD", "sleeve": "short", "bottom": "#3B5BA5", "bottom_type": "pants", "shoes": "#F4F1EA", "build": 1.0, "height_m": 1.68},
+  {"id": "boy", "sex": "m", "child": true, "skin": "#E2A77F", "hair": "#3B2A20", "hair_style": "short", "beard": false, "glasses": false, "top": "#E4572E", "sleeve": "short", "bottom": "#3B4A6B", "bottom_type": "shorts", "shoes": "#2F80ED", "build": 1.0, "height_m": 1.3},
+  {"id": "girl", "sex": "f", "child": true, "skin": "#B87A55", "hair": "#2B1D14", "hair_style": "ponytail", "beard": false, "glasses": false, "top": "#FFC857", "sleeve": "short", "bottom": "#6C5CE7", "bottom_type": "skirt", "shoes": "#E4572E", "build": 1.0, "height_m": 1.25},
+  {"id": "girl2", "sex": "f", "child": true, "skin": "#F0C29E", "hair": "#8A4B22", "hair_style": "long", "beard": false, "glasses": true, "top": "#3BA99C", "sleeve": "long", "bottom": "#2F3E46", "bottom_type": "pants", "shoes": "#F4F1EA", "build": 1.0, "height_m": 1.2},
+  {"id": "elder", "sex": "m", "child": false, "skin": "#E3B08C", "hair": "#D9D6D0", "hair_style": "bald", "beard": true, "glasses": true, "top": "#8D99AE", "sleeve": "long", "bottom": "#5C5C5C", "bottom_type": "pants", "shoes": "#3A3330", "build": 1.0, "height_m": 1.7},
+  {"id": "elderw", "sex": "f", "child": false, "skin": "#D9A07A", "hair": "#E2E0DC", "hair_style": "bun", "beard": false, "glasses": true, "top": "#B5838D", "sleeve": "long", "bottom": "#6D597A", "bottom_type": "skirt", "shoes": "#3A3330", "build": 1.0, "height_m": 1.6}
+ ]
+}

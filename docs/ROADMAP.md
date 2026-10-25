@@ -76,7 +76,11 @@ _Built as "V2" (groups A–D); renamed 2026-10-17 when Concept Simulation became
   0-token replay · **S2** relative phrases, graphs, readouts, optional LLM field · **S3** processes · **S4** hard
   topics (p-n junction, RLC transients / resonance / phasors, networks: packets, routing, TCP) · **Explore mode**
   for students on /view (later).
-- **V2 Next — F-015 Live Scene Engine** (`docs/v2/`, planned 2026-10-22): open-vocabulary scenes from speech, no
+- **V2 Next — F-017 Explainer Stage** (re-planned 2026-10-26, `docs/v2/V2-ROADMAP.md`, ADR-0011): 2D SVG stage,
+  look explainer_flat + chibi people (baked CC0 mocap), LLM op deltas → Python laws → director + acting → stage.
+  Sessions **E1** renderer + kit · **E2** stage core (laws, director, acting) · **E3** live language · **E4** views,
+  diagrams, laws · **E5** evaluation (paper 2). Supersedes F-016 C2/C3 and F-015's remaining plan below.
+- _(superseded)_ **F-015 Live Scene Engine** (`docs/v2/`, planned 2026-10-22): open-vocabulary scenes from speech, no
   templates. The LLM emits typed SceneOps; Python engines compute. **L1** scene core (geometry, plot, motion) · **L2**
   science worlds (rigid, field, wave/optics, particles) + nouns not built in · **L3** any subject (flow, graph) + continuity + teacher
   panel · **L4** benchmark + baseline + ablations (paper 2). Templates: teacher pick only.

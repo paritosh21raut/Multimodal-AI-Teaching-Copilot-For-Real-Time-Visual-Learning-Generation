@@ -1,0 +1,493 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>V2 2D samples</title>
+<style>
+html,body{margin:0;background:#fff;font-family:"Segoe UI",Arial,sans-serif}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(560px,1fr));gap:10px;padding:10px}
+#grid svg,#one svg{width:100%;height:auto;display:block;border-radius:8px}
+#one{width:100vw;height:100vh}#one svg{width:100vw;height:100vh}
+.bar{padding:8px 12px;font-size:15px}.bar a{margin-right:12px}
+</style>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/jsm/"}}</script>
+</head><body>
+<div id="root"></div>
+<script type="module">
+// V2 2D look samples. People = flat 2D figures moved by real motion capture (the CC0 Quaternius clips, baked to
+// joint tracks in motion.json by tools/imggen/bake_motion.py); objects drawn in code; physics from closed forms.
+//   ?all=1&theme=textbook|explainer&fig=flat|stick   (animated gallery)   ?scene=push&theme=..&fig=..  (one scene)
+const VW = 1600, VH = 1000;
+const M = await (await fetch('motion.json')).json();
+const JI = Object.fromEntries(M.joints.map((j, i) => [j, i]));
+
+// ---------- motion ----------
+function sample(name, t, loop = true) {
+  const c = M.clips[name], n = c.frames.length;
+  const tt = loop ? ((t % c.dur) + c.dur) % c.dur : Math.max(0, Math.min(t, c.dur * 0.999));
+  const u = (tt / c.dur) * (loop ? n : n - 1), i = Math.floor(u), k = u - i;
+  const a = c.frames[i % n], b = c.frames[loop ? (i + 1) % n : Math.min(i + 1, n - 1)];
+  const out = a.map((p, q) => [p[0] + (b[q][0] - p[0]) * k, p[1] + (b[q][1] - p[1]) * k, p[2] + (b[q][2] - p[2]) * k]);
+  out.clip = name; out.tt = tt;   // the 3D figures pose the same clip at the same time
+  return out;
+}
+// the speed a loop clip walks at (per metre of height): the planted foot slides back at it in the baked clip
+const _sp = {};
+function natSpeed(name) {
+  if (_sp[name] != null) return _sp[name];
+  const c = M.clips[name], f = c.frames, L = JI.ball_l, R = JI.ball_r, dt = c.dur / f.length;
+  let d = 0, n = 0;
+  for (let i = 0; i < f.length; i++) {
+    const j = (i + 1) % f.length, a = f[i][L][1] < f[i][R][1] ? L : R, b = f[j][L][1] < f[j][R][1] ? L : R;
+    if (a !== b) continue; d += f[i][a][0] - f[j][a][0]; n++;
+  }
+  return (_sp[name] = Math.max(0, d / (n * dt)));
+}
+const clipMax = (name, j, ax) => Math.max(...M.clips[name].frames.map(f => f[JI[j]][ax]));
+
+// ---------- svg helpers ----------
+const F = n => (Math.round(n * 10) / 10).toString();
+const line = (a, b, w, c, ex = '') => `<line x1="${F(a[0])}" y1="${F(a[1])}" x2="${F(b[0])}" y2="${F(b[1])}" stroke="${c}" stroke-width="${F(w)}" stroke-linecap="round" ${ex}/>`;
+const circ = (c, r, fill, ex = '') => `<circle cx="${F(c[0])}" cy="${F(c[1])}" r="${F(r)}" fill="${fill}" ${ex}/>`;
+const pathD = pts => 'M' + pts.map(p => F(p[0]) + ',' + F(p[1])).join('L') + 'Z';
+const poly = (pts, fill, ex = '') => `<path d="${pathD(pts)}" fill="${fill}" ${ex}/>`;
+const lerp = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k];
+function shade(hex, k) {
+  const n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255, f = x => Math.max(0, Math.min(255, Math.round(x * k)));
+  return '#' + ((1 << 24) | (f(r) << 16) | (f(g) << 8) | f(b)).toString(16).slice(1);
+}
+function hash(i) { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+
+// ---------- themes ----------
+const THEMES = {
+  textbook: { bg: '#F6F3EC', ink: '#2b3138', muted: '#6b7380', ground: '#e7e1d4', groundLine: '#8a8f96', fill: '#e9e2d3',
+    block: '#ffffff', glass: '#2b3138', water: '#1f6fd1', applied: '#b05a00', friction: '#c2362a', weight: '#1d5bbf',
+    normal: '#0a7a52', vel: '#7a3fc0', path: '#7a3fc0', outline: true, card: 'rgba(255,255,255,0.88)' },
+  explainer: { bg: '#EAF4F7', ink: '#33363d', muted: '#5d6672', ground: '#A9CF8E', groundLine: '#7FAF66', fill: '#F2E6CF',
+    block: '#D9A066', glass: '#6E8FA6', water: '#3B8FE0', applied: '#F07C1A', friction: '#E04A3A', weight: '#2F6BE0',
+    normal: '#1E9E6A', vel: '#8A4FE0', path: '#8A4FE0', outline: false, card: 'rgba(255,255,255,0.9)' },
+};
+const LOOK = {
+  man: { skin: '#E9B591', shirt: '#3E8E9E', sleeve: 'long', pants: '#3B4A6B', shoes: '#4A3F38', hair: '#2E2B29', hairStyle: 'short' },
+  woman: { skin: '#C98E6B', shirt: '#E07A5F', sleeve: 'short', pants: '#3D5A80', shoes: '#5A4A42', hair: '#4A2E20', hairStyle: 'long' },
+};
+
+function view(s, cx, gy) { return { s, cx, gy, sx: x => VW / 2 + (x - cx) * s, sy: y => gy - y * s }; }
+
+// ---------- people ----------
+// group of primitives: in the textbook theme every primitive's outline is drawn first, then all fills, so a group
+// gets one clean silhouette line (parts of the same group don't outline each other)
+function group(prims, T, ow) {
+  let o = '', f = '';
+  for (const p of prims) {
+    if (p.k === 'l') { if (T.outline && !p.no) o += line(p.a, p.b, p.w + 2 * ow, T.ink); f += line(p.a, p.b, p.w, p.c); }
+    else if (p.k === 'c') { if (T.outline && !p.no) o += circ(p.c, p.r + ow, T.ink); f += circ(p.c, p.r, p.fill); }
+    else if (p.k === 'p') { if (T.outline && !p.no) o += poly(p.pts, T.ink, `stroke="${T.ink}" stroke-width="${F(2 * ow)}" stroke-linejoin="round"`); f += poly(p.pts, p.fill); }
+  }
+  return o + f;
+}
+
+// p: {clip, t, loop, x, y, h, dir, look, fr?}; fig: flat | stick
+const FIG = {};   // extra figure styles (people2.js, toon3d.js)
+function person(p, V, T, fig) {
+  if (FIG[fig]) return FIG[fig](p, V, T);
+  const fr = p.fr || sample(p.clip, p.t, p.loop !== false), h = p.h, d = p.dir || 1, L = p.look;
+  const W = k => k * h * V.s;
+  const P = j => { const q = fr[JI[j]]; return [V.sx(p.x + d * q[0] * h), V.sy((p.y || 0) + q[1] * h)]; };
+  const nk = P('neck_01'), hd = P('Head');
+  let vx = hd[0] - nk[0], vy = hd[1] - nk[1]; const vl = Math.hypot(vx, vy) || 1; vx /= vl; vy /= vl;
+  const fx = -vy * d, fy = vx * d, r = W(0.068), hc = [hd[0] + vx * r * 0.9, hd[1] + vy * r * 0.9];
+  const at = (u, v) => [hc[0] + fx * u * r + vx * v * r, hc[1] + fy * u * r + vy * v * r];
+  const hand = s => lerp(P('hand' + s), P('middle_01' + s), 0.45);
+  const toe = s => { const f = P('foot' + s), b = P('ball' + s); return [b[0] + (b[0] - f[0]) * 0.55, b[1] + (b[1] - f[1]) * 0.55]; };
+  const heel = s => { const f = P('foot' + s), b = P('ball' + s); return [f[0] - (b[0] - f[0]) * 0.2, f[1] + W(0.03)]; };
+  let shadow = '';
+  if (!T.outline && !p.noShadow) {
+    const gx = (P('ball_l')[0] + P('ball_r')[0]) / 2, gy = V.sy(0);
+    const lift = Math.max(0, (p.y || 0)) * V.s, k = Math.max(0.35, 1 - lift / 600);
+    shadow = `<ellipse cx="${F(gx)}" cy="${F(gy)}" rx="${F(W(0.17) * k)}" ry="${F(W(0.028) * k)}" fill="rgba(40,50,40,${F(0.18 * k)})"/>`;
+  }
+  if (fig === 'stick') {
+    const sw = Math.max(4, W(0.024)), far = shade(T.ink, 1.9), lim = (s, c) => [
+      line(P('upperarm' + s), P('lowerarm' + s), sw, c), line(P('lowerarm' + s), hand(s), sw, c),
+      line(P('thigh' + s), P('calf' + s), sw, c), line(P('calf' + s), P('foot' + s), sw, c), line(P('foot' + s), toe(s), sw, c)].join('');
+    const neckTop = at(0, -1);
+    return shadow + lim('_l', far) + line(P('pelvis'), P('spine_03'), sw, T.ink) + line(P('spine_03'), neckTop, sw, T.ink) +
+      line(P('spine_03'), P('upperarm_r'), sw, T.ink) + line(P('spine_03'), P('upperarm_l'), sw, far) + lim('_r', T.ink) +
+      circ(hc, r * 0.95, T.outline ? T.bg : '#fff', `stroke="${T.ink}" stroke-width="${F(sw)}"`) + circ(at(0.5, 0.15), r * 0.11, T.ink);
+  }
+  const ow = Math.max(2, W(0.007));
+  const arm = (s, far) => {
+    const c = x => far ? shade(x, 0.82) : x, fore = L.sleeve === 'long' ? L.shirt : L.skin;
+    const ua = P('upperarm' + s), la = P('lowerarm' + s), cuff = lerp(la, P('hand' + s), 0.15);
+    const prims = [{ k: 'l', a: ua, b: la, w: W(0.054), c: c(L.shirt) }, { k: 'l', a: la, b: hand(s), w: W(0.042), c: c(L.skin) }];
+    if (fore !== L.skin) prims.push({ k: 'l', a: la, b: cuff, w: W(0.046), c: c(fore), no: 1 });
+    else prims.push({ k: 'l', a: ua, b: lerp(ua, la, 0.55), w: W(0.06), c: c(L.shirt), no: 1 });
+    prims.push({ k: 'c', c: hand(s), r: W(0.026), fill: c(L.skin) });
+    return prims;
+  };
+  const leg = (s, far) => {
+    const c = x => far ? shade(x, 0.82) : x;
+    return [{ k: 'l', a: P('thigh' + s), b: P('calf' + s), w: W(0.076), c: c(L.pants) },
+      { k: 'l', a: P('calf' + s), b: P('foot' + s), w: W(0.06), c: c(L.pants) },
+      { k: 'l', a: heel(s), b: toe(s), w: W(0.05), c: c(L.shoes) }];
+  };
+  const pel = P('pelvis'), sp2 = P('spine_02'), sp3 = P('spine_03'), belt = lerp(pel, sp2, 0.3);
+  const hairPts = [];
+  if (L.hairStyle === 'long') {
+    for (let a = 70; a <= 250; a += 10) hairPts.push(at(Math.cos(a * Math.PI / 180) * 1.08, Math.sin(a * Math.PI / 180) * 1.08));
+    hairPts.push(at(-0.55, -1.75), at(-0.05, -1.55), at(-0.2, -0.3), at(0.1, 0.35));
+  } else {
+    for (let a = 65; a <= 215; a += 10) hairPts.push(at(Math.cos(a * Math.PI / 180) * 1.07, Math.sin(a * Math.PI / 180) * 1.07));
+    hairPts.push(at(-0.5, 0.05), at(0.15, 0.55));
+  }
+  const body = [
+    ...leg('_r', false).slice(0, 0),
+    { k: 'l', a: pel, b: belt, w: W(0.145), c: L.pants },
+    ...leg('_r', false),
+    { k: 'l', a: belt, b: sp2, w: W(0.15), c: L.shirt }, { k: 'l', a: sp2, b: sp3, w: W(0.16), c: L.shirt },
+    { k: 'l', a: sp3, b: lerp(sp3, nk, 0.6), w: W(0.13), c: L.shirt },
+    { k: 'l', a: nk, b: at(-0.1, -0.7), w: W(0.05), c: shade(L.skin, 0.93) },
+    { k: 'c', c: at(0.93, -0.12), r: r * 0.17, fill: L.skin },
+    { k: 'c', c: hc, r, fill: L.skin },
+    { k: 'p', pts: hairPts, fill: L.hair },
+  ];
+  const face = line(at(0.62, -0.47), at(0.82, -0.43), r * 0.06, '#9a4a3a') + circ(at(0.5, 0.12), r * 0.11, '#2b2522') +
+    line(at(0.32, 0.4), at(0.7, 0.37), r * 0.08, L.hair) + circ(at(-0.12, -0.05), r * 0.19, shade(L.skin, 0.88));
+  return shadow + group(arm('_l', true), T, ow) + group(leg('_l', true), T, ow) + group(body, T, ow) + face + group(arm('_r', false), T, ow);
+}
+
+// ---------- overlays ----------
+function sym(s) {
+  const m = s.match(/^([^_]+)_(.+)$/);
+  return m ? `${m[1]}<tspan baseline-shift="sub" font-size="0.62em">${m[2]}</tspan>` : s;
+}
+function label(x, y, s, color, T, anchor = 'start', size = 42) {
+  return `<text x="${F(x)}" y="${F(y)}" text-anchor="${anchor}" fill="${color}" font-family="Cambria Math,Cambria,Times New Roman,serif" font-style="italic" font-size="${size}" paint-order="stroke" stroke="${T.outline ? T.bg : '#ffffff'}" stroke-width="8" stroke-linejoin="round">${sym(s)}</text>`;
+}
+function words(x, y, s, T, { size = 30, anchor = 'start', color, weight = 500, halo = true } = {}) {
+  return `<text x="${F(x)}" y="${F(y)}" text-anchor="${anchor}" fill="${color || T.ink}" font-family="Segoe UI,Arial,sans-serif" font-weight="${weight}" font-size="${size}" paint-order="stroke" stroke="${!halo ? 'none' : T.outline ? T.bg : 'rgba(255,255,255,0.85)'}" stroke-width="6" stroke-linejoin="round">${s}</text>`;
+}
+function arrow(x1, y1, x2, y2, color, lab, T, { lx = 12, ly = -12, dashed = false, w = 7 } = {}) {
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy); if (len < 6) return '';
+  const ux = dx / len, uy = dy / len, H = 26, bx = x2 - ux * H, by = y2 - uy * H, px = -uy * H * 0.55, py = ux * H * 0.55;
+  return `<g>${line([x1, y1], [bx, by], w, color, dashed ? 'stroke-dasharray="14 10"' : '')}<path d="M${F(x2)},${F(y2)}L${F(bx + px)},${F(by + py)}L${F(bx - px)},${F(by - py)}Z" fill="${color}"/></g>` +
+    (lab ? label(x2 + lx, y2 + ly, lab, color, T) : '');
+}
+function quote(s, T) { return words(48, 66, '“' + s + '”', T, { size: 30, color: T.muted, weight: 400 }); }
+function badge(T, text = 'Illustrative') {
+  const w = text.length * 15 + 40;
+  return `<g transform="translate(${VW - w - 40},34)"><rect width="${w}" height="46" rx="23" fill="${T.card}" stroke="${T.muted}" stroke-width="2"/>` +
+    `<text x="${w / 2}" y="31" text-anchor="middle" font-family="Segoe UI,Arial" font-size="24" fill="${T.muted}">${text}</text></g>`;
+}
+function card(x, y, rows, tag, T, w = 470) {
+  const h = 30 + rows.length * 54;
+  return `<g transform="translate(${x},${y})"><rect width="${w}" height="${h}" rx="18" fill="${T.card}" stroke="${T.outline ? '#d8d2c4' : 'none'}"/>` +
+    (tag ? `<text x="${w - 22}" y="30" text-anchor="end" font-family="Segoe UI" font-size="18" letter-spacing="1.5" fill="${T.muted}">${tag.toUpperCase()}</text>` : '') +
+    rows.map((r, i) => `<text x="24" y="${68 + i * 54}" font-family="Cambria Math,Cambria,serif" font-size="36" fill="${T.ink}"><tspan font-style="italic">${sym(r[0])}</tspan> = ${r[1]}</text>`).join('') + '</g>';
+}
+
+// ---------- backgrounds and props ----------
+function sky(T, id, top = '#BFE3F2', bottom = '#EEF6F0') {
+  return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${top}"/><stop offset="1" stop-color="${bottom}"/></linearGradient></defs><rect width="${VW}" height="${VH}" fill="url(#${id})"/>`;
+}
+function hills(T, gy) {
+  return `<path d="M0,${gy - 120} C260,${gy - 230} 470,${gy - 90} 720,${gy - 160} S1180,${gy - 250} 1600,${gy - 130} L1600,${gy} L0,${gy}Z" fill="#CFE5C2"/>` +
+    `<path d="M0,${gy - 50} C300,${gy - 120} 600,${gy - 30} 900,${gy - 80} S1400,${gy - 110} 1600,${gy - 60} L1600,${gy} L0,${gy}Z" fill="#BCDCA8"/>`;
+}
+function ground(T, V, { rough = false, x0 = 0, x1 = VW, color } = {}) {
+  const gy = V.gy;
+  if (T.outline) {
+    let s = `<rect x="0" y="${gy}" width="${VW}" height="${VH - gy}" fill="${color || T.bg}"/>` + line([x0, gy], [x1, gy], 4, T.groundLine);
+    if (rough) for (let x = x0 + 14; x < x1; x += 30) s += line([x, gy + 6], [x - 20, gy + 30], 3, T.groundLine);
+    return s;
+  }
+  let s = `<rect x="0" y="${gy}" width="${VW}" height="${VH - gy}" fill="${color || T.ground}"/><rect x="0" y="${gy}" width="${VW}" height="10" fill="${shade(color || T.ground, 0.9)}"/>`;
+  if (rough) for (let i = 0; i < 70; i++) s += circ([hash(i) * VW, gy + 18 + hash(i + 9) * (VH - gy - 24)], 3 + hash(i + 3) * 4, shade(color || T.ground, 0.85));
+  return s;
+}
+function crate(x, y, w, h, T) {           // px, (x, y) = bottom-left
+  if (T.outline) return `<rect x="${F(x)}" y="${F(y - h)}" width="${F(w)}" height="${F(h)}" rx="12" fill="${T.block}" stroke="${T.ink}" stroke-width="5"/>`;
+  return `<rect x="${F(x)}" y="${F(y - h)}" width="${F(w)}" height="${F(h)}" rx="8" fill="#D9A066"/>` +
+    `<rect x="${F(x)}" y="${F(y - h)}" width="${F(w)}" height="${F(h * 0.12)}" rx="6" fill="#C58B52"/>` +
+    `<rect x="${F(x + w * 0.42)}" y="${F(y - h)}" width="${F(w * 0.16)}" height="${F(h)}" fill="#EBC895" opacity="0.9"/>` +
+    `<rect x="${F(x)}" y="${F(y - h)}" width="${F(w)}" height="${F(h)}" rx="8" fill="none" stroke="#B87A45" stroke-width="4"/>`;
+}
+function ball(c, r, T, color = '#E4572E') {
+  if (T.outline) return circ(c, r, '#ffffff', `stroke="${T.ink}" stroke-width="5"`) + circ([c[0] - r * 0.3, c[1] - r * 0.3], r * 0.18, '#d8d2c4');
+  return circ(c, r, color) + circ([c[0] - r * 0.32, c[1] - r * 0.32], r * 0.28, 'rgba(255,255,255,0.55)');
+}
+function table(V, x0, x1, top, T) {       // metres
+  const a = V.sx(x0), b = V.sx(x1), y = V.sy(top), th = 0.06 * V.s, lg = 0.07 * V.s, g = V.sy(0);
+  const fill = T.outline ? T.fill : '#B98256', st = T.outline ? `stroke="${T.ink}" stroke-width="4"` : '';
+  return `<rect x="${F(a + lg * 0.6)}" y="${F(y)}" width="${F(lg)}" height="${F(g - y)}" fill="${T.outline ? T.fill : '#9C6A43'}" ${st}/>` +
+    `<rect x="${F(b - lg * 1.6)}" y="${F(y)}" width="${F(lg)}" height="${F(g - y)}" fill="${T.outline ? T.fill : '#9C6A43'}" ${st}/>` +
+    `<rect x="${F(a)}" y="${F(y)}" width="${F(b - a)}" height="${F(th)}" rx="4" fill="${fill}" ${st}/>`;
+}
+function tree(V, x, h, T) {
+  const s = V.s, bx = V.sx(x), g = V.sy(0), tw = 0.32 * s, th = h * 0.45 * s;
+  const leaf = T.outline ? '#dfe9d6' : '#4E9F5A', leaf2 = T.outline ? '#dfe9d6' : '#3F8A4B', st = T.outline ? `stroke="${T.ink}" stroke-width="4"` : '';
+  const cy = g - th - h * 0.25 * s, R = h * 0.27 * s;
+  return `<rect x="${F(bx - tw / 2)}" y="${F(g - th - 8)}" width="${F(tw)}" height="${F(th + 8)}" fill="${T.outline ? T.fill : '#8A5A3B'}" ${st}/>` +
+    (T.outline ? (() => { const cs = [[-0.55, 0.2, 0.72], [0.55, 0.25, 0.7], [0, -0.25, 0.85]];
+      return cs.map(([u, v, k]) => circ([bx + R * u, cy + R * v], R * k + 4, T.ink)).join('') + cs.map(([u, v, k]) => circ([bx + R * u, cy + R * v], R * k, leaf)).join(''); })() :
+      circ([bx - R * 0.55, cy + R * 0.2], R * 0.72, leaf2) + circ([bx + R * 0.55, cy + R * 0.25], R * 0.7, leaf2) + circ([bx, cy - R * 0.25], R * 0.85, leaf) +
+      circ([bx - R * 0.3, cy - R * 0.45], R * 0.25, 'rgba(255,255,255,0.18)'));
+}
+function car(V, x, T, color = '#E4572E', t = 0, vx = 0) {   // x = rear bumper (m), facing right
+  const s = V.s, X = u => V.sx(x + u), Y = v => V.sy(v);
+  const body = [[0, 0.32], [4.4, 0.32], [4.45, 0.72], [4.05, 0.9], [2.95, 0.98], [2.3, 1.45], [1.05, 1.45], [0.45, 0.98], [0.02, 0.86]].map(([u, v]) => [X(u), Y(v)]);
+  const win = [[1.2, 1.0], [2.15, 1.0], [2.15, 1.36], [1.28, 1.36]].map(([u, v]) => [X(u), Y(v)]);
+  const win2 = [[2.3, 1.0], [2.8, 1.0], [2.25, 1.36]].map(([u, v]) => [X(u), Y(v)]);
+  const st = T.outline ? `stroke="${T.ink}" stroke-width="5" stroke-linejoin="round"` : '';
+  const fill = T.outline ? T.fill : color, glass = T.outline ? '#ffffff' : '#CFE7F5';
+  const wheel = u => {
+    const c = [X(u), Y(0.34)], r = 0.34 * s, a = -(x / 0.34);
+    let sp = ''; for (let i = 0; i < 3; i++) { const q = a + i * Math.PI / 3; sp += line([c[0] + Math.cos(q) * r * 0.5, c[1] + Math.sin(q) * r * 0.5], [c[0] - Math.cos(q) * r * 0.5, c[1] - Math.sin(q) * r * 0.5], 4, T.outline ? T.ink : '#888'); }
+    return circ(c, r, T.outline ? '#ffffff' : '#2F3238', st) + circ(c, r * 0.55, T.outline ? '#ffffff' : '#C9CDD3', T.outline ? `stroke="${T.ink}" stroke-width="3"` : '') + sp;
+  };
+  return poly(body, fill, st) + poly(win, glass, st) + poly(win2, glass, st) +
+    (T.outline ? '' : `<rect x="${F(X(4.25))}" y="${F(Y(0.72))}" width="${F(0.16 * s)}" height="${F(0.1 * s)}" fill="#FFE08A"/>`) + wheel(0.95) + wheel(3.45);
+}
+
+// ---------- scenes (t in s; each returns svg markup) ----------
+const SCENES = {};
+
+SCENES.push = { title: 'A man pushes a heavy box across a rough floor.', still: 1.1,
+  draw(T, fig, t) {
+    const V = view(250, 0.2, 820), h = 1.78, clip = 'Push_Loop', fr = sample(clip, t);
+    const v = natSpeed(clip) * h, span = 2.6, boxW = 0.95, boxH = Math.min(1.4, clipMax(clip, 'hand_r', 1) * h + 0.14);
+    const hx = Math.max(fr[JI.hand_l][0], fr[JI.hand_r][0]) * h;
+    const bx = -1.2 + ((v * t) % span), mx = bx - hx - 0.035;
+    let s = T.outline ? `<rect width="${VW}" height="${VH}" fill="${T.bg}"/>` :
+      `<rect width="${VW}" height="${VH}" fill="#F3E7D3"/><rect y="${V.gy - 70}" width="${VW}" height="70" fill="#E6D3B5"/>`;
+    s += ground(T, V, { rough: true, color: T.outline ? null : '#C99C6E' });
+    if (!T.outline) for (let i = 0; i < 3; i++) s += line([V.sx(mx) - 70 - i * 20, V.sy(0.6 + i * 0.3)], [V.sx(mx) - 160 - i * 20, V.sy(0.6 + i * 0.3)], 6, 'rgba(90,70,50,0.25)');
+    s += person({ fr, x: mx, h, dir: 1, look: LOOK.man }, V, T, fig);
+    const X0 = V.sx(bx), Y0 = V.sy(0), Wp = boxW * V.s, Hp = boxH * V.s;
+    s += crate(X0, Y0, Wp, Hp, T);
+    s += arrow(X0 + 6, Y0 - Hp * 0.45, X0 + 150, Y0 - Hp * 0.45, T.applied, 'F', T, { lx: 10, ly: 14 });
+    s += arrow(X0 + Wp * 0.62, Y0 - 10, X0 + Wp * 0.62 - 125, Y0 - 10, T.friction, 'f', T, { lx: -36, ly: -16 });
+    s += arrow(X0 + Wp * 0.3, Y0 - Hp - 40, X0 + Wp * 0.3 + 150, Y0 - Hp - 40, T.vel, 'v', T, { lx: 12, ly: 14 });
+    return s + quote(this.title, T);
+  } };
+
+SCENES.throw = { title: 'He throws a ball; it flies in a curve and falls.', still: 0,
+  draw(T, fig, t) {
+    const V = view(160, 0.3, 860), h = 1.78, clip = 'OverhandThrow', c = M.clips[clip], mx = -3.9;
+    let tr = 0, best = -1e9;
+    c.frames.forEach((f, i) => { const sc = f[JI.hand_r][1] + 0.6 * f[JI.hand_r][0]; if (sc > best) { best = sc; tr = (i / (c.frames.length - 1)) * c.dur; } });
+    const g = 9.8, v0 = [4.6, 4.4], fl = sample(clip, tr, false), hr = [mx + fl[JI.hand_r][0] * h, fl[JI.hand_r][1] * h];
+    const tf = (v0[1] + Math.sqrt(v0[1] ** 2 + 2 * g * (hr[1] - 0.12))) / g, cyc = tr + tf + 1.2;
+    let tt = this.still && t === this.still ? t : t % cyc; if (t === 0 && this.still === 0) tt = tr + tf * 0.45;
+    const fr = sample(clip, tt, false), V2 = V;
+    let s = T.outline ? `<rect width="${VW}" height="${VH}" fill="${T.bg}"/>` : sky(T, 'skyT') + hills(T, V.gy);
+    s += ground(T, V);
+    s += person({ fr, x: mx, h, dir: 1, look: LOOK.man }, V, T, fig);
+    let bp, vel = null;
+    if (tt < tr) bp = [mx + fr[JI.hand_r][0] * h, fr[JI.hand_r][1] * h];
+    else {
+      const u = Math.min(tt - tr, tf); bp = [hr[0] + v0[0] * u, hr[1] + v0[1] * u - 0.5 * g * u * u]; vel = [v0[0], v0[1] - g * u];
+      for (let k = 0.06; k < u; k += 0.06) { const q = [hr[0] + v0[0] * k, hr[1] + v0[1] * k - 0.5 * g * k * k]; s += circ([V.sx(q[0]), V.sy(q[1])], 5, T.path); }
+    }
+    const B = [V2.sx(bp[0]), V2.sy(bp[1])];
+    s += ball(B, 0.11 * V.s, T);
+    if (vel && tt - tr < tf) {
+      const k = 24; s += arrow(B[0], B[1], B[0] + vel[0] * k, B[1] - vel[1] * k, T.vel, 'v', T);
+      s += arrow(B[0], B[1] + 20, B[0], B[1] + 120, T.weight, 'mg', T, { lx: 12, ly: 10 });
+    }
+    return s + quote(this.title, T) + badge(T);
+  } };
+
+SCENES.carry = { title: 'She carries a box to the table and puts it down.', still: 1.4,
+  draw(T, fig, t) {
+    const V = view(250, 0.3, 830), h = 1.66, clip = 'Walk_Carry_Loop', v = natSpeed(clip) * h;
+    const tx0 = 1.0, tx1 = 2.5, top = 0.78, x0 = -2.6, stop = tx0 - 0.62, walkT = (stop - x0) / v, cyc = walkT + 2.5;
+    const tt = t % cyc, walking = tt < walkT, x = walking ? x0 + v * tt : stop;
+    const fr = walking ? sample(clip, tt) : sample('Idle_Loop', tt - walkT);
+    let s = T.outline ? `<rect width="${VW}" height="${VH}" fill="${T.bg}"/>` :
+      `<rect width="${VW}" height="${VH}" fill="#EFE6F2"/><rect y="${V.gy - 60}" width="${VW}" height="60" fill="#DCCFE3"/>` +
+      `<rect x="160" y="150" width="260" height="190" rx="10" fill="#CFE6F5" stroke="#B9A9C4" stroke-width="10"/>`;
+    s += ground(T, V, { color: T.outline ? null : '#C7A3D1' }) + table(V, tx0, tx1, top, T);
+    s += person({ fr, x, h, dir: 1, look: LOOK.woman }, V, T, fig);
+    const bw = 0.5, bh = 0.4;
+    let bxm, bym;
+    if (walking) { const a = fr[JI.hand_l], b = fr[JI.hand_r]; bxm = x + (a[0] + b[0]) / 2 * h + 0.12; bym = (a[1] + b[1]) / 2 * h - 0.05; }
+    else { bxm = tx0 + 0.45; bym = top + 0.06 + bh / 2; }
+    s += crate(V.sx(bxm - bw / 2), V.sy(bym - bh / 2), bw * V.s, bh * V.s, T);
+    if (walking) s += arrow(V.sx(x) - 20, V.sy(h + 0.22), V.sx(x) + 130, V.sy(h + 0.22), T.vel, 'v', T, { lx: 12, ly: 14 });
+    return s + quote(this.title, T);
+  } };
+
+SCENES.rain = { title: 'Rain falls straight down on a man walking; to him it comes at an angle.', still: 0.9,
+  draw(T, fig, t) {
+    const V = view(230, 0.0, 850), h = 1.78, clip = 'Walk_Loop', v = natSpeed(clip) * h, x = -2.9 + ((v * t) % 3.2);
+    let s = T.outline ? `<rect width="${VW}" height="${VH}" fill="${T.bg}"/>` : sky(T, 'skyR', '#AFC3D3', '#E3ECEF') + hills(T, V.gy);
+    if (!T.outline) for (let i = 0; i < 7; i++) s += circ([i * 260 + 60, 70 + hash(i) * 30], 110 + hash(i + 4) * 40, '#DCE4EA');
+    s += ground(T, V);
+    const vr = 7.0;
+    for (let i = 0; i < 90; i++) {
+      const rx = -3.6 + hash(i) * 7.6, ph = hash(i + 50) * 4.2, yy = 4.0 - ((vr * t + ph * vr) % 4.2);
+      if (yy < 0.05) continue;
+      s += line([V.sx(rx), V.sy(yy)], [V.sx(rx), V.sy(yy - 0.22)], 3.5, T.outline ? T.water : '#4F86C6', 'opacity="0.75"');
+    }
+    s += person({ clip, t, x, h, dir: 1, look: LOOK.man }, V, T, fig);
+    s += arrow(V.sx(x) - 20, V.sy(h + 0.25), V.sx(x) + 130, V.sy(h + 0.25), T.vel, 'v_m', T, { lx: 10, ly: 14 });
+    // vector card: rain relative to the man = v_r - v_m
+    const cx = 1080, cy = 120, w = 470, hh = 400, O = [cx + 330, cy + 70], R = [O[0], O[1] + 230], E = [R[0] - 150, R[1]];
+    s += `<rect x="${cx}" y="${cy}" width="${w}" height="${hh}" rx="18" fill="${T.card}" stroke="${T.outline ? '#d8d2c4' : 'none'}"/>`;
+    s += words(cx + 24, cy + 40, 'SEEN BY THE MAN', T, { size: 19, color: T.muted, weight: 600 });
+    s += arrow(O[0], O[1], R[0], R[1], T.weight, 'v_r', T, { lx: 14, ly: -60 });
+    s += arrow(R[0], R[1], E[0], E[1], T.vel, '−v_m', T, { lx: -20, ly: 46, dashed: true });
+    s += arrow(O[0], O[1], E[0], E[1], T.applied, 'v_rm', T, { lx: -120, ly: -70 });
+    const a = Math.atan2(150, 230);
+    s += `<path d="M${O[0]},${O[1] + 70} A70,70 0 0 1 ${F(O[0] - 70 * Math.sin(a))},${F(O[1] + 70 * Math.cos(a))}" fill="none" stroke="${T.ink}" stroke-width="3"/>` + label(O[0] - 48, O[1] + 120, 'θ', T.ink, T, 'middle', 34);
+    s += words(cx + 24, cy + hh - 24, 'tan θ = v<tspan baseline-shift="sub" font-size="0.62em">m</tspan> / v<tspan baseline-shift="sub" font-size="0.62em">r</tspan>', T, { size: 26 });
+    return s + quote(this.title, T) + badge(T);
+  } };
+
+SCENES.moonmars = { title: 'The same jump on the Moon and on Mars.', still: 0.95,
+  draw(T, fig, t) {
+    const v0 = 2.4, h = 1.78, panes = [{ name: 'Moon', g: 1.62, x0: 0 }, { name: 'Mars', g: 3.71, x0: 800 }];
+    let s = '';
+    for (const P of panes) {
+      const V = { s: 175, gy: 880, sx: x => P.x0 + 400 + x * 175, sy: y => 880 - y * 175 }, T2 = T;
+      const air = 2 * v0 / P.g, pre = 0.35, post = 0.45, cyc = pre + air + post + 0.8, tt = t % cyc;
+      let y = 0, fr;
+      if (tt < pre) fr = sample('Jump_Start', (tt / pre) * M.clips.Jump_Start.dur, false);
+      else if (tt < pre + air) { const u = tt - pre; y = v0 * u - 0.5 * P.g * u * u; fr = sample('Jump_Loop', u); }
+      else if (tt < pre + air + post) fr = sample('Jump_Land', ((tt - pre - air) / post) * M.clips.Jump_Land.dur, false);
+      else fr = sample('Idle_Loop', tt);
+      const moon = P.name === 'Moon', apex = v0 * v0 / (2 * P.g);
+      if (T.outline) s += `<rect x="${P.x0}" width="800" height="${VH}" fill="${T.bg}"/><rect x="${P.x0}" y="880" width="800" height="120" fill="${moon ? '#e3e3e3' : '#f0d6c4'}"/>` + line([P.x0, 880], [P.x0 + 800, 880], 4, T.groundLine);
+      else {
+        s += `<rect x="${P.x0}" width="800" height="${VH}" fill="${moon ? '#1C2340' : '#E8B48C'}"/>`;
+        if (moon) for (let i = 0; i < 40; i++) s += circ([P.x0 + hash(i) * 800, hash(i + 7) * 760], 1.5 + hash(i + 2) * 2, '#ffffff', 'opacity="0.8"');
+        s += `<rect x="${P.x0}" y="880" width="800" height="120" fill="${moon ? '#A9ADB5' : '#B5532F'}"/>`;
+        for (let i = 0; i < 9; i++) s += `<ellipse cx="${F(P.x0 + hash(i + 20) * 800)}" cy="${F(905 + hash(i + 30) * 80)}" rx="${F(18 + hash(i) * 30)}" ry="${F(6 + hash(i) * 8)}" fill="${moon ? '#8E929B' : '#9A4426'}"/>`;
+      }
+      const Ty = V.sy(apex + h), ink = T.outline ? T.ink : '#ffffff';
+      s += line([P.x0 + 150, V.sy(h)], [P.x0 + 650, V.sy(h)], 3, ink, 'stroke-dasharray="10 10" opacity="0.6"');
+      s += line([P.x0 + 150, Ty], [P.x0 + 650, Ty], 3, ink, 'stroke-dasharray="10 10" opacity="0.6"');
+      s += arrow(P.x0 + 600, V.sy(h) - 4, P.x0 + 600, Ty + 4, T.vel, '', T, { w: 5 }) + arrow(P.x0 + 600, Ty + 30, P.x0 + 600, V.sy(h) - 4, T.vel, '', T, { w: 5 });
+      s += label(P.x0 + 620, (V.sy(h) + Ty) / 2 + 14, 'h', T.vel, T);
+      s += person({ fr, x: -0.2, y, h, dir: 1, look: LOOK.man }, V, T, fig);
+      s += words(P.x0 + 40, 150, P.name, T, { size: 40, weight: 700, halo: T.outline, color: T.outline ? T.ink : (moon ? '#ffffff' : '#3a1d10') });
+      s += words(P.x0 + 40, 198, `g = ${P.g} m/s²  ·  constant`, T, { size: 26, halo: T.outline, color: T.outline ? T.muted : (moon ? '#D8DCE6' : '#5a2a14') });
+    }
+    s += line([800, 0], [800, VH], 4, T.outline ? '#cfc8ba' : '#ffffff');
+    s += `<rect x="380" y="928" width="840" height="56" rx="28" fill="${T.card}"/>` +
+      `<text x="800" y="967" text-anchor="middle" font-family="Segoe UI" font-size="27" fill="${T.ink}">same take-off speed:  h on the Moon / h on Mars = 2.29  (computed)</text>`;
+    return s + badge(T);
+  } };
+
+SCENES.beaker = { title: 'A beaker of HCl; we slowly add water and stir it continuously.', still: 6,
+  draw(T, fig, t) {
+    const tt = t % 14, k = 0.32 + 0.4 * Math.min(1, tt / 11), L = 560, R = 940, B = 880, TOP = 380, inL = L + 8, inR = R - 8;
+    const lvl = B - 8 - (B - 8 - TOP) * k, glassSt = T.outline ? T.ink : '#7FA3BC', cHi = Math.max(0, 1 - (k - 0.32) / 0.5);
+    let s = T.outline ? `<rect width="${VW}" height="${VH}" fill="${T.bg}"/>` :
+      `<rect width="${VW}" height="${VH}" fill="#E8F1F4"/>` + Array.from({ length: 12 }, (_, i) => line([i * 140, 0], [i * 140, B], 2, '#D6E3E8')).join('') +
+      Array.from({ length: 7 }, (_, i) => line([0, i * 140], [VW, i * 140], 2, '#D6E3E8')).join('');
+    s += T.outline ? line([300, B], [1300, B], 5, T.groundLine) : `<rect x="0" y="${B}" width="${VW}" height="${VH - B}" fill="#B98256"/><rect x="0" y="${B}" width="${VW}" height="14" fill="#CF9A6C"/>`;
+    if (!T.outline) s += `<ellipse cx="${(L + R) / 2}" cy="${B + 6}" rx="230" ry="16" fill="rgba(0,0,0,0.14)"/>`;
+    // liquid (dilute HCl gets paler as water is added)
+    const liq = T.outline ? `rgba(31,111,209,${F(0.1 + 0.08 * cHi)})` : `rgba(${Math.round(150 + 60 * (1 - cHi))},${Math.round(200 + 20 * (1 - cHi))},${Math.round(120 + 110 * (1 - cHi))},0.75)`;
+    s += `<path d="M${inL},${F(lvl)} Q${(inL + inR) / 2},${F(lvl + 14)} ${inR},${F(lvl)} L${inR},${B - 8} L${inL},${B - 8}Z" fill="${liq}"/>`;
+    // ions spread through the growing volume, swirling with the stirring
+    for (let i = 0; i < 26; i++) {
+      const u = (hash(i) + tt * 0.06 * (i % 2 ? 1 : 0.8)) % 1, w = hash(i + 40), px = inL + 22 + u * (inR - inL - 44), py = lvl + 26 + w * (B - lvl - 52);
+      const hp = i % 2 === 0;
+      s += circ([px, py], 12, hp ? '#D9443A' : '#2E9E5B') + `<text x="${F(px)}" y="${F(py + 6)}" text-anchor="middle" font-size="17" font-weight="700" fill="#fff" font-family="Segoe UI">${hp ? '+' : '−'}</text>`;
+    }
+    // swirl
+    const ph = (tt * 220) % 60;
+    s += `<ellipse cx="${(L + R) / 2}" cy="${F(lvl + (B - lvl) * 0.55)}" rx="140" ry="26" fill="none" stroke="${T.outline ? T.muted : '#ffffff'}" stroke-width="4" stroke-dasharray="40 20" stroke-dashoffset="${F(-ph)}" opacity="0.8"/>`;
+    // glass rod, its tip circling in the liquid
+    const tipX = 750 + 80 * Math.cos(tt * 4), tipY = lvl + (B - lvl) * 0.6 + 10 * Math.sin(tt * 4);
+    s += line([640, 250], [tipX, tipY], 14, T.outline ? T.ink : '#8FB4CC') + line([640, 250], [tipX, tipY], 7, T.outline ? '#ffffff' : '#E2F1FA');
+    // water poured from a second beaker
+    const jx = 1110, jy = 210;
+    s += `<g transform="translate(${jx},${jy}) rotate(-38)"><path d="M-80,-110 L80,-110 L80,90 L-80,90Z" fill="${T.outline ? 'rgba(31,111,209,0.12)' : 'rgba(80,160,230,0.35)'}"/>` +
+      `<path d="M-80,-140 L-80,90 L80,90 L80,-140 M-80,-140 L-100,-152" fill="none" stroke="${glassSt}" stroke-width="6" stroke-linejoin="round"/></g>`;
+    const sx0 = jx - 128, sy0 = jy - 66;
+    s += `<path d="M${sx0},${sy0} C${sx0 - 30},${sy0 + 40} ${905},${lvl - 160} ${905},${F(lvl)}" fill="none" stroke="${T.outline ? T.water : '#4FA3EE'}" stroke-width="7" stroke-dasharray="16 8" stroke-dashoffset="${F(-tt * 90)}"/>`;
+    // beaker glass: walls, lip and spout, scale marks (no numbers: none were said)
+    s += `<path d="M${L - 26},${TOP - 14} L${L},${TOP} L${L},${B} L${R},${B} L${R},${TOP}" fill="none" stroke="${glassSt}" stroke-width="8" stroke-linejoin="round"/>`;
+    for (let i = 1; i < 7; i++) s += line([R - 54, B - i * 64], [R - 14, B - i * 64], 3, glassSt, 'opacity="0.7"');
+    if (!T.outline) s += line([L + 30, TOP + 40], [L + 30, B - 60], 10, 'rgba(255,255,255,0.6)');
+    s += words(320, lvl + 120, 'HCl (aq)', T, { size: 34, weight: 600 }) + line([450, lvl + 110], [inL + 40, lvl + 110], 2, T.muted);
+    s += words(1150, 380, 'water', T, { size: 32, weight: 600, color: T.water });
+    s += words(470, 236, 'glass rod', T, { size: 30, weight: 600 });
+    s += words(1000, B - 30, 'stir', T, { size: 28, color: T.muted });
+    s += `<g transform="translate(1220,560)">${circ([0, 0], 13, '#D9443A')}<text x="0" y="6" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">+</text>` + words(26, 10, 'H⁺', T, { size: 28 }) +
+      `${circ([0, 50], 13, '#2E9E5B')}<text x="0" y="56" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">−</text>` + words(26, 60, 'Cl⁻', T, { size: 28 }) + '</g>';
+    return s + quote(this.title, T);
+  } };
+
+SCENES.table = { title: 'A ball rolls off the edge of a table.', still: 0,
+  draw(T, fig, t) {
+    const V = view(300, -0.75, 860), top = 0.8, r = 0.1, edge = -0.45, x0 = -2.5, v = 2.8, g = 9.8;
+    const roll = (edge - x0) / v, tf = Math.sqrt(2 * top / g), cyc = roll + tf + 1.0;
+    let tt = t % cyc; if (t === 0) tt = roll + tf * 0.7;
+    let s = T.outline ? `<rect width="${VW}" height="${VH}" fill="${T.bg}"/>` : `<rect width="${VW}" height="${VH}" fill="#FBF0DD"/><rect y="${V.gy - 80}" width="${VW}" height="80" fill="#F0DFC3"/>`;
+    s += ground(T, V, { color: T.outline ? null : '#D7B48A' }) + table(V, -2.9, edge, top, T);
+    const pos = u => u < roll ? [x0 + v * u, top + 0.06 + r] : [edge + v * (u - roll), top + 0.06 + r - 0.5 * g * (u - roll) ** 2];
+    // strobe: the ball every 0.1 s after the edge; the even horizontal steps show v_x does not change
+    for (let k = 0.1; k < Math.min(tt - roll, tf); k += 0.1) {
+      const p = pos(roll + k), P = [V.sx(p[0]), V.sy(Math.max(r, p[1]))];
+      s += circ(P, r * V.s, 'none', `stroke="${T.path}" stroke-width="3" stroke-dasharray="6 5" opacity="0.8"`) + line([P[0], V.gy + 6], [P[0], V.gy + 26], 3, T.path);
+    }
+    for (let k = 0; k < Math.min(Math.max(0, tt - roll), tf); k += 0.03) { const p = pos(roll + k); s += circ([V.sx(p[0]), V.sy(p[1])], 4, T.path, 'opacity="0.6"'); }
+    const p = pos(Math.min(tt, roll + tf)), P = [V.sx(p[0]), V.sy(Math.max(r, p[1]))];
+    s += ball(P, r * V.s, T);
+    const ka = 45;
+    s += arrow(P[0], P[1], P[0] + v * ka, P[1], T.vel, 'v_x', T, { lx: 10, ly: 14 });
+    if (tt > roll) { const vy = g * Math.min(tt - roll, tf); s += arrow(P[0], P[1], P[0], P[1] + vy * ka * 0.55, T.normal, 'v_y', T, { lx: 12, ly: 0 }); }
+    s += label(V.sx(edge) + 10, V.sy(top) - 16, '', T.ink, T);
+    return s + quote(this.title, T) + badge(T);
+  } };
+
+SCENES.street = { title: 'A car passes a tree while a girl watches from the pavement.', still: 1.25,
+  draw(T, fig, t) {
+    const V = view(105, 0, 880), vc = 8, cx = -11 + ((vc * t) % 22);
+    let s = T.outline ? `<rect width="${VW}" height="${VH}" fill="${T.bg}"/>` : sky(T, 'skyS') + circ([1380, 150], 60, '#FFD66B') + hills(T, V.gy - 70);
+    if (T.outline) s += line([0, V.gy - 70], [VW, V.gy - 70], 3, '#cfc8ba');
+    else s += `<rect y="${V.gy - 70}" width="${VW}" height="70" fill="#9BA3AC"/>` + Array.from({ length: 9 }, (_, i) => `<rect x="${i * 200 + 40}" y="${V.gy - 38}" width="90" height="7" fill="#F2F2F2"/>`).join('');
+    const Vr = { ...V, gy: V.gy - 30, sy: y => V.gy - 30 - y * V.s };
+    s += tree({ ...V, gy: V.gy - 72, sy: y => V.gy - 72 - y * V.s }, 4.6, 5.2, T);
+    s += car(Vr, cx, T, '#E4572E', t, vc);
+    s += arrow(Vr.sx(cx + 1.4), Vr.sy(1.95), Vr.sx(cx + 3.4), Vr.sy(1.95), T.vel, 'v', T, { lx: 10, ly: 14 });
+    s += ground(T, V, { color: T.outline ? null : '#C9C1B4' });
+    s += person({ clip: 'Idle_Loop', t, x: -4.6, h: 1.4, dir: 1, look: LOOK.woman }, V, T, fig);
+    return s + quote(this.title, T);
+  } };
+
+const ORDER = ['push', 'throw', 'carry', 'rain', 'moonmars', 'beaker', 'table', 'street'];
+
+// more figure styles, animals and scenes live in modules that get this kit
+const K = { VW, VH, M, JI, sample, natSpeed, clipMax, F, line, circ, poly, pathD, lerp, shade, hash, THEMES, LOOK, view, group,
+  person: (...a) => person(...a), label, words, arrow, quote, badge, card, sky, hills, ground, crate, ball, table, tree, car,
+  SCENES, ORDER, FIG, sym };
+const [people2, scenes2, scenes3] = await Promise.all([import('./people2.js'), import('./scenes2.js'), import('./scenes3.js')]);
+people2.install(K); scenes2.install(K); scenes3.install(K);
+async function ready(fig) { if (fig === 'toon3d' && !FIG.toon3d) { const m = await import('./toon3d.js'); await m.install(K); } }
+
+function svgOf(name, theme, fig, t) {
+  const T = THEMES[theme];
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${VW} ${VH}" data-scene="${name}">${SCENES[name].draw(T, fig, t)}</svg>`;
+}
+
+const q = new URLSearchParams(location.search), theme = q.get('theme') || 'explainer', fig = q.get('fig') || 'shaped';
+const root = document.getElementById('root');
+window.v2 = { svgOf, ORDER, SCENES, ready, still: n => SCENES[n].still };
+if (q.get('shoot')) { document.title = 'done'; }
+else {
+  await ready(fig);
+  const all = !q.get('scene');
+  const names = all ? ORDER : [q.get('scene')];
+  const nav = ['explainer', 'textbook'].flatMap(th => ['shaped', 'chibi', 'flat', 'stick', 'toon3d'].map(f => `<a href="?theme=${th}&fig=${f}">${th} · ${f}</a>`)).join('');
+  root.innerHTML = (all ? `<div class="bar">${nav}</div><div id="grid"></div>` : '<div id="one"></div>');
+  const box = document.getElementById(all ? 'grid' : 'one');
+  box.innerHTML = names.map(n => `<div data-n="${n}"></div>`).join('');
+  const cells = [...box.children], t0 = performance.now();
+  const tick = () => { const t = (performance.now() - t0) / 1000 + 0.001; cells.forEach(c => { c.innerHTML = svgOf(c.dataset.n, theme, fig, t); }); requestAnimationFrame(tick); };
+  tick(); document.title = 'V2 2D samples';
+}
+</script></body></html>

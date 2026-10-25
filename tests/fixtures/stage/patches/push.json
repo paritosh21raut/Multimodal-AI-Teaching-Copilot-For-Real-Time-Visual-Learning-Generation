@@ -1,0 +1,125 @@
+{
+ "rev": 1,
+ "source": "hand-made (E1, reference closed forms); E2 makes patches from ops",
+ "name": "push",
+ "caption": "A man pushes a heavy box across a rough floor.",
+ "view": "side",
+ "backdrop": {
+  "id": "room"
+ },
+ "period": 8.001,
+ "entities": [
+  {
+   "id": "man",
+   "draw": "cast:man"
+  },
+  {
+   "id": "box",
+   "draw": "crate",
+   "xform": {
+    "size": [0.95, 1.37]
+   }
+  }
+ ],
+ "tracks": [
+  {
+   "id": "box",
+   "kind": "path",
+   "samples": [
+    [0, -0.725, 0],
+    [8.001, 1.9852, 0]
+   ]
+  },
+  {
+   "id": "man",
+   "kind": "path",
+   "samples": [
+    [0, -1.7316, 0],
+    [8.001, 0.9786, 0]
+   ]
+  },
+  {
+   "id": "man",
+   "kind": "clip",
+   "clip": "Push_Loop",
+   "rate": 1,
+   "loop": true,
+   "lock": true,
+   "t0": 0
+  },
+  {
+   "id": "man",
+   "kind": "ik",
+   "hand": "r",
+   "pad": true,
+   "target": {
+    "entity": "box",
+    "anchor": "face_l",
+    "dy": 0.5434
+   }
+  },
+  {
+   "id": "man",
+   "kind": "ik",
+   "hand": "l",
+   "pad": true,
+   "target": {
+    "entity": "box",
+    "anchor": "face_l",
+    "dy": 0.5432
+   }
+  }
+ ],
+ "overlays": [
+  {
+   "kind": "words",
+   "screen": [48, 66],
+   "text": "“A man pushes a heavy box across a rough floor.”",
+   "size": 30,
+   "color": "#5d6672",
+   "weight": 400
+  },
+  {
+   "kind": "arrow",
+   "at": {
+    "entity": "box",
+    "anchor": "face_l",
+    "dx": 0.03
+   },
+   "vec": [150, 0],
+   "role": "applied",
+   "label": "F"
+  },
+  {
+   "kind": "arrow",
+   "at": {
+    "entity": "box",
+    "anchor": "bottom",
+    "dx": 0.12,
+    "dy": 0.04
+   },
+   "vec": [-125, 0],
+   "role": "friction",
+   "label": "f"
+  },
+  {
+   "kind": "arrow",
+   "at": {
+    "entity": "box",
+    "anchor": "top",
+    "dx": -0.2,
+    "dy": 0.16
+   },
+   "vec": [150, 0],
+   "role": "velocity",
+   "label": "v"
+  }
+ ],
+ "frame": {
+  "cx": 0.2,
+  "cy": 1.28,
+  "s": 250,
+  "ease_ms": 0
+ },
+ "keyframes": [1.2001, 4.0005, 6.8008]
+}

@@ -51,7 +51,18 @@ _TABLE: dict[float, tuple[str, ...]] = {
            "comet", "asteroid"),
     1000.0: ("mountain", "volcano", "cliff", "glacier", "iceberg", "island", "valley"),
 }
-TYPICAL: dict[str, float] = {w: m for m, ws in _TABLE.items() for w in ws}
+# F-017 stage kit nouns (config/stage_catalog.json sizes agree with these; tests/unit/test_stage_config.py)
+_KIT: dict[float, tuple[str, ...]] = {
+    0.12: ("beaker", "test tube", "light switch"),
+    0.22: ("flask", "conical flask", "thermometer", "burner", "bunsen burner", "coil spring"),
+    0.35: ("watering can", "rock", "stone", "pulley"),
+    0.6: ("seesaw", "see-saw", "fulcrum", "weighing scale"),
+    1.0: ("wire", "trolley", "cart", "ramp", "inclined plane", "fence", "stake"),
+    1.4: ("blackboard", "whiteboard"),
+    3.0: ("swing", "swing seat", "elevator"),
+    5.0: ("rope",),
+}
+TYPICAL: dict[str, float] = {w: m for t in (_TABLE, _KIT) for m, ws in t.items() for w in ws}
 
 
 def typical(noun: str, size: str = "") -> float:

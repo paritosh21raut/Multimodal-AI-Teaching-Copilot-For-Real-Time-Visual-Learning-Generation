@@ -1,0 +1,2334 @@
+{
+ "units": "per metre of body height; frame indices at fps",
+ "fps": 24,
+ "clips": [
+  {
+   "name": "A_TPose",
+   "verb": [],
+   "loop": false,
+   "dur": 2.5,
+   "frames": 60,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.805,
+    "r": 0.805,
+    "max": 0.805
+   },
+   "reach_x": -0.0345
+  },
+  {
+   "name": "Chest_Open",
+   "verb": [],
+   "loop": false,
+   "dur": 1.367,
+   "frames": 33,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4821,
+    "r": 0.5212,
+    "max": 0.571
+   },
+   "reach_x": 0.264
+  },
+  {
+   "name": "ClimbUp_1m_RM",
+   "verb": [
+    "climb"
+   ],
+   "loop": false,
+   "dur": 0.667,
+   "frames": 16,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.732,
+    "r": 0.9631,
+    "max": 1.166
+   },
+   "reach_x": 1.0985
+  },
+  {
+   "name": "Consume",
+   "verb": [
+    "drink",
+    "eat"
+   ],
+   "loop": false,
+   "dur": 1.333,
+   "frames": 32,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.7373,
+    "r": 0.5148,
+    "max": 0.8595
+   },
+   "reach_x": 0.32
+  },
+  {
+   "name": "Crouch_Fwd_Loop",
+   "verb": [
+    "crouch"
+   ],
+   "loop": true,
+   "dur": 2,
+   "frames": 48,
+   "stride_mps": 0.3415,
+   "events": {
+    "footstrike": [
+     [
+      0,
+      "l"
+     ],
+     [
+      24,
+      "r"
+     ],
+     [
+      33,
+      "l"
+     ]
+    ]
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.2343,
+    "r": 0.294,
+    "max": 0.3165
+   },
+   "reach_x": 0.0205,
+   "contact": {
+    "l": "333333333333333333322222222222220222000000000000",
+    "r": "222000000000000000000000111333333333333222222222"
+   },
+   "lock": {
+    "l": [
+     0.0,
+     -0.0132,
+     -0.0245,
+     -0.0337,
+     -0.0409,
+     -0.0471,
+     -0.0514,
+     -0.0536,
+     -0.0558,
+     -0.0551,
+     -0.0543,
+     -0.0515,
+     -0.0477,
+     -0.044,
+     -0.0382,
+     -0.0324,
+     -0.0257,
+     -0.0179,
+     -0.0101,
+     -0.0024,
+     0.0064,
+     0.0142,
+     0.023,
+     0.0317,
+     0.0405,
+     0.0413,
+     0.042,
+     0.0428,
+     0.0446,
+     0.0454,
+     0.0471,
+     0.0299,
+     0.0224,
+     0.0224,
+     -0.0628,
+     -0.148,
+     -0.111,
+     -0.074,
+     -0.037,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "r": [
+     0.0377,
+     0.0395,
+     0.0403,
+     0.0302,
+     0.0201,
+     0.0101,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     -0.0032,
+     -0.0095,
+     -0.0095,
+     -0.0077,
+     -0.0059,
+     -0.0031,
+     -0.0014,
+     0.0004,
+     0.0032,
+     0.0049,
+     0.0077,
+     0.0095,
+     0.0123,
+     0.015,
+     0.0168,
+     0.0196,
+     0.0223,
+     0.0241,
+     0.0269,
+     0.0286,
+     0.0314,
+     0.0332,
+     0.036
+    ]
+   }
+  },
+  {
+   "name": "Crouch_Idle_Loop",
+   "verb": [
+    "crouch"
+   ],
+   "loop": true,
+   "dur": 2.933,
+   "frames": 70,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.2303,
+    "r": 0.2859,
+    "max": 0.3075
+   },
+   "reach_x": -0.0005
+  },
+  {
+   "name": "Dance_Loop",
+   "verb": [
+    "dance"
+   ],
+   "loop": true,
+   "dur": 1,
+   "frames": 24,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5882,
+    "r": 0.6224,
+    "max": 0.674
+   },
+   "reach_x": 0.169
+  },
+  {
+   "name": "Death01",
+   "verb": [],
+   "loop": false,
+   "dur": 2.4,
+   "frames": 58,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.2186,
+    "r": 0.2462,
+    "max": 0.523
+   },
+   "reach_x": 0.0705
+  },
+  {
+   "name": "Driving_Loop",
+   "verb": [
+    "drive"
+   ],
+   "loop": true,
+   "dur": 1.667,
+   "frames": 40,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": 0.329,
+   "hands_h": {
+    "l": 0.529,
+    "r": 0.519,
+    "max": 0.529
+   },
+   "reach_x": 0.034,
+   "pelvis_x": -0.17
+  },
+  {
+   "name": "Farm_Harvest",
+   "verb": [
+    "harvest"
+   ],
+   "loop": false,
+   "dur": 2.5,
+   "frames": 60,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4051,
+    "r": 0.3417,
+    "max": 0.51
+   },
+   "reach_x": 0.1895
+  },
+  {
+   "name": "Farm_PlantSeed",
+   "verb": [
+    "plant"
+   ],
+   "loop": false,
+   "dur": 2.767,
+   "frames": 66,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.3604,
+    "r": 0.3667,
+    "max": 0.531
+   },
+   "reach_x": 0.3045
+  },
+  {
+   "name": "Farm_Watering",
+   "verb": [
+    "water"
+   ],
+   "loop": false,
+   "dur": 3.8,
+   "frames": 91,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4828,
+    "r": 0.5688,
+    "max": 0.615
+   },
+   "reach_x": 0.2425
+  },
+  {
+   "name": "Fixing_Kneeling",
+   "verb": [
+    "kneel"
+   ],
+   "loop": false,
+   "dur": 5.2,
+   "frames": 125,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.2741,
+    "r": 0.2576,
+    "max": 0.4985
+   },
+   "reach_x": 0.291
+  },
+  {
+   "name": "Hit_Chest",
+   "verb": [],
+   "loop": false,
+   "dur": 0.333,
+   "frames": 8,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5106,
+    "r": 0.4959,
+    "max": 0.537
+   },
+   "reach_x": 0.1185
+  },
+  {
+   "name": "Hit_Head",
+   "verb": [],
+   "loop": false,
+   "dur": 0.433,
+   "frames": 10,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4835,
+    "r": 0.4878,
+    "max": 0.4935
+   },
+   "reach_x": 0.0565
+  },
+  {
+   "name": "Hit_Knockback",
+   "verb": [],
+   "loop": false,
+   "dur": 0.833,
+   "frames": 20,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.3051,
+    "r": 0.3185,
+    "max": 0.883
+   },
+   "reach_x": 0.333
+  },
+  {
+   "name": "Hit_Knockback_RM",
+   "verb": [],
+   "loop": false,
+   "dur": 0.833,
+   "frames": 20,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.3051,
+    "r": 0.3185,
+    "max": 0.883
+   },
+   "reach_x": 0.333
+  },
+  {
+   "name": "Idle_FoldArms_Loop",
+   "verb": [
+    "fold_arms"
+   ],
+   "loop": true,
+   "dur": 2.5,
+   "frames": 60,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.7278,
+    "r": 0.7381,
+    "max": 0.743
+   },
+   "reach_x": 0.078
+  },
+  {
+   "name": "Idle_Lantern_Loop",
+   "verb": [],
+   "loop": true,
+   "dur": 2.5,
+   "frames": 60,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4819,
+    "r": 0.7776,
+    "max": 0.786
+   },
+   "reach_x": 0.231
+  },
+  {
+   "name": "Idle_Loop",
+   "verb": [
+    "catch",
+    "hold",
+    "look_at",
+    "point",
+    "stand"
+   ],
+   "loop": true,
+   "dur": 2.5,
+   "frames": 60,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4727,
+    "r": 0.4873,
+    "max": 0.494
+   },
+   "reach_x": 0.032
+  },
+  {
+   "name": "Idle_No_Loop",
+   "verb": [
+    "shake_head"
+   ],
+   "loop": true,
+   "dur": 2.5,
+   "frames": 60,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4795,
+    "r": 0.4941,
+    "max": 0.5005
+   },
+   "reach_x": 0.039
+  },
+  {
+   "name": "Idle_Rail_Call",
+   "verb": [
+    "call"
+   ],
+   "loop": false,
+   "dur": 2.5,
+   "frames": 60,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5963,
+    "r": 0.7118,
+    "max": 0.792
+   },
+   "reach_x": 0.208
+  },
+  {
+   "name": "Idle_Rail_Loop",
+   "verb": [],
+   "loop": true,
+   "dur": 2.5,
+   "frames": 60,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5964,
+    "r": 0.5846,
+    "max": 0.597
+   },
+   "reach_x": 0.1
+  },
+  {
+   "name": "Idle_Shield_Break",
+   "verb": [],
+   "loop": false,
+   "dur": 1.067,
+   "frames": 26,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.7054,
+    "r": 0.5494,
+    "max": 0.759
+   },
+   "reach_x": 0.2405
+  },
+  {
+   "name": "Idle_Shield_Loop",
+   "verb": [],
+   "loop": true,
+   "dur": 2.5,
+   "frames": 60,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.6873,
+    "r": 0.4949,
+    "max": 0.6995
+   },
+   "reach_x": 0.1885
+  },
+  {
+   "name": "Idle_TalkingPhone_Loop",
+   "verb": [
+    "phone"
+   ],
+   "loop": true,
+   "dur": 2.933,
+   "frames": 70,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.6698,
+    "r": 0.8761,
+    "max": 0.8855
+   },
+   "reach_x": 0.187
+  },
+  {
+   "name": "Idle_Talking_Loop",
+   "verb": [
+    "talk"
+   ],
+   "loop": true,
+   "dur": 2.933,
+   "frames": 70,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.6708,
+    "r": 0.6687,
+    "max": 0.7155
+   },
+   "reach_x": 0.1695
+  },
+  {
+   "name": "Idle_Torch_Loop",
+   "verb": [],
+   "loop": true,
+   "dur": 1.267,
+   "frames": 30,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.747,
+    "r": 0.4876,
+    "max": 0.7705
+   },
+   "reach_x": 0.292
+  },
+  {
+   "name": "Interact",
+   "verb": [
+    "wave"
+   ],
+   "loop": false,
+   "dur": 2,
+   "frames": 48,
+   "stride_mps": 0.0,
+   "events": {
+    "contact": 18
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5896,
+    "r": 0.4908,
+    "max": 0.746
+   },
+   "reach_x": 0.3075
+  },
+  {
+   "name": "Jog_Fwd_Loop",
+   "verb": [
+    "jog"
+   ],
+   "loop": true,
+   "dur": 0.933,
+   "frames": 22,
+   "stride_mps": 3.1597,
+   "events": {
+    "footstrike": [
+     [
+      2,
+      "l"
+     ],
+     [
+      13,
+      "r"
+     ]
+    ]
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.6007,
+    "r": 0.595,
+    "max": 0.701
+   },
+   "reach_x": 0.287,
+   "contact": {
+    "l": "0022000000000000000000",
+    "r": "0000000000000220000000"
+   },
+   "lock": {
+    "l": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "r": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "name": "Jump_Land",
+   "verb": [
+    "jump"
+   ],
+   "loop": false,
+   "dur": 1.267,
+   "frames": 30,
+   "stride_mps": 0.0,
+   "events": {
+    "apex": 0
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.3982,
+    "r": 0.447,
+    "max": 0.741
+   },
+   "reach_x": 0.216
+  },
+  {
+   "name": "Jump_Loop",
+   "verb": [
+    "jump"
+   ],
+   "loop": true,
+   "dur": 2.5,
+   "frames": 60,
+   "stride_mps": 0.0,
+   "events": {
+    "footstrike": [
+     [
+      1,
+      "r"
+     ],
+     [
+      17,
+      "l"
+     ]
+    ],
+    "apex": 0
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.7356,
+    "r": 0.7659,
+    "max": 0.787
+   },
+   "reach_x": 0.057
+  },
+  {
+   "name": "Jump_Start",
+   "verb": [
+    "jump"
+   ],
+   "loop": false,
+   "dur": 1.333,
+   "frames": 32,
+   "stride_mps": 0.0,
+   "events": {
+    "apex": 8
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.6714,
+    "r": 0.7759,
+    "max": 0.895
+   },
+   "reach_x": 0.121
+  },
+  {
+   "name": "LayToIdle",
+   "verb": [],
+   "loop": false,
+   "dur": 1.533,
+   "frames": 37,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.1721,
+    "r": 0.3138,
+    "max": 0.5665
+   },
+   "reach_x": 0.141
+  },
+  {
+   "name": "Melee_Hook",
+   "verb": [],
+   "loop": false,
+   "dur": 0.467,
+   "frames": 11,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.6692,
+    "r": 0.5321,
+    "max": 0.871
+   },
+   "reach_x": 0.7805
+  },
+  {
+   "name": "Melee_Hook_Rec",
+   "verb": [],
+   "loop": false,
+   "dur": 0.6,
+   "frames": 14,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.604,
+    "r": 0.5973,
+    "max": 0.8245
+   },
+   "reach_x": 0.492
+  },
+  {
+   "name": "NinjaJump_Idle_Loop",
+   "verb": [
+    "jump"
+   ],
+   "loop": true,
+   "dur": 2,
+   "frames": 48,
+   "stride_mps": 0.0,
+   "events": {
+    "footstrike": [
+     [
+      8,
+      "r"
+     ],
+     [
+      11,
+      "l"
+     ]
+    ],
+    "apex": 0
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4037,
+    "r": 0.373,
+    "max": 0.4195
+   },
+   "reach_x": -0.053
+  },
+  {
+   "name": "NinjaJump_Land",
+   "verb": [
+    "jump"
+   ],
+   "loop": false,
+   "dur": 1.267,
+   "frames": 30,
+   "stride_mps": 0.0,
+   "events": {
+    "apex": 20
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4035,
+    "r": 0.4379,
+    "max": 0.735
+   },
+   "reach_x": 0.2315
+  },
+  {
+   "name": "NinjaJump_Start",
+   "verb": [
+    "jump"
+   ],
+   "loop": false,
+   "dur": 0.967,
+   "frames": 23,
+   "stride_mps": 0.0,
+   "events": {
+    "apex": 5
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.6689,
+    "r": 0.6912,
+    "max": 0.757
+   },
+   "reach_x": 0.138
+  },
+  {
+   "name": "OverhandThrow",
+   "verb": [
+    "throw"
+   ],
+   "loop": false,
+   "dur": 1.333,
+   "frames": 32,
+   "stride_mps": 0.0,
+   "events": {
+    "release": 8
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5921,
+    "r": 0.4438,
+    "max": 0.961
+   },
+   "reach_x": 0.607
+  },
+  {
+   "name": "PickUp_Table",
+   "verb": [
+    "pick_up",
+    "put_down"
+   ],
+   "loop": false,
+   "dur": 0.833,
+   "frames": 20,
+   "stride_mps": 0.0,
+   "events": {
+    "contact": 19
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.549,
+    "r": 0.5229,
+    "max": 0.678
+   },
+   "reach_x": 0.2735
+  },
+  {
+   "name": "Pistol_Aim_Down",
+   "verb": [],
+   "loop": false,
+   "dur": 0.167,
+   "frames": 4,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.482,
+    "r": 0.476,
+    "max": 0.482
+   },
+   "reach_x": 0.08
+  },
+  {
+   "name": "Pistol_Aim_Neutral",
+   "verb": [],
+   "loop": false,
+   "dur": 0.167,
+   "frames": 4,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.7555,
+    "r": 0.7915,
+    "max": 0.7915
+   },
+   "reach_x": 0.2365
+  },
+  {
+   "name": "Pistol_Aim_Up",
+   "verb": [],
+   "loop": false,
+   "dur": 0.167,
+   "frames": 4,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 1.028,
+    "r": 1.0345,
+    "max": 1.0345
+   },
+   "reach_x": -0.019
+  },
+  {
+   "name": "Pistol_Idle_Loop",
+   "verb": [],
+   "loop": true,
+   "dur": 1.667,
+   "frames": 40,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.7536,
+    "r": 0.7895,
+    "max": 0.7915
+   },
+   "reach_x": 0.2375
+  },
+  {
+   "name": "Pistol_Reload",
+   "verb": [],
+   "loop": false,
+   "dur": 1.667,
+   "frames": 40,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.7281,
+    "r": 0.8101,
+    "max": 0.83
+   },
+   "reach_x": 0.2365
+  },
+  {
+   "name": "Pistol_Shoot",
+   "verb": [],
+   "loop": false,
+   "dur": 0.633,
+   "frames": 15,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.7558,
+    "r": 0.7952,
+    "max": 0.7995
+   },
+   "reach_x": 0.2365
+  },
+  {
+   "name": "Punch_Cross",
+   "verb": [],
+   "loop": false,
+   "dur": 1,
+   "frames": 24,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.8118,
+    "r": 0.7459,
+    "max": 0.824
+   },
+   "reach_x": 0.3755
+  },
+  {
+   "name": "Punch_Jab",
+   "verb": [],
+   "loop": false,
+   "dur": 0.867,
+   "frames": 21,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.7906,
+    "r": 0.7576,
+    "max": 0.824
+   },
+   "reach_x": 0.432
+  },
+  {
+   "name": "Push_Loop",
+   "verb": [
+    "pull",
+    "push"
+   ],
+   "loop": true,
+   "dur": 2.667,
+   "frames": 64,
+   "stride_mps": 0.1903,
+   "events": {
+    "footstrike": [
+     [
+      36,
+      "r"
+     ],
+     [
+      60,
+      "l"
+     ]
+    ],
+    "contact": 27
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.69,
+    "r": 0.6901,
+    "max": 0.691
+   },
+   "reach_x": 0.3155,
+   "contact": {
+    "l": "3333333333333322222222222222222222222222222222000000000000003333",
+    "r": "2222222222222222222222000000000000003333333333333333332222222222"
+   },
+   "lock": {
+    "l": [
+     -0.0057,
+     -0.0056,
+     -0.0066,
+     -0.0075,
+     -0.0084,
+     -0.0104,
+     -0.0123,
+     -0.0142,
+     -0.0162,
+     -0.0181,
+     -0.02,
+     -0.0219,
+     -0.0239,
+     -0.0258,
+     -0.0277,
+     -0.0297,
+     -0.0316,
+     -0.0335,
+     -0.0355,
+     -0.0374,
+     -0.0383,
+     -0.0402,
+     -0.0412,
+     -0.0431,
+     -0.044,
+     -0.045,
+     -0.0459,
+     -0.0458,
+     -0.0467,
+     -0.0467,
+     -0.0466,
+     -0.0455,
+     -0.0455,
+     -0.0434,
+     -0.0423,
+     -0.0403,
+     -0.0382,
+     -0.0351,
+     -0.031,
+     -0.027,
+     -0.0209,
+     -0.0148,
+     -0.0068,
+     0.0033,
+     0.0124,
+     0.0144,
+     0.0108,
+     0.0072,
+     0.0036,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     -0.0039,
+     -0.0059,
+     -0.0058
+    ],
+    "r": [
+     -0.044,
+     -0.045,
+     -0.0459,
+     -0.0458,
+     -0.0468,
+     -0.0467,
+     -0.0466,
+     -0.0455,
+     -0.0455,
+     -0.0434,
+     -0.0423,
+     -0.0403,
+     -0.0382,
+     -0.0351,
+     -0.031,
+     -0.027,
+     -0.0209,
+     -0.0148,
+     -0.0068,
+     0.0033,
+     0.0124,
+     0.0144,
+     0.0108,
+     0.0072,
+     0.0036,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     -0.0039,
+     -0.0049,
+     -0.0058,
+     -0.0057,
+     -0.0056,
+     -0.0056,
+     -0.0055,
+     -0.0064,
+     -0.0074,
+     -0.0083,
+     -0.0102,
+     -0.0112,
+     -0.0131,
+     -0.016,
+     -0.0179,
+     -0.0199,
+     -0.0228,
+     -0.0247,
+     -0.0277,
+     -0.0296,
+     -0.0325,
+     -0.0345,
+     -0.0364,
+     -0.0383,
+     -0.0402,
+     -0.0412,
+     -0.0431
+    ]
+   }
+  },
+  {
+   "name": "Roll",
+   "verb": [
+    "roll"
+   ],
+   "loop": false,
+   "dur": 1.467,
+   "frames": 35,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4025,
+    "r": 0.42,
+    "max": 0.792
+   },
+   "reach_x": 0.537
+  },
+  {
+   "name": "Roll_RM",
+   "verb": [
+    "roll"
+   ],
+   "loop": false,
+   "dur": 1.467,
+   "frames": 35,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4025,
+    "r": 0.42,
+    "max": 0.792
+   },
+   "reach_x": 0.537
+  },
+  {
+   "name": "Shield_Dash_RM",
+   "verb": [],
+   "loop": false,
+   "dur": 1.1,
+   "frames": 26,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4767,
+    "r": 0.554,
+    "max": 0.717
+   },
+   "reach_x": 1.0005
+  },
+  {
+   "name": "Shield_OneShot",
+   "verb": [],
+   "loop": false,
+   "dur": 0.833,
+   "frames": 20,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.639,
+    "r": 0.5043,
+    "max": 0.721
+   },
+   "reach_x": 0.2665
+  },
+  {
+   "name": "Sitting_Enter",
+   "verb": [
+    "sit"
+   ],
+   "loop": false,
+   "dur": 1.3,
+   "frames": 31,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4208,
+    "r": 0.435,
+    "max": 0.498
+   },
+   "reach_x": 0.059
+  },
+  {
+   "name": "Sitting_Exit",
+   "verb": [
+    "sit"
+   ],
+   "loop": false,
+   "dur": 1.033,
+   "frames": 25,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4232,
+    "r": 0.4345,
+    "max": 0.4955
+   },
+   "reach_x": 0.0625
+  },
+  {
+   "name": "Sitting_Idle_Loop",
+   "verb": [
+    "sit"
+   ],
+   "loop": true,
+   "dur": 1.667,
+   "frames": 40,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": 0.322,
+   "hands_h": {
+    "l": 0.379,
+    "r": 0.3826,
+    "max": 0.383
+   },
+   "reach_x": -0.0395,
+   "pelvis_x": -0.181
+  },
+  {
+   "name": "Sitting_Talking_Loop",
+   "verb": [
+    "sit",
+    "talk"
+   ],
+   "loop": true,
+   "dur": 2.933,
+   "frames": 70,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": 0.322,
+   "hands_h": {
+    "l": 0.5131,
+    "r": 0.5343,
+    "max": 0.559
+   },
+   "reach_x": 0.107,
+   "pelvis_x": -0.181
+  },
+  {
+   "name": "Slide_Exit",
+   "verb": [
+    "slide"
+   ],
+   "loop": false,
+   "dur": 0.5,
+   "frames": 12,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.2637,
+    "r": 0.4312,
+    "max": 0.645
+   },
+   "reach_x": 0.385
+  },
+  {
+   "name": "Slide_Loop",
+   "verb": [
+    "slide"
+   ],
+   "loop": true,
+   "dur": 2,
+   "frames": 48,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": -0.0129,
+    "r": 0.2205,
+    "max": 0.2365
+   },
+   "reach_x": 0.0095
+  },
+  {
+   "name": "Slide_Start",
+   "verb": [
+    "slide"
+   ],
+   "loop": false,
+   "dur": 0.833,
+   "frames": 20,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.1769,
+    "r": 0.3854,
+    "max": 0.6495
+   },
+   "reach_x": 0.297
+  },
+  {
+   "name": "Spell_Simple_Enter",
+   "verb": [],
+   "loop": false,
+   "dur": 0.533,
+   "frames": 13,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.6207,
+    "r": 0.5058,
+    "max": 0.823
+   },
+   "reach_x": 0.387
+  },
+  {
+   "name": "Spell_Simple_Exit",
+   "verb": [],
+   "loop": false,
+   "dur": 0.433,
+   "frames": 10,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.6575,
+    "r": 0.5068,
+    "max": 0.8245
+   },
+   "reach_x": 0.387
+  },
+  {
+   "name": "Spell_Simple_Idle_Loop",
+   "verb": [],
+   "loop": true,
+   "dur": 2.1,
+   "frames": 50,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.8194,
+    "r": 0.4989,
+    "max": 0.8245
+   },
+   "reach_x": 0.384
+  },
+  {
+   "name": "Spell_Simple_Shoot",
+   "verb": [],
+   "loop": false,
+   "dur": 0.5,
+   "frames": 12,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.8238,
+    "r": 0.4992,
+    "max": 0.825
+   },
+   "reach_x": 0.384
+  },
+  {
+   "name": "Sprint_Loop",
+   "verb": [
+    "run"
+   ],
+   "loop": true,
+   "dur": 0.667,
+   "frames": 16,
+   "stride_mps": 4.7976,
+   "events": {
+    "footstrike": [
+     [
+      3,
+      "l"
+     ],
+     [
+      10,
+      "r"
+     ]
+    ]
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5828,
+    "r": 0.5761,
+    "max": 0.6635
+   },
+   "reach_x": 0.299,
+   "contact": {
+    "l": "0002000000000000",
+    "r": "0000000000220000"
+   },
+   "lock": {
+    "l": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "r": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "name": "Swim_Fwd_Loop",
+   "verb": [
+    "swim"
+   ],
+   "loop": true,
+   "dur": 1.333,
+   "frames": 32,
+   "stride_mps": 0.0,
+   "events": {
+    "footstrike": [
+     [
+      3,
+      "l"
+     ],
+     [
+      3,
+      "r"
+     ],
+     [
+      25,
+      "l"
+     ],
+     [
+      25,
+      "r"
+     ]
+    ]
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.0068,
+    "r": 0.0095,
+    "max": 0.094
+   },
+   "reach_x": 0.595
+  },
+  {
+   "name": "Swim_Idle_Loop",
+   "verb": [
+    "float"
+   ],
+   "loop": true,
+   "dur": 3.333,
+   "frames": 80,
+   "stride_mps": 0.0,
+   "events": {
+    "footstrike": [
+     [
+      30,
+      "l"
+     ],
+     [
+      36,
+      "r"
+     ]
+    ]
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.7487,
+    "r": 0.7442,
+    "max": 0.802
+   },
+   "reach_x": 0.119
+  },
+  {
+   "name": "Sword_Attack",
+   "verb": [],
+   "loop": false,
+   "dur": 1.533,
+   "frames": 37,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5996,
+    "r": 0.5361,
+    "max": 0.8785
+   },
+   "reach_x": 0.407
+  },
+  {
+   "name": "Sword_Attack_RM",
+   "verb": [],
+   "loop": false,
+   "dur": 1.533,
+   "frames": 37,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5996,
+    "r": 0.5361,
+    "max": 0.8785
+   },
+   "reach_x": 0.407
+  },
+  {
+   "name": "Sword_Block",
+   "verb": [],
+   "loop": false,
+   "dur": 1.233,
+   "frames": 30,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5078,
+    "r": 0.5192,
+    "max": 0.5565
+   },
+   "reach_x": 0.2835
+  },
+  {
+   "name": "Sword_Dash_RM",
+   "verb": [],
+   "loop": false,
+   "dur": 1.567,
+   "frames": 38,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.3627,
+    "r": 0.583,
+    "max": 0.656
+   },
+   "reach_x": 2.3395
+  },
+  {
+   "name": "Sword_Idle",
+   "verb": [],
+   "loop": false,
+   "dur": 1.667,
+   "frames": 40,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4787,
+    "r": 0.4865,
+    "max": 0.493
+   },
+   "reach_x": 0.198
+  },
+  {
+   "name": "Sword_Regular_A",
+   "verb": [],
+   "loop": false,
+   "dur": 0.433,
+   "frames": 10,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4851,
+    "r": 0.5716,
+    "max": 0.8435
+   },
+   "reach_x": 0.65
+  },
+  {
+   "name": "Sword_Regular_A_Rec",
+   "verb": [],
+   "loop": false,
+   "dur": 0.967,
+   "frames": 23,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5011,
+    "r": 0.6337,
+    "max": 0.8005
+   },
+   "reach_x": 0.8515
+  },
+  {
+   "name": "Sword_Regular_B",
+   "verb": [],
+   "loop": false,
+   "dur": 0.533,
+   "frames": 13,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.3365,
+    "r": 0.6206,
+    "max": 0.7265
+   },
+   "reach_x": 0.9095
+  },
+  {
+   "name": "Sword_Regular_B_Rec",
+   "verb": [],
+   "loop": false,
+   "dur": 1.033,
+   "frames": 25,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.3878,
+    "r": 0.5802,
+    "max": 0.692
+   },
+   "reach_x": 0.7755
+  },
+  {
+   "name": "Sword_Regular_C",
+   "verb": [],
+   "loop": false,
+   "dur": 2,
+   "frames": 48,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.6315,
+    "r": 0.5063,
+    "max": 0.961
+   },
+   "reach_x": 1.619
+  },
+  {
+   "name": "Sword_Regular_Combo",
+   "verb": [],
+   "loop": false,
+   "dur": 3,
+   "frames": 72,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5474,
+    "r": 0.5371,
+    "max": 0.97
+   },
+   "reach_x": 1.5755
+  },
+  {
+   "name": "TreeChopping_Loop",
+   "verb": [
+    "chop"
+   ],
+   "loop": true,
+   "dur": 0.967,
+   "frames": 23,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.5087,
+    "r": 0.8074,
+    "max": 0.969
+   },
+   "reach_x": 0.3275
+  },
+  {
+   "name": "Walk_Carry_Loop",
+   "verb": [
+    "carry"
+   ],
+   "loop": true,
+   "dur": 2,
+   "frames": 48,
+   "stride_mps": 0.3651,
+   "events": {
+    "footstrike": [
+     [
+      0,
+      "l"
+     ],
+     [
+      24,
+      "r"
+     ]
+    ]
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.6102,
+    "r": 0.6144,
+    "max": 0.65
+   },
+   "reach_x": 0.147,
+   "contact": {
+    "l": "333333333200000000000000000000000000000000000000",
+    "r": "000000000000000000000000333333322220000000000000"
+   },
+   "lock": {
+    "l": [
+     0.0,
+     -0.0002,
+     -0.0004,
+     -0.0006,
+     -0.0008,
+     -0.0001,
+     -0.0003,
+     0.0005,
+     0.0003,
+     0.0001,
+     0.0001,
+     0.0001,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "r": [
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     0.0,
+     -0.0002,
+     -0.0004,
+     -0.0006,
+     -0.0008,
+     -0.0001,
+     -0.0003,
+     0.0005,
+     0.0003,
+     0.0001,
+     -0.0001,
+     -0.0001,
+     -0.0001,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ]
+   }
+  },
+  {
+   "name": "Walk_Formal_Loop",
+   "verb": [
+    "walk"
+   ],
+   "loop": true,
+   "dur": 1.333,
+   "frames": 32,
+   "stride_mps": 0.5141,
+   "events": {
+    "footstrike": [
+     [
+      0,
+      "l"
+     ],
+     [
+      16,
+      "r"
+     ]
+    ]
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.488,
+    "r": 0.483,
+    "max": 0.5005
+   },
+   "reach_x": 0.0255,
+   "contact": {
+    "l": "11113333322222222220000000000000",
+    "r": "22200000000000001111322222222222"
+   },
+   "lock": {
+    "l": [
+     0.0,
+     0.0006,
+     0.0022,
+     0.0028,
+     0.0028,
+     0.0033,
+     0.0039,
+     0.0055,
+     0.0061,
+     0.0067,
+     0.0083,
+     0.0088,
+     0.0094,
+     0.011,
+     0.0116,
+     0.0122,
+     0.0138,
+     -0.0027,
+     -0.0101,
+     -0.0076,
+     -0.005,
+     -0.0025,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "r": [
+     0.0117,
+     -0.0037,
+     -0.0121,
+     -0.0091,
+     -0.006,
+     -0.003,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     0.0,
+     0.0006,
+     0.0012,
+     0.0017,
+     0.0017,
+     0.0023,
+     0.0029,
+     0.0045,
+     0.0051,
+     0.0057,
+     0.0072,
+     0.0078,
+     0.0084,
+     0.01,
+     0.0106,
+     0.0112
+    ]
+   }
+  },
+  {
+   "name": "Walk_Loop",
+   "verb": [
+    "walk"
+   ],
+   "loop": true,
+   "dur": 1.333,
+   "frames": 32,
+   "stride_mps": 0.5145,
+   "events": {
+    "footstrike": [
+     [
+      0,
+      "l"
+     ],
+     [
+      16,
+      "r"
+     ]
+    ]
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.507,
+    "r": 0.5052,
+    "max": 0.538
+   },
+   "reach_x": 0.1655,
+   "contact": {
+    "l": "11113333322222222220000000000000",
+    "r": "22200000000000001111322222222222"
+   },
+   "lock": {
+    "l": [
+     0.0,
+     0.0006,
+     0.0021,
+     0.0027,
+     0.0027,
+     0.0033,
+     0.0038,
+     0.0054,
+     0.006,
+     0.0065,
+     0.0081,
+     0.0087,
+     0.0092,
+     0.0108,
+     0.0114,
+     0.0119,
+     0.0135,
+     -0.0029,
+     -0.0104,
+     -0.0078,
+     -0.0052,
+     -0.0026,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    "r": [
+     0.0125,
+     -0.0039,
+     -0.0124,
+     -0.0093,
+     -0.0062,
+     -0.0031,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     -0.0,
+     0.0,
+     0.0006,
+     0.0011,
+     0.0017,
+     0.0017,
+     0.0023,
+     0.0028,
+     0.0044,
+     0.005,
+     0.0055,
+     0.0071,
+     0.0077,
+     0.0082,
+     0.0098,
+     0.0104,
+     0.0109
+    ]
+   }
+  },
+  {
+   "name": "Yes",
+   "verb": [
+    "nod"
+   ],
+   "loop": false,
+   "dur": 2.5,
+   "frames": 60,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.7097,
+    "r": 0.5024,
+    "max": 0.8835
+   },
+   "reach_x": 0.3275
+  },
+  {
+   "name": "Zombie_Idle_Loop",
+   "verb": [],
+   "loop": true,
+   "dur": 1.333,
+   "frames": 32,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.3525,
+    "r": 0.4138,
+    "max": 0.436
+   },
+   "reach_x": 0.0655
+  },
+  {
+   "name": "Zombie_Scratch",
+   "verb": [],
+   "loop": false,
+   "dur": 1.8,
+   "frames": 43,
+   "stride_mps": 0.0,
+   "events": {},
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4364,
+    "r": 0.3828,
+    "max": 0.866
+   },
+   "reach_x": 0.3275
+  },
+  {
+   "name": "Zombie_Walk_Fwd_Loop",
+   "verb": [],
+   "loop": true,
+   "dur": 1.333,
+   "frames": 32,
+   "stride_mps": 0.4553,
+   "events": {
+    "footstrike": [
+     [
+      2,
+      "l"
+     ],
+     [
+      7,
+      "r"
+     ],
+     [
+      16,
+      "r"
+     ],
+     [
+      17,
+      "l"
+     ]
+    ]
+   },
+   "seat_h": null,
+   "hands_h": {
+    "l": 0.4595,
+    "r": 0.478,
+    "max": 0.5195
+   },
+   "reach_x": 0.1925,
+   "contact": {
+    "l": "00113333222222220200000000000000",
+    "r": "22000002222000002222222222222222"
+   },
+   "lock": {
+    "l": [
+     0.0,
+     0.0,
+     0.0,
+     0.004,
+     0.004,
+     0.0091,
+     0.0141,
+     0.0181,
+     0.0232,
+     0.0272,
+     0.0312,
+     0.0353,
+     0.0393,
+     0.0443,
+     0.0484,
+     0.0524,
+     0.0393,
+     0.0393,
+     0.0295,
+     0.0197,
+     0.0098,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "r": [
+     0.0646,
+     0.0536,
+     0.0402,
+     0.0268,
+     0.0134,
+     0.0,
+     0.0,
+     0.0,
+     -0.069,
+     -0.1359,
+     -0.1989,
+     -0.1492,
+     -0.0994,
+     -0.0497,
+     -0.0,
+     -0.0,
+     0.0,
+     0.003,
+     0.0071,
+     0.0111,
+     0.0151,
+     0.0192,
+     0.0242,
+     0.0282,
+     0.0323,
+     0.0363,
+     0.0393,
+     0.0434,
+     0.0474,
+     0.0514,
+     0.0555,
+     0.0605
+    ]
+   }
+  }
+ ]
+}

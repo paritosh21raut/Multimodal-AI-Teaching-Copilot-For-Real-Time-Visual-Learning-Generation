@@ -1,0 +1,116 @@
+{
+ "rev": 1,
+ "source": "hand-made (E1, reference closed forms); E2 makes patches from ops",
+ "name": "carry",
+ "caption": "She carries a box to the table and puts it down.",
+ "view": "side",
+ "backdrop": {
+  "id": "room"
+ },
+ "period": 7.653,
+ "entities": [
+  {
+   "id": "table",
+   "draw": "table",
+   "xform": {
+    "x": 0.6366,
+    "size": [1.5, 0.627]
+   }
+  },
+  {
+   "id": "woman",
+   "draw": "cast:woman"
+  },
+  {
+   "id": "box",
+   "draw": "crate",
+   "xform": {
+    "size": [0.5, 0.4]
+   }
+  }
+ ],
+ "tracks": [
+  {
+   "id": "woman",
+   "kind": "path",
+   "samples": [
+    [0, -2.6, 0],
+    [4.62, 0.2, 0],
+    [7.653, 0.2, 0]
+   ]
+  },
+  {
+   "id": "woman",
+   "kind": "clip",
+   "clip": "Walk_Carry_Loop",
+   "rate": 1,
+   "loop": true,
+   "lock": true,
+   "t0": 0
+  },
+  {
+   "id": "woman",
+   "kind": "clip",
+   "clip": "PickUp_Table",
+   "rate": 1,
+   "loop": false,
+   "t0": 4.62,
+   "blend": 0.25,
+   "events": [
+    {
+     "t": 5.453,
+     "name": "contact"
+    }
+   ]
+  },
+  {
+   "id": "woman",
+   "kind": "clip",
+   "clip": "Idle_Loop",
+   "rate": 1,
+   "loop": true,
+   "t0": 5.453,
+   "blend": 0.5
+  },
+  {
+   "id": "box",
+   "kind": "socket",
+   "parent": "woman",
+   "socket": "hands",
+   "child_socket": "centre",
+   "offset": [0.1, 0.02],
+   "t0": 0,
+   "t1": 5.453
+  }
+ ],
+ "overlays": [
+  {
+   "kind": "words",
+   "screen": [48, 66],
+   "text": "“She carries a box to the table and puts it down.”",
+   "size": 30,
+   "color": "#5d6672",
+   "weight": 400
+  },
+  {
+   "kind": "arrow",
+   "at": {
+    "entity": "woman",
+    "anchor": "head_top",
+    "dx": -0.1,
+    "dy": 0.22
+   },
+   "vec": [150, 0],
+   "role": "velocity",
+   "label": "v",
+   "t1": 4.62
+  }
+ ],
+ "frame": {
+  "cx": 0.3,
+  "cy": 1.32,
+  "s": 250,
+  "ease_ms": 0
+ },
+ "keyframes": [1.848, 5.0365, 6.453]
+}
