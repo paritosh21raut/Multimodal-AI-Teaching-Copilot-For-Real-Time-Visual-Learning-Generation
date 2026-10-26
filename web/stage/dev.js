@@ -13,7 +13,10 @@ export const ready = (async () => {
   stage = new Stage(document.getElementById('host'));
 })();
 
-export function show(patch, t = 0) { stage.apply(patch); stage.render(t); return stage.player; }
+// a still: no ease from the last patch shown, no entrance fade (each sheet cell stands alone)
+export function show(patch, t = 0) { stage.still = true; stage.apply(patch); stage.render(t); return stage.player; }
+// live: eases and entrances run on wall time since the patch arrived (t0 = when it was applied)
+export function play(patch, t0, t) { stage.still = false; if (patch) stage.apply(patch); stage.render(t0 + t); return stage.player; }
 
 // a frame whose ground sits at 75 % of the height (director rule) and whose width spans x0..x1
 const groundFrame = (x0, x1, top) => {

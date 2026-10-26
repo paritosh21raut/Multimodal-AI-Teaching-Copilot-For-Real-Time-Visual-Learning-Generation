@@ -2508,7 +2508,10 @@
     "space",
     "moon surface",
     "mars",
-    "sky"
+    "sky",
+    "moon",
+    "lunar surface",
+    "jupiter"
    ],
    "ground_y": 0,
    "regions": {},

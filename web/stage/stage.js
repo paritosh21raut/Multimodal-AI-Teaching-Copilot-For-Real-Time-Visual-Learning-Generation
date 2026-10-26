@@ -52,6 +52,7 @@ export class Stage {
   apply(patch) {
     const n = patch.view === 'split' ? (patch.panes || []).length || 1 : 1;
     if (n !== this.n || !this.player) this.build(n);
+    this.player.still = !!this.still;  // a still (dev sheets): no ease from the last patch, no entrance fade
     this.player.apply(patch);
     return this;
   }

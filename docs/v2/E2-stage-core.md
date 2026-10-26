@@ -70,4 +70,14 @@ A contact sheet of the 12 fixtures at key frames, side by side with the E1 refer
 judges physics, readability and look → the look list goes to P-round 1.
 
 ## Result
-_(≤ 1 KB)_
+2026-10-26. Built (unit + browser tested, 0 tokens):
+- `src/copilot/stage/`: ops, validate (pint), graph, log (fold, undo, fast→llm), catalog, acting (warp, IK,
+  sockets), director, timeline (+ diff).
+- 10 laws with provenance (wrap S-template `flight`, `period`, `swing_curve`); `config/constants.toml`.
+- 12 op fixtures, `tools/stage/replay.py`, gate `artifacts/stage/sheet_e2_{a,b}.png`.
+- Player: entrance fade; dev stills skip eases.
+
+Review: 12 + 4 findings fixed (quote word boundaries, sign/range checks, one id space, pint error refused, relative roles, stop-before-s, said push decides the caption, balance intent, late LLM delta order, remove drops its laws, title band, full diffs, group overlays shift, sea water). Tests: 47 unit, 5 browser; full suite 1847 pass. Push hands ≤ 2 px (warped push too), feet ≤ 1 cm, laps on seats.
+
+Not built: diagram recipes except strobe / energy bars (E4); `follow` shot; morph on fast→llm. E1 patches stay as
+the reference only. Look list for P1: seesaw dims crowd the pivot, the lift rises with no shaft, small strobe labels.

@@ -1,0 +1,47 @@
+# Physical constants the stage may show (contract stage-spec §2, src "constant"). Each row: value, unit, note (source).
+# A law reads only these rows; a number on the stage that is none of said / computed / constant is refused.
+
+[g_earth]
+v = 9.8
+u = "m/s^2"
+note = "standard gravity 9.80665 m/s², rounded as in school textbooks (NCERT uses 9.8)"
+
+[g_moon]
+v = 1.62
+u = "m/s^2"
+note = "NASA Moon fact sheet, surface gravity 1.62 m/s²"
+
+[g_mars]
+v = 3.71
+u = "m/s^2"
+note = "NASA Mars fact sheet, surface gravity 3.71 m/s²"
+
+[g_jupiter]
+v = 24.79
+u = "m/s^2"
+note = "NASA Jupiter fact sheet, equatorial gravity 24.79 m/s²"
+
+[sound_air_20c]
+v = 343
+u = "m/s"
+note = "speed of sound in dry air at 20 °C (CRC Handbook)"
+
+[c]
+v = 299792458
+u = "m/s"
+note = "speed of light in vacuum, exact (SI 2019)"
+
+[e]
+v = 1.602176634e-19
+u = "C"
+note = "elementary charge, exact (SI 2019)"
+
+[rho_water]
+v = 1000
+u = "kg/m^3"
+note = "density of fresh water near 4 °C, as used in school problems"
+
+[rho_sea_water]
+v = 1025
+u = "kg/m^3"
+note = "typical density of sea water (NOAA)"

@@ -19,10 +19,11 @@ export class Player {
   // panes: [{svg, bd, world, far, near, over, w}] from the stage; catalog: {props, backdrops, species} rows by id
   constructor(panes, catalog, top = null) {
     this.panes = panes; this.cat = catalog; this.top = top; this.ents = new Map(); this.patch = null; this.cam = []; this.applyAt = null;
+    this.still = false; this.entering = new Map();
   }
 
   apply(patch) {
-    const prevCam = this.cam.map((c) => c && c.now);
+    const prevCam = this.still ? [] : this.cam.map((c) => c && c.now);
     this.patch = patch;
     this.byId = {};
     const tracks = patch.tracks || [];
@@ -37,6 +38,8 @@ export class Player {
       else if (tr.kind === 'tween') s.tween.push(tr);
     }
     for (const s of Object.values(this.byId)) for (const k of ['clips', 'socket']) s[k].sort((a, b) => (a.t0 || 0) - (b.t0 || 0));  // the latest started wins
+    // entrances: an entity new in this patch fades in after its stagger (enter_ms, the director's ~100 ms steps)
+    this.entering = new Map((patch.entities || []).filter((e) => !this.ents.has(e.id) && e.enter_ms != null).map((e) => [e.id, e.enter_ms]));
     // DOM: one <g> per entity, kept across patches
     for (const [id, d] of this.ents) if (!this.byId[id]) { d.g.remove(); if (d.arm) d.arm.remove(); this.ents.delete(id); }
     for (const e of patch.entities || []) {
@@ -227,6 +230,7 @@ export class Player {
     }
     for (const e of this.patch.entities || []) {
       const d = this.ents.get(e.id), o = this.place(e.id, t), k = this.kind(e.id);
+      if (!this.still && this.entering.has(e.id)) o.opacity *= Math.max(0, Math.min(1, (tRaw - this.applyAt - this.entering.get(e.id) / 1000) / 0.3));
       setAttr(d.g, 'opacity', String(o.opacity));
       if (o.heldBy) held.push([o.heldBy, e.id]);
       if (k === 'person') {
