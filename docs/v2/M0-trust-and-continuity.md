@@ -47,4 +47,11 @@ Sheet per theme: C1/C2 → +C3 → square inside C3; box on incline with the 5 k
 repeat lines → same slide. Then the loop live test (`docs/v2/tests/M0-live.md`, 10–12 lines from test36).
 
 ## Result
-_(≤ 1 KB)_
+_Unit + replays (test36/37/38 fixtures) + browser sheet; live test37, re-tests test38 / next. 1982 pass._
+- Numbers (`understanding/numbers.py`): changed unit → as said; unsaid number → item dropped; a factual concern
+  changing a said number is dropped (`[CONCERN] number kept`).
+- Recap: one per scene (no carry; E3b test changed); analogy links, other scenes' things, picture-only bullets dropped.
+- Repeat (cue words ⊆ open scene's within 60 s) = same slide. Continue: another / named counts / `inside` / outside =
+  beside / "C1 has X inside"; one-part upgrade; shapes retitle; pentagon, hexagon; a property line draws nothing.
+- STT: "laptop of sodium" → atom, "ink-like plane" → inclined, "C1C"/"SC3" → label; Whisper primed with the diagram.
+- Review 8/8 fixed. Left to M1: a closed diagram's label (C3) going back to it; F-015 cube+ball; stage titles.

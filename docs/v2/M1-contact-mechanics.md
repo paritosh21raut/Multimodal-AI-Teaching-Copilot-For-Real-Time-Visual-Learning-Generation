@@ -24,6 +24,10 @@ validator). Grep, don't read whole: `src/copilot/simulation/values.py` (`heard`,
    (50 N on the bottom block; with and without masses / μ), block pushed on floor (sticks / slides), Atwood
    (2 kg, 3 kg), table + hanging mass, spring with 0.5 kg and k = 100 N/m, a 45° re-angle edit.
 
+### Carried from M0 (test38/39, small)
+- Whisper merges "is outside" into "inside": keep the place word's probability; below a bar, an inside/outside chip.
+- A label of a closed diagram ("C3") within 10 min goes back to that slide.
+
 ## Tests
 Solver vs hand-worked answers (in the test docstring): incline a = g(sinθ − μcosθ) etc.; two-block regimes
 (top sticks / slips threshold); no number without a source (walk every label: said quote or `from` syms).

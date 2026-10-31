@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from difflib import SequenceMatcher
 from functools import lru_cache
 from typing import Any, Optional
 
@@ -28,9 +29,38 @@ COUNT = {"a": 1, "an": 1, "one": 1, "single": 1, "two": 2, "three": 3, "four": 4
          "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "both": 2, "pair of": 2}
 _DEF = ("the", "this", "that", "its", "same")
 _HANG = re.compile(r"\b(?:hang\w*|hung|suspended|attached|tied)\b", re.IGNORECASE)
-_ON = re.compile(r"^\s*(?:(?:which|that)\s+(?:is|are)\s+)?(?:(?:is|are|lying|resting|placed|kept|sitting|sits|"
-                 r"rests|lies)\s+)?(?:on|on top of|upon|over|above)\s*$", re.IGNORECASE)
-_IN = re.compile(r"^\s*(?:(?:is|are|placed|kept)\s+)?(?:in|inside|into)\s*$", re.IGNORECASE)
+_ON = re.compile(r"^\s*(?:(?:which|that)\s+(?:is|are)\s+)?(?:(?:is|are|was|were)\s+)?(?:(?:lying|resting|placed|kept|"
+                 r"sitting|sits|rests|lies|put)\s+)?(?:on|on top of|upon|over|above)(?:\s+(?:plane|flat|smooth|rough))?\s*$",
+                 re.IGNORECASE)
+_IN = re.compile(r"^\s*(?:(?:is|are|was|were)\s+)?(?:(?:placed|kept|put|drawn)\s+)?(?:in|inside|into|within)\s*$",
+                 re.IGNORECASE)
+# M0 (test36): "another circle", "one more", "a third": a part added to the open diagram, never the one there
+# (one adjective may sit between, never an article: "after a second the box", "we added the box" name the open one)
+_ANOTHER = re.compile(r"\b(?:another|one more|a second|a third|a fourth|a new|added|add|adding)\s+"
+                      r"(?:(?!(?:the|this|that|its|a|an)\b)\w+\s+)?$", re.IGNORECASE)
+# "If a square was inside C3": a shape inside the open part labelled C3
+# (a garbled label keeps its letter + digits: "C1C" -> C1, test37)
+_SHAPE_W = r"(?:circle|square|triangle|rectangle|pentagon|hexagon)\s+"
+# (a stray capital in front is Whisper's too: "SC3" -> C3, test38)
+_INSIDE_LABEL = re.compile(rf"\b(inside|within|in|outside|beside|next to),?\s+(?:the\s+)?(?:{_SHAPE_W})?"
+                           r"[A-Z]?([A-Z][0-9]{1,2})[A-Z]?\b")
+# test37: "C1 has a pentagon inside it" (the host first)
+_HAS_INSIDE = re.compile(r"\b[A-Z]?([A-Z][0-9]{1,2})[A-Z]?\s+(?:has|have|contains?|holds?)\s+(?:a|an|the)?\s*(\w+)\s+"
+                         r"(?:inside|in it|within)\b")
+# a statement about a kind: "<noun> has / is / are / means ..." with no place word in the line
+_PROPERTY = re.compile(r"\w+(?:e?s)?\s+(?:has|have|is|are|means|contains)\s+(?!(?:inside|outside|on|in|beside|placed|"
+                       r"kept|added|drawn|put|next|above|below|under)\b)", re.IGNORECASE)
+_PLACE_WORD = re.compile(r"\b(?:inside|outside|within|on top|beside|next to|above|below|under|placed|kept|added|drawn|"
+                         r"put|hang\w*|hung|attached|poured|in it|into)\b", re.IGNORECASE)
+# test37: "a box on an ink-like plane" (Whisper) -> an inclined plane: a word that sounds like "inclined" before "plane"
+_PLANE = re.compile(r"\b([a-z]+(?:-[a-z]+)?)\s+plane\b", re.IGNORECASE)
+# "a laptop of sodium" (test36, a mishear of "an atom of sodium"): an unknown noun + "of" + an element
+_OF_ELEMENT = re.compile(r"\b(?:a|an)\s+([a-z]+)\s+of\s+([A-Za-z]+)\b")
+_OF_OK = {"piece", "lump", "bit", "chunk", "sample", "block", "bar", "rod", "strip", "sheet", "wire", "mole", "moles",
+          "gram", "grams", "pinch", "spoon", "spoonful", "jar", "bottle", "solution", "compound", "salt", "ion", "isotope",
+          "nucleus", "electron", "proton", "neutron", "shell", "property", "properties", "number", "mass", "weight",
+          "balloon", "tank", "cylinder", "kind", "form", "type", "layer", "coin", "can", "container", "cup", "glass",
+          "gas", "foil", "ring", "nugget", "cloud", "source", "supply", "atmosphere", "flask", "beaker", "tube"}
 _AROUND = re.compile(r"\b(?:around|orbiting|revolving|orbits?)\b", re.IGNORECASE)
 _POUR = re.compile(r"\b(?:add|adding|added|adds|pour|pouring|poured|pours)\b", re.IGNORECASE)
 _STIR = re.compile(r"\bstir(?:s|red|ring)?\b", re.IGNORECASE)
@@ -45,7 +75,7 @@ _PRONOUN = re.compile(r"\b(?:it|them|its)\b", re.IGNORECASE)
 _ANGLE = re.compile(r"(?:(?:an?\s+)?angle\s+(?:of\s+)?)?(\d+(?:\.\d+)?|[a-z]+(?:[- ][a-z]+)?)\s*(?:degrees?|°)",
                     re.IGNORECASE)
 _MASS = re.compile(r"(\d+(?:\.\d+)?|[a-z]+)\s*(?:kg|kilograms?|kilos?)\b", re.IGNORECASE)
-_NAMES = re.compile(r"^\s*,?\s*(?:(?:called|named|labelled|labeled)\s+)?([A-Z][0-9]{0,2}(?:\s*(?:,|and|&)\s*"
+_NAMES = re.compile(r"^\s*,?\s*(?:(?:called|named|labelled|labeled|of)\s+)?([A-Z][0-9]{0,2}(?:\s*(?:,|and|&)\s*"
                     r"[A-Z][0-9]{0,2})*)\b(?![a-z])")
 _UNKNOWN = re.compile(r"\b(?:a|an|the)\s+([a-z]{4,})\b", re.IGNORECASE)
 _STOP = {"time", "moment", "second", "minute", "example", "case", "situation", "scenario", "question", "answer",
@@ -94,6 +124,8 @@ class Draft:
     old: list[str] = field(default_factory=list)     # ids of the open diagram the line names
     new: list[str] = field(default_factory=list)     # ids the line adds
     refers: bool = False                             # "it" / "the beaker": the line is about the open diagram
+    named: list[str] = field(default_factory=list)   # ids of the open diagram the line names by label ("C1, C2")
+    more: bool = False                               # "another / one more X" of a kind the open diagram has
     unknown: list[str] = field(default_factory=list)
     title: str = ""
 
@@ -144,7 +176,7 @@ def mentions(text: str) -> list[Mention]:
         n, definite = _count_before(text, m.start())
         mm = Mention(m.start(), m.end(), kind, w, n, definite=definite)
         nm = _NAMES.match(text[m.end():])
-        if nm and kind not in ("planet",):
+        if nm and kind not in ("planet", "atom"):
             mm.names = re.split(r"\s*(?:,|and|&)\s*", nm.group(1).strip())
             if mm.n == 1 and len(mm.names) > 1:
                 mm.names = mm.names[:1]
@@ -185,7 +217,7 @@ def unknown_nouns(text: str, known: list[Mention]) -> list[tuple[int, str]]:
         if P.words().get(w) or P.chemicals().get(w) or P.element(w):
             continue
         nxt = text[m.end(1):m.end(1) + 12].lower()
-        if re.match(r"\s+(?:of|atom|system|plane)\b", nxt):
+        if re.match(r"\s+(?:of|atom|system|plane|surface|table|floor|ground)\b", nxt):  # "a plane surface" (test36)
             continue
         out.append((m.start(1), w))
     return out
@@ -273,20 +305,36 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
             d.kinds.append("liquid")
             continue
         d.kinds.append(m.kind)
+        more = bool(_ANOTHER.search(text[max(0, m.start - 30):m.start]))
+        d.more = d.more or (more and bool(g.of(m.kind)))
         same = [p for p in g.of(m.kind) if (m.names and p.label in m.names) or (not m.names and m.attr.get("name")
                 and p.attr.get("name") == m.attr["name"])]
-        if not same and not m.names and m.n == 1:  # the same cue said again (Whisper repeats): "a box" = the box
-            same = [p for p in g.of(m.kind) if p.label_src == "said" and p.label.lower() == m.word][:1]
+        if not same and not m.names and m.n == 1 and not more:  # the same cue said again (Whisper repeats)
+            # "a box" = the box; "an atom (of)" = the atom with no other element said (shapes are drawn many times)
+            same = [p for p in g.of(m.kind) if p.label_src == "said" and p.label.lower() == m.word
+                    or not p.label and _row(m.kind).get("domain") != "shape"
+                    and all(p.attr.get(k) == v for k, v in m.attr.items())][:1]
         if same:
             m.ids = [p.id for p in same]
             d.old += m.ids
+            if m.names:
+                d.named += m.ids
+                have = {p.label for p in same}
+                # "three circles C1, C2 and C3" with C1 and C2 open: the count includes them, only C3 is added
+                m.ids += [add(m.kind, nm, "said", **m.attr) for nm in m.names if nm not in have]
             continue
         olds = g.of(m.kind)
-        if olds and not m.names and m.n == 1 and (m.definite or not _fresh(text, m)):
+        loose = [p for p in olds if p.id not in g.rels and _row(m.kind).get("domain") == "shape"]
+        if loose and not m.names and m.n == 1 and not more:  # test37: "a pentagon ... inside C1" said again and
+            olds = loose                                       # again: the one not placed yet, not a 2nd and 3rd
+        if olds and not m.names and m.n == 1 and not more and (m.definite or not _fresh(text, m) or olds is loose):
             m.ids = [olds[-1].id]
             d.old.append(olds[-1].id)
             d.refers = True
             continue
+        if g.parts and not m.names and _PROPERTY.match(text[m.start:]) and not _PLACE_WORD.search(text) \
+                and not _CUEW.search(text):
+            continue  # test38: "A square has 4 equal sides" is a fact about squares, not a new square
         n = max(m.n, len(m.names))
         auto = _row(m.kind).get("two_port") and m.kind != "cell" and n > 1
         for k in range(n):
@@ -361,6 +409,8 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
             rel = ("on", a, b)
         elif _IN.match(between) and _row(b.kind).get("container"):
             rel = ("in", a, b)
+        elif _IN.match(between) and _row(a.kind).get("domain") == _row(b.kind).get("domain") == "shape":
+            rel = ("inside", a, b)  # "a square inside a circle"
         elif _AROUND.search(between) and b.kind in ("sun", "planet", "nucleus"):
             rel = ("orbit", a, b)
         if rel and rel[0] == "hang_from" and rel[2].kind == "support" and rel[1].kind not in ("spring", "pulley"):
@@ -372,6 +422,7 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
             for i in x.ids:
                 if g.rels.get(i) != (r, y.ids[0]):
                     ops.append({"op": "place", "a": i, "rel": r, "b": y.ids[0]})
+    _inside_label(text, things, ops, g)
     _supports(ops, ms, g, add)
 
     # 5. processes and shows
@@ -408,6 +459,51 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
 
 def _row(kind: str) -> dict:
     return P.kind(kind) or {}
+
+
+def _inside_label(text: str, things: list[Mention], ops: list[dict], g: Graph) -> None:
+    """"If a square was inside C3": the shape said before goes inside the shape labelled C3 (open or in this line)."""
+    labels = {p.label: p.id for p in g.parts.values() if _row(p.kind).get("domain") == "shape" and p.label}
+    labels.update({o["label"]: o["id"] for o in ops if o.get("op") == "part" and o.get("label")
+                   and _row(o["kind"]).get("domain") == "shape"})
+    found = [(m.start(), "beside" if m.group(1).lower() in ("outside", "beside", "next to") else "inside",
+              labels.get(m.group(2)), None) for m in _INSIDE_LABEL.finditer(text)]
+    for m in _HAS_INSIDE.finditer(text):  # "C1 has a pentagon inside it": the guest is the shape after the label
+        guest = next((t for t in things if t.start >= m.start(2) and t.ids
+                      and _row(t.kind).get("domain") == "shape"), None)
+        found.append((m.start(), "inside", labels.get(m.group(1)), guest))
+    for pos, rel, host, guest in found:
+        guest = guest or next((t for t in reversed(things) if t.start < pos and t.ids
+                               and _row(t.kind).get("domain") == "shape" and host not in t.ids), None)
+        if host is None or guest is None or host in guest.ids:
+            continue
+        for i in guest.ids:
+            if g.rels.get(i) != (rel, host) and not any(o.get("op") == "place" and o.get("a") == i for o in ops):
+                ops.append({"op": "place", "a": i, "rel": rel, "b": host})
+
+
+def concept_mishear(text: str) -> Optional[str]:
+    """"Imagine a laptop of sodium" -> "Imagine an atom of sodium" (test36): an unknown noun before "of <element>"
+    is a mishear of "atom" (the element is the concept said); "a box on an ink-like plane" -> "... an inclined
+    plane" (test37); None when the line has no such word."""
+    p = _PLANE.search(text)
+    if p and p.group(1).lower() not in ("inclined", "the", "a", "an", "flat", "plane", "smooth", "rough", "horizontal",
+                                        "vertical", "same", "this", "that", "air", "x", "y", "xy", "cartesian") \
+            and SequenceMatcher(None, p.group(1).lower().replace("-", ""), "inclined").ratio() >= 0.6:
+        text = text[:p.start()] + "inclined plane" + text[p.end():]
+        text = re.sub(r"\ba(\s+inclined plane)", r"an\1", text)
+        return concept_mishear(text) or text
+    m = _OF_ELEMENT.search(text)
+    if m is None:
+        return None
+    noun, el = m.group(1).lower(), m.group(2)
+    if noun in _OF_OK or noun == "atom" or P.words().get(noun) or P.words().get(noun.rstrip("s")):
+        return None
+    if SequenceMatcher(None, noun, "atom").ratio() < 0.55:  # must sound like "atom" ("laptop" 0.6, "tank" 0.25)
+        return None
+    if not (P.element(el) or P.element(el.lower())):
+        return None
+    return text[:m.start()] + f"an atom of {el}" + text[m.end():]
 
 
 def _chem_label(row: dict, word: str, text: str) -> str:
@@ -531,7 +627,7 @@ def _gap(s: str) -> str:
     " of mass 2 kg on a " -> " on ")."""
     s = re.sub(r"\bof\s+(?:mass|weight)\b", " ", s, flags=re.IGNORECASE)
     words = [w for w in re.findall(r"[A-Za-z']+", s) if w.lower() not in COUNT and w.lower() not in _DEF
-             and w.lower() not in UNITS]
+             and w.lower() not in UNITS and w.lower() != "another"]  # "on top of another box" (test36)
     return " " + " ".join(words) + " "
 
 

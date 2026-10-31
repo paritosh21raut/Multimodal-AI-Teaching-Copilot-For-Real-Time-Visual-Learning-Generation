@@ -31,6 +31,7 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from copilot.core.events import RepresentationIntent, SimulationNotice, StageWords
 from copilot.diagram import fastpath as dfast
+from copilot.diagram import parts as dparts
 from copilot.diagram import patch as dpatch
 from copilot.diagram.graph import DiagramLog
 from copilot.diagram.route import route as diagram_route
@@ -52,6 +53,8 @@ NOUNS_FOR_STT = 10                     # Whisper's prompt: the slide title + the
 QUEUE_MAX = 3                          # lines waiting for the LLM at most (older ones keep their draft)
 EMPTY_S = 20.0                         # a stage that drew nothing closes after this long (test34: 107 s "Listening…")
 UNSURE_S = 30.0                        # a word Whisper was unsure of stays ghosted (with its chip) this long at most
+SHAPE_KINDS = ("circle", "square", "triangle", "rectangle", "pentagon", "hexagon")
+REPEAT_S = 60.0                       # M0 (test36: 3 moon slides): a cue naming the open scene's things this soon = it
 
 
 @dataclass
@@ -89,6 +92,7 @@ class _Open:
     dlog: DiagramLog = field(default_factory=DiagramLog)
     dpatch: Optional[dict] = None
     dtitle: str = ""                    # the diagram's title (from its first line)
+    cues: list[tuple[float, frozenset[str]]] = field(default_factory=list)  # M0: (lecture time, words) of its cues
 
     def drawn(self) -> bool:
         """Something is on the slide (stage entities or diagram parts)."""
@@ -151,6 +155,10 @@ class StageController:
 
     # ---- intents --------------------------------------------------------------------------------------------
     async def on_intent(self, ev: RepresentationIntent) -> None:
+        fixed = dfast.concept_mishear(ev.text)
+        if fixed is not None and diagram_route(fixed) == "diagram":  # M0: "a laptop of sodium" -> an atom of sodium
+            log.info("[STAGE] %r read as %r (an element said with an unknown noun)", ev.text[:60], fixed[:60])
+            ev = ev.model_copy(update={"text": fixed})
         if ev.visual_kind != "scene" or not self.e.s.scenes or not self.wants(ev):
             return
         heard = time.perf_counter()
@@ -191,7 +199,7 @@ class StageController:
         g = o.log.fold()
         d = fastpath.draft(ev.text, g)
         cue = ev.strength == "cue" or bool(_IMAGINE.match(ev.text))  # "Imagine a kettle ...": no world, still a cue
-        if cue and g.ents and not same_scene(d, g) and _drawable(d):
+        if cue and g.ents and not same_scene(d, g) and _drawable(d) and not self._repeat(o, ev.text):
             # "now think of an elephant on a sofa": a new picture, not the open one (F-016 §2: in Imagine Mode the
             # next scene keeps the mode; else the open stage ends with its recap)
             await self.start(origin="cue", title=_title_from(ev.text), cue_segment=next(iter(ev.segment_ids), ""))
@@ -200,6 +208,8 @@ class StageController:
                 return
             g = o.log.fold()
             d = fastpath.draft(ev.text, g)
+        if cue:
+            o.cues.append((self.e.now(), cue_words(ev.text)))
         if self.imagine and not d.ops and not d.prefetch and not pics.picturable(ev.text, [x.w for x in g.ents.values()]):
             log.info("[STAGE] imagine: nothing to picture in %r", ev.text[:60])
             return
@@ -320,9 +330,17 @@ class StageController:
         if self.e.s.simulations == "off" and not self.imagine:
             log.info("[STAGE] diagram cue ignored (setting off): %r", ev.text[:60])
             return True
-        if o is not None and o.mode == "diagram" and _same_diagram(dfast.draft(ev.text, o.dlog.fold())):
-            await self._diagram_line(o, ev)  # the same picture said again ("two circles C1 and C2" twice)
-            return True
+        if o is not None and o.mode == "diagram":
+            dd = dfast.draft(ev.text, o.dlog.fold())
+            # the same picture said again ("two circles C1 and C2" twice, "an atom of" after the sodium atom), or more
+            # of it (M0: "another circle of C3", "three circles C1, C2 and C3" with C1 and C2 open)
+            if _same_diagram(dd) or dd.named or dd.more or self._repeat(o, ev.text, diagram=True):
+                await self._diagram_line(o, ev)
+                return True
+            if self._upgrade(o, dd):  # test37: "a box on an ink-like plane" drew a box; "... inclined plane" says it all
+                o.dtitle = ""
+                await self._diagram_line(o, ev)
+                return True
         self.e.stats.ops["diagram_start"] += 1
         d = dfast.draft(ev.text)
         await self.start(origin="cue", title=d.title or IMAGINE_TITLE, cue_segment=next(iter(ev.segment_ids), ""),
@@ -331,6 +349,27 @@ class StageController:
         if o is not None:
             await self._diagram_line(o, ev)
         return True
+
+    def _repeat(self, o: _Open, text: str, diagram: bool = False) -> bool:
+        """M0 (test36: 3 moon slides, 2 student slides, "Atom" between two atoms): a cue within REPEAT_S of the open
+        scene's last cue that names only its things ("jump on the surface of the moon" after "jump on the moon").
+        A stage also keeps a cue that says an earlier cue again with more ("teaching students" -> "in a classroom
+        teaching students"); a diagram does not (an atom of oxygen after an atom is the next diagram)."""
+        if not o.cues or self.e.now() - o.cues[-1][0] > REPEAT_S:
+            return False
+        w = cue_words(text)
+        if not w:
+            return False
+        if w <= frozenset().union(*(c for _, c in o.cues)):
+            return True
+        return not diagram and any(c and c <= w for _, c in o.cues)
+
+    def _upgrade(self, o: _Open, d: dfast.Draft) -> bool:
+        """A cue within REPEAT_S that names the open diagram's only part again and adds more: the first cue was cut
+        or misheard (test37), this one is the whole picture: the same slide, the new title."""
+        parts = o.dlog.fold().parts
+        return bool(o.cues) and self.e.now() - o.cues[-1][0] <= REPEAT_S and len(parts) == 1 \
+            and next(iter(parts)) in d.old and bool(d.new)
 
     def _heard(self) -> None:
         m = self.e._sims.mode
@@ -346,6 +385,8 @@ class StageController:
             return
         o.n += 1
         self.stats.lines += 1
+        if ev.strength == "cue" or _IMAGINE.match(ev.text):
+            o.cues.append((self.e.now(), cue_words(ev.text)))
         line_id = next(iter(ev.segment_ids), "") or f"l{o.n}"
         o.dlog.say(line_id, ev.text)
         d = dfast.draft(ev.text, o.dlog.fold())
@@ -357,7 +398,11 @@ class StageController:
         res = o.dlog.delta(d.ops, line_id, "fast", t_ms=int(self.e.now() * 1000), text=ev.text)
         for raw, why in res.rejected:
             log.info("[STAGE] diagram.rejected %s: %s", raw, why)
+        g = o.dlog.fold()
+        o.dtitle = shapes_title(g) or o.dtitle  # test37: "Two circles C1 and C2" with C3 added
         await self._publish_diagram(o)
+        o.nouns = diagram_nouns(g)  # test38: Whisper heard "pentagon" as "Zagon", "outside" as
+        await self._words(o)                        # "inside": primed with the diagram's own words
         self.stats.draft_s.append(time.perf_counter() - heard)
         log.info("[STAGE] diagram %s: %d op(s), %d refused (fast path, 0 tokens; the LLM delta comes in K5)",
                  line_id, len(res.ok), len(res.rejected))
@@ -372,6 +417,9 @@ class StageController:
             m = self.e._sims.mode
             if m is not None and m.kind == "stage" and m.block_id == o.block_id and m.names:
                 m.names[-1] = title
+        m = self.e._sims.mode
+        if m is not None and m.kind == "stage" and m.block_id == o.block_id:  # M0: the recap leaves the picture out
+            m.picture = picture_words(o.dlog.fold())
         try:
             patch = dpatch.build(o.dlog.fold(), rev=o.rev + 1, nogo=_title_nogo(spec.title) if b.full else None)
         except Exception:  # a layout fault: the last good diagram stays, the log keeps the line
@@ -635,6 +683,59 @@ def same_scene(d: fastpath.Draft, g: Any) -> bool:
         return True
     said = {(o["verb"], o.get("obj")) for o in d.ops if o.get("op") == "act" and o.get("obj") in g.ents}
     return any((a.verb, a.obj) in said for a in g.actions.values())
+
+
+_CUE_STOP = {"imagine", "imager", "picture", "visualise", "visualize", "suppose", "think", "consider", "you", "your",
+             "you're", "are", "is", "was", "were", "be", "the", "and", "with", "of", "on", "in", "at", "to", "into",
+             "this", "that", "there", "here", "now", "so", "okay", "ok", "then", "surface", "top", "side", "some", "very",
+             "if", "we", "our", "us", "it", "its", "has", "have", "having", "for", "from", "who", "which", "what", "just"}
+
+
+def cue_words(text: str) -> frozenset[str]:
+    """A cue's content words, normalised ("Imagine you jump on the surface of the moon" -> {jump, moon}): no cue
+    word, article, count or filler; plurals and -ing folded ("teaching students" -> {teach, student})."""
+    out = set()
+    for w in re.findall(r"[a-z][a-z0-9']*", text.lower()):
+        if w in _CUE_STOP or w in dfast.COUNT or (len(w) < 3 and not any(c.isdigit() for c in w)):
+            continue
+        if w.endswith("ing") and len(w) > 5:
+            w = w[:-3]
+        elif w.endswith("s") and not w.endswith("ss") and len(w) > 3:
+            w = w[:-1]
+        out.add(w)
+    return frozenset(out)
+
+
+def picture_words(g: Any) -> frozenset[str]:
+    """What a diagram draws, in words: its parts' kind words and labels ("box", "inclined", "plane", "c3")."""
+    out: set[str] = set()
+    for p in g.parts.values():
+        for w in (list((dparts.kind(p.kind) or {}).get("words", [])) + [p.kind.replace("_", " "), p.label or ""]):
+            out |= set(re.findall(r"[a-z][a-z0-9]*", w.lower()))
+    return frozenset(out)
+
+
+def diagram_nouns(g: Any) -> list[str]:
+    """The words Whisper is primed with while a diagram is open: its labels and part words; with shapes, the shape
+    family and the place words said about them."""
+    out: list[str] = []
+    for p in g.parts.values():
+        out += [w for w in ((dparts.kind(p.kind) or {}).get("words", [])[:1] + [p.label]) if w]
+    if any(p.kind in SHAPE_KINDS for p in g.parts.values()):
+        out += [k for k in SHAPE_KINDS if k != "rectangle"] + ["inside", "outside"]
+    return list(dict.fromkeys(out))[:16]
+
+
+def shapes_title(g: Any) -> str:
+    """A diagram of labelled shapes of one kind, titled by them ("Three circles C1, C2, C3"); the shapes inside them
+    are not counted. "" otherwise (the title of the first line stays)."""
+    top = [p for p in g.parts.values() if p.kind in SHAPE_KINDS and g.rels.get(p.id, ("",))[0] != "inside"]
+    kinds = {p.kind for p in top}
+    if len(top) < 2 or len(kinds) != 1 or not all(p.label for p in top):
+        return ""
+    names = [p.label for p in top]
+    joined = " and ".join(names) if len(names) == 2 else ", ".join(names)
+    return f"{dfast._num(len(top)).capitalize()} {top[0].kind}s {joined}"[:48]
 
 
 def _same_diagram(d: dfast.Draft) -> bool:

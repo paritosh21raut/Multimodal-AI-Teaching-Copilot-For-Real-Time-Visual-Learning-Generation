@@ -158,6 +158,8 @@ def _place_tree(g: Graph, L: Layout, root: str) -> None:
                 orbit_i += 1
             elif rel == "above":
                 _above(na, nb, g, L)
+            elif rel == "inside":
+                _inside(na, nb)
             else:  # beside: next to it on the same floor line
                 na.cx = nb.box()[2] + GAP / 2 + na.w / 2
                 na.cy = nb.box()[3] - na.h / 2
@@ -199,6 +201,15 @@ def _in(a: Node, b: Node, L: Layout) -> None:
         a.cy = tip[1] - math.cos(math.radians(tilt)) * a.h / 2
         return
     a.cx, a.cy, a.rot = b.cx, floor - a.h / 2, 0.0
+
+
+def _inside(a: Node, b: Node) -> None:
+    """A shape inside a shape (M0, "a square inside C3"): centred on b's centre anchor, scaled to fit (≤ 0.7 of b; a
+    square stays clear inside a circle at 0.6; inside a triangle, its incircle)."""
+    room = 0.6 if b.kind == "circle" else 0.42 if b.kind == "triangle" else 0.7
+    s = min(1.0, room * b.w / a.w, room * b.h / a.h)
+    a.w, a.h, a.rot = a.w * s, a.h * s, 0.0
+    a.cx, a.cy = b.anchor("centre")
 
 
 def _hang(a: Node, b: Node, i: int, L: Layout) -> None:
@@ -606,7 +617,7 @@ def place_labels(L: Layout, nogo: list[list[float]]) -> None:
         pref = (P.kind(n.kind) or {}).get("label", "right")
         x0, y0, x1, y1 = n.box()
         cands: list[tuple[float, float]] = []
-        if pref == "inside" and n.kind in ("circle", "square", "triangle", "rectangle", "unknown", "liquid"):
+        if pref == "inside" and n.kind in ("circle", "square", "triangle", "rectangle", "pentagon", "hexagon", "unknown", "liquid"):
             cands.append((n.cx, n.cy + (n.h * 0.12 if n.kind == "triangle" else 0)))
         sides = {"right": (x1 + 14 + lw / 2, n.cy), "left": (x0 - 14 - lw / 2, n.cy), "below": (n.cx, y1 + 12 + lh / 2),
                  "above": (n.cx, y0 - 12 - lh / 2)}
@@ -617,7 +628,7 @@ def place_labels(L: Layout, nogo: list[list[float]]) -> None:
             r = max(n.w, n.h) / 2 + 30 + ring * 46
             for a in range(0, 360, 30):
                 cands.append((n.cx + (r + lw / 2) * math.cos(math.radians(a)), n.cy + r * math.sin(math.radians(a))))
-        inner = len(cands) and pref == "inside" and n.kind in ("circle", "square", "triangle", "rectangle", "unknown",
+        inner = len(cands) and pref == "inside" and n.kind in ("circle", "square", "triangle", "rectangle", "pentagon", "hexagon", "unknown",
                                                               "liquid")
         obs_in = obstacles(L, _ancestors(L, n))   # inside its own part (and a liquid inside its container)
         obs = obstacles(L, {n.id})

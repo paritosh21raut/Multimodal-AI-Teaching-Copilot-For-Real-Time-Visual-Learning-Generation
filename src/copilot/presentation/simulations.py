@@ -79,7 +79,7 @@ class SimMode:
     kind: str = "simulation"           # F-015: "scene" (a live scene runs in the same mode: one at a time)
     imagine: bool = False              # F-016 Imagine Mode: only the teacher's End (or Back to slides) ends it
     lines: int = 0                     # F-017: teacher lines the stage heard (a one-line stage makes no recap)
-    carried: int = 0                   # F-017: recap pieces carried in from the stages before it (first in collected)
+    picture: frozenset = frozenset()   # M0: the words of what its diagram draws (a bullet only of these: no recap)
 
 
 @dataclass
@@ -120,9 +120,8 @@ class SimulationController:
     setups: dict[tuple[str, str], int] = field(default_factory=dict)  # (topic, template) -> setups heard, none open
     suggestion: Optional[Suggestion] = None
     ended: Optional[Ended] = None
-    carry: Optional[tuple[list[str], list[Piece]]] = None          # F-017: (names, pieces) of stages that ended into
-    #                                                                the next stage: one recap for the run of scenes
     shown: int = 0                                                 # simulation slides made in this lecture
+    past: list[str] = field(default_factory=list)                  # M0: the scenes ended before (their names)
     stepped: dict[str, float] = field(default_factory=dict)        # S3: block id -> lecture time of the last step word
     #                                                                (or Next / Prev, or the show): the auto-cycle waits
 
@@ -395,14 +394,6 @@ class SimulationController:
         frame = self._topic_frame()
         self.mode = SimMode(block_id, "", key, frame, e._working_id,
                             e._seg_order.get(cue_segment, e._seg_n + 1), e.now(), [title], origin=origin, kind=kind)
-        if self.carry is not None:
-            if kind == "stage":  # the scenes before it recap together at the end (test34: 4 one-bullet "Recap: Girl")
-                names, pieces, seq = self.carry
-                self.mode.start_seq = min(seq, self.mode.start_seq)
-                self.mode.names = names + self.mode.names
-                self.mode.collected = list(pieces)
-                self.mode.carried = len(pieces)
-            self.carry = None
         return self.mode
 
     async def place(self, mode: SimMode, block: Any, title: str, reason: str) -> SlideSpec:
@@ -467,19 +458,13 @@ class SimulationController:
             return []
         e = self.e
         await e.deck.set_sim_mode(None)
-        if m.kind == "stage" and reason == "another stage was started":
-            # F-017 E3b: a run of stages makes one recap at its end (a stage of one line adds no piece of its own)
-            self.carry = (m.names[-6:], m.collected if m.lines > 1 else m.collected[:m.carried], m.start_seq)
-            log.info("[SIM] stage ended into the next stage: its recap waits (%d piece(s))", len(self.carry[1]))
-            e._working_id = m.before_id if e._spec(m.before_id) is not None else None
-            self.ended = None
-            await e.bus.publish(SimulationModeChanged(on=False, slide_id=m.slide_id, template=m.template,
-                                                      reason=reason, recap_ids=[], kept=0, dropped=0))
-            return []
-        kept, dropped = recap_pieces(m.collected if m.kind != "stage" or m.lines > 1
-                                     else m.collected[:m.carried])
+        # F-019 M0 (test36: one recap of 12 scenes): each scene recaps only its own lines, titled by it; a stage of
+        # one line makes no recap (test34: "Recap: Girl" with one bullet)
+        kept, dropped = recap_pieces(m.collected if m.kind != "stage" or m.lines > 1 else [],
+                                     foreign=_things(self.past[-8:]) - _things(m.names), picture=m.picture)
+        self.past = (self.past + m.names[-1:])[-8:]
         ids: list[str] = []
-        name = _recap_name(m.names) if m.kind == "stage" else m.names[-1] if m.names else "Simulation"
+        name = m.names[-1] if m.names else "Simulation"
         last: Optional[str] = None
         if kept:
             frame = Frame(m.frame.topic, RECAP_PREFIX + name)
@@ -712,11 +697,23 @@ def next_playback(kind: str, pb: Playback, t_now: float, args: dict) -> Optional
     return pb.model_copy(update={**update, "rev": pb.rev + 1}) if update is not None else None
 
 
-def _recap_name(names: list[str]) -> str:
-    """A run of stages recaps under its scenes' names ("Man pushing a box · Girl throwing a ball"), at most three."""
-    seen = list(dict.fromkeys(n for n in names if n))
-    out = " · ".join(seen[-3:]) if seen else "Stage"
-    return out if len(out) <= 60 else seen[-1][:60]
+_NOT_THINGS = {"imagine", "recap", "simulation", "stage", "diagram", "with", "your", "you", "moving",
+               "riding", "pushing", "pulling", "throwing", "sitting", "standing", "jumping", "another", "mode",
+               # concept words: shared by many scenes, never another scene's own thing
+               "friction", "force", "forces", "gravity", "motion", "energy", "speed", "velocity", "mass", "weight",
+               "plane", "inclined", "incline", "slope", "surface", "floor", "ground", "rough", "smooth", "field",
+               "electric", "magnetic", "charge", "current", "atom", "circle", "square", "triangle", "solution",
+               "water", "acid", "base", "light", "heat", "wave", "pressure", "spring", "process", "cycle"}
+
+
+def _things(names: list[str]) -> set[str]:
+    """The things a scene's title names (\"Riding a horse\" -> horse), for keeping them out of another scene's recap."""
+    out = set()
+    for n in names:
+        for w in re.findall(r"[a-z]{4,}", n.lower()):
+            if w not in _NOT_THINGS:
+                out.add(w[:-1] if w.endswith("s") and not w.endswith("ss") else w)
+    return out
 
 
 def _num(v: Any) -> Optional[float]:

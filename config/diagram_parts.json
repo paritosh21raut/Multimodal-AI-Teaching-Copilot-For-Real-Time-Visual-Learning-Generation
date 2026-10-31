@@ -24,6 +24,8 @@
     "circle":     {"domain": "shape", "words": ["circle"], "w": 300, "h": 300, "anchors": {"centre": [0.5, 0.5], "bottom": [0.5, 1]}, "label": "inside"},
     "square":     {"domain": "shape", "words": ["square"], "w": 280, "h": 280, "anchors": {"centre": [0.5, 0.5], "bottom": [0.5, 1]}, "label": "inside"},
     "triangle":   {"domain": "shape", "words": ["triangle"], "w": 320, "h": 280, "anchors": {"centre": [0.5, 0.62], "bottom": [0.5, 1]}, "label": "inside"},
+    "pentagon":   {"domain": "shape", "words": ["pentagon"], "w": 300, "h": 286, "anchors": {"centre": [0.5, 0.55], "bottom": [0.5, 1]}, "label": "inside"},
+    "hexagon":    {"domain": "shape", "words": ["hexagon"], "w": 320, "h": 278, "anchors": {"centre": [0.5, 0.5], "bottom": [0.5, 1]}, "label": "inside"},
     "rectangle":  {"domain": "shape", "words": ["rectangle"], "w": 400, "h": 240, "anchors": {"centre": [0.5, 0.5], "bottom": [0.5, 1]}, "label": "inside"},
     "bar_magnet": {"domain": "field", "words": ["bar magnet", "magnet"], "w": 440, "h": 104, "anchors": {"left": [0.0, 0.5], "right": [1.0, 0.5], "bottom": [0.5, 1]}, "label": "below"},
     "compass":    {"domain": "field", "words": ["compass", "plotting compass", "compass needle"], "w": 92, "h": 92, "anchors": {"centre": [0.5, 0.5]}, "label": "below"},

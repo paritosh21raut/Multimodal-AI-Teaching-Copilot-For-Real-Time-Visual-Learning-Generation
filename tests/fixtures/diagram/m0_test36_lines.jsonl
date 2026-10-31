@@ -1,0 +1,108 @@
+{"about": "F-019 M0: the test36 live run (25 min) as Whisper gave the lines, in order, junk kept (verify_results/test36/transcript.txt). diagram/stage = new slide or the open one; kinds / labels / count (exact) / inside [kind, host label] of the open diagram after the line; 0 tokens (fast paths only). slides: the 28 stage/diagram slides in order (test36 had 45 slides; stage titles are the parked stage's own, e.g. the horse lines retitle 'Planes').", "slides": ["Box on an inclined plane", "Three circles C1, C2, C3", "Square", "Hcl", "Throwing a ball", "Car moving", "Student", "Throwing a ball", "You jumping", "Riding a bicycle", "Box with a spring", "Ball rolling", "Solar system", "You", "You standing", "Sitting on a chair", "Pulling a rope", "Moon", "Pushing a box", "Pushing a car", "You", "Riding a horse", "Rain", "Football", "Box on a box", "Box on a surface", "Sodium atom", "Oxygen atom"]}
+{"n": 1, "t": 1.1, "say": "Imagine a box on an inclined plane.", "facts": {"diagram": "new", "kinds": ["block", "incline"]}}
+{"n": 2, "t": 5.9, "say": "And we apply a weight of the box in the 5K GING."}
+{"n": 3, "t": 13.0, "say": "The weight of the box is 5kg.", "facts": {"diagram": "same", "kinds": ["block", "incline"]}}
+{"n": 4, "t": 20.0, "say": "If the weight of the box is 5 kg.", "facts": {"diagram": "same", "kinds": ["block", "incline"]}}
+{"n": 5, "t": 32.6, "say": "If you apply a pushing force of 5N."}
+{"n": 6, "t": 43.1, "say": "If the coefficient of friction is 0.3."}
+{"n": 7, "t": 56.1, "say": "Imagine two circles, C1 and C2.", "facts": {"diagram": "new", "kinds": ["circle"], "labels": ["C1", "C2"]}}
+{"n": 8, "t": 60.9, "say": "If the radius of C1 is 5 cm and radius of C2 is 10 cm."}
+{"n": 9, "t": 72.0, "say": "Imagine another circle of C3.", "facts": {"diagram": "same", "labels": ["C1", "C2", "C3"], "count": {"circle": 3}}}
+{"n": 10, "t": 79.6, "say": "Imagine three circles C1, C2 and C3.", "facts": {"diagram": "same", "labels": ["C1", "C2", "C3"], "count": {"circle": 3}}}
+{"n": 11, "t": 87.3, "say": "If a square was inside C3.", "facts": {"diagram": "same", "kinds": ["square"], "inside": ["square", "C3"]}}
+{"n": 12, "t": 94.5, "say": "If this square is inside C3.", "facts": {"diagram": "same", "count": {"square": 1}, "inside": ["square", "C3"]}}
+{"n": 13, "t": 105.1, "say": "Imagine a square.", "facts": {"diagram": "new", "kinds": ["square"], "count": {"square": 1, "circle": 0}}}
+{"n": 14, "t": 108.0, "say": "A triangle is added to stop.", "facts": {"diagram": "same", "kinds": ["square", "triangle"]}}
+{"n": 15, "t": 117.7, "say": "Imagine a bicol with HCL.", "facts": {"diagram": "new", "kinds": ["beaker", "liquid"]}}
+{"n": 16, "t": 124.8, "say": "And you pour water into it slowly while stirring it."}
+{"n": 17, "t": 136.3, "say": "You will see HCl getting dissociated into H plus and Cl minus ions."}
+{"n": 18, "t": 154.8, "say": "Imagine you throw a ball in the air."}
+{"n": 19, "t": 161.3, "say": "with the speed of 3mps. second."}
+{"n": 20, "t": 170.8, "say": "if you throw the ball with a speed of 10 mps. second."}
+{"n": 21, "t": 181.1, "say": "if you throw the ball at the speed of 10 meter per second."}
+{"n": 22, "t": 212.4, "say": "Imagine a car moving at a speed of 50 kmph."}
+{"n": 23, "t": 219.9, "say": "Imagine the car moving at 50 kmph."}
+{"n": 24, "t": 226.5, "say": "Imager, another car moving at a speed of 60 kmph."}
+{"n": 25, "t": 357.9, "say": "Imagine a cuboid."}
+{"n": 26, "t": 371.0, "say": "Imagine a cube."}
+{"n": 27, "t": 376.5, "say": "Inside the cube you have a ball."}
+{"n": 28, "t": 387.8, "say": "Imagine two balls colliding."}
+{"n": 29, "t": 416.4, "say": "Imagine you are teaching students.", "facts": {"stage": "new"}}
+{"n": 30, "t": 420.4, "say": "you, student."}
+{"n": 31, "t": 422.8, "say": "Imagine you are in a classroom teaching students. questions. This is a production of University of Michigan.", "facts": {"stage": "same"}}
+{"n": 32, "t": 444.2, "say": "Imagine you hit a ball with a cricket bat."}
+{"n": 33, "t": 452.6, "say": "you, throw. you, hit the ball with a cricket bat."}
+{"n": 34, "t": 514.9, "say": "Imagine you jump on moon.", "facts": {"stage": "new"}}
+{"n": 35, "t": 521.2, "say": "Imagine you jump on the moon.", "facts": {"stage": "same"}}
+{"n": 36, "t": 524.1, "say": "on the moon."}
+{"n": 37, "t": 529.0, "say": "Imagine you jump on the surface of the moon.", "facts": {"stage": "same"}}
+{"n": 38, "t": 537.4, "say": "Imagine you jump on the surface of the moon.", "facts": {"stage": "same"}}
+{"n": 39, "t": 546.1, "say": "Imagine you are riding a bicycle."}
+{"n": 40, "t": 553.6, "say": "Imagine you are riding a bicycle."}
+{"n": 41, "t": 571.1, "say": "Imagine a box attached to a spring."}
+{"n": 42, "t": 579.5, "say": "If the weight of the box is 5 kg,"}
+{"n": 43, "t": 582.7, "say": "Index spring coefficient is"}
+{"n": 44, "t": 599.9, "say": "Imagine a ball rolling on a inclined plane."}
+{"n": 45, "t": 609.6, "say": "Imagine a ball rolling on an inclined plane."}
+{"n": 46, "t": 680.3, "say": "Inclined Plane."}
+{"n": 47, "t": 719.2, "say": "Imagine a solar system."}
+{"n": 48, "t": 725.5, "say": "If we look at the"}
+{"n": 49, "t": 727.2, "say": "The Planet Jupiter"}
+{"n": 50, "t": 732.2, "say": "If you look at the planet's repeaters,"}
+{"n": 51, "t": 743.6, "say": "Imagine an electric field."}
+{"n": 52, "t": 754.1, "say": "You bring a unit positive charge near it."}
+{"n": 53, "t": 764.7, "say": "Imagine an electric field and you bring a unit positive charge near it."}
+{"n": 54, "t": 873.5, "say": "Imagine you stand on a table."}
+{"n": 55, "t": 880.4, "say": "Imagine you stand on the table."}
+{"n": 56, "t": 888.0, "say": "Imagine you're sitting on a chair."}
+{"n": 57, "t": 893.1, "say": "Imagine you are sitting on a chair."}
+{"n": 58, "t": 911.1, "say": "Imagine a rope attached to a wall and you are pulling it."}
+{"n": 59, "t": 920.1, "say": "You are pulling the rope."}
+{"n": 60, "t": 945.4, "say": "Imagine you're flying a rocket to the moon."}
+{"n": 61, "t": 951.8, "say": "Imagine you are flying a rocket to the moon."}
+{"n": 62, "t": 1020.7, "say": "That's it."}
+{"n": 63, "t": 1033.4, "say": "Imagine you are pushing a box."}
+{"n": 64, "t": 1040.3, "say": "imagine you're pushing a box Thanks."}
+{"n": 65, "t": 1042.7, "say": "Thanks."}
+{"n": 66, "t": 1048.5, "say": "imagine you're pushing a car"}
+{"n": 67, "t": 1059.8, "say": "Imagine you're flying in a helicopter.", "facts": {"stage": "new"}}
+{"n": 68, "t": 1066.6, "say": "Imagine you are flying in a helicopter.", "facts": {"stage": "same"}}
+{"n": 69, "t": 1087.0, "say": "Imagine two planes colliding."}
+{"n": 70, "t": 1094.8, "say": "Imagine two planes hitting each other. to be."}
+{"n": 71, "t": 1147.1, "say": "Imagine you're riding a horse."}
+{"n": 72, "t": 1152.8, "say": "Imagine you are riding a horse."}
+{"n": 73, "t": 1157.5, "say": "Imagine you are riding a horse."}
+{"n": 74, "t": 1164.8, "say": "Imagine you are running in the rain."}
+{"n": 75, "t": 1173.4, "say": "I shouldn't have done that."}
+{"n": 76, "t": 1176.1, "say": "Imagine you are running in the rain."}
+{"n": 77, "t": 1184.8, "say": "with an umbrella in your hand."}
+{"n": 78, "t": 1190.3, "say": "with an umbrella in you and You"}
+{"n": 79, "t": 1225.8, "say": "Hey, hey."}
+{"n": 80, "t": 1228.7, "say": "What's up..."}
+{"n": 81, "t": 1230.3, "say": "It's a good one. them."}
+{"n": 82, "t": 1234.2, "say": "We're going to the lab."}
+{"n": 83, "t": 1238.7, "say": "I didn't see that."}
+{"n": 84, "t": 1242.5, "say": "But even more, Thomas."}
+{"n": 85, "t": 1246.8, "say": "Thank you very much."}
+{"n": 86, "t": 1248.4, "say": "You hear something. them."}
+{"n": 87, "t": 1250.1, "say": "Ready."}
+{"n": 88, "t": 1252.2, "say": "Imagine you are playing football. one."}
+{"n": 89, "t": 1257.3, "say": "Sorry."}
+{"n": 90, "t": 1259.2, "say": "Imagine you are playing football."}
+{"n": 91, "t": 1264.1, "say": "Imagine you are thinking boom."}
+{"n": 92, "t": 1304.4, "say": "Imagine a box on top of another box.", "facts": {"diagram": "new", "kinds": ["block"], "count": {"block": 2}}}
+{"n": 93, "t": 1312.9, "say": "Imagine a box placed on a plane surface."}
+{"n": 94, "t": 1324.1, "say": "Imagine a box placed on a surface."}
+{"n": 95, "t": 1333.3, "say": "Another box is placed on top of the box.", "facts": {"diagram": "same", "count": {"block": 2}}}
+{"n": 96, "t": 1338.8, "say": "Keep it secret."}
+{"n": 97, "t": 1346.2, "say": "Another block is placed on the box."}
+{"n": 98, "t": 1403.1, "say": "Um..."}
+{"n": 99, "t": 1408.9, "say": "Imagine a laptop of sodium.", "facts": {"diagram": "new", "kinds": ["atom"], "count": {"atom": 1}}}
+{"n": 100, "t": 1416.6, "say": "Imagine an atom of sodium.", "facts": {"diagram": "same", "count": {"atom": 1}}}
+{"n": 101, "t": 1424.6, "say": "Imagine an atom of", "facts": {"diagram": "same", "count": {"atom": 1}}}
+{"n": 102, "t": 1426.8, "say": "Cool."}
+{"n": 103, "t": 1430.1, "say": "Imagine a atom of Oxygen.", "facts": {"diagram": "new", "kinds": ["atom"], "count": {"atom": 1}}}
+{"n": 104, "t": 1436.5, "say": "If you look at the properties of electron"}
+{"n": 105, "t": 1442.7, "say": "If you look at its nucleus,"}
+{"n": 106, "t": 1449.1, "say": "It has 8 protons and 8 neutrons."}
+{"n": 107, "t": 1465.4, "say": "It has two shells."}

@@ -1,0 +1,10 @@
+[    0.8] Imagine a box on an inclined plane.
+[    6.9] Imagine two circles C1 and C2.
+[   13.5] Imagine another circle C3.
+[   20.5] This even has a pentagon inside it.
+[   25.4] If C1 has the pentagon inside it.
+[   35.2] Perfect! Zagon is inside C3.
+[   41.7] Perfect! The gun is inside C3.
+[   48.6] Lip for the hexagon is inside C3.
+[   54.9] APO Hexagon is inside SC3.
+[   67.0] A square has 4 equal sides.

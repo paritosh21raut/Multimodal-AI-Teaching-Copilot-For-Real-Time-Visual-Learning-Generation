@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
 MAX_OPS = 16
 MAX_PARTS = 40
-RELS = ("on", "in", "hang_from", "orbit", "above", "attached_to", "beside")
+RELS = ("on", "in", "hang_from", "orbit", "above", "attached_to", "beside", "inside")
 VERBS = ("stir", "heat", "cool", "dissolve", "pour", "close", "open", "rotate", "orbit", "flow")
 SHOWS = ("field", "current", "voltage", "forces", "labels", "shells")
 SYMS = {"theta": "deg", "m": "kg", "k": "N/m", "V": "V", "R": "ohm"}  # K1: the givens a part can show

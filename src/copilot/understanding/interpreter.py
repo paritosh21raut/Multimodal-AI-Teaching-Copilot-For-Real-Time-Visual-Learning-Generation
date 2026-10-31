@@ -23,6 +23,7 @@ from copilot.core.textutil import approx_tokens, ends_sentence, normalise_spoken
 from copilot.llm.router import AllProvidersFailed, LLMRouter
 from copilot.understanding.gate import BufferedLine
 from copilot.understanding.grounding import enforce_grounding
+from copilot.understanding.numbers import guard_numbers
 from copilot.understanding.quality import cut_off, problem, strip_meta
 from copilot.understanding.prompt import BuiltPrompt, PromptBudgetError, build_prompt
 
@@ -827,6 +828,9 @@ class Interpreter:
                 return self._fallback(state, lines, f"invalid output after repair: {second}", t0,
                                       prompt.tokens, attempts)
 
+        it, renumbered = guard_numbers(it, [l.text for l in lines] + [state.slide_context or ""])
+        if renumbered:  # F-019 M0: numbers are sacred
+            log.warning("interpretation from %s: numbers kept as said: %s", res.entry, "; ".join(renumbered)[:300])
         it = _fill_empty_acts(_compare_from_cue(_examples_need_a_cue(_strip_meta_notes(it), lines), lines), lines)
         it = _comparison_direction(_drop_cut_off(it), lines)  # F-013 S3c (E2)
         it, changed = enforce_grounding(it, [l.text for l in lines])

@@ -1,0 +1,141 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (6.8 s)
+[INIT]  live speech model distil-small.en ready (2.0 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.4 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#3 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_5         openai/gpt-oss-120b           146k of 200k tokens IN USE
+        GROQ_API_KEY_6         openai/gpt-oss-120b           186k of 200k tokens ok
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~18.3 h
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 267 lecture minutes
+
+[READY] session 20261031-193240-8330
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+19:32:57 INFO    copilot.visuals.service: CLIP ready in 0.7 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    0.8s] Imagine a box on an inclined plane. (592 ms)
+19:33:16 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a box on an inclined plane.'
+19:33:16 INFO    copilot.presentation.simulations: [SIM] stage mode on: Box on an inclined plane on its own slide (cue)
+19:33:16 INFO    copilot.presentation.stage: [STAGE] diagram open: Box on an inclined plane (cue)
+19:33:16 INFO    copilot.presentation.stage: [STAGE] diagram f50d70889e3b: 3 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] add    'Box on an inclined plane' [simulation] v1 (1 items)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v2 (1 items)
+19:33:16 INFO    copilot.simulation.detector: [SIM] cue incline ('Imagine a') {}
+19:33:19 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Physics, Inclined Plane)
+  [UNDERSTAND] Physics > Inclined Plane (new_topic) acts=explanation hint=concept lines=1 via groq_main#5 1781 ms
+               Introduced a box on an inclined plane as a scenario
+19:33:19 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [    6.9s] Imagine two circles C1 and C2. (546 ms)
+19:33:22 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two circles C1 and C2.'
+19:33:22 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another stage was started): recap none (0 kept, 0 dropped as parameter talk)
+19:33:22 INFO    copilot.presentation.simulations: [SIM] stage mode on: Two circles C1 and C2 on its own slide (cue)
+19:33:22 INFO    copilot.presentation.stage: [STAGE] diagram open: Two circles C1 and C2 (cue)
+19:33:22 INFO    copilot.presentation.stage: [STAGE] diagram fbf383e44b66: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v3 (1 items)
+  [SLIDE] add    'Two circles C1 and C2' [simulation] v1 (1 items)
+  [SLIDE] update 'Two circles C1 and C2' [simulation] v2 (1 items)
+19:33:22 INFO    copilot.simulation.detector: [SIM] values - {}
+19:33:24 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: Physics, Inclined Plane, Circles)
+  [UNDERSTAND] Physics > Circles (sibling_concept) acts=explanation hint=concept lines=1 via groq_main#5 1398 ms
+               Introduced two circles labeled C1 and C2
+19:33:24 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   13.5s] Imagine another circle C3. (478 ms)
+19:33:29 INFO    copilot.scene.detector: [SCENE] cue 'Imagine another circle C3.'
+19:33:29 INFO    copilot.presentation.stage: [STAGE] diagram a0671eb7e1af: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Three circles C1, C2, C3' [simulation] v3 (1 items)
+19:33:29 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Circles (same_concept) acts=explanation hint=example lines=1 via groq_main#5 1329 ms
+               Introduced a third circle C3
+19:33:32 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   20.5s] This even has a pentagon inside it. (551 ms)
+19:33:35 INFO    copilot.scene.detector: [SCENE] edit 'This even has a pentagon inside it.'
+19:33:35 INFO    copilot.presentation.stage: [STAGE] diagram 12aad22bb1c2: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Three circles C1, C2, C3' [simulation] v4 (1 items)
+  [UNDERSTAND] Physics > Circles (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1176 ms
+               A pentagon is shown inside the circle
+19:33:37 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   25.4s] If C1 has the pentagon inside it. (566 ms)
+19:33:41 INFO    copilot.scene.detector: [SCENE] edit 'If C1 has the pentagon inside it.'
+19:33:41 INFO    copilot.presentation.stage: [STAGE] diagram a6484394a276: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Three circles C1, C2, C3' [simulation] v5 (1 items)
+19:33:41 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Circles (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 4013 ms
+               Teacher notes that circle C1 encloses the pentagon.
+19:33:45 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [   35.2s] Perfect! Zagon is inside C3. (536 ms)
+19:33:50 INFO    copilot.scene.detector: [SCENE] edit 'Perfect! Zagon is inside C3.'
+19:33:50 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'Perfect! Zagon is inside C3.'
+19:33:50 INFO    copilot.simulation.detector: [SIM] values - {}
+19:33:54 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Circles' -> same_concept
+  [UNDERSTAND] Physics > Circles (same_concept) acts=other hint=key_points lines=1 via groq_main#6 1834 ms
+               Zagon (likely a shape) is placed inside circle C3.
+  [HEARD] 'Zagon' -> 'Hexagon' corrected on the slide (0.5)
+19:33:54 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [   41.7s] Perfect! The gun is inside C3. (536 ms)
+19:33:57 INFO    copilot.scene.detector: [SCENE] edit 'Perfect! The gun is inside C3.'
+19:33:57 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'Perfect! The gun is inside C3.'
+19:33:57 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Circles (same_concept) acts=explanation hint=concept lines=1 via groq_main#5 4125 ms
+               The teacher notes that the gun is located inside circle C3.
+19:34:02 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (6 so far)
+  [   48.6s] Lip for the hexagon is inside C3. (674 ms)
+19:34:04 INFO    copilot.scene.detector: [SCENE] edit 'Lip for the hexagon is inside C3.'
+19:34:04 INFO    copilot.presentation.stage: [STAGE] diagram c7831f7dd751: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Three circles C1, C2, C3' [simulation] v6 (1 items)
+19:34:04 INFO    copilot.simulation.detector: [SIM] values - {}
+19:34:06 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Circles' -> same_concept
+  [UNDERSTAND] Physics > Circles (same_concept) acts=explanation hint=concept lines=1 via groq_main#6 1620 ms
+               Teacher notes that a hexagon is placed inside circle C3.
+19:34:06 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (7 so far)
+  [   54.9s] APO Hexagon is inside SC3. (530 ms)
+19:34:10 INFO    copilot.scene.detector: [SCENE] edit 'APO Hexagon is inside SC3.'
+19:34:10 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'APO Hexagon is inside SC3.'
+19:34:10 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Circles (same_concept) acts=explanation hint=key_points lines=1 via groq_main#6 1572 ms
+               Hexagon is placed inside circle C3
+  [HEARD] 'APO, SC3' -> '(none)' corrected on the slide (0.5)
+19:34:13 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (8 so far)
+  [   67.0s] A square has 4 equal sides. (625 ms)
+19:34:22 INFO    copilot.scene.detector: [SCENE] edit 'A square has 4 equal sides.'
+19:34:22 INFO    copilot.presentation.stage: [STAGE] diagram 3b31304d5eb2: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Three circles C1, C2, C3' [simulation] v7 (1 items)
+19:34:22 INFO    copilot.simulation.detector: [SIM] values - {}
+19:34:23 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Circles' -> same_concept
+19:34:23 INFO    copilot: [STT] vocabulary prompt: 34 terms (newest: Inclined Plane, Circles, Square)
+  [UNDERSTAND] Physics > Circles (same_concept) acts=definition hint=definition lines=1 via groq_main#5 1231 ms
+               Defined a square as having four equal sides
+19:34:23 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (9 so far)
+[END]   finishing lecture understanding (0 buffered lines) ...
+19:34:28 INFO    copilot.presentation.simulations: [SIM] simulation mode off (the lecture ended): recap 1 slide(s) (5 kept, 4 dropped as parameter talk)
+  [SLIDE] add    'Recap: Three circles C1, C2, C3' [key_points] v1 (5 items)
+[ENDED] session 20261031-193240-8330: 10 segments, 60 words, state v25, 172 events logged
+        CommandReceived=4, ConceptSignal=10, ConcernRaised=2, DeckState=7, InterpretRequested=10, InterpretationReady=10, LifecycleChanged=5, LiveCue=8, ModeChanged=1, RepresentationIntent=19, SimulationModeChanged=4, SimulationSettingChanged=1, SlideContextChanged=1, SlidePatch=11, StateChanged=25, TranscriptFinal=10, TranscriptPartial=31, UtteranceClassified=10, VocabularyChanged=3
+        stt: 10 published, 0 dropped, latency p50=551 ms p95=674 ms max=674 ms
+        understanding: 10 interpretations (10 by LLM, 0 fallbacks, 0 repaired), max 9 calls/min, prompt tokens max=1945 avg=1889, latency p50=1620 ms max=4125 ms
+        presentation: 3 slides; planner ops {'diagram_start': 2}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/3
+          1. [simulation] Box on an inclined plane  (v3, ['stage'])
+          2. [simulation] Three circles C1, C2, C3  (v7, ['stage'])
+          3. [key_points] Recap: Three circles C1, C2, C3  (v1, ['points', 'facts'])
+        providers: {'groq_main#5': 7, 'groq_main#6': 3}; triggers: {'pause': 10}; outline: ['Physics > Inclined Plane, Circles']; concerns: 2
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261031-193240-8330\session.sqlite

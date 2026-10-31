@@ -138,6 +138,9 @@ def check(op: Any, g: Graph, lines: list[str], trusted: bool = False, counts: Op
         b = g.parts[op.b]
         if op.rel == "in" and not P.kind(b.kind).get("container"):
             return f"{b.kind} holds nothing"
+        if op.rel == "inside" and not (P.kind(b.kind).get("domain") == P.kind(g.parts[op.a].kind).get("domain")
+                                       == "shape"):
+            return "only a shape goes inside a shape"
         if op.rel in ("hang_from", "attached_to") and "end" not in P.kind(b.kind)["anchors"]:
             return f"{b.kind} has no end to hang from"
         if op.rel == "orbit" and b.kind not in ("sun", "planet", "nucleus", "atom"):

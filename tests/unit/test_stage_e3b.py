@@ -183,21 +183,17 @@ async def test_unsure_ghosts_clear_after_a_while_and_an_empty_stage_closes():
         assert eng._stage.open is None and deck.sim_mode is None
 
 
-# ---- A1: one recap for a run of stages ------------------------------------------------------------------------------
-async def test_a_run_of_stages_makes_one_recap_and_a_one_line_stage_none():
+# ---- A1 (changed by F-019 M0: one recap per scene, test36): a one-line stage makes no recap ---------------------------
+async def test_a_one_line_stage_makes_no_recap_and_carries_nothing():
     bus, deck, eng, talk, replay, lines = await stage_lecture()
     sims = eng._sims
     await eng._stage.start(origin="cue", title="Ball")
     sims.mode.lines = 1
     sims.mode.collected = ["piece-a"]
     await eng._stage.start(origin="cue", title="Box")               # one line: its piece is not kept
-    assert sims.mode.collected == [] and sims.mode.names[:1] == ["Ball"]
-    sims.mode.lines = 3
-    sims.mode.collected = ["piece-b"]
-    await eng._stage.start(origin="cue", title="Elephant")
-    assert sims.mode.collected == ["piece-b"] and sims.mode.carried == 1
+    assert sims.mode.collected == [] and sims.mode.names == ["Box"]
     recaps = [s for s in deck.slides if s.title.startswith("Recap")]
-    assert recaps == []                                              # no recap between the stages
+    assert recaps == []
 
 
 # ---- E20, E22, E23 ---------------------------------------------------------------------------------------------------

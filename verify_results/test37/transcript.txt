@@ -1,0 +1,24 @@
+[    2.0] Imagine a box on an ink-like plane.
+[   13.2] Imagine a box on an inclined plane.
+[   25.3] Weight of the box is 5kg.
+[   36.7] The weight of the box is 5kg.
+[   45.7] Imagine two circles C1 and C2.
+[   52.6] Imagine another circle C3 on the same something.
+[   60.5] Imagine three circles C1, C2 and C3.
+[   72.3] Because square is inside C3.
+[   78.7] If a triangle is inside C2.
+[   84.5] Pentagon is outside Cleveland.
+[   90.1] It even is inside a pentagon.
+[   96.4] It even has Pentagon inside it.
+[  103.1] If a pentagon is inside, C1C.
+[  110.7] X3 has pentagon inside it.
+[  116.1] STM31 has pentagon inside it.
+[  121.3] If C1 has pentagon inside it.
+[  137.0] Imagine you jump on the moon.
+[  144.3] Imagine you jump on the surface of moon.
+[  153.3] Imagine a box placed on a surface.
+[  160.5] Another box is placed on top of the box.
+[  170.3] Imagine a laptop of sodium.
+[  178.3] Imagine an atom of sodium.
+[  183.1] Imagine an atom of oxygen.
+[  201.2] Imagine circles C3.

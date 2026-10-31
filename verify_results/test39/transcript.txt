@@ -1,0 +1,4 @@
+[    1.0] Imagine two circles C1 and C2.
+[    6.7] hexagon inside C2.
+[   13.3] A square has four equal sides.
+[   20.4] Imagine an atom of sodium.

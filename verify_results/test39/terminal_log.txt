@@ -1,0 +1,91 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (7.7 s)
+[INIT]  live speech model distil-small.en ready (2.3 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.7 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#3 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_5         openai/gpt-oss-120b           131k of 200k tokens IN USE
+        GROQ_API_KEY_6         openai/gpt-oss-120b           179k of 200k tokens ok
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~18.2 h
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 264 lecture minutes
+
+[READY] session 20261031-194031-3957
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+19:40:50 INFO    copilot.visuals.service: CLIP ready in 1.0 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    1.0s] Imagine two circles C1 and C2. (627 ms)
+19:41:14 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two circles C1 and C2.'
+19:41:14 INFO    copilot.presentation.simulations: [SIM] stage mode on: Two circles C1 and C2 on its own slide (cue)
+19:41:14 INFO    copilot.presentation.stage: [STAGE] diagram open: Two circles C1 and C2 (cue)
+19:41:14 INFO    copilot.presentation.stage: [STAGE] diagram 73bfe6c7adeb: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] add    'Two circles C1 and C2' [simulation] v1 (1 items)
+  [SLIDE] update 'Two circles C1 and C2' [simulation] v2 (1 items)
+19:41:14 INFO    copilot.simulation.detector: [SIM] values - {}
+19:41:17 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Geometry, Circles)
+  [UNDERSTAND] Geometry > Circles (new_topic) acts=explanation hint=concept lines=1 via groq_main#5 1680 ms
+               Teacher asks students to imagine two circles labeled C1 and C2.
+19:41:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [    6.7s] hexagon inside C2. (949 ms)
+19:41:20 INFO    copilot.scene.detector: [SCENE] edit 'hexagon inside C2.'
+19:41:20 INFO    copilot.presentation.stage: [STAGE] diagram ff5435c4095c: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two circles C1 and C2' [simulation] v3 (1 items)
+19:41:20 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Geometry > Circles (elaboration) acts=explanation hint=example lines=1 via groq_main#5 1173 ms
+               A hexagon is drawn inside circle C2.
+19:41:22 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   13.3s] A square has four equal sides. (604 ms)
+19:41:26 INFO    copilot.scene.detector: [SCENE] edit 'A square has four equal sides.'
+19:41:26 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'A square has four equal sides.'
+19:41:26 INFO    copilot.simulation.detector: [SIM] values - {}
+19:41:27 INFO    copilot: [STT] vocabulary prompt: 34 terms (newest: Circles, Squares, Square)
+  [UNDERSTAND] Geometry > Squares (sibling_concept) acts=definition hint=concept lines=1 via groq_main#5 898 ms
+               A square is defined as having four equal sides.
+19:41:27 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   20.4s] Imagine an atom of sodium. (608 ms)
+19:41:33 INFO    copilot.scene.detector: [SCENE] cue 'Imagine an atom of sodium.'
+19:41:33 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another stage was started): recap 1 slide(s) (1 kept, 2 dropped as parameter talk)
+19:41:33 INFO    copilot.presentation.simulations: [SIM] stage mode on: Sodium atom on its own slide (cue)
+19:41:33 INFO    copilot.presentation.stage: [STAGE] diagram open: Sodium atom (cue)
+19:41:33 INFO    copilot.presentation.stage: [STAGE] diagram 95c2603e68de: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two circles C1 and C2' [simulation] v4 (1 items)
+  [SLIDE] add    'Recap: Two circles C1 and C2' [key_points] v1 (1 items)
+  [SLIDE] add    'Sodium atom' [simulation] v1 (1 items)
+  [SLIDE] update 'Sodium atom' [simulation] v2 (1 items)
+19:41:33 INFO    copilot.simulation.detector: [SIM] values - {}
+19:41:36 INFO    copilot: [STT] vocabulary prompt: 36 terms (newest: Square, Chemistry, Sodium Atom)
+  [UNDERSTAND] Chemistry > Sodium Atom (new_topic) acts=transition hint=none lines=1 via groq_main#5 1741 ms
+               Teacher asks students to imagine an atom of sodium.
+19:41:36 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+[END]   finishing lecture understanding (0 buffered lines) ...
+19:41:40 INFO    copilot.presentation.simulations: [SIM] simulation mode off (the lecture ended): recap none (0 kept, 0 dropped as parameter talk)
+[ENDED] session 20261031-194031-3957: 4 segments, 20 words, state v13, 85 events logged
+        CommandReceived=4, ConceptSignal=4, DeckState=7, InterpretRequested=4, InterpretationReady=4, LifecycleChanged=5, LiveCue=2, ModeChanged=1, RepresentationIntent=8, SimulationModeChanged=4, SimulationSettingChanged=1, SlideContextChanged=1, SlidePatch=7, StateChanged=13, TranscriptFinal=4, TranscriptPartial=9, UtteranceClassified=4, VocabularyChanged=3
+        stt: 4 published, 0 dropped, latency p50=627 ms p95=949 ms max=949 ms
+        understanding: 4 interpretations (4 by LLM, 0 fallbacks, 0 repaired), max 4 calls/min, prompt tokens max=1878 avg=1851, latency p50=1680 ms max=1741 ms
+        presentation: 3 slides; planner ops {'diagram_start': 2}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/3
+          1. [simulation] Two circles C1 and C2  (v4, ['stage'])
+          2. [key_points] Recap: Two circles C1 and C2  (v1, ['points'])
+          3. [simulation] Sodium atom  (v2, ['stage'])
+        providers: {'groq_main#5': 4}; triggers: {'pause': 4}; outline: ['Geometry > Circles, Squares', 'Chemistry > Sodium Atom']; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261031-194031-3957\session.sqlite

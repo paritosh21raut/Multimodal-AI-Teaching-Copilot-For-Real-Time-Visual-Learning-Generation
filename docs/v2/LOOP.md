@@ -41,7 +41,7 @@ the plan, say so and propose a new card instead. Then either a **short re-test**
 Phase B with a 3–6-line script) or close. Max 2 fix rounds per card; after that the leftovers go to the next card.
 
 ## Phase E — close
-Card Result (≤ 1 KB), `STATE.md` (≤ 3 KB, names the next card), roadmap row status, the commit command
+Card Result (≤ 1 KB), `STATE.md` (≤ 3 KB, names the next card), roadmap row status, then Claude runs the commit + push itself (user, 2026-10-31)
 (`git add -A && git commit -m "<type>: <msg>" && git push origin V2-Concept-Simulation`), and the line:
 **"Start a new session and type `next`."**
 

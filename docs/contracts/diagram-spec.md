@@ -44,6 +44,7 @@ Python from two poles, N → S outside the bar.
 | `above` | a above b (a pourer: tilted over b, its stream ends on b's liquid surface) |
 | `attached_to` | as `hang_from` |
 | `beside` | the grid order |
+| `inside` | shapes only (M0): a centred on b's centre anchor, scaled to fit (≤ 0.7 of b; a square in a circle 0.6) |
 Then the free parts go in a row (grid); the whole fits the slide under the title (1600 × 1000 units, y down, the
 title box is a no-go zone); labels are placed last, each box clear of every part box and every other label.
 

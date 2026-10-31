@@ -9,8 +9,8 @@ speaks it → Claude evaluates `verify_results/testN` → fix → next card; the
 |---|---|---|---|---|
 | E0–E3b | F-017 cards (`E1`…`E3b`) | 2D stage: renderer, core, live language, test34 fixes | — | done; people stage now **parked** |
 | K1 | `K1-diagram-core.md` | composed concept diagrams: parts, on / in / hang / orbit, routing, player | sheet D1–D5, D9, D10 | done (sheet built; live test36: pictures right, values dropped) |
-| **M0** | `M0-trust-and-continuity.md` | numbers never changed, recap scope, repeat = same slide, continue the open diagram (another / inside), mishear routing | sheet + live test | **next** |
-| M1 | `M1-contact-mechanics.md` | `qty` op (values said later attach), solver framework, contact-mechanics solver (incline, stacked blocks, push, friction regimes, pulley, spring), force arrows + values panel + motion | sheet + live test | planned |
+| **M0** | `M0-trust-and-continuity.md` | numbers never changed, recap scope, repeat = same slide, continue the open diagram (another / inside), mishear routing | sheet + live test | **done** (test37–39) |
+| M1 | `M1-contact-mechanics.md` | `qty` op (values said later attach), solver framework, contact-mechanics solver (incline, stacked blocks, push, friction regimes, pulley, spring), force arrows + values panel + motion | sheet + live test | **next** |
 | M2 | `M2-M5-outline.md` §M2 | look + motion polish, free-body toggle, value-change morph | sheet + live test | outline |
 | M3 | §M3 | Groq scene extraction (closed vocabulary, validated), paraphrase set | ≥ 90 % paraphrase replay + live test | outline |
 | M4 | §M4 | 10-min live mechanics lecture, latency budget | live run all must-pass yes | outline |

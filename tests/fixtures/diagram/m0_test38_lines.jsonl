@@ -1,0 +1,11 @@
+{"about": "F-019 M0 fix round 2: the test38 re-test as Whisper gave it (the user spoke only the script: every other wording is STT). 'A hexagon is outside C3' was heard as 'inside SC3' 4 times: drawn inside, as heard.", "slides": ["Box on an inclined plane", "Three circles C1, C2, C3"]}
+{"n": 1, "t": 0.8, "say": "Imagine a box on an inclined plane.", "facts": {"diagram": "new", "kinds": ["block", "incline"]}}
+{"n": 2, "t": 6.9, "say": "Imagine two circles C1 and C2.", "facts": {"diagram": "new", "labels": ["C1", "C2"]}}
+{"n": 3, "t": 13.5, "say": "Imagine another circle C3.", "facts": {"diagram": "same", "count": {"circle": 3}}}
+{"n": 4, "t": 20.5, "say": "This even has a pentagon inside it."}
+{"n": 5, "t": 25.4, "say": "If C1 has the pentagon inside it.", "facts": {"diagram": "same", "inside": ["pentagon", "C1"], "count": {"pentagon": 1}}}
+{"n": 6, "t": 35.2, "say": "Perfect! Zagon is inside C3."}
+{"n": 7, "t": 41.7, "say": "Perfect! The gun is inside C3."}
+{"n": 8, "t": 48.6, "say": "Lip for the hexagon is inside C3."}
+{"n": 9, "t": 54.9, "say": "APO Hexagon is inside SC3.", "facts": {"diagram": "same", "inside": ["hexagon", "C3"], "count": {"hexagon": 1}}}
+{"n": 10, "t": 67.0, "say": "A square has 4 equal sides.", "facts": {"diagram": "same", "count": {"square": 0, "circle": 3}}}

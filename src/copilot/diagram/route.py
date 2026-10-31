@@ -13,7 +13,7 @@ from typing import Optional
 
 from copilot.diagram import fastpath
 
-SHAPES = {"circle", "square", "triangle", "rectangle"}
+SHAPES = {"circle", "square", "triangle", "rectangle", "pentagon", "hexagon"}
 _MEASURE = re.compile(r"\b(?:radius|radii|diameter|side|sides|length|area|perimeter|circumference|chord|tangent|"
                       r"diagonal|angle\s+[A-Z]{2,3}|cm|centimet\w*|met(?:er|re)s?|inch\w*)\b|\d", re.IGNORECASE)
 _YOU_ACT = re.compile(r"\b(?:you|yourself)(?:'re|\s+are|\s+were|\s+)?\s*(?:\w+ly\s+)?(?:riding|ride|driving|drive|"
