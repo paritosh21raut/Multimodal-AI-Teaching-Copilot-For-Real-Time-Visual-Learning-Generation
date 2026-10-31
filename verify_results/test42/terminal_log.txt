@@ -1,0 +1,246 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (7.7 s)
+[INIT]  live speech model distil-small.en ready (1.8 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#3 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_5         openai/gpt-oss-120b            66k of 200k tokens IN USE
+        GROQ_API_KEY_6         openai/gpt-oss-120b           166k of 200k tokens ok
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~14.2 h
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 254 lecture minutes
+
+[READY] session 20261031-234143-f10d
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+23:41:59 INFO    copilot.visuals.service: CLIP ready in 0.9 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    3.3s] Imagine two blocks on top of the other on the floor. (765 ms)
+23:42:14 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two blocks on top of the other on the floor.'
+23:42:14 INFO    copilot.presentation.simulations: [SIM] stage mode on: Two blocks and floor on its own slide (cue)
+23:42:14 INFO    copilot.presentation.stage: [STAGE] diagram open: Two blocks and floor (cue)
+23:42:14 INFO    copilot.presentation.stage: [STAGE] diagram 7bc3bff7b42f: 3 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] add    'Two blocks and floor' [simulation] v1 (1 items)
+  [SLIDE] update 'Two blocks and floor' [simulation] v2 (1 items)
+23:42:14 INFO    copilot.simulation.detector: [SIM] values - {}
+23:42:16 WARNING copilot.understanding.interpreter: interpretation from groq_main#5 invalid (schema: [{'type': 'literal_error', 'loc': ('relation',), 'msg': "Input should be 'same_concept', 'elaboration', 'sub_concept', 'sibling_concept', 'new_topic' or 'digression'", 'input': 'new_concept', 'ctx': {'expected': "'same_concept', 'elaboration', 'sub_concept', 'sibling_concept', 'new_topic' or 'digression'"}}]); one repair attempt
+23:42:17 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Physics, Contact Forces)
+  [UNDERSTAND] Physics > Contact Forces (new_topic) acts=explanation hint=example lines=1 via groq_main#5 2685 ms
+               Teacher asks students to picture two stacked blocks on the floor
+23:42:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   12.9s] Imagine two blocks, one on top of the other on the floor. (486 ms)
+23:42:21 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two blocks, one on top of the other on the floor.'
+23:42:21 INFO    copilot.presentation.stage: [STAGE] diagram 139469c4342e: 4 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v3 (1 items)
+23:42:21 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Contact Forces (same_concept) acts=explanation hint=example lines=1 via groq_main#5 3256 ms
+               Teacher asks students to picture two stacked blocks on the floor
+23:42:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   21.5s] The top block is 2kg and the bottom block is 3kg. (497 ms)
+23:42:29 INFO    copilot.scene.detector: [SCENE] edit 'The top block is 2kg and the bottom block is 3kg.'
+23:42:29 INFO    copilot.presentation.stage: [STAGE] diagram e9ca62fff406: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v4 (1 items)
+23:42:29 INFO    copilot.simulation.detector: [SIM] values - {'mass': '2kg', 'mass#1': '3kg'}
+  [UNDERSTAND] Physics > Contact Forces (same_concept) acts=other hint=key_points lines=1 via groq_main#5 1061 ms
+               The teacher states the masses of the two stacked blocks: 2 kg for the top and 3 kg for the bottom.
+23:42:30 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   35.0s] Perf friction between the blocks is 0.4 and the floor is frictionless. (581 ms)
+23:42:44 INFO    copilot.scene.detector: [SCENE] edit 'Perf friction between the blocks is 0.4 and the floor is frictionless.'
+23:42:44 INFO    copilot.presentation.stage: [STAGE] diagram e86526fd5605: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v5 (1 items)
+23:42:44 INFO    copilot.simulation.detector: [SIM] values - {'mu': 'frictionless'}
+23:42:45 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: Physics, Contact Forces, Coefficient of friction)
+  [UNDERSTAND] Physics > Contact Forces (elaboration) acts=definition hint=definition lines=1 via groq_main#5 1250 ms
+               Introduced the coefficient of friction: 0.4 between blocks, floor frictionless.
+23:42:45 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [   48.1s] Let's draw the free body diagram of the bottom block. (492 ms)
+23:42:55 INFO    copilot.scene.detector: [SCENE] edit "Let's draw the free body diagram of the bottom block."
+23:42:55 INFO    copilot.presentation.stage: [SIM] free-body view: block3
+  [SLIDE] update 'Two blocks and floor' [simulation] v6 (1 items)
+23:42:55 INFO    copilot.understanding.service: [CUE] figure 'Bottom block free body diagram'
+23:42:55 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Contact Forces (same_concept) acts=transition hint=none lines=1 via groq_main#5 4714 ms
+               Teacher prompts drawing the free‑body diagram of the bottom block
+23:43:00 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (4 so far)
+  [   52.2s] N equals 19.6 down and F dash equals 7.84 left. (515 ms)
+23:43:02 INFO    copilot.scene.detector: [SCENE] edit 'N equals 19.6 down and F dash equals 7.84 left.'
+23:43:02 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'N equals 19.6 down and F dash equals 7.84 left.'
+23:43:02 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Contact Forces (same_concept) acts=other hint=key_points lines=1 via groq_main#6 1434 ms
+               Normal force is 19.6 N down and friction force is 7.84 N left on the bottom block.
+23:43:04 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [   66.3s] Now the freeboard diagram of both blocks. (575 ms)
+23:43:13 INFO    copilot.scene.detector: [SCENE] edit 'Now the freeboard diagram of both blocks.'
+23:43:13 INFO    copilot.presentation.stage: [STAGE] diagram 1882df58a955: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v7 (1 items)
+  [UNDERSTAND] Physics > Contact Forces (elaboration) acts=transition hint=none lines=1 via groq_main#5 3916 ms
+               Teacher introduces the free‑body diagram for both stacked blocks
+23:43:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (5 so far)
+  [   74.5s] Now the free body diagram of both blocks. (451 ms)
+23:43:21 INFO    copilot.scene.detector: [SCENE] edit 'Now the free body diagram of both blocks.'
+23:43:21 INFO    copilot.presentation.stage: [SIM] free-body view: all
+23:43:21 INFO    copilot.presentation.stage: [STAGE] diagram fbe468a32509: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v8 (1 items)
+  [SLIDE] update 'Two blocks and floor' [simulation] v9 (1 items)
+23:43:21 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Contact Forces (same_concept) acts=explanation hint=none lines=1 via groq_main#6 1338 ms
+               Introduced the free‑body diagram for the combined two‑block system
+23:43:23 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (6 so far)
+  [   83.2s] Change the mass of the top block to 4 kg. (606 ms)
+23:43:30 INFO    copilot.scene.detector: [SCENE] edit 'Change the mass of the top block to 4 kg.'
+23:43:30 INFO    copilot.presentation.stage: [STAGE] diagram e98459503c82: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v10 (1 items)
+23:43:30 INFO    copilot.simulation.detector: [SIM] values - {'mass': '4 kg'}
+  [UNDERSTAND] Physics > Contact Forces (elaboration) acts=other hint=key_points lines=1 via groq_main#5 3474 ms
+               The top block’s mass is set to 4 kg.
+23:43:34 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (7 so far)
+23:43:41 INFO    copilot.stt.engine: STT: outro hallucination cut: 'Okay back to the picture. Thank you.' -> 'Okay back to the picture.'
+  [   93.9s] Okay back to the picture. (2467 ms)
+23:43:41 INFO    copilot.scene.detector: [SCENE] edit 'Okay back to the picture.'
+23:43:41 INFO    copilot.presentation.stage: [SIM] free-body view: off
+  [SLIDE] update 'Two blocks and floor' [simulation] v11 (1 items)
+  [UNDERSTAND] Physics > Contact Forces (same_concept) acts=transition hint=none lines=1 via groq_main#6 1235 ms
+               Teacher returns to the diagram.
+23:43:43 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (7 so far)
+  [  101.7s] Imagine a box on an inclined plane at 30 degree. (519 ms)
+23:43:49 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a box on an inclined plane at 30 degree.'
+23:43:49 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another stage was started): recap 1 slide(s) (5 kept, 3 dropped as parameter talk)
+23:43:49 INFO    copilot.presentation.simulations: [SIM] stage mode on: Box on an inclined plane on its own slide (cue)
+23:43:49 INFO    copilot.presentation.stage: [STAGE] diagram open: Box on an inclined plane (cue)
+23:43:49 INFO    copilot.presentation.stage: [STAGE] diagram a19c403ec160: 5 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v12 (1 items)
+  [SLIDE] add    'Recap: Two blocks and floor' [key_points] v1 (4 items)
+  [SLIDE] add    'Box on an inclined plane' [simulation] v1 (1 items)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v2 (1 items)
+23:43:49 INFO    copilot.simulation.detector: [SIM] cue incline ('Imagine a') {'angle': '30 degree'}
+23:43:51 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Contact Forces' -> same_concept
+  [UNDERSTAND] Physics > Contact Forces (same_concept) acts=explanation hint=example lines=1 via groq_main#5 1278 ms
+               Introduced a box on a 30° inclined plane as a new scenario
+23:43:51 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  108.3s] The mass of the block box is 5 kg. (512 ms)
+23:43:55 INFO    copilot.scene.detector: [SCENE] edit 'The mass of the block box is 5 kg.'
+23:43:55 INFO    copilot.presentation.stage: [STAGE] diagram 8c9573801e01: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v3 (1 items)
+23:43:55 INFO    copilot.simulation.detector: [SIM] values - {'mass': '5 kg'}
+23:43:56 INFO    copilot: [STT] vocabulary prompt: 34 terms (newest: Contact Forces, Coefficient of friction, Inclined Plane)
+  [UNDERSTAND] Physics > Inclined Plane (sibling_concept) acts=other hint=key_points lines=1 via groq_main#6 1204 ms
+               The block on the incline has a mass of 5 kg.
+23:43:56 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  115.8s] The coefficient of friction is 0.3. (446 ms)
+23:44:02 INFO    copilot.scene.detector: [SCENE] edit 'The coefficient of friction is 0.3.'
+23:44:02 INFO    copilot.presentation.stage: [STAGE] diagram 6f6752be5ff4: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v4 (1 items)
+23:44:02 INFO    copilot.simulation.detector: [SIM] values - {'mu': 'coefficient of friction is 0.3'}
+  [UNDERSTAND] Physics > Inclined Plane (elaboration) acts=other hint=key_points lines=1 via groq_main#5 4799 ms
+               The coefficient of friction for the block on the incline is 0.3.
+23:44:07 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [  122.5s] Now make it 45 degree. (459 ms)
+23:44:08 INFO    copilot.scene.detector: [SCENE] edit 'Now make it 45 degree.'
+23:44:08 INFO    copilot.presentation.stage: [STAGE] diagram eb8350c8641f: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v5 (1 items)
+23:44:08 INFO    copilot.simulation.detector: [SIM] values - {'angle': '45 degree'}
+23:44:11 INFO    copilot.understanding.interpreter: dropped 1 revision(s) with unknown refs
+  [UNDERSTAND] Physics > Inclined Plane (elaboration) acts=explanation hint=concept lines=1 via groq_main#6 1423 ms
+               The incline angle is increased from 30° to 45°.
+23:44:11 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [  128.7s] Draw the free body diagram of the box. (483 ms)
+23:44:15 INFO    copilot.scene.detector: [SCENE] cue 'Draw the free body diagram of the box.'
+23:44:15 INFO    copilot.presentation.stage: [SIM] free-body view: box
+  [SLIDE] update 'Box on an inclined plane' [simulation] v6 (1 items)
+23:44:15 INFO    copilot.understanding.service: [CUE] figure 'Box free body diagram'
+23:44:15 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Inclined Plane (elaboration) acts=explanation hint=concept lines=1 via groq_main#6 1259 ms
+               Teacher asks students to draw the free‑body diagram of the box on the incline.
+23:44:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [  137.5s] The angle is now 60 degree. (441 ms)
+23:44:23 INFO    copilot.scene.detector: [SCENE] edit 'The angle is now 60 degree.'
+23:44:23 INFO    copilot.presentation.stage: [STAGE] diagram 3092e4738756: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v7 (1 items)
+23:44:23 INFO    copilot.simulation.detector: [SIM] values - {'angle': '60 degree'}
+  [UNDERSTAND] Physics > Inclined Plane (elaboration) acts=explanation hint=key_points lines=1 via groq_main#5 1248 ms
+               The incline angle is changed to 60 degrees.
+23:44:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (6 so far)
+  [  142.8s] Back to the diagram. (513 ms)
+23:44:28 INFO    copilot.scene.detector: [SCENE] edit 'Back to the diagram.'
+23:44:28 INFO    copilot.presentation.stage: [SIM] free-body view: off
+  [SLIDE] update 'Box on an inclined plane' [simulation] v8 (1 items)
+  [  146.4s] Imagine a pulley with two blocks hanging from it. (475 ms)
+23:44:33 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a pulley with two blocks hanging from it.'
+23:44:33 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another stage was started): recap 1 slide(s) (2 kept, 4 dropped as parameter talk)
+23:44:33 INFO    copilot.presentation.simulations: [SIM] stage mode on: Pulley with two blocks on its own slide (cue)
+23:44:33 INFO    copilot.presentation.stage: [STAGE] diagram open: Pulley with two blocks (cue)
+23:44:33 INFO    copilot.presentation.stage: [STAGE] diagram 7156ae32ce4f: 7 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v9 (1 items)
+  [SLIDE] add    'Recap: Box on an inclined plane' [key_points] v1 (2 items)
+  [SLIDE] add    'Pulley with two blocks' [simulation] v1 (1 items)
+  [SLIDE] update 'Pulley with two blocks' [simulation] v2 (1 items)
+23:44:33 INFO    copilot.simulation.detector: [SIM] values - {}
+23:44:35 INFO    copilot: [STT] vocabulary prompt: 35 terms (newest: Coefficient of friction, Inclined Plane, Pulley System)
+  [UNDERSTAND] Physics > Pulley System (sibling_concept) acts=transition hint=concept lines=2 via groq_main#6 1573 ms
+               Introduces a pulley with two hanging blocks as a new scenario
+23:44:35 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [  155.3s] One block is 2kg and the other is 3kg. (469 ms)
+23:44:42 INFO    copilot.scene.detector: [SCENE] edit 'One block is 2kg and the other is 3kg.'
+23:44:42 INFO    copilot.presentation.stage: [STAGE] diagram 3863cf52e451: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Pulley with two blocks' [simulation] v3 (1 items)
+23:44:42 INFO    copilot.simulation.detector: [SIM] values - {'mass': '2kg', 'mass#1': '3kg'}
+  [UNDERSTAND] Physics > Pulley System (elaboration) acts=other hint=concept lines=1 via groq_main#5 1533 ms
+               Teacher gave the masses of the two hanging blocks in the pulley system (2 kg and 3 kg).
+23:44:44 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  167.5s] Draw the free body diagram. (472 ms)
+23:44:53 INFO    copilot.scene.detector: [SCENE] edit 'Draw the free body diagram.'
+23:44:53 INFO    copilot.presentation.stage: [SIM] free-body view: all
+  [SLIDE] update 'Pulley with two blocks' [simulation] v4 (1 items)
+23:44:53 INFO    copilot.understanding.service: [CUE] figure 'Free body diagram'
+23:44:53 INFO    copilot.simulation.detector: [SIM] values - {}
+  [  171.5s] Draw the freeboard diagram. (474 ms)
+23:45:00 INFO    copilot.scene.detector: [SCENE] edit 'Draw the freeboard diagram.'
+23:45:00 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'Draw the freeboard diagram.'
+23:45:00 INFO    copilot.understanding.service: [CUE] figure 'Freeboard diagram'
+  [UNDERSTAND] Physics > Pulley System (same_concept) acts=other hint=none lines=2 via groq_main#5 1486 ms
+               Teacher asks students to draw the free‑body diagram of the pulley system
+23:45:02 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (1 so far)
+  [  178.7s] Newton's third law says force comes in pairs. (448 ms)
+23:45:05 INFO    copilot.scene.detector: [SCENE] edit "Newton's third law says force comes in pairs."
+23:45:05 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in "Newton's third law says force comes in pairs."
+23:45:05 INFO    copilot.simulation.detector: [SIM] values - {}
+23:45:07 INFO    copilot: [STT] vocabulary prompt: 36 terms (newest: Inclined Plane, Pulley System, Newton's third law)
+  [UNDERSTAND] Physics > Pulley System (elaboration) acts=definition hint=definition lines=1 via groq_main#6 1291 ms
+               Defined Newton's third law as force comes in pairs.
+23:45:07 INFO    copilot.presentation.engine: [EQ] Newton's third law: standard form from the library
+23:45:07 INFO    copilot.presentation.simulations: [SIM] simulation mode: 2 piece(s) collected for the recap (3 so far)
+[END]   finishing lecture understanding (0 buffered lines) ...
+23:45:13 INFO    copilot.presentation.simulations: [SIM] simulation mode off (the lecture ended): recap 1 slide(s) (2 kept, 2 dropped as parameter talk)
+  [SLIDE] add    'Recap: Pulley with two blocks' [members] v1 (2 items)
+[ENDED] session 20261031-234143-f10d: 22 segments, 179 words, state v47, 367 events logged
+        CommandReceived=6, ConceptSignal=22, DeckState=14, InterpretRequested=20, InterpretationReady=20, LifecycleChanged=5, LiveCue=25, ModeChanged=1, RepresentationIntent=40, SimulationModeChanged=6, SimulationSettingChanged=1, SlideContextChanged=1, SlidePatch=28, StateChanged=47, TranscriptFinal=22, TranscriptPartial=82, UtteranceClassified=22, VocabularyChanged=5
+        stt: 22 published, 0 dropped, latency p50=492 ms p95=765 ms max=2467 ms
+        understanding: 20 interpretations (20 by LLM, 0 fallbacks, 1 repaired), max 8 calls/min, prompt tokens max=1967 avg=1930, latency p50=1434 ms max=4799 ms
+        presentation: 6 slides; planner ops {'diagram_start': 3}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/6
+          1. [simulation] Two blocks and floor  (v12, ['stage'])
+          2. [key_points] Recap: Two blocks and floor  (v1, ['points', 'definition', 'facts'])
+          3. [simulation] Box on an inclined plane  (v9, ['stage'])
+          4. [key_points] Recap: Box on an inclined plane  (v1, ['points'])
+          5. [simulation] Pulley with two blocks  (v4, ['stage'])
+          6. [members] Recap: Pulley with two blocks  (v1, ['definition', 'formula'])
+        providers: {'groq_main#5': 12, 'groq_main#6': 8}; triggers: {'pause': 20}; outline: ['Physics > Contact Forces, Inclined Plane, Pulley System']; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261031-234143-f10d\session.sqlite

@@ -25,16 +25,18 @@ import asyncio
 import logging
 import re
 import time
-from collections import deque
+from collections import Counter, deque
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Optional
 
 from copilot.core.events import RepresentationIntent, SimulationNotice, StageWords
 from copilot.diagram import fastpath as dfast
+from copilot.diagram import mech as dmech
 from copilot.diagram import parts as dparts
 from copilot.diagram import patch as dpatch
 from copilot.diagram.graph import DiagramLog
 from copilot.diagram.route import route as diagram_route
+from copilot.diagram.solvers import run as drun
 from copilot.presentation.spec import SlideSpec, StageBlock
 from copilot.scene import pictures as pics
 from copilot.scene import safety
@@ -91,6 +93,7 @@ class _Open:
     mode: str = "stage"                 # F-018: "diagram" draws concept lines as a diagram on this slide
     dlog: DiagramLog = field(default_factory=DiagramLog)
     dpatch: Optional[dict] = None
+    fbd: str = ""                       # F-019 M2: the free-body view ("" off, "all", a body id)
     dtitle: str = ""                    # the diagram's title (from its first line)
     cues: list[tuple[float, frozenset[str]]] = field(default_factory=list)  # M0: (lecture time, words) of its cues
 
@@ -310,12 +313,20 @@ class StageController:
         o = self._live()
         cue = ev.strength == "cue" or bool(_IMAGINE.match(ev.text))
         dia = cue and diagram_route(ev.text) == "diagram"
+        if dia and _FBD.search(ev.text) and not dfast.draft(_FBD_PHRASE.sub(" ", ev.text)).ops:
+            dia = False  # M2: "draw the free body diagram" with no mechanics diagram open is no new diagram
         if o is not None and o.frozen:  # the teacher's Freeze: speech changes nothing, opens nothing
             if o.mode != "diagram":
                 return False  # the stage's own frozen handling
             self._heard()
             log.info("[STAGE] frozen: %r is not drawn", ev.text[:60])
             return True
+        if o is not None and o.mode == "diagram" and self._fbd_line(o, ev.text):
+            await self._publish_diagram(o)  # the view turns; the rest of the line (a value, a cue) still goes on
+            rest = dfast.draft(_FBD_PHRASE.sub(" ", ev.text), o.dlog.fold())
+            if not any(op.get("op") == "qty" for op in rest.ops):  # only a value goes on ("of both blocks" drew
+                self._heard()                                       # two more blocks, test42)
+                return True
         if o is not None and o.mode == "diagram" and not cue:
             if self.imagine and diagram_route(ev.text) is None and _drawable(fastpath.draft(ev.text)) \
                     and not dfast.draft(ev.text, o.dlog.fold()).ops:
@@ -339,6 +350,18 @@ class StageController:
             soon = bool(o.cues) and self.e.now() - o.cues[-1][0] <= REPEAT_S
             parts = o.dlog.fold().parts
             ground = bool(dd.old) and not dd.new and all(parts[i].kind == "floor" for i in dd.old if i in parts)
+            if soon and _recount(dd, parts):  # test42: a cut cue said again whole ("two blocks, one on top of the
+                lines = [i for i, _ in o.dlog.lines if i not in o.dlog.undone]  # other") drew two more blocks
+                if len(lines) == 1:  # only the cut cue so far: this one says it all (the stack), drawn instead
+                    o.dlog.undo(lines[0], int(self.e.now() * 1000))
+                    o.dtitle = ""
+                    log.info("[STAGE] diagram repeat redraws the first cue: %r", ev.text[:60])
+                    await self._diagram_line(o, ev)
+                    return True
+                self._heard()  # later: the same things are already there
+                o.cues.append((self.e.now(), cue_words(ev.text)))
+                log.info("[STAGE] diagram repeat (its things are drawn): %r", ev.text[:60])
+                return True
             if dd.refers or _same_diagram(dd) and (soon or ground) or dd.named or dd.more \
                     or self._repeat(o, ev.text, diagram=True):
                 await self._diagram_line(o, ev)
@@ -354,6 +377,27 @@ class StageController:
         o = self._live()
         if o is not None:
             await self._diagram_line(o, ev)
+        return True
+
+    def _fbd_line(self, o: _Open, text: str) -> bool:
+        """M2: "draw the free body diagram (of the top block)" turns the free-body view on (that body, else all);
+        "back to the picture" turns it off. True: the line was that."""
+        if _FBD_OFF.search(text) and o.fbd:
+            o.fbd = ""
+        elif _FBD.search(text):
+            g = o.dlog.fold()
+            res = drun(g) if dmech.wants(g) else None
+            bodies = dmech.free_bodies(g, res, "all")
+            if not bodies:  # nothing to draw alone: the line changes nothing (it never opens a "Body" slide)
+                log.info("[SIM] free-body view: no body with forces in %r", text[:60])
+                return True
+            low = _FBD_PHRASE.sub(" ", text.lower())  # review: "a" in "diagram", "b" in "body" named no block
+            named = [b for b in bodies if any(re.search(rf"\b{re.escape(w.lower())}\b", low)
+                                              for w in (dmech._name(g, b, res), g.parts[b].label) if w)]
+            o.fbd = named[0] if len(named) == 1 else "all"
+        else:
+            return False
+        log.info("[SIM] free-body view: %s", o.fbd or "off")
         return True
 
     def _repeat(self, o: _Open, text: str, diagram: bool = False) -> bool:
@@ -429,7 +473,8 @@ class StageController:
         if m is not None and m.kind == "stage" and m.block_id == o.block_id:  # M0: the recap leaves the picture out
             m.picture = picture_words(o.dlog.fold())
         try:
-            patch = dpatch.build(o.dlog.fold(), rev=o.rev + 1, nogo=_title_nogo(spec.title) if b.full else None)
+            patch = dpatch.build(o.dlog.fold(), rev=o.rev + 1, nogo=_title_nogo(spec.title) if b.full else None,
+                                 fbd=o.fbd)
         except Exception:  # a layout fault: the last good diagram stays, the log keeps the line
             log.exception("[STAGE] diagram layout failed; the last diagram stays")
             return
@@ -628,6 +673,9 @@ class StageController:
             if kind == "stage_freeze":
                 o.frozen = bool(args.get("on", not o.frozen))
                 log.info("teacher: diagram %s", "frozen" if o.frozen else "unfrozen")
+            elif kind == "stage_fbd":  # M2: the control's Free body button (off -> all -> each body -> off)
+                o.fbd = str(args.get("on") or "")[:40]
+                log.info("teacher: free-body view %s", o.fbd or "off")
             elif kind == "stage_undo":
                 last = o.dlog.last_line()
                 if last is None:
@@ -675,6 +723,11 @@ class StageController:
         await self._publish(o)
 
 
+# M2: "the free body diagram of the top block" (test42: Whisper's "freeboard diagram")
+_FBD = re.compile(r"\bfree[\s-]*(?:bod(?:y|ies)|board)\b", re.IGNORECASE)
+_FBD_PHRASE = re.compile(r"\b(?:(?:draw|show)\s+)?(?:(?:the|a)\s+)?free[\s-]*(?:bod(?:y|ies)|board)(?:\s+diagrams?)?\b",
+                         re.IGNORECASE)
+_FBD_OFF = re.compile(r"\bback to the (?:picture|diagram|scene|figure|setup)\b", re.IGNORECASE)
 _IMAGINE = re.compile(r"^\W*(?:(?:now|so|and|okay|ok|next),?\s+)?(?:imagine|picture|visuali[sz]e|think of|suppose)(?![a-z])",
                       re.IGNORECASE)
 
@@ -744,6 +797,19 @@ def shapes_title(g: Any) -> str:
     names = [p.label for p in top]
     joined = " and ".join(names) if len(names) == 2 else ", ".join(names)
     return f"{dfast._num(len(top)).capitalize()} {top[0].kind}s {joined}"[:48]
+
+
+def _recount(d: dfast.Draft, parts: dict) -> bool:
+    """The cue draws again exactly what the open diagram has ("two blocks ... on the floor" with those drawn), and it
+    says neither "another" nor a new name (M0: "another circle C3" adds one)."""
+    if not d.new or d.more or d.named:
+        return False
+    def sig(kind: str, attr: dict) -> tuple:  # a beaker of NaOH is not the beaker of HCl
+        return kind, attr.get("chem"), attr.get("element"), attr.get("name")
+    said = Counter(sig(o["kind"], o.get("attr") or {}) for o in d.ops if o.get("op") == "part" and o.get("id") in d.new)
+    said.update(sig(parts[i].kind, parts[i].attr) for i in d.old if i in parts)  # "on the floor": the floor drawn
+    have = Counter(sig(p.kind, p.attr) for p in parts.values())
+    return said == have  # the same picture said again (test36's "imagine a square" after C1–C3 is the next one)
 
 
 def _same_diagram(d: dfast.Draft) -> bool:

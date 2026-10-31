@@ -144,7 +144,7 @@ def _count_before(text: str, start: int) -> tuple[int, bool]:
     """The count said right before a noun ("two circles", "three small blocks"); a number with a unit is a measure,
     not a count ("a 5 kg block" is one block, "a 10 ohm resistor" one resistor)."""
     toks = re.findall(r"[a-z0-9]+", text[max(0, start - 40):start].lower())[-2:]
-    definite = bool(toks) and toks[-1] in _DEF
+    definite = bool(toks) and (toks[-1] in _DEF or "both" in toks)  # test42: "both blocks" are the ones drawn
     if not toks or toks[-1] in UNITS:
         return 1, definite
 

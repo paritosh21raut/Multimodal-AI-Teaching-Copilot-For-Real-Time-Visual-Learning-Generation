@@ -2,9 +2,9 @@
 // block's `diagram`) full slide under the title, in the S0-S4 simulation look. Every position comes from Python; the
 // browser draws and runs the patch's tracks, seamless loops that are a pure function of the time t (orbits, the pour
 // stream, the stirring rod, the flame, the field's flowing dashes). still: the slide's figure at t = 0, no clock.
-import { html, useEffect, useRef } from "../vendor/htm-preact-standalone.mjs";
+import { html, useLayoutEffect, useRef } from "../vendor/htm-preact-standalone.mjs";
 import { PARTS, ABSOLUTE } from "./parts/index.js";
-import { Arrow, symbolParts } from "../sims/draw.js";
+import { Arrow, HEAD, symbolParts } from "../sims/draw.js";
 
 const reduced = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 const F = (v) => Math.round(v * 10) / 10;
@@ -120,6 +120,18 @@ function panel(m) {
     <rect class="card" x="0" y="0" width=${pn.w} height=${y + 10} rx="18" />${rows}</g>`;
 }
 
+// F-019 M2: the free-body view: each body alone (Python placed it), every force from its centre dot, the forces the
+// body on top puts on it too; drawn instead of the scene, standing still
+function freeBody(fb, uid) {
+  return html`<g class="dg-fbd" data-fbd="1">
+    <text class="tag dg-fbd-head" x="60" y=${fb.name_y - 34}>Free-body diagram</text>
+    ${fb.bodies.map((b) => html`<g key=${"fb-" + b.id} data-fbd-body=${b.id}>
+      ${part({ id: "fbd-" + b.id, kind: "block", cx: b.cx, cy: b.cy, w: b.w, h: b.h, rot: b.rot, attr: {}, uid })}
+      <circle class="dg-fbd-dot" cx=${b.cx} cy=${b.cy} r="7" />
+      <text class="sim-label word dg-fbd-name" x=${b.cx} y=${fb.name_y} text-anchor="middle">${b.name}${b.mass ? ` · ${b.mass}` : ""}</text></g>`)}
+    ${forces({ forces: fb.forces })}</g>`;
+}
+
 let SEQ = 0;  // each drawn diagram's own clip ids (two diagram slides can share part ids)
 
 export function DiagramSvg({ p }) {
@@ -130,19 +142,54 @@ export function DiagramSvg({ p }) {
   const under = wires.filter((w) => w.kind === "orbit" || w.kind === "field");
   const over = wires.filter((w) => w.kind !== "orbit" && w.kind !== "field");
   const badges = p.badges || [];
+  const fb = p.mech && p.mech.fbd;
   return html`<svg class="diagram-svg" viewBox=${`0 0 ${(p.view || [1600, 1000]).join(" ")}`} preserveAspectRatio="xMidYMid meet"
       data-rev=${p.rev || 0}>
+    ${fb ? freeBody(fb, uid.current) : html`
     ${under.map(wire)}
     ${(p.parts || []).filter((x) => x.kind !== "electron" && x.kind !== "planet").map(own)}
     ${over.map(wire)}
     ${(p.parts || []).filter((x) => x.kind === "electron" || x.kind === "planet").map(own)}
     ${(p.overlays || []).map(overlay)}
     ${(p.labels || []).map(label)}
-    ${forces(p.mech)}
+    ${forces(p.mech)}`}
     ${panel(p.mech)}
     ${badges.map((b, i) => html`<text key=${"b" + i} class="sim-caption dg-badge" x="1560" y=${975 - (badges.length - 1 - i) * 30} text-anchor="end">${b}</text>`)}
   </svg>`;
 }
+
+// F-019 M2: a value said again re-solves the scene; each arrow (same id) moves from its old place to the new one in
+// MORPH s (tip, start and label; both ends from Python), then the tracks run as before.
+export const MORPH = 0.6;
+
+function arrowGeom(el, a) {
+  const line = el.querySelector("line"), head = el.querySelector("path"), text = el.querySelector("text");
+  const len = Math.hypot(a.x2 - a.x1, a.y2 - a.y1);
+  if (line && head && len >= 4) {
+    const ux = (a.x2 - a.x1) / len, uy = (a.y2 - a.y1) / len;
+    const bx = a.x2 - ux * HEAD, by = a.y2 - uy * HEAD, px = -uy * HEAD * 0.55, py = ux * HEAD * 0.55;
+    line.setAttribute("x1", F(a.x1)); line.setAttribute("y1", F(a.y1));
+    line.setAttribute("x2", F(bx)); line.setAttribute("y2", F(by));
+    head.setAttribute("d", `M${F(a.x2)},${F(a.y2)} L${F(bx + px)},${F(by + py)} L${F(bx - px)},${F(by - py)} Z`);
+  }
+  if (text) { text.setAttribute("x", F(a.lx)); text.setAttribute("y", F(a.ly)); }
+}
+
+export function morph(svg, prev, cur, t) {
+  if (!svg || !prev || !cur) return;
+  const k = Math.min(1, Math.max(0, t / MORPH));
+  const e = k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;  // ease in-out
+  const old = Object.fromEntries(prev.map((a) => [a.id, a]));
+  for (const a of cur) {
+    const o = old[a.id], el = svg.querySelector(`[data-force="${CSS.escape(a.id)}"]`);
+    if (!o || !el) continue;
+    const m = {};
+    for (const key of ["x1", "y1", "x2", "y2", "lx", "ly"]) m[key] = o[key] + (a[key] - o[key]) * e;
+    arrowGeom(el, m);
+  }
+}
+
+const shown = (p) => (p && p.mech ? (p.mech.fbd ? p.mech.fbd.forces : p.mech.forces) || [] : []);
 
 // One frame of the patch's tracks at time t (s). Pure: the same t always gives the same picture.
 export function frame(svg, p, t) {
@@ -212,16 +259,33 @@ export function frame(svg, p, t) {
 
 export function DiagramView({ b, onClick }) {
   const host = useRef(null);
-  const st = useRef({ raf: 0, t0: 0, rev: -1 });
+  const st = useRef({ raf: 0, t0: 0, rev: -1, prev: null, last: null });
   const p = b.diagram;
-  useEffect(() => {
+  useLayoutEffect(() => {  // before paint: a morph starts at the old arrows, no flash of the new
     const s = st.current;
     const svg = host.current && host.current.querySelector("svg");
     cancelAnimationFrame(s.raf);
     if (!svg || !p) return undefined;
-    if ((p.rev || 0) !== s.rev) { s.rev = p.rev || 0; s.t0 = performance.now(); }
-    if (b.still || reduced()) { frame(svg, p, 0); return undefined; }
-    const loop = () => { frame(svg, p, (performance.now() - s.t0) / 1000); s.raf = requestAnimationFrame(loop); };
+    if ((p.rev || 0) !== s.rev) {
+      s.rev = p.rev || 0; s.t0 = performance.now();
+      s.prev = s.last && !!(s.last.mech && s.last.mech.fbd) === !!(p.mech && p.mech.fbd) ? shown(s.last) : null;
+      s.last = p;
+      if (s.prev) s.t0 += MORPH * 1000;  // the tracks start once the arrows have moved
+    }
+    if (b.still || reduced()) {
+      if (s.prev) { morph(svg, s.prev, shown(p), MORPH); s.prev = null; }  // no move: the arrows at their new place
+      frame(svg, p, 0);
+      return undefined;
+    }
+    const loop = () => {
+      const t = (performance.now() - s.t0) / 1000;  // < 0 while the arrows move (the bodies at their run's start)
+      if (s.prev && t < 0) { frame(svg, p, 0); morph(svg, s.prev, shown(p), t + MORPH); }
+      else {
+        if (s.prev) { morph(svg, s.prev, shown(p), MORPH); s.prev = null; }
+        frame(svg, p, Math.max(0, t));
+      }
+      s.raf = requestAnimationFrame(loop);
+    };
     loop();
     return () => cancelAnimationFrame(s.raf);
   }, [p && p.rev, b.still]);

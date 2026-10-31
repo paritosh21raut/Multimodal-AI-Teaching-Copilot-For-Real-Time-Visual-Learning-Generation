@@ -29,7 +29,8 @@ _CHATTER = re.compile(
     r"change|set|increase|decrease|double|halve)|(?:make|change|set|put) it\b|what happens|see what happens|what if|"
     r"imagine|suppose|assume|consider|if (?:we|i|you) (?:apply|push|pull|give|make|take|change|increase|decrease)|"
     r"is applied|(?:we|i) (?:apply|push|pull|exert|give)|double (?:it|the)|halve (?:it|the)|"
-    r"(?:in|on) (?:the|this) simulation|the simulation|slider|on the screen|in this case|back to the (?:slides|notes))\b", re.IGNORECASE)
+    r"(?:in|on) (?:the|this) simulation|the simulation|slider|on the screen|in this case|back to the (?:slides|notes)|"
+    r"(?:increased|decreased|changed|raised|lowered|reduced|set|made) to \d+)\b", re.IGNORECASE)  # "Angle increased to 60°"
 # a general rule: these keep a line even when it names a value
 _RULE = re.compile(
     r"\b(?:always|never|oppos\w*|proportional|inversely|independent of|depends? on|directly|increas\w*|decreas\w*|"
@@ -40,6 +41,12 @@ _RULE = re.compile(
 # another scene's thing is caught by `foreign`)
 _LINK = re.compile(r"\b(?:illustrat\w*|exemplif\w*|symboli[sz]\w*|is an example of|(?:is|are) analogous to|"
                    r"serves? as an? (?:example|analogy))\b", re.IGNORECASE)
+# a value alone: "0.4", "5 kg", "19.6 N down" (test42)
+_BARE = re.compile(r"^\s*[-+−]?\d[\d.,]*\s*[a-zA-Zμ°%²³/·]{0,8}(?:\s+(?:up|down|left|right|along|downwards|upwards|"
+                   r"up the slope|down the slope))?\s*$", re.IGNORECASE)
+# ... of a scene parameter (not "pH of pure water: 7" or "Year: 1905": those are facts)
+_PARAM = re.compile(r"\b(?:coefficient|friction|mass|force|angle|incline|slope|weight|spring constant|tension|"
+                    r"accelerat\w*|push|pull|applied)\b|[μθ]", re.IGNORECASE)
 _ASSIGN = re.compile(rf"(?:^|[\s(])[A-Za-zμθα-ω](?:_?\w)?\s*(?:=|is|equals)\s*{NUM}", re.IGNORECASE)
 _NUMBER_WITH_UNIT_OR_CALC = re.compile(r"\d\s*(?:[×x*/+−-]\s*\d|[a-zA-Zμ°%²]|$)")
 
@@ -77,7 +84,8 @@ _PLACING = {"is", "are", "was", "were", "the", "a", "an", "of", "on", "in", "ins
             "top", "placed", "kept", "put", "added", "labeled", "labelled", "named", "called", "same", "another", "has",
             "have", "with", "and", "it", "its", "there", "imagine", "new", "drawn", "beside", "next", "to", "near", "one",
             "two", "three", "four", "five", "six", "both", "also", "each", "other", "figure", "diagram", "picture",
-            "contains", "contain", "containing", "location", "position", "shown", "shows", "there's"}
+            "contains", "contain", "containing", "location", "position", "shown", "shows", "there's",
+            "stacked", "hanging", "free", "body", "free-body", "free‑body"}  # test42: "Free-body diagram of the box"
 _WHERE = re.compile(r"\b(?:inside|outside|within|contains?|beside|next to|on top of|location|position)\b", re.IGNORECASE)
 
 
@@ -148,7 +156,9 @@ def recap_pieces(pieces: Iterable[Piece], foreign: Iterable[str] = (), picture: 
                 kept.append(p)
             continue
         if p.kind in ("facts", "causes") and p.pairs:  # (label, value) pairs: a value is a parameter
-            pairs = tuple(pr for pr in p.pairs if not junk(f"{pr[0]}: {pr[1]}"))  # "Coefficient of friction: 0.2"
+            # "Coefficient of friction: 0.2"; M2 (test41): "Coefficient of friction (blocks): 0.4", a bare number
+            pairs = tuple(pr for pr in p.pairs if not junk(f"{pr[0]}: {pr[1]}")
+                          and not (_BARE.match(str(pr[1])) and _PARAM.search(str(pr[0]))))
             dropped += len(p.pairs) - len(pairs)
             pairs = tuple(pr for pr in pairs if new(f"{pr[0]} {pr[1]}"))
             if pairs:

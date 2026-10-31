@@ -1033,3 +1033,7 @@ rect.sc-body.r-second, circle.sc-body.r-second { fill: var(--scene-second); stro
 .dg-panel-note { font-size: 21px; font-weight: 650; fill: var(--ink-2); }
 .dg-mass rect { fill: var(--surface); stroke: var(--line, currentColor); stroke-width: 1.5px; }
 .dg-mass text { font-weight: 700; fill: var(--ink); }
+/* F-019 M2: the free-body view (each body alone, forces from its centre dot) */
+.dg-fbd-dot { fill: var(--ink); }
+.dg-fbd-name { font-size: 26px; font-weight: 650; fill: var(--ink); }
+.dg-fbd-head { font-size: 20px; }

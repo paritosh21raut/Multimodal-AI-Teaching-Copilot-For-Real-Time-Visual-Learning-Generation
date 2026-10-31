@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import itertools
 import math
+from dataclasses import replace
 from typing import Optional
 
 import numpy as np
@@ -196,6 +197,9 @@ def _surface(g: Graph, r: Results, gr: str, bs: list[str], G: Value) -> None:
     for i, b in enumerate(bs):
         r.forces.append(Force(f"W_{b}", b, "weight", W[i], 90.0, "centre"))
         r.forces.append(Force(f"N_{b}", b, "normal", N[i], ax - 90.0, "contact"))
+        if sup[i] >= 0:  # Newton III: the body on top presses on the one below (drawn in the free-body view)
+            r.forces.append(Force(f"N'_{b}", bs[sup[i]], "normal", replace(N[i], sym="N′"), ax + 90.0, "top",
+                                  pair=True))
     known = all(x.known for x in m) and th.known and dir_ok and all(x.known for x in N) and \
         all(mus[i].known and muk[i].known for i in range(n))
     if n > MAX_CONTACTS:
@@ -236,6 +240,9 @@ def _surface(g: Graph, r: Results, gr: str, bs: list[str], G: Value) -> None:
             fv = _comp("f", abs(fi), "N", b, [muk[i], N[i]], "f = μk N")
         if abs(fi) > EPS:
             r.forces.append(Force(f"f_{b}", b, "friction", fv, ax if fi > 0 else ax + 180.0, "contact"))
+            if sup[i] >= 0:  # the friction on the block below: the same size, the other way
+                r.forces.append(Force(f"f'_{b}", bs[sup[i]], "friction", replace(fv, sym="f′"),
+                                      ax + 180.0 if fi > 0 else ax, "top", pair=True))
         r.values.append(fv)
         terms = _net_terms(F[i], kind, fi, i, f, sup, a[i], Fv[i] is not None)
         av = _comp("a", abs(a[i]), "m/s^2", b, frm + [mus[i], muk[i]], f"a = ({terms}) / m")

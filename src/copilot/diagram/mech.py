@@ -30,14 +30,28 @@ def wants(g: Graph) -> bool:
     return any(p.kind in ("block", "mass") for p in g.parts.values()) or bool(g.qty)
 
 
-def build(g: Graph, L: Layout, res: Optional[Results]) -> dict[str, Any]:
+def build(g: Graph, L: Layout, res: Optional[Results], fbd: str = "") -> dict[str, Any]:
+    """fbd: "" the scene, "all" every body's free-body diagram, or one body's id (M2)."""
     if res is None:
         return {"forces": [], "panel": None, "notes": [], "tracks": [], "simulated": False}
     forces = _arrows(L, res, PANEL_W if res.values else 0.0)
     tracks = _tracks(L, res)
     notes = [ln for n in res.notes for ln in textwrap.wrap(n, NOTE_CHARS)]
-    return {"forces": forces, "panel": _fit(_panel(g, res), notes), "notes": notes, "tracks": tracks,
-            "marks": _marks(L, res, forces), "simulated": True}
+    out = {"forces": forces, "panel": _fit(_panel(g, res), notes), "notes": notes, "tracks": tracks,
+           "marks": _marks(L, res, forces), "simulated": True}
+    shown = free_bodies(g, res, fbd)
+    if shown:
+        out["fbd"] = _fbd(g, L, res, shown, PANEL_W if res.values else 0.0)
+        out["tracks"] = []  # a free-body diagram stands still
+    return out
+
+
+def free_bodies(g: Graph, res: Optional[Results], fbd: str) -> list[str]:
+    """The bodies a free-body view draws: every body with a force ("all"), or the one named."""
+    if not fbd or res is None:
+        return []
+    bodies = list(dict.fromkeys(f.on for f in res.forces if f.on in g.parts and g.parts[f.on].kind in ("block", "mass")))
+    return bodies if fbd == "all" else [b for b in bodies if b == fbd]
 
 
 def _marks(L: Layout, res: Results, arrows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -114,8 +128,8 @@ def _arrows(L: Layout, res: Results, panel: float) -> list[dict[str, Any]]:
     top = max(known) if known else 1.0
     out = []
     for f in res.forces:
-        if f.on not in L.nodes:
-            continue
+        if f.on not in L.nodes or f.pair:
+            continue  # a pair force (the top block on the bottom one) is drawn in the free-body view only
         x, y = _origin(L, f.on, f.at)
         v = f.value
         if v.known and abs(v.v) < 1e-9:
@@ -146,7 +160,8 @@ def _arrows(L: Layout, res: Results, panel: float) -> list[dict[str, Any]]:
                     "x2": round(x2, 1), "y2": round(y2, 1), "text": v.text(), "src": v.src,
                     "q": v.q, "eq": v.eq, "said_dir": f.said_dir, "lx": round(lx, 1), "ly": round(ly, 1),
                     "anchor": anchor})
-    _unclash(out)
+    bodies = [L.nodes[b].box() for b in {f.on for f in res.forces} if b in L.nodes]
+    _unclash(out, bodies, area)
     return out
 
 
@@ -160,24 +175,118 @@ def _on_body(L: Layout, res: Results, on: str, lx: float, ly: float, w: float) -
     return False
 
 
+def _label_box(a: dict[str, Any]) -> list[float]:
+    w = LABEL_W * len(a["text"])
+    x0 = a["lx"] - (w if a["anchor"] == "end" else w / 2 if a["anchor"] == "middle" else 0)
+    return [x0, a["ly"] - 30, x0 + w, a["ly"] + 8]
+
+
 def boxes(arrows: list[dict[str, Any]]) -> list[list[float]]:
     """Each arrow's line and label as boxes (the part labels keep clear of them)."""
     out = []
     for a in arrows:
         out.append([min(a["x1"], a["x2"]) - 6, min(a["y1"], a["y2"]) - 6, max(a["x1"], a["x2"]) + 6,
                     max(a["y1"], a["y2"]) + 6])
-        w = LABEL_W * len(a["text"])
-        x0 = a["lx"] - (w if a["anchor"] == "end" else w / 2 if a["anchor"] == "middle" else 0)
-        out.append([x0, a["ly"] - 30, x0 + w, a["ly"] + 8])
+        out.append(_label_box(a))
     return out
 
 
-def _unclash(arrows: list[dict[str, Any]]) -> None:
-    """Labels of arrows ending near each other move apart (down the slide)."""
+def _hits(b: list[float], others: Any) -> bool:
+    return any(b[0] < o[2] and b[2] > o[0] and b[1] < o[3] and b[3] > o[1] for o in others)
+
+
+def _spots(a: dict[str, Any]) -> list[tuple[float, float, str]]:
+    """Where a label may go: its first choice, the other side of the tip, past the tip, then up / down the slide."""
+    x2, y2 = a["x2"], a["y2"]
+    ln = math.hypot(x2 - a["x1"], y2 - a["y1"]) or 1.0
+    ux, uy = (x2 - a["x1"]) / ln, (y2 - a["y1"]) / ln
+    flip = {"start": "end", "end": "start", "middle": "middle"}[a["anchor"]]
+    fx = 2 * x2 - a["lx"]
+    past = (x2 + ux * 46, y2 + uy * 46 + 10, "start" if ux > 0.35 else "end" if ux < -0.35 else "middle")
+    return [(a["lx"], a["ly"], a["anchor"]), (fx, a["ly"], flip), past, (a["lx"], a["ly"] - 40, a["anchor"]),
+            (a["lx"], a["ly"] + 42, a["anchor"]), (fx, a["ly"] + 42, flip), (a["lx"], a["ly"] + 84, a["anchor"])]
+
+
+def _unclash(arrows: list[dict[str, Any]], bodies: Any = (),
+             area: Optional[tuple[float, float, float, float]] = None) -> None:
+    """Each label at the first of its spots clear of the labels before it, the other arrows' lines, the bodies (the
+    first choice may touch its own) and inside the area (M2: the stacked blocks' labels piled up)."""
+    taken: list[list[float]] = []
+    lines = [[min(a["x1"], a["x2"]) - 4, min(a["y1"], a["y2"]) - 4, max(a["x1"], a["x2"]) + 4,
+              max(a["y1"], a["y2"]) + 4] for a in arrows]
     for i, a in enumerate(arrows):
-        for b in arrows[:i]:
-            if abs(a["lx"] - b["lx"]) < 150 and abs(a["ly"] - b["ly"]) < 40:
-                a["ly"] = round(b["ly"] + 42, 1)
+        best = None
+        for k, (lx, ly, anc) in enumerate(_spots(a)):
+            b = _label_box({**a, "lx": lx, "ly": ly, "anchor": anc})
+            inside = area is None or (b[0] >= area[0] - 20 and b[2] <= area[2] + 10 and b[1] >= area[1] - 10
+                                      and b[3] <= area[3] + 10)
+            clear = not _hits(b, taken) and not _hits(b, [ln for j, ln in enumerate(lines) if j != i])
+            if inside and clear and (k == 0 or not _hits(b, bodies)):
+                best = (lx, ly, anc)
+                break
+        if best is None:  # nothing clear: below the last label it would cover (the M1 rule)
+            lx, ly, anc = a["lx"], a["ly"], a["anchor"]
+            while _hits(_label_box({**a, "lx": lx, "ly": ly, "anchor": anc}), taken) and ly < VIEW[1]:
+                ly += 42
+            best = (lx, ly, anc)
+        a["lx"], a["ly"], a["anchor"] = round(best[0], 1), round(best[1], 1), best[2]
+        taken.append(_label_box(a))
+
+
+# the free-body view (M2): each body alone, every force from its centre dot, the pair forces too
+FBD_BOX = (190.0, 130.0)
+
+
+def _fbd(g: Graph, L: Layout, res: Results, shown: list[str], panel: float) -> dict[str, Any]:
+    area = (AREA[0], AREA[1] + 50, AREA[2] - panel, VIEW[1] - 20)
+    cw = (area[2] - area[0]) / len(shown)
+    fs = [f for f in res.forces if f.on in shown]
+    known = [abs(f.value.v) for f in fs if f.value.known and f.value.v]
+    top = max(known) if known else 1.0
+    cy = (area[1] + area[3]) / 2
+    bodies, arrows = [], []
+    for k, b in enumerate(shown):
+        cx = area[0] + cw * (k + 0.5)
+        n = L.nodes.get(b)
+        rot = n.rot if n is not None else 0.0
+        w = min(FBD_BOX[0], cw * 0.24)  # narrow cells: a smaller box, room for the level arrows' labels
+        h = min(FBD_BOX[1], w * 0.7)
+        name = _name(g, b, res) or (g.parts[b].label or g.parts[b].kind)
+        m = next((v for v in res.values if v.on == b and v.sym == "m" and v.known), None)
+        bodies.append({"id": b, "kind": g.parts[b].kind, "cx": round(cx, 1), "cy": round(cy, 1), "w": round(w, 1),
+                       "h": round(h, 1), "rot": round(rot, 1), "name": name,
+                       "mass": "" if m is None or m.text().split(" = ", 1)[-1] in name else m.text().split(" = ", 1)[-1]})
+        cell = (cx - cw / 2 + 10, area[1], cx + cw / 2 - 10, area[3])
+        wide = (cell[0] - 30, cell[1], cell[2] + 30, cell[3])  # a level arrow may use the room pad
+        seen: list[float] = []
+        for f in fs:
+            if f.on != b or f.value.known and abs(f.value.v) < 1e-9:
+                continue
+            same = sum(1 for a in seen if abs((a - f.ang + 180) % 360 - 180) < 12)
+            seen.append(f.ang)
+            ux, uy = math.cos(math.radians(f.ang)), math.sin(math.radians(f.ang))
+            off = 26.0 * ((same + 1) // 2) * (1 if same % 2 else -1)  # forces on one line (W and N′ down) sit apart
+            x, y = cx - uy * off, cy + ux * off
+            v = f.value
+            ln = ARROW[0] + (ARROW[1] - ARROW[0]) * abs(v.v) / top if v.known else (ARROW[0] + ARROW[1]) / 2
+            edge = abs(ux) * w / 2 + abs(uy) * h / 2
+            side = abs(ux) < 0.35
+            # well past the box's edge; a level arrow far enough for its label over the shaft outside the box
+            ln = max(ln, edge + 50, 0.0 if side else edge + LABEL_W * len(v.text()) + 14)
+            ln = min(ln, _room(x, y, ux, uy, cell if side else wide))
+            x2, y2 = x + ux * ln, y + uy * ln
+            # a vertical arrow's label beside its tip; a level / slanted one's above its shaft, ending at the tip (it
+            # stays in the body's cell: a label past the tip ran under the panel)
+            lx = x2 + (16 if uy > 0 else -16) if side else x2
+            ly = y2 + 10 - uy * 14 if side else y2 - 16 + max(0.0, uy) * 30
+            anchor = ("start" if uy > 0 else "end") if side else "end" if ux > 0 else "start"
+            arrows.append({"id": "fbd-" + f.id, "on": b, "kind": f.kind, "role": ROLE[f.kind], "x1": round(x, 1),
+                           "y1": round(y, 1), "x2": round(x2, 1), "y2": round(y2, 1), "text": v.text(),
+                           "src": v.src, "said_dir": f.said_dir, "pair": f.pair, "lx": round(lx, 1),
+                           "ly": round(ly, 1), "anchor": anchor})
+    rects = [[c["cx"] - c["w"] / 2, c["cy"] - c["h"] / 2, c["cx"] + c["w"] / 2, c["cy"] + c["h"] / 2] for c in bodies]
+    _unclash(arrows, rects, area)
+    return {"bodies": bodies, "forces": arrows, "name_y": round(area[1] - 6, 1)}
 
 
 def _name(g: Graph, on: str, res: Results) -> str:

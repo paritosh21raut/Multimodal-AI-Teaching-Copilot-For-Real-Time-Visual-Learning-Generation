@@ -8,7 +8,7 @@
 // Dev page for the concept diagrams (not used by the app): tools/diagram/k1_sheet.py draws the part library grid and
 // tests/e2e/test_diagram_browser.py renders the fixtures through window.diagramDev.show(patch, t, theme).
 import { html, render } from '../vendor/htm-preact-standalone.mjs';
-import { DiagramSvg, frame } from './player.js';
+import { DiagramSvg, frame, morph } from './player.js';
 const host = document.getElementById('host');
 window.diagramDev = {
   show(p, t = 0, theme = 'light') {
@@ -17,6 +17,11 @@ window.diagramDev = {
     render(html`<${DiagramSvg} p=${p} />`, host);
     frame(host.querySelector('svg'), p, t);
     return host.querySelectorAll('[data-id]').length;
+  },
+  // F-019 M2: patch b drawn, its arrows at time t of the move from patch a's places
+  morph(a, b, t) {
+    this.show(b, 0);
+    morph(host.querySelector('svg'), a.mech.forces, b.mech.forces, t);
   },
 };
 document.title = 'ready';

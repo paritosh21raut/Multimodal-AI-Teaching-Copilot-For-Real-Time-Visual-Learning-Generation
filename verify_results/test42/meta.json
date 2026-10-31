@@ -1,0 +1,14 @@
+{
+  "name": "test42",
+  "source": "mic",
+  "note": "M2 live",
+  "session_id": "20261031-234143-f10d",
+  "date": "2026-10-31 23:45",
+  "title": "",
+  "minutes": 3.0,
+  "utterances": 22,
+  "slides": 6,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": []
+}

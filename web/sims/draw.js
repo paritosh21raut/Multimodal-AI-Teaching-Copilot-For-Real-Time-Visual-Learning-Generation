@@ -7,7 +7,7 @@ import { html } from "../vendor/htm-preact-standalone.mjs";
 export const W = 1100;
 export const H = 740;
 export const LABEL_PX = 34;
-const HEAD = 24;      // arrow head length
+export const HEAD = 24;      // arrow head length
 const MIN_ARROW = 70;
 export const MAX_ARROW = 250;
 

@@ -16,7 +16,8 @@ def _tint(g: Graph, pid: str) -> Optional[str]:
     return c["tint"] if c else None
 
 
-def build(g: Graph, rev: int = 1, nogo: Optional[list[list[float]]] = None) -> dict[str, Any]:
+def build(g: Graph, rev: int = 1, nogo: Optional[list[list[float]]] = None, fbd: str = "") -> dict[str, Any]:
+    """fbd (M2): "" the scene, "all" or a body id: the free-body view."""
     if not g.parts:
         return {"rev": rev, "view": list(VIEW), "parts": [], "wires": [], "labels": [], "overlays": [], "tracks": [],
                 "badges": []}
@@ -25,7 +26,10 @@ def build(g: Graph, rev: int = 1, nogo: Optional[list[list[float]]] = None) -> d
     if panel:  # labels keep off the values panel
         nogo = list(nogo or []) + [[AREA[2] - panel, AREA[1], VIEW[0], AREA[3]]]
     L = solve(g, nogo, panel)
-    M = mech.build(g, L, res) if mech.wants(g) else None
+    M = mech.build(g, L, res, fbd) if mech.wants(g) else None
+    if M is not None:  # what the control's Free body button cycles through
+        M["bodies"] = mech.free_bodies(g, res, "all")
+        M["fbd_on"] = fbd if "fbd" in M else ""
     if M is not None and M["forces"]:  # the part labels again, clear of the force arrows and their labels
         L.labels = []
         place_labels(L, list(nogo or []) + mech.boxes(M["forces"]))

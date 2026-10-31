@@ -528,6 +528,13 @@ function StageBar({ spec, b, send, running }) {
   const [fix, setFix] = useState(null);  // {id, w}
   const ents = ((b.patch && b.patch.entities) || []).filter((e) => e.w);
   const live = running && !b.still;
+  // F-019 M2: the free-body view cycles off -> all bodies -> each body (when more than one) -> off
+  const mech = (b.diagram && b.diagram.mech) || {};
+  const bodies = mech.bodies || [];
+  const fbList = bodies.length ? ["", "all", ...(bodies.length > 1 ? bodies : [])] : [];
+  const fbOn = mech.fbd_on || "";
+  const fbBody = fbOn && fbOn !== "all" && mech.fbd ? (mech.fbd.bodies.find((x) => x.id === fbOn) || {}).name : "";
+  const fbName = fbOn ? `Free body: ${fbBody || "all"}` : "Free body";
   const pick = (kind) => html`<div class="menu up stage-pick" role="menu">
     ${kind === "stage_focus" && html`<button role="menuitem" class="menu-row" onClick=${() => { send("stage_focus", { slide_id: spec.id, id: "" }); setMenu(false); }}>
       ${svg(ICON.full)}<span>The whole scene</span></button>`}
@@ -546,6 +553,9 @@ function StageBar({ spec, b, send, running }) {
     <button class=${menu === "fixwho" || menu === "fix" ? "on" : ""} onClick=${() => setMenu(menu === "fixwho" ? false : "fixwho")} title="Correct a word that was misheard">${svg(ICON.edit)}Fix word</button>
     <button class=${b.frozen ? "on" : ""} onClick=${cmd("stage_freeze", { on: !b.frozen })} title="Stop (or resume) drawing what you say">${svg(ICON.pause)}${b.frozen ? "Frozen" : "Freeze"}</button>
     <button class=${menu === "focus" ? "on" : ""} onClick=${() => setMenu(menu === "focus" ? false : "focus")} title="Zoom the stage onto one thing">${svg(ICON.eye)}Focus</button>`}
+    ${live && fbList.length > 1 && html`<button class=${fbOn ? "on" : ""} data-cmd="stage_fbd"
+      onClick=${cmd("stage_fbd", { on: fbList[(fbList.indexOf(fbOn) + 1) % fbList.length] })}
+      title="Free-body diagram: every body alone with its forces (click again: one body at a time, then back)">${svg(ICON.eye)}${fbName}</button>`}
     ${live && html`<span class="seg" role="group" aria-label="Draw as">
       <button class=${b.mode === "diagram" ? "on" : ""} onClick=${cmd("stage_mode", { to: "diagram" })} title="Draw this slide as a clean concept diagram (no people, no scenery)">Diagram</button>
       <button class=${b.mode !== "diagram" ? "on" : ""} onClick=${cmd("stage_mode", { to: "scene" })} title="Draw this slide as a scene with people and places">Scene</button></span>`}

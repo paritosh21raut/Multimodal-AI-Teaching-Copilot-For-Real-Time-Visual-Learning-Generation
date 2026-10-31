@@ -97,6 +97,8 @@ CommandKind = Literal[
     "stage_pin", "stage_undo", "stage_fix", "stage_freeze", "stage_focus",
     # F-018: stage_mode {to: diagram | scene} (the teacher draws the slide as a concept diagram or a scene)
     "stage_mode",
+    # F-019 M2: stage_fbd {on: "" | "all" | body id} (the free-body view of a mechanics diagram)
+    "stage_fbd",
     # F-014 S1: sim_end = Back to slides (simulation mode ends, the recap follows); sim_accept / sim_dismiss {id}: the
     # Suggest chip; set_simulations {setting: auto | suggest | off} (kept in data/preferences.json)
     "sim_end", "sim_accept", "sim_dismiss", "set_simulations",

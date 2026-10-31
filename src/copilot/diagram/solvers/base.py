@@ -45,6 +45,7 @@ class Force:
     ang: float                   # screen degrees: 0 = right, 90 = down (y down)
     at: str = "centre"           # centre | contact | top: where the arrow starts
     said_dir: bool = True        # False: a push with no way said (drawn, decides nothing)
+    pair: bool = False           # Newton III: put on this body by the body on it (free-body view only)
 
 
 @dataclass

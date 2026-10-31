@@ -1,0 +1,7 @@
+[    0.4] Imagine two blocks on top of the other on the floor.
+[   10.6] Imagine two blocks, one on top of the other on the floor.
+[   19.4] The top block is 2kg and the bottom block is 3kg.
+[   26.0] We apply 50N on the bottom block.
+[   32.0] Now the free body diagram of both the blocks.
+[   38.4] Change the mass of the top block to 4 kg.
+[   46.5] back to the picture

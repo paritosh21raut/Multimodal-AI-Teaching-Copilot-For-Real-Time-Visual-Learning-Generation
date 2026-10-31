@@ -1,0 +1,109 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (7.5 s)
+00:26:27 INFO    copilot.stt.engine: STT: outro hallucination cut: '. . . . . . . . . . .' -> ''
+[INIT]  live speech model distil-small.en ready (1.8 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.5 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#3 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_5         openai/gpt-oss-120b            37k of 200k tokens IN USE
+        GROQ_API_KEY_6         openai/gpt-oss-120b           147k of 200k tokens ok
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~13.4 h
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 248 lecture minutes
+
+[READY] session 20261101-002617-4d15
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+00:26:34 INFO    copilot.visuals.service: CLIP ready in 0.6 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    0.4s] Imagine two blocks on top of the other on the floor. (592 ms)
+00:26:41 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two blocks on top of the other on the floor.'
+00:26:41 INFO    copilot.presentation.simulations: [SIM] stage mode on: Two blocks and floor on its own slide (cue)
+00:26:41 INFO    copilot.presentation.stage: [STAGE] diagram open: Two blocks and floor (cue)
+00:26:42 INFO    copilot.presentation.stage: [STAGE] diagram 1a1bedbc3b28: 3 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] add    'Two blocks and floor' [simulation] v1 (1 items)
+  [SLIDE] update 'Two blocks and floor' [simulation] v2 (1 items)
+00:26:42 INFO    copilot.simulation.detector: [SIM] values - {}
+00:26:44 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Physics, Blocks on Floor)
+  [UNDERSTAND] Physics > Blocks on Floor (new_topic) acts=explanation hint=example lines=1 via groq_main#5 2116 ms
+               Introduced a scenario of two stacked blocks on the floor
+00:26:44 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   10.6s] Imagine two blocks, one on top of the other on the floor. (539 ms)
+00:26:52 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two blocks, one on top of the other on the floor.'
+00:26:52 INFO    copilot.presentation.stage: [STAGE] diagram repeat redraws the first cue: 'Imagine two blocks, one on top of the other on the floor.'
+00:26:52 INFO    copilot.presentation.stage: [STAGE] diagram 86dccddf6be6: 5 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v3 (1 items)
+00:26:52 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Blocks on Floor (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 1475 ms
+               Introduced a scenario of two stacked blocks on the floor
+00:26:54 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   19.4s] The top block is 2kg and the bottom block is 3kg. (473 ms)
+00:27:00 INFO    copilot.scene.detector: [SCENE] edit 'The top block is 2kg and the bottom block is 3kg.'
+00:27:00 INFO    copilot.presentation.stage: [STAGE] diagram a80382fd735d: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v4 (1 items)
+00:27:00 INFO    copilot.simulation.detector: [SIM] values - {'mass': '2kg', 'mass#1': '3kg'}
+  [UNDERSTAND] Physics > Blocks on Floor (same_concept) acts=other hint=key_points lines=1 via groq_main#5 1937 ms
+               Provided the masses of the top and bottom blocks (2 kg and 3 kg).
+00:27:02 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   26.0s] We apply 50N on the bottom block. (477 ms)
+00:27:06 INFO    copilot.scene.detector: [SCENE] edit 'We apply 50N on the bottom block.'
+00:27:06 INFO    copilot.presentation.stage: [STAGE] diagram bf4eeacfdeb9: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v5 (1 items)
+00:27:06 INFO    copilot.simulation.detector: [SIM] values - {'force': '50N'}
+  [UNDERSTAND] Physics > Blocks on Floor (elaboration) acts=other hint=key_points lines=1 via groq_main#5 1623 ms
+               A 50 N force is applied to the bottom block.
+00:27:08 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [   32.0s] Now the free body diagram of both the blocks. (482 ms)
+00:27:12 INFO    copilot.scene.detector: [SCENE] edit 'Now the free body diagram of both the blocks.'
+00:27:12 INFO    copilot.presentation.stage: [SIM] free-body view: all
+  [SLIDE] update 'Two blocks and floor' [simulation] v6 (1 items)
+00:27:12 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Blocks on Floor (elaboration) acts=transition hint=none lines=1 via groq_main#5 4828 ms
+               Introduced the free‑body diagram for both blocks
+00:27:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (4 so far)
+  [   38.4s] Change the mass of the top block to 4 kg. (451 ms)
+00:27:19 INFO    copilot.scene.detector: [SCENE] edit 'Change the mass of the top block to 4 kg.'
+00:27:19 INFO    copilot.presentation.stage: [STAGE] diagram 14c62e6a18ee: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v7 (1 items)
+00:27:19 INFO    copilot.simulation.detector: [SIM] values - {'mass': '4 kg'}
+00:27:21 INFO    copilot.understanding.interpreter: dropped 1 revision(s) with unknown refs
+00:27:21 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Change the mass of the top block to 4 kg']
+  [UNDERSTAND] Physics > Blocks on Floor (elaboration) acts=explanation hint=concept lines=1 via groq_main#6 1628 ms
+               Top block mass changed from 2 kg to 4 kg.
+00:27:21 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [   46.5s] back to the picture (423 ms)
+00:27:25 INFO    copilot.scene.detector: [SCENE] edit 'back to the picture'
+00:27:25 INFO    copilot.presentation.stage: [SIM] free-body view: off
+  [SLIDE] update 'Two blocks and floor' [simulation] v8 (1 items)
+  [UNDERSTAND] Physics > Blocks on Floor (same_concept) acts=- hint=none lines=1 via groq_main#5 1323 ms
+               Teacher returns to the diagram
+00:27:38 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (5 so far)
+[END]   finishing lecture understanding (0 buffered lines) ...
+00:27:44 INFO    copilot.presentation.simulations: [SIM] simulation mode off (the lecture ended): recap none (0 kept, 6 dropped as parameter talk)
+[ENDED] session 20261101-002617-4d15: 7 segments, 64 words, state v18, 124 events logged
+        CommandReceived=4, ConceptSignal=7, DeckState=3, InterpretRequested=7, InterpretationReady=7, LifecycleChanged=5, LiveCue=6, ModeChanged=1, RepresentationIntent=13, SimulationModeChanged=2, SimulationSettingChanged=1, SlidePatch=8, StateChanged=18, TranscriptFinal=7, TranscriptPartial=27, UtteranceClassified=7, VocabularyChanged=1
+        stt: 7 published, 0 dropped, latency p50=477 ms p95=592 ms max=592 ms
+        understanding: 7 interpretations (7 by LLM, 0 fallbacks, 0 repaired), max 7 calls/min, prompt tokens max=1918 avg=1882, latency p50=1628 ms max=4828 ms
+        presentation: 1 slides; planner ops {'diagram_start': 1}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/1
+          1. [simulation] Two blocks and floor  (v8, ['stage'])
+        providers: {'groq_main#5': 6, 'groq_main#6': 1}; triggers: {'pause': 6, 'max_wait': 1}; outline: ['Physics > Blocks on Floor']; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261101-002617-4d15\session.sqlite
