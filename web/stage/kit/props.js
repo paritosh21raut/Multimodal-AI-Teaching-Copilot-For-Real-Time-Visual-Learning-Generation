@@ -191,6 +191,16 @@ export const PROPS = {
   bush: { draw: (w, h) => [C(-w * 0.25, h * 0.4, h * 0.42, '#3F8A4B'), C(w * 0.25, h * 0.42, h * 0.42, '#3F8A4B'), C(0, h * 0.55, h * 0.45, '#4E9F5A'), C(-w * 0.1, h * 0.7, h * 0.12, 'rgba(255,255,255,0.18)')] },
   trolley: { dynamic: true, draw: (w, h, st, ctx) => { const r = 0.09, a = -((ctx.x || 0) / r);
     return [R(-w / 2, 0.2, w / 2, h * 0.75, '#9AA0A6', 0.03), Open([[-w / 2, h * 0.75], [-w / 2 - 0.15, h]], 0.03, '#5D6470'), ...wheel(-w / 2 + 0.15, r, r, a), ...wheel(w / 2 - 0.15, r, r, a)]; } },
+  // ---------- E3 generic shapes (lookup ladder rung 4: pole -> rod, barrel -> cylinder, tray -> plate) ----------
+  rod: { draw: (w, h, st) => { const c = st.color || '#9C6A43', t = Math.min(w, h);
+    return w >= h ? [R(-w / 2, 0, w / 2, t, c, t / 2), shine(-w * 0.42, t * 0.72, w * 0.42, t * 0.72, t * 0.18)]
+      : [R(-t / 2, 0, t / 2, h, c, t / 2), shine(-t * 0.18, h * 0.06, -t * 0.18, h * 0.94, t * 0.18)]; } },
+  cylinder: { draw: (w, h, st) => { const c = st.color || '#9AA3AE', ry = Math.min(w * 0.18, h * 0.2);
+    return [R(-w / 2, ry, w / 2, h - ry, c), E(0, ry, w / 2, ry, c), E(0, h - ry, w / 2, ry, shade(c, 1.12)), R(-w * 0.32, ry, -w * 0.2, h - ry, 'rgba(255,255,255,0.35)')]; } },
+  plate: { draw: (w, h, st) => { const c = st.color || '#C9CDD3';
+    return [R(-w / 2, 0, w / 2, h, c, Math.min(h / 2, w * 0.05)), shine(-w * 0.44, h * 0.75, w * 0.44, h * 0.75, Math.max(0.004, h * 0.15))]; } },
+  lens: { draw: (w, h) => [E(0, h / 2, w / 2, h / 2, 'rgba(160,210,240,0.72)', 0, { stroke: '#7FA3BC', 'stroke-width': F(X(Math.max(0.003, w * 0.08))) }),
+    E(-w * 0.12, h * 0.62, w * 0.1, h * 0.22, 'rgba(255,255,255,0.6)')] },
 };
 
 export const ROLES = ROLE;

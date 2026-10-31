@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 import math
+import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -18,6 +19,30 @@ FILLER_HALLUCINATIONS = {
     "thank you.", "thank you", "thanks for watching!", "thanks for watching.", "thanks for watching",
     "you", "you.", "bye.", "bye!", ".", "...", "so", "so.", "okay.", "hmm.",
 }
+
+
+# Whisper's silence hallucinations (video outros) inside a real line (F-017 E3b, test34: "He pushes with 50N. Thank you
+# for your attention.", "... into the air. you"): cut before the line reaches captions or the LLM. Only outro phrases
+# and a trailing lone "thank you" / "you"; a teacher's real sentence is never cut.
+_OUTRO = re.compile(r"(?:^|(?<=[.!?])\s*|\s)(?:"
+                    r"(?:thanks?(?: you)?(?: so much| very much)? for (?:watching|listening|your attention)[.!]?)"
+                    r"|(?:(?:and )?(?:i'?ll|i will|we'?ll|we will) see you (?:in the )?next (?:time|video|one)[.!]?)"
+                    r"|(?:see you (?:in the )?next (?:time|video)[.!]?)"
+                    r"|(?:i hope you (?:enjoyed|liked) (?:this|the) video[.!]?)"
+                    r"|(?:(?:please )?(?:like and )?subscribe(?: to (?:my|the|our) channel)?[.!]?)"
+                    r"|(?:this is the (?:last|end) (?:part )?of (?:the|this) video[.!]?)"
+                    r"|(?:(?<=[.!?] )for watching[.!]?)"
+                    r")(?![a-z])(?=\s*(?:[.!?]|$|(?-i:[A-Z])))", re.IGNORECASE)
+_TAIL = re.compile(r"(?<=[.!?])\s*(?:(?:thank you(?: very much| so much)?|(?-i:you)|bye)[.!]?\s*)+$", re.IGNORECASE)
+
+
+def strip_outros(text: str) -> str:
+    """The line without Whisper's outro hallucinations ("" if nothing else was said)."""
+    t = _OUTRO.sub(" ", text)
+    t = _TAIL.sub("", t.strip())
+    t = re.sub(r"\s+([.!?,])", lambda m: m.group(1), " ".join(t.split()))
+    t = re.sub(r"^(?:[.!?,]\s*)+", "", t)
+    return t.strip()
 
 
 @dataclass
@@ -39,6 +64,7 @@ class SttResult:
     infer_ms: float
     rejected: Optional[str] = None  # reason, if the guard rejected it
     words: list[tuple[str, float, float]] = field(default_factory=list)  # (word, start s, end s) when asked for
+    probs: list[float] = field(default_factory=list)  # each word's probability (with `words`)
 
 
 def guard(text: str, duration_s: float, avg_logprob: float, no_speech_prob: float, compression_ratio: float) -> Optional[str]:
@@ -51,6 +77,8 @@ def guard(text: str, duration_s: float, avg_logprob: float, no_speech_prob: floa
     if compression_ratio > 2.4:
         return "repetitive"
     if stripped.lower() in FILLER_HALLUCINATIONS and duration_s < 3.0:
+        return "filler_hallucination"
+    if not re.search(r"[A-Za-z]{2}|\d", stripped):
         return "filler_hallucination"
     return None
 
@@ -102,6 +130,10 @@ class WhisperEngine:
         else:
             avg_lp, no_speech, comp = -10.0, 1.0, 0.0
         duration = len(audio) / 16_000
+        said = strip_outros(text)
+        if said != text:
+            log.info("STT: outro hallucination cut: %r -> %r", text, said)
+        text = said
         return SttResult(
             text=text,
             confidence=math.exp(min(0.0, avg_lp)),
@@ -111,4 +143,5 @@ class WhisperEngine:
             rejected=guard(text, duration, avg_lp, no_speech, comp),
             words=[(w.word.strip(), float(w.start), float(w.end)) for s in segments for w in (s.words or [])]
             if words else [],
+            probs=[float(getattr(w, "probability", 1.0)) for s in segments for w in (s.words or [])] if words else [],
         )

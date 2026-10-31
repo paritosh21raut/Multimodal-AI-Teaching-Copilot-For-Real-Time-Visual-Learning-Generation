@@ -1,0 +1,33 @@
+{
+ "id": "X5",
+ "title": "Beaker and centrifuge",
+ "lines": [
+  {
+   "line": "Imagine a beaker next to a centrifuge.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "beaker",
+     "kind": "beaker",
+     "label": "beaker",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "part",
+     "id": "centrifuge",
+     "kind": "unknown",
+     "label": "centrifuge",
+     "attr": {
+      "label_src": "said"
+     }
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "beaker drawn",
+  "the unknown thing as a labelled box 'centrifuge' (no wrong symbol)"
+ ]
+}

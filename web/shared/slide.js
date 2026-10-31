@@ -343,8 +343,8 @@ export const partLabel = (n) => (n ? ROMAN[n] || String(n) : "");
 
 function splitBlocks(blocks, members) {
   // F-014: a simulation has the visual column (composer.SIM_COLUMN_PX); the other blocks stack beside it
-  const sim = blocks.find((b) => b.type === "simulation" || b.type === "scene");  // F-015: a scene too
-  if (sim) return { main: blocks.filter((b) => b.type !== "simulation" && b.type !== "scene" && b.type !== "image"), aside: [], sim };
+  const sim = blocks.find((b) => b.type === "simulation" || b.type === "scene" || b.type === "stage");  // F-015 scene, F-017 stage
+  if (sim) return { main: blocks.filter((b) => b.type !== "simulation" && b.type !== "scene" && b.type !== "stage" && b.type !== "image"), aside: [], sim };
   const image = blocks.find((b) => b.type === "image");
   if (image) {
     const rest = blocks.filter((b) => b.type !== "image");
@@ -408,7 +408,8 @@ export function Slide({ spec, phase = "", onOverflow, onImageClick, onSimClick }
   const members = spec.layout === "members";
   const { main, below, aside, image, sim } = splitBlocks(spec.blocks, members);
   // F-016 (test32): a canvas scene IS the slide: its stage fills it edge to edge, the title floats over the top left
-  if (sim && sim.type === "scene" && sim.scene && sim.scene.world === "canvas") {
+  // F-017: an explainer stage on its own slide (a cue, Imagine Mode) is the whole slide too
+  if (sim && (sim.type === "scene" && sim.scene && sim.scene.world === "canvas" || sim.type === "stage" && sim.full)) {
     return html`<section data-slide=${spec.id} class=${`slide layout-canvas ${phase}`} style=${style}>
       <div class="canvas-stage"><${SimStage} key=${sim.id} b=${sim}
         onClick=${onSimClick ? () => onSimClick(sim) : undefined} /></div>

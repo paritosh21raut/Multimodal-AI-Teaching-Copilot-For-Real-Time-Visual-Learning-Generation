@@ -12,7 +12,7 @@ import time
 import webbrowser
 from collections import Counter
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from copilot.core.bus import EventBus
 from copilot.core.config import PROJECT_ROOT, Config, load_config
@@ -33,6 +33,8 @@ from copilot.core.events import (
     CorrectionPlaced,
     ModeChanged,
     SimulationSettingChanged,
+    SimulationModeChanged,
+    StageWords,
     VocabularyChanged,
     new_id,
 )
@@ -351,7 +353,42 @@ class App:
                     self._emoji_warm = asyncio.create_task(asyncio.to_thread(self.presentation._scenes.emoji.warm),
                                                            name="scene:emoji-warm")
                 print(f"[INIT]  scenes: {'on' if self._router is not None else 'off (no LLM configured)'}", flush=True)
+            if settings.scenes and settings.stage:  # F-017 E3: the explainer stage (fast path + one call per line)
+                await self._init_stage(embedder, on_failure, usage)
             self._init_images()
+
+    async def _init_stage(self, embedder: Any, on_failure: Any, usage: Any) -> None:
+        """The stage's lookup ladder (MiniLM, flat icons) and its own router: gpt-oss-20b first, then gpt-oss-120b
+        ([llm.stage] order); every model failing leaves the fast path's drafts."""
+        from copilot.llm.router import build_router
+        from copilot.scene.pictures import Emoji
+        from copilot.stage import lookup
+        from copilot.stage.director_llm import StageDirector
+
+        assert self.presentation is not None
+        ctl = self.presentation._stage
+        lad = lookup.Ladder(embedder=embedder, emoji=Emoji(embedder))
+        if embedder is not None:
+            await asyncio.to_thread(lad.warm)
+            await asyncio.to_thread(lad.emoji.warm)
+
+        async def on_icon(name: str) -> None:  # an icon landed: the open stage is drawn again (the fold finds it)
+            async with self.presentation._lock:
+                o = ctl._live()
+                if o is not None:
+                    await ctl._publish(o)
+
+        lad.on_icon = on_icon
+        lookup.set_ladder(lad)
+        order = list(self.config.get("llm", "stage", {}).get("order", ["groq_stage", "groq_main"]))
+        try:
+            router = build_router(self.config, self._http, on_failure, usage, order=order)
+        except ValueError:  # no key for any of them
+            router = None
+        if router is not None:
+            ctl.director = StageDirector(router)
+        print(f"[INIT]  stage: fast path + {' -> '.join(e.name for e in router.entries) if router else 'no LLM'}"
+              f"; ladder {'MiniLM + ' if embedder is not None else ''}icons", flush=True)
 
     def _init_images(self) -> None:
         """Automatic images (F-007b): needs the `images` extra (Pillow) and the CLIP model (loads in the background)."""
@@ -736,11 +773,33 @@ class App:
         )
         speech = self.speech
 
+        terms: list[str] = list(study)
+        stage: list[str] = []
+
+        def prompt() -> Optional[str]:
+            base = vocabulary_prompt(self.store.snapshot().setup, terms)
+            # F-017 E3: while a stage is open, its slide title and last scene nouns prime Whisper too
+            return " ".join(x for x in (base, " ".join(stage)) if x) or None
+
         async def on_vocabulary(e: VocabularyChanged) -> None:  # F-013 S3: Whisper hears the lecture's terms
-            speech.set_prompt(vocabulary_prompt(self.store.snapshot().setup, e.terms))
+            terms[:] = list(e.terms)
+            speech.set_prompt(prompt())
             log.info("[STT] vocabulary prompt: %d terms (newest: %s)", len(e.terms), ", ".join(e.terms[-3:]))
 
+        async def on_stage_words(e: StageWords) -> None:
+            stage[:] = [f"{e.title}." if e.title else "", ", ".join(e.nouns) + "." if e.nouns else ""]
+            speech.want_words = True
+            speech.set_prompt(prompt())
+
+        async def on_mode(e: SimulationModeChanged) -> None:
+            if not e.on:  # the stage closed: back to the lecture's vocabulary, no word probabilities
+                stage.clear()
+                speech.want_words = False
+                speech.set_prompt(prompt())
+
         self.bus.subscribe("speech_vocabulary", on_vocabulary, [VocabularyChanged])
+        self.bus.subscribe("speech_stage_words", on_stage_words, [StageWords])
+        self.bus.subscribe("speech_stage_mode", on_mode, [SimulationModeChanged])
         try:
             self.speech.start()
             stop_task = asyncio.create_task(self._stop.wait())

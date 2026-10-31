@@ -9,6 +9,7 @@ noun with no prop row (floor, ground, road) is the backdrop's ground line: drawn
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -30,8 +31,13 @@ PEOPLE: dict[str, tuple[Optional[str], bool, bool]] = {
     **{w: ("m", False, True) for w in ("grandfather", "grandpa", "old man")},
     **{w: ("f", False, True) for w in ("grandmother", "grandma", "old woman")},
     **{w: (None, False, False) for w in ("person", "teacher", "people", "someone", "athlete", "runner", "swimmer",
-                                         "astronaut", "passenger", "friend", "team")},
+                                         "astronaut", "passenger", "friend", "team", "you", "doctor", "nurse", "chef",
+                                         "cook", "pilot", "soldier", "police officer", "scientist", "engineer",
+                                         "dancer", "singer", "rider", "cyclist", "boxer", "footballer", "goalkeeper",
+                                         "shopkeeper", "customer", "neighbour", "neighbor", "classmate")},
 }
+# an agent noun the cast does not know is a person only if it reads as one ("plumber", "violinist"); never a rocket
+PERSONISH = re.compile(r"(?:er|or|ist|ian|ant|ent|man|woman|person)$")
 GROUND = ("floor", "ground", "road", "street", "grass", "ice", "carpet", "earth", "field", "surface", "track", "path",
           "pavement", "concrete", "sand", "mud")
 FLUIDS = ("water", "oil", "sea", "river", "pool", "pond", "lake", "liquid", "mercury")
@@ -97,6 +103,26 @@ def person(w: str) -> Optional[tuple[Optional[str], bool, bool]]:
         if f in PEOPLE:
             return PEOPLE[f]
     return None
+
+
+def kind_of(w: str) -> Optional[str]:
+    """The kind the catalog knows a noun as (agent / animal / prop / surface / place), None: not a catalog noun."""
+    f = _norm(w)
+    if person(f):
+        return "agent"
+    if species(f):
+        return "animal"
+    if prop(f):
+        return "prop"
+    if any(g in _forms(f) for g in GROUND + FLUIDS):
+        return "surface"
+    return "place" if backdrop(f) else None
+
+
+def personish(w: str) -> bool:
+    """A person noun: the table's, or one that reads as a person ("plumber"); a catalog thing never is."""
+    f = _norm(w)
+    return bool(person(f)) or (kind_of(f) is None and bool(PERSONISH.search(f.split()[-1] if f else "")))
 
 
 def known(w: str) -> bool:

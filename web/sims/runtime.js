@@ -32,6 +32,8 @@ import * as thinLens from "./thin_lens.js";
 import * as refraction from "./refraction.js";
 import * as gasPiston from "./gas_piston.js";
 import { SceneStage } from "../scene/scene.js";  // F-015: a live scene shares the stage, the clock and the bar
+import { StageView } from "../stage/view.js";     // F-017: the explainer stage (its own clock: the patch's)
+import { DiagramView } from "../diagram/player.js"; // F-018: a concept diagram (its own clock: the patch's)
 
 // template id -> scene module: { scene({sim, v, u, t}), motion(v) -> {a, dir, L, rest}, TWEEN: keys tweened }
 export const SCENES = { block_on_surface: blockOnSurface, incline, pendulum, projectile, dc_circuit: dcCircuit, wave, orbit, unit_circle: unitCircle,
@@ -54,7 +56,7 @@ export function clockOf(id, pb) {
 // still moment (drive.still_t, simulation seconds; STILL_T when a template has none), no clock, no animation
 export const STILL_T = 1.2;
 export const stillSpec = (spec) => (spec && spec.blocks
-  ? { ...spec, blocks: spec.blocks.map((b) => (b.type === "simulation" || b.type === "scene" ? { ...b, still: true } : b)) } : spec);
+  ? { ...spec, blocks: spec.blocks.map((b) => (b.type === "simulation" || b.type === "scene" || b.type === "stage" ? { ...b, still: true } : b)) } : spec);
 export const simTime = (c) => (c.state === "playing" ? c.t + (now() - c.at) * c.speed : c.t);
 
 // One-dimensional textbook motion along a track of L metres, closed form and piecewise: from u0 with velocity v0 at
@@ -99,6 +101,8 @@ const TWEEN_S = 0.16;  // time constant of the geometry tween
 // The stage of one simulation block. full: the teacher's Full stage (bigger, same clock).
 export function SimStage({ b, full, onClick }) {
   if (b.type === "scene") return html`<${SceneStage} b=${b} full=${full} onClick=${onClick} />`;
+  if (b.type === "stage") return b.diagram && (b.diagram.parts || []).length  // F-018: a concept diagram on the stage's slide
+    ? html`<${DiagramView} b=${b} onClick=${onClick} />` : html`<${StageView} b=${b} onClick=${onClick} />`;
   return html`<${TemplateStage} b=${b} full=${full} onClick=${onClick} />`;
 }
 
@@ -176,4 +180,4 @@ export function SimFull({ b, onClose }) {
 }
 
 // the slide's stage: a simulation (F-014) or a live scene (F-015)
-export const simOf = (spec) => (spec && spec.blocks ? spec.blocks.find((x) => x.type === "simulation" || x.type === "scene") : null);
+export const simOf = (spec) => (spec && spec.blocks ? spec.blocks.find((x) => x.type === "simulation" || x.type === "scene" || x.type === "stage") : null);

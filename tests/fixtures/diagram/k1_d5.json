@@ -1,0 +1,19 @@
+{
+ "id": "D5",
+ "title": "Atom",
+ "lines": [
+  {
+   "line": "Imagine an atom.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "atom",
+     "kind": "atom"
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "nucleus + shells + electrons (not an icon)"
+ ]
+}

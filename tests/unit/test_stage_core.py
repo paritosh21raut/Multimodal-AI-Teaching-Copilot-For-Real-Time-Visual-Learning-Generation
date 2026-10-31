@@ -99,7 +99,10 @@ def test_unsafe_blocklist_budgets_and_catalog():
     rs = reasons(delta([{"op": "add", "id": "x", "kind": "prop", "w": "gizmo", "near": "flux capacitor"},
                         {"op": "add", "id": "y", "kind": "prop", "w": "gizmo"},
                         {"op": "add", "id": "z", "kind": "prop", "w": "gizmo", "near": "box"}]))
-    assert "not in the catalog" in rs[0] and "nothing draws" in rs[1] and len(rs) == 2
+    # E3: an unknown noun is no longer refused: the lookup ladder draws it (here a labelled box, rung 6)
+    assert "not in the catalog" in rs[0] and len(rs) == 1
+    d = delta([{"op": "add", "id": "y", "kind": "prop", "w": "gizmo"}])
+    assert d.ok[0][1]["draw"] == "box" and d.ok[0][1]["rung"] == 6
 
 
 def test_labels_and_diagram_params_must_be_said():
@@ -215,12 +218,17 @@ def test_fold_undo_and_fast_drafts():
     g = log.fold()
     assert set(g.ents) == {"man"} and "p1" not in g.actions  # the push used the undone box: skipped
     assert log.fold(upto=add_box + 1).ents.keys() == {"man", "box"}
-    # a fast draft counts until the LLM delta of its line replaces it
+    # a fast draft counts until the LLM delta of its line arrives; E3b: the delta merges with it (a drafted noun it
+    # does not name survives, as src merge) and drops a draft only by naming it (set / remove)
     log.say("l3", "A ball.")
     log.delta([{"op": "add", "id": "ball", "kind": "prop", "w": "ball"}], "l3", src="fast")
     assert "ball" in log.fold().ents
     log.delta([{"op": "add", "id": "rock", "kind": "prop", "w": "rock"}], "l3", src="llm")
-    assert "ball" not in log.fold().ents and "rock" in log.fold().ents
+    assert {"ball", "rock"} <= set(log.fold().ents) and any(e.src == "merge" for e in log.events)
+    log.say("l4", "A cup.")
+    log.delta([{"op": "add", "id": "cup", "kind": "prop", "w": "cup"}], "l4", src="fast")
+    log.delta([{"op": "remove", "id": "cup"}, {"op": "add", "id": "mug", "kind": "prop", "w": "bottle"}], "l4", src="llm")
+    assert "cup" not in log.fold().ents and "mug" in log.fold().ents
     assert all({"seq", "t_ms", "src", "line_id", "op", "ok"} <= set(e.row()) for e in log.events)
 
 

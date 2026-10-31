@@ -888,6 +888,8 @@ section.drop-gap { margin: 0; }
 .image-bar.sim-bar { position: absolute; }  /* .menu-wrap (relative) is later in this file */
 .sim-bar button.speed { min-width: 44px; padding: 0 8px; justify-content: center; font-variant-numeric: tabular-nums; }
 .sim-bar button.on { background: var(--accent-soft); color: var(--accent); }
+.sim-bar .seg { display: inline-flex; border: 1px solid var(--line, rgba(0,0,0,.15)); border-radius: 8px; overflow: hidden; }  /* F-018 Diagram | Scene */
+.sim-bar .seg button { border-radius: 0; }
 .sim-bar .menu.up { right: 0; left: auto; bottom: calc(100% + 8px); }
 .sim-values { min-width: 360px; padding: 10px 12px; display: grid; gap: 8px; }
 /* F-015 L2a: a moving thing's picture */
@@ -937,3 +939,9 @@ section.drop-gap { margin: 0; }
 
 /* S4: a typed value the server did not read (Values text field) */
 .sim-row.text input.refused { outline: 2px solid var(--accent-2); outline-offset: 1px; }
+/* F-017 E3: the stage bar's "did you mean" chips and the fix-word box */
+.stage-unsure { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px;
+  background: color-mix(in srgb, #F07C1A 16%, transparent); font-size: 13px; }
+.stage-unsure button { padding: 2px 8px; font-size: 13px; }
+.stage-fix form { display: flex; gap: 6px; padding: 8px; }
+.stage-fix input { min-width: 12em; }

@@ -1,0 +1,23 @@
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>diagram dev</title><link rel="icon" href="data:,">
+<link rel="stylesheet" href="/web/shared/tokens.css" />
+<link rel="stylesheet" href="/web/shared/slide.css" />
+<style>html,body{margin:0;background:var(--stage-bg, var(--bg))}#host{width:1600px;height:1000px}</style>
+</head><body><div id="host"></div>
+<script type="module">
+// Dev page for the concept diagrams (not used by the app): tools/diagram/k1_sheet.py draws the part library grid and
+// tests/e2e/test_diagram_browser.py renders the fixtures through window.diagramDev.show(patch, t, theme).
+import { html, render } from '../vendor/htm-preact-standalone.mjs';
+import { DiagramSvg, frame } from './player.js';
+const host = document.getElementById('host');
+window.diagramDev = {
+  show(p, t = 0, theme = 'light') {
+    document.documentElement.dataset.theme = theme;
+    render(null, host);
+    render(html`<${DiagramSvg} p=${p} />`, host);
+    frame(host.querySelector('svg'), p, t);
+    return host.querySelectorAll('[data-id]').length;
+  },
+};
+document.title = 'ready';
+</script></body></html>

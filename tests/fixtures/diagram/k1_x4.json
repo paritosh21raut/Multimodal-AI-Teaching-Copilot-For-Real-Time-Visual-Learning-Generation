@@ -1,0 +1,60 @@
+{
+ "id": "X4",
+ "title": "Pulley with two blocks",
+ "lines": [
+  {
+   "line": "Imagine a pulley with two blocks hanging from it.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "pulley",
+     "kind": "pulley",
+     "label": "pulley",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "part",
+     "id": "block",
+     "kind": "block"
+    },
+    {
+     "op": "part",
+     "id": "block2",
+     "kind": "block"
+    },
+    {
+     "op": "place",
+     "a": "block",
+     "rel": "hang_from",
+     "b": "pulley"
+    },
+    {
+     "op": "place",
+     "a": "block2",
+     "rel": "hang_from",
+     "b": "pulley"
+    },
+    {
+     "op": "part",
+     "id": "support",
+     "kind": "support",
+     "attr": {
+      "implied": true
+     }
+    },
+    {
+     "op": "place",
+     "a": "pulley",
+     "rel": "hang_from",
+     "b": "support"
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "pulley hangs from a support",
+  "one block on each side, on ropes"
+ ]
+}

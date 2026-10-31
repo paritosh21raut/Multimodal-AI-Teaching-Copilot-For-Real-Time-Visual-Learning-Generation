@@ -236,11 +236,28 @@ class SceneBlock(_Model):
     scene: SceneSpec
 
 
+class StageBlock(_Model):
+    """The explainer stage (F-017, docs/contracts/stage-spec.md §8): the director's last `stage.patch`, played by
+    web/stage/ on the slide (the whole slide in Imagine Mode, else the visual column). In diagram mode (F-018,
+    docs/contracts/diagram-spec.md §7) it holds a `diagram.patch` instead, played by web/diagram/. Not teacher text. Its id stays
+    the same while the scene builds; a new patch.rev restarts the stage clock on the clients. still: the scene ended,
+    the slide keeps its last frame as a figure (drawn frozen, no clock)."""
+    type: Literal["stage"] = "stage"
+    id: str = Field(default_factory=new_id)
+    patch: dict = Field(default_factory=dict)
+    full: bool = True            # the whole slide is the stage (Imagine Mode, a cue's own slide)
+    still: bool = False
+    frozen: bool = False         # the teacher's Freeze: speech does not change it
+    unsure: list[dict] = Field(default_factory=list)  # [{id, w, options}] words Whisper was unsure of (/control)
+    diagram: dict = Field(default_factory=dict)  # F-018: a concept diagram's `diagram.patch` (diagram mode), drawn instead
+    mode: Literal["stage", "diagram"] = "stage"   # F-018: what the block shows (the teacher's Diagram | Scene switch)
+
+
 Block = Annotated[
     Union[
         DefinitionBlock, PointsBlock, ProcessBlock, ComparisonBlock, TimelineBlock, HierarchyBlock,
         CauseEffectBlock, FormulaBlock, ExampleBlock, CalloutBlock, ImageBlock, FactsBlock, GroupsBlock,
-        SimulationBlock, SceneBlock,
+        SimulationBlock, SceneBlock, StageBlock,
     ],
     Field(discriminator="type"),
 ]

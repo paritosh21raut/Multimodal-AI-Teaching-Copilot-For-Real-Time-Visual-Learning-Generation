@@ -1,0 +1,33 @@
+{
+ "id": "D2",
+ "title": "Two circles C1 and C2",
+ "lines": [
+  {
+   "line": "Imagine two circles, C1 and C2.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "c1",
+     "kind": "circle",
+     "label": "C1",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "part",
+     "id": "c2",
+     "kind": "circle",
+     "label": "C2",
+     "attr": {
+      "label_src": "said"
+     }
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "two circles labelled C1, C2",
+  "no person"
+ ]
+}

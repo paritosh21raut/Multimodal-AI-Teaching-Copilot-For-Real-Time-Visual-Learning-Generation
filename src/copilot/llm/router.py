@@ -54,6 +54,7 @@ class Entry:
     failures: int = 0
     usage_key: str = ""  # "<host>:<key id>:<model>": one free-tier daily quota (Groq counts per model and key)
     env: str = ""        # the .env variable holding the key ("GROQ_API_KEY_3"); never the key itself
+    dead: str = ""       # why this key is out for the session (a 401 / 403: an invalid key is not tried again)
 
     @property
     def tpd(self) -> int:
@@ -163,6 +164,8 @@ class LLMRouter:
         fresh: set[str] = set()  # families whose active key was settled in this call
         busy: list[Entry] = []   # skipped only for their per-minute limits: free again within seconds
         for entry in self._ordered():
+            if entry.dead:
+                continue
             daily = self._daily_refusal(entry, budget)
             if daily is not None:
                 attempts.append(f"{entry.name}: skipped ({daily})")
@@ -249,6 +252,10 @@ class LLMRouter:
                     entry.limiter.cooldown(err.retry_after or st.cooldown_429_s)
                 elif isinstance(err, Unavailable):
                     entry.limiter.cooldown(st.cooldown_unavailable_s)
+                elif isinstance(err, Rejected) and _auth_error(str(err)):
+                    entry.dead = str(err)[:80]  # E3b test34: a 401 key failed again every 5 min
+                    log.warning("llm %s: the key is invalid (%s); it is left out for this session", entry.name,
+                                str(err)[:3])
                 elif isinstance(err, Rejected):
                     entry.limiter.cooldown(st.cooldown_rejected_s)
                 if retry:
@@ -264,6 +271,11 @@ class LLMRouter:
             attempts.append(f"{entry.name}: ok")
             return RouterResult(resp, entry.name, attempts)
         return None
+
+
+def _auth_error(msg: str) -> bool:
+    """A 401 answer: the key itself is bad (invalid, revoked), not this one call."""
+    return msg[:3] == "401" or "invalid_api_key" in msg
 
 
 def _natural(name: str) -> tuple:
@@ -288,7 +300,7 @@ def api_keys(env_name: str, order: Sequence[str] = ()) -> list[tuple[str, str]]:
 
 
 def build_router(config: Config, client: httpx.AsyncClient, on_failure: Optional[FailureHook] = None,
-                 usage: Optional[UsageLedger] = None) -> LLMRouter:
+                 usage: Optional[UsageLedger] = None, order: Optional[list[str]] = None) -> LLMRouter:
     """Entries from config [llm].order; entries whose API key is missing are left out (logged).
 
     An entry whose key env var has numbered siblings (GROQ_API_KEY_2, _3, ...) gets one entry per key, right after
@@ -297,7 +309,7 @@ def build_router(config: Config, client: httpx.AsyncClient, on_failure: Optional
     llm = config.section("llm")
     providers = llm.get("providers", {})
     entries: list[Entry] = []
-    for name in llm.get("order", []):
+    for name in (order if order is not None else llm.get("order", [])):  # order: another call's models (F-017 stage)
         raw = dict(providers.get(name, {}))
         if not raw:
             log.warning("llm entry %r in order but not configured", name)

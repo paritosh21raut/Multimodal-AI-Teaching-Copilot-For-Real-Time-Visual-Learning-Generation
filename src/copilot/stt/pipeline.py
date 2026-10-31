@@ -12,9 +12,10 @@ from __future__ import annotations
 import asyncio
 import logging
 import queue
+import re
 import threading
 import time
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 
@@ -135,6 +136,8 @@ class SpeechPipeline:
         self._split_sentences = bool(on)
         if not on:
             self._split_request = None
+
+    want_words: bool = False  # F-017 E3: the stage is open (one reference assignment, read by the STT thread)
 
     def set_prompt(self, prompt: Optional[str]) -> None:
         """A new vocabulary prompt for the next utterances (F-013 S3: the lecture glossary grew). The final model's
@@ -305,7 +308,8 @@ class SpeechPipeline:
                 utt, detected_at = item
                 self.stats["utterances"] += 1
                 try:
-                    res = self._engine.transcribe(utt.audio, self._prompt)
+                    # F-017 E3: while a stage is open the final pass keeps word probabilities (unsure nouns are ghosted)
+                    res = self._engine.transcribe(utt.audio, self._prompt, words=True) if self.want_words                         else self._engine.transcribe(utt.audio, self._prompt)
                 except Exception as e:
                     log.exception("STT failed for utterance %.1f-%.1f", utt.start, utt.end)
                     self._publish(UtteranceDropped(start=utt.start, end=utt.end, reason=f"stt_error: {e}"))
@@ -323,6 +327,7 @@ class SpeechPipeline:
                     end=round(utt.end, 3),
                     confidence=round(res.confidence, 3),
                     source="mic",
+                    unsure=unsure_words(res),
                 )
                 self._publish(TranscriptFinal(segment=segment, stt_latency_ms=round(latency_ms, 1),
                                               utterance=utt.number))
@@ -334,3 +339,16 @@ class SpeechPipeline:
                 self._loop.call_soon_threadsafe(self._finished.set)
             except RuntimeError:  # loop already closed
                 pass
+
+
+UNSURE_P = 0.45  # a word below this probability is "unsure" (F-017 E3: a visual noun is ghosted, /control asks)
+
+
+def unsure_words(res: Any) -> list[str]:
+    """Words of 3+ letters Whisper gave a low probability (only when word probabilities were asked for)."""
+    out = []
+    for (w, _, _), p in zip(getattr(res, "words", []) or [], getattr(res, "probs", []) or []):
+        w = re.sub(r"[^A-Za-z'-]", "", w)
+        if len(w) >= 3 and p < UNSURE_P:
+            out.append(w.lower())
+    return out

@@ -1,0 +1,52 @@
+{
+ "id": "D10",
+ "title": "Spring with a mass",
+ "lines": [
+  {
+   "line": "Imagine a spring with a mass hanging from it.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "spring",
+     "kind": "spring",
+     "label": "spring",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "part",
+     "id": "mass",
+     "kind": "mass",
+     "label": "mass",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "place",
+     "a": "mass",
+     "rel": "hang_from",
+     "b": "spring"
+    },
+    {
+     "op": "part",
+     "id": "support",
+     "kind": "support",
+     "attr": {
+      "implied": true
+     }
+    },
+    {
+     "op": "place",
+     "a": "spring",
+     "rel": "hang_from",
+     "b": "support"
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "mass hangs FROM the spring end"
+ ]
+}

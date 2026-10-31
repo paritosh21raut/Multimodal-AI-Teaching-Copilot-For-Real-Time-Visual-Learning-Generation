@@ -1,16 +1,19 @@
 # CLAUDE.md — Multimodal AI Teaching Copilot
 
 Listens to a live lecture and renders a continuity-aware live educational display on the projector.
-V1 = live slides (done). V2 = Concept Simulation: S0–S4 templates (done); F-015 scene core (done); F-016 C1 canvas (done,
-baseline); **V2 Next = F-017 Explainer Stage** (2D stage: explainer_flat look, chibi people from CC0 mocap, director + acting + laws, sessions
-E1–E5, ADR-0011). V3 Story Scenes, V4 Multilingual reuse the same stage.
+V1 = live slides (done). V2 = Concept Simulation: S0–S4 templates (done); F-015 scenes, F-016 C1 canvas, F-017 E1–E3b
+people stage (done, parked); F-018 K1 diagrams (done). **V2 Next = F-019 Live Concept Simulator** (ADR-0014): composed
+diagrams + values said later + one solver per domain, cards M0–M5, run as **the loop** (`docs/v2/LOOP.md`).
+Order: Concept Simulator → V3 Story → Canvas of Imagination; V4 Multilingual later.
 
 Branch: **`V2-Concept-Simulation`** (holds all of V1; V1 fixes go here). `CLAUDE_rebuild` = V1, untouched unless
 asked. Do not inspect other branches. Original requirements: `docs/brief/master-prompt.md` (only if in question).
 
 ## Session protocol (token budget matters)
-1. Read `docs/STATE.md` (short). It names the current session card.
-2. Read that card (`docs/v2/Lx-*.md`) and ONLY the files it lists. Need something else? grep / read a line range,
+0. Until M5 the session follows `docs/v2/LOOP.md`: the user types `next` / `test done` / `fix` / `ok`; Claude runs
+   the phase (build → live test script → evaluate `verify_results/testN` → fix → close) and keeps sessions short.
+1. Read `docs/STATE.md` (short). It names the current session card and the loop phase.
+2. Read that card (`docs/v2/Mx-*.md`) and ONLY the files it lists. Need something else? grep / read a line range,
    don't read whole large files. Never read `docs/history/` unless asked.
 3. Short plan → implement → tests for the touched area → runtime check → one review subagent on the diff → update
    the card's Result (≤ 1 KB) + `STATE.md` (≤ 3 KB) → report → recommend a commit.
@@ -27,7 +30,8 @@ asked. Do not inspect other branches. Original requirements: `docs/brief/master-
 ## Doc map (load only what the task needs)
 | Task | Load |
 |---|---|
-| V2 Next (stage) | current E-card in `docs/v2/`, `docs/v2/F-017-explainer-stage.md`, `docs/contracts/stage-spec.md` |
+| V2 Next (simulator) | current M-card, `docs/v2/LOOP.md`, `docs/v2/F-019-concept-simulator.md`, `docs/contracts/diagram-spec.md` |
+| Parked stage (only if a card says) | `docs/v2/F-017-explainer-stage.md`, `docs/contracts/stage-spec.md` |
 | Old templates (only if a card says) | `docs/specs/F-014-concept-simulation.md`, `docs/contracts/simulation-spec.md`, ADR-0010 |
 | Rules in question | `docs/RULES.md` |
 | Core / events / state | `docs/architecture/overview.md`, `docs/contracts/events.md`, `docs/contracts/lecture-state.md` |

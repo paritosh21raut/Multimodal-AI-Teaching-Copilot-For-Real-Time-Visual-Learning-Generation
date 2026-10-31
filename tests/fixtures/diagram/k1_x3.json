@@ -1,0 +1,44 @@
+{
+ "id": "X3",
+ "title": "Flask on a burner",
+ "lines": [
+  {
+   "line": "Imagine a flask on a burner.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "flask",
+     "kind": "flask",
+     "label": "flask",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "part",
+     "id": "burner",
+     "kind": "burner",
+     "label": "burner",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "place",
+     "a": "flask",
+     "rel": "on",
+     "b": "burner"
+    },
+    {
+     "op": "process",
+     "verb": "heat",
+     "target": "flask"
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "flask sits ON the gauze",
+  "flame under it"
+ ]
+}

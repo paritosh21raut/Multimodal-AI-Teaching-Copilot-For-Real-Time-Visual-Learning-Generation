@@ -1,0 +1,29 @@
+{
+ "id": "D9",
+ "title": "Bar magnet and its field",
+ "lines": [
+  {
+   "line": "Imagine a bar magnet and its field.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "bar_magnet",
+     "kind": "bar_magnet",
+     "label": "bar magnet",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "show",
+     "what": "field",
+     "on": "bar_magnet"
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "N / S marked",
+  "field lines N -> S outside"
+ ]
+}

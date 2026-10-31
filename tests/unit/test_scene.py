@@ -375,6 +375,7 @@ ANSWERS = {
 
 
 async def scene_lecture(**settings):
+    settings.setdefault("stage", False)  # F-017: these test the F-015 / F-016 scene controller (the C1 canvas)
     bus, store, deck, eng, clock = await make(min_dwell_s=0.0, templates_auto=False, **settings)
     SimulationDetector(bus).attach()
     SceneDetector(bus).attach()
@@ -718,7 +719,11 @@ def test_a_launched_body_keeps_its_name_above_it_among_many_lanes():
     assert g.label_at[0] == g.c[0] and s2.get("m0").geom.label_at[0] == layout.MARGIN
 
 
-@pytest.mark.parametrize("line", ["Imagine an inclined plane.", "Consider a plane mirror.", "Consider the xy plane.",
+def test_an_inclined_plane_is_a_concept_diagram_not_a_plane():
+    assert cue("Imagine an inclined plane.") == "diagram"  # F-018 / ADR-0013 (was: no cue at all)
+
+
+@pytest.mark.parametrize("line", ["Consider a plane mirror.", "Consider the xy plane.",
                                   "Consider a bus topology network.", "Imagine the address bus of a CPU.",
                                   "Consider a cube root.", "Picture the cones in the retina."])
 def test_look_alike_nouns_are_not_scene_cues(line):

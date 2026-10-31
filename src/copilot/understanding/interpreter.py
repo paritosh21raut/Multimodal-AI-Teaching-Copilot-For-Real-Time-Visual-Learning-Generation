@@ -223,7 +223,9 @@ def _normalise_rows(items: dict) -> None:
     items["rows"] = out
 
 
-def parse_interpretation(text: str) -> Interpretation:
+def parse_interpretation(text: str, topic: str = "") -> Interpretation:
+    """topic: the lecture's current topic title; a blank topic in the output takes it (E3b, test34: a line of
+    greetings came back with topic "" and cost a repair call) instead of failing the schema."""
     raw = _FENCE.sub("", text.strip())
     start, end = raw.find("{"), raw.rfind("}")
     if start < 0 or end <= start:
@@ -236,6 +238,8 @@ def parse_interpretation(text: str) -> Interpretation:
         data = _normalise(data)
     except Exception as e:  # odd shapes must lead to repair/fallback, never escape
         raise InvalidInterpretation(f"unexpected shape: {type(e).__name__}: {e}") from e
+    if topic and isinstance(data, dict) and not str(data.get("topic") or "").strip():
+        data["topic"] = topic
     try:
         return Interpretation.model_validate(data)
     except ValidationError as e:
@@ -787,8 +791,15 @@ class Interpreter:
 
         log.debug("interpretation raw output from %s: %s", res.entry, res.response.text[:2000])
         repaired = False
+        cur = state.topic(state.current_topic_id)
         try:
-            it = parse_interpretation(res.response.text)
+            try:
+                it = parse_interpretation(res.response.text)
+            except InvalidInterpretation as blank:
+                if cur is None or "topic must not be blank" not in str(blank):
+                    raise
+                # E3b (test34): a line of greetings came back with topic "": the lecture's topic, not a repair call
+                it = parse_interpretation(res.response.text, cur.title)
         except InvalidInterpretation as first:
             log.warning("interpretation from %s invalid (%s); one repair attempt", res.entry, first)
             instruction = f"That output was invalid: {str(first)[:300]}. Reply with the corrected JSON object only."

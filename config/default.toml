@@ -31,6 +31,7 @@ title_slide = true         # title slide at LIVE when an expected topic is given
 simulations = "auto"       # F-014: auto (a spoken cue shows one) | suggest (a /control chip) | off; the teacher's switch wins (data/preferences.json)
 templates_auto = false     # F-015 (2026-10-22): the 21 templates start only when the teacher picks one in /control
 scenes = true              # F-015: "imagine a square..." draws a live scene (one LLM call per cue / edit; follows `simulations`)
+stage = true               # F-017: motion / picture cues and Imagine Mode draw on the explainer stage; geometry / plot cues stay F-015 scenes (false: the C1 canvas)
 
 [images]
 enabled = true             # automatic images (F-007b); the teacher's own images work either way
@@ -139,6 +140,20 @@ api_key_env = "GROQ_API_KEY"
 rpm = 30
 tpm = 8000
 tpd = 200000   # Groq free tier, per model and key
+extra = { reasoning_effort = "low", include_reasoning = false }
+
+# F-017 E3: the explainer stage's one call per line: the small model first (fast, JSON), then 120b; then the fast
+# path's drafts only
+[llm.stage]
+order = ["groq_stage", "groq_main"]
+
+[llm.providers.groq_stage]
+base_url = "https://api.groq.com/openai/v1"
+model = "openai/gpt-oss-20b"
+api_key_env = "GROQ_API_KEY"
+rpm = 30
+tpm = 8000
+tpd = 200000
 extra = { reasoning_effort = "low", include_reasoning = false }
 
 [llm.providers.groq_alt]

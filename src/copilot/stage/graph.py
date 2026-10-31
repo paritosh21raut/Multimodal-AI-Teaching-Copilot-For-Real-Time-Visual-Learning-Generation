@@ -31,6 +31,10 @@ class Ent:
     added: int = 0       # seq of the add
     said: int = 0        # seq of the last op naming it (dimming)
     line: str = ""       # line id of the last op naming it (framing: the current sentence)
+    rung: int = 1        # lookup ladder rung (stage.lookup): 2+ = a stand-in, the said word shows as a chip
+    src: str = ""        # an icon's URL (rung 5)
+    pinned: bool = False  # the teacher's Pin: never dimmed
+    ghost: bool = False   # only a fast-path draft (or a word Whisper was unsure of) says it: drawn ghosted
 
 
 @dataclass
@@ -121,23 +125,29 @@ def _touch(g: Graph, ids: list[Optional[str]], line: str) -> None:
             g.ents[i].said, g.ents[i].line = g.seq, line
 
 
-def apply(g: Graph, op: Any, checked: dict[str, Any], line: str) -> None:
-    """Fold one checked op into the graph (in place). `checked` carries what the validator resolved (draw, SI value)."""
+def apply(g: Graph, op: Any, checked: dict[str, Any], line: str, src: str = "llm") -> None:
+    """Fold one checked op into the graph (in place). `checked` carries what the validator resolved (draw, SI value).
+    src: who said it (a fast-path add is a ghost until an LLM or teacher op names it)."""
     g.seq += 1
     k = op.op
+    for i in (getattr(op, "id", None), getattr(op, "a", None), getattr(op, "agent", None)):
+        if src != "fast" and i in g.ents and k != "remove":
+            g.ents[i].ghost = False
     if k == "add":
         if op.id in g.ents:  # a retried add: merge
             e = g.ents[op.id]
             e.attr = sorted(set(e.attr) | set(op.attr))
         else:
             g.ents[op.id] = Ent(op.id, op.kind, op.w, checked["draw"], tuple(checked["size"]), op.near, list(op.attr),
-                                added=g.seq)
+                                added=g.seq, rung=checked.get("rung", 1), src=checked.get("src", ""),
+                                ghost=src == "fast")
         _touch(g, [op.id], line)
     elif k == "set":
         e = g.ents[op.id]
         if op.w:
             e.w = op.w
             e.draw, e.size = checked.get("draw", e.draw), tuple(checked.get("size", e.size))
+            e.rung, e.src = checked.get("rung", e.rung), checked.get("src", e.src)
         if op.attr is not None:
             e.attr = list(op.attr)
         if op.state:
@@ -171,6 +181,12 @@ def apply(g: Graph, op: Any, checked: dict[str, Any], line: str) -> None:
             if a.id != op.id:
                 a.active = False
         g.actions[op.id] = Action(op.id, op.verb, op.agent, op.obj, op.dir, op.manner, True, g.seq, line)
+        if op.verb in ("carry", "hold", "pick_up", "throw") and op.obj in g.ents and not any(
+                r.kind == "holding" and r.a == op.agent and r.b == op.obj for r in g.rels):
+            # what is carried / thrown is in the hands (contract: carry / throw / hold imply holding; test34: the LLM
+            # left it out and "puts it down" was refused)
+            g.rels = [r for r in g.rels if not (r.kind == "holding" and r.b == op.obj)]
+            g.rels.append(Rel(op.agent, "holding", op.obj))
         _touch(g, [op.agent, op.obj], line)
     elif k == "end":
         a = g.actions[op.id]

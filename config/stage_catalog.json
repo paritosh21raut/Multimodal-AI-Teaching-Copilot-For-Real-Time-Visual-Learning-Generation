@@ -2402,6 +2402,164 @@
    },
    "states": [],
    "colourable": false
+  },
+  {
+   "id": "rod",
+   "names": [
+    "rod",
+    "stick",
+    "pole",
+    "bar",
+    "pipe"
+   ],
+   "category": "shape",
+   "size_m": [
+    0.05,
+    1.2
+   ],
+   "anchors": {
+    "top": [
+     0,
+     1
+    ],
+    "face_l": [
+     -0.5,
+     0.5
+    ],
+    "face_r": [
+     0.5,
+     0.5
+    ],
+    "centre": [
+     0,
+     0.5
+    ],
+    "bottom": [
+     0,
+     0
+    ],
+    "handle": [
+     0,
+     0.6
+    ]
+   },
+   "states": [],
+   "colourable": true
+  },
+  {
+   "id": "cylinder",
+   "names": [
+    "cylinder",
+    "can",
+    "drum",
+    "barrel",
+    "tin"
+   ],
+   "category": "shape",
+   "size_m": [
+    0.25,
+    0.35
+   ],
+   "anchors": {
+    "top": [
+     0,
+     1
+    ],
+    "face_l": [
+     -0.5,
+     0.5
+    ],
+    "face_r": [
+     0.5,
+     0.5
+    ],
+    "centre": [
+     0,
+     0.5
+    ],
+    "bottom": [
+     0,
+     0
+    ]
+   },
+   "states": [],
+   "colourable": true
+  },
+  {
+   "id": "plate",
+   "names": [
+    "plate",
+    "disc",
+    "disk",
+    "sheet",
+    "slab"
+   ],
+   "category": "shape",
+   "size_m": [
+    0.24,
+    0.03
+   ],
+   "anchors": {
+    "top": [
+     0,
+     1
+    ],
+    "face_l": [
+     -0.5,
+     0.5
+    ],
+    "face_r": [
+     0.5,
+     0.5
+    ],
+    "centre": [
+     0,
+     0.5
+    ],
+    "bottom": [
+     0,
+     0
+    ]
+   },
+   "states": [],
+   "colourable": true
+  },
+  {
+   "id": "lens",
+   "names": [
+    "lens",
+    "convex lens",
+    "magnifying glass"
+   ],
+   "category": "shape",
+   "size_m": [
+    0.04,
+    0.12
+   ],
+   "anchors": {
+    "top": [
+     0,
+     1
+    ],
+    "face_l": [
+     -0.5,
+     0.5
+    ],
+    "face_r": [
+     0.5,
+     0.5
+    ],
+    "centre": [
+     0,
+     0.5
+    ],
+    "bottom": [
+     0,
+     0
+    ]
+   },
+   "states": [],
+   "colourable": false
   }
  ],
  "backdrops": [
@@ -2412,7 +2570,8 @@
     "outside",
     "field",
     "ground",
-    "countryside"
+    "countryside",
+    "sky"
    ],
    "ground_y": 0,
    "regions": {
@@ -2508,7 +2667,6 @@
     "space",
     "moon surface",
     "mars",
-    "sky",
     "moon",
     "lunar surface",
     "jupiter"

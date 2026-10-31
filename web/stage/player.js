@@ -7,8 +7,9 @@ import { blend, clip as clipRow, hasClip, sample } from './motion.js';
 import { drawOverlays, at as sampleAt } from './overlays.js';
 import * as people from './people.js';
 import { B, VH } from './style.js';
-import { F, el, markup, reconcile, setAttr, setMarkup } from './svg.js';
+import { F, P, el, markup, reconcile, setAttr, setMarkup } from './svg.js';
 
+const GHOST = 0.5;  // E3: a fast-path draft (the LLM has not confirmed it yet) or a word Whisper was unsure of
 const HOLD = new Set(['hand_r', 'hand_l', 'hands']);  // sockets that mean 'held in the hand(s)'
 const FAR = 0.6;  // the far row: drawn behind, at 0.6 scale, standing a little up the backdrop
 const ease3 = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
@@ -85,7 +86,7 @@ export class Player {
   // ---------- placement (world metres) ----------
   base(id, t) {
     const s = this.byId[id], e = s.e, x = e.xform || {};
-    const o = { x: x.x || 0, y: x.y || 0, rot: x.rot || 0, dir: x.dir || 1, scale: x.scale || 1, opacity: x.dim ? 0.45 : 1,
+    const o = { x: x.x || 0, y: x.y || 0, rot: x.rot || 0, dir: x.dir || 1, scale: x.scale || 1, opacity: (x.dim ? 0.45 : 1) * (e.ghost ? GHOST : 1),
       state: { ...(e.state || {}) }, size: x.size || null };
     if (s.path) {
       const v = sampleAt(s.path.samples, t);
@@ -249,7 +250,7 @@ export class Player {
         reconcile(d.inner, animals.draw({ kind, x: o.x, y: o.y, t, dir: o.dir, speed: o.state.speed != null ? o.state.speed : o.speed, dist: o.dist,
           pose: o.state.pose || ((o.speed || 0) > 0.05 ? 'walk' : 'stand'), scale: o.scale, color: o.state.color }));
       } else {
-        const kit = PROPS[e.draw];
+        const kit = PROPS[e.draw] || standIn(e);
         if (!kit) continue;
         const [w, h] = this.sizeOf(e.id, o);
         setAttr(d.g, 'transform', `translate(${F(o.x * B)},${F(-o.y * B)})${o.rot ? ` rotate(${F(-o.rot)})` : ''}${o.dir < 0 || o.scale !== 1 ? ` scale(${F(o.dir * o.scale * 100) / 100},${F(o.scale * 100) / 100})` : ''}`);
@@ -302,3 +303,19 @@ export class Player {
 }
 
 export const clipOf = clipRow;
+
+// E3 lookup ladder: things the kit has no drawing for. rung 5: a flat icon (cleaned and recoloured on the server,
+// drawn by <image>, which runs nothing); rung 6: a rounded box printing the said word. Both in the prop frame
+// (metres, bottom centre), at the size the server sent.
+const ICON = { draw: (w, h, st, ctx) => [['image', { href: ctx.src, x: F(-w / 2 * B), y: F(-h * B), width: F(w * B), height: F(h * B), preserveAspectRatio: 'xMidYMax meet' }]] };
+const BOX = { draw: (w, h, st, ctx) => {
+  const fs = Math.min(h * 0.38, (w * 1.6) / Math.max(3, (ctx.text || '').length)) * B;
+  return [P.rect(-w / 2 * B, -h * B, w * B, h * B, '#E8E2D6', { rx: F(Math.min(w, h) * 0.18 * B) }),
+    P.rect(-w / 2 * B, -h * B, w * B, h * B, 'none', { rx: F(Math.min(w, h) * 0.18 * B), stroke: '#9AA3AE', 'stroke-width': F(Math.max(2, 0.02 * B)) }),
+    ['text', { x: '0', y: F(-h * B / 2 + fs * 0.35), 'font-size': F(fs), 'text-anchor': 'middle', fill: '#33363d', 'font-family': 'Segoe UI,Arial,sans-serif', 'font-weight': '600', text: ctx.text || '' }]];
+} };
+function standIn(e) {
+  if (e.draw === 'box') return { draw: (w, h, st) => BOX.draw(w, h, st, { text: e.text }) };
+  if (e.draw.startsWith('icon:') && e.src) return { draw: (w, h, st) => ICON.draw(w, h, st, { src: e.src }) };
+  return null;
+}

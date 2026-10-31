@@ -30,7 +30,7 @@ async def lecture(h):
     store = LectureStateStore(h.bus, "t", LectureSetup(subject="Maths"))
     store.attach()
     eng = PresentationEngine(h.bus, store, h.deck, PresentationSettings(min_dwell_s=0.0, provisional=False,
-                                                                        templates_auto=False))
+                                                                        templates_auto=False, stage=False))
     eng.attach()
     SimulationDetector(h.bus).attach()
     SceneDetector(h.bus).attach()

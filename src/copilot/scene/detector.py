@@ -9,6 +9,9 @@
 A cue for another world's noun while a scene is open is a new scene ("now imagine a ball" over a square); a cue for
 the same world is an edit ("now draw a circle inside it").
 
+F-018: a cue whose drawable nouns are all concept parts (copilot.diagram.route) is a "diagram" cue: the stage
+controller draws it as a concept diagram.
+
 F-016 canvas: a cue word followed by any picture noun (scene.pictures.words: the emoji / icon names, places, shape
 nouns) is a cue; it is a "canvas" cue when that noun is not one of an L1 world's or a relation word ("on", "under")
 follows an object noun. Canvas cues are always published while a scene is open: the scene controller decides
@@ -78,6 +81,12 @@ def cue(text: str) -> Optional[str]:
     """The world of the drawable noun after a cue word in the line ("canvas": any other picture noun, or a relation
     word with an object noun), or None."""
     for m in _CUE.finditer(text):
+        # F-018 (test35): a concept line is a diagram, also with "our" / "you" ("imagine our solar system", "imagine
+        # in a beaker you have HCl"); a shape with a measurement stays geometry (diagram.route)
+        if not m.group(0).lower().startswith("look"):
+            from copilot.diagram.route import route
+            if route(text[m.start():]) == "diagram":
+                return "diagram"
         you = m.group(0).lower().startswith(("imagine", "picture", "visuali")) and _YOU.search(text[m.end():])
         tail = " ".join(text[m.end():].split()[:NOUN_REACH + 2])
         best: Optional[tuple[int, str]] = None
@@ -99,9 +108,18 @@ def cue(text: str) -> Optional[str]:
             and pictures.assets.singular(t) in pictures.words() for t in toks)
         if canvas or (you and (best is None or best[1] == "motion")):  # the listener in a scene (a vehicle: canvas)
             return "canvas"
+        if best is None and not m.group(0).lower().startswith("look") and _stage_noun(toks):
+            return "canvas"  # F-017: a person, an animal or a kit thing ("imagine a man pushing a box")
         if best is not None:
             return best[1]
     return None
+
+
+def _stage_noun(toks: list[str]) -> bool:
+    """A word the explainer stage draws (stage.fastpath's catalog index: people, animals, kit things, places)."""
+    from copilot.stage.fastpath import index
+    idx = index()
+    return any(t in idx for t in toks if t not in ("he", "she", "it", "they", "you"))  # E3b: "you" alone is no picture
 
 
 def wants_edit(text: str, names: list[str]) -> bool:
@@ -120,6 +138,7 @@ class SceneDetector:
     def __init__(self, bus: EventBus) -> None:
         self.bus = bus
         self._text: OrderedDict[str, str] = OrderedDict()
+        self._unsure: dict[str, list[str]] = {}  # F-017 E3: segment id -> words Whisper was unsure of
         self.open_world: Optional[str] = None  # the open scene's world (None: no scene open)
         self._cued: str = ""                    # the world of the last cue published (the scene it opens)
         self.intents = 0
@@ -133,17 +152,21 @@ class SceneDetector:
         log.info("[SCENE] %s %r", strength, text[:80])
         await self.bus.publish(RepresentationIntent(
             segment_ids=[segment_id], visual_kind="scene", strength=strength,  # type: ignore[arg-type]
-            origin="cue", text=text[:300]))
+            origin="cue", text=text[:300], unsure=self._unsure.get(segment_id, [])))
 
     async def _on_event(self, event: Event) -> None:
         if isinstance(event, TranscriptFinal):
             self._text[event.segment.id] = event.segment.text
+            if event.segment.unsure:
+                self._unsure[event.segment.id] = list(event.segment.unsure)
             while len(self._text) > MAX_LINES:
-                self._text.popitem(last=False)
+                gone, _ = self._text.popitem(last=False)
+                self._unsure.pop(gone, None)
             return
         if isinstance(event, SimulationModeChanged):
             # a scene opened by its cue, or by the teacher (Imagine Mode, no cue): a canvas
-            self.open_world = (self._cued or "canvas") if event.on and event.template == "scene" else None
+            # F-017: the explainer stage is a canvas for the detector (every content line is an edit candidate)
+            self.open_world = (self._cued or "canvas") if event.on and event.template in ("scene", "stage") else None
             self._cued = ""
             return
         assert isinstance(event, UtteranceClassified)
@@ -151,8 +174,9 @@ class SceneDetector:
         if event.kind != "content" or event.maybe_meta or not text or end_cue(text):
             return
         world = cue(text)
-        if world is not None and (world != self.open_world or world == "canvas"):  # none open, another world's noun
-            # (a new scene), or a canvas cue (the controller: an edit when it refers to the open scene)
+        # none open, another world's noun (a new scene), or a canvas / diagram cue (the controller: an edit when it
+        # refers to the open scene)
+        if world is not None and (world != self.open_world or world in ("canvas", "diagram")):
             self._cued = world
             await self._publish(event.segment_id, text, "cue")
         elif self.open_world is not None:

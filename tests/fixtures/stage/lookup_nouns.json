@@ -1,0 +1,858 @@
+{
+"about": "F-017 E3 lookup ladder: said nouns that are not kit names, labelled with the kit ids that may draw them at rung 2 (MiniLM nearest). ok = [] : no kit picture is right (the noun must fall to a lower rung). 157 nouns. The thresholds in stage/lookup.py are the lowest that pick no wrong row here.",
+"nouns": [
+{
+"w": "armchair",
+"kind": "prop",
+"ok": [
+"chair"
+]
+},
+{
+"w": "seat",
+"kind": "prop",
+"ok": [
+"chair",
+"bench",
+"swing_seat"
+]
+},
+{
+"w": "yacht",
+"kind": "prop",
+"ok": [
+"boat"
+]
+},
+{
+"w": "cab",
+"kind": "prop",
+"ok": [
+"car"
+]
+},
+{
+"w": "flowerpot",
+"kind": "prop",
+"ok": [
+"pot_plant"
+]
+},
+{
+"w": "raindrop",
+"kind": "prop",
+"ok": [
+"rain"
+]
+},
+{
+"w": "handbag",
+"kind": "prop",
+"ok": [
+"bag"
+]
+},
+{
+"w": "suitcase",
+"kind": "prop",
+"ok": [
+"bag"
+]
+},
+{
+"w": "kayak",
+"kind": "prop",
+"ok": [
+"boat"
+]
+},
+{
+"w": "raft",
+"kind": "prop",
+"ok": [
+"boat"
+]
+},
+{
+"w": "wagon",
+"kind": "prop",
+"ok": [
+"trolley"
+]
+},
+{
+"w": "heater",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "stove",
+"kind": "prop",
+"ok": [
+"burner"
+]
+},
+{
+"w": "hut",
+"kind": "prop",
+"ok": [
+"house"
+]
+},
+{
+"w": "skateboard",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "surfboard",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "flashlight",
+"kind": "prop",
+"ok": [
+"bulb"
+]
+},
+{
+"w": "torch",
+"kind": "prop",
+"ok": [
+"bulb"
+]
+},
+{
+"w": "candle",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "barometer",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "tablet",
+"kind": "prop",
+"ok": [
+"phone",
+"laptop"
+]
+},
+{
+"w": "parrot",
+"kind": "animal",
+"ok": [
+"bird"
+]
+},
+{
+"w": "goldfish",
+"kind": "animal",
+"ok": [
+"fish"
+]
+},
+{
+"w": "eagle",
+"kind": "animal",
+"ok": [
+"bird"
+]
+},
+{
+"w": "chicken",
+"kind": "animal",
+"ok": [
+"bird"
+]
+},
+{
+"w": "hen",
+"kind": "animal",
+"ok": [
+"bird"
+]
+},
+{
+"w": "duck",
+"kind": "animal",
+"ok": [
+"bird"
+]
+},
+{
+"w": "owl",
+"kind": "animal",
+"ok": [
+"bird"
+]
+},
+{
+"w": "highway",
+"kind": "place",
+"ok": [
+"street"
+]
+},
+{
+"w": "bedroom",
+"kind": "place",
+"ok": [
+"room"
+]
+},
+{
+"w": "city",
+"kind": "place",
+"ok": [
+"street"
+]
+},
+{
+"w": "village",
+"kind": "place",
+"ok": [
+"street"
+]
+},
+{
+"w": "lake",
+"kind": "place",
+"ok": [
+"pool"
+]
+},
+{
+"w": "ocean",
+"kind": "place",
+"ok": [
+"pool"
+]
+},
+{
+"w": "kitchen",
+"kind": "place",
+"ok": [
+"room"
+]
+},
+{
+"w": "beach",
+"kind": "place",
+"ok": [
+"outdoor"
+]
+},
+{
+"w": "farm",
+"kind": "place",
+"ok": [
+"outdoor",
+"park"
+]
+},
+{
+"w": "pebble",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "sofa",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "couch",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "kettle",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "teapot",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "jug",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "glass",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "vase",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "sapling",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "oak",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "palm",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "hedge",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "lever",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "crowbar",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "tyre",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "wheel",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "motorbike",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "scooter",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "lorry",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "truck",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "van",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "ship",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "pram",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "stroller",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "monitor",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "television",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "diary",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "magazine",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "newspaper",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "rucksack",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "satchel",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "lantern",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "socket",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "plug",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "charger",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "microscope",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "telescope",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "ruler",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "protractor",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "scissors",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "hammer",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "spanner",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "screwdriver",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "knife",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "spoon",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "fork",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "bowl",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "saucepan",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "basin",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "hose",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "sprinkler",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "raincoat",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "hat",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "helmet",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "shoe",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "sock",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "ski",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "sledge",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "kite",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "balloon",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "drone",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "rocket",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "airplane",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "helicopter",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "satellite",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "star",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "comet",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "mountain",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "hill",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "river",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "ocean",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "volcano",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "snowflake",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "hailstone",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "lightning",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "fire",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "flame",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "smoke",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "fridge",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "oven",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "microwave",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "fan",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "sink",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "bathtub",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "mirror",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "window",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "gate",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "wall",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "bridge",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "tower",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "lighthouse",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "windmill",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "tent",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "school",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "hospital",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "shop",
+"kind": "prop",
+"ok": []
+},
+{
+"w": "tiger",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "lion",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "wolf",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "fox",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "elephant",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "giraffe",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "zebra",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "donkey",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "ox",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "sheep",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "goat",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "pig",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "shark",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "whale",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "dolphin",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "snake",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "frog",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "monkey",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "bear",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "rabbit",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "mouse",
+"kind": "animal",
+"ok": []
+},
+{
+"w": "forest",
+"kind": "place",
+"ok": []
+},
+{
+"w": "desert",
+"kind": "place",
+"ok": []
+},
+{
+"w": "mountain",
+"kind": "place",
+"ok": []
+}
+]
+}

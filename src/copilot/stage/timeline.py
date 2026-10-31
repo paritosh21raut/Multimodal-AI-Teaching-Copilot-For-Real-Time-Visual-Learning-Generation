@@ -66,6 +66,20 @@ class Build:
         xf = {k: (r(v) if isinstance(v, float) else v) for k, v in xf.items() if v is not None}
         if isinstance(e, Ent) and e.row == "far":
             xf["row"] = "far"
+        if isinstance(e, Ent):
+            # E3 lookup ladder: an icon / a labelled box has no catalog row: its size travels with it; a rung-6 box
+            # carries the said word it prints; an icon its URL; a fast-path draft is drawn ghosted
+            if d["draw"].startswith("icon:") or d["draw"] == "box" or (e.rung >= 4 and "size" not in xf):
+                xf.setdefault("size", [r(e.size[0]), r(e.size[1])])
+            if d["draw"] == "box":
+                d["text"] = e.w
+            if e.src:
+                d["src"] = e.src
+            if e.ghost:
+                d["ghost"] = True
+            if e.pinned:
+                d["pinned"] = True
+            d["w"] = e.w  # the said noun (/control lists things by it; never drawn as a number)
         if xf:
             d["xform"] = xf
         self.E[eid] = d
@@ -259,7 +273,9 @@ class Build:
         self.group(ids, period, [period * 0.15, period * 0.5, period * 0.85] if phase != "released" else
                    [lead * 0.5, lead + max(0.05, res.events.get("stop", 0.2)) * 0.5, period * 0.9])
 
-    def _projectile(self, law: LawRec) -> None:
+    def _projectile(self, law: LawRec, auto: bool = False) -> None:
+        """auto (E3b): a throw the teacher gave no numbers for: the held ball leaves the hand on an illustrative arc;
+        no card (nothing was said to compute)."""
         g, ro = self.g, law.roles
         body = g.ents[ro["body"]]
         throws = self.acts_on(body.id, ("throw",))
@@ -311,7 +327,8 @@ class Build:
                   {"kind": "arrow", "at": {"entity": body.id, "anchor": "centre"}, "dy": -20, "vec": [0, -100],
                    "role": "weight", "label": "mg", "lx": 12, "ly": 10, "t0": r(t0), "t1": r(t0 + tf)})
         lines = ["a curve: it moves sideways and falls at once"] if thrower else ["it rolls off the edge and falls in a curve"]
-        self.card("Projectile", res, ["v0", "theta", "h0", "g", "t_apex", "h_apex", "T", "R"], lines)
+        if not auto:
+            self.card("Projectile", res, ["v0", "theta", "h0", "g", "t_apex", "h_apex", "T", "R"], lines)
         self.group(ids, period, [t0 * 0.5, t0 + tf * 0.45, t0 + tf * 0.95])
 
     def _free_fall_compare(self, law: LawRec) -> None:
@@ -649,6 +666,14 @@ class Build:
                 self._carry(a.agent)
             elif a.verb in ("walk", "jog", "run") and a.active:
                 self._walk(a)
+            elif a.verb == "throw" and a.active and a.obj in g.ents and a.obj not in self.done \
+                    and g.ents[a.agent].kind == "agent" and g.law_of("projectile") is None:
+                self._projectile(LawRec(f"auto_{a.id}", "projectile", {"body": a.obj, "launcher": a.agent}), auto=True)
+            elif a.verb == "drive" and a.active and a.obj in g.ents and a.obj not in self.done \
+                    and _vehicle(g.ents[a.obj]):
+                self._drive(a)
+            elif a.verb == "fly" and a.active:
+                self._fly(a)
         for a in sorted(g.actions.values(), key=lambda a: a.seq):  # what is left: stand and act in place
             if a.agent not in self.done and a.agent in g.ents and a.active:
                 self._in_place(a)
@@ -787,6 +812,43 @@ class Build:
                                            "dx": -0.1 * d, "dy": 0.25}, "vec": [150 * d, 0], "role": "velocity",
                    "label": "v", "lx": 10 if d > 0 else -40, "ly": 14})
         self.group(ids, period, [period * 0.2, period * 0.5, period * 0.8])
+
+    def _drive(self, a: Action) -> None:
+        """E3b (test34: the driver stood beside the car): the driver sits in the vehicle (its seat, else inside it,
+        drawn behind its body) and the vehicle moves; an illustrative speed, no number."""
+        g = self.g
+        car, who = g.ents[a.obj], g.ents[a.agent]
+        d = self.dirn(a)
+        period = 4.0
+        span = max(3.0, 1.3 * car.size[0])
+        x0 = -span / 2 if d > 0 else span / 2
+        row = catalog.prop(car.draw) or {}
+        seat = "seat" in (row.get("anchors") or {})
+        if not seat:
+            self.ent(who).update(shadow=False)  # inside the bus: behind its body
+        self.ent(car, dir=d if d < 0 else None)
+        if seat:
+            self.ent(who).update(shadow=False)
+        self.track({"id": car.id, "kind": "path", "samples": [[0, r(x0), 0], [r(period), r(x0 + d * span), 0]]},
+                   {"id": who.id, "kind": "socket", "parent": car.id, "socket": "seat" if seat else "centre",
+                    "child_socket": "lap", "t0": 0},
+                   ACT.clip(who.id, "Driving_Loop", 0, 1.0, True))
+        self.over({"kind": "arrow", "at": {"entity": car.id, "anchor": "top", "dy": 0.25}, "vec": [150 * d, 0],
+                   "role": "velocity", "label": "v"})
+        self.group([car.id, who.id], period, [period * 0.2, period * 0.5, period * 0.8])
+
+    def _fly(self, a: Action) -> None:
+        """A bird / plane flies: across the sky at a height, not on the ground (test34)."""
+        who = self.g.ents[a.agent]
+        d = self.dirn(a)
+        period, span, y = 4.0, 4.0, 2.4
+        x0 = -span / 2 if d > 0 else span / 2
+        self.ent(who, dir=d if d < 0 else None)
+        self.track({"id": who.id, "kind": "path", "samples": [[0, r(x0), y], [r(period), r(x0 + d * span), y]]})
+        self.over({"kind": "arrow", "at": {"entity": who.id, "anchor": "top", "dy": 0.2}, "vec": [150 * d, 0],
+                   "role": "velocity", "label": "v"})
+        self.backdrop = self.backdrop if self.g.place() else {"id": "outdoor"}
+        self.group([who.id], period, [period * 0.2, period * 0.5, period * 0.8])
 
     def _in_place(self, a: Action) -> None:
         g = self.g
@@ -929,13 +991,17 @@ class Build:
                 o["screen"] = [r(c["screen"][0] + 24, 1), r(c["screen"][1] + o.pop("card_dy"), 1)]
         patch["frame"] = fr.d()
         if line:
-            patch["overlays"].insert(0, {"kind": "words", "screen": [48, 66], "text": f"“{line}”", "size": 30,
+            # the slide's own title floats over the top left of a full-slide stage (a no-go box): the quote starts after it
+            cx = max([48.0] + [n[2] + 24 for n in self.nogo if n[0] < 60 and n[1] < 80])
+            patch["overlays"].insert(0, {"kind": "words", "screen": [r(cx, 1), 66], "text": f"“{line}”", "size": 30,
                                          "color": "#5d6672", "weight": 400, "said": g.current_line()})
         self._fr, self._where, self._times = fr, w, times
 
     def _labels(self, patch: dict) -> None:
         g = self.g
-        labs = [e for e in g.visible() if e.label and e.id in self._where.ents]
+        # a stand-in picture (ladder rung 2-5) shows the said word as a chip; a box prints it already
+        chips = {e.id for e in g.visible() if not e.label and 2 <= e.rung <= 5}
+        labs = [e for e in g.visible() if (e.label or e.id in chips) and e.id in self._where.ents]
         if not labs:
             return
         fr, w, times = self._fr, self._where, self._times
@@ -947,7 +1013,7 @@ class Build:
             for t in times:
                 b = fr.screen_box(w.box(e.id, t))
                 at.append([(b[0] + b[2]) / 2, b[1] - 14])
-            req.append({"text": e.label, "at": at})
+            req.append({"text": e.label or e.w, "at": at})
         placed = director.place_labels(req, figs, others)
         for e, p in zip(labs, placed):
             # a person: above the head; anything else: its height above its origin (animals have no `top` socket)
@@ -956,6 +1022,11 @@ class Build:
             at = {"entity": e.id, "anchor": "head_top"} if e.draw.startswith("cast:") else \
                 {"entity": e.id, "anchor": "bottom", "dy": r(b[3] - b[1])}
             # the teacher's own words (said_words checked them): `said`, so a digit in them needs no record
+            if e.id in chips:  # the teacher's noun (the validator checked the add): a quiet chip
+                patch["overlays"].append({"kind": "words", "at": at, "dx": p["dx"], "dy": 14 - p["dy"], "text": e.w,
+                                          "size": 26, "anchor": "middle", "weight": 500, "color": "#5d6672",
+                                          "said": "chip"})
+                continue
             patch["overlays"].append({"kind": "words", "at": at, "dx": p["dx"], "dy": 14 - p["dy"], "text": e.label,
                                       "size": 34, "anchor": "middle", "weight": 600, "said": "label"})
         patch["label_boxes"] = [p["boxes"] for p in placed]
@@ -1103,3 +1174,9 @@ def undiff(a: dict, d: dict) -> dict:
     out.update(rev=d["rev"], entities=[ents[i] for i in d["order"]],
                tracks=[t for i in d["track_order"] for t in tracks.get(i, [])])
     return {k: out[k] for k in list(a) + [k for k in out if k not in a] if k in out}
+
+
+def _vehicle(e) -> bool:
+    """A thing one drives or rides in (the catalog's vehicles, or any row with a seat); not an animal."""
+    row = catalog.prop(e.draw) or {}
+    return row.get("category") == "vehicle" or "seat" in (row.get("anchors") or {})

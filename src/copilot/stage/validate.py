@@ -1,5 +1,6 @@
 """Checks every stage op before the event log takes it (contract §6). A bad op is refused with a logged reason (the
-reject log is a paper dataset), never repaired by guessing.
+reject log is a paper dataset), never repaired by guessing: only a closed list of deterministic repairs runs first
+(`repair`: ids, catalog kinds, seat sides, restated actions, a given filed under its law), each one logged.
 
 - schema (pydantic), id pattern, unique ids, referenced ids exist;
 - verb, relation, law, recipe, view, shot, manner, state and direction come from the closed lists (stage.ops);
@@ -9,7 +10,8 @@ reject log is a paper dataset), never repaired by guessing.
 - law preconditions (sliding_friction needs the body on the surface ...); laws not built yet are refused;
 - budgets: ≤ 16 ops per delta, ≤ 12 visible entities;
 - safety: an `unsafe` op or a blocklist hit drops the whole delta;
-- a noun must be drawable (`w` or its `near` stand-in in the catalog).
+- a noun must be drawable: the lookup ladder (stage.lookup) always draws one that is not blocked; a `near`
+  stand-in must be a catalog noun.
 """
 from __future__ import annotations
 
@@ -25,7 +27,7 @@ from pydantic import ValidationError
 from copilot.scene import safety
 from copilot.scene.validate import Corpus, said_words
 from copilot.simulation.values import NUM, spoken_number
-from copilot.stage import catalog, ops
+from copilot.stage import catalog, lookup, ops
 from copilot.stage.graph import Graph, apply
 from copilot.stage.laws import ANGLE, LAWS, PURE
 
@@ -79,6 +81,7 @@ class Delta:
     ok: list[tuple[Any, dict[str, Any]]] = field(default_factory=list)
     rejected: list[Rejected] = field(default_factory=list)
     dropped: str = ""
+    repaired: list[tuple[Any, list[dict], str]] = field(default_factory=list)  # (raw, what was checked, why)
 
 
 def _clean(s: str) -> str:
@@ -171,6 +174,11 @@ def check_given(op: Any, g: Graph, lines: list[str]) -> tuple[str, dict[str, Any
     return "", {"si": float(si), "si_u": si_u}
 
 
+def _drawn(p: Any) -> dict[str, Any]:
+    """The facts a lookup pick gives the graph: what draws it, its size, the ladder rung (and an icon's URL)."""
+    return {"draw": p.draw, "size": p.size, "rung": p.rung, "src": p.src, "via": p.via}
+
+
 def _ids(g: Graph) -> set[str]:
     """One id space: entities, actions, laws and diagrams never share an id."""
     return set(g.ents) | set(g.actions) | set(g.laws) | set(g.diagrams)
@@ -201,13 +209,13 @@ def check(op: Any, g: Graph, lines: list[str]) -> tuple[str, dict[str, Any]]:
         if op.near and not catalog.known(op.near):
             return f"near noun {op.near!r} is not in the catalog", {}
         used = {e.draw[5:] for e in E.values() if e.draw.startswith("cast:")}
-        d = catalog.resolve(op.kind, op.w, op.near, op.attr, used)
+        d = lookup.ladder().pick(op.kind, op.w, op.near, op.attr, used)
         if d is None:
-            return f"nothing draws {op.w!r} as a {op.kind} (give a `near` noun from the catalog)", {}
+            return f"nothing draws {op.w!r} as a {op.kind}", {}
         drawn = d.draw not in ("ground", "fluid") and not d.draw.startswith("backdrop:")
         if drawn and op.id not in E and len(g.visible()) >= ops.MAX_ENTITIES:
             return f"more than {ops.MAX_ENTITIES} visible entities", {}
-        return "", {"draw": d.draw, "size": d.size}
+        return "", _drawn(d)
     if k in ("set", "remove", "label") and op.id not in E:
         return f"unknown id {op.id!r}", {}
     if k == "set":
@@ -215,10 +223,12 @@ def check(op: Any, g: Graph, lines: list[str]) -> tuple[str, dict[str, Any]]:
             return f"unknown state {op.state!r}", {}
         if op.w:
             used = {e.draw[5:] for e in E.values() if e.draw.startswith("cast:") and e.id != op.id}
-            d = catalog.resolve(E[op.id].kind, op.w, E[op.id].near, op.attr or E[op.id].attr, used)
+            if not _NOUN.match(op.w):
+                return f"bad noun {op.w!r}", {}
+            d = lookup.ladder().pick(E[op.id].kind, op.w, None, op.attr or E[op.id].attr, used)
             if d is None:
                 return f"nothing draws {op.w!r}", {}
-            return "", {"draw": d.draw, "size": d.size}
+            return "", _drawn(d)
         return "", {}
     if k == "remove":
         return "", {}
@@ -257,8 +267,8 @@ def check(op: Any, g: Graph, lines: list[str]) -> tuple[str, dict[str, Any]]:
             return f"bad direction {op.dir!r}", {}
         if op.manner and op.manner not in ops.MANNERS:
             return f"unknown manner {op.manner!r}", {}
-        if op.verb == "put_down" and g.holder(op.obj) != op.agent and not any(
-                x.obj == op.obj and x.verb in ("carry", "hold", "pick_up") for x in g.active(op.agent)):
+        if op.verb == "put_down" and g.holder(op.obj) != op.agent and not (g.holder(op.obj) is None and _last_had(
+                g, op.obj) == op.agent):  # carried, then "she is standing still", then puts it down
             return f"{op.agent} is not holding {op.obj}", {}
         return "", {}
     if k == "end":
@@ -341,20 +351,158 @@ def check_delta(raws: list[dict], g: Graph, lines: list[str], line_id: str = "")
         out.dropped = f"blocked: {hit or safety.blocked(lines[-1])}"
         return out
     work = g.copy()
-    for raw in raws:
+    idmap: dict[str, str] = {}
+    for raw0 in raws:
         try:
-            op = ops.parse(raw)
-        except ValidationError as e:
-            err = e.errors()[0]
-            out.rejected.append(Rejected(raw, f"schema: {'.'.join(map(str, err['loc']))}: {err['msg']}"))
-            continue
-        if op.op == "undo":
-            out.rejected.append(Rejected(raw, "undo is a teacher command, not an op"))
-            continue
-        why, facts = check(op, work, lines)
-        if why:
-            out.rejected.append(Rejected(raw, why))
-            continue
-        apply(work, op, facts, line_id)
-        out.ok.append((op, facts))
+            fixed, note = repair(raw0, work, idmap, line_id) if isinstance(raw0, dict) else ([raw0], "")
+        except (TypeError, AttributeError, KeyError, ValueError):  # a list where an id goes: the parser refuses it
+            fixed, note = [raw0], ""
+        if note:
+            out.repaired.append((raw0, fixed, note))
+        for raw in fixed:
+            try:
+                op = ops.parse(raw)
+            except ValidationError as e:
+                err = e.errors()[0]
+                out.rejected.append(Rejected(raw, f"schema: {'.'.join(map(str, err['loc']))}: {err['msg']}"))
+                continue
+            if op.op == "undo":
+                out.rejected.append(Rejected(raw, "undo is a teacher command, not an op"))
+                continue
+            why, facts = check(op, work, lines)
+            if why:
+                out.rejected.append(Rejected(raw, why))
+                continue
+            apply(work, op, facts, line_id)
+            out.ok.append((op, facts))
     return out
+
+
+# ---- repairs (E3b, from the test34 rejects): a closed list of deterministic fixes, each logged ---------------------
+_REFS = ("id", "a", "b", "agent", "obj", "law")
+_SIDES = {"left": "left_of", "right": "right_of"}
+SEATS = ("seesaw", "bench", "chair", "swing_seat", "bicycle", "car", "boat", "sofa")
+# a said verb the closed list lacks -> the nearest listed verb (the clip it plays); "ride" / "chase" keep their sense
+VERB_MAP = {"skip": "jump", "skipping": "jump", "hop": "jump", "read": "hold", "ride": "drive", "cycle": "drive",
+            "chase": "run", "run_after": "run", "follow": "walk", "sleep": "sit", "rest": "sit", "stir": "hold",
+            "write": "hold", "type": "sit", "work": "sit", "play": "stand"}
+MOVERS = ("walk", "jog", "run", "drive", "swim", "move", "fly", "carry", "push", "pull")
+
+
+def _slug_id(i: str) -> str:
+    """"see-saw" / "Big Box" -> see_saw / big_box; anything else that is not an id ("Man!") stays refused."""
+    if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_ -]*", i.strip()):
+        return i
+    return re.sub(r"[ -]+", "_", i.strip().lower())[:24]
+
+
+def _last_had(g: Graph, obj: str) -> str:
+    """Who carried / held / picked up `obj` last, "" when it was put down since."""
+    who = ""
+    for x in sorted(g.actions.values(), key=lambda x: x.seq):
+        if x.obj == obj and x.verb in ("carry", "hold", "pick_up", "throw"):
+            who = x.agent
+        elif x.obj == obj and x.verb == "put_down":
+            who = ""
+    return who
+
+
+def repair(raw: dict, work: Graph, idmap: dict[str, str], line_id: str = "") -> tuple[list[dict], str]:
+    """The ops to check instead of `raw` (none: a restatement of what is already there) and why ("" = unchanged).
+    Never invents a thing, a number or a quote: it renames ids, takes the catalog's kind for a known noun, turns a
+    seat side into the seat, restates a known action, and files a given under the law it is about."""
+    r = dict(raw)
+    why: list[str] = []
+    for k in _REFS:
+        v = r.get(k)
+        if isinstance(v, str) and v:
+            if v in idmap:
+                r[k] = idmap[v]
+            elif not ops.ID.match(v):
+                new = _slug_id(v)
+                if ops.ID.match(new):
+                    idmap[v] = new
+                    r[k] = new
+                    why.append(f"id {v!r} -> {new!r}")
+    op = r.get("op")
+    E = work.ents
+    if op == "add" and isinstance(r.get("w"), str) and isinstance(r.get("kind"), str):
+        k0, w = r["kind"], r["w"]
+        known = catalog.kind_of(w)
+        if r.get("id") in E and E[r["id"]].kind != k0:
+            r["kind"] = E[r["id"]].kind                       # dog re-added as an agent: it stays the animal
+        elif k0 == "agent" and not catalog.personish(w):
+            r["kind"] = known if known in ("animal", "prop", "surface", "place") else "prop"
+        elif k0 in ("animal", "prop") and known in ("agent", "animal", "prop") and known != k0:
+            r["kind"] = known                                 # a bird said as a prop is the bird
+        if r["kind"] != k0:
+            why.append(f"kind {k0} -> {r['kind']} ({w})")
+    elif op == "relate":
+        a, b, kind = r.get("a"), r.get("b"), r.get("kind")
+        if b in _SIDES and b not in E and a in E:
+            seat = next((e.id for e in reversed(list(E.values())) if e.draw in SEATS and e.id != a), None)
+            if kind in ("sitting_on", "on") and seat:
+                r["b"] = seat
+                why.append(f"{b} side -> {seat}")
+        if kind == "sitting_on" and a in E and E[a].kind not in ("agent", "animal"):
+            r["kind"] = "on"
+            why.append("sitting_on -> on (a thing)")
+    elif op == "act":
+        v = r.get("verb")
+        if isinstance(v, str) and v not in ops.AGENT_VERBS + ops.OBJECT_VERBS and v in VERB_MAP:
+            r["verb"] = VERB_MAP[v]
+            why.append(f"verb {v} -> {r['verb']}")
+        if r.get("verb") == "drive" and not r.get("obj"):
+            cars = [e.id for e in E.values() if (catalog.prop(e.draw) or {}).get("category") == "vehicle"]
+            if len(cars) == 1:  # "you are driving a car" came back as "man drives": the car on stage
+                r["obj"] = cars[0]
+                why.append(f"drive -> drive {cars[0]}")
+        i = r.get("id")
+        if isinstance(i, str) and i in work.actions and work.actions[i].line != line_id:
+            x = work.actions[i]  # an id of an earlier line's action (the model restates the scene)
+            if x.active and (x.verb, x.agent, x.obj) == (r.get("verb"), r.get("agent"), r.get("obj")) \
+                    and r.get("manner") in (None, x.manner):
+                return [], f"act {i}: already on stage"
+            n = 2
+            base = re.sub(r"\d+$", "", i) or "act"
+            while f"{base}{n}" in work.actions or f"{base}{n}" in work.laws or f"{base}{n}" in E:
+                n += 1
+            r["id"] = f"{base}{n}"
+            why.append(f"act id {i} -> {r['id']}")
+    elif op == "given" and isinstance(r.get("law"), str) and r["law"] not in work.laws:
+        fixed = _given_law(r, work)
+        if fixed:
+            return fixed, f"given for {raw.get('law')!r} -> law {fixed[-1]['law']!r}"
+    return [r], "; ".join(why)
+
+
+def _given_law(r: dict, work: Graph) -> list[dict]:
+    """A given filed under an action or an entity id (walk1, man) instead of its law: the law about that body; a
+    speed of a walker with no law yet -> uniform_motion, or relative_motion when rain falls on the walker."""
+    ref = r["law"]
+    act = work.actions.get(ref)
+    body = act.agent if act else ref if ref in work.ents else None
+    laws = list(work.laws.values())
+    if body is not None:
+        hit = [l for l in laws if body in [i for v in l.roles.values() for i in (v if isinstance(v, list) else [v])]]
+        if len(hit) == 1:
+            sym = r.get("sym")
+            if hit[0].name == "relative_motion" and sym not in ("va", "vb"):
+                sym = "va" if hit[0].roles.get("a") == body else "vb"
+            return [dict(r, law=hit[0].id, sym=sym)]
+    elif len(laws) == 1:
+        return [dict(r, law=laws[0].id)]
+    if body is None or r.get("sym") not in ("v", "va", "vb"):
+        return []
+    rain = next((e.id for e in work.ents.values() if e.draw == "rain"), None)
+    walker = next((a.agent for a in work.active() if a.verb in MOVERS and a.agent in work.ents
+                   and work.ents[a.agent].kind == "agent"), None)
+    if rain and walker and body in (rain, walker):
+        lid = "rel"
+        law = {"op": "law", "id": lid, "name": "relative_motion", "roles": {"a": rain, "b": walker, "observer": walker}}
+        sym = "va" if body == rain else "vb"
+        return ([] if lid in work.laws else [law]) + [dict(r, law=lid, sym=sym)]
+    if act is not None and act.verb in MOVERS and not laws:
+        lid = f"um_{body}"[:24]
+        return [{"op": "law", "id": lid, "name": "uniform_motion", "roles": {"body": body}}, dict(r, law=lid, sym="v")]
+    return []

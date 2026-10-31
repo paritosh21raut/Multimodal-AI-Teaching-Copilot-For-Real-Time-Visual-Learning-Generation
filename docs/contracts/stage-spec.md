@@ -83,10 +83,12 @@ release, apex, impact, stop) and quantities.
 The reject log is a paper dataset.
 
 ## 7. Event log and scene graph
-Event = `{seq, t_ms, src: fast|llm|teacher, line_id, op, ok, reason?}`. Graph = fold(events): entities (id, kind,
+Event = `{seq, t_ms, src: fast|llm|merge|teacher|director, line_id, op, ok, reason?}`. Graph = fold(events): entities (id, kind,
 w, kit_id, ladder_rung, cast row, row near/far), relations, actions (active / ended), laws (+ givens), view, frame.
-Undo = a compensating event. Draft ops from the fast path are `src: fast`. They are confirmed or replaced by the
-LLM delta of the same line (morph, not pop).
+Undo = a compensating event. Draft ops from the fast path are `src: fast`. The LLM delta of the same line merges
+with them (E3b): a drafted noun the delta does not name survives as `src: merge`; set / remove / its own add of the
+same noun replaces it (morph, not pop). Before checking, `validate.repair` applies a closed, logged list of fixes
+(id spelling, catalog kind, seat side, restated action, a given filed under its law).
 
 ## 8. Timeline (server → stage, WebSocket `stage.*`)
 - `stage.patch {rev, view, backdrop, entities[], tracks[], overlays[], frame, badges[]}`:

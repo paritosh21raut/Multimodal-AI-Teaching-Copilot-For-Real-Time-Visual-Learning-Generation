@@ -52,6 +52,7 @@ class TranscriptSegment(BaseModel):
     confidence: float = 1.0
     language: str = "en"
     source: Literal["mic", "sim"] = "mic"
+    unsure: list[str] = Field(default_factory=list)  # F-017 E3: words heard with a low word probability
     # Test-only annotations from simulator scripts (@expect); never used by production logic.
     expect: dict[str, str] = Field(default_factory=dict)
 
@@ -91,6 +92,11 @@ CommandKind = Literal[
     "scene_look", "scene_frame",
     # F-016: imagine_mode {on: bool} (/control Imagine / End: every picturable line is drawn until End)
     "imagine_mode",
+    # F-017 E3, the explainer stage {slide_id, ...}: stage_pin {id} (never dimmed), stage_undo (the last line),
+    # stage_fix {id, w} (the word Whisper misheard), stage_freeze {on}, stage_focus {id} ("" = the whole scene)
+    "stage_pin", "stage_undo", "stage_fix", "stage_freeze", "stage_focus",
+    # F-018: stage_mode {to: diagram | scene} (the teacher draws the slide as a concept diagram or a scene)
+    "stage_mode",
     # F-014 S1: sim_end = Back to slides (simulation mode ends, the recap follows); sim_accept / sim_dismiss {id}: the
     # Suggest chip; set_simulations {setting: auto | suggest | off} (kept in data/preferences.json)
     "sim_end", "sim_accept", "sim_dismiss", "set_simulations",
@@ -134,6 +140,13 @@ class TranscriptPartial(Event):
 class VocabularyChanged(Event):
     """F-013 S3: the lecture glossary grew (understanding.glossary); speech primes Whisper with these terms."""
     terms: list[str] = Field(default_factory=list)
+
+
+class StageWords(Event):
+    """F-017 E3: the open stage's slide title and its last scene nouns; speech primes Whisper with them."""
+    ephemeral: ClassVar[bool] = True
+    title: str = ""
+    nouns: list[str] = Field(default_factory=list)
 
 
 class LiveCue(Event):
@@ -404,6 +417,7 @@ class RepresentationIntent(Event):
     reveal: list[str] = Field(default_factory=list)  # element ids the line names ("friction opposes it")
     origin: Literal["cue", "policy", "llm", "teacher"] = "cue"
     text: str = ""              # the line (logs, evaluation)
+    unsure: list[str] = Field(default_factory=list)  # F-017 E3: words Whisper heard with low confidence
 
 
 class SimulationNotice(Event):

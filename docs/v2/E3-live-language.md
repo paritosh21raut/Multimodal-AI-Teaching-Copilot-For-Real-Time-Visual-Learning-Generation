@@ -56,4 +56,11 @@ A live run of 5–8 min, mixing physics with odd sentences. Report:
 - the user's verdict.
 
 ## Result
-_(≤ 1 KB)_
+2026-10-26, built + tested, not gate-run. Fast path (`stage/fastpath.py`, ~1 ms, p95 13.5 ms) → ghosted drafts; LLM
+delta (`director_llm.py`, gpt-oss-20b → 120b) replaces them; ladder (`lookup.py`: exact / MiniLM per-kind thresholds
+from 157 nouns / near / shape / Fluent flat icon / labelled box); `presentation/stage.py` controller on slides (Imagine,
+motion/canvas cues; geometry/plot stay F-015), new scene on a fresh cue, ≤12 things (`director.room`), pin / undo /
+fix / freeze / focus, unsure STT words → chips. Reviewed (8 fixed). Tests: `test_stage_live.py` 15, browser 2, unit 1838.
+Live (`tools/stage/e3_live.py`, 20 lines): **32.1k tokens counted (est. 15k)**, 1605/call — prefix cache hit 3/20
+(keys rotate); full p50 1.12 s p95 4.33 s; 0 429s; scene facts 15/20 (missed: projectile + relative_motion laws,
+sit/emit/roll verbs). Sheets `artifacts/stage/sheet_e3_{light,dark}.png`.

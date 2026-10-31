@@ -1,0 +1,36 @@
+{"about": "F-018 K1: the test35 live run (7.6 min) as Whisper gave the lines, in order, junk kept (verify_results/test35/transcript.txt). diagram = the concept lines that must open (or stay on) a diagram, with the part kinds it must hold; 0 tokens (no LLM answers: the fast paths only)."}
+{"n": 1, "t": 2.0, "say": "Imagine you are riding a horse."}
+{"n": 2, "t": 11.9, "say": "Imagine you are riding a horse."}
+{"n": 3, "t": 21.8, "say": "Imagine a box on an inclined plane.", "facts": {"diagram": "new", "kinds": ["block", "incline"]}}
+{"n": 4, "t": 37.4, "say": "Imagine two circles, C1 and C2.", "facts": {"diagram": "new", "kinds": ["circle"], "labels": ["C1", "C2"]}}
+{"n": 5, "t": 47.9, "say": "Imagine two circles C1 and C2.", "facts": {"diagram": "same", "kinds": ["circle"], "labels": ["C1", "C2"]}}
+{"n": 6, "t": 72.1, "say": "Imagine our solar system.", "facts": {"diagram": "new", "kinds": ["sun", "planet"]}}
+{"n": 7, "t": 83.9, "say": "Imagine in a beaker you have HCL.", "facts": {"diagram": "new", "kinds": ["beaker", "liquid"], "labels": ["HCl"]}}
+{"n": 8, "t": 90.9, "say": "and you're adding water to it slowly Thank you.", "facts": {"diagram": "same", "kinds": ["beaker", "liquid", "pourer"], "labels": ["HCl", "water"]}}
+{"n": 9, "t": 105.8, "say": "Imagine a girl swinging on a swing."}
+{"n": 10, "t": 117.4, "say": "Imagine a dog running."}
+{"n": 11, "t": 125.5, "say": "Imagine a dog running."}
+{"n": 12, "t": 142.0, "say": "if he was running in the rain time."}
+{"n": 13, "t": 152.9, "say": "If his velocity was 5 mps in the rain."}
+{"n": 14, "t": 156.7, "say": "Our velocity is 2 mps."}
+{"n": 15, "t": 166.9, "say": "Velocity of rain is 2 mps."}
+{"n": 16, "t": 175.8, "say": "The dog velocity is 2 mps. Thank you. Thank you again."}
+{"n": 17, "t": 198.2, "say": "Imagine you are studying."}
+{"n": 18, "t": 223.6, "say": "Imagine you are reading a book."}
+{"n": 19, "t": 260.9, "say": "Imagine two Thank you."}
+{"n": 20, "t": 262.8, "say": "People, two men playing tug of war."}
+{"n": 21, "t": 274.8, "say": "against two women."}
+{"n": 22, "t": 281.8, "say": "if two people are playing tug-of-war against two you"}
+{"n": 23, "t": 285.2, "say": "female kids."}
+{"n": 24, "t": 294.2, "say": "Imagine you are riding a car."}
+{"n": 25, "t": 303.1, "say": "Imagine you are riding a car."}
+{"n": 26, "t": 314.3, "say": "Imagine you are playing football."}
+{"n": 27, "t": 322.4, "say": "Imagine you are throwing a ball."}
+{"n": 28, "t": 330.9, "say": "with the initial velocity of"}
+{"n": 29, "t": 333.1, "say": "30 m s at an angle of 60 degree."}
+{"n": 30, "t": 347.8, "say": "if the initial velocity was 30 meter per second Thank you."}
+{"n": 31, "t": 374.9, "say": "If you throw another ball at an angle of 30 degree with the same velocity."}
+{"n": 32, "t": 389.1, "say": "if you throw another ball at an angle of 30 degree with the same velocity."}
+{"n": 33, "t": 430.8, "say": "Imagine a bird sitting on a tree."}
+{"n": 34, "t": 440.0, "say": "Imagine the bird sitting on the tree."}
+{"n": 35, "t": 455.5, "say": "Imagine an atom.", "facts": {"diagram": "new", "kinds": ["atom"]}}

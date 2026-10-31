@@ -1,0 +1,68 @@
+{
+ "id": "D4",
+ "title": "HCl in a beaker",
+ "lines": [
+  {
+   "line": "Imagine in a beaker you have HCL.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "beaker",
+     "kind": "beaker",
+     "label": "beaker",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "part",
+     "id": "hcl",
+     "kind": "liquid",
+     "label": "HCl",
+     "attr": {
+      "chem": "hcl",
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "contain",
+     "a": "beaker",
+     "b": "hcl"
+    }
+   ]
+  },
+  {
+   "line": "and you're adding water to it slowly",
+   "ops": [
+    {
+     "op": "part",
+     "id": "water",
+     "kind": "pourer",
+     "label": "water",
+     "attr": {
+      "chem": "water",
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "place",
+     "a": "water",
+     "rel": "above",
+     "b": "beaker"
+    },
+    {
+     "op": "process",
+     "verb": "pour",
+     "target": "beaker",
+     "src": "water",
+     "manner": "slow"
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "liquid IN the beaker, labelled HCl",
+  "water poured in",
+  "no person, no grass"
+ ]
+}

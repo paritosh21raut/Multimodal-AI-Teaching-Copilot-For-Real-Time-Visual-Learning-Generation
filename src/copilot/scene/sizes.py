@@ -53,7 +53,7 @@ _TABLE: dict[float, tuple[str, ...]] = {
 }
 # F-017 stage kit nouns (config/stage_catalog.json sizes agree with these; tests/unit/test_stage_config.py)
 _KIT: dict[float, tuple[str, ...]] = {
-    0.12: ("beaker", "test tube", "light switch"),
+    0.12: ("beaker", "test tube", "light switch", "lens", "convex lens"),
     0.22: ("flask", "conical flask", "thermometer", "burner", "bunsen burner", "coil spring"),
     0.35: ("watering can", "rock", "stone", "pulley"),
     0.6: ("seesaw", "see-saw", "fulcrum", "weighing scale"),

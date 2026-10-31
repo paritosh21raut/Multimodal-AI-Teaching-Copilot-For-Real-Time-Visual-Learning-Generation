@@ -1,0 +1,1147 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (11.6 s)
+[INIT]  live speech model distil-small.en ready (1.7 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#3 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_4         openai/gpt-oss-120b           200k of 200k tokens IN USE
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 300 lecture minutes
+
+[READY] session 20261031-135031-6c5b
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+13:50:52 INFO    copilot.visuals.service: CLIP ready in 0.6 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    1.1s] Imagine a box on an inclined plane. (569 ms)
+13:51:03 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a box on an inclined plane.'
+13:51:03 INFO    copilot.presentation.simulations: [SIM] stage mode on: Box on an inclined plane on its own slide (cue)
+13:51:03 INFO    copilot.presentation.stage: [STAGE] diagram open: Box on an inclined plane (cue)
+13:51:03 INFO    copilot.presentation.stage: [STAGE] diagram 2d69a7486abd: 3 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] add    'Box on an inclined plane' [simulation] v1 (1 items)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v2 (1 items)
+13:51:03 INFO    copilot.simulation.detector: [SIM] cue incline ('Imagine a') {}
+13:51:06 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Physics, Inclined Plane)
+  [UNDERSTAND] Physics > Inclined Plane (new_topic) acts=explanation hint=example lines=1 via groq_main#4 1363 ms
+               Introduced the concept of a box on an inclined plane as a visual example.
+13:51:06 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [    5.9s] And we apply a weight of the box in the 5K GING. (436 ms)
+13:51:09 INFO    copilot.scene.detector: [SCENE] edit 'And we apply a weight of the box in the 5K GING.'
+13:51:09 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'And we apply a weight of the box in the 5K GING.'
+13:51:09 INFO    copilot.simulation.detector: [SIM] values - {'temperature': '5K'}
+  [UNDERSTAND] Physics > Inclined Plane (same_concept) acts=other hint=key_points lines=1 via groq_main#4 1113 ms
+               The box’s weight is given as 5 kN.
+13:51:11 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   13.0s] The weight of the box is 5kg. (397 ms)
+13:51:15 INFO    copilot.scene.detector: [SCENE] edit 'The weight of the box is 5kg.'
+13:51:15 INFO    copilot.presentation.stage: [STAGE] diagram 903c3bfa9d2c: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v3 (1 items)
+13:51:15 INFO    copilot.simulation.detector: [SIM] values - {'mass': '5kg'}
+  [UNDERSTAND] Physics > Inclined Plane (same_concept) acts=other hint=key_points lines=1 via groq_main#4 1383 ms
+               Corrected the box's weight to 5 kg as stated, noting the earlier inconsistency.
+  [CONCERN] (factual) The weight of the box is 5kg -> 5 kN (0.9, correct it on the slide)
+13:51:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   20.0s] If the weight of the box is 5 kg. (390 ms)
+13:51:22 INFO    copilot.scene.detector: [SCENE] edit 'If the weight of the box is 5 kg.'
+13:51:22 INFO    copilot.presentation.stage: [STAGE] diagram c52275e3bd42: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v4 (1 items)
+13:51:22 INFO    copilot.simulation.detector: [SIM] values - {'mass': '5 kg'}
+  [UNDERSTAND] Physics > Inclined Plane (elaboration) acts=other hint=key_points lines=1 via groq_main#4 2417 ms
+               The box’s weight is specified as 5 kg.
+13:51:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+13:51:25 INFO    copilot.presentation.stage: teacher: the slide is drawn as a scene (4 line(s))
+  [SLIDE] update 'Box on an inclined plane' [simulation] v5 (1 items)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v6 (1 items)
+13:51:28 INFO    copilot.presentation.stage: teacher: the slide is drawn as a diagram (4 line(s))
+  [SLIDE] update 'Box on an inclined plane' [simulation] v7 (1 items)
+  [   32.6s] If you apply a pushing force of 5N. (442 ms)
+13:51:36 INFO    copilot.scene.detector: [SCENE] edit 'If you apply a pushing force of 5N.'
+13:51:36 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'If you apply a pushing force of 5N.'
+13:51:36 INFO    copilot.simulation.detector: [SIM] values - {'force': '5N'}
+  [UNDERSTAND] Physics > Inclined Plane (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1278 ms
+               Introduced a 5 N pushing force on the box
+13:51:37 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [   43.1s] If the coefficient of friction is 0.3. (464 ms)
+13:51:46 INFO    copilot.scene.detector: [SCENE] edit 'If the coefficient of friction is 0.3.'
+13:51:46 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'If the coefficient of friction is 0.3.'
+13:51:46 INFO    copilot.simulation.detector: [SIM] values - {'mu': 'coefficient of friction is 0.3'}
+  [UNDERSTAND] Physics > Inclined Plane (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 2782 ms
+               Stated the coefficient of friction as 0.3 for the inclined plane scenario.
+13:51:50 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (6 so far)
+13:51:50 INFO    copilot.presentation.simulations: [SIM] simulation mode off (Back to slides): recap 1 slide(s) (2 kept, 4 dropped as parameter talk)
+  [SLIDE] add    'Recap: Box on an inclined plane' [key_points] v1 (2 items)
+  [SLIDE] update 'Box on an inclined plane' [simulation] v8 (1 items)
+  [   56.1s] Imagine two circles, C1 and C2. (386 ms)
+13:51:58 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two circles, C1 and C2.'
+13:51:58 INFO    copilot.presentation.simulations: [SIM] stage mode on: Two circles C1 and C2 on its own slide (cue)
+13:51:58 INFO    copilot.presentation.stage: [STAGE] diagram open: Two circles C1 and C2 (cue)
+13:51:58 INFO    copilot.presentation.stage: [STAGE] diagram a02f7a1956de: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] add    'Two circles C1 and C2' [simulation] v1 (1 items)
+  [SLIDE] update 'Two circles C1 and C2' [simulation] v2 (1 items)
+13:51:58 INFO    copilot.simulation.detector: [SIM] values - {}
+13:52:01 INFO    copilot.understanding.interpreter: left-out sentence not shown (speaker): 'Imagine two circles, C1 and C2'
+13:52:01 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: Physics, Inclined Plane, Circles)
+  [UNDERSTAND] Physics > Circles (sibling_concept) acts=- hint=none lines=1 via groq_main#5 2197 ms
+               Introduced two circles C1 and C2.
+13:52:01 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [   60.9s] If the radius of C1 is 5 cm and radius of C2 is 10 cm. (486 ms)
+13:52:05 INFO    copilot.scene.detector: [SCENE] edit 'If the radius of C1 is 5 cm and radius of C2 is 10 cm.'
+13:52:05 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'If the radius of C1 is 5 cm and radius of C2 is 10 cm.'
+13:52:05 INFO    copilot.simulation.detector: [SIM] values - {'length': '5 cm', 'length#1': '10 cm'}
+  [UNDERSTAND] Physics > Circles (elaboration) acts=other hint=key_points lines=1 via groq_main#4 1367 ms
+               The radii of circles C1 (5 cm) and C2 (10 cm) were given.
+13:52:07 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   72.0s] Imagine another circle of C3. (406 ms)
+13:52:14 INFO    copilot.scene.detector: [SCENE] cue 'Imagine another circle of C3.'
+13:52:14 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (1 piece(s))
+13:52:14 INFO    copilot.presentation.simulations: [SIM] stage mode on: Circle on its own slide (cue)
+13:52:14 INFO    copilot.presentation.stage: [STAGE] diagram open: Circle (cue)
+13:52:14 INFO    copilot.presentation.stage: [STAGE] diagram 572e7904b427: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two circles C1 and C2' [simulation] v3 (1 items)
+  [SLIDE] add    'Circle' [simulation] v1 (1 items)
+  [SLIDE] update 'Circle' [simulation] v2 (1 items)
+13:52:14 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Circles (same_concept) acts=explanation hint=concept lines=1 via groq_main#5 1332 ms
+               Introduced a third circle, C3, to the discussion of circles.
+13:52:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   79.6s] Imagine three circles C1, C2 and C3. (447 ms)
+13:52:22 INFO    copilot.scene.detector: [SCENE] cue 'Imagine three circles C1, C2 and C3.'
+13:52:22 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (1 piece(s))
+13:52:22 INFO    copilot.presentation.simulations: [SIM] stage mode on: Three circles C1, C2, C3 on its own slide (cue)
+13:52:22 INFO    copilot.presentation.stage: [STAGE] diagram open: Three circles C1, C2, C3 (cue)
+13:52:22 INFO    copilot.presentation.stage: [STAGE] diagram 1defff0c1f49: 3 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Circle' [simulation] v3 (1 items)
+  [SLIDE] add    'Three circles C1, C2, C3' [simulation] v1 (1 items)
+  [SLIDE] update 'Three circles C1, C2, C3' [simulation] v2 (1 items)
+13:52:22 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Circles (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 3154 ms
+               Introduced three circles C1, C2, and C3.
+13:52:26 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   87.3s] If a square was inside C3. (367 ms)
+13:52:31 INFO    copilot.scene.detector: [SCENE] edit 'If a square was inside C3.'
+13:52:31 INFO    copilot.presentation.stage: [STAGE] diagram dbf6a905fcd7: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Three circles C1, C2, C3' [simulation] v3 (1 items)
+13:52:31 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Circles (same_concept) acts=explanation hint=concept lines=1 via groq_main#5 1827 ms
+               Introduced that a square can be placed inside circle C3
+13:52:33 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   94.5s] If this square is inside C3. (415 ms)
+13:52:36 INFO    copilot.scene.detector: [SCENE] edit 'If this square is inside C3.'
+13:52:36 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'If this square is inside C3.'
+13:52:36 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Circles (same_concept) acts=explanation hint=concept lines=1 via groq_main#4 4216 ms
+               The teacher noted that the square can be placed inside circle C3.
+13:52:41 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [  105.1s] Imagine a square. (375 ms)
+13:52:46 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a square.'
+13:52:46 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (4 piece(s))
+13:52:46 INFO    copilot.presentation.simulations: [SIM] stage mode on: Square on its own slide (cue)
+13:52:46 INFO    copilot.presentation.stage: [STAGE] diagram open: Square (cue)
+13:52:46 INFO    copilot.presentation.stage: [STAGE] diagram fe3fb7b24c51: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Three circles C1, C2, C3' [simulation] v4 (1 items)
+  [SLIDE] add    'Square' [simulation] v1 (1 items)
+  [SLIDE] update 'Square' [simulation] v2 (1 items)
+  [  108.0s] A triangle is added to stop. (369 ms)
+13:52:49 INFO    copilot.scene.detector: [SCENE] edit 'A triangle is added to stop.'
+13:52:49 INFO    copilot.presentation.stage: [STAGE] diagram 69a6c29d96bc: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Square' [simulation] v3 (1 items)
+13:52:51 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Circles' -> same_concept
+  [UNDERSTAND] Physics > Circles (same_concept) acts=explanation,explanation hint=key_points lines=2 via groq_main#5 1408 ms
+               Teacher asks students to imagine a square and then adds a triangle.
+13:52:51 INFO    copilot.presentation.simulations: [SIM] simulation mode: 2 piece(s) collected for the recap (6 so far)
+  [  117.7s] Imagine a bicol with HCL. (386 ms)
+13:53:00 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a bicol with HCL.'
+13:53:00 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (6 piece(s))
+13:53:00 INFO    copilot.presentation.simulations: [SIM] stage mode on: Hcl on its own slide (cue)
+13:53:00 INFO    copilot.presentation.stage: [STAGE] diagram open: Hcl (cue)
+13:53:00 INFO    copilot.presentation.stage: [STAGE] diagram 5b253e9d9c23: 3 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Square' [simulation] v4 (1 items)
+  [SLIDE] add    'Hcl' [simulation] v1 (1 items)
+  [SLIDE] update 'Hcl' [simulation] v2 (1 items)
+13:53:00 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Circles (new_topic) acts=transition hint=none lines=1 via groq_main#4 1598 ms
+               Teacher asked students to imagine a bottle with HCl.
+  [HEARD] 'bicol' -> 'bottle' corrected on the slide (0.5)
+13:53:04 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (6 so far)
+  [  124.8s] And you pour water into it slowly while stirring it. (436 ms)
+13:53:08 INFO    copilot.scene.detector: [SCENE] edit 'And you pour water into it slowly while stirring it.'
+13:53:08 INFO    copilot.presentation.stage: [STAGE] diagram 9d33d6c5f0f3: 6 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Hcl' [simulation] v3 (1 items)
+13:53:08 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Circles (digression) acts=explanation hint=example lines=1 via groq_main#5 1257 ms
+               Teacher described pouring water into a bottle of HCl while stirring
+13:53:10 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (7 so far)
+  [  136.3s] You will see HCl getting dissociated into H plus and Cl minus ions. (504 ms)
+13:53:22 INFO    copilot.scene.detector: [SCENE] edit 'You will see HCl getting dissociated into H plus and Cl minus ions.'
+13:53:22 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'You will see HCl getting dissociated into H plus and Cl minu'
+13:53:22 INFO    copilot.simulation.detector: [SIM] values - {}
+13:53:24 INFO    copilot: [STT] vocabulary prompt: 34 terms (newest: Inclined Plane, Circles, HCl Dissociation)
+  [UNDERSTAND] Physics > HCl Dissociation (new_topic) acts=explanation hint=concept lines=1 via groq_main#4 1612 ms
+               HCl separates into hydrogen and chloride ions when dissolved
+13:53:24 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (8 so far)
+  [  154.8s] Imagine you throw a ball in the air. (460 ms)
+13:53:37 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you throw a ball in the air.'
+13:53:37 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (8 piece(s))
+13:53:37 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+13:53:37 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'Hcl' [simulation] v4 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Throwing a ball' [simulation] v2 (1 items)
+13:53:37 INFO    copilot.simulation.detector: [SIM] setup projectile {}
+13:53:38 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 4 op(s), 0 refused, 1577 tokens (1577 counted), first op -, 1.11 s
+  [SLIDE] update 'Throwing a ball' [simulation] v3 (1 items)
+  [  161.3s] with the speed of 3mps. second. (864 ms)
+13:53:44 INFO    copilot.scene.detector: [SCENE] edit 'with the speed of 3mps. second.'
+13:53:44 INFO    copilot.simulation.detector: [SIM] values - {'speed': '3mps'}
+13:53:45 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 2 op(s), 0 refused, 1540 tokens (1540 counted), first op 1.00 s, 1.31 s
+  [SLIDE] update 'Throwing a ball' [simulation] v4 (1 items)
+13:53:46 INFO    copilot: [STT] vocabulary prompt: 35 terms (newest: Circles, HCl Dissociation, Projectile Motion)
+  [UNDERSTAND] Physics > Projectile Motion (sibling_concept) acts=explanation hint=concept lines=2 via groq_main#4 1669 ms
+               Introduced a projectile motion example of throwing a ball upward at 3 m/s.
+13:53:46 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (9 so far)
+  [  170.8s] if you throw the ball with a speed of 10 mps. second. (877 ms)
+13:53:55 INFO    copilot.scene.detector: [SCENE] edit 'if you throw the ball with a speed of 10 mps. second.'
+  [SLIDE] update 'Throwing a ball' [simulation] v5 (1 items)
+13:53:55 INFO    copilot.simulation.detector: [SIM] score projectile {'speed': '10 mps'}
+13:53:56 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 2 op(s), 0 refused, 1756 tokens (1756 counted), first op 1.17 s, 1.25 s
+  [SLIDE] update 'Throwing a ball' [simulation] v6 (1 items)
+  [UNDERSTAND] Physics > Projectile Motion (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1550 ms
+               Introduces a new example of throwing the ball at 10 m/s.
+13:53:56 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (10 so far)
+13:54:05 INFO    copilot.stt.engine: STT: outro hallucination cut: "if you throw the ball at the speed of 10 meter per second. I'll see you next time." -> 'if you throw the ball at the speed of 10 meter per second.'
+  [  181.1s] if you throw the ball at the speed of 10 meter per second. (1231 ms)
+13:54:05 INFO    copilot.scene.detector: [SCENE] edit 'if you throw the ball at the speed of 10 meter per second.'
+  [SLIDE] update 'Throwing a ball' [simulation] v7 (1 items)
+13:54:05 INFO    copilot.simulation.detector: [SIM] score projectile {'speed': '10 meter per second'}
+13:54:06 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1644 tokens (1644 counted), first op 0.92 s, 0.94 s
+  [SLIDE] update 'Throwing a ball' [simulation] v8 (1 items)
+  [UNDERSTAND] Physics > Projectile Motion (elaboration) acts=explanation hint=example lines=1 via groq_main#4 3420 ms
+               Introduced a new projectile motion example with a 10 m/s upward throw.
+13:54:09 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (11 so far)
+13:54:13 INFO    copilot.presentation.stage: teacher: the slide is drawn as a diagram (4 line(s))
+  [SLIDE] update 'Throwing a ball' [simulation] v9 (1 items)
+13:54:15 INFO    copilot.presentation.stage: teacher: the slide is drawn as a scene (4 line(s))
+  [SLIDE] update 'Throwing a ball' [simulation] v10 (1 items)
+  [SLIDE] update 'Throwing a ball' [simulation] v11 (1 items)
+13:54:17 INFO    copilot.presentation.stage: teacher: the slide is drawn as a diagram (4 line(s))
+  [SLIDE] update 'Throwing a ball' [simulation] v12 (1 items)
+13:54:18 INFO    copilot.presentation.stage: teacher: the slide is drawn as a scene (4 line(s))
+  [SLIDE] update 'Throwing a ball' [simulation] v13 (1 items)
+  [SLIDE] update 'Throwing a ball' [simulation] v14 (1 items)
+  [  212.4s] Imagine a car moving at a speed of 50 kmph. (475 ms)
+13:54:35 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a car moving at a speed of 50 kmph.'
+13:54:35 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (11 piece(s))
+13:54:35 INFO    copilot.presentation.simulations: [SIM] stage mode on: Car on its own slide (cue)
+13:54:35 INFO    copilot.presentation.stage: [STAGE] stage open: Car (cue)
+  [SLIDE] update 'Throwing a ball' [simulation] v15 (1 items)
+  [SLIDE] add    'Car' [simulation] v1 (1 items)
+  [SLIDE] update 'Car moving' [simulation] v2 (1 items)
+13:54:35 INFO    copilot.simulation.detector: [SIM] values - {'speed': '50 kmph'}
+13:54:38 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1538 tokens (258 counted), first op 2.42 s, 2.45 s
+  [SLIDE] update 'Car' [simulation] v3 (1 items)
+13:54:39 INFO    copilot: [STT] vocabulary prompt: 36 terms (newest: HCl Dissociation, Projectile Motion, Speed)
+  [UNDERSTAND] Physics > Speed (sibling_concept) acts=explanation hint=example lines=1 via groq_main#4 3228 ms
+               Introduced a car moving at 50 kmph as an example of speed.
+13:54:39 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (12 so far)
+  [  219.9s] Imagine the car moving at 50 kmph. (458 ms)
+13:54:42 INFO    copilot.scene.detector: [SCENE] cue 'Imagine the car moving at 50 kmph.'
+  [SLIDE] update 'Car moving' [simulation] v4 (1 items)
+13:54:42 INFO    copilot.simulation.detector: [SIM] values - {'speed': '50 kmph'}
+13:54:45 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'given', 'law': 'fr', 'sym': 'v', 'v': 50, 'u': 'km/h', 'q': 'at 50 kmph'}: given for unknown law 'fr'
+13:54:45 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 0 op(s), 1 refused, 1982 tokens (1982 counted), first op 2.64 s, 2.64 s
+  [SLIDE] update 'Car moving' [simulation] v5 (1 items)
+  [UNDERSTAND] Physics > Speed (same_concept) acts=explanation hint=example lines=1 via groq_main#4 2482 ms
+               Added a car moving at 50 km/h as a speed example.
+13:54:45 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (13 so far)
+  [  226.5s] Imager, another car moving at a speed of 60 kmph. (512 ms)
+13:54:50 INFO    copilot.scene.detector: [SCENE] edit 'Imager, another car moving at a speed of 60 kmph.'
+  [SLIDE] update 'Car moving' [simulation] v6 (1 items)
+13:54:50 INFO    copilot.simulation.detector: [SIM] values - {'speed': '60 kmph'}
+13:54:51 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'law', 'id': 'spd', 'name': 'speed', 'roles': {'body': 'car2'}}: unknown law 'speed'
+13:54:51 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'given', 'law': 'spd', 'sym': 'v', 'v': 60, 'u': 'kmph', 'q': 'at 60 kmph'}: given for unknown law 'spd'
+13:54:51 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 2 op(s), 2 refused, 1797 tokens (1797 counted), first op 1.05 s, 1.09 s
+  [SLIDE] update 'Car moving' [simulation] v7 (1 items)
+  [UNDERSTAND] Physics > Speed (same_concept) acts=explanation hint=example lines=1 via groq_main#5 1385 ms
+               Added a 60 km/h car as another speed example.
+13:54:51 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (14 so far)
+  [  357.9s] Imagine a cuboid. (466 ms)
+13:56:59 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a cuboid.'
+13:56:59 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap 1 slide(s) (6 kept, 9 dropped as parameter talk)
+13:56:59 INFO    copilot.presentation.simulations: [SIM] scene mode on: Cuboid on its own slide (cue)
+  [SLIDE] add    'Recap: Hcl · Throwing a ball · Car moving' [key_points] v1 (6 items)
+  [SLIDE] add    'Cuboid' [simulation] v1 (1 items)
+  [SLIDE] update 'Car moving' [simulation] v8 (1 items)
+  [SLIDE] update 'Cuboid' [simulation] v2 (1 items)
+13:57:00 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 1 op(s) applied, 0 refused, 3001 tokens, first op 0.81 s, done 0.83 s, line -> first shape 0.84 s
+13:57:03 INFO    copilot: [STT] vocabulary prompt: 37 terms (newest: Projectile Motion, Speed, Cuboid)
+  [UNDERSTAND] Physics > Cuboid (sibling_concept) acts=- hint=none lines=1 via groq_main#4 1554 ms
+               Introduced the idea of a cuboid.
+13:57:03 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [  371.0s] Imagine a cube. (441 ms)
+13:57:12 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a cube.'
+13:57:12 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another scene was started): recap none (0 kept, 0 dropped as parameter talk)
+13:57:12 INFO    copilot.presentation.simulations: [SIM] scene mode on: Cube on its own slide (cue)
+  [SLIDE] add    'Cube' [simulation] v1 (1 items)
+  [SLIDE] update 'Cube' [simulation] v2 (1 items)
+13:57:13 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 1 op(s) applied, 0 refused, 3002 tokens, first op 0.91 s, done 0.92 s, line -> first shape 0.92 s
+13:57:15 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Cuboid' -> same_concept
+13:57:15 INFO    copilot: [STT] vocabulary prompt: 38 terms (newest: Speed, Cuboid, Cube)
+  [UNDERSTAND] Physics > Cuboid (same_concept) acts=definition hint=definition lines=1 via groq_main#5 1216 ms
+               Introduced the cube as a specific type of cuboid.
+13:57:15 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  376.5s] Inside the cube you have a ball. (412 ms)
+13:57:18 INFO    copilot.scene.detector: [SCENE] edit 'Inside the cube you have a ball.'
+  [SLIDE] update 'Cube and ball' [simulation] v3 (1 items)
+  [SLIDE] update 'Cube and ball' [simulation] v4 (1 items)
+13:57:19 INFO    copilot.presentation.scenes: [SCENE] call groq_main#5: 2 op(s) applied, 0 refused, 3034 tokens, first op 0.69 s, done 0.77 s, line -> first shape 0.70 s
+13:57:20 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Cuboid' -> same_concept
+  [UNDERSTAND] Physics > Cuboid (same_concept) acts=explanation hint=concept lines=1 via groq_main#5 1516 ms
+               A ball is placed inside the cube as an example of a cuboid shape.
+13:57:20 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  387.8s] Imagine two balls colliding. (430 ms)
+13:57:29 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two balls colliding.'
+13:57:29 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Cube and ball' [simulation] v5 (1 items)
+  [SLIDE] update 'Cube and ball' [simulation] v6 (1 items)
+13:57:31 INFO    copilot.presentation.scenes: [SCENE] call groq_main#4: 2 op(s) applied, 0 refused, 3104 tokens, first op 1.14 s, done 1.19 s, line -> first shape 1.13 s
+13:57:33 INFO    copilot: [STT] vocabulary prompt: 39 terms (newest: Cuboid, Cube, Collisions)
+  [UNDERSTAND] Physics > Collisions (sibling_concept) acts=explanation hint=concept lines=1 via groq_main#6 1132 ms
+               Introduced the idea of two balls colliding
+13:57:33 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [  416.4s] Imagine you are teaching students. (415 ms)
+13:57:58 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are teaching students.'
+13:57:58 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another stage was started): recap 1 slide(s) (3 kept, 0 dropped as parameter talk)
+13:57:58 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+13:57:58 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] add    'Recap: Cube and ball' [members] v1 (3 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Student' [simulation] v2 (1 items)
+13:57:59 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 2 op(s), 0 refused, 1500 tokens (1500 counted), first op 0.88 s, 0.91 s
+  [SLIDE] update 'Student' [simulation] v3 (1 items)
+  [  420.4s] you, student. (777 ms)
+13:58:02 INFO    copilot.scene.detector: [SCENE] edit 'you, student.'
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=- hint=none lines=2 via groq_main#4 1216 ms
+13:58:03 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [  422.8s] Imagine you are in a classroom teaching students. questions. This is a production of University of Michigan. (2719 ms)
+13:58:08 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are in a classroom teaching students. questions. This is a productio'
+13:58:08 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (0 piece(s))
+13:58:08 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+13:58:08 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'Student' [simulation] v4 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Student' [simulation] v2 (1 items)
+13:58:09 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'label', 'id': 'prod', 'text': 'This is a production of University of Michigan.'}: unknown id 'prod'
+13:58:09 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 1 refused, 1590 tokens (1590 counted), first op 1.08 s, 1.10 s
+  [SLIDE] update 'Student' [simulation] v3 (1 items)
+13:58:09 INFO    copilot.understanding.interpreter: left-out sentence not shown (speaker): 'Imagine you are in a classroom teaching students'
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=- hint=none lines=1 via groq_main#4 1152 ms
+13:58:09 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [  444.2s] Imagine you hit a ball with a cricket bat. (576 ms)
+13:58:27 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you hit a ball with a cricket bat.'
+13:58:27 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (0 piece(s))
+13:58:27 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+13:58:27 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'Student' [simulation] v4 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Ball' [simulation] v2 (1 items)
+13:58:27 INFO    copilot.simulation.detector: [SIM] setup projectile {}
+13:58:28 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'act', 'id': 'hit1', 'verb': 'hit', 'agent': 'you', 'obj': 'ball', 'by': 'bat'}: schema: act.by: Extra inputs are not permitted
+13:58:28 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 1 refused, 1516 tokens (1516 counted), first op 1.47 s, 1.52 s
+  [SLIDE] update 'Ball' [simulation] v3 (1 items)
+13:58:29 INFO    copilot.stage.lookup: [STAGE] icon 'bat': /stage-icon/bat.svg
+  [SLIDE] update 'Ball' [simulation] v4 (1 items)
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1966 ms
+               Added a cricket‑bat ball‑hit as an example of a collision.
+13:58:29 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  452.6s] you, throw. you, hit the ball with a cricket bat. (556 ms)
+13:58:35 INFO    copilot.scene.detector: [SCENE] edit 'you, throw. you, hit the ball with a cricket bat.'
+  [SLIDE] update 'Throwing a ball' [simulation] v5 (1 items)
+13:58:35 INFO    copilot.simulation.detector: [SIM] setup projectile {}
+13:58:36 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'act', 'id': 'hit1', 'verb': 'hit', 'agent': 'you', 'obj': 'ball'}: unknown verb 'hit'
+13:58:36 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 0 op(s), 1 refused, 1672 tokens (1672 counted), first op 1.12 s, 1.15 s
+  [SLIDE] update 'Throwing a ball' [simulation] v6 (1 items)
+  [UNDERSTAND] Physics > Collisions (elaboration) acts=explanation hint=example lines=1 via groq_main#4 1274 ms
+               Added examples of throwing and batting a ball as collisions.
+13:58:40 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+13:59:40 INFO    copilot.stt.engine: STT: outro hallucination cut: 'Imagine you jump on moon. you' -> 'Imagine you jump on moon.'
+  [  514.9s] Imagine you jump on moon. (3783 ms)
+13:59:40 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you jump on moon.'
+13:59:40 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (2 piece(s))
+13:59:40 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+13:59:40 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'Throwing a ball' [simulation] v7 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'You jumping' [simulation] v2 (1 items)
+13:59:41 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 0 refused, 1507 tokens (1507 counted), first op 0.98 s, 1.00 s
+  [SLIDE] update 'You on a moon' [simulation] v3 (1 items)
+13:59:42 INFO    copilot: [STT] vocabulary prompt: 40 terms (newest: Cube, Collisions, Moon Jump)
+  [UNDERSTAND] Physics > Moon Jump (sibling_concept) acts=other hint=none lines=1 via groq_main#4 1340 ms
+               Teacher asks students to imagine jumping on the Moon
+13:59:42 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (2 so far)
+  [  521.2s] Imagine you jump on the moon. (434 ms)
+13:59:43 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you jump on the moon.'
+13:59:43 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (2 piece(s))
+13:59:43 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+13:59:43 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'You on a moon' [simulation] v4 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'You jumping' [simulation] v2 (1 items)
+13:59:44 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 0 refused, 1586 tokens (1586 counted), first op 0.86 s, 0.94 s
+  [SLIDE] update 'You jumping' [simulation] v3 (1 items)
+  [  524.1s] on the moon. (434 ms)
+13:59:45 INFO    copilot.scene.detector: [SCENE] edit 'on the moon.'
+  [SLIDE] update 'You jumping' [simulation] v4 (1 items)
+  [UNDERSTAND] Physics > Moon Jump (same_concept) acts=question hint=none lines=1 via groq_main#4 1202 ms
+               Teacher asks students to imagine jumping on the Moon
+13:59:45 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (2 so far)
+13:59:46 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'remove', 'id': 'moon2'}: unknown id 'moon2'
+13:59:46 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 1 refused, 1503 tokens (1503 counted), first op 0.91 s, 0.92 s
+  [SLIDE] update 'You jumping' [simulation] v5 (1 items)
+  [UNDERSTAND] Physics > Moon Jump (same_concept) acts=explanation hint=concept lines=1 via groq_main#4 1096 ms
+               Teacher prompts students to imagine jumping on the Moon.
+13:59:49 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [  529.0s] Imagine you jump on the surface of the moon. (474 ms)
+13:59:52 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you jump on the surface of the moon.'
+13:59:52 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (3 piece(s))
+13:59:52 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+13:59:52 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'You jumping' [simulation] v6 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'You jumping' [simulation] v2 (1 items)
+13:59:53 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 5 op(s), 0 refused, 1553 tokens (1553 counted), first op 0.80 s, 0.85 s
+  [SLIDE] update 'You jumping' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Moon Jump (same_concept) acts=question hint=none lines=1 via groq_main#4 3367 ms
+               Teacher asks students to imagine jumping on the Moon
+13:59:56 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (3 so far)
+  [  537.4s] Imagine you jump on the surface of the moon. (482 ms)
+14:00:00 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you jump on the surface of the moon.'
+  [SLIDE] update 'You jumping' [simulation] v4 (1 items)
+14:00:00 INFO    copilot.presentation.stage: [STAGE] stage.repaired {'op': 'act', 'id': 'jump1', 'verb': 'jump', 'agent': 'you'}: act jump1: already on stage
+14:00:00 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 2 op(s), 0 refused, 1564 tokens (284 counted), first op 0.66 s, 0.71 s
+  [SLIDE] update 'You jumping' [simulation] v5 (1 items)
+  [UNDERSTAND] Physics > Moon Jump (same_concept) acts=question hint=none lines=1 via groq_main#5 1068 ms
+               Teacher asks students to imagine jumping on the Moon
+14:00:01 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (3 so far)
+  [  546.1s] Imagine you are riding a bicycle. (518 ms)
+14:00:08 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are riding a bicycle.'
+14:00:08 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (3 piece(s))
+14:00:08 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+14:00:08 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'You jumping' [simulation] v6 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Riding a bicycle' [simulation] v2 (1 items)
+14:00:09 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 0 refused, 1598 tokens (1598 counted), first op 0.95 s, 0.97 s
+  [SLIDE] update 'Bicycle' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Moon Jump (elaboration) acts=question hint=none lines=1 via groq_main#4 4321 ms
+               Teacher asks students to imagine riding a bicycle
+14:00:12 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (3 so far)
+  [  553.6s] Imagine you are riding a bicycle. (534 ms)
+14:00:15 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are riding a bicycle.'
+  [SLIDE] update 'Riding a bicycle' [simulation] v4 (1 items)
+14:00:16 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1496 tokens (1496 counted), first op 0.64 s, 0.65 s
+  [SLIDE] update 'Riding a bicycle' [simulation] v5 (1 items)
+  [UNDERSTAND] Physics > Moon Jump (same_concept) acts=other hint=none lines=1 via groq_main#5 1445 ms
+               Teacher asks students to imagine riding a bicycle
+14:00:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (3 so far)
+  [  571.1s] Imagine a box attached to a spring. (571 ms)
+14:00:34 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a box attached to a spring.'
+14:00:34 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (3 piece(s))
+14:00:34 INFO    copilot.presentation.simulations: [SIM] stage mode on: Box with a spring on its own slide (cue)
+14:00:34 INFO    copilot.presentation.stage: [STAGE] diagram open: Box with a spring (cue)
+14:00:34 INFO    copilot.presentation.stage: [STAGE] diagram 3ea47f16ab6a: 5 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Riding a bicycle' [simulation] v6 (1 items)
+  [SLIDE] add    'Box with a spring' [simulation] v1 (1 items)
+  [SLIDE] update 'Box with a spring' [simulation] v2 (1 items)
+14:00:35 INFO    copilot: [STT] vocabulary prompt: 41 terms (newest: Collisions, Moon Jump, Spring-Mass System)
+  [UNDERSTAND] Physics > Spring-Mass System (sibling_concept) acts=explanation hint=concept lines=1 via groq_main#4 1630 ms
+               Introduces a box‑spring system as a new example.
+14:00:35 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [  579.5s] If the weight of the box is 5 kg, (426 ms)
+14:00:42 INFO    copilot.scene.detector: [SCENE] edit 'If the weight of the box is 5 kg,'
+14:00:42 INFO    copilot.presentation.stage: [STAGE] diagram 70b3299f1ec8: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box with a spring' [simulation] v3 (1 items)
+14:00:42 INFO    copilot.simulation.detector: [SIM] values - {'mass': '5 kg'}
+  [  582.7s] Index spring coefficient is (339 ms)
+14:00:44 INFO    copilot.scene.detector: [SCENE] edit 'Index spring coefficient is'
+14:00:44 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'Index spring coefficient is'
+  [UNDERSTAND] Physics > Spring-Mass System (same_concept) acts=other hint=key_points lines=2 via groq_main#4 1188 ms
+               The box in the spring‑mass example weighs 5 kg.
+14:00:55 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [  599.9s] Imagine a ball rolling on a inclined plane. (435 ms)
+14:01:03 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a ball rolling on a inclined plane.'
+14:01:03 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (5 piece(s))
+14:01:03 INFO    copilot.presentation.simulations: [SIM] stage mode on: Ball on its own slide (cue)
+14:01:03 INFO    copilot.presentation.stage: [STAGE] stage open: Ball (cue)
+  [SLIDE] update 'Box with a spring' [simulation] v4 (1 items)
+  [SLIDE] add    'Ball' [simulation] v1 (1 items)
+  [SLIDE] update 'Ball rolling' [simulation] v2 (1 items)
+14:01:03 INFO    copilot.simulation.detector: [SIM] cue incline ('Imagine a') {}
+14:01:04 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 0 refused, 1544 tokens (1544 counted), first op 1.01 s, 1.03 s
+  [SLIDE] update 'Ball rolling' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Inclined Plane (sibling_concept) acts=explanation hint=example lines=1 via groq_main#4 1674 ms
+               Teacher asks students to imagine a ball rolling on an inclined plane.
+14:01:05 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (6 so far)
+14:01:07 INFO    copilot.presentation.stage: teacher: the slide is drawn as a diagram (1 line(s))
+  [SLIDE] update 'Inclined plane' [simulation] v4 (1 items)
+  [  609.6s] Imagine a ball rolling on an inclined plane. (481 ms)
+14:01:12 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a ball rolling on an inclined plane.'
+14:01:12 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (5 piece(s))
+14:01:12 INFO    copilot.presentation.simulations: [SIM] stage mode on: Ball on its own slide (cue)
+14:01:12 INFO    copilot.presentation.stage: [STAGE] stage open: Ball (cue)
+  [SLIDE] update 'Inclined plane' [simulation] v5 (1 items)
+  [SLIDE] add    'Ball' [simulation] v1 (1 items)
+  [SLIDE] update 'Ball rolling' [simulation] v2 (1 items)
+14:01:12 INFO    copilot.simulation.detector: [SIM] cue incline ('Imagine a') {}
+14:01:14 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 4 op(s), 0 refused, 1593 tokens (1593 counted), first op 1.20 s, 1.31 s
+  [SLIDE] update 'Ball rolling' [simulation] v3 (1 items)
+14:01:14 INFO    copilot.understanding.interpreter: left-out sentence not shown (speaker): 'Imagine a ball rolling on an inclined plane'
+  [UNDERSTAND] Physics > Inclined Plane (same_concept) acts=- hint=none lines=1 via groq_main#5 1825 ms
+               Students imagine a ball rolling on an inclined plane.
+14:01:14 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (5 so far)
+  [  680.3s] Inclined Plane. (1085 ms)
+14:02:23 INFO    copilot.scene.detector: [SCENE] edit 'Inclined Plane.'
+14:02:23 INFO    copilot.simulation.detector: [SIM] setup incline {}
+14:02:24 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1471 tokens (1471 counted), first op 0.89 s, 0.91 s
+  [SLIDE] update 'Ball rolling' [simulation] v4 (1 items)
+  [UNDERSTAND] Physics > Inclined Plane (same_concept) acts=- hint=none lines=1 via groq_main#4 1087 ms
+               Reiterated the subtopic name.
+14:02:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (5 so far)
+  [  719.2s] Imagine a solar system. (472 ms)
+14:03:01 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a solar system.'
+14:03:01 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (5 piece(s))
+14:03:01 INFO    copilot.presentation.simulations: [SIM] stage mode on: Solar system on its own slide (cue)
+14:03:01 INFO    copilot.presentation.stage: [STAGE] diagram open: Solar system (cue)
+14:03:01 INFO    copilot.presentation.stage: [STAGE] diagram a401ad744c06: 17 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Ball rolling' [simulation] v5 (1 items)
+  [SLIDE] add    'Solar system' [simulation] v1 (1 items)
+  [SLIDE] update 'Solar system' [simulation] v2 (1 items)
+14:03:04 INFO    copilot: [STT] vocabulary prompt: 42 terms (newest: Moon Jump, Spring-Mass System, Solar System)
+  [UNDERSTAND] Physics > Solar System (new_topic) acts=transition hint=none lines=1 via groq_main#4 1293 ms
+               Teacher asks students to imagine a solar system.
+14:03:04 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (5 so far)
+  [  725.5s] If we look at the (390 ms)
+14:03:07 INFO    copilot.scene.detector: [SCENE] edit 'If we look at the'
+14:03:07 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'If we look at the'
+  [  727.2s] The Planet Jupiter (370 ms)
+14:03:08 INFO    copilot.scene.detector: [SCENE] edit 'The Planet Jupiter'
+14:03:08 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'The Planet Jupiter'
+  [  732.2s] If you look at the planet's repeaters, (462 ms)
+14:03:14 INFO    copilot.scene.detector: [SCENE] edit "If you look at the planet's repeaters,"
+14:03:14 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in "If you look at the planet's repeaters,"
+14:03:20 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Solar System' -> same_concept
+  [UNDERSTAND] Physics > Solar System (same_concept) acts=explanation hint=concept lines=3 via groq_main#4 1454 ms
+               Introduced Jupiter as another planet in the Solar System
+14:03:20 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (6 so far)
+  [  743.6s] Imagine an electric field. (351 ms)
+14:03:25 INFO    copilot.scene.detector: [SCENE] cue 'Imagine an electric field.'
+14:03:25 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (6 piece(s))
+14:03:25 INFO    copilot.presentation.simulations: [SIM] stage mode on: Field on its own slide (cue)
+14:03:25 INFO    copilot.presentation.stage: [STAGE] stage open: Field (cue)
+  [SLIDE] update 'Solar system' [simulation] v3 (1 items)
+  [SLIDE] add    'Field' [simulation] v1 (1 items)
+  [SLIDE] update 'Field' [simulation] v2 (1 items)
+14:03:26 INFO    copilot.stage.lookup: [STAGE] icon 'electric plug': /stage-icon/electric-plug.svg
+  [SLIDE] update 'Field' [simulation] v3 (1 items)
+14:03:26 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1470 tokens (190 counted), first op -, 0.59 s
+  [SLIDE] update 'Field' [simulation] v4 (1 items)
+14:03:29 INFO    copilot: [STT] vocabulary prompt: 43 terms (newest: Spring-Mass System, Solar System, Electric Field)
+  [UNDERSTAND] Physics > Electric Field (sibling_concept) acts=transition hint=none lines=1 via groq_main#4 1300 ms
+               Teacher introduced the concept of an electric field
+14:03:29 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (6 so far)
+  [  754.1s] You bring a unit positive charge near it. (860 ms)
+14:03:37 INFO    copilot.scene.detector: [SCENE] edit 'You bring a unit positive charge near it.'
+14:03:38 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 2 op(s), 0 refused, 1531 tokens (1531 counted), first op 0.94 s, 0.98 s
+  [SLIDE] update 'Charge next to a field' [simulation] v5 (1 items)
+14:03:38 INFO    copilot.presentation.stage: teacher: the slide is drawn as a diagram (2 line(s))
+  [SLIDE] update 'Charge next to a field' [simulation] v6 (1 items)
+  [UNDERSTAND] Physics > Electric Field (elaboration) acts=definition hint=definition lines=1 via groq_main#4 1250 ms
+               A unit positive charge near a source feels a force, defining the electric field.
+14:03:38 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (7 so far)
+14:03:39 INFO    copilot.stage.lookup: [STAGE] icon 'japanese free of charge button': /stage-icon/japanese-free-of-charge-button.svg
+  [SLIDE] update 'Charge next to a field' [simulation] v7 (1 items)
+14:03:40 INFO    copilot.presentation.stage: teacher: the slide is drawn as a scene (2 line(s))
+  [SLIDE] update 'Charge next to a field' [simulation] v8 (1 items)
+  [SLIDE] update 'Charge next to a field' [simulation] v9 (1 items)
+14:03:41 INFO    copilot.presentation.stage: teacher: the slide is drawn as a diagram (2 line(s))
+  [SLIDE] update 'Charge next to a field' [simulation] v10 (1 items)
+14:03:42 INFO    copilot.presentation.stage: teacher: the slide is drawn as a scene (2 line(s))
+  [SLIDE] update 'Charge next to a field' [simulation] v11 (1 items)
+  [SLIDE] update 'Charge next to a field' [simulation] v12 (1 items)
+  [  764.7s] Imagine an electric field and you bring a unit positive charge near it. (528 ms)
+14:03:50 INFO    copilot.scene.detector: [SCENE] cue 'Imagine an electric field and you bring a unit positive charge near it.'
+14:03:50 INFO    copilot.presentation.stage: [STAGE] the stage ended before it drew anything: its slide goes
+14:03:50 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (7 piece(s))
+14:03:50 INFO    copilot.presentation.simulations: [SIM] stage mode on: Field on its own slide (cue)
+14:03:50 INFO    copilot.presentation.stage: [STAGE] stage open: Field (cue)
+  [SLIDE] add    'Field' [simulation] v1 (1 items)
+  [SLIDE] update 'You' [simulation] v2 (1 items)
+14:03:51 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 4 op(s), 0 refused, 1516 tokens (1516 counted), first op 0.94 s, 0.97 s
+  [SLIDE] update 'Charge next to a field' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Electric Field (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1129 ms
+               Teacher gave an example of a unit positive charge placed in an electric field.
+14:03:51 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (8 so far)
+[MODE]  high performance: every finished sentence goes to the LLM (pause 0.6 s, calls >= 2 s apart)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)
+14:05:38 INFO    copilot.stt.engine: STT: outro hallucination cut: 'Imagine you stand on a table. you' -> 'Imagine you stand on a table.'
+  [  873.5s] Imagine you stand on a table. (2990 ms)
+14:05:38 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you stand on a table.'
+14:05:38 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (7 piece(s))
+14:05:38 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+14:05:38 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'Charge next to a field' [simulation] v4 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'You standing' [simulation] v2 (1 items)
+14:05:38 INFO    copilot.simulation.detector: [SIM] values - {}
+14:05:39 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 4 op(s), 0 refused, 1466 tokens (1466 counted), first op -, 1.05 s
+  [SLIDE] update 'You standing' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Electric Field (same_concept) acts=transition hint=none lines=1 via groq_main#4 1626 ms
+               Teacher asks students to imagine standing on a table.
+14:05:39 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (7 so far)
+  [  880.4s] Imagine you stand on the table. (459 ms)
+14:05:42 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you stand on the table.'
+  [SLIDE] update 'You standing' [simulation] v4 (1 items)
+14:05:42 INFO    copilot.simulation.detector: [SIM] values - {}
+14:05:43 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 0 refused, 1639 tokens (359 counted), first op 0.78 s, 0.86 s
+  [SLIDE] update 'You standing' [simulation] v5 (1 items)
+  [UNDERSTAND] Physics > Electric Field (elaboration) acts=- hint=none lines=1 via groq_main#4 1429 ms
+               Teacher asks students to imagine standing on a table.
+14:05:44 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (7 so far)
+  [  888.0s] Imagine you're sitting on a chair. (487 ms)
+14:05:49 INFO    copilot.scene.detector: [SCENE] cue "Imagine you're sitting on a chair."
+14:05:49 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (7 piece(s))
+14:05:49 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+14:05:49 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'You standing' [simulation] v6 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Sitting on a chair' [simulation] v2 (1 items)
+14:05:50 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 0 refused, 1540 tokens (1540 counted), first op 0.81 s, 0.87 s
+  [SLIDE] update 'Chair' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Electric Field (same_concept) acts=transition hint=none lines=1 via groq_main#4 1371 ms
+               Teacher asked students to imagine sitting on a chair.
+14:05:51 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (7 so far)
+  [  893.1s] Imagine you are sitting on a chair. (492 ms)
+14:05:55 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are sitting on a chair.'
+  [SLIDE] update 'Sitting on a chair' [simulation] v4 (1 items)
+14:05:55 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 0 op(s), 0 refused, 1448 tokens (168 counted), first op -, 0.63 s
+  [SLIDE] update 'Sitting on a chair' [simulation] v5 (1 items)
+  [UNDERSTAND] Physics > Electric Field (same_concept) acts=question hint=none lines=1 via groq_main#4 1129 ms
+               Teacher asks students to imagine sitting on a chair.
+14:05:56 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (7 so far)
+  [  911.1s] Imagine a rope attached to a wall and you are pulling it. (760 ms)
+14:06:15 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a rope attached to a wall and you are pulling it.'
+14:06:15 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (7 piece(s))
+14:06:15 INFO    copilot.presentation.simulations: [SIM] stage mode on: Rope on its own slide (cue)
+14:06:15 INFO    copilot.presentation.stage: [STAGE] stage open: Rope (cue)
+  [SLIDE] update 'Sitting on a chair' [simulation] v6 (1 items)
+  [SLIDE] add    'Rope' [simulation] v1 (1 items)
+  [SLIDE] update 'Rope' [simulation] v2 (1 items)
+14:06:15 INFO    copilot.simulation.detector: [SIM] values - {}
+14:06:16 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 5 op(s), 0 refused, 1553 tokens (273 counted), first op 1.03 s, 1.11 s
+  [SLIDE] update 'Pulling a rope' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Electric Field (elaboration) acts=explanation hint=example lines=1 via groq_main#4 1348 ms
+               Teacher used a rope‑wall analogy to illustrate the electric field concept.
+14:06:16 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (8 so far)
+14:06:22 INFO    copilot.stt.engine: STT: outro hallucination cut: 'You are pulling the rope. you' -> 'You are pulling the rope.'
+  [  920.1s] You are pulling the rope. (817 ms)
+14:06:22 INFO    copilot.scene.detector: [SCENE] edit 'You are pulling the rope.'
+  [SLIDE] update 'Pulling a rope' [simulation] v4 (1 items)
+14:06:22 INFO    copilot.simulation.detector: [SIM] values - {}
+14:06:23 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'remove', 'id': 'pull2'}: unknown id 'pull2'
+14:06:23 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 0 op(s), 1 refused, 1508 tokens (1508 counted), first op 1.00 s, 1.01 s
+  [SLIDE] update 'Pulling a rope' [simulation] v5 (1 items)
+  [UNDERSTAND] Physics > Electric Field (elaboration) acts=explanation hint=concept lines=1 via groq_main#4 1978 ms
+               Teacher uses rope‑pulling as an analogy for the force experienced in an electric field.
+14:06:25 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (9 so far)
+  [  945.4s] Imagine you're flying a rocket to the moon. (514 ms)
+14:06:48 INFO    copilot.scene.detector: [SCENE] cue "Imagine you're flying a rocket to the moon."
+14:06:48 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (9 piece(s))
+14:06:48 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+14:06:48 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'Pulling a rope' [simulation] v6 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Moon' [simulation] v2 (1 items)
+14:06:49 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'act', 'id': 'fly1', 'verb': 'fly', 'agent': 'you', 'obj': 'rocket', 'dir': 'toward', 'manner': 'fast'}: bad direction 'toward'
+14:06:49 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 4 op(s), 1 refused, 1551 tokens (1551 counted), first op 1.00 s, 1.09 s
+  [SLIDE] update 'Moon' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Moon Jump (new_topic) acts=transition hint=none lines=1 via groq_main#4 1820 ms
+               Teacher asks students to imagine flying a rocket to the moon.
+14:06:50 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (9 so far)
+  [  951.8s] Imagine you are flying a rocket to the moon. (535 ms)
+14:06:54 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are flying a rocket to the moon.'
+14:06:55 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 4 op(s), 0 refused, 1546 tokens (266 counted), first op 0.88 s, 0.97 s
+  [SLIDE] update 'Moon' [simulation] v4 (1 items)
+  [UNDERSTAND] Physics > Moon Jump (elaboration) acts=explanation hint=concept lines=1 via groq_main#4 5067 ms
+               Students are asked to imagine flying a rocket to the Moon
+14:07:00 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (10 so far)
+  [ 1020.7s] That's it. (511 ms)
+14:08:02 INFO    copilot.scene.detector: [SCENE] edit "That's it."
+  [UNDERSTAND] Physics > Moon Jump (same_concept) acts=- hint=none lines=1 via groq_main#4 1399 ms
+               Teacher concludes the Moon Jump segment.
+14:08:05 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (10 so far)
+  [ 1033.4s] Imagine you are pushing a box. (488 ms)
+14:08:15 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are pushing a box.'
+14:08:15 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (10 piece(s))
+14:08:15 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+14:08:15 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'Moon' [simulation] v5 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Pushing a box' [simulation] v2 (1 items)
+14:08:15 INFO    copilot.simulation.detector: [SIM] setup block_on_surface {}
+14:08:16 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'remove', 'id': 'you'}: unknown id 'you'
+14:08:16 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 1 refused, 1441 tokens (1441 counted), first op 0.64 s, 0.66 s
+  [SLIDE] update 'Box' [simulation] v3 (1 items)
+14:08:17 INFO    copilot: [STT] vocabulary prompt: 44 terms (newest: Solar System, Electric Field, Force)
+  [UNDERSTAND] Physics > Force (sibling_concept) acts=explanation hint=concept lines=1 via groq_main#4 1260 ms
+               Teacher uses pushing a box to illustrate force
+14:08:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (11 so far)
+14:08:20 INFO    copilot.presentation.stage: teacher: the slide is drawn as a diagram (1 line(s))
+  [SLIDE] update 'Box' [simulation] v4 (1 items)
+14:08:22 INFO    copilot.presentation.stage: teacher: the slide is drawn as a scene (1 line(s))
+  [SLIDE] update 'Box' [simulation] v5 (1 items)
+  [SLIDE] update 'Pushing a box' [simulation] v6 (1 items)
+14:08:27 INFO    copilot.stt.engine: STT: outro hallucination cut: "imagine you're pushing a box Thanks. Bye." -> "imagine you're pushing a box Thanks."
+  [ 1040.3s] imagine you're pushing a box Thanks. (5232 ms)
+14:08:27 INFO    copilot.scene.detector: [SCENE] cue "imagine you're pushing a box Thanks."
+  [SLIDE] update 'Pushing a box' [simulation] v7 (1 items)
+14:08:27 INFO    copilot.simulation.detector: [SIM] setup block_on_surface {}
+14:08:28 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1589 tokens (1589 counted), first op 0.81 s, 0.82 s
+  [SLIDE] update 'Pushing a box' [simulation] v8 (1 items)
+  [UNDERSTAND] Physics > Force (elaboration) acts=explanation hint=example lines=1 via groq_main#4 1181 ms
+               Box‑pushing used as a concrete example of force
+14:08:29 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (12 so far)
+  [ 1042.7s] Thanks. (5869 ms)
+14:08:29 INFO    copilot.scene.detector: [SCENE] edit 'Thanks.'
+  [ 1048.5s] imagine you're pushing a car (838 ms)
+14:08:31 INFO    copilot.scene.detector: [SCENE] cue "imagine you're pushing a car"
+14:08:31 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (12 piece(s))
+14:08:31 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+14:08:31 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'Pushing a box' [simulation] v9 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Pushing a car' [simulation] v2 (1 items)
+14:08:32 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 0 refused, 1520 tokens (1520 counted), first op 0.97 s, 1.01 s
+  [SLIDE] update 'Pushing a car' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Force (elaboration) acts=explanation hint=example lines=2 via groq_main#4 1063 ms
+               Teacher uses pushing a car as an example of force
+14:08:37 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (13 so far)
+  [ 1059.8s] Imagine you're flying in a helicopter. (471 ms)
+14:08:43 INFO    copilot.scene.detector: [SCENE] cue "Imagine you're flying in a helicopter."
+14:08:43 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (12 piece(s))
+14:08:43 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+14:08:43 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'Pushing a car' [simulation] v4 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'You' [simulation] v2 (1 items)
+14:08:43 INFO    copilot.stage.lookup: [STAGE] icon 'helicopter': /stage-icon/helicopter.svg
+  [SLIDE] update 'You' [simulation] v3 (1 items)
+14:08:43 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 0 refused, 1539 tokens (259 counted), first op 0.91 s, 0.94 s
+  [SLIDE] update 'Helicopter' [simulation] v4 (1 items)
+  [UNDERSTAND] Physics > Force (elaboration) acts=explanation hint=example lines=1 via groq_main#4 1171 ms
+               Adds flying in a helicopter as another force example
+14:08:44 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (13 so far)
+  [ 1066.6s] Imagine you are flying in a helicopter. (487 ms)
+14:08:49 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are flying in a helicopter.'
+14:08:50 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 0 refused, 1480 tokens (1480 counted), first op 0.75 s, 0.76 s
+  [SLIDE] update 'Helicopter' [simulation] v5 (1 items)
+  [UNDERSTAND] Physics > Force (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1191 ms
+               Helicopter flight is given as another concrete example of force
+14:08:50 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (14 so far)
+  [ 1087.0s] Imagine two planes colliding. (436 ms)
+14:09:09 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two planes colliding.'
+14:09:09 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (14 piece(s))
+14:09:09 INFO    copilot.presentation.simulations: [SIM] stage mode on: Planes on its own slide (cue)
+14:09:09 INFO    copilot.presentation.stage: [STAGE] stage open: Planes (cue)
+  [SLIDE] update 'Helicopter' [simulation] v6 (1 items)
+  [SLIDE] add    'Planes' [simulation] v1 (1 items)
+14:09:09 INFO    copilot.simulation.detector: [SIM] values - {}
+14:09:10 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'act', 'id': 'collide1', 'verb': 'collide', 'agent': 'plane1', 'obj': 'plane2'}: unknown verb 'collide'
+14:09:10 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 2 op(s), 1 refused, 1618 tokens (338 counted), first op 1.12 s, 1.22 s
+  [SLIDE] update 'Plane' [simulation] v2 (1 items)
+14:09:11 INFO    copilot.stage.lookup: [STAGE] icon 'airplane': /stage-icon/airplane.svg
+  [SLIDE] update 'Plane' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Collisions (sibling_concept) acts=transition hint=none lines=1 via groq_main#4 1528 ms
+               Teacher prompts students to imagine two planes colliding, introducing the Collisions concept.
+14:09:12 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (14 so far)
+  [ 1094.8s] Imagine two planes hitting each other. to be. (806 ms)
+14:09:19 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two planes hitting each other. to be.'
+14:09:19 INFO    copilot.simulation.detector: [SIM] values - {}
+14:09:20 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 2 op(s), 0 refused, 1486 tokens (206 counted), first op 0.81 s, 0.82 s
+  [SLIDE] update 'Plane' [simulation] v4 (1 items)
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=explanation hint=example lines=1 via groq_main#4 4925 ms
+               Teacher asks students to imagine two planes colliding as an example of collisions.
+14:09:24 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (15 so far)
+  [ 1147.1s] Imagine you're riding a horse. (494 ms)
+14:10:09 INFO    copilot.scene.detector: [SCENE] cue "Imagine you're riding a horse."
+14:10:09 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (15 piece(s))
+14:10:09 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+14:10:09 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'Plane' [simulation] v5 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Riding a horse' [simulation] v2 (1 items)
+14:10:10 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'remove', 'id': 'drive1'}: unknown id 'drive1'
+14:10:10 INFO    copilot.presentation.stage: [STAGE] stage.repaired {'op': 'act', 'id': 'ride1', 'verb': 'ride', 'agent': 'you', 'obj': 'horse'}: verb ride -> drive
+14:10:10 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 1 refused, 1564 tokens (284 counted), first op 1.09 s, 1.12 s
+  [SLIDE] update 'Riding a horse' [simulation] v3 (1 items)
+  [ 1150.3s] (dropped: filler_hallucination) Okay.
+  [ 1152.8s] Imagine you are riding a horse. (442 ms)
+14:10:15 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are riding a horse.'
+  [SLIDE] update 'Riding a horse' [simulation] v4 (1 items)
+14:10:16 INFO    copilot.presentation.stage: [STAGE] stage.repaired {'op': 'act', 'id': 'ride1', 'verb': 'ride', 'agent': 'you', 'obj': 'horse'}: act ride1: already on stage
+14:10:16 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 0 op(s), 0 refused, 1522 tokens (1522 counted), first op 1.02 s, 1.03 s
+  [SLIDE] update 'Riding a horse' [simulation] v5 (1 items)
+14:10:16 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Collisions' -> same_concept
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=explanation hint=example lines=2 via groq_main#4 1492 ms
+               Teacher gives riding a horse as another illustration of collisions
+14:10:16 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (16 so far)
+14:10:20 INFO    copilot.stt.engine: STT: outro hallucination cut: 'Imagine you are riding a horse. Thank you very much.' -> 'Imagine you are riding a horse.'
+  [ 1157.5s] Imagine you are riding a horse. (849 ms)
+14:10:20 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are riding a horse.'
+  [SLIDE] update 'Riding a horse' [simulation] v6 (1 items)
+14:10:21 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1682 tokens (402 counted), first op 0.70 s, 0.71 s
+  [SLIDE] update 'Riding a horse' [simulation] v7 (1 items)
+  [UNDERSTAND] Physics > Collisions (elaboration) acts=explanation hint=example lines=1 via groq_main#4 1458 ms
+               Riding a horse is given as a collision example
+14:10:22 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (17 so far)
+  [ 1164.8s] Imagine you are running in the rain. (550 ms)
+14:10:27 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are running in the rain.'
+14:10:27 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (17 piece(s))
+14:10:27 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+14:10:27 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'Riding a horse' [simulation] v8 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Rain' [simulation] v2 (1 items)
+14:10:27 INFO    copilot.simulation.detector: [SIM] values - {}
+14:10:27 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 3 op(s), 0 refused, 1537 tokens (257 counted), first op 0.56 s, 0.64 s
+  [SLIDE] update 'You running' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Collisions (elaboration) acts=explanation hint=example lines=1 via groq_main#4 1185 ms
+               Adds running in the rain as another illustration of collisions
+14:10:28 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (18 so far)
+  [ 1173.4s] I shouldn't have done that. (786 ms)
+14:10:34 INFO    copilot.scene.detector: [SCENE] edit "I shouldn't have done that."
+14:10:34 INFO    copilot.simulation.detector: [SIM] values - {}
+  [ 1176.1s] Imagine you are running in the rain. (653 ms)
+14:10:38 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are running in the rain.'
+  [SLIDE] update 'You running' [simulation] v4 (1 items)
+14:10:38 INFO    copilot.simulation.detector: [SIM] values - {}
+14:10:39 INFO    copilot.presentation.stage: [STAGE] stage.repaired {'op': 'act', 'id': 'run1', 'verb': 'run', 'agent': 'you'}: act run1: already on stage
+14:10:39 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1511 tokens (1511 counted), first op 0.94 s, 0.97 s
+  [SLIDE] update 'You running' [simulation] v5 (1 items)
+  [UNDERSTAND] Physics > Collisions (elaboration) acts=explanation hint=example lines=2 via groq_main#4 1305 ms
+               Added running in the rain as another illustration of collisions
+14:10:41 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (19 so far)
+  [ 1184.8s] with an umbrella in your hand. (892 ms)
+14:10:47 INFO    copilot.scene.detector: [SCENE] edit 'with an umbrella in your hand.'
+  [SLIDE] update 'You running' [simulation] v6 (1 items)
+14:10:47 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1443 tokens (163 counted), first op 0.41 s, 0.42 s
+  [SLIDE] update 'You running' [simulation] v7 (1 items)
+14:10:47 INFO    copilot.stage.lookup: [STAGE] icon 'ok hand': /stage-icon/ok-hand.svg
+  [SLIDE] update 'You running' [simulation] v8 (1 items)
+14:10:49 INFO    copilot.understanding.interpreter: dropped 1 revision(s) with unknown refs
+  [UNDERSTAND] Physics > Collisions (elaboration) acts=- hint=concept lines=1 via groq_main#4 2044 ms
+               Added detail that the rain example includes holding an umbrella
+14:10:49 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (19 so far)
+  [ 1190.3s] with an umbrella in you and You (7378 ms)
+14:10:59 INFO    copilot.scene.detector: [SCENE] edit 'with an umbrella in you and You'
+  [SLIDE] update 'You running' [simulation] v9 (1 items)
+14:11:00 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'relate', 'a': 'umbrella', 'kind': 'holding', 'b': 'you'}: umbrella cannot hold (not a person)
+14:11:00 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 0 op(s), 1 refused, 1501 tokens (221 counted), first op 0.83 s, 0.84 s
+  [SLIDE] update 'You running' [simulation] v10 (1 items)
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=explanation hint=concept lines=1 via groq_main#4 1465 ms
+               Added detail that the rain example includes holding an umbrella
+14:11:13 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (20 so far)
+  [ 1225.8s] Hey, hey. (538 ms)
+14:11:26 INFO    copilot.scene.detector: [SCENE] edit 'Hey, hey.'
+14:11:31 INFO    copilot.stt.engine: STT: outro hallucination cut: "What's up. . ." -> "What's up..."
+  [ 1228.7s] What's up... (1799 ms)
+14:11:31 INFO    copilot.scene.detector: [SCENE] edit "What's up..."
+  [ 1230.3s] It's a good one. them. (946 ms)
+14:11:32 INFO    copilot.scene.detector: [SCENE] edit "It's a good one. them."
+14:11:32 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=- hint=none lines=3 via groq_main#4 916 ms
+               No new instructional content was added
+14:11:33 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (20 so far)
+14:11:39 INFO    copilot.stt.engine: STT: outro hallucination cut: "We're going to the lab. you" -> "We're going to the lab."
+  [ 1234.2s] We're going to the lab. (4080 ms)
+14:11:39 INFO    copilot.scene.detector: [SCENE] edit "We're going to the lab."
+  [SLIDE] update 'You running' [simulation] v11 (1 items)
+14:11:40 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1557 tokens (277 counted), first op -, 0.85 s
+  [SLIDE] update 'You running' [simulation] v12 (1 items)
+14:11:40 INFO    copilot.stt.engine: STT: outro hallucination cut: 'Thank you. Thank you.' -> 'Thank you.'
+  [ 1235.6s] (dropped: filler_hallucination) Thank you.
+  [ 1238.7s] I didn't see that. (1654 ms)
+14:11:41 INFO    copilot.scene.detector: [SCENE] edit "I didn't see that."
+14:11:41 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=transition,other hint=none lines=2 via groq_main#4 1403 ms
+               Teacher announces moving to the lab and makes a brief comment
+14:11:46 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (20 so far)
+  [ 1242.5s] But even more, Thomas. (3746 ms)
+14:11:49 INFO    copilot.scene.detector: [SCENE] edit 'But even more, Thomas.'
+14:11:50 INFO    copilot.presentation.stage: [STAGE] stage.repaired {'op': 'add', 'id': 'Thomas', 'kind': 'agent', 'w': 'Thomas'}: id 'Thomas' -> 'thomas'; kind agent -> prop (Thomas)
+14:11:50 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1462 tokens (182 counted), first op 0.73 s, 0.76 s
+  [SLIDE] update 'You running' [simulation] v13 (1 items)
+  [ 1246.8s] Thank you very much. (3114 ms)
+14:11:50 INFO    copilot.scene.detector: [SCENE] edit 'Thank you very much.'
+  [ 1248.4s] You hear something. them. (7082 ms)
+14:11:56 INFO    copilot.scene.detector: [SCENE] edit 'You hear something. them.'
+14:11:57 INFO    copilot.presentation.stage: [STAGE] stage.rejected {'op': 'act', 'id': 'hear1', 'verb': 'hear', 'agent': 'you', 'obj': 'something'}: unknown verb 'hear'
+14:11:57 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#2: 1 op(s), 1 refused, 1523 tokens (1523 counted), first op 0.88 s, 0.93 s
+  [SLIDE] update 'You running' [simulation] v14 (1 items)
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=- hint=none lines=2 via groq_main#4 1506 ms
+               No new instructional content was added
+14:11:58 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (20 so far)
+  [ 1250.1s] Ready. (6794 ms)
+14:11:58 INFO    copilot.scene.detector: [SCENE] edit 'Ready.'
+  [ 1252.2s] Imagine you are playing football. one. (7104 ms)
+14:12:03 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are playing football. one.'
+14:12:03 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (20 piece(s))
+14:12:03 INFO    copilot.presentation.simulations: [SIM] stage mode on: You on its own slide (cue)
+14:12:03 INFO    copilot.presentation.stage: [STAGE] stage open: You (cue)
+  [SLIDE] update 'You running' [simulation] v15 (1 items)
+  [SLIDE] add    'You' [simulation] v1 (1 items)
+  [SLIDE] update 'Football' [simulation] v2 (1 items)
+14:12:03 INFO    copilot.simulation.detector: [SIM] values - {}
+14:12:04 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 2 op(s), 0 refused, 1476 tokens (196 counted), first op -, 0.75 s
+  [SLIDE] update 'Football' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=- hint=none lines=3 via groq_main#5 1135 ms
+               No new instructional content was added
+14:12:04 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (20 so far)
+  [ 1257.3s] Sorry. (9765 ms)
+14:12:08 INFO    copilot.scene.detector: [SCENE] edit 'Sorry.'
+  [ 1259.2s] Imagine you are playing football. (7105 ms)
+14:12:08 INFO    copilot.scene.detector: [SCENE] cue 'Imagine you are playing football.'
+  [ 1264.1s] Imagine you are thinking boom. (3561 ms)
+14:12:09 INFO    copilot.scene.detector: [SCENE] edit 'Imagine you are thinking boom.'
+14:12:09 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#2: 2 op(s), 0 refused, 1467 tokens (1467 counted), first op 0.55 s, 0.70 s
+  [SLIDE] update 'Football' [simulation] v4 (1 items)
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=- hint=none lines=1 via groq_main#4 4634 ms
+14:12:12 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (20 so far)
+  [UNDERSTAND] Physics > Collisions (elaboration) acts=other hint=none lines=2 via groq_main#5 918 ms
+               Teacher asks students to imagine playing football and thinking "boom"
+14:12:13 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (20 so far)
+  [ 1304.4s] Imagine a box on top of another box. (918 ms)
+14:12:50 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a box on top of another box.'
+14:12:50 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (20 piece(s))
+14:12:50 INFO    copilot.presentation.simulations: [SIM] stage mode on: Box and box on its own slide (cue)
+14:12:50 INFO    copilot.presentation.stage: [STAGE] diagram open: Box and box (cue)
+14:12:50 INFO    copilot.presentation.stage: [STAGE] diagram 0b2ee4725211: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Football' [simulation] v5 (1 items)
+  [SLIDE] add    'Box and box' [simulation] v1 (1 items)
+  [SLIDE] update 'Box and box' [simulation] v2 (1 items)
+  [UNDERSTAND] Physics > Collisions (elaboration) acts=explanation hint=example lines=1 via groq_main#4 1260 ms
+               Teacher introduces a stacked‑box scenario as a collision illustration.
+14:12:52 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (21 so far)
+  [ 1312.9s] Imagine a box placed on a plane surface. (441 ms)
+14:13:04 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a box placed on a plane surface.'
+14:13:04 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (20 piece(s))
+14:13:04 INFO    copilot.presentation.simulations: [SIM] stage mode on: Box on a plane on its own slide (cue)
+14:13:04 INFO    copilot.presentation.stage: [STAGE] diagram open: Box on a plane (cue)
+14:13:04 INFO    copilot.presentation.stage: [STAGE] diagram b81c67171282: 4 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box and box' [simulation] v3 (1 items)
+  [SLIDE] add    'Box on a plane' [simulation] v1 (1 items)
+  [SLIDE] update 'Box on a plane' [simulation] v2 (1 items)
+14:13:04 INFO    copilot.simulation.detector: [SIM] cue block_on_surface ('Imagine a') {}
+  [ 1324.1s] Imagine a box placed on a surface. (375 ms)
+14:13:11 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a box placed on a surface.'
+14:13:11 INFO    copilot.presentation.stage: [STAGE] diagram f23493dace42: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box on a plane' [simulation] v3 (1 items)
+14:13:11 INFO    copilot.simulation.detector: [SIM] cue block_on_surface ('Imagine a') {}
+  [UNDERSTAND] Physics > Collisions (elaboration) acts=explanation hint=example lines=2 via groq_main#4 1036 ms
+               Introduced a box on a plane surface as a collision illustration
+14:13:13 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (21 so far)
+  [ 1333.3s] Another box is placed on top of the box. (427 ms)
+14:13:17 INFO    copilot.scene.detector: [SCENE] edit 'Another box is placed on top of the box.'
+14:13:17 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'Another box is placed on top of the box.'
+  [ 1338.8s] Keep it secret. (354 ms)
+14:13:21 INFO    copilot.scene.detector: [SCENE] edit 'Keep it secret.'
+14:13:21 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'Keep it secret.'
+  [UNDERSTAND] Physics > Collisions (elaboration) acts=explanation hint=concept lines=1 via groq_main#4 1708 ms
+               Introduces a second box stacked on the first as part of the collision illustration.
+14:13:23 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (22 so far)
+  [UNDERSTAND] Physics > Collisions (digression) acts=- hint=none lines=1 via groq_main#4 953 ms
+               Teacher made a non‑instructional comment.
+14:13:26 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (22 so far)
+  [ 1346.2s] Another block is placed on the box. (422 ms)
+14:13:29 INFO    copilot.scene.detector: [SCENE] edit 'Another block is placed on the box.'
+14:13:29 INFO    copilot.presentation.stage: [STAGE] diagram 4f33e3dfa24e: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Box on a plane' [simulation] v4 (1 items)
+  [ 1349.7s] (dropped: filler_hallucination) Thank you.
+  [UNDERSTAND] Physics > Collisions (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 4878 ms
+               A third block is added to the stacked boxes illustration.
+14:13:35 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (23 so far)
+  [ 1403.1s] Um... (1254 ms)
+  [ 1408.9s] Imagine a laptop of sodium. (425 ms)
+14:14:31 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a laptop of sodium.'
+14:14:31 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (23 piece(s))
+14:14:31 INFO    copilot.presentation.simulations: [SIM] stage mode on: Laptop on its own slide (cue)
+14:14:31 INFO    copilot.presentation.stage: [STAGE] stage open: Laptop (cue)
+  [SLIDE] update 'Box on a plane' [simulation] v5 (1 items)
+  [SLIDE] add    'Laptop' [simulation] v1 (1 items)
+  [SLIDE] update 'Laptop' [simulation] v2 (1 items)
+14:14:31 INFO    copilot.simulation.detector: [SIM] values - {}
+14:14:32 INFO    copilot.presentation.stage: [STAGE] delta groq_stage#1: 1 op(s), 0 refused, 1425 tokens (1425 counted), first op -, 1.24 s
+  [SLIDE] update 'Laptop' [simulation] v3 (1 items)
+14:14:34 INFO    copilot.presentation.stage: teacher: the slide is drawn as a diagram (1 line(s))
+  [SLIDE] update 'Laptop' [simulation] v4 (1 items)
+  [UNDERSTAND] Physics > Collisions (digression) acts=- hint=none lines=1 via groq_main#4 1433 ms
+               Teacher asked students to imagine a laptop made of sodium.
+14:14:34 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (23 so far)
+14:14:36 INFO    copilot.presentation.stage: teacher: the slide is drawn as a scene (1 line(s))
+  [SLIDE] update 'Laptop' [simulation] v5 (1 items)
+  [SLIDE] update 'Laptop' [simulation] v6 (1 items)
+  [ 1416.6s] Imagine an atom of sodium. (479 ms)
+14:14:38 INFO    copilot.scene.detector: [SCENE] cue 'Imagine an atom of sodium.'
+14:14:38 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (23 piece(s))
+14:14:38 INFO    copilot.presentation.simulations: [SIM] stage mode on: Sodium atom on its own slide (cue)
+14:14:38 INFO    copilot.presentation.stage: [STAGE] diagram open: Sodium atom (cue)
+14:14:38 INFO    copilot.presentation.stage: [STAGE] diagram 48d025e2788d: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Laptop' [simulation] v7 (1 items)
+  [SLIDE] add    'Sodium atom' [simulation] v1 (1 items)
+  [SLIDE] update 'Sodium atom' [simulation] v2 (1 items)
+14:14:38 INFO    copilot.simulation.detector: [SIM] values - {}
+14:14:40 INFO    copilot.presentation.stage: teacher: the slide is drawn as a scene (1 line(s))
+  [SLIDE] update 'Sodium atom' [simulation] v3 (1 items)
+  [SLIDE] update 'Sodium atom' [simulation] v4 (1 items)
+14:14:41 INFO    copilot.presentation.stage: teacher: the slide is drawn as a diagram (1 line(s))
+  [SLIDE] update 'Sodium atom' [simulation] v5 (1 items)
+  [UNDERSTAND] Physics > Collisions (same_concept) acts=explanation hint=example lines=1 via groq_main#4 1307 ms
+               Introduced a sodium atom as an example
+14:14:42 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (24 so far)
+  [ 1424.6s] Imagine an atom of (397 ms)
+14:14:46 INFO    copilot.scene.detector: [SCENE] cue 'Imagine an atom of'
+14:14:46 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (23 piece(s))
+14:14:46 INFO    copilot.presentation.simulations: [SIM] stage mode on: Atom on its own slide (cue)
+14:14:46 INFO    copilot.presentation.stage: [STAGE] diagram open: Atom (cue)
+14:14:46 INFO    copilot.presentation.stage: [STAGE] diagram f6cdad017618: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Sodium atom' [simulation] v6 (1 items)
+  [SLIDE] add    'Atom' [simulation] v1 (1 items)
+  [SLIDE] update 'Atom' [simulation] v2 (1 items)
+  [ 1426.8s] Cool. (346 ms)
+14:14:47 INFO    copilot.scene.detector: [SCENE] edit 'Cool.'
+14:14:47 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'Cool.'
+  [ 1430.1s] Imagine a atom of Oxygen. (422 ms)
+14:14:52 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a atom of Oxygen.'
+14:14:52 INFO    copilot.presentation.simulations: [SIM] stage ended into the next stage: its recap waits (23 piece(s))
+14:14:52 INFO    copilot.presentation.simulations: [SIM] stage mode on: Oxygen atom on its own slide (cue)
+14:14:52 INFO    copilot.presentation.stage: [STAGE] diagram open: Oxygen atom (cue)
+14:14:52 INFO    copilot.presentation.stage: [STAGE] diagram 275693b01bf3: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Atom' [simulation] v3 (1 items)
+  [SLIDE] add    'Oxygen atom' [simulation] v1 (1 items)
+  [SLIDE] update 'Oxygen atom' [simulation] v2 (1 items)
+14:14:52 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Collisions (elaboration) acts=explanation hint=example lines=3 via groq_main#4 1445 ms
+               Teacher asks students to imagine an oxygen atom as an example
+14:14:54 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (24 so far)
+  [ 1436.5s] If you look at the properties of electron (401 ms)
+14:14:59 INFO    copilot.scene.detector: [SCENE] edit 'If you look at the properties of electron'
+14:14:59 INFO    copilot.presentation.stage: [STAGE] diagram c1ee1355d58f: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Oxygen atom' [simulation] v3 (1 items)
+14:14:59 INFO    copilot.simulation.detector: [SIM] values - {}
+  [ 1442.7s] If you look at its nucleus, (410 ms)
+14:15:04 INFO    copilot.scene.detector: [SCENE] edit 'If you look at its nucleus,'
+14:15:04 INFO    copilot.presentation.stage: [STAGE] diagram 0887e4990f32: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Oxygen atom' [simulation] v4 (1 items)
+14:15:04 INFO    copilot.simulation.detector: [SIM] values - {}
+  [ 1449.1s] It has 8 protons and 8 neutrons. (442 ms)
+14:15:12 INFO    copilot.scene.detector: [SCENE] edit 'It has 8 protons and 8 neutrons.'
+14:15:12 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'It has 8 protons and 8 neutrons.'
+14:15:12 INFO    copilot.simulation.detector: [SIM] values - {}
+14:15:12 INFO    copilot: [STT] vocabulary prompt: 45 terms (newest: Electric Field, Force, Electron Properties)
+  [UNDERSTAND] Physics > Electron Properties (sibling_concept) acts=explanation,explanation hint=key_points lines=2 via groq_main#4 1460 ms
+               Teacher introduced electron properties and its nucleus as new points
+14:15:12 INFO    copilot.presentation.simulations: [SIM] simulation mode: 2 piece(s) collected for the recap (26 so far)
+  [UNDERSTAND] Physics > Electron Properties (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1297 ms
+               Oxygen atom contains 8 protons and 8 neutrons.
+14:15:16 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (27 so far)
+  [ 1465.4s] It has two shells. (400 ms)
+14:15:27 INFO    copilot.scene.detector: [SCENE] edit 'It has two shells.'
+14:15:27 INFO    copilot.presentation.stage: [STAGE] diagram bd8374c272bf: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Oxygen atom' [simulation] v5 (1 items)
+14:15:27 INFO    copilot.simulation.detector: [SIM] values - {}
+  [ 1467.7s] (dropped: empty) 
+  [UNDERSTAND] Physics > Electron Properties (elaboration) acts=explanation hint=concept lines=1 via groq_main#4 1310 ms
+               Oxygen atom is described as having two electron shells.
+14:15:32 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (28 so far)
+14:16:04 INFO    copilot.presentation.engine: slide 'Recap: Sodium atom · Atom · Oxygen atom' waits for the min dwell time
+14:16:04 INFO    copilot.presentation.engine: slide 'Recap: Sodium atom · Atom · Oxygen atom' waits for the min dwell time
+14:16:04 INFO    copilot.presentation.simulations: [SIM] simulation mode off (Back to slides): recap 3 slide(s) (24 kept, 4 dropped as parameter talk)
+  [SLIDE] add    'Recap: Sodium atom · Atom · Oxygen atom' [key_points] v1 (10 items)
+  [SLIDE] update 'Oxygen atom' [simulation] v6 (1 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+  [SLIDE] add    'Recap: Sodium atom · Atom · Oxygen atom' [key_points] v1 (8 items)
+  [SLIDE] add    'Recap: Sodium atom · Atom · Oxygen atom' [key_points] v1 (5 items)
+[ENDED] session 20261031-135031-6c5b: 107 segments, 673 words, state v203, 1797 events logged
+        CommandReceived=39, ConceptSignal=106, ConcernRaised=2, ConcernResolved=3, DeckState=137, InterpretRequested=86, InterpretationReady=86, LifecycleChanged=5, LiveCue=90, ModeChanged=3, RepresentationIntent=158, SimulationModeChanged=80, SimulationSettingChanged=1, SlideContextChanged=3, SlidePatch=238, StateChanged=203, TranscriptFinal=107, TranscriptPartial=325, UtteranceClassified=107, UtteranceDropped=4, VocabularyChanged=14
+        stt: 107 published, 4 dropped, latency p50=486 ms p95=6794 ms max=9765 ms
+        understanding: 86 interpretations (86 by LLM, 0 fallbacks, 0 repaired), max 8 calls/min, prompt tokens max=1993 avg=1963, latency p50=1403 ms max=5067 ms
+        presentation: 46 slides; planner ops {'diagram_start': 13, 'teacher_stage_mode': 18, 'teacher_sim_end': 2, 'scene_start': 2, 'stage_start': 1}; revisions 0, corrections shown 0, shown as said 0
+        scenes: 4 calls, 12141 tokens, 6 ops, 0 refused; line -> first shape p50 0.92 s p90 1.13 s
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/45
+          1. [simulation] Box on an inclined plane  (v8, ['stage'])
+          2. [key_points] Recap: Box on an inclined plane  (v1, ['points', 'facts'])
+          3. [simulation] Two circles C1 and C2  (v3, ['stage'])
+          4. [simulation] Circle  (v3, ['stage'])
+          5. [simulation] Three circles C1, C2, C3  (v4, ['stage'])
+          6. [simulation] Square  (v4, ['stage'])
+          7. [simulation] Hcl  (v4, ['stage'])
+          8. [simulation] Throwing a ball  (v15, ['stage'])
+          9. [simulation] Car moving  (v8, ['stage'])
+          10. [key_points] Recap: Hcl · Throwing a ball · Car moving  (v1, ['points'])
+          11. [simulation] Cuboid  (v2, ['scene'])
+          12. [simulation] Cube and ball  (v6, ['scene'])
+          13. [members] Recap: Cube and ball  (v1, ['definition', 'points', 'points'])
+          14. [simulation] Student  (v4, ['stage'])
+          15. [simulation] Student  (v4, ['stage'])
+          16. [simulation] Throwing a ball  (v7, ['stage'])
+          17. [simulation] You on a moon  (v4, ['stage'])
+          18. [simulation] You jumping  (v6, ['stage'])
+          19. [simulation] You jumping  (v6, ['stage'])
+          20. [simulation] Riding a bicycle  (v6, ['stage'])
+          21. [simulation] Box with a spring  (v4, ['stage'])
+          22. [simulation] Inclined plane  (v5, ['stage'])
+          23. [simulation] Ball rolling  (v5, ['stage'])
+          24. [simulation] Solar system  (v3, ['stage'])
+          25. [simulation] Charge next to a field  (v4, ['stage'])
+          26. [simulation] You standing  (v6, ['stage'])
+          27. [simulation] Sitting on a chair  (v6, ['stage'])
+          28. [simulation] Pulling a rope  (v6, ['stage'])
+          29. [simulation] Moon  (v5, ['stage'])
+          30. [simulation] Pushing a box  (v9, ['stage'])
+          31. [simulation] Pushing a car  (v4, ['stage'])
+          32. [simulation] Helicopter  (v6, ['stage'])
+          33. [simulation] Plane  (v5, ['stage'])
+          34. [simulation] Riding a horse  (v8, ['stage'])
+          35. [simulation] You running  (v15, ['stage'])
+          36. [simulation] Football  (v5, ['stage'])
+          37. [simulation] Box and box  (v3, ['stage'])
+          38. [simulation] Box on a plane  (v5, ['stage'])
+          39. [simulation] Laptop  (v7, ['stage'])
+          40. [simulation] Sodium atom  (v6, ['stage'])
+          41. [simulation] Atom  (v3, ['stage'])
+          42. [simulation] Oxygen atom  (v6, ['stage'])
+          43. [key_points] Recap: Sodium atom · Atom · Oxygen atom [part 1]  (v1, ['points', 'definition', 'points'])
+          44. [key_points] Recap: Sodium atom · Atom · Oxygen atom [part 2]  (v1, ['points'])
+          45. [key_points] Recap: Sodium atom · Atom · Oxygen atom [part 3]  (v1, ['points'])
+        providers: {'groq_main#4': 72, 'groq_main#5': 13, 'groq_main#6': 1}; triggers: {'pause': 78, 'max_wait': 7, 'boundary': 1}; outline: ['Physics > Collisions, Moon Jump, Spring-Mass System, Inclined Plane, Solar System, Electric Field, Force, Electron Properties']; concerns: 2
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261031-135031-6c5b\session.sqlite

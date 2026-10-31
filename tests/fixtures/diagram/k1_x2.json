@@ -1,0 +1,60 @@
+{
+ "id": "X2",
+ "title": "Two resistors in parallel with a cell",
+ "lines": [
+  {
+   "line": "Consider two resistors in parallel with a cell.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "r1",
+     "kind": "resistor",
+     "label": "R1",
+     "attr": {
+      "label_src": "auto"
+     }
+    },
+    {
+     "op": "part",
+     "id": "r2",
+     "kind": "resistor",
+     "label": "R2",
+     "attr": {
+      "label_src": "auto"
+     }
+    },
+    {
+     "op": "part",
+     "id": "cell",
+     "kind": "cell",
+     "label": "cell",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "group",
+     "id": "par",
+     "mode": "parallel",
+     "items": [
+      "r1",
+      "r2"
+     ]
+    },
+    {
+     "op": "group",
+     "id": "loop",
+     "mode": "series",
+     "items": [
+      "par",
+      "cell"
+     ]
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "2 branches in parallel, R1 and R2",
+  "in series with the cell"
+ ]
+}

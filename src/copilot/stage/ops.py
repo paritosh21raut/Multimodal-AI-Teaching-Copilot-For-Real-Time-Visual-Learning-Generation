@@ -23,7 +23,7 @@ AGENT_VERBS = tuple("""walk jog run stand sit jump push pull throw catch carry p
 phone fold_arms nod shake_head wave drive swim float climb crouch kneel roll slide water plant harvest chop eat
 drink dance look_at""".split())
 OBJECT_VERBS = tuple("""move fall roll bounce slide_down orbit swing rotate float sink grow shrink appear vanish
-transform_into emit flow""".split())
+transform_into emit flow fly""".split())
 ANIMAL_VERBS = ("walk", "run", "sit", "stand", "fly", "swim")
 NEEDS_OBJ = ("push", "pull", "throw", "catch", "carry", "pick_up", "put_down", "hold", "water", "chop", "eat", "drink")
 MANNERS = ("slow", "fast", "hard", "gently")

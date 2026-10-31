@@ -1,0 +1,52 @@
+{
+ "id": "X1",
+ "title": "Cell, bulb and switch",
+ "lines": [
+  {
+   "line": "Imagine a cell, a bulb and a switch.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "cell",
+     "kind": "cell",
+     "label": "cell",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "part",
+     "id": "bulb",
+     "kind": "bulb",
+     "label": "bulb",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "part",
+     "id": "switch",
+     "kind": "switch",
+     "label": "switch",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "group",
+     "id": "loop",
+     "mode": "series",
+     "items": [
+      "cell",
+      "bulb",
+      "switch"
+     ]
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "cell, bulb and switch in one loop",
+  "labels on each"
+ ]
+}

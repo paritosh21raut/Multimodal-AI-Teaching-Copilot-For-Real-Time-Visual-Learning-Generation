@@ -265,8 +265,24 @@ def dimmed(g: Any, busy: set[str]) -> set[str]:
     """Ids not named in the last DIM_AFTER lines and not in an active action / law."""
     order = [i for i, _ in g.lines]
     recent = set(order[-DIM_AFTER:])
-    return {e.id for e in g.visible() if e.line not in recent and e.id not in busy}
+    return {e.id for e in g.visible() if e.line not in recent and e.id not in busy and not e.pinned}
 
 
 def stagger(new_ids: list[str], step_ms: int = 100) -> dict[str, int]:
     return {i: k * step_ms for k, i in enumerate(new_ids)}
+
+
+def room(g: Any, raws: list[dict], pinned: set[str] = frozenset(), most: int = 12) -> list[dict]:
+    """`remove` ops that keep at most `most` things visible once a line's ops add theirs (F-017 §7: show less): the
+    things said longest ago go first; never a pinned one, one in an active action or a law, or one the line names."""
+    new = {r.get("id") for r in raws if isinstance(r, dict) and r.get("op") == "add"
+           and r.get("kind") not in ("place", "surface") and r.get("id") not in g.ents}
+    over = len(g.visible()) + len(new) - most
+    if over <= 0:
+        return []
+    busy = {x for a in g.active() for x in (a.agent, a.obj) if x}
+    busy |= {i for law in g.laws.values() for v in law.roles.values() for i in (v if isinstance(v, list) else [v])}
+    named = {r.get(k) for r in raws if isinstance(r, dict) for k in ("id", "a", "b", "agent", "obj")}
+    old = sorted((e for e in g.visible() if e.id not in pinned and e.id not in busy and e.id not in named),
+                 key=lambda e: e.said)[:over]
+    return [{"op": "remove", "id": e.id} for e in old]

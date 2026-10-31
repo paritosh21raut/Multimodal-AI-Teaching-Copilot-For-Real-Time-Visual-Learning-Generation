@@ -155,6 +155,25 @@ def create_app(hub: DisplayHub, web_root: Path = WEB_ROOT, media: Optional["Imag
             return Response(status_code=404)
         return FileResponse(PICS_DIR / name, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
 
+    @app.get("/stage-icon/{name}")
+    async def stage_icon(name: str):
+        # F-017 E3: a flat icon of the lookup ladder (stage.icons cleaned and recoloured it): by its slug, never a path
+        from copilot.scene.pictures import SLUG
+        from copilot.stage.icons import ICON_DIR
+
+        stem = name[:-4] if name.endswith(".svg") else ""
+        if not SLUG.fullmatch(stem) or not (ICON_DIR / name).is_file():
+            return Response(status_code=404)
+        return FileResponse(ICON_DIR / name, media_type="image/svg+xml",
+                            headers={"Cache-Control": "public, max-age=86400", "Content-Security-Policy": "script-src 'none'"})
+
+    @app.get("/config/{name}")
+    async def stage_config(name: str):
+        # F-017 E3: the stage's catalog, cast and clip table for web/stage/ (only these three files)
+        if name not in ("stage_catalog.json", "stage_cast.json", "stage_clips.json"):
+            return Response(status_code=404)
+        return FileResponse(Path(__file__).resolve().parents[3] / "config" / name, media_type="application/json")
+
     @app.post("/api/upload")
     async def upload(request: Request):
         """The teacher's own image (drag & drop / Add image in /control). Stores a validated, re-encoded copy and

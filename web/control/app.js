@@ -518,6 +518,51 @@ function SceneBar({ spec, b, send, running }) {
   </div>`;
 }
 
+// F-017 E3: the explainer stage's bar. Pin keeps a thing from dimming, Undo takes back the last line, Fix word
+// corrects a word Whisper misheard ("did you mean ..." for the unsure ones), Freeze stops speech changing the stage,
+// Focus frames one thing (or the whole scene). F-018: Diagram | Scene redraws the slide's lines the other way. Every
+// button only sends a command; the server changes the stage.
+function StageBar({ spec, b, send, running }) {
+  const cmd = (kind, args = {}) => () => send(kind, { slide_id: spec.id, ...args });
+  const [menu, setMenu, ref] = usePopover();
+  const [fix, setFix] = useState(null);  // {id, w}
+  const ents = ((b.patch && b.patch.entities) || []).filter((e) => e.w);
+  const live = running && !b.still;
+  const pick = (kind) => html`<div class="menu up stage-pick" role="menu">
+    ${kind === "stage_focus" && html`<button role="menuitem" class="menu-row" onClick=${() => { send("stage_focus", { slide_id: spec.id, id: "" }); setMenu(false); }}>
+      ${svg(ICON.full)}<span>The whole scene</span></button>`}
+    ${ents.map((e) => html`<button key=${e.id} role="menuitem" class=${"menu-row" + (kind === "stage_pin" && e.pinned ? " on" : "")}
+      onClick=${() => { if (kind === "stage_fix") setFix({ id: e.id, w: e.w }); else send(kind, { slide_id: spec.id, id: e.id }); setMenu(kind === "stage_fix" ? "fix" : false); }}>
+      ${svg(kind === "stage_pin" ? ICON.lock : kind === "stage_fix" ? ICON.edit : ICON.eye)}<span>${e.w}</span></button>`)}
+    ${ents.length === 0 && html`<div class="menu-row muted">Nothing on the stage yet</div>`}
+  </div>`;
+  const sendFix = (w) => { if (fix && w.trim()) send("stage_fix", { slide_id: spec.id, id: fix.id, w: w.trim() }); setFix(null); setMenu(false); };
+  return html`<div class="image-bar sim-bar stage-bar menu-wrap" ref=${ref}>
+    ${(b.unsure || []).map((u) => html`<span key=${u.id} class="stage-unsure" title="Whisper was not sure of this word">
+      Did you mean${u.options.map((o) => html` <button onClick=${() => send("stage_fix", { slide_id: spec.id, id: u.id, w: o })}>${o}</button>`)}
+      <button onClick=${() => { setFix({ id: u.id, w: u.w }); setMenu("fix"); }}>other…</button></span>`)}
+    ${live && html`<button class=${menu === "pin" ? "on" : ""} onClick=${() => setMenu(menu === "pin" ? false : "pin")} title="Keep a thing bright (it is not dimmed later)">${svg(ICON.lock)}Pin</button>
+    <button onClick=${cmd("stage_undo")} title="Take back what the last line drew">${svg(ICON.restart)}Undo</button>
+    <button class=${menu === "fixwho" || menu === "fix" ? "on" : ""} onClick=${() => setMenu(menu === "fixwho" ? false : "fixwho")} title="Correct a word that was misheard">${svg(ICON.edit)}Fix word</button>
+    <button class=${b.frozen ? "on" : ""} onClick=${cmd("stage_freeze", { on: !b.frozen })} title="Stop (or resume) drawing what you say">${svg(ICON.pause)}${b.frozen ? "Frozen" : "Freeze"}</button>
+    <button class=${menu === "focus" ? "on" : ""} onClick=${() => setMenu(menu === "focus" ? false : "focus")} title="Zoom the stage onto one thing">${svg(ICON.eye)}Focus</button>`}
+    ${live && html`<span class="seg" role="group" aria-label="Draw as">
+      <button class=${b.mode === "diagram" ? "on" : ""} onClick=${cmd("stage_mode", { to: "diagram" })} title="Draw this slide as a clean concept diagram (no people, no scenery)">Diagram</button>
+      <button class=${b.mode !== "diagram" ? "on" : ""} onClick=${cmd("stage_mode", { to: "scene" })} title="Draw this slide as a scene with people and places">Scene</button></span>`}
+    <button class="icon" onClick=${cmd("sim_full", { on: true })} title="Full screen on the display">${svg(ICON.full)}</button>
+    <button class="icon" onClick=${cmd("sim_remove")} title="Take the stage off this slide">${svg(ICON.remove)}</button>
+    ${running && html`<span class="sep"></span><button class="sim-end" onClick=${() => send("sim_end")}
+      title="End the scene: slides resume, first a recap of what you taught">${svg(ICON.back)}End</button>`}
+    ${menu === "pin" && pick("stage_pin")}
+    ${menu === "focus" && pick("stage_focus")}
+    ${menu === "fixwho" && pick("stage_fix")}
+    ${menu === "fix" && fix && html`<div class="menu up stage-fix" role="dialog">
+      <form onSubmit=${(ev) => { ev.preventDefault(); sendFix(ev.target.elements.w.value); }}>
+        <input name="w" value=${fix.w} maxlength="40" autofocus aria-label="The right word" />
+        <button type="submit">${svg(ICON.check)}Fix</button></form></div>`}
+  </div>`;
+}
+
 // F-015 L2a: a moving thing's picture. The icons for its noun (or a word the teacher types), its kind's own drawing,
 // or the teacher's image (uploaded, then put on the body by scene_look; the UI changes nothing itself).
 function ScenePicture({ spec, bodies, send }) {
@@ -845,7 +890,7 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
     ${zoomed && html`<button class="back" onClick=${() => send("unzoom_image")} title="Back to the slide (Esc)">
       ${svg(ICON.back)}<span>Back to slide</span><kbd>Esc</kbd></button>`}
     ${spec && spec.layout !== "title" && !zoomed && !simFull && !drag && !onScreen && (sim
-      ? html`<${sim.type === "scene" ? SceneBar : SimBar} spec=${spec} b=${sim} send=${send} running=${!!(deck && deck.sim_mode === spec.id)} />`
+      ? html`<${sim.type === "stage" ? StageBar : sim.type === "scene" ? SceneBar : SimBar} spec=${spec} b=${sim} send=${send} running=${!!(deck && deck.sim_mode === spec.id)} />`
       : html`<${ImageBar} spec=${spec} image=${image} choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`)}
     <${NotesOnScreen} shown=${notesShown} send=${send} />
     ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} notes=${notes} mode=${mode} simSetting=${simSetting} send=${send} />`}

@@ -1,0 +1,152 @@
+{
+ "id": "D3",
+ "title": "Solar system",
+ "lines": [
+  {
+   "line": "Imagine our solar system.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "sun",
+     "kind": "sun",
+     "label": "Sun",
+     "attr": {
+      "label_src": "table"
+     }
+    },
+    {
+     "op": "part",
+     "id": "planet",
+     "kind": "planet",
+     "label": "Mercury",
+     "attr": {
+      "name": "Mercury",
+      "label_src": "table"
+     }
+    },
+    {
+     "op": "place",
+     "a": "planet",
+     "rel": "orbit",
+     "b": "sun"
+    },
+    {
+     "op": "part",
+     "id": "planet2",
+     "kind": "planet",
+     "label": "Venus",
+     "attr": {
+      "name": "Venus",
+      "label_src": "table"
+     }
+    },
+    {
+     "op": "place",
+     "a": "planet2",
+     "rel": "orbit",
+     "b": "sun"
+    },
+    {
+     "op": "part",
+     "id": "planet3",
+     "kind": "planet",
+     "label": "Earth",
+     "attr": {
+      "name": "Earth",
+      "label_src": "table"
+     }
+    },
+    {
+     "op": "place",
+     "a": "planet3",
+     "rel": "orbit",
+     "b": "sun"
+    },
+    {
+     "op": "part",
+     "id": "planet4",
+     "kind": "planet",
+     "label": "Mars",
+     "attr": {
+      "name": "Mars",
+      "label_src": "table"
+     }
+    },
+    {
+     "op": "place",
+     "a": "planet4",
+     "rel": "orbit",
+     "b": "sun"
+    },
+    {
+     "op": "part",
+     "id": "planet5",
+     "kind": "planet",
+     "label": "Jupiter",
+     "attr": {
+      "name": "Jupiter",
+      "label_src": "table"
+     }
+    },
+    {
+     "op": "place",
+     "a": "planet5",
+     "rel": "orbit",
+     "b": "sun"
+    },
+    {
+     "op": "part",
+     "id": "planet6",
+     "kind": "planet",
+     "label": "Saturn",
+     "attr": {
+      "name": "Saturn",
+      "label_src": "table"
+     }
+    },
+    {
+     "op": "place",
+     "a": "planet6",
+     "rel": "orbit",
+     "b": "sun"
+    },
+    {
+     "op": "part",
+     "id": "planet7",
+     "kind": "planet",
+     "label": "Uranus",
+     "attr": {
+      "name": "Uranus",
+      "label_src": "table"
+     }
+    },
+    {
+     "op": "place",
+     "a": "planet7",
+     "rel": "orbit",
+     "b": "sun"
+    },
+    {
+     "op": "part",
+     "id": "planet8",
+     "kind": "planet",
+     "label": "Neptune",
+     "attr": {
+      "name": "Neptune",
+      "label_src": "table"
+     }
+    },
+    {
+     "op": "place",
+     "a": "planet8",
+     "rel": "orbit",
+     "b": "sun"
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "sun + 8 planets in order on orbits",
+  "no bullet slide"
+ ]
+}

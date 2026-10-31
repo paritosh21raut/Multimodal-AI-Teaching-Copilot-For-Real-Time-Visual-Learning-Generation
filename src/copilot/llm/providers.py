@@ -61,6 +61,7 @@ class LLMResponse:
     text: str
     prompt_tokens: int = 0
     completion_tokens: int = 0
+    cached_tokens: int = 0  # prompt tokens served from the provider's prompt cache (Groq: not counted to limits)
     latency_ms: float = 0.0
     remaining_tokens: Optional[float] = None  # from x-ratelimit-remaining-tokens
 
@@ -194,6 +195,7 @@ def _response(text: str, usage: dict, resp: httpx.Response, latency: float) -> L
         text=text,
         prompt_tokens=_int(usage.get("prompt_tokens")),
         completion_tokens=_int(usage.get("completion_tokens")),
+        cached_tokens=_int((usage.get("prompt_tokens_details") or {}).get("cached_tokens")),
         latency_ms=latency,
         remaining_tokens=remaining_f,
     )

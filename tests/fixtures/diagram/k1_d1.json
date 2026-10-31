@@ -1,0 +1,40 @@
+{
+ "id": "D1",
+ "title": "Box on an inclined plane",
+ "lines": [
+  {
+   "line": "Imagine a box on an inclined plane.",
+   "ops": [
+    {
+     "op": "part",
+     "id": "box",
+     "kind": "block",
+     "label": "box",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "part",
+     "id": "inclined_plane",
+     "kind": "incline",
+     "label": "inclined plane",
+     "attr": {
+      "label_src": "said"
+     }
+    },
+    {
+     "op": "place",
+     "a": "box",
+     "rel": "on",
+     "b": "inclined_plane"
+    }
+   ]
+  }
+ ],
+ "checks": [
+  "diagram, not stage",
+  "box sits ON the slope surface",
+  "angle marked"
+ ]
+}
