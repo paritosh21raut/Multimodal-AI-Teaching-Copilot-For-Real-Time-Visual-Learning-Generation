@@ -1,0 +1,32 @@
+{
+ "id": "m1_two_blocks_stick",
+ "title": "Two blocks, 10 N on the bottom one: they move together",
+ "about": "together a = F/(m1+m2) = 2; the top needs f = 2 kg x 2 = 4 N <= μN = 7.84 N: it sticks",
+ "lines": [
+  {
+   "say": "Imagine two blocks, one on top of the other, on the floor."
+  },
+  {
+   "say": "The top block is 2 kg and the bottom block is 3 kg."
+  },
+  {
+   "say": "We apply 10 newtons on the bottom block."
+  },
+  {
+   "say": "The coefficient of friction between the blocks is 0.4."
+  },
+  {
+   "say": "The floor is frictionless.",
+   "expect": {
+    "values": {
+     "block:a": 2.0,
+     "block2:a": 2.0,
+     "block2:f": 4.0
+    },
+    "notes": [
+     "the top block sticks to the block below"
+    ]
+   }
+  }
+ ]
+}

@@ -83,6 +83,9 @@ class Layout:
 
 # ---- sizes ----------------------------------------------------------------------------------------------------------
 def theta(g: Graph, inc: str) -> tuple[float, bool]:
+    q = g.value(inc, "theta")  # F-019: the latest said angle ("now make it 45 degrees")
+    if q and 3 <= q["v"] <= 75:
+        return float(q["v"]), True
     gv = g.givens.get("theta")
     if gv and (gv.get("on") in (None, inc)) and 3 <= gv["v"] <= 75:
         return float(gv["v"]), True
@@ -160,6 +163,8 @@ def _place_tree(g: Graph, L: Layout, root: str) -> None:
                 _above(na, nb, g, L)
             elif rel == "inside":
                 _inside(na, nb)
+            elif rel == "at_edge":
+                _edge(na, nb)
             else:  # beside: next to it on the same floor line
                 na.cx = nb.box()[2] + GAP / 2 + na.w / 2
                 na.cy = nb.box()[3] - na.h / 2
@@ -177,10 +182,20 @@ def _on(a: Node, b: Node, i: int, n: int) -> None:
         a.cx, a.cy, a.rot = px + nx * a.h / 2, py + ny * a.h / 2, math.degrees(th)
         a.attr["contact"] = [round(px, 2), round(py, 2)]
         return
+    if b.kind in ("block", "mass"):  # F-019 M1: a block on a block (also on a slope: along the lower block's top face)
+        if a.kind == b.kind:
+            a.w, a.h = a.w * 0.72, a.h * 0.72
+        px, py = b.at(0.5, 0.0)
+        th = math.radians(b.rot)
+        a.cx, a.cy, a.rot = px + math.sin(th) * a.h / 2, py - math.cos(th) * a.h / 2, b.rot
+        a.attr["contact"] = [round(px, 2), round(py, 2)]
+        return
     sx, sy = b.anchor("top") if b.kind in ("burner",) else (b.cx, b.box()[1])
     span = b.w * 0.6
     x = sx if n == 1 else sx - span / 2 + span * i / (n - 1)
     a.cx, a.cy, a.rot = x, sy - a.h / 2, 0.0
+    if b.kind == "floor":
+        a.attr["contact"] = [round(x, 2), round(sy, 2)]
 
 
 def _in(a: Node, b: Node, L: Layout) -> None:
@@ -212,15 +227,33 @@ def _inside(a: Node, b: Node) -> None:
     a.cx, a.cy = b.anchor("centre")
 
 
+def _edge(a: Node, b: Node) -> None:
+    """F-019 M1: a pulley clamped at a table's right edge, its centre on the corner (the rope from a block on the
+    table leaves the block's side at the pulley's top)."""
+    x1, y0 = b.box()[2], b.box()[1]
+    a.cx, a.cy, a.rot = x1 + 6, y0, 0.0
+    a.attr["edge"] = True
+
+
+def ties(g: Graph, L: Layout) -> None:
+    """The rope from a block on a table to the pulley at the edge (a `wire` between two mechanics parts)."""
+    for x, y in g.wires:
+        a, p = L.nodes.get(x), L.nodes.get(y)
+        if not (a and p and p.kind == "pulley" and a.kind in ("block", "mass")):
+            continue
+        L.wires.append({"id": f"tie_{a.id}", "kind": "rope", "body": a.id, "end": 0,
+                        "pts": [[a.cx + a.w / 2, a.cy], [p.cx, p.cy - p.h / 2]]})
+
+
 def _hang(a: Node, b: Node, i: int, L: Layout) -> None:
     anchors = (P.kind(b.kind) or {})["anchors"]
     if b.kind == "pulley":
         k = min(1.0, 0.85 * b.w / a.w)  # the two sides must not touch: a hung body no wider than the pulley
         a.w, a.h = a.w * k, a.h * k
-        side = "left_end" if i % 2 == 0 else "right_end"
+        side = "right_end" if b.attr.get("edge") else "left_end" if i % 2 == 0 else "right_end"
         ex, ey = b.anchor(side)
-        top = ey + ROPE[i % 2]
-        L.wires.append({"id": f"rope_{a.id}", "kind": "rope", "pts": [[ex, ey], [ex, top]]})
+        top = ey + ROPE[1 if b.attr.get("edge") else i % 2]
+        L.wires.append({"id": f"rope_{a.id}", "kind": "rope", "body": a.id, "end": 1, "pts": [[ex, ey], [ex, top]]})
         a.cx, a.cy = ex, top + a.h / 2
         return
     if b.kind == "support":
@@ -436,7 +469,8 @@ def _circuit(g: Graph, L: Layout) -> Optional[str]:
 
 
 # ---- the whole diagram ----------------------------------------------------------------------------------------------
-def solve(g: Graph, nogo: Optional[list[list[float]]] = None) -> Layout:
+def solve(g: Graph, nogo: Optional[list[list[float]]] = None, panel: float = 0.0) -> Layout:
+    """panel: the width kept free on the right for the values panel (F-019 §4)."""
     L = Layout()
     for pid in g.parts:
         L.nodes[pid] = _node(g, pid)
@@ -453,6 +487,7 @@ def solve(g: Graph, nogo: Optional[list[list[float]]] = None) -> Layout:
         if n.kind == "atom":
             _atom(n, L)
             n.label = ""
+    ties(g, L)
     _streams(g, L)
     for what, on in g.shows:
         if what == "field" and on in L.nodes and L.nodes[on].kind == "bar_magnet":
@@ -460,7 +495,7 @@ def solve(g: Graph, nogo: Optional[list[list[float]]] = None) -> Layout:
     for n in L.nodes.values():
         if n.kind == "incline":
             _angle(n, L)
-    _arrange(L, roots)
+    _arrange(L, roots, (AREA[0], AREA[1], AREA[2] - panel, AREA[3]))
     _compass(L)  # on the final positions (each tree has its own frame until it is arranged)
     _focus(g, L)
     place_labels(L, nogo or [])
@@ -512,18 +547,18 @@ def _wire_pts(w: dict[str, Any]) -> list[tuple[float, float]]:
     return [(p[0], p[1]) for p in w["pts"]]
 
 
-def _arrange(L: Layout, roots: list[str]) -> None:
+def _arrange(L: Layout, roots: list[str], area: tuple[float, float, float, float] = AREA) -> None:
     """The trees in a row (bottoms on one line for apparatus, centres for the rest), scaled as one to fill the slide."""
     boxes = [tree_box(L, r) for r in roots]
     margin = 70.0  # room for the labels round the edge
     widths = [b[2] - b[0] for b in boxes]
     total = sum(widths) + GAP * (len(roots) - 1)
     tall = max(b[3] - b[1] for b in boxes)
-    aw, ah = AREA[2] - AREA[0] - 2 * margin, AREA[3] - AREA[1] - 2 * margin
+    aw, ah = area[2] - area[0] - 2 * margin, area[3] - area[1] - 2 * margin
     s = min(MAX_SCALE, aw / max(total, 1.0), ah / max(tall, 1.0))
     bottoms = all((P.kind(L.nodes[r].kind) or {}).get("domain") in ("mech", "lab") for r in roots) and len(roots) > 1
-    x = (AREA[0] + AREA[2]) / 2 - s * total / 2
-    cy = (AREA[1] + AREA[3]) / 2
+    x = (area[0] + area[2]) / 2 - s * total / 2
+    cy = (area[1] + area[3]) / 2
     base = cy + s * tall / 2
     shifts = {}
     for r, b, w in zip(roots, boxes, widths):
@@ -624,6 +659,8 @@ def place_labels(L: Layout, nogo: list[list[float]]) -> None:
         for k in [pref] + [s for s in ("right", "below", "left", "above") if s != pref]:
             if k in sides:
                 cands.append(sides[k])
+            if k == "below" and n.kind in ("floor", "support", "incline"):  # a wide part: along it, not on a far ring
+                cands += [(x0 + f * (x1 - x0), y1 + 12 + lh / 2) for f in (0.2, 0.8, 0.35, 0.65)]
         for ring in (1, 2, 3, 4):
             r = max(n.w, n.h) / 2 + 30 + ring * 46
             for a in range(0, 360, 30):

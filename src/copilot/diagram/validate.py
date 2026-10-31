@@ -5,6 +5,7 @@ is logged with its reason (the reject log is a paper dataset).
 - kind / rel / verb / show in the closed lists; `in` / `contain` need a container; `hang_from` an `end` anchor;
 - a said count ("two circles") equals the parts of that kind the line adds (counts are drawn exactly);
 - a `given` matches its quote (the number is in it, the unit fits the symbol);
+- a `qty` (F-019 §2) sits on a part that can have it and its v is what Python reads from the quote, in SI;
 - a label is the teacher's word (in the recent lines), an auto name (R1, R2 … counted by Python) or a table name;
 - budgets (ops per line, parts per diagram).
 """
@@ -107,6 +108,35 @@ def check_given(op: O.Given, lines: list[str]) -> str:
     return ""
 
 
+_QTY_ON = {"m": ("block", "mass"), "F": ("block", "mass"), "mu": ("block", "mass"), "mu_s": ("block", "mass"),
+           "mu_k": ("block", "mass"), "theta": ("incline",), "k": ("spring",)}
+
+
+def check_qty(op: O.Qty, g: Graph, lines: list[str]) -> str:
+    from copilot.diagram.quantities import said_ok
+    if op.sym not in O.QSYMS:
+        return f"no quantity {op.sym!r} (has {', '.join(O.QSYMS)})"
+    if op.on not in g.parts:
+        return "unknown id"
+    if g.parts[op.on].kind not in _QTY_ON[op.sym]:
+        return f"{op.sym} does not go on a {g.parts[op.on].kind}"
+    if op.u != O.QSYMS[op.sym]:
+        return f"{op.sym} is kept in {O.QSYMS[op.sym] or 'no unit'}, not {op.u!r}"
+    if op.dir not in O.DIRS or op.dir and op.sym != "F":
+        return f"bad direction {op.dir!r}"
+    if not math.isfinite(op.v) or op.v < 0 or op.sym.startswith("mu") and op.v > 2:
+        return f"{op.v} is not a {op.sym}"
+    if op.sym == "theta" and not 3 <= op.v <= 75:  # the slope the layout can draw (layout.theta); else it would
+        return f"an incline of {op.v:g}° is not drawn (3–75°)"  # show 30° while the solver used the said angle
+    q = _clean(op.q)
+    rx = re.compile(r"(?<![\w.])" + re.escape(q) + r"(?![\w])", re.IGNORECASE) if q else None
+    if not rx or not any(rx.search(_clean(x)) for x in lines):
+        return f"quote {op.q!r} is not in the teacher's recent lines"
+    if not said_ok(op.q, op.sym, op.v):
+        return f"{op.v:g} {op.u} is not what the quote {op.q!r} says"
+    return ""
+
+
 def _ref(i: str, g: Graph) -> bool:
     return i.split(".", 1)[0] in g.parts or i in g.groups
 
@@ -143,6 +173,8 @@ def check(op: Any, g: Graph, lines: list[str], trusted: bool = False, counts: Op
             return "only a shape goes inside a shape"
         if op.rel in ("hang_from", "attached_to") and "end" not in P.kind(b.kind)["anchors"]:
             return f"{b.kind} has no end to hang from"
+        if op.rel == "at_edge" and not (g.parts[op.a].kind == "pulley" and b.kind == "floor"):
+            return "only a pulley is clamped at the edge of a table"
         if op.rel == "orbit" and b.kind not in ("sun", "planet", "nucleus", "atom"):
             return f"nothing orbits a {b.kind}"
         x, seen = op.b, {op.a}
@@ -170,6 +202,8 @@ def check(op: Any, g: Graph, lines: list[str], trusted: bool = False, counts: Op
         if op.on is not None and op.on not in g.parts:
             return "unknown id"
         return check_given(op, lines)
+    if isinstance(op, O.Qty):
+        return check_qty(op, g, lines)
     if isinstance(op, O.Show):
         if op.what not in O.SHOWS:
             return f"unknown show {op.what!r}"

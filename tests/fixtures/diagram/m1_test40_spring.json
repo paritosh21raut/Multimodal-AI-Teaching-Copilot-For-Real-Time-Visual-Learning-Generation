@@ -1,0 +1,35 @@
+{
+ "id": "m1_test40_spring",
+ "title": "test40: the repeat heard as 'a hanging mass' and k heard as '100Nm'",
+ "about": "one mass; x = 4.9/100 = 0.049 m; T = 2π √(0.5/100) = 0.4443 s",
+ "lines": [
+  {
+   "say": "Imagine a spring with a mass hanging from it."
+  },
+  {
+   "say": "Imagine a spring with a hanging mass.",
+   "expect": {
+    "qty": {}
+   }
+  },
+  {
+   "say": "from it."
+  },
+  {
+   "say": "The mass is 0.5kg and spring constant is 100Nm. meter.",
+   "expect": {
+    "qty": {
+     "mass:m": 0.5,
+     "spring:k": 100.0
+    },
+    "values": {
+     "mass:x": 0.049,
+     "mass:T": 0.4442882938158366
+    },
+    "motions": {
+     "mass": "oscillates"
+    }
+   }
+  }
+ ]
+}

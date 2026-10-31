@@ -1,0 +1,31 @@
+{
+ "id": "m1_atwood",
+ "title": "Atwood machine 2 kg and 3 kg",
+ "about": "a = (3 − 2) g / 5 = 1.96; T = 2·2·3·g/5 = 23.52",
+ "lines": [
+  {
+   "say": "Imagine a pulley with two blocks hanging from it."
+  },
+  {
+   "say": "One block is 2 kg and the other is 3 kg.",
+   "expect": {
+    "qty": {
+     "block:m": 2.0,
+     "block2:m": 3.0
+    },
+    "values": {
+     ":a": 1.9600000000000002,
+     ":T": 23.520000000000003
+    },
+    "motions": {
+     "block2": "slides",
+     "block": "slides"
+    },
+    "motion_ang": {
+     "block2": 90.0,
+     "block": -90.0
+    }
+   }
+  }
+ ]
+}

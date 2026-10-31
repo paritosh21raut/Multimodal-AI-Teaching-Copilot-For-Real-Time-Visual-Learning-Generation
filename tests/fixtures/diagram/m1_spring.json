@@ -1,0 +1,32 @@
+{
+ "id": "m1_spring",
+ "title": "A 0.5 kg mass on a 100 N/m spring",
+ "about": "x = mg/k = 4.9/100 = 0.049 m; T = 2π √(0.5/100) = 0.4443 s",
+ "lines": [
+  {
+   "say": "Imagine a spring with a mass hanging from it.",
+   "expect": {
+    "symbols": [
+     "mass:T"
+    ]
+   }
+  },
+  {
+   "say": "The mass is 0.5 kg and the spring constant is 100 newtons per metre.",
+   "expect": {
+    "qty": {
+     "mass:m": 0.5,
+     "spring:k": 100.0
+    },
+    "values": {
+     "mass:x": 0.049,
+     "mass:T": 0.4442882938158366,
+     "mass:F_s": 4.9
+    },
+    "motions": {
+     "mass": "oscillates"
+    }
+   }
+  }
+ ]
+}

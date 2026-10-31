@@ -1,0 +1,49 @@
+{
+ "id": "m1_test40_incline",
+ "title": "test40: the push said again with its way misheard keeps 'up the slope'",
+ "about": "the test40 transcript lines; 30°: W∥ 24.5 − F 5 = 19.5 > μN 12.73: slides down, a = 6.77/5 = 1.354",
+ "lines": [
+  {
+   "say": "Imagine a box on an inclined plane at 30 degrees."
+  },
+  {
+   "say": "The mass of the box is 5 kg."
+  },
+  {
+   "say": "We push the box up the slope with 5N. happens.",
+   "expect": {
+    "dir": {
+     "box:F": "up_slope"
+    }
+   }
+  },
+  {
+   "say": "We push the box up with the slope with 5N. And that concludes today's session.",
+   "expect": {
+    "dir": {
+     "box:F": "up_slope"
+    }
+   }
+  },
+  {
+   "say": "The coefficient of friction is 0.3.",
+   "expect": {
+    "values": {
+     "box:f": 12.730573435631248,
+     "box:a": 1.3538853128737496
+    },
+    "motions": {
+     "box": "slides"
+    }
+   }
+  },
+  {
+   "say": "Now make it 45 degree.",
+   "expect": {
+    "values": {
+     "box:a": 3.8507525189397165
+    }
+   }
+  }
+ ]
+}

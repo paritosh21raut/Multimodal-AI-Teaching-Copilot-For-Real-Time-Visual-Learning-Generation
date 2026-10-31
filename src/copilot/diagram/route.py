@@ -22,7 +22,8 @@ _YOU_ACT = re.compile(r"\b(?:you|yourself)(?:'re|\s+are|\s+were|\s+)?\s*(?:\w+ly
                       r"play|jumping|jump|climbing|climb|swimming|swim|studying|study|eating|eat|sleeping|sleep|"
                       r"going|travel\w*|flying|fly|floating|in|on|at|inside)\b",  # the listener in a scene
                       re.IGNORECASE)
-_SKIP = {"you", "it", "he", "she", "they", "we", "i", "field", "lines", "line", "system", "plane", "surface", "solution"}
+_SKIP = {"you", "it", "he", "she", "they", "we", "i", "field", "lines", "line", "system", "plane", "surface", "solution",
+         "rope", "string", "thread", "cord"}  # F-019 M1: the rope over a pulley is drawn by the diagram
 
 
 def stage_nouns(text: str, spans: list[tuple[int, int]]) -> list[str]:

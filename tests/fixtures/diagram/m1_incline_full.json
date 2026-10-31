@@ -1,0 +1,50 @@
+{
+ "id": "m1_incline_full",
+ "title": "Box on an incline: 5 kg, 5 N up the slope, μ 0.3, then 45°",
+ "lines": [
+  {
+   "say": "Imagine a box on an inclined plane at 30 degrees."
+  },
+  {
+   "say": "The mass of the box is 5 kg."
+  },
+  {
+   "say": "We push the box up the slope with 5 newtons.",
+   "expect": {
+    "dir": {
+     "box:F": "up_slope"
+    }
+   }
+  },
+  {
+   "say": "The coefficient of friction is 0.3.",
+   "expect": {
+    "values": {
+     "box:W": 49.0,
+     "box:N": 42.4352447854375,
+     "box:f": 12.730573435631248,
+     "box:a": 1.3538853128737496
+    },
+    "motions": {
+     "box": "slides"
+    },
+    "motion_ang": {
+     "box": 30.0
+    }
+   }
+  },
+  {
+   "say": "Now make it 45 degrees.",
+   "expect": {
+    "qty": {
+     "inclined_plane:theta": 45.0
+    },
+    "values": {
+     "box:N": 34.64823227814083,
+     "box:f": 10.39446968344225,
+     "box:a": 3.8507525189397165
+    }
+   }
+  }
+ ]
+}

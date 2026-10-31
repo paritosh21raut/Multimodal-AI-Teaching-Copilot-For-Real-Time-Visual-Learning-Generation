@@ -1,0 +1,123 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (6.4 s)
+[INIT]  live speech model distil-small.en ready (1.5 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#3 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_5         openai/gpt-oss-120b            82k of 200k tokens IN USE
+        GROQ_API_KEY_6         openai/gpt-oss-120b           168k of 200k tokens ok
+        GROQ_API_KEY_1         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~15.6 h
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 256 lecture minutes
+
+[READY] session 20261031-221342-7ffc
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+22:13:56 INFO    copilot.visuals.service: CLIP ready in 0.6 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    1.2s] Imagine two blocks, one on top of the other on the floor. (463 ms)
+22:14:09 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two blocks, one on top of the other on the floor.'
+22:14:09 INFO    copilot.presentation.simulations: [SIM] stage mode on: Two blocks and floor on its own slide (cue)
+22:14:09 INFO    copilot.presentation.stage: [STAGE] diagram open: Two blocks and floor (cue)
+22:14:09 INFO    copilot.presentation.stage: [STAGE] diagram 9dbc62f42b13: 5 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] add    'Two blocks and floor' [simulation] v1 (1 items)
+  [SLIDE] update 'Two blocks and floor' [simulation] v2 (1 items)
+22:14:09 INFO    copilot.simulation.detector: [SIM] values - {}
+22:14:11 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Physics, Blocks)
+  [UNDERSTAND] Physics > Blocks (new_topic) acts=explanation hint=example lines=1 via groq_main#5 1464 ms
+               Teacher shows two blocks stacked on the floor as a visual example.
+22:14:11 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   12.4s] The top block is 2 kg and the bottom block is 3 kg. (463 ms)
+22:14:19 INFO    copilot.scene.detector: [SCENE] edit 'The top block is 2 kg and the bottom block is 3 kg.'
+22:14:19 INFO    copilot.presentation.stage: [STAGE] diagram dc2667343681: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v3 (1 items)
+22:14:19 INFO    copilot.simulation.detector: [SIM] values - {'mass': '2 kg', 'mass#1': '3 kg'}
+  [UNDERSTAND] Physics > Blocks (elaboration) acts=other hint=key_points lines=1 via groq_main#5 1238 ms
+               Teacher gives the masses of the top and bottom blocks: 2 kg and 3 kg.
+22:14:20 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   19.5s] We apply 50N on the bottom blocks. (421 ms)
+22:14:25 INFO    copilot.scene.detector: [SCENE] edit 'We apply 50N on the bottom blocks.'
+22:14:25 INFO    copilot.presentation.stage: [SIM] value unattached: F '50N' in 'We apply 50N on the bottom blocks.'
+22:14:25 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'We apply 50N on the bottom blocks.'
+22:14:25 INFO    copilot.simulation.detector: [SIM] values - {'force': '50N'}
+  [UNDERSTAND] Physics > Blocks (elaboration) acts=other hint=key_points lines=1 via groq_main#5 1094 ms
+               The teacher states a 50 N force is applied to the bottom block.
+22:14:26 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   29.8s] We apply 50 N on the bottom block. (416 ms)
+22:14:36 INFO    copilot.scene.detector: [SCENE] edit 'We apply 50 N on the bottom block.'
+22:14:36 INFO    copilot.presentation.stage: [STAGE] diagram af77c81a3b0d: 1 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v4 (1 items)
+22:14:36 INFO    copilot.simulation.detector: [SIM] values - {'force': '50 N'}
+  [UNDERSTAND] Physics > Blocks (same_concept) acts=explanation hint=key_points lines=1 via groq_main#5 1579 ms
+               The teacher notes a 50 N force acting on the bottom block.
+22:14:37 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [   36.6s] The coefficient of friction between the blocks is 0.4 and the floor is frictionless. (502 ms)
+22:14:45 INFO    copilot.scene.detector: [SCENE] edit 'The coefficient of friction between the blocks is 0.4 and the floor is frictionl'
+22:14:45 INFO    copilot.presentation.stage: [STAGE] diagram 7a41fc3c3b6d: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v5 (1 items)
+22:14:45 INFO    copilot.simulation.detector: [SIM] values - {'mu': 'coefficient of friction between the blocks is 0.4'}
+  [UNDERSTAND] Physics > Blocks (elaboration) acts=other hint=concept lines=1 via groq_main#5 1769 ms
+               Introduced the coefficient of friction between the blocks as 0.4.
+22:14:47 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [   50.4s] Imagine a spring with a mass hanging from it. (425 ms)
+22:14:56 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a spring with a mass hanging from it.'
+22:14:56 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another stage was started): recap 1 slide(s) (1 kept, 5 dropped as parameter talk)
+22:14:56 INFO    copilot.presentation.simulations: [SIM] stage mode on: Spring with a mass on its own slide (cue)
+22:14:56 INFO    copilot.presentation.stage: [STAGE] diagram open: Spring with a mass (cue)
+22:14:56 INFO    copilot.presentation.stage: [STAGE] diagram 9779b393467c: 5 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Two blocks and floor' [simulation] v6 (1 items)
+  [SLIDE] add    'Recap: Two blocks and floor' [facts] v1 (1 items)
+  [SLIDE] add    'Spring with a mass' [simulation] v1 (1 items)
+  [SLIDE] update 'Spring with a mass' [simulation] v2 (1 items)
+22:14:56 INFO    copilot.simulation.detector: [SIM] values - {}
+22:14:58 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: Physics, Blocks, Spring and Hanging Mass)
+  [UNDERSTAND] Physics > Spring and Hanging Mass (sibling_concept) acts=explanation hint=example lines=1 via groq_main#5 1708 ms
+               Teacher introduces a spring‑mass system as a new example
+22:14:58 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   56.3s] Imagine a spring with a mass hanging on it. (429 ms)
+22:15:02 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a spring with a mass hanging on it.'
+22:15:02 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'Imagine a spring with a mass hanging on it.'
+22:15:02 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Spring and Hanging Mass (elaboration) acts=explanation hint=example lines=1 via groq_main#6 1191 ms
+               Teacher introduces a spring‑mass example with a hanging mass
+22:15:03 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   63.7s] Mass is 0.5kg and spring constant is 100 Nm. (481 ms)
+22:15:12 INFO    copilot.scene.detector: [SCENE] edit 'Mass is 0.5kg and spring constant is 100 Nm.'
+22:15:12 INFO    copilot.presentation.stage: [STAGE] diagram 3d893f80d37b: 2 op(s), 0 refused (fast path, 0 tokens; the LLM delta comes in K5)
+  [SLIDE] update 'Spring with a mass' [simulation] v3 (1 items)
+22:15:12 INFO    copilot.simulation.detector: [SIM] values - {'mass': '0.5kg', 'force': '100 Nm'}
+22:15:14 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Spring and Hanging Mass' -> same_concept
+  [UNDERSTAND] Physics > Spring and Hanging Mass (same_concept) acts=other hint=key_points lines=1 via groq_main#5 1947 ms
+               Introduced a 0.5 kg mass and a spring constant of 100 N/m for the hanging‑mass example.
+22:15:14 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+[END]   finishing lecture understanding (0 buffered lines) ...
+22:15:24 INFO    copilot.presentation.simulations: [SIM] simulation mode off (the lecture ended): recap none (0 kept, 4 dropped as parameter talk)
+[ENDED] session 20261031-221342-7ffc: 8 segments, 81 words, state v21, 154 events logged
+        CommandReceived=4, ConceptSignal=8, DeckState=7, InterpretRequested=8, InterpretationReady=8, LifecycleChanged=5, LiveCue=8, ModeChanged=1, RepresentationIntent=16, SimulationModeChanged=4, SimulationSettingChanged=1, SlideContextChanged=1, SlidePatch=10, StateChanged=21, TranscriptFinal=8, TranscriptPartial=34, UtteranceClassified=8, VocabularyChanged=2
+        stt: 8 published, 0 dropped, latency p50=463 ms p95=502 ms max=502 ms
+        understanding: 8 interpretations (8 by LLM, 0 fallbacks, 0 repaired), max 7 calls/min, prompt tokens max=1962 avg=1898, latency p50=1579 ms max=1947 ms
+        presentation: 3 slides; planner ops {'diagram_start': 2}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/3
+          1. [simulation] Two blocks and floor  (v6, ['stage'])
+          2. [facts] Recap: Two blocks and floor  (v1, ['facts'])
+          3. [simulation] Spring with a mass  (v3, ['stage'])
+        providers: {'groq_main#5': 7, 'groq_main#6': 1}; triggers: {'pause': 8}; outline: ['Physics > Blocks, Spring and Hanging Mass']; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261031-221342-7ffc\session.sqlite

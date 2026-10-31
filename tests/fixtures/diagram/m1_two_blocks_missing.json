@@ -1,0 +1,22 @@
+{
+ "id": "m1_two_blocks_missing",
+ "title": "Two blocks with a force and no masses: symbols only",
+ "lines": [
+  {
+   "say": "Imagine two blocks, one on top of the other, on the floor."
+  },
+  {
+   "say": "We apply 50 newtons on the bottom block.",
+   "expect": {
+    "symbols": [
+     "block:a",
+     "block2:a",
+     "block:W"
+    ],
+    "notes": [
+     "the mass"
+    ]
+   }
+  }
+ ]
+}

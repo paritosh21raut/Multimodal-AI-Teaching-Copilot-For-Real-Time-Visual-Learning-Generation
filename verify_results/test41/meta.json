@@ -1,0 +1,14 @@
+{
+  "name": "test41",
+  "source": "mic",
+  "note": "M1 retest",
+  "session_id": "20261031-221342-7ffc",
+  "date": "2026-10-31 22:15",
+  "title": "",
+  "minutes": 1.1,
+  "utterances": 8,
+  "slides": 3,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": []
+}

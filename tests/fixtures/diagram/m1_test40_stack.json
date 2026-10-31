@@ -1,0 +1,29 @@
+{
+ "id": "m1_test40_stack",
+ "title": "test40: 'between the block' (singular) is the contact between the blocks",
+ "about": "top: a = μg = 3.92; bottom: (50 − 7.84)/3 = 14.05 (frictionless floor)",
+ "lines": [
+  {
+   "say": "Imagine two blocks, one on top of the other on the floor."
+  },
+  {
+   "say": "Top block is 2kg and bottom block is 3kg."
+  },
+  {
+   "say": "We apply 50N on the bottom block."
+  },
+  {
+   "say": "The coefficient of friction between the block is 0.4 and the floor is frictionless.",
+   "expect": {
+    "qty": {
+     "block2:mu": 0.4,
+     "block:mu": 0.0
+    },
+    "values": {
+     "block2:a": 3.9200000000000004,
+     "block:a": 14.053333333333333
+    }
+   }
+  }
+ ]
+}

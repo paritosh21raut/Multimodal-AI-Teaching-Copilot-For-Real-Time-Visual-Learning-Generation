@@ -8,10 +8,13 @@ from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
 MAX_OPS = 16
 MAX_PARTS = 40
-RELS = ("on", "in", "hang_from", "orbit", "above", "attached_to", "beside", "inside")
+RELS = ("on", "in", "hang_from", "orbit", "above", "attached_to", "beside", "inside", "at_edge")
 VERBS = ("stir", "heat", "cool", "dissolve", "pour", "close", "open", "rotate", "orbit", "flow")
 SHOWS = ("field", "current", "voltage", "forces", "labels", "shells")
 SYMS = {"theta": "deg", "m": "kg", "k": "N/m", "V": "V", "R": "ohm"}  # K1: the givens a part can show
+# F-019 §2: the quantities a `qty` op may attach (sym -> SI unit; "" = a pure number)
+QSYMS = {"m": "kg", "F": "N", "mu": "", "mu_s": "", "mu_k": "", "theta": "deg", "k": "N/m"}
+DIRS = ("left", "right", "up", "down", "up_slope", "down_slope", "")
 
 
 class _Op(BaseModel):
@@ -76,6 +79,18 @@ class Given(_Op):
     on: Optional[str] = None
 
 
+class Qty(_Op):
+    """A said quantity on a part (F-019 §2): `v` in the SI unit `u`, converted by Python from the quote `q`."""
+    op: Literal["qty"]
+    on: str
+    sym: str
+    v: float
+    u: str = ""
+    q: str
+    dir: str = ""
+    note: str = ""          # "weight": the word the teacher used for a mass ("the weight of the box is 5 kg")
+
+
 class Show(_Op):
     op: Literal["show"]
     what: str
@@ -87,7 +102,7 @@ class Mode(_Op):
     to: Literal["diagram", "scene"]
 
 
-Op = Union[Part, Group, Wire, Contain, Solution, Place, Process, Given, Show, Mode]
+Op = Union[Part, Group, Wire, Contain, Solution, Place, Process, Given, Qty, Show, Mode]
 _ADAPTER: TypeAdapter = TypeAdapter(Op)
 
 

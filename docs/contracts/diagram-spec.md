@@ -16,6 +16,7 @@ that `web/diagram/player.js` draws. Same pattern as `stage-spec.md` §6–8. Cod
 | `place` | a, rel (§3), b | a relation; layout solves it |
 | `process` | verb `stir heat cool dissolve pour close open rotate orbit flow`, target, src?, manner? | the motion |
 | `given` | sym, v, u, q, on? | a stated number + unit + **verbatim quote** |
+| `qty` | on, sym `m F mu mu_s mu_k theta k`, v (SI), u, q, dir?, note? | F-019 §2 (M1): a said quantity on a part (§8) |
 | `show` | what `field current voltage forces labels shells`, on | an overlay Python computes |
 | `mode` | to `diagram`/`scene` | switch (checked) |
 
@@ -45,6 +46,7 @@ Python from two poles, N → S outside the bar.
 | `attached_to` | as `hang_from` |
 | `beside` | the grid order |
 | `inside` | shapes only (M0): a centred on b's centre anchor, scaled to fit (≤ 0.7 of b; a square in a circle 0.6) |
+| `at_edge` | M1: a pulley clamped at a table's right edge; a `wire` block → pulley is the rope over it |
 Then the free parts go in a row (grid); the whole fits the slide under the title (1600 × 1000 units, y down, the
 title box is a no-go zone); labels are placed last, each box clear of every part box and every other label.
 
@@ -69,3 +71,15 @@ stream|field, pts}], labels: [{id, for, text, src, x, y, anchor, leader?}], over
 tracks: [{id, kind: orbit|spin|flow|pour|swirl|heat, …}], badges: [text]}`. Positions are diagram units, decided by
 Python; tracks are seamless loops (an orbit: centre, rx, ry, period, phase; t = 0 is the laid-out frame). The
 browser draws; it never decides positions.
+
+## 8. Quantities (`qty`, F-019 M1) and the solver block
+- `on`: m, F, μ (`mu` = both, `mu_s`, `mu_k`: the contact under that body) on a block / mass; θ on an incline (3–75°,
+  the drawable range); k on a spring. `v` in SI (kg, N, °, N/m), converted by Python (`quantities.si_values`); the
+  validator reads the quote again and refuses any other value. `dir` (F only): left right up down up_slope
+  down_slope, or unsaid (a floor push is drawn right, dashed; on a slope it decides nothing).
+- Graph: `g.qty[(on, sym)]`, latest wins; every older value stays in the event log. A value with no part to go on is
+  logged (`[SIM] value unattached`), never guessed.
+- Patch: `mech = {forces: [{id, on, kind, role, x1, y1, x2, y2, text, src, lx, ly, anchor, said_dir}], panel: {x, y,
+  w, scale, rows: [{kind: head|value, text, src, sub}], foot} (scale: fits the slide), marks: [{on, text, x, y, rot,
+  size, w, h}] (a said mass written in its body, moves with it), notes, simulated}`; tracks `slide` (ux, uy, acc, run, hold,
+  ropes) and `shm` (period, amp, spring). A mechanics scene no solver covers shows the badge "not simulated".

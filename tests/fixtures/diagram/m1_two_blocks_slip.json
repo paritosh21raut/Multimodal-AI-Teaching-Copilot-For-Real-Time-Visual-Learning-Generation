@@ -1,0 +1,75 @@
+{
+ "id": "m1_two_blocks_slip",
+ "title": "Two blocks, 50 N on the bottom one, frictionless floor: the top one slips",
+ "about": "top: a = μg = 3.92; bottom: a = (F − μ m_top g)/m_bottom = (50 − 7.84)/3",
+ "lines": [
+  {
+   "say": "Imagine two blocks, one on top of the other, on the floor.",
+   "expect": {
+    "rels": {
+     "block2": [
+      "on",
+      "block"
+     ],
+     "block": [
+      "on",
+      "floor"
+     ]
+    }
+   }
+  },
+  {
+   "say": "We apply 50 newtons on the bottom block.",
+   "expect": {
+    "qty": {
+     "block:F": 50.0
+    }
+   }
+  },
+  {
+   "say": "The top block is 2 kg and the bottom block is 3 kg.",
+   "expect": {
+    "qty": {
+     "block2:m": 2.0,
+     "block:m": 3.0
+    }
+   }
+  },
+  {
+   "say": "The coefficient of friction between the blocks is 0.4.",
+   "expect": {
+    "qty": {
+     "block2:mu": 0.4
+    },
+    "motions": {
+     "block": "not computed"
+    },
+    "notes": [
+     "the friction coefficient"
+    ]
+   }
+  },
+  {
+   "say": "The floor is frictionless.",
+   "expect": {
+    "qty": {
+     "block:mu": 0.0
+    },
+    "values": {
+     "block2:a": 3.9200000000000004,
+     "block:a": 14.053333333333333,
+     "block2:f": 7.840000000000001,
+     "block:N": 49.0,
+     "block2:N": 19.6
+    },
+    "motions": {
+     "block": "slides",
+     "block2": "slides"
+    },
+    "notes": [
+     "the top block slides on the block below"
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,71 @@
+{
+ "id": "m1_table_hanging",
+ "title": "A block on a table pulled by a hanging mass over a pulley",
+ "about": "frictionless: a = m_h g/(m_t + m_h) = 1.96, T = m_t a = 7.84; μ 0.2: a = (1 − 0.8) g / 5 = 0.392, T = 1 (9.8 − 0.392) = 9.408; μ 0.3: 0.3 x 4 = 1.2 >= 1: it sticks, T = 9.8",
+ "lines": [
+  {
+   "say": "Imagine a block on a table connected by a rope over a pulley to a hanging mass.",
+   "expect": {
+    "rels": {
+     "block": [
+      "on",
+      "table"
+     ],
+     "pulley": [
+      "at_edge",
+      "table"
+     ],
+     "hanging_mass": [
+      "hang_from",
+      "pulley"
+     ]
+    }
+   }
+  },
+  {
+   "say": "The block on the table is 4 kg and the hanging mass is 1 kg.",
+   "expect": {
+    "qty": {
+     "block:m": 4.0,
+     "hanging_mass:m": 1.0
+    },
+    "symbols": [
+     ":a",
+     ":T"
+    ]
+   }
+  },
+  {
+   "say": "The table is frictionless.",
+   "expect": {
+    "values": {
+     ":a": 1.96,
+     ":T": 7.84
+    }
+   }
+  },
+  {
+   "say": "Now the coefficient of friction is 0.2.",
+   "expect": {
+    "values": {
+     ":a": 0.392,
+     ":T": 9.408,
+     "block:f": 7.840000000000001
+    }
+   }
+  },
+  {
+   "say": "Make the coefficient of friction 0.3.",
+   "expect": {
+    "values": {
+     ":a": 0.0,
+     ":T": 9.8
+    },
+    "motions": {
+     "block": "at rest",
+     "hanging_mass": "at rest"
+    }
+   }
+  }
+ ]
+}

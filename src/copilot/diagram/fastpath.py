@@ -9,7 +9,10 @@
                -> hang_from (the part with an end is the hanger); a hanging spring or pulley gets its support
     processes  "adding / pouring water (in)to it" -> a pourer labelled with the chemical over the container; "stir"
                -> a glass rod in it; "heat" / a burner -> the flame; "and its field" -> the magnet's field lines
-    numbers    only with their quote ("at 30 degrees" -> given theta, the validator checks it again)
+    numbers    only with their quote ("at 30 degrees" -> given theta, the validator checks it again); F-019: every
+               quantity said (mass, force + its way, μ, k, θ) -> a `qty` op on its part (`quantities.attach`)
+    mechanics  "two blocks, one on top of the other, on the floor" -> stacked; "a block on a table connected by a rope
+               over a pulley to a hanging mass" -> the pulley at the table's edge, the rope, the mass hanging from it
 
 With the open diagram's graph, a noun the diagram already has ("the beaker", "it", the same label) refers to it, and
 the draft says which ids are old and which are new (continuity: a follow-up line stays on the open diagram).
@@ -30,7 +33,7 @@ COUNT = {"a": 1, "an": 1, "one": 1, "single": 1, "two": 2, "three": 3, "four": 4
 _DEF = ("the", "this", "that", "its", "same")
 _HANG = re.compile(r"\b(?:hang\w*|hung|suspended|attached|tied)\b", re.IGNORECASE)
 _ON = re.compile(r"^\s*(?:(?:which|that)\s+(?:is|are)\s+)?(?:(?:is|are|was|were)\s+)?(?:(?:lying|resting|placed|kept|"
-                 r"sitting|sits|rests|lies|put)\s+)?(?:on|on top of|upon|over|above)(?:\s+(?:plane|flat|smooth|rough))?\s*$",
+                 r"sitting|sits|rests|lies|put|stacked)\s+)?(?:on|on top of|upon|over|above)(?:\s+(?:plane|flat|smooth|rough))?\s*$",
                  re.IGNORECASE)
 _IN = re.compile(r"^\s*(?:(?:is|are|was|were)\s+)?(?:(?:placed|kept|put|drawn)\s+)?(?:in|inside|into|within)\s*$",
                  re.IGNORECASE)
@@ -74,7 +77,6 @@ _PASSIVE = re.compile(r"\b(?:is|are|being|was|were|gets?)\s+(?:\w+ly\s+)?(?:adde
 _PRONOUN = re.compile(r"\b(?:it|them|its)\b", re.IGNORECASE)
 _ANGLE = re.compile(r"(?:(?:an?\s+)?angle\s+(?:of\s+)?)?(\d+(?:\.\d+)?|[a-z]+(?:[- ][a-z]+)?)\s*(?:degrees?|°)",
                     re.IGNORECASE)
-_MASS = re.compile(r"(\d+(?:\.\d+)?|[a-z]+)\s*(?:kg|kilograms?|kilos?)\b", re.IGNORECASE)
 _NAMES = re.compile(r"^\s*,?\s*(?:(?:called|named|labelled|labeled|of)\s+)?([A-Z][0-9]{0,2}(?:\s*(?:,|and|&)\s*"
                     r"[A-Z][0-9]{0,2})*)\b(?![a-z])")
 _UNKNOWN = re.compile(r"\b(?:a|an|the)\s+([a-z]{4,})\b", re.IGNORECASE)
@@ -99,7 +101,7 @@ UNITS = {"kg", "g", "gram", "grams", "kilogram", "kilograms", "ohm", "ohms", "v"
 AMBIGUOUS = {"spring", "cell", "switch", "mass", "block", "shell", "flask", "weight", "bob", "surface", "table",
              "floor", "ground", "lamp", "key", "battery", "slope", "ramp", "stand", "wedge", "compass", "flame", "sun"}
 CONTEXT = re.compile(r"\b(?:hang\w*|hung|attached|suspended|stretch\w*|compress\w*|circuit|battery|series|parallel|"
-                     r"current|volt\w*|resist\w*|bulb|wire|incline\w*|slope|pulley|friction|oscillat\w*|beaker|"
+                     r"current|volt\w*|resist\w*|bulb|wire|incline\w*|slope|pulley|friction\w*|smooth|oscillat\w*|beaker|"
                      r"spring constant|gravity|planet\w*|orbit\w*|magnet\w*|on (?:a|an|the) \w+)\b", re.IGNORECASE)
 SYSTEM = re.compile(r"\bsolar\s+system\b", re.IGNORECASE)
 
@@ -128,6 +130,7 @@ class Draft:
     more: bool = False                               # "another / one more X" of a kind the open diagram has
     unknown: list[str] = field(default_factory=list)
     title: str = ""
+    unattached: list[tuple[str, str]] = field(default_factory=list)  # (sym, quote): a value with no part to go on
 
 
 @lru_cache(maxsize=1)
@@ -170,7 +173,8 @@ def mentions(text: str) -> list[Mention]:
             continue
         if kind is None:
             continue
-        if w in AMBIGUOUS and (re.match(r"\s+of\s+(?!(?:mass|weight)\b)\w", text[m.end():])
+        if w in AMBIGUOUS and (re.match(r"\s+of\s+(?!(?:mass|weight)\b)(?!\d)(?!(?:one|two|three|four|five|six|seven|"
+                                        r"eight|nine|ten|twenty|fifty|hundred|half)\b)\w", text[m.end():])
                                or re.search(r"\bof\s+$", text[max(0, m.start() - 4):m.start()])):
             continue  # "a mass of air", "a block of ice", "a block of mass 2 kg": not a part (the quantity is a given)
         n, definite = _count_before(text, m.start())
@@ -314,6 +318,9 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
             same = [p for p in g.of(m.kind) if p.label_src == "said" and p.label.lower() == m.word
                     or not p.label and _row(m.kind).get("domain") != "shape"
                     and all(p.attr.get(k) == v for k, v in m.attr.items())][:1]
+            kin = g.of(m.kind)
+            if not same and len(kin) == 1 and kin[0].label_src == "said" and _head(kin[0].label) == _head(m.word):
+                same = kin  # test40: "a spring with a hanging mass" said again = the mass there ("mass")
         if same:
             m.ids = [p.id for p in same]
             d.old += m.ids
@@ -330,7 +337,7 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
         if olds and not m.names and m.n == 1 and not more and (m.definite or not _fresh(text, m) or olds is loose):
             m.ids = [olds[-1].id]
             d.old.append(olds[-1].id)
-            d.refers = True
+            d.refers = d.refers or m.kind != "floor"  # M1: "imagine a block on the floor" is a new picture
             continue
         if g.parts and not m.names and _PROPERTY.match(text[m.start:]) and not _PLACE_WORD.search(text) \
                 and not _CUEW.search(text):
@@ -399,7 +406,7 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
     # 4. relations between neighbouring things
     things = [m for m in ms if m.ids and m.kind not in ("system",)]
     for a, b in zip(things, things[1:]):
-        between = _gap(text[a.end:b.start])
+        between = _gap(_QUANT.sub(" ", text[a.end:b.start], count=1))  # "a block of 10 kg on the floor": on
         if a.kind == "chem" or b.kind == "chem":
             continue
         rel = None
@@ -423,6 +430,7 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
                 if g.rels.get(i) != (r, y.ids[0]):
                     ops.append({"op": "place", "a": i, "rel": r, "b": y.ids[0]})
     _inside_label(text, things, ops, g)
+    _mechanics(text, things, ops, g)
     _supports(ops, ms, g, add)
 
     # 5. processes and shows
@@ -452,6 +460,7 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
                             o.setdefault("attr", {})["state"] = "closed" if st.group(1).lower() in ("closed", "close", "on") else "open"
     _circuit(text, ms, ops, ids, g)
     _givens(text, ms, ops, g)
+    _quantities(text, ops, g, d)
     d.ops = ops
     d.title = title_for(text, ms)
     return d
@@ -509,6 +518,11 @@ def concept_mishear(text: str) -> Optional[str]:
 def _chem_label(row: dict, word: str, text: str) -> str:
     """The table's formula when the teacher said it ("HCL" -> HCl), else the said words."""
     return row["show"] if row["show"].lower() in text.lower() else word
+
+
+def _head(word: str) -> str:
+    """The noun without its describing words ("hanging mass" -> "mass")."""
+    return word.lower().split()[-1] if word.strip() else ""
 
 
 def _fresh(text: str, m: Mention) -> bool:
@@ -573,13 +587,72 @@ def _givens(text: str, ms: list[Mention], ops: list[dict], g: Graph) -> None:
         nums = quoted_numbers(m.group(0))
         if nums and inc:
             ops.append({"op": "given", "sym": "theta", "v": nums[0][0], "u": "deg", "q": m.group(0).strip(), "on": inc})
-            break
-    body = next((m.ids[0] for m in ms if m.kind in ("block", "mass") and m.ids), None)
-    for m in _MASS.finditer(text):
-        nums = quoted_numbers(m.group(0))
-        if nums and body:
-            ops.append({"op": "given", "sym": "m", "v": nums[0][0], "u": "kg", "q": m.group(0).strip(), "on": body})
-            break
+            break  # a body's mass is a `qty` now (F-019 §2, `_quantities`)
+
+
+_STACK = re.compile(r"\bone\s+(?:on\s+top\s+of|above|over|upon)\s+(?:the\s+other|another)\b|\bon\s+top\s+of\s+"
+                    r"(?:each\s+other|one\s+another)\b|\bstacked\b|\bplaced\s+on\s+(?:each\s+other|one\s+another)\b",
+                    re.IGNORECASE)
+_QUANT = re.compile(r"^\s*,?\s*(?:of|with\s+(?:a\s+)?mass\s+of|weighing|of\s+mass)\s+[\w.]+(?:\s+point\s+\w+)?\s*"
+                    r"(?:kg|kilograms?|kilos?|grams?|g)\b\s*,?", re.IGNORECASE)
+_ROPE = re.compile(r"\b(?:rope|string|thread|cord)s?\b|\bconnected\b|\btied\b|\bover\s+(?:a|the)\s+pulley\b",
+                   re.IGNORECASE)
+
+
+def _mechanics(text: str, things: list[Mention], ops: list[dict], g: Graph) -> None:
+    """F-019 M1: stacks and ropes over a pulley, which the neighbour relations above do not see."""
+    placed = lambda i: [o for o in ops if o.get("op") == "place" and o["a"] == i]  # noqa: E731
+    bodies = [i for m in things if m.kind in ("block", "mass") for i in m.ids]
+    grounds = [m for m in things if m.kind in ("floor", "incline")]
+    st = _STACK.search(text)
+    if st and len(bodies) >= 2:
+        lo, hi = bodies[0], bodies[1]  # "two blocks, one on top of the other": the second one on the first
+        said = next((o for o in ops if o.get("op") == "place" and o["rel"] == "on" and {o["a"], o["b"]} == {lo, hi}),
+                    None)
+        if said:  # "a small block stacked on a big block": the said order stands
+            hi, lo = said["a"], said["b"]
+        elif re.search(r"\bstacked\s+(?:on|upon|over)\b", text, re.IGNORECASE):
+            hi, lo = bodies[0], bodies[1]
+        for o in placed(lo) + placed(hi):
+            ops.remove(o)
+        ops.append({"op": "place", "a": hi, "rel": "on", "b": lo})
+        gr = next((m for m in grounds if re.search(r"\bon\s+(?:a|an|the)?\s*(?:\w+\s+)?$", text[:m.start])), None)
+        if gr:
+            ops.append({"op": "place", "a": lo, "rel": "on", "b": gr.ids[0]})
+    pulley = next((m for m in things if m.kind == "pulley"), None)
+    if not (pulley and pulley.ids and _ROPE.search(text)):
+        return
+    pid = pulley.ids[0]
+    on_table = [i for m in things if m.kind in ("block", "mass") for i in m.ids  # either word order
+                if any(o["rel"] == "on" and next((t for t in things if o["b"] in t.ids and t.kind == "floor"), None)
+                       for o in placed(i))]
+    rest = [i for m in things if m.kind in ("block", "mass") for i in m.ids if i not in on_table]
+    table = next((m.ids[0] for m in things if m.kind == "floor" and m.ids), None)
+    if on_table and table and not placed(pid) and pid not in g.rels:
+        ops.append({"op": "place", "a": pid, "rel": "at_edge", "b": table})
+        ops.append({"op": "wire", "a": on_table[0], "b": pid})
+        for i in rest[:1]:
+            for o in placed(i):
+                ops.remove(o)
+            ops.append({"op": "place", "a": i, "rel": "hang_from", "b": pid})
+    elif not on_table:
+        for i in [i for i in rest if not placed(i) and i not in g.rels][:2]:  # two masses tied over a pulley (Atwood)
+            ops.append({"op": "place", "a": i, "rel": "hang_from", "b": pid})
+
+
+def _quantities(text: str, ops: list[dict], g: Graph, d: Draft) -> None:
+    """The line's quantities on the parts (the open diagram's and this line's): `qty` ops, or unattached."""
+    from copilot.diagram import ops as O
+    from copilot.diagram.graph import apply
+    from copilot.diagram.quantities import attach
+    work = g.copy()
+    for raw in ops:
+        try:
+            apply(work, O.parse(raw), "", 0)
+        except Exception:  # noqa: BLE001 - the validator reports a bad op; the quantities only need the good ones
+            continue
+    q, d.unattached = attach(text, work)
+    ops += q
 
 
 def title_for(text: str, ms: list[Mention]) -> str:

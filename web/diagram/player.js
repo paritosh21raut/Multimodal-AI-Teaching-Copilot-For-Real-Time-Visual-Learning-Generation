@@ -4,6 +4,7 @@
 // stream, the stirring rod, the flame, the field's flowing dashes). still: the slide's figure at t = 0, no clock.
 import { html, useEffect, useRef } from "../vendor/htm-preact-standalone.mjs";
 import { PARTS, ABSOLUTE } from "./parts/index.js";
+import { Arrow, symbolParts } from "../sims/draw.js";
 
 const reduced = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 const F = (v) => Math.round(v * 10) / 10;
@@ -44,7 +45,8 @@ function wire(w) {
       ${a && html`<path class="dg-field-head" transform=${`translate(${F(a.x)},${F(a.y)}) rotate(${F(a.a)})`} d="M12,0 L-10,-10 L-10,10 Z" />`}</g>`;
   }
   if (w.kind === "stream") return html`<path key=${w.id} class=${`dg-stream t-${w.tint || "water"}`} data-stream=${w.id} d=${d} />`;
-  return html`<path key=${w.id} class=${w.kind === "rope" ? "sim-string dg-rope" : "sim-wire"} d=${d} fill="none" />`;
+  return html`<path key=${w.id} class=${w.kind === "rope" ? "sim-string dg-rope" : "sim-wire"} d=${d} fill="none"
+    data-rope=${w.kind === "rope" ? w.id : undefined} />`;
 }
 
 function overlay(o, i) {
@@ -65,6 +67,59 @@ function label(l) {
     <text class="sim-label word part dg-label" x=${l.x} y=${l.y + 12} text-anchor="middle"><tspan class="sym">${l.text}</tspan></text></g>`;
 }
 
+// F-019 §4: the solver's force arrows, grouped per body so a sliding body carries its arrows and their labels.
+// "mg = 49 N" said / computed / a bare symbol, exactly as the server wrote it; colour is never the only cue.
+function valueText(text, role) {
+  const i = text.indexOf(" = ");
+  const sym = i < 0 ? text : text.slice(0, i);
+  return html`<tspan class="sym">${symbolParts(sym)}</tspan>${i >= 0 && html`<tspan class="val">${text.slice(i)}</tspan>`}`;
+}
+
+function forces(m) {
+  const by = {}, marks = {};
+  for (const f of (m && m.forces) || []) (by[f.on] = by[f.on] || []).push(f);
+  for (const k of (m && m.marks) || []) { marks[k.on] = k; by[k.on] = by[k.on] || []; }
+  // a said mass written in its body ("2 kg"): a tag over the arrows (spot chosen by mech._marks), moving with the body
+  const tag = (k) => k && html`<g class="dg-mass" transform=${`translate(${k.x},${k.y}) rotate(${k.rot})`}>
+    <rect x=${-k.w / 2} y=${-k.h / 2} width=${k.w} height=${k.h} rx="6" />
+    <text data-mark=${k.on} x="0" y="1" text-anchor="middle" dominant-baseline="central" font-size=${k.size}>${k.text}</text></g>`;
+  return Object.entries(by).map(([on, fs]) => html`<g key=${"carry-" + on} data-carry=${on}>
+    ${fs.map((f) => html`<g key=${f.id} data-force=${f.id} data-kind=${f.kind} data-src=${f.src}>
+      ${Arrow({ x1: f.x1, y1: f.y1, x2: f.x2, y2: f.y2, role: f.role, dashed: !f.said_dir, id: f.id })}
+      <text class=${`sim-label r-${f.role} dg-force`} x=${f.lx} y=${f.ly} text-anchor=${f.anchor} data-source=${f.src}
+        >${valueText(f.text)}</text></g>`)}
+  </g>`).concat(Object.values(marks).map((k) => html`<g key=${"mark-" + k.on} data-carry=${k.on}>${tag(k)}</g>`));
+}
+
+function panel(m) {
+  const pn = m && m.panel;
+  if (!pn || !(pn.rows || []).length) return null;
+  let y = 44;
+  const rows = [];
+  for (const [i, r] of pn.rows.entries()) {
+    if (r.kind === "head") {
+      y += i ? 14 : 0;
+      rows.push(html`<text key=${"h" + i} class="tag dg-panel-head" x="22" y=${y}>${r.text}</text>`);
+      y += 36;
+      continue;
+    }
+    rows.push(html`<g key=${"r" + i} data-row=${r.src}>
+      <text class=${"sim-label r-ink dg-panel-val" + (r.src === "computed" ? " computed" : "")} x="22" y=${y + 8}
+        data-source=${r.src}>${valueText(r.text)}</text>
+      ${r.sub && html`<text class="dg-panel-sub" x="22" y=${y + 38}>${r.sub}</text>`}</g>`);
+    y += r.sub ? 74 : 50;
+  }
+  for (const [i, n] of ((m.notes || []).entries())) {
+    rows.push(html`<text key=${"n" + i} class="dg-panel-note" x="22" y=${y + 6}>${n}</text>`);
+    y += 32;
+  }
+  if (pn.foot) { rows.push(html`<text key="foot" class="dg-panel-sub" x="22" y=${y + 10}>${pn.foot}</text>`); y += 30; }
+  // Python fits the panel to the slide (mech._fit: its steps mirror the ones above)
+  return html`<g class="sim-readout dg-panel" data-panel="values"
+    transform=${`translate(${pn.x},${pn.y}) scale(${pn.scale || 1})`}>
+    <rect class="card" x="0" y="0" width=${pn.w} height=${y + 10} rx="18" />${rows}</g>`;
+}
+
 let SEQ = 0;  // each drawn diagram's own clip ids (two diagram slides can share part ids)
 
 export function DiagramSvg({ p }) {
@@ -83,6 +138,8 @@ export function DiagramSvg({ p }) {
     ${(p.parts || []).filter((x) => x.kind === "electron" || x.kind === "planet").map(own)}
     ${(p.overlays || []).map(overlay)}
     ${(p.labels || []).map(label)}
+    ${forces(p.mech)}
+    ${panel(p.mech)}
     ${badges.map((b, i) => html`<text key=${"b" + i} class="sim-caption dg-badge" x="1560" y=${975 - (badges.length - 1 - i) * 30} text-anchor="end">${b}</text>`)}
   </svg>`;
 }
@@ -119,6 +176,34 @@ export function frame(svg, p, t) {
       const fl = el && el.querySelector("[data-flame]");
       const k = 2 * Math.PI * t / tr.period;
       if (fl) fl.style.transform = `scale(${(1 + 0.04 * Math.sin(k)).toFixed(3)}, ${(1 + 0.08 * Math.sin(k + 1)).toFixed(3)})`;
+    } else if (tr.kind === "slide" || tr.kind === "shm") {
+      // F-019: x(t) = ½ a t² for a run, a rest, again (slide); y(t) = amp · sin(2πt / T) about the stretched length (shm)
+      const el = byId(tr.id), x = parts[tr.id];
+      if (!el || !x) continue;
+      let dx = 0, dy = 0;
+      if (tr.kind === "slide") {
+        const s = Math.min(t % (tr.run + tr.hold), tr.run);
+        const d = 0.5 * tr.acc * s * s;
+        dx = tr.ux * d; dy = tr.uy * d;
+      } else {
+        dy = tr.amp * Math.sin(2 * Math.PI * t / tr.period);
+        const sp = byId(tr.spring), spx = parts[tr.spring];
+        if (sp && spx) {
+          const k = (spx.h + dy) / spx.h;
+          sp.setAttribute("transform", `translate(${F(spx.cx)},${F(spx.cy + dy / 2)}) rotate(${spx.rot || 0}) scale(1,${k.toFixed(4)})`);
+        }
+      }
+      el.setAttribute("transform", `translate(${F(x.cx + dx)},${F(x.cy + dy)}) rotate(${x.rot || 0})`);
+      const move = `translate(${F(dx)},${F(dy)})`;
+      const lab = svg.querySelector(`[data-label="${CSS.escape(tr.id)}"]`);
+      if (lab) lab.setAttribute("transform", move);
+      for (const carry of svg.querySelectorAll(`[data-carry="${CSS.escape(tr.id)}"]`)) carry.setAttribute("transform", move);
+      for (const r of tr.ropes || []) {
+        const w = (p.wires || []).find((x) => x.id === r.id), path = svg.querySelector(`[data-rope="${CSS.escape(r.id)}"]`);
+        if (!w || !path) continue;
+        const pts = w.pts.map((q, i) => (i === (r.end < 0 ? w.pts.length - 1 : r.end) ? [q[0] + dx, q[1] + dy] : q));
+        path.setAttribute("d", "M" + pts.map((q) => `${F(q[0])},${F(q[1])}`).join(" L"));
+      }
     } else if (tr.kind === "flow") {
       for (const el of svg.querySelectorAll("[data-flow]")) el.style.strokeDashoffset = String(F(-t * 40 * (tr.speed || 1)));
     }

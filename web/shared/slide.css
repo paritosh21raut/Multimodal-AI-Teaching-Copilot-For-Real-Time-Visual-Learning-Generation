@@ -1021,3 +1021,15 @@ rect.sc-body.r-second, circle.sc-body.r-second { fill: var(--scene-second); stro
 .dg-sign { font: 800 34px var(--font-text); fill: var(--ink); }
 .dg-leader { stroke: var(--sim-component); stroke-width: 2.5; }
 .dg-badge { font-size: 20px; }
+/* F-019 §4: solver arrows + the values panel (said in ink, computed lighter italic, the equation / quote under it) */
+.sim-label.dg-force { font-size: 28px; }
+.sim-label.dg-force .sym { font-size: 32px; }
+.sim-label.r-tension .sym { fill: var(--sim-pull); } .sim-label.r-spring .sym { fill: var(--sim-component); }
+.dg-panel .sim-label { font-size: 28px; }
+.dg-panel .sim-label .sym { font-size: 31px; }
+.dg-panel-val.computed .val { font-weight: 450; font-style: italic; fill: var(--ink-2); }
+.dg-panel-sub { font-size: 19px; fill: var(--muted); }
+.dg-panel-head { font-size: 19px; }
+.dg-panel-note { font-size: 21px; font-weight: 650; fill: var(--ink-2); }
+.dg-mass rect { fill: var(--surface); stroke: var(--line, currentColor); stroke-width: 1.5px; }
+.dg-mass text { font-weight: 700; fill: var(--ink); }

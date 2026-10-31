@@ -31,18 +31,22 @@ class Graph:
     givens: dict[str, dict[str, Any]] = field(default_factory=dict)  # sym -> {v, u, q, on}
     shows: list[tuple[str, Optional[str]]] = field(default_factory=list)
     last: str = ""                                                    # the part the last line named (focus)
+    qty: dict[tuple[str, str], dict[str, Any]] = field(default_factory=dict)  # (on, sym) -> {v, u, q, dir, …}; latest wins
 
     def copy(self) -> "Graph":
         return Graph({k: Part(**asdict(v)) for k, v in self.parts.items()}, dict(self.rels),
                      {k: (m, list(i)) for k, (m, i) in self.groups.items()}, list(self.wires),
                      [dict(p) for p in self.processes], {k: dict(v) for k, v in self.givens.items()},
-                     list(self.shows), self.last)
+                     list(self.shows), self.last, {k: dict(v) for k, v in self.qty.items()})
 
     def of(self, kind: str) -> list[Part]:
         return [p for p in self.parts.values() if p.kind == kind]
 
     def children(self, b: str, rel: Optional[str] = None) -> list[str]:
         return [a for a, (r, x) in self.rels.items() if x == b and (rel is None or r == rel)]
+
+    def value(self, on: str, sym: str) -> Optional[dict[str, Any]]:
+        return self.qty.get((on, sym))
 
     def has_process(self, verb: str) -> bool:
         return any(p["verb"] == verb for p in self.processes)
@@ -71,6 +75,9 @@ def apply(g: Graph, op: Any, line_id: str, seq: int) -> None:
         g.processes.append({"verb": op.verb, "target": op.target, "src": op.src, "manner": op.manner})
     elif isinstance(op, O.Given):
         g.givens[op.sym] = {"v": op.v, "u": op.u, "q": op.q, "on": op.on}
+    elif isinstance(op, O.Qty):
+        g.qty[(op.on, op.sym)] = {"v": op.v, "u": op.u, "q": op.q, "dir": op.dir, "note": op.note, "line_id": line_id,
+                                  "seq": seq}
     elif isinstance(op, O.Show):
         if (op.what, op.on) not in g.shows:
             g.shows.append((op.what, op.on))

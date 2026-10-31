@@ -1,0 +1,8 @@
+[    1.2] Imagine two blocks, one on top of the other on the floor.
+[   12.4] The top block is 2 kg and the bottom block is 3 kg.
+[   19.5] We apply 50N on the bottom blocks.
+[   29.8] We apply 50 N on the bottom block.
+[   36.6] The coefficient of friction between the blocks is 0.4 and the floor is frictionless.
+[   50.4] Imagine a spring with a mass hanging from it.
+[   56.3] Imagine a spring with a mass hanging on it.
+[   63.7] Mass is 0.5kg and spring constant is 100 Nm.

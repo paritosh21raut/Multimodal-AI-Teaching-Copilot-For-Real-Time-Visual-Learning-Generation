@@ -1,0 +1,61 @@
+{
+ "id": "m1_incline_test36",
+ "title": "Box on an inclined plane (test36 words)",
+ "about": "test36 lines 1-6 as Whisper gave them: no angle and no push direction said -> W only, the rest symbols",
+ "lines": [
+  {
+   "say": "Imagine a box on an inclined plane."
+  },
+  {
+   "say": "And we apply a weight of the box in the 5K GING.",
+   "expect": {
+    "qty": {}
+   }
+  },
+  {
+   "say": "The weight of the box is 5kg.",
+   "expect": {
+    "qty": {
+     "box:m": 5.0
+    },
+    "note": {
+     "box:m": "weight"
+    }
+   }
+  },
+  {
+   "say": "If the weight of the box is 5 kg."
+  },
+  {
+   "say": "If you apply a pushing force of 5N.",
+   "expect": {
+    "qty": {
+     "box:m": 5.0,
+     "box:F": 5.0
+    }
+   }
+  },
+  {
+   "say": "If the coefficient of friction is 0.3.",
+   "expect": {
+    "qty": {
+     "box:mu": 0.3
+    },
+    "values": {
+     "box:W": 49.0
+    },
+    "symbols": [
+     "box:N",
+     "box:a"
+    ],
+    "motions": {
+     "box": "not computed"
+    },
+    "notes": [
+     "the angle",
+     "which way the force acts"
+    ]
+   }
+  }
+ ]
+}

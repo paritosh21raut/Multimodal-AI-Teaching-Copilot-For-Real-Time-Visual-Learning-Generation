@@ -334,7 +334,13 @@ class StageController:
             dd = dfast.draft(ev.text, o.dlog.fold())
             # the same picture said again ("two circles C1 and C2" twice, "an atom of" after the sodium atom), or more
             # of it (M0: "another circle of C3", "three circles C1, C2 and C3" with C1 and C2 open)
-            if _same_diagram(dd) or dd.named or dd.more or self._repeat(o, ev.text, diagram=True):
+            # M1: a cue naming only the open diagram's things (no "the" / "it") is the same picture only within
+            # REPEAT_S (a Whisper repeat); minutes later "imagine a block on the floor" is the next diagram
+            soon = bool(o.cues) and self.e.now() - o.cues[-1][0] <= REPEAT_S
+            parts = o.dlog.fold().parts
+            ground = bool(dd.old) and not dd.new and all(parts[i].kind == "floor" for i in dd.old if i in parts)
+            if dd.refers or _same_diagram(dd) and (soon or ground) or dd.named or dd.more \
+                    or self._repeat(o, ev.text, diagram=True):
                 await self._diagram_line(o, ev)
                 return True
             if self._upgrade(o, dd):  # test37: "a box on an ink-like plane" drew a box; "... inclined plane" says it all
@@ -390,6 +396,8 @@ class StageController:
         line_id = next(iter(ev.segment_ids), "") or f"l{o.n}"
         o.dlog.say(line_id, ev.text)
         d = dfast.draft(ev.text, o.dlog.fold())
+        for sym, q in d.unattached:  # F-019 §2: asked, not guessed (which part it belongs to was not said)
+            log.info("[SIM] value unattached: %s %r in %r", sym, q, ev.text[:60])
         if not o.dtitle and d.title:
             o.dtitle = d.title
         if not d.ops:

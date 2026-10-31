@@ -8,8 +8,9 @@ _Last updated 2026-10-31. History in `docs/history/` (not read by default)._
   later + one solver per domain (no template per scene). Order Concept Simulator → Story → Canvas; people stage parked.
 - **Work method: the loop** (`docs/v2/LOOP.md`). User words: `next` (build the card below) · `test done`
   (evaluate the newest `verify_results/testN`) · `fix` · `ok` (close, next card in a new session).
-- **Next card: `docs/v2/M1-contact-mechanics.md`** (phase A). M0 closed: live test37 → re-tests test38, test39 (pass).
-- Loop state: **M1 not started.**
+- **Next card: M2** (`docs/v2/M2-M5-outline.md` §M2: look + motion polish, free-body toggle, value-change morph;
+  phase A writes `docs/v2/M2-*.md` from the outline + the M1 leftovers below). M1 closed (test40–41).
+- Loop state: **M2 not started.**
 
 ## Done and verified
 | Part | Status |
@@ -20,10 +21,12 @@ _Last updated 2026-10-31. History in `docs/history/` (not read by default)._
 | F-017 E1–E3b 2D stage (renderer, core, live language, fixes) | tested; live test34/35 failed on pictures; parked (ADR-0014) |
 | F-018 K1 diagram core (parts, relations, atom/solar/field/circuit, routing) | reviewed, full 1959 pass; live test36: pictures right, values dropped |
 | F-019 M0 trust + continuity (numbers guard, recap scope, repeats, continue / inside, mishears) | verified live test37–39; 1982 pass |
-| F-019 M1–M5 | planned |
+| F-019 M1 values + contact solver (qty, solvers/contact, arrows, panel, motion) | verified live test40–41 (2 fix rounds); 2019 pass |
+| F-019 M2–M5 | planned |
 
 ## Open issues
-- Values dropped on diagrams (test36 → M1). From M0: Whisper merges "is outside" into "inside" (test38/39); a closed
+- M1 → M2: stacked-block arrows crowd; free-body toggle; recaps keep parameter talk ("μ (blocks): 0.4") and a line
+  said after the last scene; rope systems beyond Atwood / table "not computed"; mass tags not yet seen live. From M0: Whisper merges "is outside" into "inside" (test38/39); a closed
   diagram's label (C3) should go back to it; F-015 cube + ball inside; people-scene errors (parked).
 - K1: no current dots (circuits later), focus colour; diagram LLM delta → M3.
 - Groq: two keys answered 401 in test35; delta ~1.5k tokens/call; understanding ~105k tokens / 25 min (test36).
@@ -31,4 +34,4 @@ _Last updated 2026-10-31. History in `docs/history/` (not read by default)._
 
 ## User actions pending
 - Replace dead Groq keys in .env; check the network before live runs.
-- Start a new session and type `next`.
+- Start a new session and type `next` (M2).

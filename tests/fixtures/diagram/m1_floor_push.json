@@ -1,0 +1,50 @@
+{
+ "id": "m1_floor_push",
+ "title": "A block pushed on the floor: sticks at 20 N, slides at 60 N",
+ "about": "μN = 0.5 x 98 = 49 N: 20 N < 49 N sticks (f = 20 N); 60 N > 49 N: a = (60 − 49)/10 = 1.1",
+ "lines": [
+  {
+   "say": "Imagine a block on the floor."
+  },
+  {
+   "say": "It is 10 kg and we push it with 20 newtons.",
+   "expect": {
+    "qty": {
+     "block:m": 10.0,
+     "block:F": 20.0
+    }
+   }
+  },
+  {
+   "say": "The coefficient of friction is 0.5.",
+   "expect": {
+    "values": {
+     "block:N": 98.0,
+     "block:f": 20.0,
+     "block:a": 0.0
+    },
+    "motions": {
+     "block": "at rest"
+    }
+   }
+  },
+  {
+   "say": "Now we push it with 60 newtons.",
+   "expect": {
+    "qty": {
+     "block:F": 60.0
+    },
+    "values": {
+     "block:f": 49.0,
+     "block:a": 1.1
+    },
+    "motions": {
+     "block": "slides"
+    },
+    "motion_ang": {
+     "block": 0.0
+    }
+   }
+  }
+ ]
+}

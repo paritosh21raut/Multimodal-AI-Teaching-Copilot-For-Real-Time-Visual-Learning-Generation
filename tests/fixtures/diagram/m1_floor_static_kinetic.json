@@ -1,0 +1,37 @@
+{
+ "id": "m1_floor_static_kinetic",
+ "title": "μs 0.5 and μk 0.4: 45 N sticks, 55 N slides with μk",
+ "about": "μs N = 49: 45 N sticks; 55 N slides, f = μk N = 39.2, a = (55 − 39.2)/10 = 1.58",
+ "lines": [
+  {
+   "say": "Imagine a block of 10 kg on the floor."
+  },
+  {
+   "say": "The static friction is 0.5 and the kinetic friction is 0.4.",
+   "expect": {
+    "qty": {
+     "block:mu_s": 0.5,
+     "block:mu_k": 0.4
+    }
+   }
+  },
+  {
+   "say": "We push it to the right with 45 newtons.",
+   "expect": {
+    "values": {
+     "block:f": 45.0,
+     "block:a": 0.0
+    }
+   }
+  },
+  {
+   "say": "Now we push it with 55 newtons.",
+   "expect": {
+    "values": {
+     "block:f": 39.2,
+     "block:a": 1.58
+    }
+   }
+  }
+ ]
+}

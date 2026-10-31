@@ -37,4 +37,10 @@ Sheet per theme of the fixtures with checks (arrow directions, values, slip / st
 (12–15 lines: incline, two blocks, Atwood, spring, re-angle, one non-mechanics line, one repeat).
 
 ## Result
-_(≤ 1 KB)_
+**Done, verified live** (test40 → 2 fix rounds → test41; 2026-10-31). `qty` op (validator re-reads the quote in SI;
+latest wins; unattached logged, never guessed); `solvers/` base + `contact.py` (stick/slip regimes, Atwood, table +
+hanging, spring, string; other rope systems "not computed"); `mech.py`: arrows, values panel fitted to the slide,
+said mass written in its body, slide/shm motion. Fixes from live: repeat ≠ 2nd body, k from "100Nm", "between the
+block(s)", way kept on a repeat, plural "bottom blocks", labels off the panel / other bodies. 13 fixtures `m1_*.json`,
+37 unit + 29 browser tests, full 2019 pass. To M2: crowded stack arrows, free-body toggle, M0 carry-overs
+(inside/outside chip, closed-diagram label), recap scope (parameter talk, lines after the last scene).

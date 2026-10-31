@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
+from copilot.diagram import mech
 from copilot.diagram import parts as P
+from copilot.diagram.solvers import run
 from copilot.diagram.graph import Graph
-from copilot.diagram.layout import VIEW, solve
+from copilot.diagram.layout import AREA, VIEW, place_labels, solve
 
 
 def _tint(g: Graph, pid: str) -> Optional[str]:
@@ -18,7 +20,15 @@ def build(g: Graph, rev: int = 1, nogo: Optional[list[list[float]]] = None) -> d
     if not g.parts:
         return {"rev": rev, "view": list(VIEW), "parts": [], "wires": [], "labels": [], "overlays": [], "tracks": [],
                 "badges": []}
-    L = solve(g, nogo)
+    res = run(g) if mech.wants(g) else None  # F-019: the domain solver (contact mechanics in M1)
+    panel = mech.PANEL_W if res is not None and res.values else 0.0
+    if panel:  # labels keep off the values panel
+        nogo = list(nogo or []) + [[AREA[2] - panel, AREA[1], VIEW[0], AREA[3]]]
+    L = solve(g, nogo, panel)
+    M = mech.build(g, L, res) if mech.wants(g) else None
+    if M is not None and M["forces"]:  # the part labels again, clear of the force arrows and their labels
+        L.labels = []
+        place_labels(L, list(nogo or []) + mech.boxes(M["forces"]))
     parts = []
     for n in L.nodes.values():
         if n.kind in ("loop",):
@@ -50,6 +60,13 @@ def build(g: Graph, rev: int = 1, nogo: Optional[list[list[float]]] = None) -> d
         if n.kind == "burner" and not any(t["id"] == n.id for t in tracks):
             tracks.append({"id": n.id, "kind": "heat", "period": 0.9})  # a lit burner's flame flickers
     givens = {k: {"v": v["v"], "u": v["u"], "src": "said", "q": v["q"]} for k, v in g.givens.items()}
+    for (_, sym), v in g.qty.items():  # the said values a K1 `given` does not cover (the solver's panel has them all)
+        givens.setdefault(sym, {"v": v["v"], "u": v["u"], "src": "said", "q": v["q"]})
+    badges = list(L.badges)
+    if M is not None:
+        tracks += M.pop("tracks")
+        if not M["simulated"]:
+            badges.append("not simulated")
     return {"rev": rev, "view": list(VIEW), "scale": round(L.scale, 4), "parts": parts, "wires": L.wires,
-            "labels": L.labels, "overlays": L.overlays, "tracks": tracks, "badges": L.badges, "processes": procs,
-            "givens": givens, "focus": g.last if g.last in g.parts else None}
+            "labels": L.labels, "overlays": L.overlays, "tracks": tracks, "badges": badges, "processes": procs,
+            "givens": givens, "focus": g.last if g.last in g.parts else None, "mech": M}
