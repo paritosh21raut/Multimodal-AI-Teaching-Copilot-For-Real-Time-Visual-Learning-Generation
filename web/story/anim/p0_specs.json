@@ -88,6 +88,16 @@
   ],
   "fallback": [],
   "skipped": [],
+  "checks": [
+   {
+    "op": "change_posture",
+    "actor": "e1",
+    "target": "",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
   "duration": 2.0
  },
  "B": {
@@ -246,6 +256,16 @@
   ],
   "fallback": [],
   "skipped": [],
+  "checks": [
+   {
+    "op": "fall",
+    "actor": "e3",
+    "target": "e1",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
   "duration": 3.663
  },
  "C": {
@@ -383,6 +403,24 @@
   ],
   "fallback": [],
   "skipped": [],
+  "checks": [
+   {
+    "op": "attach",
+    "actor": "e1",
+    "target": "e2",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   },
+   {
+    "op": "move_to",
+    "actor": "e1",
+    "target": "e3",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
   "duration": 4.367
  },
  "D": {
@@ -492,6 +530,16 @@
     "id": "e3",
     "name": "time",
     "why": "no asset, no role"
+   }
+  ],
+  "checks": [
+   {
+    "op": "speak",
+    "actor": "e1",
+    "target": "e2",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
    }
   ],
   "duration": 4.16
@@ -737,6 +785,40 @@
   ],
   "fallback": [],
   "skipped": [],
+  "checks": [
+   {
+    "op": "move_to",
+    "actor": "e1",
+    "target": "e5",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   },
+   {
+    "op": "move_to",
+    "actor": "e2",
+    "target": "e5",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   },
+   {
+    "op": "move_to",
+    "actor": "e3",
+    "target": "e5",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   },
+   {
+    "op": "move_to",
+    "actor": "e4",
+    "target": "e5",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
   "duration": 4.908
  },
  "F": {
@@ -945,6 +1027,16 @@
   ],
   "fallback": [],
   "skipped": [],
+  "checks": [
+   {
+    "op": "speak",
+    "actor": "e1",
+    "target": "e2",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
   "duration": 3.98
  }
 }

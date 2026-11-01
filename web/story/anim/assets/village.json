@@ -1,3 +1,4 @@
 {"_doc": "Village: a few houses. x = centre. entrance = where arrivals stop (relative x).",
  "houses": [[-1.1, 1.5, 1.6, 0.9], [0.45, 1.25, 1.3, 0.8], [1.5, 1.0, 1.9, 0.75]],
- "entrance": -2.1, "width": 4.2, "capabilities": ["place"]}
+ "entrance": -2.1, "width": 4.2, "capabilities": ["place"],
+ "affordances": {"region": {"target": "entrance", "actor": "feet"}}}

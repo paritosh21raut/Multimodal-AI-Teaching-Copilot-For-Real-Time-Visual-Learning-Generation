@@ -1,2 +1,3 @@
 {"_doc": "Apple, a small holdable prop (real scale: smaller than a hand).", "r": 0.06, "width": 0.12,
- "restitution": 0.35, "capabilities": ["holdable", "fruit"]}
+ "restitution": 0.35, "capabilities": ["holdable", "fruit"],
+ "affordances": {"holdable": {"target": "centre", "actor": "hand"}, "fruit": {"target": "centre", "actor": ""}}}

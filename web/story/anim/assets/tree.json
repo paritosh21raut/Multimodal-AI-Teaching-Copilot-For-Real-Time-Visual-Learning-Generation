@@ -3,4 +3,5 @@
  "canopy": {"cx": 0.0, "cy": 3.6, "rx": 2.3, "ry": 1.4},
  "under": {"x0": -2.0, "x1": 2.0, "clear": 0.5},
  "fruit": [[-1.45, 2.8], [-0.65, 2.55], [0.75, 2.6], [1.5, 2.9], [0.1, 3.4], [-1.0, 3.7], [1.05, 3.75]],
- "width": 4.6, "capabilities": ["shade", "fruit"]}
+ "width": 4.6, "capabilities": ["shade", "fruit"],
+ "affordances": {"shade": {"target": "under", "actor": "feet"}, "fruit": {"target": "fruit", "actor": ""}, "climbable": {"target": "trunk", "actor": "hands"}}}

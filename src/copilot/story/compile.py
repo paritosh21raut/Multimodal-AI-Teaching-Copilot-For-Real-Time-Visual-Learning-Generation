@@ -13,6 +13,8 @@ a StorySceneSpec the browser plays (web/story/anim/). Deterministic, 0 tokens.
                never a story fact
     fallback   an op the engine has no motion for: the actor stays, the op is listed in "fallback" (logged), never a
                guessed gesture; a thing with no asset and no role is not drawn (an abstract word like "time")
+    registry   story/ops.py gives each op's duration and sorts every event first (executable / unsupported / invalid /
+               missing_asset, in spec["checks"]); an invalid event (ride a tree) never animates
 
 Positions persist across lines (the Compiler keeps each entity's end place), so B starts where A ended.
 """
@@ -26,6 +28,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Optional
 
+from copilot.story import ops as O
 from copilot.story import world as W
 from copilot.story.look import Looks
 
@@ -135,14 +138,23 @@ class Compiler:
             t = self._walk(i, x1, world, at, t, timeline)
             at[i].tree = tree
         group: Optional[tuple[str, float, int]] = None      # people going to one place go together, queued
+        checks = []
         for ev in events:
+            cls, why = O.classify(ev, world, asset_for, assets())
+            checks.append({"op": ev.op, "actor": ev.actor, "target": ev.target or ev.obj, "class": cls, "why": why})
+            if cls == "invalid":                             # never animates; the actor stays
+                fallback.append({"op": ev.op, "actor": ev.actor, "verb": ev.verb, "why": why})
+                checks[-1]["fallback"] = why
+                continue
+            n0 = len(fallback)
             if ev.op in ("move_to", "enter") and group and group[0] == ev.target:
                 end = self._event(ev, world, at, group[1], timeline, fallback, queue=group[2])
                 group, t = (group[0], group[1], group[2] + 1), max(t, end)
-                continue
-            t0 = t
-            t = self._event(ev, world, at, t, timeline, fallback)
-            group = (ev.target, t0, 1) if ev.op in ("move_to", "enter") and ev.target else None
+            else:
+                t0 = t
+                t = self._event(ev, world, at, t, timeline, fallback)
+                group = (ev.target, t0, 1) if ev.op in ("move_to", "enter") and ev.target else None
+            checks[-1]["fallback"] = fallback[-1]["why"] if len(fallback) > n0 else ""
         _style_hit_reacts(timeline)
         end = max([t] + [e.get("t1", e.get("t0", 0)) for e in timeline]) + 0.8
         for k, v in at.items():
@@ -152,7 +164,8 @@ class Compiler:
         spec = {
             "rev": world.rev, "line": line, "g": G, "stage": {"w": STAGE_W, "sky": "day"},
             "entities": [self._ent(ents[i], start.get(i), at.get(i)) for i in drawn if i in start],
-            "events": timeline, "fallback": fallback, "skipped": skipped, "duration": round(end, 3),
+            "events": timeline, "fallback": fallback, "skipped": skipped, "checks": checks,
+            "duration": round(end, 3),
         }
         return spec
 
@@ -328,9 +341,10 @@ class Compiler:
         if ev.op == "change_posture":
             if p.carrier or p.posture == ev.value:
                 return t
-            out.append({"op": "posture", "actor": ev.actor, "from": p.posture, "to": ev.value, "t0": t, "t1": t + 0.9})
+            d = O.OPS["change_posture"].dur
+            out.append({"op": "posture", "actor": ev.actor, "from": p.posture, "to": ev.value, "t0": t, "t1": t + d})
             p.posture = ev.value
-            return t + 0.9
+            return t + d
         if ev.op == "attach" and ev.value in ("ride", "sit_on") and ev.target in at \
                 and asset_for(ents[ev.target]) == "horse":
             if p.carrier == ev.target:
@@ -340,7 +354,7 @@ class Compiler:
             out.append({"op": "mount", "actor": ev.actor, "carrier": ev.target, "from": [p.x, pelvis_y(p)],
                         "to": [h.x + h.facing * sx, sy], "t0": t, "t1": t + 1.0})
             at[ev.actor] = replace(p, carrier=ev.target, anchor="saddle", posture="sit", facing=h.facing)
-            return t + 1.1
+            return t + O.OPS["attach"].dur
         if ev.op in ("move_to", "enter") and ev.target in at:
             mover = p.carrier or ev.actor
             x1 = self._arrive_x(ev.target, at[mover], asset_for(ents[mover]), world, at)
@@ -353,25 +367,28 @@ class Compiler:
                 if p.carrier or p.posture == "lie":
                     fallback.append({"op": "fall", "actor": ev.actor, "verb": ev.verb, "why": "no fall-off motion in P0"})
                     return t
-                out.append({"op": "posture", "actor": ev.actor, "from": p.posture, "to": "lie", "t0": t, "t1": t + 0.6})
+                d = O.OPS["fall"].dur
+                out.append({"op": "posture", "actor": ev.actor, "from": p.posture, "to": "lie", "t0": t, "t1": t + d})
                 p.posture = "lie"
-                return t + 0.6
+                return t + d
             return self._fall(ev, world, at, t, out, fallback)
         if ev.op == "speak":
             facing = self._face(ev.actor, ev.target, at, both=True)
             text = ev.value or ""
-            dur = 0.5 + 0.06 * len(text) + 1.6
+            sp = O.OPS["speak"]
+            dur = sp.dur + sp.per_char * len(text) + sp.tail
             out.append({"op": "speak", "actor": ev.actor, "to": ev.target, "text": text, "t0": t, "t1": t + dur,
-                        "type_s": round(0.06 * len(text), 3), "facing": facing})
+                        "type_s": round(sp.per_char * len(text), 3), "facing": facing})
             return t + dur
         if ev.op == "react":
-            out.append({"op": "react", "actor": ev.actor, "value": ev.value, "t0": t, "t1": t + 1.4})
-            return t + 1.4
+            d = O.OPS["react"].dur
+            out.append({"op": "react", "actor": ev.actor, "value": ev.value, "t0": t, "t1": t + d})
+            return t + d
         if ev.op in ("look_at", "point_at") and (ev.target or ev.obj) in at:
             facing = self._face(ev.actor, ev.target or ev.obj, at, both=False)
             out.append({"op": ev.op.replace("_at", ""), "actor": ev.actor, "target": ev.target or ev.obj,
-                        "t0": t, "t1": t + 1.2, "facing": facing})
-            return t + 1.2
+                        "t0": t, "t1": t + O.OPS[ev.op].dur, "facing": facing})
+            return t + O.OPS[ev.op].dur
         fallback.append({"op": ev.op, "actor": ev.actor, "verb": ev.verb, "why": "no motion for this op in P0"})
         return t
 

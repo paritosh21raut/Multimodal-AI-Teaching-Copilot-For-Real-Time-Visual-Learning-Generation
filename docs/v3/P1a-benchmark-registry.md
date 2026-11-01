@@ -51,4 +51,13 @@ New ops / props, live wiring, any visual change.
 Benchmark + scorer + registries + baseline report.
 
 ## Result
-_(pending)_
+_2026-11-02, done._ `story/ops.py` (15 ops as data, ACTS, 4-way `classify`), spec `checks`, sidecar `affordances`;
+bench 24 stories / 223 lines / 291 events (dev 8 · val 4 · test 12); `tools/story_bench.py`. 2286 pass; review 10 fixed.
+**Baseline dev+val (138 events)**, oracle (perfect reader) vs gpt-oss-20b (177k tokens, p50 0.97 s / p90 1.81 s):
+| | events | relations | continuity | honesty |
+|---|---|---|---|---|
+| oracle | 33.0 (m 34.8 h 35.2 s 29.2) | 100 | 100 | 100 |
+| 20b | 23.4 (m 16.8 h 26.1 s 27.1) | 57.3 | 90.2 | 70.4 |
+LLM: 21/113 lines refused, 15 of them a wrong echoed `rev` (stamped by the caller: events 26.4, rel 62.5).
+P1b ranking: UNKNOWN_ACTION put 5, jump 3, climb 3, catch / lift / give / push 2; MOTION hold 12, exit 4, detach 3;
+UNKNOWN_ASSET animals 13 (fox, lion, mouse), groups 9, places 9.
