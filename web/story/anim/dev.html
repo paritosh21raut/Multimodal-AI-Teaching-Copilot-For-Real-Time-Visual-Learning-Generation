@@ -1,0 +1,77 @@
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>story anim P0</title><link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --bg: #f6f3ec; --ink: #16191d; --muted: #6b7380; --line: #ddd6c8; }
+  [data-theme="dark"] { --bg: #050608; --ink: #f5f7f9; --muted: #8b95a3; --line: #262c34; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Segoe UI", system-ui, sans-serif; }
+  #bar { display: flex; gap: 8px; align-items: center; padding: 10px 16px; flex-wrap: wrap; }
+  #bar button { font: inherit; padding: 6px 14px; border: 1px solid var(--line); border-radius: 8px; background: transparent;
+    color: var(--ink); cursor: pointer; }
+  #bar span { color: var(--muted); margin-left: 8px; }
+  canvas { display: block; width: 100%; max-width: 1920px; aspect-ratio: 16 / 9; }
+  body.bare #bar { display: none; }
+</style>
+</head><body>
+<div id="bar">
+  <button data-play="AB">A → B (Newton)</button><button data-play="C">C (horse)</button>
+  <button data-play="D">D (Einstein)</button><button data-play="EF">E → F (Geeta, Arun)</button>
+  <button data-play="ABCDEF">All</button>
+  <button id="theme">theme</button><span id="info"></span>
+</div>
+<canvas id="cv" width="1920" height="1080"></canvas>
+<script type="module">
+// P0 part 2 dev page (ADR-0015 gate A–D): plays the specs tools/p0_specs.py compiled from the recorded LLM deltas.
+// Not used by the app. Tests drive window.anim (seek / probe / fps); ?bare hides the bar (recording).
+import { Player, loadAssets } from './engine.js';
+
+const cv = document.getElementById('cv'), info = document.getElementById('info');
+if (location.search.includes('bare')) document.body.classList.add('bare');
+const [A, specs] = await Promise.all([loadAssets(), fetch('./p0_specs.json').then((r) => r.json())]);
+const pl = new Player(cv, A);
+let run = 0;
+
+function seek(name, t) { pl.load(specs[name]); pl.frame(t); return pl.spec.duration; }
+
+async function play(seq) {
+  const my = ++run;
+  for (const name of seq) {
+    pl.load(specs[name]);
+    const t0 = performance.now(), dur = specs[name].duration + 1.0;
+    info.textContent = `${name}: ${specs[name].line}`;
+    await new Promise((done) => {
+      const tick = (now) => {
+        if (my !== run) return done();
+        const t = (now - t0) / 1000;
+        pl.frame(Math.min(t, dur));
+        t < dur ? requestAnimationFrame(tick) : done();
+      };
+      requestAnimationFrame(tick);
+    });
+    if (my !== run) return;
+  }
+}
+
+function fps(ms = 1500, name = 'C') {
+  pl.load(specs[name]);
+  return new Promise((done) => {
+    let n = 0; const t0 = performance.now();
+    const tick = (now) => {
+      pl.frame(((now - t0) / 1000) % specs[name].duration); n++;
+      now - t0 < ms ? requestAnimationFrame(tick) : done((n * 1000) / (now - t0));
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+function theme(name) {
+  document.documentElement.dataset.theme = name; pl.theme(name);
+}
+
+document.querySelectorAll('[data-play]').forEach((b) => b.onclick = () => play([...b.dataset.play]));
+document.getElementById('theme').onclick = () => theme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+window.anim = { specs, assets: A, seek, play, fps, theme, probe: (name, t) => { pl.load(specs[name]); return pl.probe(t); } };
+seek('A', 0);
+document.title = 'ready';
+if (location.search.includes('autoplay')) play([...'ABCDEF']);
+</script></body></html>

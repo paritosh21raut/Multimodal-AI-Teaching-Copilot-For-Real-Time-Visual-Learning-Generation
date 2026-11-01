@@ -1,0 +1,950 @@
+{
+ "A": {
+  "rev": 1,
+  "line": "Newton was sitting under an apple tree.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Newton",
+    "known": "newton",
+    "start": {
+     "x": 7.725,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "e2"
+    },
+    "end": {
+     "x": 7.725,
+     "y": 0.0,
+     "posture": "sit",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "e2"
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Newton"
+   },
+   {
+    "id": "e2",
+    "kind": "place",
+    "asset": "tree",
+    "name": "an apple tree",
+    "known": "",
+    "start": {
+     "x": 7.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 7.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "fruit": "apple",
+    "hidden": []
+   }
+  ],
+  "events": [
+   {
+    "op": "posture",
+    "actor": "e1",
+    "from": "stand",
+    "to": "sit",
+    "t0": 0.3,
+    "t1": 1.2
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "duration": 2.0
+ },
+ "B": {
+  "rev": 2,
+  "line": "An apple fell on his head.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Newton",
+    "known": "newton",
+    "start": {
+     "x": 7.725,
+     "y": 0.0,
+     "posture": "sit",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "e2"
+    },
+    "end": {
+     "x": 7.725,
+     "y": 0.0,
+     "posture": "sit",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "e2"
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Newton"
+   },
+   {
+    "id": "e2",
+    "kind": "place",
+    "asset": "tree",
+    "name": "an apple tree",
+    "known": "",
+    "start": {
+     "x": 7.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 7.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "fruit": "apple",
+    "hidden": [
+     2
+    ]
+   },
+   {
+    "id": "e3",
+    "kind": "prop",
+    "asset": "apple",
+    "name": "an apple",
+    "known": "",
+    "start": {
+     "x": 7.75,
+     "y": 2.6,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": 2,
+     "tree": "e2"
+    },
+    "end": {
+     "x": 8.501916284523748,
+     "y": 0.06,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    }
+   }
+  ],
+  "events": [
+   {
+    "op": "fall",
+    "actor": "e3",
+    "from": [
+     7.75,
+     2.6
+    ],
+    "v": [
+     -0.20595731025162284,
+     0.0
+    ],
+    "shake": 0.4,
+    "t0": 0.7,
+    "t1": 2.4497,
+    "contact": {
+     "t": 1.2631,
+     "at": [
+      7.634018722460421,
+      1.0445345632489382
+     ],
+     "on": "e1",
+     "part": "head"
+    },
+    "r": 0.06,
+    "bounce": {
+     "v": [
+      0.9,
+      1.9335158142511633
+     ],
+     "t_ground": 1.9497,
+     "roll": 0.25
+    },
+    "rest": [
+     8.501916284523748,
+     0.06
+    ]
+   },
+   {
+    "op": "react",
+    "actor": "e1",
+    "value": "surprise",
+    "t0": 1.2631,
+    "t1": 2.8631,
+    "style": "hit_reacts",
+    "rub": true
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "duration": 3.663
+ },
+ "C": {
+  "rev": 1,
+  "line": "The boy rode his horse to the village.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "The boy",
+    "known": "",
+    "start": {
+     "x": 1.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 7.6,
+     "y": 0.0,
+     "posture": "sit",
+     "facing": 1,
+     "carrier": "e2",
+     "anchor": "saddle",
+     "fruit": -1,
+     "tree": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 0.74,
+     "stoop": 0.0
+    },
+    "label": ""
+   },
+   {
+    "id": "e2",
+    "kind": "animal",
+    "asset": "horse",
+    "name": "his horse",
+    "known": "",
+    "start": {
+     "x": 2.4,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 7.6,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    }
+   },
+   {
+    "id": "e3",
+    "kind": "place",
+    "asset": "village",
+    "name": "the village",
+    "known": "",
+    "start": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    }
+   }
+  ],
+  "events": [
+   {
+    "op": "mount",
+    "actor": "e1",
+    "carrier": "e2",
+    "from": [
+     1.0,
+     0.92
+    ],
+    "to": [
+     2.35,
+     1.56
+    ],
+    "t0": 0.3,
+    "t1": 1.3
+   },
+   {
+    "op": "move",
+    "actor": "e2",
+    "from": 2.4,
+    "to": 7.6,
+    "t0": 1.4000000000000001,
+    "t1": 3.5666666666666664,
+    "gait": "walk",
+    "speed": 2.4,
+    "facing": 1,
+    "carries": [
+     "e1"
+    ]
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "duration": 4.367
+ },
+ "D": {
+  "rev": 1,
+  "line": "Einstein said to his friend, time is relative.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Einstein",
+    "known": "einstein",
+    "start": {
+     "x": 7.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 7.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Einstein"
+   },
+   {
+    "id": "e2",
+    "kind": "person",
+    "asset": "person",
+    "name": "his friend",
+    "known": "",
+    "start": {
+     "x": 8.4,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 8.4,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#d1495b",
+     "hair": "side",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": ""
+   }
+  ],
+  "events": [
+   {
+    "op": "speak",
+    "actor": "e1",
+    "to": "e2",
+    "text": "time is relative",
+    "t0": 0.3,
+    "t1": 3.36,
+    "type_s": 0.96,
+    "facing": {
+     "e1": 1,
+     "e2": -1
+    }
+   }
+  ],
+  "fallback": [],
+  "skipped": [
+   {
+    "id": "e3",
+    "name": "time",
+    "why": "no asset, no role"
+   }
+  ],
+  "duration": 4.16
+ },
+ "E": {
+  "rev": 1,
+  "line": "Geeta and her brother Arun walked to the village with two boys.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Geeta",
+    "known": "",
+    "start": {
+     "x": 3.55,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 8.5,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "ponytail",
+     "hair_col": "dark",
+     "dress": true,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Geeta"
+   },
+   {
+    "id": "e2",
+    "kind": "person",
+    "asset": "person",
+    "name": "her brother Arun",
+    "known": "",
+    "start": {
+     "x": 2.6999999999999997,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 7.65,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#d1495b",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Arun"
+   },
+   {
+    "id": "e3",
+    "kind": "person",
+    "asset": "person",
+    "name": "two boys",
+    "known": "",
+    "start": {
+     "x": 1.8499999999999999,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 6.8,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "look": {
+     "main": false,
+     "shirt": "#8a929c",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 0.74,
+     "stoop": 0.0
+    },
+    "label": ""
+   },
+   {
+    "id": "e4",
+    "kind": "person",
+    "asset": "person",
+    "name": "two boys",
+    "known": "",
+    "start": {
+     "x": 1.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 5.95,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "look": {
+     "main": false,
+     "shirt": "#8a929c",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 0.74,
+     "stoop": 0.0
+    },
+    "label": ""
+   },
+   {
+    "id": "e5",
+    "kind": "place",
+    "asset": "village",
+    "name": "the village",
+    "known": "",
+    "start": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    }
+   }
+  ],
+  "events": [
+   {
+    "op": "move",
+    "actor": "e1",
+    "from": 3.55,
+    "to": 8.5,
+    "t0": 0.3,
+    "t1": 4.107692307692307,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": 1,
+    "carries": []
+   },
+   {
+    "op": "move",
+    "actor": "e2",
+    "from": 2.6999999999999997,
+    "to": 7.65,
+    "t0": 0.3,
+    "t1": 4.107692307692308,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": 1,
+    "carries": []
+   },
+   {
+    "op": "move",
+    "actor": "e3",
+    "from": 1.8499999999999999,
+    "to": 6.8,
+    "t0": 0.3,
+    "t1": 4.107692307692307,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": 1,
+    "carries": []
+   },
+   {
+    "op": "move",
+    "actor": "e4",
+    "from": 1.0,
+    "to": 5.95,
+    "t0": 0.3,
+    "t1": 4.107692307692307,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": 1,
+    "carries": []
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "duration": 4.908
+ },
+ "F": {
+  "rev": 2,
+  "line": "Geeta asked Arun, are you tired?",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Geeta",
+    "known": "",
+    "start": {
+     "x": 8.5,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 8.5,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "ponytail",
+     "hair_col": "dark",
+     "dress": true,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Geeta"
+   },
+   {
+    "id": "e2",
+    "kind": "person",
+    "asset": "person",
+    "name": "her brother Arun",
+    "known": "",
+    "start": {
+     "x": 7.65,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 7.65,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#d1495b",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Arun"
+   },
+   {
+    "id": "e3",
+    "kind": "person",
+    "asset": "person",
+    "name": "two boys",
+    "known": "",
+    "start": {
+     "x": 6.8,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 6.8,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "look": {
+     "main": false,
+     "shirt": "#8a929c",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 0.74,
+     "stoop": 0.0
+    },
+    "label": ""
+   },
+   {
+    "id": "e4",
+    "kind": "person",
+    "asset": "person",
+    "name": "two boys",
+    "known": "",
+    "start": {
+     "x": 5.95,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 5.95,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "look": {
+     "main": false,
+     "shirt": "#8a929c",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 0.74,
+     "stoop": 0.0
+    },
+    "label": ""
+   },
+   {
+    "id": "e5",
+    "kind": "place",
+    "asset": "village",
+    "name": "the village",
+    "known": "",
+    "start": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    },
+    "end": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": ""
+    }
+   }
+  ],
+  "events": [
+   {
+    "op": "speak",
+    "actor": "e1",
+    "to": "e2",
+    "text": "are you tired",
+    "t0": 0.3,
+    "t1": 3.1799999999999997,
+    "type_s": 0.78,
+    "facing": {
+     "e1": -1,
+     "e2": 1
+    }
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "duration": 3.98
+ }
+}

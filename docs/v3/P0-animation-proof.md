@@ -36,4 +36,20 @@ surprise". Not scored, for part 2 / P1: "ran away from the bull" also gives `mov
 "apple tree" came as kind place (map by noun to the tree asset); sleeping = `sit_on` + lie; "in the lab" dropped.
 Review: 7 found, 7 fixed (two places in one line, bad types refused, gender from own name only, between ids,
 scorer noun match, detach keeps the room, full-history keys). Full suite 2260 pass.
-**Part 2 — next session** (0 tokens, replays the recorded deltas).
+**Part 2 — built, look check pending (2026-11-01, 0 tokens).** `story/compile.py` (relations -> placements from
+the sidecars, carrier/saddle, fall contact time from g + bounce, facing on events, walk-to for a new relation, style
+rule hit_reacts, explicit fallback, abstract words not drawn); `web/story/anim/` (rig.js 14 joints + 2-bone IK,
+props.js tree/fruit/horse 4-beat/village, engine.js frame = f(t), per-scene camera, dev.html); `assets/*.json`
+shared by both sides; `tools/p0_specs.py` -> `p0_specs.json`. Browser probes: apple touches the head at the
+contact time, rider gap 0 on 9 frames of the ride, Newton in the shade span, bubble over Einstein, 144 fps
+headless. Review: 6 + 1 found, all fixed (relocation, rider x, slot clash, person fall = lie, fruit only from his
+tree, facing to the browser, crouch offset). 11 unit + 7 browser tests; full suite 2271 pass. No video (no ffmpeg).
+User (2026-11-02): **yes, but** -> look round 1: `story/look.py` name tags (named people only, under the feet),
+main characters distinct (shirt, hair style, cap / glasses), supporting ones one shared look, children shorter, old =
+grey + stoop, dress / long hair only for a said "she"; free spots (no stacking), people going to one place walk
+together and queue; rig polish (hands, feet, blink, brows, smile, skirt, straight arms, head 0.13). Scenes E-F are
+HAND-WRITTEN deltas (look demo, not LLM). 14 unit + 8 browser; full suite 2274. **Closed 2026-11-02: user went on
+to the next card (look accepted).**
+**Generality (user question):** the engine is general (no story-specific code); coverage is bounded by ops, props
+with anchors, groups / weather. Estimate 70-80 % of ordinary teacher-story lines after P1-P2, **unmeasured**: P1
+step 0 = a coverage gate on ~40 unseen story lines (score like part 1).

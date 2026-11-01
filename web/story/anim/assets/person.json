@@ -1,0 +1,7 @@
+{"_doc": "Stick person rig (ADR-0015), metres, side view. Shared by story/compile.py (heights, head contact) and web/story/anim/rig.js (bones).",
+ "head_r": 0.13, "neck": 0.08, "torso": 0.55, "upper_arm": 0.30, "forearm": 0.28, "thigh": 0.45, "shin": 0.45,
+ "pelvis": {"stand": 0.92, "sit": 0.10, "lie": 0.12, "kneel": 0.50, "crouch": 0.48},
+ "pelvis_dx": {"crouch": -0.08},
+ "lean": {"stand": 0.0, "sit": -0.12, "ride": 0.12, "lie": 1.5708, "kneel": 0.05, "crouch": 0.45},
+ "seat_clear": 0.02, "width": 0.5, "walk_speed": 1.3, "stride": 0.7,
+ "capabilities": ["walk", "sit", "hold", "ride", "speak", "react"]}

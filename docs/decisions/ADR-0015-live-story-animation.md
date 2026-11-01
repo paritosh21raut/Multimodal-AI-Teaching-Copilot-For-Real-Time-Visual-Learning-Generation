@@ -73,3 +73,17 @@ No progress is claimed from replay tests or slide counts (test35 lesson).
 P0 proof (2 sessions: LLM relation accuracy, rig + compiler + A–D, user look check) → P1 world + compiler + live
 wiring (ops, continuity, fallbacks) → P2 assets, quadruped, blob agent, groups, environment, heads → P3 10-min live
 story lecture (the ST4 script) → P4 evaluation (paper 3).
+
+## Addendum 2026-11-02 — after P0 (user "yes, but" + ChatGPT review, `AI responce/chatGPT.txt`)
+P0 passed: relations 17/20 (gate 16), look accepted after one round (name tags for named people only, main
+characters distinct, supporting ones alike, children / old by said words, group walk). Adopted from the review:
+**semantic actions compiled into choreography graphs** (give = approach → reach → handoff → release, over the
+primitives; the LLM states meaning, never the sequence); a verb earns its own action only if it needs a unique
+constraint, multi-entity coordination or a state change; an **op registry** (preconditions, effects, duration,
+failure: a failed transfer keeps the owner); an **affordance registry** in the sidecars with a four-way check
+(executable / unsupported / invalid / missing asset); groups, weather and time_jump as world state; environment
+grammar (forest, village) and a room builder; a **story-split benchmark** scored per atomic event with failure
+types and per-genre numbers. Changed: actions are added ~12 at a time, ordered by the benchmark's UNKNOWN_ACTION
+counts (not a guessed 25); benchmark 24 stories first (free tier); pursuit paths precomputed in Python (no runtime
+controller); cook / build / fight later; latency gate stays p50 ≤ 2.5 s / p90 ≤ 4 s. Cards: P1a benchmark +
+registries → P1b actions batch 1 → P1c live wiring → P2 world (environments, rooms, groups, weather, props) → P3 → P4.

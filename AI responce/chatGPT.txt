@@ -1,905 +1,974 @@
-Engineering feasibility verdict
-Partly feasible
- Strongly feasible as a compositional 2D engine
+# Recommended design: a small action language, not a large animation vocabulary
 
+Your architecture is now much more promising because you have separated three things:
 
-My honest assessment: build this, but change the definition of what "open-ended" means.
+1. Language: What happened?
+2. Choreography: What movements and interactions are required?
+3. Execution: Where do the characters and objects move?
 
-You can build a system that accepts previously unseen stories, identifies their entities, understands relationships, retrieves suitable visual assets, and constructs animated scenes without having a pre-made scene for every story.
+I would preserve that separation.
 
-You cannot realistically expect it to generate arbitrary, visually convincing animation with the freedom of a human animator, within 2–3 seconds, on a CPU-only or 4 GB GPU school laptop.
+My biggest recommendation is to introduce a distinction between primitive operations, composite actions and world-state changes.
 
-Those are two different engineering problems.
-Capability	Feasibility
-Previously unseen stories	Feasible
-Dynamic combinations of characters and props	Feasible
-Walk, run, sit, stand, point, hold	Feasible
-Correct spatial relationships	Feasible with constraints
-Objects falling, riding, collisions	Feasible with procedural mechanics
-Recognisable caricatures of famous people	Feasible with authored assets
-Arbitrary characters and complex movements	Not reliably feasible
-Hand-animated YouTube quality	Not achievable under these constraints
+Do not make every English verb a new low-level operation. Equally, do not reduce every verb to `move_to + react + attach`. Some actions have their own interaction mechanics.
 
-The most important thing: the bottleneck is not animation rendering. It is semantic grounding: turning language into a spatially correct, physically plausible scene.
+For example, `give`, `hug`, `fight` and `climb` have distinct choreography. They should be recognized as semantic actions, but compiled into reusable, deterministic action graphs.
 
-A browser can easily animate hundreds of 2D objects at 60 FPS. Getting Newton underneath the tree, the apple attached to the tree before falling, and the apple actually contacting Newton's head is considerably harder.
+This gives you an extensible vocabulary without creating a different animation implementation for every story.
 
-1. The actual hard problem: semantic grounding, not animation
-Your previous chibi experiment encountered the most important failure mode: it understood what objects existed, but failed to understand how those objects interacted.
+# 1. The 25 additional operations I recommend
 
-A sentence contains more information than a collection of nouns and verbs.
+Your existing vocabulary already covers basic movement, posture, attachment, falling, throwing, speaking and reactions.
 
-Consider:
-The boy rode his horse to the village.
+I would add the following 25, ranked by expected coverage across ordinary moral stories, folk tales, history and science anecdotes.
 
-A correct scene needs to understand:
-- The boy is the rider.
-- The horse is the vehicle.
-- The boy must be positioned on the horse, not beside it.
-- The boy's body must have a riding posture.
-- His legs must relate to the horse's sides.
-- His hands may connect to the reins.
-- The horse moves along a path.
-- The boy moves with the horse.
-- The village is the destination.
-A noun-and-verb parser cannot reliably produce all of this.
+The ranking is an engineering prioritization, not a measured frequency analysis.
 
-I would solve it with four interconnected systems.
-A. Semantic scene graph
-Your proposed scene graph is correct, but I would make one important modification.
+## Priority 1: Essential interactions
 
-Do not generate an entirely new scene for every sentence. Generate changes to a persistent scene state.
+Implement first
 
-There are two layers:
-1. World state: everything currently present and its relationships.
-2. Event delta: what the new sentence changes.
-For example:
+| Rank | Operation  | What it should do                                    | Why it matters                          |
+| ---- | ---------- | ---------------------------------------------------- | --------------------------------------- |
+| 1    | `pick_up`  | Move hand to object, grasp and attach                | Extremely common interaction            |
+| 2    | `put_down` | Release object at a valid surface or location        | Completes object manipulation           |
+| 3    | `push`     | Apply directional movement to an object or character | Doors, carts, people, objects           |
+| 4    | `pull`     | Pull target towards actor                            | Ropes, carts, doors, people             |
+| 5    | `transfer` | Transfer possession between two characters           | Give, hand, pass, receive               |
+| 6    | `pursue`   | Follow, chase or flee from another entity            | Animal tales, adventures, history       |
+| 7    | `turn_to`  | Rotate character body towards direction or target    | Natural-looking interactions            |
+| 8    | `jump`     | Generate a jumping trajectory and landing            | Obstacles, animals, excitement          |
+| 9    | `climb`    | Alternate hand/foot contacts while progressing       | Trees, mountains, ladders               |
+| 10   | `hide`     | Move into a concealment region and become occluded   | Moral stories, folk tales, chase scenes |
 
-Sentence 1: Newton was sitting under an apple tree.
+A particularly important design decision:
 
-The LLM returns something conceptually like:
-{
-  "entities": [
-    {
-      "id": "newton",
-      "type": "person",
-      "identity": "isaac_newton"
-    },
-    {
-      "id": "tree_1",
-      "type": "apple_tree"
-    },
-    {
-      "id": "apple_1",
-      "type": "apple"
-    }
-  ],
-  "events": [
-    {
-      "actor": "newton",
-      "action": "sit",
-      "relation": {
-        "type": "under",
-        "target": "tree_1"
-      }
-    },
-    {
-      "actor": "apple_1",
-      "action": "remain_attached",
-      "target": "tree_1",
-      "relation": "on_branch"
-    }
-  ]
-}
+`pick_up` and `put_down` should be semantic operations that expand into your existing `attach` and `detach`.
 
-
-This is illustrative, not a proposed final JSON schema.
-
-Sentence 2: An apple fell on his head.
-
-The LLM receives the existing state and returns a delta:
-{
-  "events": [
-    {
-      "actor": "apple_1",
-      "action": "fall",
-      "target": "newton",
-      "interaction": "contact_head"
-    },
-    {
-      "actor": "newton",
-      "action": "react",
-      "emotion": "surprised",
-      "look_at": "apple_1"
-    }
-  ]
-}
-
-
-Notice what happened.
-
-The LLM does not have to invent another Newton, another tree, or another apple. It resolves the reference to the existing apple and changes its state.
-
-This is essential for pronouns, continuity, and multi-sentence narratives.
-B. A typed spatial relationship system
-This is where I would invest most of the engineering effort.
-
-Do not treat spatial relations as descriptive labels. Treat them as geometric constraints.
-Relationship	What the engine must calculate
-Under	Place subject inside the target's lower spatial region
-On	Align subject's contact point with target's support surface
-Holding	Connect hand endpoint to object grip point
-Riding	Align pelvis with saddle/seat and solve limb positions
-In	Place subject inside a containment region
-Next to	Place objects within a distance range without overlap
-Above	Maintain vertical ordering with appropriate separation
-Falling onto	Calculate trajectory and target collision
-Looking at	Orient head and eyes toward the target
-Pointing at	Solve arm and hand direction toward target
-
-Every object should expose semantic anchors.
-
-For example:
-Example: horse asset
-
-
-
-
-
-
-
-
-
-Saddle seat
-Rider pelvis placement
-Rein anchors
-Rider hand placement
-Left/right sides
-Leg positioning
-Ground contact
-Horse positioning
-
-
-The same principle applies to other objects.
-
-An apple tree needs a trunk, canopy region, branch points and apple attachment points.
-
-A table needs a support surface and leg geometry.
-
-A chair needs a seat anchor and backrest.
-
-A person's rig needs hand, foot, head and pelvis anchors.
-
-My recommendation: create an explicit anchor metadata file for every important asset.
-
-For example:
-{
-  "asset": "horse",
-  "anchors": {
-    "saddle_seat": [0.58, 0.34],
-    "head": [0.91, 0.24],
-    "ground": [0.50, 0.91],
-    "left_rein": [0.89, 0.30]
-  }
-}
-
-
-Coordinates here are normalized illustrative values.
-
-Can anchors be extracted automatically from arbitrary SVG geometry? Partially.
-
-You can extract bounding boxes, contours, extreme points and approximate surfaces. But software cannot reliably infer which horizontal line is a saddle, which part of a tree is a branch, or where an object should be gripped just from its silhouette.
-
-That requires semantic annotations or a much more sophisticated vision system.
-
-I would not spend weeks attempting fully automatic anchor detection. Build a small asset-authoring tool where you can mark anchors once and reuse them indefinitely.
-C. Procedural character animation and inverse kinematics
-I agree with your stick-figure/2D rig direction.
-
-For the first implementation, use a skeleton with:
-- Head
-- Neck
-- Torso
-- Pelvis
-- Upper arms
-- Forearms
-- Hands
-- Thighs
-- Lower legs
-- Feet
-Use inverse kinematics (IK) for the limbs.
-
-IK allows you to specify the hand's destination, and the engine calculates the elbow position. The same principle works for feet and other joints.
-
-You then build a small library of reusable motion primitives:
-Primitive	Implementation
-Idle	Breathing, blinking, subtle body movement
-Walk	Procedural gait cycle
-Run	Faster gait with body lean
-Sit	Pelvis lowered, legs bent
-Stand	Transition to standing pose
-Point	Arm IK toward target
-Hold	Hand IK constrained to object anchor
-Ride	Pelvis constrained to saddle, riding gait
-Fall	Gravity-driven motion
-React	Head movement, body recoil, facial expression
-Talk	Mouth movement and gestures
-
-You do not need a separate animation for every sentence.
-
-You need a reusable motion vocabulary that can be combined.
+They are not new physics systems.
 
 For instance:
 
-walk + hold object + look at target
-
-could generate a combination that was never explicitly authored.
-
-That is compositional animation rather than scene templates.
-D. A simple physics layer
-Do not build a complete physics engine at the beginning.
-
-You need only a small number of behaviours:
-- Gravity
-- Velocity
-- Ground collision
-- Object-to-object collision
-- Contact detection
-- Basic pushing and carrying
-- Parent-child attachment and detachment
-For Newton:
-1. The apple initially belongs to a branch anchor.
-2. The fall event detaches it.
-3. Gravity determines its trajectory.
-4. Collision detection identifies contact with Newton's head.
-5. The engine switches Newton's pose to surprised/recoiling.
-6. The apple settles or falls to the ground.
-That is a small deterministic physics problem, not an AI motion-generation problem.
-
-2. The best concrete architecture
-This is the architecture I would actually build.
-Proposed live scene engine
-1. Speech input
-
-Whisper STT → sentence / partial transcript
-
-
-2. Narrative understanding
-
-Groq LLM → entities, actions, references, relationships, dialogue
-
-
-3. Validated scene graph
-
-JSON schema, entity IDs, state and event validation
-
-
-4. Deterministic scene engine
-Asset resolver
-Character and prop retrieval
-Layout solver
-Spatial constraint placement
-Motion system
-Rigs, gait and IK
-Physics engine
-Gravity and collisions
-
-
-
-5. Browser renderer
-
-Animated 2D scene → Classroom projector
-
-
-The LLM is responsible for understanding the story. The deterministic engine is responsible for making that story physically visible.
-
-Do not let the LLM output joint coordinates, rendering code, or arbitrary screen positions.
-Recommended technology stack
-Component	My choice	Reason
-LLM	Groq GPT-OSS 20B	Strict JSON-schema output supported
-Backend	Python / FastAPI	Existing project integration
-Communication	WebSocket	Continuous updates to browser
-Frontend	TypeScript	Typed scene graph and engine
-Renderer	PixiJS 8	WebGL-based 2D rendering
-Animation	Custom rig + IK, GSAP optional	Full procedural control
-Physics	Custom 2D physics initially	Gravity and simple collisions are sufficient
-Assets	Curated SVG library	Lightweight and visually consistent
-Asset metadata	JSON sidecars	Anchors, geometry, semantic tags
-Scene validation	JSON Schema + custom validators	Reject invalid relationships
-
-Why PixiJS?
-
-PixiJS provides WebGL/WebGL2 rendering, with Canvas rendering also available as a fallback option. Its documentation recommends WebGL for production and describes Canvas rendering as experimental. 
-pixi.js+1
-
-
-Project: PixiJS
-
-I would use PixiJS when the renderer grows beyond a few characters and simple props. For the first proof, SVG with CSS transforms is also perfectly adequate.
-
-Why not make Rive or Lottie the main engine?
-
-Rive is useful for pre-authored character rigs and state-machine animations. Its official runtimes are MIT-licensed, including the web runtimes. 
-GitHub
-
-
-However, Rive does not solve your semantic scene construction problem. You still need to decide that the character should sit on the chair, hold the cup, and turn toward the speaker.
-
-Lottie is even less suitable as the core system because it primarily plays pre-authored animation timelines.
-
-GSAP is a useful optional animation/tweening layer. Its standard offering is now free for commercial use, including its formerly premium plugins. 
-GitHub
-
-
-My preference:
-
-PixiJS + custom procedural character system + IK + authored asset anchors.
-
-Not PixiJS + hundreds of canned animations.
-
-3. Motion-generation research: should you use T2M-GPT, MoMask or MDM?
-This is an important distinction: text-to-motion models generate human joint movements. They do not generate a complete story scene.
-
-They can tell a skeleton how to walk, bend or jump. They do not inherently know that a person must sit on a particular horse, that the horse must carry the person, or that an apple must collide with someone's head.
-Comparison
-Model / dataset	What it provides	My assessment
-T2M-GPT	Text-conditioned 3D human motion	Useful research, not core engine
-MoMask	Text-conditioned 3D skeletal motion	Most interesting experiment
-MDM	Diffusion-based 3D skeletal motion	Promising but unnecessarily heavy
-HumanML3D	14,616 motion sequences and 44,970 descriptions	Useful for research and testing
-KIT-ML	3,911 motions and over 6,000 annotations	Useful alternative dataset
-
-T2M-GPT
-Weights: Apache 2.0 on the published Hugging Face model cardThe published model weights are approximately 1.1 GB. It combines a vector-quantized motion representation with a GPT-based sequence generator. 
-Hugging Face+1
-
-
-It produces motion sequences rather than complete animated scenes.
-
-Verdict: Do not integrate it into the first version.
-MoMask
-Worth experimenting with
-MoMask is particularly interesting because its authors provide a CPU-capable web demonstration. The official repository also provides generation code and model checkpoints. Its code is MIT-licensed, but dependent libraries, model assets and datasets have separate licensing requirements. 
-GitHub+2
-
-
-Its output is a 3D skeleton with 22 joints, generally represented at 20 FPS in the HumanML3D setup. 
-GitHub
-
-
-Important limitations:
-- CPU execution is possible, but the authors do not provide a benchmark establishing that inference consistently completes within your 2–3-second deadline on an ordinary school laptop.
-- Its output is skeletal motion, not a complete visual scene.
-- Its movement vocabulary and training distribution constrain what it can produce.
-- It does not automatically solve object attachment or character-to-character interaction.
-My verdict: Experiment with it offline. Do not put it in the live critical path.
-MDM
-MDM is another research option.
-
-Its repository reports approximately 0.4 seconds per sample after introducing a 50-step diffusion model and caching the CLIP result. However, its documented setup requires a CUDA-capable GPU. That timing is not a guarantee for a 4 GB GPU or CPU-only classroom machine. Its code is MIT-licensed. 
-GitHub+1
-
-
-This is interesting, but I would not spend development time optimizing it for your application.
-Dataset licensing: an important trap
-There is a distinction between code licensing, model-weight licensing and training-data licensing.
-Resource	Licensing situation	Recommendation
-HumanML3D repository	MIT code license	Code can be reused under its terms
-AMASS	Non-commercial scientific research, education and artistic-use restrictions	Avoid for a commercial product without separate permission
-MoMask code	MIT	Suitable to study and reuse under the license
-T2M-GPT published weights	Apache 2.0 model-card declaration	Check associated code and data separately
-KIT-ML	Official download page does not clearly state a licence	Obtain permission/clarification before commercial use
-Game-icons.net	CC BY 3.0	Commercial use requires attribution
-
-The critical restriction is AMASS: its official licence prohibits commercial incorporation and commercial use of the dataset. HumanML3D's MIT repository licence does not override those restrictions on the underlying motion data. 
-GitHub+3
-
-
-KIT-ML is openly downloadable, but downloadable does not automatically mean commercially unrestricted. 
-motion-annotation.humanoids.kit.edu
-
-
-My recommendation: Build your initial motion library procedurally. Do not make your architecture dependent on these datasets.
-
-4. Props and character assets: what should you use?
-Your SVG retrieval idea is good, but I would modify it substantially.
-
-Do not download thousands of unrelated icons and expect them to become a coherent animated world.
-
-You need a consistent visual vocabulary.
-Asset library
-I would investigate these sources:
-
-
-
-
-
-
-
-
-
-Game-icons.net
-
-More than 4,000 icons. CC BY 3.0, requiring attribution. Good starting source for prop silhouettes and object categories.
-
-Explore Game Icons · Licence
-
-
-
-
-
-
-
-
-
-
-
-
-Tabler Icons
-
-MIT-licensed. Useful for simpler outlines and some classroom objects.
-
-Explore Tabler
-
-
-
-
-
-
-
-
-
-
-
-
-Bootstrap Icons
-
-MIT-licensed. Another source for simple objects and symbols.
-
-Explore Bootstrap Icons
-
-
-
-
-
-
-
-
-
-
-
-
-Iconify
-
-Excellent way to search and retrieve icons from many collections. However, licensing is per icon set, not a single universal Iconify licence.
-
-Explore Iconify · Licence details
-
-
-
-
-game-icons.net+3
-These are sources, not finished animation assets. In particular, a conventional icon may have no saddle, grip point or usable interaction geometry.
-My proposed asset strategy
-Build a curated offline library of approximately 50–100 high-value assets first, all in one visual style.
-
-Divide it into:
-Category	Initial assets
-Characters	Generic man, woman, child, soldier, scientist
-Animals	Horse, bird, dog
-Nature	Tree, mountain, cloud, river, sun, moon
-Objects	Apple, ball, cup, book, table, chair
-Buildings	House, laboratory, castle, village
-Scientific	Atom, molecule, water droplet, blood cell, microscope
-Effects	Rain, snow, fire, smoke, dust, impact
-
-The numbers are an initial development target, not a technical requirement.
-
-Then every asset gets:
-1. SVG artwork.
-2. Semantic tags and synonyms.
-3. Bounding box and collision geometry.
-4. Attachment anchors.
-5. Support and containment regions.
-6. Depth/layer information.
-This solves a major problem with generic SVG retrieval.
-Famous people
-I would use a hybrid approach.
-
-For famous people: create a small curated collection of original stylized caricatures.
-
-Newton should have recognizable hair, clothing and facial features. Einstein should have his familiar hairstyle and moustache. Marie Curie should have distinct clothing and an appropriate appearance.
-
-For unknown characters: use a procedural character constructor.
-
-For example:
+```
+pick_up(person, apple)
+    → move_to(person, apple)
+    → reach_hand_to(apple)
+    → attach(person.right_hand, apple)
+    → change_posture(person, standing)
+```
+
+The compiler should skip unnecessary movement when the character is already next to the object.
+
+## Priority 2: Everyday and animal activities
+
+Implement second
+
+| Rank | Operation    | What it should do                                     |
+| ---- | ------------ | ----------------------------------------------------- |
+| 11   | `eat`        | Bring food to mouth, bite, chew                       |
+| 12   | `drink`      | Attach vessel to hand, tilt towards mouth             |
+| 13   | `read`       | Hold/open reading material, orient eyes towards it    |
+| 14   | `write_draw` | Hand movement over paper, board or surface            |
+| 15   | `open`       | Move a door, lid or container around its hinge/anchor |
+| 16   | `close`      | Reverse the opening movement                          |
+| 17   | `search`     | Scan a region with gaze and body movement             |
+| 18   | `swim`       | Animate limbs and translate through a water region    |
+| 19   | `fly`        | Airborne movement with wing or body animation         |
+| 20   | `rest`       | Sleep, lie down or wake through a state transition    |
+
+`fly` and `swim` should be locomotion modes, not entirely separate skeletal animation architectures.
+
+A bird, a butterfly and a flying human need different movement profiles, but they can all use the same high-level translation/path interface.
+
+Similarly, `rest` can contain subtypes:
+
+```
 {
-  "character": "person",
-  "attributes": {
-    "hair": "long",
-    "beard": "none",
-    "glasses": true,
-    "clothing": "formal"
+  "op": "rest",
+  "actor": "person_1",
+  "mode": "sleep"
+}
+```
+
+Waking can be represented by changing the rest state to `awake`, followed by a posture transition.
+
+## Priority 3: Composite activities
+
+Implement after the core
+
+| Rank | Operation | What it should do                                             |
+| ---- | --------- | ------------------------------------------------------------- |
+| 21   | `cook`    | Combine ingredients, manipulate cooking tools, wait, serve    |
+| 22   | `build`   | Assemble components through repeated placement and attachment |
+| 23   | `hug`     | Two-character synchronized interaction                        |
+| 24   | `fight`   | Coordinated attack, block, dodge and reaction choreography    |
+| 25   | `break`   | Change an object's state, optionally animate fragmentation    |
+
+These five are particularly important because they expose the limitations of a simple operation list.
+
+They require multiple synchronized actions, object-state changes or interaction-specific constraints.
+
+### Operations I would deliberately postpone
+
+Do not add every conceivable verb immediately.
+
+Some useful candidates for a later release are:
+
+- Rescue
+- Plant
+- Harvest
+- Wash
+- Clean
+- Repair
+- Buy
+- Sell
+- Rescue
+- Celebrate
+
+Many of these can initially reuse the operations above.
+
+For example, planting can be expressed using `dig`-like movement, `pick_up`, placement and a plant-growth world-state transition. You don't need an entirely new skeletal animation system.
+
+# 2. How composite verbs should map to operations
+
+My recommendation is a three-level action architecture.
+
+Level 1: Semantic action
+
+# GIVE
+
+What the teacher said
+
+Level 2: Choreography graph
+
+Approach → Reach → Release → Receive
+
+Which interactions must happen
+
+Level 3: Primitive execution
+
+move_to · attach · detach · change_posture · react
+
+How the engine executes the interaction
+
+The LLM should output semantic actions, not choreographed sequences.
+
+The deterministic compiler should expand those actions using predefined, parameterized choreography graphs.
+
+This is not a story template. It is an action grammar.
+
+## A. Give
+
+Sentence:
+
+"The king gave his sword to the soldier."
+
+Semantic operation:
+
+```
+{
+  "op": "transfer",
+  "actor": "king",
+  "target": "soldier",
+  "object": "sword",
+  "mode": "give"
+}
+```
+
+Execution:
+
+1. Identify which character currently holds the sword.
+2. Ensure both characters can reach each other.
+3. Move the sword-holding hand towards the recipient.
+4. Move the recipient's hand to the sword's grip anchor.
+5. Transfer attachment ownership.
+6. Release the donor's hand.
+7. Show the recipient holding the sword.
+
+The important part is that the sword must never float between the two characters.
+
+Implement transfer as an atomic transaction: if the receiving attachment cannot be established, retain the existing owner rather than silently losing the object.
+
+## B. Chase
+
+Sentence:
+
+"The wolf chased the rabbit."
+
+Do not generate two independent `move_to` operations.
+
+That can make the wolf run towards the rabbit's initial position while the rabbit runs elsewhere.
+
+Instead, use a pursuit controller.
+
+```
+{
+  "op": "pursue",
+  "actor": "wolf",
+  "target": "rabbit",
+  "mode": "chase",
+  "speed": "fast",
+  "maintain_distance": false
+}
+```
+
+The rabbit gets an escape behaviour, either explicitly stated or inferred with lower confidence.
+
+The controller continuously updates the wolf's destination using the rabbit's current position.
+
+The same operation can support:
+
+- Follow: maintain a comfortable distance.
+- Chase: reduce distance.
+- Flee: increase distance from a threat.
+
+The distinction belongs in `mode`, not separate locomotion architectures.
+
+## C. Hug
+
+Sentence:
+
+"The mother hugged her child."
+
+This deserves its own composite choreography.
+
+Execution:
+
+- Both characters turn towards one another.
+- They move into a suitable interaction distance.
+- Their torsos and arms move into a paired pose.
+- The arms establish contact at the appropriate torso anchors.
+- Hold the pose briefly.
+- Release and return to their previous states.
+
+A hug is a synchronized two-character constraint, not simply two independent people moving towards one another.
+
+## D. Fight
+
+Sentence:
+
+"The two warriors fought."
+
+Treat this as a choreographed interaction between two characters.
+
+Possible sequence:
+
+```
+approach
+  ↓
+face_each_other
+  ↓
+attack ↔ block
+  ↓
+dodge ↔ react
+  ↓
+separate
+```
+
+Use alternating action tracks.
+
+One character attacking and the other blocking should happen at compatible times.
+
+Start with non-graphic, exaggerated stick-figure fighting. You do not need realistic combat simulation.
+
+Do not use actual collision forces to determine the entire fight. A deterministic choreography graph will be much easier to control.
+
+## E. Climb
+
+Sentence:
+
+"The boy climbed the tree."
+
+This deserves a specialized movement controller because ordinary walk cycles cannot produce correct climbing.
+
+The character needs:
+
+- Hand contact points along the trunk.
+- Foot contact points.
+- Alternating limb movement.
+- Root translation upward.
+- Body orientation towards the trunk.
+
+A climbable object needs an explicit `climb_surface` with available contact locations.
+
+## F. Cook
+
+Sentence:
+
+"The woman cooked rice in a pot."
+
+Compile the semantic action into a task graph:
+
+1. Move to cooking area.
+2. Identify the pot.
+3. Attach ingredient to hand.
+4. Transfer ingredient into pot.
+5. Hold or move a stirring utensil.
+6. Animate stirring.
+7. Show cooking effects.
+8. Change food state to cooked.
+
+A `cook` graph should accept different ingredients, containers, tools and cooking methods.
+
+You should not need a separate implementation for rice, soup and vegetables.
+
+## G. Build
+
+Sentence:
+
+"The workers built a house."
+
+This is a particularly important composite action because the object itself changes over time.
+
+Use a construction task graph:
+
+1. Create an incomplete construction state.
+2. Select a building component.
+3. Move it to its placement region.
+4. Attach it to the structure's anchor.
+5. Repeat.
+6. Transition the structure to its completed state.
+
+You don't need to animate every brick. A few meaningful components can communicate the construction process.
+
+### My rule for deciding whether a verb deserves a new operation
+
+Ask three questions:
+
+1. Does it require a unique physical constraint?
+2. Does it require coordination between multiple entities?
+3. Does it have a meaningful state transition that other operations cannot express cleanly?
+
+When the answer is yes, give it a semantic composite action and a deterministic choreography implementation.
+
+Otherwise, compose existing operations.
+
+# 3. The 40 props I would prioritize
+
+I would not optimize for the number of SVG files. I would optimize for the number of different story situations each asset enables.
+
+For example, a tree enables:
+
+- Sitting under a tree.
+- Climbing a tree.
+- Hiding behind a tree.
+- Picking fruit.
+- Birds sitting on branches.
+- Cutting down a tree.
+
+One properly authored tree asset provides more value than dozens of unrelated decorative icons.
+
+The following is my proposed priority order.
+
+## Tier 1: Highest-coverage assets
+
+Build these first
+
+| Rank | Asset family         | Essential attachment points / metadata         |
+| ---- | -------------------- | ---------------------------------------------- |
+| 1    | Tree                 | Trunk, ground, branches, canopy, fruit anchors |
+| 2    | House / hut          | Entrance, roof, walls, floor                   |
+| 3    | Table / desk         | Top surface, legs                              |
+| 4    | Chair / stool        | Seat, backrest, ground                         |
+| 5    | Door / gate          | Hinge, handle, opening direction               |
+| 6    | Rock / boulder       | Top surface, sides, collision shape            |
+| 7    | Road / path          | Traversable path, destination points           |
+| 8    | River / pond         | Water region, banks, surface                   |
+| 9    | Mountain / hill      | Slopes, summit, climbable surface              |
+| 10   | Horse                | Saddle, head, reins, body, ground contact      |
+| 11   | Apple / fruit        | Branch attachment, hand grip, collision shape  |
+| 12   | Generic food / bread | Hand grip, mouth interaction                   |
+| 13   | Cooking pot / pan    | Opening, handles, base                         |
+| 14   | Cup / jug / bottle   | Handle, opening, base                          |
+| 15   | Book / scroll        | Left/right holding points, readable surface    |
+| 16   | Paper / letter / map | Corners, holding anchors, writing surface      |
+| 17   | Bag / basket         | Handles, containment region                    |
+| 18   | Rope                 | Endpoints, attachment points, flexible curve   |
+| 19   | Stick / staff        | Grip region, orientation                       |
+| 20   | Hand-tool family     | Hammer, axe, shovel, gripping locations        |
+
+These 20 will support a surprisingly large percentage of ordinary narratives.
+
+## Tier 2: Environmental and domain coverage
+
+Build next
+
+| Rank | Asset family                 | Essential metadata                                                        |
+| ---- | ---------------------------- | ------------------------------------------------------------------------- |
+| 21   | Fire / hearth / stove        | Heat region, fuel point, cooking region                                   |
+| 22   | Bed / mat                    | Lying surface, head position                                              |
+| 23   | Window                       | Frame, opening, wall attachment                                           |
+| 24   | Bridge                       | Traversable surface, entry and exit                                       |
+| 25   | Plant / seed / flower        | Ground anchor, growth states                                              |
+| 26   | Bush / grass                 | Occlusion and concealment regions                                         |
+| 27   | Cloud                        | Position, scale, movement, rain source                                    |
+| 28   | Sun / moon                   | Sky position, lighting contribution                                       |
+| 29   | Bird                         | Feet, wings, beak, flight pivot                                           |
+| 30   | Animal family                | Dog, wolf, lion, deer and similar archetypes                              |
+| 31   | Cart / wagon                 | Axle, wheels, pulling point, passenger region                             |
+| 32   | Boat / raft                  | Passenger region, water contact, direction                                |
+| 33   | Tent                         | Entrance, interior, ground footprint                                      |
+| 34   | Castle / fort / wall         | Entrance, battlements, climbable regions                                  |
+| 35   | Sword / spear                | Grip, tip, orientation                                                    |
+| 36   | Shield                       | Grip, facing, attachment                                                  |
+| 37   | Flag / banner                | Pole anchor, wind deformation                                             |
+| 38   | Crown / throne               | Head attachment, seat anchor                                              |
+| 39   | Well / fountain              | Opening, water source, container region                                   |
+| 40   | Scientific instrument family | Beaker, flask, test tube, microscope, telescope and measuring instruments |
+
+A note about the animal family: don't try to generate an arbitrary animal from generic human body parts. Make a few distinct procedural rigs for quadrupeds, birds and human characters.
+
+The scientific instrument family also deserves its own mini-library eventually. Physics and science storytelling will get significant value from beakers, pulleys, levers, gears and microscopes.
+
+## A crucial addition: environments should not be ordinary props
+
+I would not count the following as individual props:
+
+- Forest
+- Village
+- Laboratory
+- Classroom
+- Palace interior
+- Mountain landscape
+- Battlefield
+- Seashore
+
+These should be generated through an environment grammar.
+
+For example, a forest is not a single background image. It is a collection of spatially arranged trees, bushes, rocks, ground and optional environmental effects.
+
+A village is a collection of houses, pathways, trees and other structures.
+
+That is how you avoid creating a separate template for every story.
+
+# 4. Crowds, weather, indoor scenes and time skips
+
+These are four different problems. I would not solve them using the same scene-graph mechanism.
+
+## A. Crowds: introduce group entities
+
+Do not make the LLM individually control 100 soldiers.
+
+Introduce a `group` entity type.
+
+Example:
+
+```
+{
+  "id": "army_1",
+  "type": "group",
+  "category": "soldiers",
+  "count": "large",
+  "formation": "column",
+  "movement": {
+    "direction": "forward",
+    "mode": "march"
   }
 }
+```
 
+The compiler can represent this as:
 
-This is much more practical than trying to generate a new character illustration for every sentence.
+- A few detailed foreground characters.
+- Several repeated low-detail figures.
+- Background silhouettes extending into the distance.
+- A group-level movement controller.
 
-But be realistic: generic attribute-based faces will not consistently produce recognizable historical people. You need dedicated identity assets for those.
+[Cartoon of Modern Soldiers Marching on Parade or in to War](https://images.openai.com/static-rsc-4/9klsIRx5vX8EQy0htltJ-OlfTarO_Fk21fmbAJTuBbIDA5aXM_pqZzTbm8L0T4s7kGeJcj5JeQZ3Vu5H1wv62HkXWrxdm-UYaADLmyXdU1NcuO6vymbhyblmh22SRpJnf9bG2IOEgzEpatyzmJFmlHbnKT_43RTU-0gmHCxIBSO_zHB7VrJsJMAMaw77htiL?purpose=inline)
 
-5. Expected latency on ordinary school hardware
-There are two separate performance questions.
+[Sketch of many people standing together.](https://images.openai.com/static-rsc-4/0dO7xRMWN-G6OL6A9fEF6wTSXno2c5AG_zppFf1OZ1TsfNLX_u9SPuE8LQHlBmcVzLzEynWjP5uH9n43lgheIQr_s8XiVZ9YDZvqrLNr3nmEJNyPODopJ4WfgXUHP5rGG9fJVgemQi-LT747cxHcwITnkpxiLNT2RsHUAxjB-CMYFkTPHAZ1611f1m9bpxtt?purpose=inline)
 
-A. Can the animation run at 30–60 FPS?
+[Best Guerilla Coloring Pages (Free Printable PDF)](https://images.openai.com/static-rsc-4/vJ-KxD-EVIOdNvdRrassXwtngKfCOxyZjTVptnTaS2BFcIJMsSQnDBcAJm6ccu3IV02StNF3Mci8mIEJ7lYw_R6mEPnv16YlaJHyvoO_39uwdIidy9VrsiPp_TGlIE4Wid0mmpz2Xvs1gAGu_Z7O7Rdmi1WjXSJEneWo2RMMwR4?purpose=inline)
 
-Yes. With a reasonably small 2D scene, cached assets and procedural animation, this is not a particularly difficult computational problem.
+8
 
-B. Can the complete understanding-to-animation pipeline finish in 2–3 seconds?
+I recommend supporting these six formations initially:
 
-This is much more challenging.
+| Formation    | Typical use                 |
+| ------------ | --------------------------- |
+| `line`       | People standing together    |
+| `column`     | Marching army, procession   |
+| `cluster`    | Gathering, crowd            |
+| `semicircle` | Audience around speaker     |
+| `queue`      | Waiting line                |
+| `scattered`  | Battlefield, people running |
 
-Based on the latencies you supplied:
-Operation	Expected time
-Whisper sentence finalization	0.5–1.5 s
-Groq request and response	1–2 s
-JSON validation	1–10 ms
-Asset resolution	1–20 ms
-Layout and constraint solving	1–20 ms
-Initial render/update	10–100 ms
+The group should have:
 
-These are engineering estimates for the local stages, not benchmark results from your implementation.
-Estimated end-to-end delay
-1.5–3.6 s
-Calculated from your supplied Whisper and Groq ranges plus small local processing overhead.
+- A centroid.
+- Bounding region.
+- Formation.
+- Member count or approximate density.
+- Leader or representative.
+- Movement path.
+- Individual variation.
 
-My conclusion
+For visual variation, offset the characters' walking phases and positions slightly.
 
-The 2–3-second target is attainable in favourable conditions, but cannot be promised consistently with this pipeline.
+For a large army, you can use repeated silhouette instances in the background instead of rendering every character as a complete skeleton.
 
-There are several practical optimizations.
+Important: Individual interactions within a crowd should be reserved for explicitly important characters. Otherwise the system will become unnecessarily expensive.
 
-1. Do not wait for a perfect sentence-final transcript.
+## B. Weather: make it a global environment state
 
-Use partial Whisper transcripts.
+Weather should not require individual LLM operations for every raindrop.
 
-As soon as the emerging sentence contains enough information to identify an event, start a provisional interpretation. Update the scene once the final transcription arrives.
+Represent the weather in the world state:
 
-For example, when the teacher says:
+```
+{
+  "environment": {
+    "weather": {
+      "type": "snow",
+      "intensity": 0.8,
+      "wind_direction": "left",
+      "wind_strength": 0.4
+    }
+  }
+}
+```
 
-"Newton was sitting..."
+The renderer handles the rest.
 
-You can identify the character and sitting action before receiving the remainder.
+[A cheerful stick figure holding a small white flag under falling rain - MusesAI.io](https://images.openai.com/static-rsc-4/wM5KR5Fx5ZIUyUD_z3QlUuFnNGqMGMzrl504ATSLjwUAxX754JWWn_UbWIzCOkE2gkNUOJMmY1lTVIi8INYg5vhAhRQXmBup9NKqxQzRg4sbjY7qr1n2Bx9HBPgnDmad1RVk5-M03otdc3JuLiewJ0_hw-Ddmhiq9eH5d7OL-z0?purpose=inline)
 
-When "...under an apple tree" arrives, add the missing object and spatial constraint.
+Rain
 
-This is much better than waiting for every sentence to finish before beginning all processing.
+Particle system, downward trajectories, puddles
 
-2. Keep the LLM response small.
+[Vector Cartoon Illustration of Frustrated Man Looking at Mocking Snowman Pointing at Him](https://images.openai.com/static-rsc-4/-X0AtO7Gb4bKJ_-fbDaibiPmHqI3HkGwaOvLw808t-7_mR1Xf57JiPdxKe61g2kRMFZyeKROfv2J0rul7uVD0OY5cvwoFrSCQxeezUzudL66HA6SzgshNpiK5pFw8UQJvGOQ4mF0lFbSzufs-bKlUPaQ9t-8OS9KOOAu7zP1TnXiH8Gw75GnQu9L2LnlXNTQ?purpose=inline)
 
-You do not need several thousand tokens per line.
+Snow
 
-A compact event delta with a few entities and relationships should be enough. The previous scene state can be summarized and supplied as context.
+Snow particles, ground accumulation
 
-3. Preload your asset library.
+[Windy day tree with leaves blowing simple black – Royalty-Free Vector | VectorStock](https://images.openai.com/static-rsc-4/Q66qPukdKbEZ3zmBihx5ErRkXnhCiX8rJjLow6WYboiuvQs69ToqCRyHbTYJNTU3XiyBmYnMsLzXKr3fgLVYwW3rxOvm4cOQkOAKpmMltHqk5LOefD3_FRKIcWkvesw_fGQNPa65kDqSrnBS5KiJJPz_W3EUiTvrUp86ZJYAvls?purpose=inline)
 
-No asset search over the internet should occur during classroom operation.
+Wind
 
-Use a local indexed registry with synonyms and categories.
+Wind vector applied to trees, flags and particles
 
-4. Keep animation independent of the LLM.
+[mountains silhouette foggy illustration background.eps](https://images.openai.com/static-rsc-4/r9rKcde4AodBr-AfLKaIkPAw_fp161p3-2DCgxLE3ZDCTpk2iYtXduWcQ5wVDBdd3YM-n3-993d4MYh-A2GgK9_sd-4KhXEo5kKlRbkXvd991qiJG3J40MBIrkOcHMxeK0fj1cIH1GfI3ddxxBT7mVdKJOwZarNPGuI3skZpF4glOwf121vQARgUOkdfZZFv?purpose=inline)
 
-The animation must continue while the next sentence is being understood.
+Fog
 
-Do not stop the entire scene every time an API call is pending.
+Layer opacity and depth reduction
 
-5. Build a fallback.
+Initially support:
 
-Groq has model-specific request and token limits, and the applicable limits can depend on the account's plan. A free service is not a hard real-time infrastructure guarantee. 
-GroqDocs+1
+1. Clear.
+2. Rain.
+3. Snow.
+4. Wind.
+5. Fog.
+6. Storm.
 
+The intensity and direction should be numeric or enum parameters, not new operations.
 
-Your renderer should continue working when an LLM request fails, times out or is rate-limited.
-Which Groq model?
-I would start with openai/gpt-oss-20b.
+For example, `snow` and `heavy_snow` should not require different renderers.
 
-Current Groq documentation lists GPT-OSS 20B among models supporting strict structured outputs. With strict JSON-schema mode, output schema adherence is guaranteed. 
-GroqDocs+1
+## C. Indoor scenes: create a generic room-building system
 
+This is more important than it initially appears.
 
-There is a catch: Groq documents that structured-output mode does not support streaming. 
-GroqDocs
+Many ordinary stories happen inside a house, palace, laboratory, classroom, shop or shed.
 
+I would create a general 2D room container.
 
-For the first prototype, I would favour strict schema validation over token streaming. The JSON response should be small enough that waiting for its completion is reasonable.
+[empty room with french window and furniture](https://images.openai.com/static-rsc-4/E_i8_zKvZtg3awrQ1K6f93cjBPsmBxU75dJmvRYVolp0e4GFV1j0qhIfSpqjOvOLBxi6WufWKimydRcWbsXcFCCTjYE7G1ttJZE1q_V-2qs-EA0Unv-zaNTYd4hifYp1_yY9rWcLMuxY1Aorn4PeLIV3yZs3ksFr0Tp5iujgUIB_MHBu3UTn3R2TQlbFjgXc?purpose=inline)
 
-For a later latency experiment, compare strict structured output against JSON-object mode with your own validator.
+The room has:
 
-6. What quality should you honestly expect?
-I would distinguish three levels.
+- A floor plane.
+- Back wall.
+- Optional side wall.
+- Door and window openings.
+- Wall attachment points.
+- Furniture placement regions.
+- Lighting state.
+- Foreground and background layers.
 
-
-
-
-
-
-
-
-
-Level 1: Procedural stick animation
-Achievable
-Moving characters, proper positioning, interactions, basic expressions and object movement.
-
-This is a realistic first product.
-
-
-
-
-
-
-
-
-
-
-
-
-Level 2: Designed cartoon explainer
-Achievable with significant asset work
-Consistent character identities, detailed backgrounds, character expressions, multiple motion combinations and richer environments.
-
-This requires substantial offline illustration and rigging.
-
-
-
-
-
-
-
-
-
-
-
-
-Level 3: Hand-animated YouTube quality
-Not realistic under current constraints
-Detailed acting, sophisticated timing, expressive character animation, nuanced interaction, dynamic composition and artistic direction.
-
-This is the product of significant human animation work or much more capable generative systems.
-
-
-
-My expected result would be between Level 1 and the beginning of Level 2.
-
-Importantly, a well-designed stick-figure engine can still make a compelling educational experience. Correct interaction and motion are more valuable than detailed characters that interact incorrectly.
-
-I would rather see Newton sitting correctly beneath a simple, attractive tree than a beautifully illustrated Newton floating beside a realistic tree.
-
-7. Judging your seven example sentences
-Here is how I would assess the actual engineering difficulty.
-Sentence	Feasibility	Main challenge
-Newton was sitting under an apple tree.	High	Sitting pose, ground placement, tree canopy
-An apple fell on his head.	High	Continuity, gravity, head collision, reaction
-Napoleon's army crossed the Alps in winter.	Medium	Multiple characters, terrain, crowd movement
-Marie Curie worked day and night in a cold shed.	Medium	Work activity, environment, day/night transitions
-The drop of water rises into the clouds.	High	Non-human animation, evaporation, trajectory
-The boy rode his horse to the village.	High with authored horse asset	Rider-to-saddle attachment, horse gait
-Einstein said to his friend, time is relative.	High with identity assets	Speaker identification, dialogue and gaze
-
-Some important qualifications:
-
-Newton: This is one of your best initial test cases. You need a tree with semantic regions, a person rig and a sitting animation.
-
-Apple: This is an excellent test of state continuity. The apple should exist in the first scene and become the same object in the second. An isolated sentence is easier to represent, but continuing the previous scene is the real test.
-
-Napoleon: This is not simply a question of generating an army. You need a crowd system. Do not create 100 independently simulated, LLM-controlled people. Generate perhaps 8–12 visible soldier figures, with instanced or grouped movement representing a larger army. Use a mountain environment, snow effects and a left-to-right crossing path.
-
-Marie Curie: The phrase "day and night" is a temporal instruction. The environment can transition from daylight to moonlight while the character continues working. The shed, clothing, desk and laboratory objects should be asset selections. Cold could be communicated through snow outside, shivering and visible breath.
-
-Water drop: This is a useful test because your engine must support non-humanoid agents. A droplet needs a different rig from a human. Its rising movement can be procedural, with small vapour particles and clouds.
-
-Horse: This is perhaps the most important relational test. The rider must remain attached to the saddle while the horse moves. The two must animate as a coordinated system.
-
-Einstein: Dialogue should be assigned to the character, not automatically to the teacher. The character should face his friend, and the speech bubble should originate from the correct speaker. This also tests quotation and discourse understanding.
-
-I would make the horse and apple examples mandatory acceptance tests. They directly expose the failure in your previous implementation.
-
-8. The smallest proof: a 1–2 day engineering experiment
-Do not build a complete asset library. Do not train a model. Do not work on sophisticated characters.
-
-Build a miniature version of the proposed engine.
-Day 1: Scene understanding and relationships
-Implement:
-- A minimal Groq integration.
-- A structured scene graph.
-- Entity IDs and persistent scene state.
-- A small vocabulary of relationships.
-- A simple SVG character.
-- Four props: tree, apple, horse and village.
-Use a limited schema and test approximately 20 sentences with different wording.
+Objects receive semantic placement constraints.
 
 Examples:
-- A man sits beneath a tree.
-- A woman stands beside a table.
-- A boy sits on a horse.
-- A bird flies above a mountain.
-- A man holds an apple in his right hand.
-- An apple falls onto a person's head.
-The critical question:
 
-Can the LLM consistently identify the correct relationships without you writing regex rules for every sentence?
-Day 2: Actual animated interaction
-Implement only these capabilities:
-1. Walking and sitting.
-2. Under and on relationships.
-3. Holding with hand IK.
-4. Riding with saddle attachment.
-5. Gravity and collision for the apple.
-Then run:
+```
+book → on(table)
+person → sitting_on(chair)
+painting → attached_to(wall)
+cup → on(table)
+person → in(room)
+```
 
-Test A
+The compiler positions the furniture first and then places the characters.
 
-"Newton was sitting under an apple tree."
+Do not let the LLM assign screen coordinates.
 
-Show Newton sitting correctly under the tree, with an apple attached to a branch.
+The LLM should say:
 
-Test B
+```
+{
+  "room_type": "laboratory",
+  "objects": ["table", "microscope", "chair"],
+  "relations": [
+    ["microscope", "on", "table"],
+    ["scientist", "sitting_on", "chair"]
+  ]
+}
+```
 
-"An apple fell on his head."
+The room builder handles layout.
 
-The existing apple detaches, falls, collides with Newton's head, and Newton reacts.
+A laboratory, a kitchen and a bedroom can all use the same room engine with different objects and environmental metadata.
 
-Test C
+## D. Time skips: introduce a world-transition event
 
-"The boy rode his horse to the village."
+This deserves a separate concept.
 
-The rider stays on the horse while both move together towards the village.
-Acceptance criteria
-Test	Target
-Valid JSON structure	100% with strict schema
-Correct supported relationships	At least 16/20 manually evaluated sentences
-Continuity	Same entities retained across consecutive lines
-Rider attachment	No visible separation during movement
-Apple collision	Actual contact with head
-Processing delay	Measure median and p90, aiming for 3 seconds or less after final transcript availability
-Animation	Stable 30 FPS on target laptop
+Consider:
 
-These are proposed go/no-go targets, not predicted results.
+"The farmer planted a seed. Several months later, it had grown into a tree."
 
-The 20-sentence evaluation should use variations you have not directly written into the prompt. Otherwise, you risk testing memorized examples instead of genuine generalization.
-What results would make me continue?
-I would continue if:
-- The LLM identifies relations reasonably well.
-- The solver positions objects correctly.
-- The character rig can achieve natural-looking basic interactions.
-- Consecutive events preserve scene state.
-- Rendering remains responsive.
-I would stop and reconsider the approach if the model consistently produces wrong relationships even with explicit structured output, or if the engine requires a custom rendering rule for practically every sentence.
+You should not animate several months in real time.
 
-The experiment should tell you whether you have an extensible scene engine or merely another collection of special cases.
+Instead:
 
-9. Existing open-source projects worth reusing
-I found two particularly relevant projects.
-1. Stick: probably the closest match to your required architecture
-Study this first
-hmelberg/stick on GitHubThis is unusually relevant to your idea.
+1. The farmer plants the seed.
+2. The scene holds briefly.
+3. A transition begins.
+4. A caption appears: "Several months later".
+5. The seed changes into a growing plant.
+6. The environment changes if appropriate.
 
-It describes a scene using JSON and renders an animated SVG stick-figure cartoon.
+[Plant life cycle Vector Images & Graphics for Commercial Use | VectorStock](https://images.openai.com/static-rsc-4/4wJfAeHyv2za7Dx3LBPoN_Br5UnFglJKFktShqktQ1f2gY7BS7iGqSZvYeRuNMjdh3d2ZsfdDcn9GFkCugX9V-32GrmkwWGrQjoR0Xy0878T81gWQazWczr-4PfetbotMzN9-zz6zNXoi6bFJGryexVok0WOT9FI_yaO8wp8e0g?purpose=inline)
 
-Its implementation already includes:
-- Character skeleton mathematics.
-- Procedural walking gait.
-- Breathing and blinking.
-- Timeline-based animation.
-- Two-bone inverse kinematics.
-- Pinned feet and reaching hands.
-- Scenery and scene anchors.
-- Three visual styles: sketch, ink and toon.
-Its entire animation is deterministic as a function of time, which supports replay and timeline control. 
-GitHub+1
+[vectorstock.com](https://www.vectorstock.com/royalty-free-vectors/plant-life-cycle-vectors?utm_source=chatgpt.com)
 
+I would introduce a world-level event such as:
 
-Why I like it for your project:
+```
+{
+  "op": "time_jump",
+  "duration": "several_months",
+  "transition": "dissolve"
+}
+```
 
-You do not have to start character animation from zero.
+This is not a character action. It changes the temporal state of the world.
 
-You can study its JSON animation language, figure implementation, constraint system and scene anchor resolution.
+Support:
 
-However, an important licensing caveat: I did not find a LICENSE file in its visible repository root. Do not copy or distribute its code in your product until the author clarifies the reuse permission. It also appears to be a small experimental repository rather than a mature production framework. 
-GitHub+1
+| Temporal event       | Visual treatment                                 |
+| -------------------- | ------------------------------------------------ |
+| Later that day       | Lighting transition                              |
+| At night             | Sun to moon, darkness                            |
+| Next morning         | Dawn transition                                  |
+| Several months later | Calendar/season transition                       |
+| Many years later     | Time card, aged characters or changed structures |
+| Long ago             | Historical atmosphere and time caption           |
 
-2. Synctoon: useful for studying text-driven animation
-Automate-Animation/synctoon on GitHubSynctoon converts scripts and audio into a 2D cut-out animation.
+For a year-long time skip, you can use a 0.5–1-second transition. The simulation time is compressed, while the resulting world state is updated.
 
-It uses an LLM to determine:
-- Head angle
-- Eye direction
-- Facial emotion
-- Character gestures
-- Camera zoom
-- Background selection
-Its decisions are represented as editable per-frame data. It also supports OpenAI-compatible endpoints, including local Ollama. 
-GitHub+2
+Keep temporal state separate from actual animation time. Otherwise you will end up with confusing timelines.
 
+# 5. How to measure coverage fairly on unseen stories
 
-However, there are important differences:
-Your project	Synctoon
-Live classroom scenes	Script-to-video
-Browser rendering	Python frame rendering
-Persistent spatial scene graph	Per-frame animation decisions
-Dynamic object relationships	Mainly cut-out character layers
-Interactive physics	Precomputed frames
-30–60 FPS live page	24 FPS output video
+This is probably the most important part of the development process.
 
-It uses PIL, OpenCV and FFmpeg to render a video. Its default pipeline involves multiple LLM calls and external voice/alignment services, so it is not a ready-made solution for your latency requirements. It is GPL-3.0 licensed, which you must consider before incorporating or distributing modified code. 
-GitHub+1
+There is a serious risk of building an impressive demonstration that succeeds on 15 prepared stories but fails on ordinary classroom speech.
 
-What about combining both?
-That would be my starting investigation:
-- Study Stick for its character rig, IK and time-based animation system.
-- Study Synctoon for its text interpretation and animation-cue pipeline.
-- Use your own Groq-backed structured scene graph.
-- Build your own persistent scene-state and spatial constraint system.
-- Implement the renderer with PixiJS or a custom SVG engine.
-I did not find an established open-source project that already combines all of these into a reliable, live, open-ended classroom scene generator.
+You need a benchmark that measures generalization, not memorization.
 
-10. My final engineering recommendation
-I would make one major architectural decision before investing weeks:
+## A. Build a story benchmark
 
-Do not make this a text-to-animation-generation project. Make it a language-driven procedural scene-composition engine.
+For your first serious evaluation, I recommend:
 
-The distinction is fundamental.
-Text-to-animation approach	Procedural scene-composition approach
-Generates movement from text	Extracts events and relationships
-Relies on learned motion patterns	Uses deterministic movement primitives
-May generate visually plausible but incorrect interactions	Explicitly solves interaction constraints
-Model inference in the critical path	Only language understanding requires an LLM
-Harder to guarantee repeatability	Deterministic and debuggable
+# 60 stories
 
-What is proven today versus what remains uncertain?
-Capability	Engineering status
-2D browser animation at 30–60 FPS	Proven
-Procedural stick-character animation	Proven
-Basic inverse kinematics	Proven
-Gravity and collision simulation	Proven
-LLM-generated structured JSON	Proven
-Composing new scenes from supported objects and actions	Demonstrable today
-Robust language-to-spatial-relation understanding	Needs evaluation
-Correct interactions across arbitrary unseen stories	Research/development challenge
-Automatically creating visually appropriate assets for any noun	Not solved under your constraints
-Human-animator-quality arbitrary character acting	Not realistic
+Minimum proposed held-out evaluation set
 
-The development order I would choose
-1. Build the spatial relationship engine.
-   
-   Prove under, on, holding, riding, inside and falling onto.
-2. Build the reusable character rig.
-   
-   Start with one generic character. Implement IK, sitting, walking, running, holding and reactions.
-3. Build the persistent scene graph.
-   
-   Handle multiple sentences, pronouns, object identity and event continuity.
-4. Build the curated asset system.
-   
-   Add trees, animals, furniture, landscapes, scientific objects and identity-specific characters.
-5. Integrate live speech and Groq.
-   
-   Optimize latency, partial transcription, JSON validation and failure handling.
-6. Improve the visual language.
-   
-   Add character expressions, richer illustrations, environmental effects, camera movements and depth.
-My go/no-go decision
-GO
- for a constrained, compositional, real-time 2D scene engine.
+# 20
 
-NO-GO
- for the expectation that any arbitrary spoken story can become a fully animated, professionally illustrated cartoon in 2–3 seconds without a substantial authored asset and motion vocabulary.
+Moral / folk
 
-I would not invest weeks in MoMask, T2M-GPT or diffusion-based animation for this version.
+# 20
 
-I would invest the first two days in proving three things:
-1. Language understanding produces correct relationships.
-2. Your constraint solver actually enforces those relationships.
-3. The same character and objects survive across multiple spoken sentences.
-One particularly important point: Your previous implementation failed because nouns were recognised but interactions were not represented correctly. Do not repeat that experiment with better-looking characters. The next prototype must prove spatial correctness before visual quality.
+History
 
-That is the engineering risk worth resolving first.
+# 20
+
+Science
+
+Target approximately 600–800 annotated event clauses across the stories.
+
+Examples of stories to include:
+
+Moral and folk stories: The thirsty crow, the lion and the mouse, the tortoise and the hare, the honest woodcutter, unfamiliar folk tales.
+
+History: Newton's apple anecdote, Napoleon crossing the Alps, historical journeys, battles, discoveries and meetings.
+
+Science: Water cycle, discovery anecdotes, blood circulation, planetary movement, experiments and scientific inventions.
+
+Do not make the test dataset consist only of famous stories.
+
+Include original stories written by humans, stories paraphrased in unfamiliar language and combinations of familiar actions with unfamiliar objects.
+
+### Dataset split
+
+Keep three distinct sets:
+
+| Set         | Purpose                                |
+| ----------- | -------------------------------------- |
+| Development | Tune the schema and compiler           |
+| Validation  | Find regressions during implementation |
+| Test        | Unseen stories, never used for tuning  |
+
+Split by complete story, not individual sentences.
+
+Otherwise, sentences from the same story can leak into both development and test sets.
+
+Also separate:
+
+- Ordinary combinations of known actions and objects.
+- Unseen combinations of known actions and objects.
+- Unfamiliar nouns and synonyms.
+- Complex spatial relationships.
+- Multi-sentence pronoun references.
+- Ambiguous and metaphorical language.
+
+I would deliberately include some sentences that the engine cannot fully represent. A system should not be rewarded for pretending to understand something it cannot animate.
+
+## B. Evaluate atomic events, not just sentences
+
+Consider:
+
+"The king entered the castle, sat on his throne and gave his sword to the soldier."
+
+This is one sentence but contains multiple events:
+
+1. King enters castle.
+2. King moves into throne area.
+3. King sits on throne.
+4. King transfers sword to soldier.
+
+Evaluate each independently.
+
+For each atomic event, assign:
+
+| Score | Meaning                                                    |
+| ----- | ---------------------------------------------------------- |
+| 1.0   | Faithfully animated                                        |
+| 0.5   | Partially represented, with the important meaning retained |
+| 0.0   | Not animated or represented incorrectly                    |
+
+A caption or labelled unknown-object box should count as a fallback, not a successful animation.
+
+Track fallback separately so you know whether the failure was language understanding, asset retrieval or animation execution.
+
+## C. Measure five separate dimensions
+
+Do not report only one accuracy number.
+
+1\. Semantic event coverage
+
+What percentage of the story's meaningful events can your engine animate?
+
+Target: ≥80% weighted event coverage.
+
+2\. Spatial relationship accuracy
+
+Does the character actually sit on the chair, ride the horse, hold the object and stand beneath the tree?
+
+Target: ≥90% on supported relationships.
+
+3\. Narrative continuity
+
+Are pronouns resolved correctly? Are objects preserved across sentences? Do characters maintain their identities?
+
+Target: ≥90% correct identity and state continuity on supported cases.
+
+4\. Visual faithfulness
+
+Does the animation communicate what actually happened?
+
+Use independent human evaluators to score the rendered clips.
+
+Target: ≥80% of tested lines rated at least 4/5 for faithfulness.
+
+5\. Real-time performance
+
+Measure the time from the end of the teacher's utterance to the first stable, meaningful animation.
+
+Target: p95 latency ≤3 seconds, with at least 30 FPS on supported hardware.
+
+Do not let a good average hide a weak genre. Report the metrics separately for moral/folk, history and science.
+
+Also report results separately for familiar and unfamiliar action-object combinations.
+
+## D. What should count as success?
+
+My proposed release gates:
+
+| Measurement                      | Minimum for an MVP  | Strong result |
+| -------------------------------- | ------------------- | ------------- |
+| Visually faithful event coverage | 75%                 | 85%+          |
+| Supported relation correctness   | 90%                 | 95%+          |
+| Identity/state continuity        | 90%                 | 95%+          |
+| Human-rated visual faithfulness  | 4/5 on 80% of lines | 4/5 on 90%    |
+| p95 end-to-end latency           | ≤3 seconds          | ≤2 seconds    |
+| Minimum rendering performance    | 30 FPS              | 60 FPS        |
+
+These are proposed engineering acceptance criteria, not established industry benchmarks.
+
+I would add one more rule:
+
+No individual genre should fall below 65% faithful event coverage, even if the overall score is high.
+
+You do not want a system that works wonderfully for folk stories but cannot visualize scientific explanations.
+
+### Separate the failure types
+
+For each failed event, record one of these:
+
+```
+ASR_FAILURE
+LLM_SEMANTIC_FAILURE
+COREFERENCE_FAILURE
+UNKNOWN_ACTION
+UNKNOWN_ASSET
+RELATION_FAILURE
+LAYOUT_FAILURE
+IK_FAILURE
+MOTION_FAILURE
+RENDER_FAILURE
+LATENCY_FAILURE
+```
+
+This is important because otherwise you'll spend time improving the LLM when the real failure is an incorrect attachment anchor.
+
+# 6. One additional architectural recommendation: add a semantic affordance registry
+
+Your authored attachment-point idea is excellent. I would expand it into a broader concept called an affordance registry.
+
+An affordance describes what an object permits another object or character to do.
+
+For example:
+
+[Classic wooden chair side view vector illustration on white background](https://images.openai.com/static-rsc-4/3T-2bq9GuF9oCmE_rx9m4U55-VPE90NFw4QE2vc01Mxx4OBSva0GdrILQ5x1aEiBLMfS7Yti3KL05LFP5G0fEotPys8XvDcnD54d_PLOY3L3UVe2gZEEOz0NxO9-XL6gSaE8aj7tQNu9o92QBasb8YusXe_gxtzsaQjmy5tglgw4BGqKn-GP34NagcM3iJCb?purpose=inline)
+
+Chair
+
+Can support sitting
+
+seat_anchor, backrest, ground_anchor
+
+[illustration of apple tree with good quality and design.](https://images.openai.com/static-rsc-4/YnobhSI25cRlu42CMuytyunlt5Jre3RLXnwQsQhvkIOozJUzQVZe1CtE-IHDzASFBgooUEDGTu1fp-eQaD9Fjt79GaQrIab9X5zKrKNNqLnKy5eo61mup52k_HM4lSQHfXkRXan17xHcXwT0q7fQu88EOxSeDkq8Pl6KW4StXRvRfoQMdMNP_pH8PJh56utI?purpose=inline)
+
+Apple tree
+
+Can support climbing
+
+branch_anchors, climb_surface, ground_anchor, fruit_anchors
+
+[2d cartoon illustration of horse](https://images.openai.com/static-rsc-4/e_sx4q75AQfl4HUxH6JWm5npP0qm_EPAfvyrHVap55T1Uu-iY_WRxOJkc_SV4p_9jf1FBaFhGCgiWQdSQ-t-MIYBulTFhdxN1IEkUaYv_XEr9pnSjujquxKHn5p2P6jsmmY2QyM3sD1XBwO6DzXfbIlNh2USMNMRBNyabJ5W0k_NZpoZoprhtu9onhX88OoR?purpose=inline)
+
+Horse
+
+Can support riding
+
+saddle_anchor, reins_anchor, ground_anchor
+
+[Table vector on white background. Wood Table.](https://images.openai.com/static-rsc-4/vjV_hHDVpM0-xi9QV-LwLLIY1qPXFZdD0qNOOAi3X2A1WuF3CANIqvVMGLGstNoHOg-apnRSpVDtmvluG74ZyXUDM_tKFrzWcawwRy9V4quKz5BE2Q0hsZDzXnjMrVjD141aL34PE_Zp_PCSw7TKng3zuHEzUMHLkZuULxZFgaTXm0k5ftTjhq4tfLkB1RdG?purpose=inline)
+
+Table
+
+Can support object placement
+
+top_surface, edge_anchors, leg_geometry
+
+The registry should describe both what an object can do and what can be done to it.
+
+For instance:
+
+```
+{
+  "asset": "chair",
+  "affordances": [
+    "supports_sitting",
+    "supports_object_placement"
+  ],
+  "anchors": {
+    "seat": [0.5, 0.48],
+    "ground": [0.5, 0.95],
+    "backrest": [0.5, 0.18]
+  },
+  "constraints": {
+    "supports_sitting": {
+      "actor_anchor": "pelvis",
+      "target_anchor": "seat"
+    }
+  }
+}
+```
+
+The actual coordinates should come from your authored asset metadata.
+
+This solves a problem that will otherwise appear repeatedly: a syntactically valid scene graph can describe a physically impossible interaction.
+
+For example, an LLM might attempt to make a character ride a table. Your validator should reject the interaction because the table does not expose a riding affordance.
+
+The engine should distinguish:
+
+- Valid and executable.
+- Semantically understood but unsupported.
+- Physically invalid.
+- Missing asset.
+
+That is much better than blindly executing every JSON operation.
+
+# 7. Final recommendation: what I would actually implement
+
+I would prioritize the engineering work as follows:
+
+| Phase | What to build                             | Exit condition                                                           |
+| ----- | ----------------------------------------- | ------------------------------------------------------------------------ |
+| 1     | 25 additional semantic operations         | Every operation has a defined schema and expected effects                |
+| 2     | Action choreography compiler              | Give, chase, hug, climb, cook and build work without story-specific code |
+| 3     | First 20 prop families                    | All essential anchors and affordances work                               |
+| 4     | Persistent environment and group entities | Indoor, outdoor and crowd scenes work                                    |
+| 5     | Weather and time transitions              | Global world-state changes work                                          |
+| 6     | Full 40-family asset library              | Core story domains are represented                                       |
+| 7     | Unseen-story benchmark                    | Meets the MVP release gates                                              |
+
+One implementation detail I would strongly enforce: every operation needs declared preconditions, effects, duration and failure behaviour.
+
+For example:
+
+| Field              | `transfer`                                 |
+| ------------------ | ------------------------------------------ |
+| Preconditions      | Donor holds object; recipient is reachable |
+| Initial state      | Object attached to donor                   |
+| Intermediate state | Both hands reach the object                |
+| Final state        | Object attached to recipient               |
+| Failure            | Preserve donor attachment                  |
+| Animation          | Approach, reach, handoff, release          |
+
+This will make the engine debuggable and deterministic.
+
+## My final verdict
+
+I think the most promising part of your architecture is not the stick figure, the Groq model or even the SVG library.
+
+It is the combination of:
+
+A persistent world + typed actions + semantic affordances + deterministic choreography.
+
+That is the foundation of a genuinely compositional animation engine.
+
+And I would keep one principle above everything else:
+
+> An animation that correctly represents a simple event is more valuable than a sophisticated animation that represents the wrong event.
+
+For the first version, I would target 80% faithful coverage of ordinary, supported classroom stories, not an unrealistic promise to animate every possible sentence.
+
+Build the language of interactions first. The visual world can grow on top of it.
