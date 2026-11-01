@@ -1,0 +1,36 @@
+{
+ "id": "m5_rain",
+ "title": "M5: rain at 4 m/s, you walk at 3 m/s",
+ "about": "v_rel = √(4² + 3²) = 5 m/s, tan θ = 3/4: θ = 36.87°",
+ "lines": [
+  {
+   "say": "Imagine you are walking in the rain.",
+   "expect": {
+    "symbols": [
+     ":v_rel",
+     ":θ"
+    ]
+   }
+  },
+  {
+   "say": "The rain falls vertically at 4 metres per second.",
+   "expect": {
+    "qty": {
+     "rain:v": 4.0
+    }
+   }
+  },
+  {
+   "say": "You walk at 3 metres per second.",
+   "expect": {
+    "qty": {
+     "you:v": 3.0
+    },
+    "values": {
+     ":v_rel": 5.0,
+     ":θ": 36.86989764584402
+    }
+   }
+  }
+ ]
+}

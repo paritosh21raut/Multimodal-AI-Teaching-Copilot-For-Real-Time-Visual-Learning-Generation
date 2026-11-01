@@ -109,7 +109,9 @@ def check_given(op: O.Given, lines: list[str]) -> str:
 
 
 _QTY_ON = {"m": ("block", "mass"), "F": ("block", "mass"), "mu": ("block", "mass"), "mu_s": ("block", "mass"),
-           "mu_k": ("block", "mass"), "theta": ("incline",), "k": ("spring",)}
+           "mu_k": ("block", "mass"), "theta": ("incline", "ball"), "k": ("spring",),
+           "v": ("ball", "car", "boat", "man", "river", "rain"), "h": ("ball",), "t": ("ball", "car", "boat", "man"),
+           "a": ("car", "ball", "boat", "man"), "r": ("ball", "car"), "d": ("car", "boat", "man", "river", "ball")}  # M5
 
 
 def check_qty(op: O.Qty, g: Graph, lines: list[str]) -> str:
@@ -124,9 +126,12 @@ def check_qty(op: O.Qty, g: Graph, lines: list[str]) -> str:
         return f"{op.sym} is kept in {O.QSYMS[op.sym] or 'no unit'}, not {op.u!r}"
     if op.dir not in O.DIRS or op.dir and op.sym != "F":
         return f"bad direction {op.dir!r}"
-    if not math.isfinite(op.v) or op.v < 0 or op.sym.startswith("mu") and op.v > 2:
+    if not math.isfinite(op.v) or op.v < 0 or op.sym.startswith("mu") and op.v > 2 \
+            or op.sym in ("h", "r", "d") and op.v <= 0:  # M5 review: a zero height / radius / width moves nothing
         return f"{op.v} is not a {op.sym}"
-    if op.sym == "theta" and not 3 <= op.v <= 75:  # the slope the layout can draw (layout.theta); else it would
+    if op.sym == "theta" and g.parts[op.on].kind == "ball" and not 0 <= op.v <= 90:
+        return f"a launch angle of {op.v:g}° is not drawn (0–90°)"
+    if op.sym == "theta" and g.parts[op.on].kind == "incline" and not 3 <= op.v <= 75:  # the slope the layout can draw (layout.theta); else it would
         return f"an incline of {op.v:g}° is not drawn (3–75°)"  # show 30° while the solver used the said angle
     q = _clean(op.q)
     rx = re.compile(r"(?<![\w.])" + re.escape(q) + r"(?![\w])", re.IGNORECASE) if q else None

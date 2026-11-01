@@ -65,6 +65,9 @@ class Results:
     forces: list[Force] = field(default_factory=list)
     motions: list[Motion] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)   # "slides", "sticks", what is missing (shown as words)
+    paths: list = field(default_factory=list)        # M5 motion: kinematics.Path (sampled world positions)
+    vectors: list = field(default_factory=list)      # M5 motion: kinematics.Vec (velocity arrows)
+    extra: dict = field(default_factory=dict)        # M5 motion: display facts (the umbrella tilt, a river's width)
 
 
 class Solver(Protocol):
@@ -77,7 +80,8 @@ class Solver(Protocol):
 
 def registry() -> list[Solver]:
     from copilot.diagram.solvers.contact import Contact
-    return [Contact()]
+    from copilot.diagram.solvers.kinematics import Kinematics
+    return [Contact(), Kinematics()]
 
 
 def run(g: Graph) -> Optional[Results]:

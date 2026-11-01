@@ -40,9 +40,17 @@ def test_concept_cues_are_diagram_cues_even_with_our_and_you(line):
     assert cue(line) == "diagram"
 
 
-@pytest.mark.parametrize("line", S_ROWS)
+MOTION_ROWS = ["Imagine you are throwing a ball at 30 m/s at 60 degrees."]  # F-019 M5: S6 is the motion diagram now
+
+
+@pytest.mark.parametrize("line", [r for r in S_ROWS if r not in MOTION_ROWS])
 def test_gate_s_rows_are_never_diagrams(line):
     assert route(line) is None, line
+
+
+@pytest.mark.parametrize("line", MOTION_ROWS)
+def test_gate_s6_throw_is_the_motion_diagram(line):
+    assert route(line) == "diagram", line
 
 
 @pytest.mark.parametrize("line", ["Imagine you are studying.", "Thank you.", "So what is the answer to question three?",
@@ -111,7 +119,7 @@ async def test_test35_five_concept_topics_give_five_diagrams_with_no_people():
     assert not bad, "\n".join(bad)
     dia = [s for s in stage_slides(deck) if block(s).mode == "diagram"]
     assert [s.title for s in dia] == ["Box on an inclined plane", "Two circles C1 and C2", "Solar system",
-                                      "HCl in a beaker", "Atom"], [s.title for s in dia]
+                                      "HCl in a beaker", "Throwing a ball", "Atom"], [s.title for s in dia]  # M5: S6
     for s in dia:
         b = block(s)
         assert b.diagram["parts"] and not b.patch.get("entities"), s.title  # 0 people / stage things on a diagram

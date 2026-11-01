@@ -270,7 +270,7 @@ async def test_seen_from_switches_the_frame_by_command():
 @pytest.mark.parametrize("line", ["Imagine rain falling vertically at 3 m/s.", "Suppose a river 100 m wide flows.",
                                   "Imagine a man walks in the rain."])
 def test_rain_and_river_are_motion_cues(line):
-    assert cue(line) == "motion"
+    assert cue(line) == "diagram"  # F-019 M5: rain / river / a walker are the motion diagram's (was the L2 world)
 
 
 def test_a_rainbow_is_not_a_cue():

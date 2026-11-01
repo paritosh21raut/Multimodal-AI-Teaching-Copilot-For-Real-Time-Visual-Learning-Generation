@@ -1021,6 +1021,17 @@ rect.sc-body.r-second, circle.sc-body.r-second { fill: var(--scene-second); stro
 .dg-sign { font: 800 34px var(--font-text); fill: var(--ink); }
 .dg-leader { stroke: var(--sim-component); stroke-width: 2.5; }
 .dg-badge { font-size: 20px; }
+/* F-019 M5 motion: the dotted path, the river, the rain, the K1 figure, the car and the boat */
+.dg-trail { fill: none; stroke: var(--sim-component); stroke-width: 3.5; stroke-dasharray: 3 12; stroke-linecap: round; opacity: 0.85; }
+.dg-river { fill: var(--sim-water-fill); stroke: none; }
+.dg-flow { stroke: var(--sim-water); stroke-width: 3; stroke-dasharray: 26 22; opacity: 0.55; }
+.dg-rain { stroke: var(--sim-water); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 22 30; opacity: 0.6; }
+.dg-figure circle, .dg-figure line { fill: none; stroke: var(--ink); stroke-width: 7; stroke-linecap: round; }
+.dg-umbrella line { stroke: var(--ink); stroke-width: 5; }
+.dg-umbrella path { fill: var(--sim-friction); stroke: var(--sim-block-edge); stroke-width: 3; }
+.dg-window { fill: var(--sim-water-hi); stroke: var(--sim-block-edge); stroke-width: 3; }
+.dg-wheel { fill: var(--sim-surface); stroke: var(--sim-block-edge); stroke-width: 3; }
+.dg-seat { stroke: var(--sim-block-edge); stroke-width: 4; }
 /* F-019 §4: solver arrows + the values panel (said in ink, computed lighter italic, the equation / quote under it) */
 .sim-label.dg-force { font-size: 28px; }
 .sim-label.dg-force .sym { font-size: 32px; }

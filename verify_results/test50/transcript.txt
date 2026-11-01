@@ -1,0 +1,3 @@
+[    2.8] Imagine you are walking in the rain.
+[    6.8] The rain falls vertically at a speed of 4 mps. second.
+[   15.7] You walk at 3 mps. you can.

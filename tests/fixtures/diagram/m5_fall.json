@@ -1,0 +1,19 @@
+{
+ "id": "m5_fall",
+ "title": "M5: a stone dropped from 20 m",
+ "about": "t = √(2h/g) = 2.02 s, v = √(2gh) = 19.8 m/s",
+ "lines": [
+  {
+   "say": "Now imagine a stone dropped from a height of 20 metres.",
+   "expect": {
+    "qty": {
+     "stone:h": 20.0
+    },
+    "values": {
+     "stone:t": 2.0203050891044216,
+     "stone:v": 19.79898987322333
+    }
+   }
+  }
+ ]
+}

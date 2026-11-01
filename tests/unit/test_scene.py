@@ -290,7 +290,7 @@ def test_the_context_is_compact_and_bounded():
     ("Now draw its diagonal.", "geometry"),
     ("Consider the graph of y equals x squared.", "plot"),
     ("Let's plot y equals sin x.", "plot"),
-    ("Imagine a ball moving at 3 metres per second.", "motion"),
+    ("Imagine a ball moving at 3 metres per second.", "diagram"),  # F-019 M5: the motion diagram (was L1 motion)
     ("Think of a car on a straight road.", "motion"),
     ("Imagine you are in a library.", "canvas"),  # F-016 (2026-10-22): a said place is drawn (was None in L1)
     ("Look at the slide again.", None),
@@ -617,7 +617,7 @@ def test_a_solid_inside_or_on_another_is_a_canvas_scene():
 @pytest.mark.parametrize("line,world", [("Imagine a cuboid.", "geometry"), ("Let us imagine a cube.", "geometry"),
                                         ("Imagine a cone.", "geometry"), ("Imagine a cylinder.", "geometry"),
                                         ("Imagine a boy running at a speed of 20 kmph.", "motion"),
-                                        ("Imagine a boat crossing a river.", "motion")])
+                                        ("Imagine a boat crossing a river.", "diagram")])  # F-019 M5
 def test_solids_and_more_moving_things_are_scene_cues(line, world):
     assert cue(line) == world
 

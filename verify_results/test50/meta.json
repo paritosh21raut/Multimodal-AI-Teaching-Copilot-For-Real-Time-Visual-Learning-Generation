@@ -1,0 +1,14 @@
+{
+  "name": "test50",
+  "source": "mic",
+  "note": "M5 rain re-test",
+  "session_id": "20261101-114744-0326",
+  "date": "2026-11-01 11:48",
+  "title": "",
+  "minutes": 0.3,
+  "utterances": 3,
+  "slides": 1,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": []
+}

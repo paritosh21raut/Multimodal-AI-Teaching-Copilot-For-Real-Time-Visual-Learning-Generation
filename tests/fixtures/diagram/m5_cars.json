@@ -1,0 +1,45 @@
+{
+ "id": "m5_cars",
+ "title": "M5 (test36 wording): two cars at 50 and 60 km/h, then opposite ways",
+ "about": "same way: 60 − 50 = 10 km/h; opposite: 50 + 60 = 110 km/h",
+ "lines": [
+  {
+   "say": "Imagine a car moving at a speed of 50 kmph.",
+   "expect": {
+    "qty": {
+     "car:v": 13.88888888888889
+    }
+   }
+  },
+  {
+   "say": "Imagine the car moving at 50 kmph.",
+   "expect": {
+    "qty": {
+     "car:v": 13.88888888888889
+    }
+   }
+  },
+  {
+   "say": "Imagine another car moving at a speed of 60 kmph.",
+   "expect": {
+    "qty": {
+     "car2:v": 16.666666666666668
+    },
+    "values": {
+     ":v_rel": 10.0
+    },
+    "notes": [
+     "the way is not said"
+    ]
+   }
+  },
+  {
+   "say": "The two cars move in opposite directions.",
+   "expect": {
+    "values": {
+     ":v_rel": 110.0
+    }
+   }
+  }
+ ]
+}

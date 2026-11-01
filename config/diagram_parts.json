@@ -34,6 +34,12 @@
     "bulb":       {"domain": "circuit", "words": ["bulb", "lamp", "light bulb"], "w": 96, "h": 96, "anchors": {"left": [0.0, 0.5], "right": [1.0, 0.5]}, "label": "above", "two_port": true},
     "switch":     {"domain": "circuit", "words": ["switch", "plug key"], "w": 130, "h": 60, "anchors": {"left": [0.0, 0.8], "right": [1.0, 0.8]}, "label": "above", "two_port": true},
     "node":       {"domain": "circuit", "words": ["junction", "node"], "w": 18, "h": 18, "anchors": {"centre": [0.5, 0.5]}, "label": "above"},
+    "ball":       {"domain": "motion", "words": ["ball", "stone", "cricket ball", "football", "tennis ball", "projectile", "pebble"], "w": 56, "h": 56, "anchors": {"centre": [0.5, 0.5], "bottom": [0.5, 1]}, "label": "above"},
+    "car":        {"domain": "motion", "words": ["car", "train", "truck", "scooter", "motorcycle"], "w": 200, "h": 92, "anchors": {"centre": [0.5, 0.5], "bottom": [0.5, 1]}, "label": "above"},
+    "boat":       {"domain": "motion", "words": ["boat", "ship", "motorboat", "swimmer"], "w": 150, "h": 64, "anchors": {"centre": [0.5, 0.5]}, "label": "right"},
+    "river":      {"domain": "motion", "words": ["river", "stream of water"], "w": 900, "h": 340, "anchors": {"centre": [0.5, 0.5]}, "label": "below"},
+    "rain":       {"domain": "motion", "words": ["rain", "raindrops", "raindrop", "rain drops"], "w": 520, "h": 420, "anchors": {"centre": [0.5, 0.5]}, "label": "above"},
+    "man":        {"domain": "motion", "words": [], "w": 84, "h": 210, "anchors": {"centre": [0.5, 0.5], "bottom": [0.5, 1], "top": [0.5, 0]}, "label": "right"},
     "unknown":    {"domain": "other", "words": [], "w": 260, "h": 150, "anchors": {"centre": [0.5, 0.5], "bottom": [0.5, 1], "top": [0.5, 0]}, "label": "inside"}
   },
   "tables": {

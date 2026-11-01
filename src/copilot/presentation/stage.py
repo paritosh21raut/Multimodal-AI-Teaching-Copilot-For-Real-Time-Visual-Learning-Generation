@@ -34,6 +34,7 @@ from copilot.diagram import extract as dextract
 from copilot.diagram import fastpath as dfast
 from copilot.diagram import ops as dops
 from copilot.diagram import mech as dmech
+from copilot.diagram import motion as dmotion
 from copilot.diagram import parts as dparts
 from copilot.diagram import patch as dpatch
 from copilot.diagram.graph import DiagramLog
@@ -895,14 +896,17 @@ def _recount(d: dfast.Draft, parts: dict) -> bool:
     says neither "another" nor a new name (M0: "another circle C3" adds one)."""
     if not d.new or d.more or d.named:
         return False
-    def sig(kind: str, attr: dict) -> tuple:  # a beaker of NaOH is not the beaker of HCl
-        return kind, attr.get("chem"), attr.get("element"), attr.get("name")
-    said = Counter(sig(o["kind"], o.get("attr") or {}) for o in d.ops if o.get("op") == "part" and o.get("id") in d.new)
-    said.update(sig(parts[i].kind, parts[i].attr) for i in d.old if i in parts)  # "on the floor": the floor drawn
+    def sig(kind: str, attr: dict, label: str = "") -> tuple:  # a beaker of NaOH is not the beaker of HCl
+        # M5: a stone is not the ball (one part kind, the said word tells them apart)
+        return kind, attr.get("chem"), attr.get("element"), attr.get("name"), \
+            label.lower() if kind in dmotion.KINDS else ""
+    said = Counter(sig(o["kind"], o.get("attr") or {}, o.get("label") or "") for o in d.ops
+                   if o.get("op") == "part" and o.get("id") in d.new)
+    said.update(sig(parts[i].kind, parts[i].attr, parts[i].label) for i in d.old if i in parts)  # the floor drawn
     # test45: a pulley's implied support is never said ("two masses ... over a pulley" again drew two more masses)
-    said -= Counter(sig(o["kind"], o.get("attr") or {}) for o in d.ops if o.get("op") == "part"
+    said -= Counter(sig(o["kind"], o.get("attr") or {}, o.get("label") or "") for o in d.ops if o.get("op") == "part"
                     and o.get("id") in d.new and (o.get("attr") or {}).get("implied"))
-    have = Counter(sig(p.kind, p.attr) for p in parts.values() if not p.attr.get("implied"))
+    have = Counter(sig(p.kind, p.attr, p.label) for p in parts.values() if not p.attr.get("implied"))
     return said == have  # the same picture said again (test36's "imagine a square" after C1–C3 is the next one)
 
 

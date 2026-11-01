@@ -1,0 +1,23 @@
+[    0.3] Please study motion in straight line and in plane.
+[    5.9] Imagine a car moving at a speed of 50 kmph.
+[   18.6] Another it.
+[   19.6] Car moving at a speed of 60 kmph.
+[   32.7] Imagine a car moving at a speed of 50 kmph.
+[   39.4] Imagine another car moving at a speed of 60 kmph.
+[   49.5] The two cars are moving in opposite direction.
+[   61.3] Imagine you throw a ball at 20 meters per second at 30 degree above the horizontal.
+[   88.3] Now you throw it at 45 degrees. place.
+[   97.8] Now imagine a stone dropped from a height of 20 meters.
+[  126.5] Now imagine a stone drop from a height of 20 meters.
+[  142.7] Imagine you throw a ball in the air.
+[  161.9] If you throw the ball at the speed of 10 meters per second.
+[  172.2] Imagine you are walking in the rain.
+[  205.6] The rays fall vertically at 4 mps.
+[  218.0] You walk at 3 mps.
+[  229.4] Imagine a boat crossing a river 100 meters wide.
+[  241.4] The boat moves at 4 meter per second.
+[  245.9] in still water.
+[  264.4] The river flows at 3 mps. you can.
+[  272.2] Now the boat wants to reach the point directly opposite.
+[  282.0] Finally, imagine a stone whirled in a circle of radius 2 meters at 4 meter per second.
+[  298.8] Relative velocity depends on the observer.

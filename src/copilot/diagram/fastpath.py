@@ -81,6 +81,7 @@ _NAMES = re.compile(r"^\s*,?\s*(?:(?:called|named|labelled|labeled|of)\s+)?([A-Z
                     r"[A-Z][0-9]{0,2})*)\b(?![a-z])")
 _MASS_OF = re.compile(r"\s+of\s+(?:about\s+)?(?:\d|(?:one|two|three|four|five|six|seven|eight|nine|ten|twenty|fifty|"
                       r"hundred|half)\b)", re.IGNORECASE)
+_THE_N = re.compile(r"\b(?:the|these|those|both)\s+(?:\w+\s+)?$", re.IGNORECASE)  # M5: "the two cars"
 _ROPES = {"rope", "ropes", "string", "strings", "thread", "cord"}  # M3: drawn as the rope over the pulley, no box
 _UNKNOWN = re.compile(r"\b(?:a|an|the)\s+([a-z]{4,})\b", re.IGNORECASE)
 _STOP = {"time", "moment", "second", "minute", "example", "case", "situation", "scenario", "question", "answer",
@@ -95,7 +96,7 @@ _CUEW = re.compile(r"\b(?:imagine|picture|consider|suppose|visuali[sz]e|think of
 _NEXT_TO = re.compile(r"\b(?:next to|beside|near|and|with|on|in|inside|above|below|under|behind)\s+(?:a|an|the)\s+$",
                       re.IGNORECASE)
 WORD_LABEL = {"block", "mass", "incline", "floor", "spring", "pulley", "beaker", "flask", "test_tube", "stirrer",
-              "burner", "bar_magnet", "compass", "cell", "bulb", "switch"}  # a single one is labelled with the teacher's word
+              "burner", "bar_magnet", "compass", "cell", "bulb", "switch", "ball", "car", "boat", "river", "rain"}  # a single one is labelled with the teacher's word
 UNITS = {"kg", "g", "gram", "grams", "kilogram", "kilograms", "ohm", "ohms", "v", "volt", "volts", "cm", "m", "mm",
          "metre", "metres", "meter", "meters", "degree", "degrees", "n", "newton", "newtons", "ml", "litre", "litres",
          "amp", "amps", "ampere", "a", "s", "second", "seconds"} - {"a"}
@@ -273,6 +274,9 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
     d = Draft()
     ids = _Ids(g)
     ms = mentions(text)
+    from copilot.diagram import motion
+    if motion.context(ms, g):  # M5: "the boat moves at 4 m/s in still water" draws no beaker of water
+        ms = [m for m in ms if not (m.kind == "chem" and m.word == "water")]
     ops: list[dict] = []
     pron = _PRONOUN.search(text)
 
@@ -341,6 +345,11 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
                 m.ids += [add(m.kind, nm, "said", **m.attr) for nm in m.names if nm not in have]
             continue
         olds = [p for p in g.of(m.kind) if p.id not in d.old]  # M4: "a block on top of a block": two, not one twice
+        if m.kind in motion.KINDS and m.n > 1 and not m.names and len(olds) >= m.n and _THE_N.search(text[max(0, m.start - 20):m.start]):
+            m.ids = [p.id for p in olds[-m.n:]]  # M5: "the two cars move in opposite directions": the two there
+            d.old += m.ids
+            d.refers = True
+            continue
         loose =[p for p in olds if p.id not in g.rels and _row(m.kind).get("domain") == "shape"]
         if loose and not m.names and m.n == 1 and not more:  # test37: "a pentagon ... inside C1" said again and
             olds = loose                                       # again: the one not placed yet, not a 2nd and 3rd
@@ -475,8 +484,9 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
     _givens(text, ms, ops, g)
     _quantities(text, ops, g, d, [(m.start, m.ids[0]) for m in ms if len(m.ids) == 1 and m.ids[0] in d.new
                                   and m.kind in ("block", "mass")])
+    motion.draft(text, ms, ops, g, d, add)  # M5: throw / fall / move / circle / cross, speeds, heights, times
     d.ops = ops
-    d.title = title_for(text, ms)
+    d.title = motion.title(ops, g) or title_for(text, ms)
     return d
 
 
@@ -505,10 +515,19 @@ def _inside_label(text: str, things: list[Mention], ops: list[dict], g: Graph) -
                 ops.append({"op": "place", "a": i, "rel": rel, "b": host})
 
 
+# test49: "the rays fall vertically at 4 mps" = the rain (a speed with "fall"; light rays have no speed said)
+_RAYS = re.compile(r"(?<!light\s)(?<!sun\s)\brays(?=\s+(?:falls?|falling)\b[^.]*?(?:m/s|\bmps\b|\bmet(?:er|re)s?\s+per\s+second))",
+                   re.I)
+
+
 def concept_mishear(text: str) -> Optional[str]:
     """"Imagine a laptop of sodium" -> "Imagine an atom of sodium" (test36): an unknown noun before "of <element>"
     is a mishear of "atom" (the element is the concept said); "a box on an ink-like plane" -> "... an inclined
     plane" (test37); None when the line has no such word."""
+    r = _RAYS.search(text)  # test49: "The rays fall vertically at 4 mps" (rain)
+    if r:
+        text = text[:r.start()] + "rain" + text[r.end():]
+        return concept_mishear(text) or text
     p = _PLANE.search(text)
     if p and p.group(1).lower() not in ("inclined", "the", "a", "an", "flat", "plane", "smooth", "rough", "horizontal",
                                         "vertical", "same", "this", "that", "air", "x", "y", "xy", "cartesian") \

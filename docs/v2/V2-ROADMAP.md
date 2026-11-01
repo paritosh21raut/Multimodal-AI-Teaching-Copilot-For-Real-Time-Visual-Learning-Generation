@@ -14,9 +14,9 @@ speaks it → Claude evaluates `verify_results/testN` → fix → next card; the
 | M2 | `M2-M5-outline.md` §M2 | look + motion polish, free-body toggle, value-change morph | sheet + live test | done (test42–43) |
 | M3 | §M3 | Groq scene extraction (closed vocabulary, validated), paraphrase set | ≥ 90 % paraphrase replay + live test | done (test45–47) |
 | M4 | §M4 | 10-min live mechanics lecture, latency budget | live run all must-pass yes | done (test48) |
-| M5 | §M5 | motion solver: projectile, free fall, relative velocity (rain–umbrella, cars, river), circular | sheet + live test | **next** |
+| M5 | §M5 | motion solver: projectile, free fall, relative velocity (rain–umbrella, cars, river), circular | sheet + live test | done (test49–50) |
 | later | — | circuits (old K2, MNA), optics, fields, atoms / chemistry (old K3–K4) | one card each | — |
-| V3 / Canvas | `docs/v3/V3-story-outline.md` | story, then imagination canvas (people via relation table + attach points, old E3c) | — | after M5+ |
+| V3 / Canvas | `docs/v3/V3-story-outline.md` | story, then imagination canvas (people via relation table + attach points, old E3c) | — | **next** (first card planned in its session) |
 
 ## Parked (kept working as is, no new work)
 F-017 stage people scenes (E3c / E4 / E5), F-016 canvas, F-015 scenes. Lines that need people keep today's

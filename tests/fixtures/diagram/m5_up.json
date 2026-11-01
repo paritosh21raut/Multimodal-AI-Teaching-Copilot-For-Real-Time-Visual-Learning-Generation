@@ -1,0 +1,44 @@
+{
+ "id": "m5_up",
+ "title": "M5 (test36 wording): a ball thrown straight up, 3 mps then 10 m/s",
+ "about": "t up = v/g, H = v²/2g, T = 2v/g; 10 m/s: 1.02 s, 5.10 m, 2.04 s",
+ "lines": [
+  {
+   "say": "Imagine you throw a ball in the air.",
+   "expect": {
+    "symbols": [
+     "ball:H",
+     "ball:T"
+    ],
+    "notes": [
+     "say v"
+    ]
+   }
+  },
+  {
+   "say": "with the speed of 3mps. second.",
+   "expect": {
+    "qty": {
+     "ball:v": 3.0
+    },
+    "values": {
+     "ball:H": 0.4591836734693877,
+     "ball:T": 0.6122448979591836
+    }
+   }
+  },
+  {
+   "say": "if you throw the ball at the speed of 10 meter per second.",
+   "expect": {
+    "qty": {
+     "ball:v": 10.0
+    },
+    "values": {
+     "ball:t_up": 1.0204081632653061,
+     "ball:H": 5.1020408163265305,
+     "ball:T": 2.0408163265306123
+    }
+   }
+  }
+ ]
+}

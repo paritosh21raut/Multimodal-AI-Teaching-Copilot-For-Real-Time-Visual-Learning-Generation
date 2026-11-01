@@ -9,11 +9,13 @@ from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 MAX_OPS = 16
 MAX_PARTS = 40
 RELS = ("on", "in", "hang_from", "orbit", "above", "attached_to", "beside", "inside", "at_edge")
-VERBS = ("stir", "heat", "cool", "dissolve", "pour", "close", "open", "rotate", "orbit", "flow")
+VERBS = ("stir", "heat", "cool", "dissolve", "pour", "close", "open", "rotate", "orbit", "flow",
+         "throw", "fall", "move", "circle", "cross")  # M5: motion
 SHOWS = ("field", "current", "voltage", "forces", "labels", "shells")
 SYMS = {"theta": "deg", "m": "kg", "k": "N/m", "V": "V", "R": "ohm"}  # K1: the givens a part can show
 # F-019 §2: the quantities a `qty` op may attach (sym -> SI unit; "" = a pure number)
-QSYMS = {"m": "kg", "F": "N", "mu": "", "mu_s": "", "mu_k": "", "theta": "deg", "k": "N/m"}
+QSYMS = {"m": "kg", "F": "N", "mu": "", "mu_s": "", "mu_k": "", "theta": "deg", "k": "N/m",
+         "v": "m/s", "h": "m", "t": "s", "a": "m/s^2", "r": "m", "d": "m"}  # M5: motion
 DIRS = ("left", "right", "up", "down", "up_slope", "down_slope", "")
 
 

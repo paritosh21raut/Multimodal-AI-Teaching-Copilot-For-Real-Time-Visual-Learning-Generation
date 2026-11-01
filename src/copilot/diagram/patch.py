@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from copilot.diagram import mech
+from copilot.diagram import kin, mech
 from copilot.diagram import parts as P
 from copilot.diagram.solvers import run
 from copilot.diagram.graph import Graph
-from copilot.diagram.layout import AREA, VIEW, place_labels, solve
+from copilot.diagram.layout import AREA, VIEW, label_size, place_labels, solve
 
 
 def _tint(g: Graph, pid: str) -> Optional[str]:
@@ -16,23 +16,35 @@ def _tint(g: Graph, pid: str) -> Optional[str]:
     return c["tint"] if c else None
 
 
+def _box(lab: dict[str, Any]) -> list[float]:
+    w, h = label_size(lab["text"])
+    x0 = lab["x"] - (w if lab["anchor"] == "end" else w / 2 if lab["anchor"] == "middle" else 0)
+    return [x0, lab["y"] - h / 2, x0 + w, lab["y"] + h / 2]
+
+
 def build(g: Graph, rev: int = 1, nogo: Optional[list[list[float]]] = None, fbd: str = "") -> dict[str, Any]:
     """fbd (M2): "" the scene, "all" or a body id: the free-body view."""
     if not g.parts:
         return {"rev": rev, "view": list(VIEW), "parts": [], "wires": [], "labels": [], "overlays": [], "tracks": [],
                 "badges": []}
-    res = run(g) if mech.wants(g) else None  # F-019: the domain solver (contact mechanics in M1)
+    moving = kin.wants(g)  # M5: a motion scene (ball, car, boat, river, rain, man)
+    res = run(g) if mech.wants(g) or moving else None  # F-019: the domain solver (contact mechanics, motion)
     panel = mech.PANEL_W if res is not None and res.values else 0.0
     if panel:  # labels keep off the values panel
         nogo = list(nogo or []) + [[AREA[2] - panel, AREA[1], VIEW[0], AREA[3]]]
     L = solve(g, nogo, panel)
-    M = mech.build(g, L, res, fbd) if mech.wants(g) else None
+    if moving:
+        M = kin.build(g, L, res)
+    else:
+        M = mech.build(g, L, res, fbd) if mech.wants(g) else None
     if M is not None:  # what the control's Free body button cycles through
-        M["bodies"] = mech.free_bodies(g, res, "all")
+        M["bodies"] = mech.free_bodies(g, res, "all") if not moving else []
         M["fbd_on"] = fbd if "fbd" in M else ""
-    if M is not None and M["forces"]:  # the part labels again, clear of the force arrows and their labels
+    if M is not None and (M["forces"] or moving):  # the part labels again, clear of the arrows and their labels
+        dims = [x for x in L.labels if x["id"].startswith("dim_")]  # M5: a said height / width / radius on its line
         L.labels = []
-        place_labels(L, list(nogo or []) + mech.boxes(M["forces"]))
+        place_labels(L, list(nogo or []) + mech.boxes(M["forces"]) + [_box(x) for x in dims])
+        L.labels += dims
     parts = []
     for n in L.nodes.values():
         if n.kind in ("loop",):
@@ -71,6 +83,8 @@ def build(g: Graph, rev: int = 1, nogo: Optional[list[list[float]]] = None, fbd:
         tracks += M.pop("tracks")
         if not M["simulated"]:
             badges.append("not simulated")
+        if M.get("badge"):
+            badges.append(M.pop("badge"))
     return {"rev": rev, "view": list(VIEW), "scale": round(L.scale, 4), "parts": parts, "wires": L.wires,
             "labels": L.labels, "overlays": L.overlays, "tracks": tracks, "badges": badges, "processes": procs,
             "givens": givens, "focus": g.last if g.last in g.parts else None, "mech": M}

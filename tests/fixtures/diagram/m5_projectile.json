@@ -1,0 +1,34 @@
+{
+ "id": "m5_projectile",
+ "title": "M5: a ball thrown at 20 m/s at 30°, then at 45°",
+ "about": "T = 2v sinθ/g, R = v² sin2θ/g, H = v² sin²θ/2g; 30°: 2.04 s, 35.3 m, 5.10 m; 45°: 2.89 s, 40.8 m, 10.2 m",
+ "lines": [
+  {
+   "say": "Imagine you throw a ball at 20 metres per second at 30 degrees above the horizontal.",
+   "expect": {
+    "qty": {
+     "ball:v": 20.0,
+     "ball:theta": 30.0
+    },
+    "values": {
+     "ball:T": 2.040816326530612,
+     "ball:R": 35.34797566467096,
+     "ball:H": 5.102040816326529
+    }
+   }
+  },
+  {
+   "say": "Now throw it at 45 degrees.",
+   "expect": {
+    "qty": {
+     "ball:theta": 45.0
+    },
+    "values": {
+     "ball:T": 2.8861501272920305,
+     "ball:R": 40.816326530612244,
+     "ball:H": 10.204081632653063
+    }
+   }
+  }
+ ]
+}

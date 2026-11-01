@@ -1,0 +1,24 @@
+{
+ "id": "m5_circle",
+ "title": "M5: a stone whirled in a circle of radius 2 m at 4 m/s",
+ "about": "a_c = v²/r = 8 m/s², T = 2πr/v = π s, ω = v/r = 2 rad/s",
+ "lines": [
+  {
+   "say": "Finally, imagine a stone whirled in a circle of radius 2 metres at 4 metres per second.",
+   "expect": {
+    "qty": {
+     "stone:r": 2.0,
+     "stone:v": 4.0
+    },
+    "kinds": [
+     "ball"
+    ],
+    "values": {
+     "stone:a_c": 8.0,
+     "stone:T": 3.141592653589793,
+     "stone:ω": 2.0
+    }
+   }
+  }
+ ]
+}

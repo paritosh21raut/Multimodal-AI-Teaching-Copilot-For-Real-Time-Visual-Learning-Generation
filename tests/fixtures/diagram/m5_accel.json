@@ -1,0 +1,20 @@
+{
+ "id": "m5_accel",
+ "title": "M5: a car from rest at 2 m/s² for 5 s",
+ "about": "v = at = 10 m/s, s = ½at² = 25 m",
+ "lines": [
+  {
+   "say": "Now imagine a car that starts from rest and accelerates at 2 metres per second squared for 5 seconds.",
+   "expect": {
+    "qty": {
+     "car:a": 2.0,
+     "car:t": 5.0
+    },
+    "values": {
+     "car:v_end": 10.0,
+     "car:s": 25.0
+    }
+   }
+  }
+ ]
+}

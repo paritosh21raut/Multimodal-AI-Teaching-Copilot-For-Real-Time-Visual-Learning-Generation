@@ -537,7 +537,7 @@ def test_a_sphere_inscribed_in_a_cuboid_is_drawn_inside_it():
                                          ("Imagine we are solving a quadratic.", None),
                                          ("Imagine you are solving a quadratic.", None),
                                          ("Imagine you are in a rocket going to the sun.", "canvas"),
-                                         ("Imagine a car moving at 20 metres per second.", "motion")])
+                                         ("Imagine a car moving at 20 metres per second.", "diagram")])  # F-019 M5
 def test_you_in_a_scene_is_a_canvas_only_when_nothing_else_decides(line, world):
     from copilot.scene.detector import cue
     assert cue(line) == world

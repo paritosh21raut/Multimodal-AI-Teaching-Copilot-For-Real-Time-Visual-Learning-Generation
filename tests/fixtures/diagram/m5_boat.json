@@ -1,0 +1,50 @@
+{
+ "id": "m5_boat",
+ "title": "M5: a boat at 4 m/s across a 100 m river flowing at 3 m/s, then to the point opposite",
+ "about": "straight across: t = 100/4 = 25 s, drift 3·25 = 75 m, v = 5 m/s; opposite: sin α = 3/4 (48.6°), v = √7, t = 100/√7 = 37.8 s",
+ "lines": [
+  {
+   "say": "Imagine a boat crossing a river 100 metres wide.",
+   "expect": {
+    "qty": {
+     "river:d": 100.0
+    }
+   }
+  },
+  {
+   "say": "The boat moves at 4 metres per second in still water.",
+   "expect": {
+    "qty": {
+     "boat:v": 4.0
+    },
+    "kinds": [
+     "boat",
+     "river"
+    ]
+   }
+  },
+  {
+   "say": "The river flows at 3 metres per second.",
+   "expect": {
+    "qty": {
+     "river:v": 3.0
+    },
+    "values": {
+     "boat:t": 25.0,
+     "boat:x": 75.0,
+     "boat:v": 5.0
+    }
+   }
+  },
+  {
+   "say": "Now the boat wants to reach the point directly opposite.",
+   "expect": {
+    "values": {
+     "boat:α": 48.590377890729144,
+     "boat:v": 2.6457513110645907,
+     "boat:t": 37.79644730092272
+    }
+   }
+  }
+ ]
+}

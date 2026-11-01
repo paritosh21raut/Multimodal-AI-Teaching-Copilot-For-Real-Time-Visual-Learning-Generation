@@ -83,7 +83,11 @@ def si_values(q: str, sym: str) -> list[float]:
             f = (1000.0 if u.startswith("k") else 1.0) * (100.0 if "centi" in u or u.endswith("/cm") else 1.0)
             out.append(v * f)
         return out
-    kind = {"m": "mass", "F": "force", "theta": "angle"}.get(sym)
+    if sym == "a":  # M5: "2 metres per second squared"
+        from copilot.diagram.motion import _ACC
+        return [v for m in _ACC.finditer(q) if (v := spoken_number(m.group("num"))) is not None]
+    kind = {"m": "mass", "F": "force", "theta": "angle", "v": "speed", "t": "time", "h": "length", "r": "length",
+            "d": "length"}.get(sym)
     return [h.value for h in heard(q) if h.kind == kind] if kind else []
 
 

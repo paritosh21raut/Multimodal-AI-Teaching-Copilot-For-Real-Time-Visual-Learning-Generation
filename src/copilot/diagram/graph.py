@@ -72,7 +72,7 @@ def apply(g: Graph, op: Any, line_id: str, seq: int) -> None:
         g.wires.append((op.a, op.b))
     elif isinstance(op, O.Process):
         g.processes = [p for p in g.processes if not (p["verb"] == op.verb and p["target"] == op.target)]
-        g.processes.append({"verb": op.verb, "target": op.target, "src": op.src, "manner": op.manner})
+        g.processes.append({"verb": op.verb, "target": op.target, "src": op.src, "manner": op.manner, "seq": seq})
     elif isinstance(op, O.Given):
         g.givens[op.sym] = {"v": op.v, "u": op.u, "q": op.q, "on": op.on}
     elif isinstance(op, O.Qty):

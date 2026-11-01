@@ -45,6 +45,8 @@ function wire(w) {
       ${a && html`<path class="dg-field-head" transform=${`translate(${F(a.x)},${F(a.y)}) rotate(${F(a.a)})`} d="M12,0 L-10,-10 L-10,10 Z" />`}</g>`;
   }
   if (w.kind === "stream") return html`<path key=${w.id} class=${`dg-stream t-${w.tint || "water"}`} data-stream=${w.id} d=${d} />`;
+  // F-019 M5: a body's dotted path (or a dimension line); `turn`: it turns with a circling body (the radius)
+  if (w.kind === "trail") return html`<path key=${w.id} class="dg-trail" d=${d} data-carry=${w.turn || undefined} />`;
   return html`<path key=${w.id} class=${w.kind === "rope" ? "sim-string dg-rope" : "sim-wire"} d=${d} fill="none"
     data-rope=${w.kind === "rope" ? w.id : undefined} />`;
 }
@@ -205,6 +207,30 @@ export function frame(svg, p, t) {
       el.setAttribute("transform", `translate(${F(nx)},${F(ny)}) rotate(${x.rot || 0})`);
       const lab = svg.querySelector(`[data-label="${CSS.escape(tr.id)}"]`);
       if (lab) lab.setAttribute("transform", `translate(${F(nx - x.cx)},${F(ny - x.cy)})`);
+      if (tr.carry) {  // M5: v along the circle and a_c to its centre turn with the body (drawn at t = 0)
+        const deg = (a - tr.phase) * 180 / Math.PI;
+        for (const c of svg.querySelectorAll(`[data-carry="${CSS.escape(tr.id)}"]`)) {
+          c.setAttribute("transform", `rotate(${F(deg)} ${tr.cx} ${tr.cy})`);
+          for (const tx of c.querySelectorAll("text")) {  // the words stay upright
+            tx.setAttribute("transform", `rotate(${F(-deg)} ${tx.getAttribute("x")} ${tx.getAttribute("y")})`);
+          }
+        }
+      }
+    } else if (tr.kind === "path") {
+      // F-019 M5: the solver's x(t), y(t) sampled (offsets from the part's place), a run, a rest at the end, again
+      const el = byId(tr.id), x = parts[tr.id];
+      if (!el || !x || !tr.pts.length) continue;
+      const s = Math.min(t % (tr.run + tr.hold), tr.run);
+      let i = 1;
+      while (i < tr.pts.length - 1 && tr.pts[i][0] < s) i++;
+      const [t0, x0, y0] = tr.pts[i - 1], [t1, x1, y1] = tr.pts[Math.min(i, tr.pts.length - 1)];
+      const k = t1 > t0 ? Math.min(1, Math.max(0, (s - t0) / (t1 - t0))) : 1;
+      const dx = x0 + (x1 - x0) * k, dy = y0 + (y1 - y0) * k;
+      el.setAttribute("transform", `translate(${F(x.cx + dx)},${F(x.cy + dy)}) rotate(${x.rot || 0})`);
+      const move = `translate(${F(dx)},${F(dy)})`;
+      const lab = svg.querySelector(`[data-label="${CSS.escape(tr.id)}"]`);
+      if (lab) lab.setAttribute("transform", move);
+      for (const carry of svg.querySelectorAll(`[data-carry="${CSS.escape(tr.id)}"]`)) carry.setAttribute("transform", move);
     } else if (tr.kind === "pour") {
       const el = svg.querySelector(`[data-stream="${CSS.escape(tr.id)}"]`);
       if (el) el.style.strokeDashoffset = String(F(-t * 60 * (tr.speed || 1)));
