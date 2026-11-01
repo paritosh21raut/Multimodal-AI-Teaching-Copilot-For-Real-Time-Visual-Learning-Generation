@@ -212,7 +212,7 @@ async def test_a_refused_or_failed_answer_leaves_the_fast_reading():
         async def read(self, msgs, line):
             raise RuntimeError("every model failed")
     eng._story.extractor = Down()
-    line = "Then they walked into a dusty shed."
+    line = "Then they worked in a dusty shed."  # ST4: "walked into a dusty shed" is now read on the fast path
     await talk.say(line)
     await eng._story.settle()
     assert line in story_on(deck).scenes[-1].lines and eng._story.stats.llm_failed == 1

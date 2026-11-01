@@ -1,457 +1,450 @@
-Verdict
-Your core architecture is right: live speech → constrained LLM scene graph → deterministic physics/animation → real-time renderer. What is failing is not your AI pipeline; it is your attempt to make an open-vocabulary, explainer-quality, fully animated visual asset system on one laptop with no artist, no asset library, and a 4 GB GPU.
+1. Verdict
+Partly. You can build a live, dynamically composed stick-figure theatre under these constraints. You cannot honestly promise “any spoken story → a correct, immersive animated scene within 2–3 seconds” with no substantial limitations.
 
-The honest answer: you cannot get “Kurzgesagt/TED-Ed quality for anything said, with real character action, in 2 seconds, on a 4 GB RTX 3050” using per-line image/video generation. That goal conflates three different products: an infinite illustration generator, a game-quality animation engine, and a live teaching visualizer. Drop the first two as the primary path; build a retrieval-first, rig-based 3D “explainer theatre” with a tightly constrained generated fallback.
+The achievable product is:
 
-1. Diagnosis
-What was fundamentally wrong
-Approach	Verdict	Why
-21 hand-coded simulations	Right, but too narrow	Excellent for correctness and latency; useless as a general “imagination” system.
-Topic “worlds” + trigger words	Right idea, wrong abstraction	You need a general scene representation, not topic-specific triggers.
-Emoji/photo cutout canvas	Wrong for your quality bar	Static assets cannot act; mixed visual sources destroy style coherence.
-SD-Turbo per line	Wrong for live animation	It solves illustration, not temporal identity, rigging, or physics. Your observed 11.6 s under GPU contention confirms it cannot meet the 2 s target.
-AI-generated reference sheets → 2D puppets	Wrong execution path	You are manually reconstructing a game-art pipeline: multi-view sheets, joint metadata, consistent proportions, animation poses. That is artist work, not prompt work.
-Code-built 3D character from primitives	Right instinct, wrong asset source	Motion/camera/arrows worked; hand-sculpting appealing characters from spheres/cylinders will not converge without an artist.
-The real root problem
-You lack an actable asset layer: assets that are already styled, rigged, multi-pose, semantically tagged, physically scalable, and reusable across scenes.
+A persistent 2D world with a finite vocabulary of executable actions and object capabilities, composed into new scenes from unrestricted language.
 
-Your current systems each solve one side:
+That is not the same as a fixed collection of story templates. Newton, a boy, or a fictional traveller can all use the same sitting, holding, walking, and riding mechanics in previously unseen combinations.
 
-Emoji/photos: broad coverage, no action.
+But there is an unavoidable boundary:
 
-Generated images: broad coverage, no consistency or action.
+Open-ended language input is feasible. Open-ended visual understanding, object coverage, and animation behaviour are not solved by adding a scene graph.
 
-Hand-coded puppets: action, no coverage.
+If “not template based” also means “no finite library of action implementations, rig types, or object affordances,” then my answer is no.
 
-Simulation templates: correctness, no openness.
+My engineering assessment:
 
-The missing system is a curated, license-safe, rigged 3D asset library plus a semantic retrieval/indexing layer plus procedural composition. This is the approach used implicitly by real-time scene-generation research: LLMs infer scene graphs/layouts, then a graphics pipeline renders and animates them; recent work explicitly separates semantic scene graphs, spatial constraints, asset retrieval, and rendering.
+Requirement	Assessment
+Draw and animate a few simple 2D characters smoothly	Feasible; not the main risk
+Compose unseen stories from reusable mechanics	Feasible within supported mechanics
+Correct sitting, holding, riding, and falling contacts	Feasible with explicit anchors and constraints
+Recognisable curated Newton/Einstein/Curie	Feasible with offline artwork
+Arbitrary unfamiliar objects with automatically correct interactions	Not reliable
+Arbitrary verbs becoming appropriate animation	Not reliable
+Hand-animated YouTube storytelling quality, generated live	Not a realistic promise
+Guaranteed ≤3 seconds using the free Groq service	Not a defensible guarantee
+Useful classroom demonstration in 1–2 days	Feasible if narrowly scoped
+These are engineering judgments, not results from a benchmark of your implementation.
 
-2. Architecture options
-Option A — Rigged 3D asset theatre recommended
-Idea: Build a persistent 3D “explainer stage” in your existing three.js app. The LLM emits a scene graph; a deterministic resolver retrieves rigged glTF assets; physics and animation controllers drive them.
+2. The real hard problem: executable meaning, not rendering
+Your diagnosis is largely correct. More precisely, the hard problem is turning language into a persistent, temporally coherent world whose relations are actually enforced.
 
-Renderer: three.js + GLTFLoader + AnimationMixer; glTF supports meshes, skins, morph targets, and animation clips, and three.js can play those clips directly.
+Your previous puppet experiment failed at this boundary. A better parser would help, but “rider on horse” in JSON still does not put the rider on the horse. You need an execution system that makes the relation true.
 
-Characters: CC0 low-poly rigged humans/animals from Quaternius and Kenney; Quaternius explicitly ships animated, textured glTF/FBX characters under CC0, and Kenney’s animated-character packs are CC0 as well.
+Use three representations, not one
+I would separate:
 
-Motion: a local animation library: idle, walk, run, push, pull, throw, point, wave, sit, think, jump, fall. Mixamo can supply humanoid clips and auto-rigging, but audit its terms before redistributing assets; use it primarily as a production tool, not as a bundled asset source unless your legal review permits it.
+Semantic world state: who exists, identity, location, possession, posture, and persistent relations.
 
-Objects: curated CC0 packs for boxes, vehicles, furniture, tools, science apparatus, buildings, planets, circuits, animals.
+Event plan: what changes, in what order, with what preconditions and completion conditions.
 
-Style: one non-photoreal toon/flat-shaded style: unlit or toon materials, soft shadows optional, consistent palette, outline optional.
+Render state: coordinates, joint angles, layers, paths, and camera transforms computed by code.
 
-Expected quality: clean, readable, “interactive textbook / low-poly explainer” quality. Not literally Kurzgesagt, but far better than emoji stickers and dramatically more professional than code primitives.
+The LLM writes only the first two. It never writes coordinates or rendering code.
 
-Latency: excellent. Local asset retrieval is milliseconds; glTF loading is the main cost, solved by preloading a hot set and caching.
-
-VRAM: low. A 4 GB GPU can run Whisper and render hundreds of low-poly objects; generation is not in the hot path.
-
-Open vocabulary: high for common educational nouns/actions; incomplete for rare or absurd entities.
-
-Character consistency: excellent, because the same glTF character and material set is reused.
-
-V3 fit: excellent. A story is simply a sequence of scene-graph states with persistent entity IDs, locations, and camera targets.
-
-Main risk: asset coverage and art direction. You must curate rather than generate.
-
-Option B — 2D vector rig system, Rive/Lottie-like
-Idea: Use professionally designed 2D vector rigs with skeletal animation, controlled by your scene graph.
-
-Runtime: Rive’s runtimes are open source under MIT and can control animations in web apps.
-
-Assets: You would need to buy or commission a small character/object rig library, or use a designer tool such as Rive/Spine/Lottie.
-
-Renderer: Browser-native, crisp on projectors, very cheap at runtime.
-
-Quality: Potentially the closest to TED-Ed/Kurzgesagt if you buy good art.
-
-Latency: Excellent after assets load.
-
-Coverage: Poor unless you commission a large library. A vector rig for “bicycle under ocean” does not exist unless someone makes it.
-
-Consistency: Excellent within the purchased library.
-
-V3 fit: Very good.
-
-Main risk: Cost and authoring bottleneck. This is the best paid path if you can afford a small art budget; it is a poor free path.
-
-Option C — LLM-generated SVG / programmatic vector scenes
-Idea: LLM emits a constrained SVG/Canvas scene program: shapes, layout, simple transforms, labels, arrows. Your renderer executes it.
-
-Quality: Good for graphs, geometry, circuits, fields, waves, integration strips, block diagrams. Bad for humans, animals, and natural scenes.
-
-Latency: Excellent.
-
-Coverage: High for abstract/mathematical concepts; low for narrative/physical scenes.
-
-Consistency: Good if you impose a design system: fixed palette, stroke widths, fonts, icon grammar.
-
-V3 fit: Moderate; good for explanatory panels, weak for character stories.
-
-Main risk: LLM-produced SVG often becomes visually messy. Do not let the model freely draw; give it a small component grammar.
-
-Option D — Consistent-character image generation
-Idea: Use SDXL/Flux-style models with character LoRA/IP-Adapter/ControlNet pose conditioning to make consistent frames, then interpolate or animate them.
-
-Reality on your hardware: Not viable as the primary live path. Your RTX 3050 has only 4 GB VRAM and already contends with Whisper; SD-Turbo already degraded from 0.41 s alone to 11.6 s under load. Character identity, multi-view pose consistency, object interaction, and readable physics annotation remain unsolved at this latency/cost tier.
-
-Use it only for: offline asset expansion, background plates, teacher-selected “deep dive” illustrations, or non-live exports.
-
-Main risk: It will consume your project. Image generation is seductive but does not produce an animation system.
-
-Option E — Text-to-video generation
-Idea: Send each utterance to a video model and display the result.
-
-Verdict: Drop for V2 live mode. Current consumer-grade video generation is too slow, too expensive, too inconsistent, and cannot reliably preserve physics, labels, characters, or continuity across an evolving lecture. It may become useful later for V3 “story scenes” as optional non-live cinematic cutaways, but not as the live classroom canvas.
-
-Option F — Game engine: Unity/Godot
-Idea: Move rendering/animation to Unity or Godot; Python remains the speech/LLM/physics orchestrator.
-
-Verdict: Possible, but unnecessary now. Your three.js renderer already achieves 144 fps and 2 ms/frame for motion, arrows, and expressions. Changing engines would cost months and not fix your actual bottleneck: assets. Revisit only if you need advanced IK, cloth, particles, or console-grade rendering.
-
-3. Recommended system
-Build Option A, with Option C as a second rendering mode for abstract concepts.
-
-Keep
-Live Whisper pipeline.
-
-Bounded-context LLM reasoning.
-
-Pydantic scene-operation contracts.
-
-Deterministic physics solvers.
-
-Camera, arrows, trajectories, focus/zoom.
-
-Imagine Mode and slide integration.
-
-Safety filter.
-
-Three.js renderer.
-
-Drop or demote
-Drop: SD-Turbo as a live per-line visual generator.
-
-Drop: photo search as a primary object source; it introduces style chaos and latency.
-
-Drop: AI-generated multi-view puppet sheets.
-
-Demote: emoji to fallback icons only, never main characters or central educational objects.
-
-Postpone: realistic faces, lip sync, detailed hair, full-body facial performance, arbitrary camera angles, photorealism.
-
-Change
-Replace “any image of anything” with “any recognizable, correctly behaving educational stand-in.”
-
-Replace “exact real-world size always” with “relative size correct within a readability budget.” A human and a bus should have plausible proportions; a virus and a planet should use explicit scale annotations.
-
-Replace “every view needs its own sheet” with 3D assets, which inherently support camera movement.
-
-Replace “LLM imagines the scene” with LLM selects/composes from a typed asset and action ontology.
-
-Not achievable live on current hardware
-Unique, style-consistent generated artwork for every spoken noun.
-
-High-fidelity character animation from text in ~2 seconds.
-
-Reliable video-generation continuity.
-
-Perfect open-vocabulary object coverage.
-
-Exact “Kurzgesagt animator” visual quality without professional art.
-
-The closest achievable version is: a polished low-poly 3D explainer stage with a growing curated asset library, procedural vector overlays for math/physics, and generated images only as delayed enrichment.
-
-4. Concrete tools and assets
-Free path now
-Layer	Tool / source	License / cost	Use
-Speech	faster-whisper medium.en	Local, free	Keep
-Reasoner	Groq Llama / gpt-oss	Free tier, rate-limited	Scene graph only
-Renderer	three.js 0.160	MIT	Existing canvas
-3D format	glTF / GLB	Open standard	Asset interchange
-Characters	Quaternius Universal Base Characters	CC0	Rigged, animated humans 
-Characters	Kenney Animated Characters	CC0	Additional rigged humanoids 
-Objects	Kenney asset kits	CC0	Vehicles, props, buildings, platformer/sci-fi kits 
-Animals/props	Quaternius packs	CC0	Farm animals, RPG/props, etc. 
-Physics	Your existing solvers; optionally Rapier.js	MIT/Apache-style	Deterministic motion and contact
-Vector overlays	SVG / Canvas2D / three.js lines	Free	Arrows, graphs, fields, formulas
-Asset indexing	SQLite + FTS5 + CLIP embeddings	Free	Semantic retrieval
-Safety	LLM classifier + blocklist + image/text checks	Free	Pre-render gate
-Paid / better-GPU path later
-Layer	Option	Role
-Reasoner	GPT-5-class / Claude / Gemini paid API	Better disambiguation and scene planning
-Asset expansion	Blender + Mixamo + purchased asset packs	Build proprietary library
-Illustration	SDXL/Flux on 12–24 GB GPU or paid API	Backgrounds, rare objects, slide stills
-Character consistency	LoRA / IP-Adapter / ControlNet	Generate new library assets offline, not live
-Art	Commission 20–50 rigged characters and 300–1,000 props	Highest-leverage spend
-2D polish	Rive/Spine designer assets	Premium explainer look
-Rive’s runtime is MIT-licensed and royalty-free, so it is technically safe to adopt later; the cost is in the designed animation files, not the runtime.
-
-5. Open-vocabulary fallback
-Use a four-tier resolver. Never show a random mismatched image just because a noun was recognized.
-
-Exact rigged asset: “man”, “car”, “box”, “ball”, “electron”, “planet”.
-
-Semantic family: “motorcycle” → vehicle rig with changed proportions/colour; “puppy” → dog rig with child scale.
-
-Parametric primitive: “sphere”, “ramp”, “wave”, “magnet”, “circuit element”, “graph”.
-
-Abstract token: a labelled, style-consistent placeholder: rounded 3D token, icon, or vector glyph with the word rendered beneath it.
-
-Example: teacher says “a quantum tunneling barrier.” If no asset exists, show a labelled translucent barrier object, not a wrong stock photo. This preserves trust and keeps the scene explainable.
-
-For rare nouns, enqueue an offline job: generate/reference an asset, human-review it, add it to the indexed library. Over a semester, coverage grows without compromising live quality.
-
-6. Scene schema
-Keep the LLM output small, typed, and patch-based. Do not ask it to write renderer code or physics equations.
+For example:
 
 json
 {
-  "utterance_id": "u_042",
-  "scene_patch": {
-    "add": [
-      {
-        "id": "man_1",
-        "type": "human",
-        "asset_query": "adult male casual",
-        "pose": "standing",
-        "position": [-2, 0, 0],
-        "facing": "+x"
+  "base_revision": 12,
+  "entities_added": [
+    {
+      "id": "apple_1",
+      "kind": "apple"
+    }
+  ],
+  "events": [
+    {
+      "type": "fall",
+      "actor": "apple_1",
+      "source": {
+        "entity": "tree_1",
+        "region": "canopy"
       },
-      {
-        "id": "box_1",
-        "type": "object",
-        "asset_query": "wooden crate",
-        "position": [0, 0, 0],
-        "mass_kg": 10
-      }
-    ],
-    "relations": [
-      {"subject": "man_1", "predicate": "pushes", "object": "box_1"}
-    ],
-    "actions": [
-      {
-        "actor": "man_1",
-        "verb": "push",
-        "target": "box_1",
-        "duration_s": 3,
-        "applied_force_n": 20
-      }
-    ],
-    "environment": {
-      "ground": "rough_concrete",
-      "friction_mu": 0.35
-    },
-    "overlays": [
-      {"kind": "force_arrow", "target": "box_1", "vector": "applied_force", "color": "blue"},
-      {"kind": "force_arrow", "target": "box_1", "vector": "friction", "color": "red"}
-    ],
-    "camera": {
-      "shot": "medium",
-      "focus": "box_1"
-    },
-    "unknown_terms": []
-  }
+      "destination": {
+        "entity": "newton",
+        "region": "head"
+      },
+      "completion": "contact"
+    }
+  ]
 }
-Rules
-The LLM may choose asset queries, relations, actions, camera intent, and unknown terms.
+That describes the intended event. Your compiler decides where in the canopy the apple starts, whether a downward path can reach the head, how long it takes, and how impact is drawn.
 
-It may not invent numeric results.
+The previous line’s sitting and under relations remain active unless explicitly changed.
 
-If the teacher states a number, put it in given_quantities; the solver validates dimensions and uses it.
+Relations must compile into constraints
+These are suggested mechanics, not claims about an existing turnkey library:
 
-Every entity has a persistent id, enabling “now he throws it harder” to become a patch, not a new scene.
+Semantic relation	Deterministic implementation
+Sitting on chair	Pelvis at seat anchor; feet and knees posed within joint limits
+Sitting under tree	Ground-sitting pose within canopy’s horizontal region, clear of trunk
+Holding flask	Prop grip anchor attached to hand; wrist and elbow solved around it
+Riding horse	Pelvis attached to saddle; rider moves with horse; legs layered around body
+Inside shed	Occupant placed within interior region; shed uses cutaway/front-wall policy
+Bird in sky	Assigned aerial region rather than ground baseline
+Falling onto head	Target-contact trajectory with impact event
+Speaking to friend	Speaker-bound bubble, head orientation, optional pointing gesture
+Two-bone IK is useful, but it does not choose the correct seat, determine what is inside a shed, or decide whether an action is physically possible. Those are capability and planning problems.
 
-Every action maps to an animation primitive plus a physics policy.
+For simple stick figures, implement analytic arm/leg IK yourself. You probably do not need a general-purpose constraint solver initially.
 
-If the action has no rig clip, use a composed fallback: move root, rotate limbs procedurally, or show an iconified action arrow.
+Replace the open verb list with a closed executable vocabulary
+Keep the original verb in metadata, but execute only supported operators:
 
-This matches the broader text-to-3D research pattern: LLM-derived scene graphs and layouts feed a separate rendering/simulation pipeline rather than generating pixels directly.
-
-7. Build order
-Phase 1 — Make one scene excellent 1–2 weeks
-Build the “man pushes box on rough floor” demo end to end:
-
-CC0 rigged human.
-
-CC0 crate.
-
-Ground, friction, applied force, deceleration.
-
-Push animation, force arrows, velocity readout.
-
-Persistent scene state.
-
-Camera focus.
-
-Success test: from a spoken sentence, first meaningful visual appears in under 2 seconds; box motion and displayed numbers match the solver; the same man remains visually identical after five follow-up commands.
-
-Phase 2 — Asset ontology and resolver 2–4 weeks
-Create 100–300 curated CC0 assets.
-
-Tag each with: name, synonyms, category, size, mass estimate, rig clips, material style, license, preview thumbnail.
-
-Build local semantic search: exact tag → synonym → CLIP embedding → fallback token.
-
-Preload the top 50 likely classroom assets.
-
-Phase 3 — General action layer 4–8 weeks
-Support 15–25 reusable actions:
-
-move, push, pull, throw, drop, jump, collide, orbit, wave, point, hold, follow, rotate, grow, split, connect, heat, shine, flow.
-
-Each action has:
-
-Required entities.
-
-Animation clip or procedural fallback.
-
-Physics solver.
-
-Overlay annotations.
-
-Continuity patch semantics.
-
-Phase 4 — V3 story mode
-Reuse the same scene graph. Add:
-
-Scene boundaries inferred from discourse markers.
-
-Persistent characters/places across scenes.
-
-Caption text restricted to teacher utterances.
-
-Camera transitions: pan, zoom, cut, focus.
-
-Storyboard timeline stored as an editable scene-state sequence.
-
-8. Research novelty
-Do not claim “we generate educational animations with an LLM.” That is not novel.
-
-Frame the contribution as:
-
-A continuity-aware, physics-grounded scene-graph compiler for live lecture visualization.
-
-Specific claims you can defend:
-
-Open-vocabulary but grounded visualization: speech is mapped to a typed asset/action ontology with explicit unknown-term fallback, rather than unconstrained image synthesis.
-
-Deterministic physics binding: natural-language actions are compiled into solver-backed motion policies; displayed quantities are computed, not hallucinated.
-
-Live incremental scene state: utterances produce reversible patches over a persistent entity/relationship graph, enabling continuity without regenerating scenes.
-
-Hybrid rendering policy: rigged 3D assets for actable entities, procedural vector overlays for quantitative concepts, and safe abstraction for unknown terms.
-
-Latency-aware orchestration: STT, LLM, retrieval, physics, and rendering are scheduled under a real-time budget on consumer hardware.
-
-Evaluate with metrics: first-visual latency, scene-edit success rate, physics correctness, entity persistence, style-consistency score, teacher interruption rate, and student comprehension/preference.
-
-9. Full system design
 text
-Microphone
-   ↓
-faster-whisper, GPU, streaming partial/final transcripts
-   ↓
-Utterance segmenter + safety filter
-   ↓
-Bounded-context LLM planner, Groq now / paid API later
-   ↓ JSON scene patch
-Scene-state store, persistent entities, relations, world state
-   ↓
-Deterministic compiler
-   ├─ Asset resolver: tags → synonyms → CLIP → fallback token
-   ├─ Physics planner: kinematics, forces, projectiles, fields, waves
-   ├─ Animation planner: clips, transitions, root motion, IK constraints
-   └─ Overlay planner: arrows, labels, graphs, equations
-   ↓
-Renderer command stream, WebSocket
-   ↓
-Browser three.js stage
-   ├─ 3D rigged actors/objects
-   ├─ Procedural vector overlay layer
-   ├─ Camera controller
-   └─ Slide/Imagine Mode compositor
-   ↓
-Projector
-Where things run
-GPU: Whisper only, plus browser WebGL through the laptop GPU.
+move, change_posture, attach, detach, look_at,
+point_at, speak, fall, follow_path, enter, exit
+Compound behaviours such as ride can compile into several operations.
 
-CPU: segmentation, retrieval, physics, compiler, WebSocket server.
+An unsupported verb must produce an explicit fallback, not a confident but unrelated gesture. “He forged an alliance” must not become a hammering animation merely because forge matches a physical action.
 
-Cloud: LLM reasoning only; optionally delayed image generation.
+Also separate explicit content from embellishment. “The apple hit him” does not necessarily assert that he looked surprised. You can add that as an approved stylistic convention, but do not let such embellishments silently become factual story state.
 
-Browser: rendering, animation mixing, camera, overlays.
+Persistent identity and scheduling matter as much as pose
+You also need:
 
-Hard rules
-LLM never writes runtime code.
+Stable entity IDs across sentences and pronouns.
 
-LLM never computes physics.
+Revision numbers to reject stale LLM responses.
 
-No number appears unless spoken or solver-derived.
+Explicit scene changes and time jumps.
 
-No unsupported action silently “works”; use a visible, honest abstraction.
+An event queue with interruptibility.
 
-Every visual change must be a patch with an undo/rollback path.
+A policy for contradictory or impossible instructions.
 
-A failed retrieval must degrade to a labelled abstraction, not a wrong picture.
+A distinction between foreground events and background loops.
 
-10. Traps
-Do not chase universal generation. It will consume the project and still fail consistency.
+Otherwise, the correct apple may hit a newly spawned Newton while the original Newton remains elsewhere.
 
-Do not mix visual families. One asset style per lecture; enforce it in the asset manifest.
+A further constraint: ≤3 seconds to begin an animation is not ≤3 seconds to finish it. If each sentence creates six seconds of sequential action, the display will fall progressively behind. Shorten, overlap, interrupt, or summarise events rather than allowing an unbounded queue.
 
-Do not build a puppet pipeline from AI sheets. You are recreating character art and rigging manually.
+3. Recommended stack and asset strategy
+My concrete choice
+text
+Existing Whisper pipeline
+        ↓
+One Groq call: sentence + compact world state + capability vocabulary
+        ↓
+Schema validation + entity/reference/capability checks
+        ↓
+Persistent semantic world + event compiler
+        ↓
+Anchor placement + simple IK + event scheduler
+        ↓
+PixiJS browser renderer
+Use TypeScript for the world model, compiler, scheduler, and renderer. Keep the existing Python service for Whisper and your physics teaching tools; do not introduce a Python round trip for every animation frame.
 
-Do not let the LLM choose camera angles freely. Use a small grammar: wide, medium, close-up, focus, over-shoulder, top-down.
+PixiJS is MIT-licensed and provides WebGL/WebGPU rendering. It is a suitable renderer, not a semantic animation engine—you still build the latter.
 
-Do not render ambiguous physics. If friction, mass, or initial velocity is unknown, show qualitative motion or ask the teacher through a non-intrusive control.
+For this prototype, use Pixi’s ticker and your own small tween/event system. GSAP is optional, not necessary. Start with a fixed side-view camera and a few deliberate layer bands. Dynamic camera selection introduces another failure mode before you have solved contact correctness.
 
-Do not treat “open vocabulary” as “correct depiction of anything.” Correct abstraction beats incorrect realism.
+Do not start with a giant SVG library
+Game Icons is available under CC BY 3.0, including commercial use with attribution. Iconify lists that set and its licence, but you must check the licence of whichever individual set you choose rather than treating “Iconify” as one blanket asset licence.
 
-Do not optimize image quality before interaction quality. A clean moving scene that follows the teacher is more valuable than a beautiful static image.
+The engineering limitation is more important than search coverage: an icon is not an interactive prop.
 
-Do not put generation in the 2-second path. Use it asynchronously or offline.
+A horse silhouette does not tell your system:
 
-11. Development and evaluation tips
-Build a golden utterance set: 100 real lecture lines covering physics, biology, math, history, and absurd cases.
+Where the saddle is.
 
-For each, define required entities, relations, action, physics invariant, and camera intent.
+Which way the horse faces.
 
-Use Playwright screenshots only as regression checks; judge quality with a fixed rubric:
+Which leg should appear in front of the rider.
 
-Readability at 3 m.
+Whether it can animate.
 
-Correct causal motion.
+Where reins should attach.
 
-Correct labels/arrows.
+Prepare an offline asset manifest:
 
-Character consistency.
+text
+horse:
+  rig_type: quadruped
+  anchors: saddle, mouth, feet
+  capabilities: rideable, locomotion
+  layers: rear_legs, body, front_legs
+For a tree, store trunk bounds, canopy region, ground contact, and optional branch anchors. For a chair, store seat and backrest geometry.
 
-Style coherence.
+Automatic geometry analysis can propose bounding boxes, bases, and extrema. It cannot reliably infer semantic affordances from arbitrary SVG paths. Treat auto-anchors as offline authoring assistance requiring review, not as a solved runtime feature.
 
-Latency.
+Start with perhaps 20–40 carefully prepared asset families, not thousands of unprepared icons. That number is a proposed scope, not a coverage estimate.
 
-Use a “three-strike” rule: if an asset needs more than three manual fixes, replace it with a better library asset or a labelled abstraction.
+Use a consistent line weight, palette, character proportions, and ground treatment. Otherwise, the result will remain an icon collage even if everything moves.
 
-Buy/reuse assets before building them. Your highest-value purchase is not a bigger model; it is a small, coherent, rigged asset library.
+Famous people
+Use offline-made, owned or properly licensed heads on the same body rig.
 
-Keep a visible “Imagination Confidence” state internally: exact asset, family match, procedural, or abstract. Log it for the paper.
+A wig, beard, glasses, and hair-colour compositor is useful for generic people. It is not a reliable recognisable-person generator. Curated heads plus short name labels are more defensible.
 
-12. Extra product ideas
-Teacher control pad: pause imagination, undo last scene, force camera focus, approve an ambiguous interpretation.
+Keep head artwork independent of the body so that a better artist can replace it without changing the motion system.
 
-Concept trail: a small timeline showing how the current scene evolved from prior utterances.
+Rive, Spine, and Lottie
+Rive runtimes are MIT-licensed; its editor and authoring arrangements are a separate consideration. Rive is worth considering if someone will author polished reusable character rigs. It still does not solve sentence interpretation or cross-object contacts.
 
-Student replay: after class, export an interactive scene with captions and computed values.
+For your first implementation:
 
-Misconception mode: when the teacher says something physically inconsistent, visualize both the stated claim and the corrected model, clearly labelled.
+Prefer direct PixiJS rigs.
 
-Concept snapshots: automatically save each stable scene as a slide-ready PNG/SVG with citations to the utterance timestamp.
+Consider Rive later for authored character polish.
 
-Multilingual reuse: keep the scene graph language-neutral; translate only captions and UI strings.
+Do not make Spine a dependency while “zero cost” is a hard requirement without reviewing its specific editor/runtime terms.
 
-Bottom line
-Your best path is not better image generation. It is to stop trying to generate an animator and instead build a live, physics-grounded explainer game engine powered by a curated rigged 3D asset library, a typed scene graph, deterministic solvers, and disciplined visual abstraction.
+Treat Lottie as a candidate for self-contained effects, not the core arbitrary-interaction system.
 
-That will not literally match Kurzgesagt tomorrow, but it can produce a credible, live, publishable system: a classroom canvas where what the teacher says appears, moves correctly, stays consistent, and explains the concept—within the hardware and latency you actually have.
+Those are architectural recommendations, not claims that these tools cannot support more elaborate integrations.
+
+4. Motion retrieval and text-to-motion models
+Retrieval is more appropriate than live generation—but optional
+For this product, I would initially use authored procedural cycles and contact poses, not a large mocap database.
+
+If you later add retrieval, do it this way:
+
+Select and clean a small set of motions offline.
+
+Retarget them to your rig offline.
+
+Precompute labels or embeddings.
+
+Retrieve locally.
+
+Apply root placement, contact correction, and transitions at runtime.
+
+A retrieved “sitting” motion does not know your chair height. A “riding” pose does not know your horse. Contact correction remains necessary.
+
+Projecting 3D mocap directly into 2D also creates artistic problems: overlapping limbs, foreshortening, and motions that become unreadable from the chosen camera. It is a source of motion material, not an automatic stick-video style converter.
+
+Model and dataset assessment
+Candidate	Verified licence information	Assessment for this project
+T2M-GPT	Repository code is Apache 2.0. 
+Do not put it on the initial live path. No verified shared-4-GB/CPU latency here.
+MoMask	Official code is MIT; repository explicitly warns that dependencies and datasets have separate terms. 
+Potential offline motion source or later experiment; not a contact/planning solution.
+MDM	Code is MIT. Current repository advertises an accelerated version at approximately 0.4 seconds/sample. 
+That headline does not establish your end-to-end latency on an unspecified laptop sharing VRAM with Whisper.
+AMASS	Licence permits specified non-commercial research, educational, and artistic uses; commercial use and redistribution are restricted. 
+Do not bundle it or assume it is commercially reusable.
+HumanML3D	Its data provenance includes underlying datasets with their own terms; an accessible code repository does not establish unrestricted data rights. 
+Useful research resource; clear the exact data and checkpoint rights before shipping.
+KIT-ML	Official site offers the dataset for download; that statement alone does not establish a permissive redistribution/commercial licence. 
+Treat exact rights as unresolved until you inspect the release and underlying motion terms.
+There is evidence that motion generation itself can be fast: Light-T2M reports 0.152 seconds versus 0.180 seconds for MoMask in its comparison. Those figures are paper-specific inference measurements, not measurements of your laptop, Whisper concurrency, model loading, rendering, or scene planning.
+
+So the honest answer to “are these fast enough on 4 GB/CPU?” is:
+
+Some models may fit and some may generate quickly, but I do not have evidence establishing your deadline on that hardware. None removes the main engineering problem, so they are a poor first dependency.
+
+Keep code, checkpoint, dataset, body-model, and asset licences separate. An MIT model implementation does not grant rights to every dataset or checkpoint used with it.
+
+5. Latency: your budget is already tight
+Using your supplied estimates, the serial path is approximately:
+
+Stage	Planning estimate
+Final Whisper transcript	0.5–1.5 s, supplied by you
+One Groq request	1–2 s, supplied by you; not a guaranteed service bound
+Validation, local asset lookup, scene compilation	Target 10–100 ms; must benchmark
+First displayed frame	Target next frame; must benchmark
+Total	Roughly 1.5–3.6 s before additional tail delays
+These are planning estimates, not measured performance results.
+
+The 2–3 second target is plausible for typical cases, but not guaranteed. At the slow end of your own STT and LLM estimates, you already exceed it.
+
+Possible improvements:
+
+Prepare semantic interpretations from stable partial transcripts.
+
+Commit only when the transcript is sufficiently stable.
+
+Preload every live asset.
+
+Send compact state deltas, not the full story.
+
+Make exactly one inference call per committed beat.
+
+Avoid mandatory repair calls.
+
+Reject invalid output and retain the last correct scene.
+
+Do not depend on live asset downloads.
+
+Speculative partial-transcript processing helps latency, but creates correction complexity. Do not present it as free speed.
+
+The free-tier token budget is a material blocker
+Groq’s published free-plan table lists both gpt-oss-20b and gpt-oss-120b at 30 requests/minute, 8,000 tokens/minute, 1,000 requests/day, and 200,000 tokens/day. Exact organisation limits must be checked in account settings.
+
+At ten sentences/minute:
+
+2,000 uncached total tokens/call requires about 20,000 tokens/minute.
+
+An 8,000-token/minute allowance permits about 800 tokens/call on average.
+
+Therefore, “a few thousand tokens per line is OK” is not generally compatible with sustained sentence-by-sentence operation on that allowance.
+
+Groq states cached tokens do not count toward rate limits, so stable prompt caching may help; it does not eliminate the need to measure actual account usage.
+
+Build a token-budget test before investing in animation polish. A working five-line demo is not evidence of a working 40-minute lecture.
+
+Frame rate is a separate metric
+A smooth 60 fps renderer can still display an incorrect or late scene.
+
+For a modest number of simple characters, 30–60 fps is a reasonable engineering target, including on integrated graphics. It is not established merely by “4 GB GPU”: CPU, browser, projector resolution, effects, and Whisper contention matter.
+
+Measure with Whisper running and the projector connected.
+
+6. Expected quality and your seven sentences
+Expect a coherent animated diagram or modest stick-figure theatre—not a hand-directed YouTube film.
+
+A good bounded implementation can provide:
+
+Real walking and posture changes.
+
+Correct attachment and object contact.
+
+Persistent identities.
+
+Consistent visual style.
+
+Readable facial reactions and speaker bubbles.
+
+Simple camera pans and scene transitions.
+
+What it will lack is a human animator’s advance knowledge: staging future events, acting through pauses, choosing the most informative shot, varying gesture, and revising visual jokes. It cannot anticipate an unrevealed next sentence.
+
+The following judgments assume the relevant assets and mechanics have been implemented; they are not measured success rates.
+
+Sentence	Likely result	Required implementation / likely failure
+“Newton was sitting under an apple tree.”	Good	Ground-sit pose, curated head, canopy-aware placement. Do not invent a chair. “Under” alone is insufficient.
+“An apple fell on his head.”	Good with preceding context	Resolve “his”; preserve Newton’s position; spawn or identify an apple; choose a feasible fall path; trigger contact and reaction.
+“Napoleon’s army crossed the Alps in winter.”	Schematic, not literal spectacle	Use a representative marching group, mountain route, and snow. Full armies traversing arbitrary terrain are outside the small prototype. Crossing requires a route, not merely soldiers beside mountains.
+“Marie Curie worked day and night in a cold shed.”	Partial	Shed cutaway, curated Curie, day/night transition, cold cues. “Worked” does not specify the activity; avoid inventing a particular experiment as fact.
+“The drop of water rises into the clouds.”	Good visually	Nonhuman entity following an upward path into a cloud region. As an educational choice, distinguish a personified water-drop story from a literal depiction of evaporation.
+“The boy rode his horse to the village.”	Good only with a deliberately supported horse	Saddle attachment, rider pose, layered legs, horse locomotion, destination path. A retrieved horse SVG alone will not solve it.
+“Einstein said to his friend, time is relative.”	Good	Two persistent characters, Einstein head, speaker-bound bubble, gaze toward friend. This depicts the supplied dialogue; it does not authenticate it as a historical quotation.
+Likely weak cases include:
+
+Ambiguous pronouns with several plausible referents.
+
+Novel manipulable tools.
+
+Dressing, tying knots, surgery, wrestling, and complex two-person contact.
+
+Crowds interacting individually.
+
+Arbitrary quadrupeds and unusual body plans.
+
+Metaphorical verbs.
+
+Nested interiors and difficult occlusion.
+
+Scientific processes whose mechanics are not supplied by the sentence.
+
+Long action chains arriving faster than they can be shown.
+
+A water-drop journey and a blood-cell journey also need different world mechanics. You can reuse identities, paths, containment, and camera control, but not assume that a human motion library gives you biology or fluid-process coverage.
+
+7. The smallest useful 1–2 day proof
+Do not build a broad story demo. Build a relation-correctness test.
+
+Day 1: remove the LLM entirely
+Implement:
+
+One attractive stick rig.
+
+Tree, apple, chair, flask, and horse assets.
+
+Ground-sit, chair-sit, hold, ride, look, and fall behaviours.
+
+Named anchors.
+
+Persistent world state.
+
+JSON-driven events.
+
+Feed hand-written semantic JSON into the engine.
+
+Demonstrate:
+
+A person sits under a tree.
+
+An apple falls onto that person’s head.
+
+The person holds a flask.
+
+A rider stays attached while a horse moves.
+
+The horse can have a simple deliberately authored cycle; it does not need naturalistic animation.
+
+This isolates the failure that killed your previous attempt. If hand-written correct JSON still produces “beside” instead of “on,” the LLM is not the issue.
+
+Day 2: add one constrained Groq call
+Use the same runtime, then test unseen substitutions and paraphrases:
+
+“A girl sat beneath the tree.”
+
+“She picked up the flask.”
+
+“The boy mounted the horse.”
+
+“It carried him toward the village.”
+
+“The apple fell beside him, not onto him.”
+
+“He stood up but kept holding it.”
+
+Include negative cases. A system that always attaches an apple to a head can pass the Newton demo while failing language understanding.
+
+Suggested go/no-go gates:
+
+Test	Proposed gate
+Deterministic contacts with hand-written JSON	No visible detachment in tested poses
+Local constraint assertions	Pass every supported test
+Unseen supported paraphrases	At least 18/20 correct without per-sentence fixes
+Unsupported action	Explicit fallback; no silently fabricated mechanic
+Sentence-end to first correct visual	Measure median and p95; p95 ≤3 s if the deadline is truly hard
+Continuous lecture-rate replay	No growing event queue or quota failure
+Renderer under actual STT load	Stable 30 fps minimum
+Visual acceptance	You actually accept the rig and four demonstrations
+Those thresholds are proposed acceptance criteria, not published benchmarks.
+
+A two-day proof can validate the architecture and visual direction. It cannot establish broad story coverage.
+
+8. Existing projects: what is genuinely reusable?
+Stick-Gen: relevant, but not proof of your requirement
+gestura-ai/stick-gen is unusually close in stated scope. Its repository describes text-to-stick animation, structured script schemas, action mapping, motion export, and a decoupled browser-rendering path. It claims CPU inference around two seconds for its small variant and 60 fps playback of exported motion. Those are repository claims, not an independently verified result under your conditions.
+
+Important caveats:
+
+Its current licence is a custom Prosocial Public License variant, not straightforward MIT/Apache; the README describes revenue-sharing conditions for certain commercial users.
+
+It reports use of AMASS and other motion datasets whose rights need separate examination.
+
+Its advertised motion inference time does not establish continuous sentence-by-sentence scene editing, correct contacts, or end-to-end latency.
+
+Potentially reusable material: schema design, skeleton conversion, motion-file format, and rendering concepts. Review the exact file/version licence before copying code.
+
+I would inspect it, but I would not make it the foundation before reproducing your four contact tests.
+
+Motion Canvas: useful animation infrastructure, not natural-language understanding
+Motion Canvas is an MIT-licensed TypeScript animation system with a real-time editor, designed for informative vector animations synchronised with voice-overs.
+
+It is relevant for deterministic effects and offline authoring. It is not an existing solution to unrestricted text → live, contact-correct character animation. Under your architecture, developers could write reusable animation primitives in it; the LLM would still emit only data.
+
+What I would actually reuse
+PixiJS for rendering.
+
+Owned/properly licensed offline artwork.
+
+A small custom rig and contact engine.
+
+Motion Canvas ideas or components where they save implementation work.
+
+Selected mocap only later, after licensing and contact correction are settled.
+
+I did not find a demonstrated, drop-in project establishing all your requirements together.
+
+Investment recommendation
+Approve the two-day relation-first proof. Do not approve weeks of motion-model integration or mass SVG ingestion yet.
+
+The viable direction is a bounded, extensible animation engine that accepts open language—not a general animation generator. Its decisive asset will be the quality of its capability contracts, contact constraints, and continuity handling. If that bounded product is unacceptable, the full requirement is not achievable reliably under the stated constraints.

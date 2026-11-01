@@ -80,6 +80,8 @@ class _Open:
     used: list[str] = field(default_factory=list)            # image ids shown (not offered again)
     tasks: list[asyncio.Task] = field(default_factory=list)
     fetching: set[str] = field(default_factory=set)
+    opened_at: float = 0.0                     # ST4: the latency budget (first picture <= 10 s after the cue)
+    pictured: bool = False
     scene_emoji: dict[str, str] = field(default_factory=dict)  # scene id -> its emoji name (filled when fetched)
     outbox: list[ImageRequested] = field(default_factory=list)  # searches asked while building, sent after the put
     mentioned: list[str] = field(default_factory=list)       # ST2: cast ids, the most recently said last
@@ -203,7 +205,7 @@ class StoryController:
             await self._retire(old)
         mode.cues = (text,)  # test51: a recap bullet restating the cue ("Albert Einstein story begins") is dropped
         spec = await e._sims.place(mode, block, title, "spoken cue" if origin == "cue" else origin)
-        self.open = o = _Open(block.id, spec.id, shown_at=e.now())
+        self.open = o = _Open(block.id, spec.id, shown_at=e.now(), opened_at=e.now())
         await self._clear_suggestion()
         self.stats.stories += 1
         log.info("[STORY] open: %s (%s)", title, origin)
@@ -236,6 +238,8 @@ class StoryController:
         key = _norm(text)
         if any(_norm(x) == key for sc in self._story(o).scenes for x in sc.lines):
             return ""  # a repeat changes nothing
+        if beats.aside(text):
+            return ""  # ST4: class talk is read on the fast path (0 tokens)
         return sx.needs_llm(text, beats.speech(text), beats.beat(text))
 
     async def _drain(self, o: _Open) -> None:
@@ -337,6 +341,9 @@ class StoryController:
             joined = first.lower() if first.lower() in ("a", "an", "the", "his", "her", "their") else first
             text, o.fragment = f"{o.fragment} {joined} {rest}".strip(), ""
         b = beats.beat(text)
+        if ans is None and beats.aside(text) and not (b.when or b.where or b.names or b.people):
+            log.info("[STORY] aside: %r is not a story line", text[:60])
+            return
         if ans is not None and ans["type"] == "narration":
             b = _with(b, ans)
         if not b.caption and story.scenes:
@@ -703,6 +710,9 @@ class StoryController:
                   for s in story.scenes]
         self.stats.images += 1
         log.info("[STORY] image for %r in %.1f s (%s)", ev.query, ev.seconds, credit or "?")
+        if not o.pictured:
+            o.pictured = True
+            log.info("[STORY] first picture %.1f s after the cue (budget 10 s)", self.e.now() - o.opened_at)
         await self._put(o, story.model_copy(update={"scenes": scenes}))
         return True
 
@@ -895,5 +905,7 @@ def title_of(text: str) -> str:
     if not p:
         b = beats.beat(text)
         head = " and ".join(b.names[:2]) or (b.where if b.where[:1].isupper() else "")
-        return ", ".join(x for x in (head, b.when if b.when[:1].isdigit() else "") if x) or "Story"
+        head = head or (b.people[0] if b.people else "")  # ST4: "Once upon a time, a little girl ..."
+        out = ", ".join(x for x in (head, b.when if b.when[:1].isdigit() else "") if x) or "Story"
+        return out[:1].upper() + out[1:]
     return p[:1].upper() + p[1:]

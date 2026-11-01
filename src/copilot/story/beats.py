@@ -35,10 +35,11 @@ _AUX = r"(?!(?:is|was|are|were|be|been|being|has|had|have|will|would|can|could|s
 _SPEAKER = (r"(?:(?i:the|his|her|their|my|our|a|an)\s+(?:" + _AUX + r"[a-z]+\s+)?" + _AUX + r"[a-z]+(?=\s+(?:then\s+|also\s+)?(?:(?:was|is|were|kept)\s+)?(?:" + _VERBS
             + r")\b)|[A-Z][a-z]*(?:\s+[A-Z][a-z]+)?|he|she|they)")
 _TARGET = r"(?:[A-Z][a-z]+|him|her|them|me|us|(?:the|his|her|their)\s+[a-z]+)"
-_LEAD = r"^\W*(?:(?i:and|then|so|now|but|one day|later|suddenly|finally|next|after that)\W+)*"
+_LEAD = r"^\W*(?:(?i:and|then|so|now|but|one day|later|suddenly|finally|next|after that|once upon a time|long ago)\W+)*"  # ST4: the cue line's speech
 _QUOTES = "\"“”‘’'"
 _SAY_FIRST = re.compile(
     _LEAD + rf"(?P<who>{_SPEAKER})\s+(?:then\s+|also\s+|quickly\s+|softly\s+|loudly\s+)?(?:(?:was|is|were|kept)\s+)?(?P<verb>{_VERBS})\b"
+    r"(?:\s+(?i:himself|herself|themselves|itself)(?=\s*[,:]))?"  # ST4: "asked himself, why ...": no addressee
     rf"(?:\s+(?:to\s+(?P<to>{_TARGET})|(?P<obj>{_TARGET})(?=\s*[,:\"“]|\s+(?:do|did|are|is|can|will|what|why|how|where|when|who|if)\b)))?"
     r"\s*(?P<rest>.*)$", re.DOTALL)
 _SAY_AFTER = re.compile(
@@ -108,6 +109,21 @@ def quote_only(text: str) -> str:
     return _clean_words(text)
 
 
+_ASIDE = re.compile(
+    r"^\W*(?:(?:okay|ok|so|now|right|alright|sorry)\W+)*(?:(?:everyone|class|students|children)\s*[,!?]"
+    r"|let me (?:move|go|turn|switch|change|scroll)\b"
+    r"|(?:look|see)\s+(?:at\s+)?(?:the|this)\s+(?:picture|slide|screen|board|image)"
+    r"|look (?:here|carefully)|listen (?:carefully|to me)|write (?:this|it) down|can (?:you|everyone) (?:all )?see)",
+    re.IGNORECASE)
+
+
+def aside(text: str) -> bool:
+    """ST4: the teacher talking to the class ("Okay, look at the picture carefully"): not a story line."""
+    if re.search(rf"\b(?:{_VERBS})\b", text, re.IGNORECASE) or any(q in text for q in "\"“”"):
+        return False  # review: "Look here, said the king, ..." is story speech (the LLM may read it)
+    return bool(_ASIDE.match(text))
+
+
 # ---- beats ----------------------------------------------------------------------------------------------------
 _YEAR = re.compile(r"\b(?:in|by|around|during|until|from|back in|of)\s+(?:the\s+year\s+)?((?:1[0-9]|20)\d{2})\b"
                    r"(?!\s*(?:kg|g|m|km|metres?|meters?|people|times|%|degrees))", re.IGNORECASE)
@@ -121,6 +137,7 @@ _TIME = re.compile(
 _SEQ = re.compile(r"^\W*(?:(?:and|so|now|okay|ok)\W+)*(?:then|next|later|after that|afterwards|soon|finally|"
                   r"eventually|meanwhile|suddenly|at last|in the end)\b", re.IGNORECASE)
 _PREP = r"(?:in|at|to|into|from|near|inside|through|across|reaches|reached|reach|enters|entered|onto|towards|toward)"
+_PREP_COMMON = _PREP[:-1] + r"|on)"  # ST4: "on a mountain" (a place word only; "depended on Mary" is no place)
 _PLACE_PROPER = re.compile(rf"\b{_PREP}\s+(?:the\s+)?((?:[A-Z][a-z]+)(?:\s+[A-Z][a-z]+){{0,2}})\b")
 STORY_PLACES = frozenset({
     "office", "patent office", "school", "home", "house", "garden", "park", "forest", "village", "lab", "laboratory",
@@ -128,9 +145,18 @@ STORY_PLACES = frozenset({
     "capillaries", "body", "stomach", "intestine", "blood", "bloodstream", "leaf", "leaves", "roots", "soil", "ground",
     "library", "classroom", "market", "palace", "castle", "ship", "train", "university", "playground", "room",
     "city", "town", "jungle", "cave", "island", "sun", "moon", "earth", "planet", "plant", "tree", "brain", "cell",
-    "kidney", "kidneys", "liver"})
+    "kidney", "kidneys", "liver", "mountain", "mountains", "hill", "hills", "river", "sea", "ocean", "lake"})
 _PLACE_WORDS = frozenset(w for ws in pics.PLACES.values() for w in ws) | STORY_PLACES
-_PLACE_COMMON = re.compile(rf"\b{_PREP}\s+((?:the|a|an|its|his|her|their|our)\s+(?:[a-z]+\s+)?[a-z]+)\b")
+_MOVE_PLACE = re.compile(  # ST4: "wandered into a muddy ditch", "climbed onto the haystack": a place said by the move
+    r"\b(?:went|goes|walked|walks|ran|runs|moved|moves|climbed|climbs|wandered|wanders|flew|flies|drove|drives|"
+    r"sailed|sails|travelled|traveled|travels|came|comes|returned|returns|jumped|jumps|rode|rides|swam|swims|"
+    r"hurried|rushed|crawled|crept|fled|escaped)\s+(?:up\s+|down\s+|back\s+|out\s+|away\s+)?"
+    r"(?:into|onto|to|towards|toward|inside|across|through)\s+((?:the|a|an)\s+(?:[a-z]+\s+)?[a-z]+)\b")
+_NOT_PLACE_HEAD = frozenset("way time end top bottom middle side front back rest idea moment of and or with for "
+                            "his her their its decision problem problems rage hurry stop halt sleep agreement race pace "
+                            "conclusion standstill fight trouble deal close realisation realization life power "
+                            "rescue aid help start finish surprise shock".split())
+_PLACE_COMMON = re.compile(rf"\b{_PREP_COMMON}\s+((?:the|a|an|its|his|her|their|our)\s+(?:[a-z]+\s+)?[a-z]+)\b")
 PERSON_NOUNS = frozenset({
     "man", "woman", "boy", "girl", "child", "kid", "clerk", "scientist", "king", "queen", "prince", "princess",
     "farmer", "teacher", "student", "doctor", "soldier", "merchant", "sailor", "friend", "mother", "father",
@@ -224,6 +250,10 @@ def beat(text: str) -> Beat:
         tail = " ".join(ws[-2:]) if len(ws) >= 3 else ws[-1]
         if tail in _PLACE_WORDS or ws[-1] in _PLACE_WORDS:
             common.append(ph if ws[0] in ("the", "a", "an") else "the " + " ".join(ws[1:]))
+    if not common:
+        m = _MOVE_PLACE.search(plain)
+        if m and m.group(1).split()[-1] not in PERSON_NOUNS and not _NOT_PLACE_HEAD & set(m.group(1).split()):
+            common = [m.group(1).lower()]
     b.where = (proper or common or [""])[0]
     b.names = _names(text, set(proper))
     b.people = [re.sub(r"\s+", " ", m.group(0).strip()).lower() for m in _PERSON.finditer(text)]

@@ -1,0 +1,329 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (12.5 s)
+[INIT]  live speech model distil-small.en ready (2.8 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.6 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  story: on
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_1         openai/gpt-oss-120b            19k of 200k tokens IN USE
+        GROQ_API_KEY_2         openai/gpt-oss-120b           149k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b           191k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b           132k of 200k tokens ok
+        GROQ_API_KEY_6         openai/gpt-oss-120b            41k of 200k tokens ok
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              198k of 200k tokens IN USE
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 191 lecture minutes
+
+[READY] session 20261101-222819-1e60
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+22:28:45 INFO    copilot.visuals.service: CLIP ready in 1.0 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    1.9s] Today we look at how ideas about gravity grew over the years. (828 ms)
+22:29:11 INFO    copilot.simulation.detector: [SIM] values - {}
+22:29:11 INFO    copilot.presentation.simulations: [SIM] values -: ignore (values, but no simulation is open)
+22:29:13 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Gravity, Historical Development)
+  [UNDERSTAND] Gravity > Historical Development (new_topic) acts=transition hint=none lines=1 via groq_main#1 1262 ms
+               Introduced the lesson on the historical development of ideas about gravity.
+22:29:13 INFO    copilot.presentation.engine: planner: noop Gravity > Historical Development (nothing to display)
+  [   10.7s] Let me tell you the story of Isaac Newton. (645 ms)
+22:29:18 INFO    copilot.story.detector: [STORY] cue 'Let me tell you the story of Isaac Newton.'
+22:29:18 INFO    copilot.presentation.simulations: [SIM] story mode on: Isaac Newton on its own slide (cue)
+22:29:18 INFO    copilot.presentation.story: [STORY] open: Isaac Newton (cue)
+22:29:18 INFO    copilot.presentation.story: [STORY] scene 1: 'Isaac Newton.' (when '', where '', query 'Isaac Newton')
+  [SLIDE] add    'Isaac Newton' [simulation] v1 (1 items)
+  [SLIDE] update 'Isaac Newton' [simulation] v2 (1 items)
+  [SLIDE] update 'Isaac Newton' [simulation] v3 (1 items)
+  [UNDERSTAND] Gravity > Historical Development (same_concept) acts=explanation hint=concept lines=1 via groq_main#1 1483 ms
+               Introduced Isaac Newton in the history of gravity
+22:29:20 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+22:29:25 INFO    copilot.visuals.finder: image search 'Isaac Newton' (photo): 8 candidate(s), 3 accepted (0 labelled), 6.18 s {'search_s': 2.25, 'download_s': 1.51, 'clip_s': 0.35, 'full_s': 1.99, 'total_s': 6.18}
+22:29:25 INFO    copilot.presentation.story: [STORY] image for 'Isaac Newton' in 6.2 s (wikipedia · Public domain · Godfrey Kneller)
+22:29:25 INFO    copilot.presentation.story: [STORY] first picture 6.2 s after the cue (budget 10 s)
+  [IMAGE] 'Isaac Newton' -> File:GodfreyKneller-IsaacNewton-1689.jpg (6.2 s)
+  [SLIDE] update 'Isaac Newton' [simulation] v4 (1 items)
+  [   18.0s] In 1661, Newton went to Cambridge to study. (593 ms)
+22:29:27 INFO    copilot.story.detector: [STORY] edit 'In 1661, Newton went to Cambridge to study.'
+22:29:27 INFO    copilot.presentation.story: [STORY] scene 2: 'In 1661, Newton went to Cambridge to study.' (when '1661', where 'Cambridge', query 'Cambridge')
+  [SLIDE] update 'Isaac Newton' [simulation] v5 (1 items)
+22:29:27 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Gravity > Historical Development (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 1252 ms
+               Newton traveled to Cambridge in 1661 to study
+22:29:29 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+22:29:33 INFO    copilot.visuals.finder: image search 'Cambridge' (photo): 8 candidate(s), 2 accepted (0 labelled), 5.62 s {'search_s': 1.77, 'download_s': 1.57, 'clip_s': 0.33, 'full_s': 1.88, 'total_s': 5.62}
+22:29:33 INFO    copilot.presentation.story: [STORY] image for 'Cambridge' in 5.6 s (wikipedia · CC BY-SA 4.0 · Jean-Christophe BENOIST)
+  [IMAGE] 'Cambridge' -> File:Cambridge - Kings College vue des backs.jpg (5.6 s)
+  [SLIDE] update 'Isaac Newton' [simulation] v6 (1 items)
+  [   25.8s] In 1665, a plague closed the university. So he went home to (616 ms)
+22:29:37 INFO    copilot.story.detector: [STORY] edit 'In 1665, a plague closed the university. So he went home to'
+22:29:37 INFO    copilot.presentation.story: [STORY] 'Isaac Newton' is 'he' (said)
+22:29:37 INFO    copilot.presentation.story: [STORY] scene 3: 'In 1665, a plague closed the university. So he wen' (when '1665', where '', query 'Isaac Newton')
+  [SLIDE] update 'Isaac Newton' [simulation] v7 (1 items)
+22:29:37 INFO    copilot.simulation.detector: [SIM] values - {}
+  [   32.3s] Woolstrop (476 ms)
+22:29:38 INFO    copilot.story.detector: [STORY] edit 'Woolstrop'
+22:29:38 INFO    copilot.presentation.story: [STORY] 'Woolstrop' alone: the place of scene 3
+  [SLIDE] update 'Isaac Newton' [simulation] v8 (1 items)
+22:29:42 INFO    copilot.visuals.finder: image search 'Woolstrop' (photo): 1 candidate(s), 0 accepted (0 labelled), 3.40 s {'search_s': 2.1, 'download_s': 1.14, 'clip_s': 0.15, 'full_s': 0.0, 'total_s': 3.4}
+22:29:42 INFO    copilot.presentation.story: [STORY] image 'Woolstrop': none (no relevant image)
+  [IMAGE] 'Woolstrop' -> none (no relevant image) (3.4 s)
+  [   41.7s] One day, he sat under an apple tree in the garden. (611 ms)
+22:29:50 INFO    copilot.story.detector: [STORY] edit 'One day, he sat under an apple tree in the garden.'
+22:29:50 INFO    copilot.presentation.story: [STORY] scene 4: 'One day, he sat under an apple tree in the garden.' (when 'one day', where 'the garden', query 'garden')
+  [SLIDE] update 'Isaac Newton' [simulation] v9 (1 items)
+22:29:50 INFO    copilot.simulation.detector: [SIM] values - {}
+22:29:50 INFO    copilot.presentation.story: [STORY] image for 'garden' in 0.1 s (wikipedia · CC BY-SA 3.0 · Spedona ( Spedona ))
+  [IMAGE] 'garden' -> File:Bagatelle roseraie classique01.jpg (0.1 s, cached)
+  [SLIDE] update 'Isaac Newton' [simulation] v10 (1 items)
+22:29:50 WARNING copilot.understanding.interpreter: interpretation from groq_main#1: numbers kept as said: 'Newton traveled to Cambridge in 1661; in 1665 a plague closed the university, so he returned home' dropped
+22:29:50 INFO    copilot.understanding.interpreter: dropped 1 revision(s) with unknown refs
+22:29:50 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['In 1665, a plague closed the university']
+  [UNDERSTAND] Gravity > Historical Development (elaboration) acts=explanation,explanation hint=key_points lines=2 via groq_main#1 1742 ms
+               Added that a 1665 plague forced Newton to leave Cambridge and go home.
+  [HEARD] 'Woolstrop' -> '(unintelligible)' corrected on the slide (0.5)
+22:29:50 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+22:29:53 WARNING copilot.llm.router: LLM groq_main now uses GROQ_API_KEY_2 (GROQ_API_KEY_1 is spent)
+  [UNDERSTAND] Gravity > Historical Development (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 1391 ms
+               Added the anecdote of Newton sitting under an apple tree.
+22:29:54 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   49.4s] An Apple Fill to the ground near him. (567 ms)
+22:29:57 INFO    copilot.story.detector: [STORY] edit 'An Apple Fill to the ground near him.'
+22:29:57 INFO    copilot.presentation.story: [STORY] llm asked (place unread): 'An Apple Fill to the ground near him.'
+22:29:58 INFO    copilot.presentation.story: [STORY] llm answer taken: {'type': 'narration', 'when': '', 'where': '', 'people': ['Apple Fill'], 'new_scene': False}, 808 tokens, 0.63 s
+22:29:58 INFO    copilot.presentation.story: [STORY] scene 5: 'An Apple Fill to the ground near him.' (when '', where '', query 'Apple Fill')
+  [SLIDE] update 'Isaac Newton' [simulation] v11 (1 items)
+  [UNDERSTAND] Gravity > Historical Development (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 1568 ms
+               Added the detail that an apple fell near Newton.
+  [HEARD] 'Fill' -> 'fell' corrected on the slide (0.5)
+22:29:59 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+22:30:05 INFO    copilot.visuals.finder: image search 'Apple Fill' (photo): 1 candidate(s), 1 accepted (0 labelled), 6.68 s {'search_s': 2.38, 'download_s': 1.12, 'clip_s': 0.12, 'full_s': 3.03, 'total_s': 6.68}
+22:30:05 INFO    copilot.presentation.story: [STORY] image for 'Apple Fill' in 6.7 s (commons · CC BY-SA 4.0 · WhatamIdoing)
+  [IMAGE] 'Apple Fill' -> File:8 apple hand pies.png (6.7 s)
+  [SLIDE] update 'Isaac Newton' [simulation] v12 (1 items)
+  [   57.1s] Newton asked himself, why does the apple fall straight down? (601 ms)
+22:30:07 INFO    copilot.story.detector: [STORY] edit 'Newton asked himself, why does the apple fall straight down?'
+22:30:07 INFO    copilot.presentation.story: [STORY] Isaac Newton ask: 'Why does the apple fall straight down?'
+  [SLIDE] update 'Isaac Newton' [simulation] v13 (1 items)
+  [UNDERSTAND] Gravity > Historical Development (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1532 ms
+               Newton wondered why the apple falls straight down
+22:30:08 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   68.7s] Years later, Newton made (525 ms)
+22:30:16 INFO    copilot.story.detector: [STORY] edit 'Years later, Newton made'
+22:30:16 INFO    copilot.presentation.story: [STORY] scene 6: 'Years later, Newton made' (when 'years later', where '', query 'Isaac Newton')
+  [SLIDE] update 'Isaac Newton' [simulation] v14 (1 items)
+  [   71.1s] Edmund Haley in London. (516 ms)
+22:30:19 INFO    copilot.story.detector: [STORY] edit 'Edmund Haley in London.'
+22:30:19 INFO    copilot.presentation.story: [STORY] scene 7: 'Edmund Haley in London.' (when '', where 'London', query 'London')
+  [SLIDE] update 'Isaac Newton' [simulation] v15 (1 items)
+  [UNDERSTAND] Gravity > Historical Development (same_concept) acts=explanation hint=concept lines=2 via groq_main#2 1488 ms
+               Newton later met Edmund Halley in London
+22:30:20 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [SLIDE] update 'Isaac Newton' [simulation] v16 (1 items)
+22:30:24 INFO    copilot.visuals.finder: image search 'London' (photo): 8 candidate(s), 2 accepted (0 labelled), 5.34 s {'search_s': 2.12, 'download_s': 1.46, 'clip_s': 0.32, 'full_s': 1.39, 'total_s': 5.34}
+22:30:24 INFO    copilot.presentation.story: [STORY] image for 'London' in 5.3 s (wikipedia · CC BY-SA 4.0 · Tristan Surtel)
+  [IMAGE] 'London' -> File:City of London, seen from Tower Bridge.jpg (5.3 s)
+  [SLIDE] update 'Isaac Newton' [simulation] v17 (1 items)
+  [   79.6s] Paley said you must publish your ideas in a book. (598 ms)
+22:30:28 INFO    copilot.story.detector: [STORY] edit 'Paley said you must publish your ideas in a book.'
+22:30:28 INFO    copilot.presentation.story: [STORY] llm asked (speech unread): 'Paley said you must publish your ideas in a book.'
+22:30:29 INFO    copilot.presentation.story: [STORY] llm answer taken: {'type': 'speech', 'who': 'Paley', 'to': '', 'kind': 'say', 'words': 'you must publish your ideas in a book'}, 816 tokens, 0.60 s
+22:30:29 INFO    copilot.presentation.story: [STORY] Paley say: 'You must publish your ideas in a book'
+  [SLIDE] update 'Isaac Newton' [simulation] v18 (1 items)
+22:30:30 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: Gravity, Historical Development, Publishing Ideas)
+  [UNDERSTAND] Gravity > Publishing Ideas (sibling_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1390 ms
+               Teacher noted Paley's advice to publish ideas in a book
+22:30:30 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   87.8s] Newton replied, I will write hit this here. (651 ms)
+22:30:36 INFO    copilot.story.detector: [STORY] edit 'Newton replied, I will write hit this here.'
+22:30:36 INFO    copilot.presentation.story: [STORY] Isaac Newton reply: 'I will write hit this here.'
+  [SLIDE] update 'Isaac Newton' [simulation] v19 (1 items)
+22:30:36 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Gravity > Publishing Ideas (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 5136 ms
+               Newton expressed intent to write his ideas
+22:30:41 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   99.1s] In 1687, the book came out and everyone read it. (793 ms)
+22:30:49 INFO    copilot.story.detector: [STORY] edit 'In 1687, the book came out and everyone read it.'
+22:30:49 INFO    copilot.presentation.story: [STORY] scene 8: 'In 1687, the book came out and everyone read it.' (when '1687', where '', query 'Edmund Haley')
+  [SLIDE] update 'Isaac Newton' [simulation] v20 (1 items)
+22:30:49 INFO    copilot.simulation.detector: [SIM] values - {}
+22:30:51 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['In 1687, the book came out and everyone read it']
+  [UNDERSTAND] Gravity > Publishing Ideas (elaboration) acts=other,explanation hint=key_points lines=1 via groq_main#4 1546 ms
+               The book on gravity was published in 1687 and was widely read.
+22:30:51 INFO    copilot.presentation.simulations: [SIM] 2 piece(s) not collected: the story recaps its said captions
+22:30:51 INFO    copilot.presentation.story: [STORY] image 'Edmund Haley': none (no usable candidates)
+  [IMAGE] 'Edmund Haley' -> none (no usable candidates) (2.2 s)
+  [  110.4s] Ok, look at the picture carefully. (523 ms)
+  [  117.9s] That's the end of the story. (541 ms)
+22:31:04 INFO    copilot.story.detector: [STORY] end "That's the end of the story."
+22:31:04 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "That's the end of the story."): recap 1 slide(s) (7 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Isaac Newton' [key_points] v1 (7 items)
+  [SLIDE] update 'Isaac Newton' [simulation] v21 (1 items)
+  [UNDERSTAND] Gravity > Publishing Ideas (same_concept) acts=transition hint=none lines=1 via groq_main#2 1286 ms
+               Teacher concluded the publishing ideas story.
+22:31:06 INFO    copilot.presentation.engine: planner: noop Gravity > Publishing Ideas (nothing to display)
+  [  123.8s] Now remember. (452 ms)
+  [SLIDE] update 'Recap: Isaac Newton' [key_points] v2 (8 items)
+  [  125.2s] Gravity pulls every object towards the Earth. (510 ms)
+22:31:13 INFO    copilot.simulation.detector: [SIM] setup block_on_surface {}
+  [SLIDE] update 'Recap: Isaac Newton' [key_points] v3 (7 items)
+22:31:13 INFO    copilot.presentation.simulations: [SIM] setup block_on_surface: ignore (a setup without a spoken cue)
+  [UNDERSTAND] Gravity > Publishing Ideas (elaboration) acts=other,transition hint=concept lines=2 via groq_main#2 3606 ms
+               Teacher reminded that gravity pulls all objects toward Earth.
+22:31:17 INFO    copilot.presentation.engine: planner: continue Gravity > Publishing Ideas (new facet)
+  [SLIDE] add    'Publishing Ideas' [facts] v1 (1 items)
+  [  131.7s] Let us follow a drop of water through the water cycle. (568 ms)
+22:31:20 INFO    copilot.story.detector: [STORY] cue 'Let us follow a drop of water through the water cycle.'
+22:31:20 INFO    copilot.presentation.simulations: [SIM] story mode on: A drop of water on its own slide (cue)
+22:31:20 INFO    copilot.presentation.story: [STORY] open: A drop of water (cue)
+22:31:20 INFO    copilot.presentation.story: [STORY] llm asked (place unread): 'Let us follow a drop of water through the water cycle.'
+  [SLIDE] add    'A drop of water' [simulation] v1 (1 items)
+  [SLIDE] update 'A drop of water' [simulation] v2 (1 items)
+22:31:21 INFO    copilot.presentation.story: [STORY] llm answer taken: {'type': 'narration', 'when': '', 'where': '', 'people': ['a drop of water'], 'new_scene': False}, 881 tokens, 0.87 s
+22:31:21 INFO    copilot.presentation.story: [STORY] scene 1: 'Let us follow a drop of water through the water cy' (when '', where '', query 'drop of water')
+  [SLIDE] update 'A drop of water' [simulation] v3 (1 items)
+22:31:21 INFO    copilot.presentation.story: [STORY] image for 'drop of water' in 0.0 s (wikipedia · CC BY-SA 3.0 · Roger McLassus)
+22:31:21 INFO    copilot.presentation.story: [STORY] first picture 0.9 s after the cue (budget 10 s)
+  [IMAGE] 'drop of water' -> File:2006-02-13 Drop-impact.jpg (0.0 s, cached)
+  [SLIDE] update 'A drop of water' [simulation] v4 (1 items)
+22:31:21 INFO    copilot: [STT] vocabulary prompt: 34 terms (newest: Historical Development, Publishing Ideas, Water Cycle)
+  [UNDERSTAND] Gravity > Water Cycle (new_topic) acts=transition hint=none lines=1 via groq_main#4 1342 ms
+               Introduced the water cycle by following a drop of water.
+22:31:21 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [  138.7s] The drop starts in the ocean. (518 ms)
+22:31:26 INFO    copilot.story.detector: [STORY] edit 'The drop starts in the ocean.'
+22:31:26 INFO    copilot.presentation.story: [STORY] scene 2: 'The drop starts in the ocean.' (when '', where 'the ocean', query 'ocean')
+  [SLIDE] update 'A drop of water' [simulation] v5 (1 items)
+22:31:26 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'A drop of water' [simulation] v6 (1 items)
+  [UNDERSTAND] Gravity > Water Cycle (same_concept) acts=process hint=process_flow lines=1 via groq_main#4 1252 ms
+               The water cycle begins with a drop originating in the ocean.
+22:31:27 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+22:31:32 INFO    copilot.visuals.finder: image search 'ocean' (photo): 8 candidate(s), 3 accepted (0 labelled), 6.18 s {'search_s': 2.54, 'download_s': 1.41, 'clip_s': 0.34, 'full_s': 1.83, 'total_s': 6.18}
+22:31:32 INFO    copilot.presentation.story: [STORY] image for 'ocean' in 6.2 s (wikipedia · Public domain · ABI imagery from NOAA's GOES-18 satellite)
+  [IMAGE] 'ocean' -> File:Pacific Ocean as viewed from GOES-18 on September 23, 2023.jpg (6.2 s)
+  [SLIDE] update 'A drop of water' [simulation] v7 (1 items)
+  [  145.8s] Then the sun hits it and it rises into the clouds. (594 ms)
+22:31:34 INFO    copilot.story.detector: [STORY] edit 'Then the sun hits it and it rises into the clouds.'
+22:31:34 INFO    copilot.presentation.story: [STORY] scene 3: 'Then the sun hits it and it rises into the clouds.' (when '', where 'the clouds', query 'clouds')
+  [SLIDE] update 'A drop of water' [simulation] v8 (1 items)
+22:31:34 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'A drop of water' [simulation] v9 (1 items)
+  [UNDERSTAND] Gravity > Water Cycle (elaboration) acts=process hint=process_flow lines=1 via groq_main#2 1371 ms
+               Sun heats water causing it to rise into clouds
+22:31:36 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+22:31:40 INFO    copilot.visuals.finder: image search 'clouds' (photo): 8 candidate(s), 3 accepted (0 labelled), 5.88 s {'search_s': 2.19, 'download_s': 1.38, 'clip_s': 0.36, 'full_s': 1.89, 'total_s': 5.88}
+22:31:40 INFO    copilot.presentation.story: [STORY] image for 'clouds' in 5.9 s (commons · CC BY-SA 4.0 · Basile Morin)
+  [IMAGE] 'clouds' -> File:Water reflection of stringy gray and white clouds in a pond on a sand beach of Don Khon at sunrise in Laos.jpg (5.9 s)
+  [SLIDE] update 'A drop of water' [simulation] v10 (1 items)
+  [  154.8s] The drop said it is getting cold up here. (766 ms)
+22:31:43 INFO    copilot.story.detector: [STORY] edit 'The drop said it is getting cold up here.'
+22:31:43 INFO    copilot.presentation.story: [STORY] llm asked (speech unread): 'The drop said it is getting cold up here.'
+22:31:44 INFO    copilot.presentation.story: [STORY] llm answer taken: {'type': 'speech', 'who': 'The drop', 'to': '', 'kind': 'say', 'words': 'it is getting cold up here'}, 825 tokens, 0.57 s
+22:31:44 INFO    copilot.presentation.story: [STORY] a drop of water say: 'It is getting cold up here'
+  [SLIDE] update 'A drop of water' [simulation] v11 (1 items)
+  [UNDERSTAND] Gravity > Water Cycle (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1607 ms
+               The rising water drop cools at high altitude.
+22:31:45 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  162.9s] Then the drop falls as rain on the mountain. (612 ms)
+22:31:51 INFO    copilot.story.detector: [STORY] edit 'Then the drop falls as rain on the mountain.'
+22:31:51 INFO    copilot.presentation.story: [STORY] scene 4: 'Then the drop falls as rain on the mountain.' (when '', where 'the mountain', query 'mountain')
+  [SLIDE] update 'A drop of water' [simulation] v12 (1 items)
+22:31:51 INFO    copilot.simulation.detector: [SIM] values - {}
+22:31:51 INFO    copilot.presentation.story: [STORY] image for 'mountain' in 0.1 s (wikipedia · CC BY-SA 2.5 · Luca Galuzzi ( Lucag ))
+  [IMAGE] 'mountain' -> File:Everest North Face toward Base Camp Tibet Luca Galuzzi 2006.jpg (0.1 s, cached)
+  [SLIDE] update 'A drop of water' [simulation] v13 (1 items)
+  [UNDERSTAND] Gravity > Water Cycle (same_concept) acts=explanation hint=process_flow lines=1 via groq_main#2 1405 ms
+               The water drop falls as rain on the mountain.
+22:31:53 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  170.0s] Then the drop falls or has rain on the mountain. (694 ms)
+22:31:59 INFO    copilot.story.detector: [STORY] edit 'Then the drop falls or has rain on the mountain.'
+22:31:59 INFO    copilot.presentation.story: [STORY] scene 5: 'Then the drop falls or has rain on the mountain.' (when '', where 'the mountain', query 'mountain')
+  [SLIDE] update 'A drop of water' [simulation] v14 (1 items)
+22:31:59 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Gravity > Water Cycle (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1513 ms
+               Rain falls on the mountain.
+22:32:01 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  178.9s] Later it falls down, it flows down a river back to the sea. (641 ms)
+22:32:08 INFO    copilot.story.detector: [STORY] edit 'Later it falls down, it flows down a river back to the sea.'
+22:32:08 INFO    copilot.presentation.story: [STORY] scene 6: 'Later it falls down, it flows down a river back to' (when '', where 'the sea', query 'sea')
+  [SLIDE] update 'A drop of water' [simulation] v15 (1 items)
+22:32:08 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Gravity > Water Cycle (same_concept) acts=process hint=process_flow lines=1 via groq_main#2 1370 ms
+               The water drop flows down a river back to the sea.
+22:32:10 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+22:32:14 INFO    copilot.visuals.finder: image search 'sea' (photo): 7 candidate(s), 3 accepted (0 labelled), 5.36 s {'search_s': 1.89, 'download_s': 1.07, 'clip_s': 0.34, 'full_s': 2.0, 'total_s': 5.36}
+22:32:14 INFO    copilot.presentation.story: [STORY] image for 'sea' in 5.4 s (wikipedia · Public domain · Cornelis Claesz van Wieringen / Formerly attributed to Hendrick Cornelisz Vroom)
+  [IMAGE] 'sea' -> File:Battle of Gibraltar 1607.jpg (5.4 s)
+  [SLIDE] update 'A drop of water' [simulation] v16 (1 items)
+  [  191.0s] That's the end of the journey. (559 ms)
+22:32:18 INFO    copilot.story.detector: [STORY] end "That's the end of the journey."
+22:32:18 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "That's the end of the journey."): recap 1 slide(s) (6 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: A drop of water' [key_points] v1 (6 items)
+  [SLIDE] update 'Recap: A drop of water' [key_points] v2 (7 items)
+  [SLIDE] update 'A drop of water' [simulation] v17 (1 items)
+  [UNDERSTAND] Gravity > Water Cycle (same_concept) acts=- hint=none lines=1 via groq_main#4 1467 ms
+               Teacher signals the end of the water cycle journey.
+22:32:19 INFO    copilot.presentation.engine: planner: noop Gravity > Water Cycle (nothing to display)
+  [SLIDE] update 'Recap: A drop of water' [key_points] v3 (6 items)
+  [  196.1s] Once upon a time, a little girl said, I want to see the scene. (639 ms)
+22:32:25 INFO    copilot.story.detector: [STORY] cue 'Once upon a time, a little girl said, I want to see the scene.'
+22:32:25 INFO    copilot.presentation.simulations: [SIM] story mode on: A little girl on its own slide (cue)
+22:32:25 INFO    copilot.presentation.story: [STORY] open: A little girl (cue)
+22:32:25 INFO    copilot.presentation.story: [STORY] a little girl say: 'I want to see the scene.'
+  [SLIDE] add    'A little girl' [simulation] v1 (1 items)
+  [SLIDE] update 'A little girl' [simulation] v2 (1 items)
+  [UNDERSTAND] Gravity > Water Cycle (same_concept) acts=- hint=none lines=1 via groq_main#2 1384 ms
+               Student expressed curiosity about seeing the scene
+22:32:27 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [  214.6s] Her father replied, we will go tomorrow. (558 ms)
+22:32:42 INFO    copilot.story.detector: [STORY] edit 'Her father replied, we will go tomorrow.'
+22:32:42 INFO    copilot.presentation.story: [STORY] Her father reply: 'We will go tomorrow.'
+  [SLIDE] update 'A little girl' [simulation] v3 (1 items)
+  [UNDERSTAND] Gravity > Water Cycle (digression) acts=- hint=none lines=1 via groq_main#2 1141 ms
+               No new content added; a comment was made.
+22:32:44 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [  222.3s] The next morning, they drove to the beach. (620 ms)
+22:32:50 INFO    copilot.story.detector: [STORY] edit 'The next morning, they drove to the beach.'
+  [SLIDE] update 'A little girl' [simulation] v4 (1 items)
+  [SLIDE] update 'A little girl' [simulation] v5 (1 items)
+22:32:52 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['The next morning, they drove to the beach']
+  [UNDERSTAND] Gravity > Water Cycle (same_concept) acts=explanation hint=none lines=1 via groq_main#4 1347 ms
+               No new content added
+22:32:52 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  229.6s] Back to the slides. (653 ms)
+22:32:56 INFO    copilot.simulation.detector: [SIM] end - ('Back to the slides') {}
+22:32:56 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard 'Back to the slides.'): recap 1 slide(s) (1 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: A little girl' [key_points] v1 (1 items)
+  [SLIDE] update 'A little girl' [simulation] v6 (1 items)
+22:32:56 INFO    copilot.visuals.finder: image search 'beach' (photo): 8 candidate(s), 3 accepted (0 labelled), 5.99 s {'search_s': 2.03, 'download_s': 1.49, 'clip_s': 0.34, 'full_s': 2.07, 'total_s': 5.99}
+22:32:56 INFO    copilot.presentation.story: [STORY] image 'beach' came after its story ended: not shown
+  [IMAGE] 'beach' -> File:Beach at Fort Lauderdale.jpg (6.0 s)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261101-222819-1e60: 29 segments, 236 words, state v63, 482 events logged
+        CommandReceived=4, ConceptSignal=27, ConcernRaised=2, DeckState=13, ImageReady=13, ImageRequested=13, InterpretRequested=24, InterpretationReady=24, LifecycleChanged=5, LiveCue=26, ModeChanged=1, RepresentationIntent=37, SimulationModeChanged=6, SimulationSettingChanged=1, SlideContextChanged=6, SlidePatch=52, StateChanged=63, TranscriptFinal=29, TranscriptPartial=104, UtteranceClassified=29, VocabularyChanged=3
+        stt: 29 published, 0 dropped, latency p50=597 ms p95=793 ms max=828 ms
+        understanding: 24 interpretations (24 by LLM, 0 fallbacks, 0 repaired), max 8 calls/min, prompt tokens max=2058 avg=1953, latency p50=1405 ms max=5136 ms
+        presentation: 7 slides; planner ops {'noop': 3, 'story_start': 3, 'continue': 1}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 13, 'found': 11, 'none': 2}; slides with an image 0/7
+          1. [simulation] Isaac Newton  (v21, ['story'])
+          2. [key_points] Recap: Isaac Newton  (v3, ['points'])
+          3. [facts] Publishing Ideas  (v1, ['facts'])
+          4. [simulation] A drop of water  (v17, ['story'])
+          5. [key_points] Recap: A drop of water  (v3, ['points'])
+          6. [simulation] A little girl  (v6, ['story'])
+          7. [key_points] Recap: A little girl  (v1, ['points'])
+        providers: {'groq_main#1': 4, 'groq_main#2': 13, 'groq_main#4': 7}; triggers: {'pause': 23, 'max_wait': 1}; outline: ['Gravity > Historical Development, Publishing Ideas, Water Cycle']; concerns: 2
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261101-222819-1e60\session.sqlite

@@ -85,7 +85,7 @@ def test_protagonist_and_title_from_the_cue():
     assert protagonist("Let us follow a drop of water through the water cycle.") == "a drop of water"
     assert protagonist("Let me tell you the story of Albert Einstein.") == "Albert Einstein"
     assert protagonist("Imagine you are a red blood cell in the heart.") == "a red blood cell"
-    assert title_of("Once upon a time there was a boy.") == "Story"
+    assert title_of("Once upon a time there was a boy.") == "A boy"  # ST4: the first said person
     assert title_of("Let us follow a drop of water through the sky.") == "A drop of water"
 
 
@@ -494,3 +494,61 @@ async def test53_she_with_two_unknowns_is_the_hero():
     await talk.say("She replied, yes.")
     s = story_on(deck)
     assert s.member(s.scenes[-1].bubbles[-1].speaker).name == "Marie Curie"
+
+
+# ---- ST4: the 10-min story lecture (fast path, 0 tokens) ----------------------------------------------------------
+def test_st4_reflexive_ask_aside_and_places_said_by_the_move():
+    s = beats.speech("Newton asked himself, why does the apple fall straight down?")
+    assert s is not None and (s.who, s.kind, s.to, s.words) == ("Newton", "ask", "", "Why does the apple fall straight down?")
+    assert beats.aside("Okay, look at the picture carefully.") and beats.aside("Sorry, let me move this to the next page.")
+    assert not beats.aside("Look at the stars, said the girl.") and not beats.aside("The drop looks at the sea.")
+    assert beats.beat("Then the drop falls as rain on a mountain.").where == "a mountain"
+    assert beats.beat("Then the cow wandered into a muddy ditch.").where == "a muddy ditch"
+    assert beats.beat("He went back to the end of the line.").where == ""
+    # review: no place from a phrase, a person after "on" stays a person, speech after "Look here" is not class talk
+    for t in ("He came to a decision.", "He ran into a problem.", "He came in a hurry.", "She went into a deep sleep."):
+        assert beats.beat(t).where == "", t
+    b = beats.beat("He depended on Mary.")
+    assert b.where == "" and b.names == ["Mary"]
+    assert not beats.aside("Look here, said the king, I am your father.")
+    assert not beats.aside("Can you see the stars? asked the old man.")
+
+
+async def test_st4_cue_line_speech_is_a_bubble_and_an_aside_is_not_in_the_story():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    await talk.say("Once upon a time, a little girl said, I want to see the sea.")
+    s = story_on(deck)
+    assert deck.live.title == "A little girl"
+    b = s.scenes[-1].bubbles[-1]
+    assert s.member(b.speaker).name == "a little girl" and b.text == "I want to see the sea."
+    clock.t += DWELL_S + 1
+    await talk.say("Okay, look at the picture carefully.")
+    s = story_on(deck)
+    assert all("picture carefully" not in x for sc in s.scenes for x in sc.lines + [sc.caption])
+
+
+async def test_st4_the_whole_lecture_on_the_fast_path():
+    from pathlib import Path
+    lines = [x.strip() for x in (Path(__file__).parents[1] / "fixtures/story/st4_lecture.txt")
+             .read_text(encoding="utf-8").splitlines() if x.strip()]
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    seen = {}
+    for line in lines:
+        clock.t += 12
+        await talk.say(line)
+        s = story_on(deck)
+        if s is not None:
+            seen[s.title] = s
+    assert [x.title for x in deck.slides] == ["Physics history", "Isaac Newton", "Recap: Isaac Newton",
+                                              "A drop of water", "Recap: A drop of water", "A little girl",
+                                              "Recap: A little girl"]
+    newton, drop, girl = seen["Isaac Newton"], seen["A drop of water"], seen["A little girl"]
+    assert [(sc.when, sc.where) for sc in newton.scenes] == [
+        ("", ""), ("1661", "Cambridge"), ("1665", "Woolsthorpe"), ("one day", "the garden"),
+        ("years later", "London"), ("1687", "")]
+    talk_ = [(newton.member(b.speaker).name, b.kind) for sc in newton.scenes for b in sc.bubbles]
+    assert talk_ == [("Isaac Newton", "ask"), ("Edmond Halley", "say"), ("Isaac Newton", "reply")]
+    assert not any("picture carefully" in x for sc in newton.scenes for x in sc.lines)
+    assert [sc.where for sc in drop.scenes] == ["", "the ocean", "the clouds", "a mountain", "the sea"]
+    assert [b.text for sc in girl.scenes for b in sc.bubbles] == ["I want to see the sea.", "We will go tomorrow."]
+    assert eng._story.stats.llm_calls == 0
