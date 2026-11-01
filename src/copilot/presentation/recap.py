@@ -85,7 +85,9 @@ _PLACING = {"is", "are", "was", "were", "the", "a", "an", "of", "on", "in", "ins
             "have", "with", "and", "it", "its", "there", "imagine", "new", "drawn", "beside", "next", "to", "near", "one",
             "two", "three", "four", "five", "six", "both", "also", "each", "other", "figure", "diagram", "picture",
             "contains", "contain", "containing", "location", "position", "shown", "shows", "there's",
-            "stacked", "hanging", "free", "body", "free-body", "free‑body"}  # test42: "Free-body diagram of the box"
+            "stacked", "hanging", "free", "body", "free-body", "free‑body",  # test42: "Free-body diagram of the box"
+            "connected", "by", "over", "tied", "attached", "string", "rope", "cord", "thread",  # test45: the rope cue
+            "rests", "resting", "sits", "sitting", "lies", "lying"}  # test46: "Block A rests on block B on the floor"
 _WHERE = re.compile(r"\b(?:inside|outside|within|contains?|beside|next to|on top of|location|position)\b", re.IGNORECASE)
 
 
@@ -93,7 +95,8 @@ def only_picture(text: str, picture: set[str]) -> bool:
     """The text only names what is drawn and how it is placed (no rule, no property, no why). A placing sentence
     with one word that is nothing drawn ("Gun is inside C3", Whisper's "pentagon", test38) is picture talk too."""
     words = [w for w in re.findall(r"[a-z][a-z0-9']*", text.lower()) if w not in _PLACING]
-    fold = [w[:-1] if w.endswith("s") and w[:-1] in picture else w for w in words]
+    fold = [w[:-1] if w.endswith("s") and w[:-1] in picture else w[:-2] if w.endswith("es") and w[:-2] in picture
+            else w for w in words]  # test45: "masses"
     if not fold:
         return False
     odd = [w for w in fold if w not in picture]

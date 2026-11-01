@@ -1,0 +1,43 @@
+{
+ "about": "M3: the M1 scenes said in other words (30 lines). After each line the scene (diagram.extract.scene_key) must equal the reference fixture's after its line of the same number. Answers for the lines the fast path leaves unread: m3_llm_answers.json (recorded live by tools/record_m3.py).",
+ "scenes": [
+  {"ref": "m1_incline_full", "lines": [
+   "Picture a crate resting on a ramp inclined at 30 degrees.",
+   "The crate has a mass of five kilograms.",
+   "Someone pushes it up the ramp with a force of 5 newtons.",
+   "Let the friction coefficient be 0.3.",
+   "Let's raise the angle to 45 degrees."]},
+  {"ref": "m1_floor_push", "lines": [
+   "Consider a heavy block lying on the ground.",
+   "Its mass is 10 kg and a 20 newton push acts on it.",
+   "Take mu equal to 0.5.",
+   "Increase the push to 60 newtons."]},
+  {"ref": "m1_floor_static_kinetic", "lines": [
+   "Think of a 10 kg block on the floor.",
+   "Mu static is 0.5 while mu kinetic is 0.4.",
+   "A force of 45 newtons pushes it to the right.",
+   "The push becomes 55 newtons."]},
+  {"ref": "m1_two_blocks_slip", "lines": [
+   "Imagine block A on block B on the floor.",
+   "A 50 newton force pulls block B.",
+   "Block A is 2 kg and block B is 3 kg.",
+   "Between A and B the friction coefficient is 0.4.",
+   "There is no friction with the floor."]},
+  {"ref": "m1_atwood", "lines": [
+   "Imagine two masses connected by a string over a pulley.",
+   "The masses are 2 kg and 3 kg."]},
+  {"ref": "m1_spring", "lines": [
+   "Consider a mass suspended from a spring.",
+   "The spring's stiffness is 100 newtons per metre and the mass weighs 0.5 kg."]},
+  {"ref": "m1_table_hanging", "lines": [
+   "Imagine a block on a table tied with a string that goes over a pulley to a mass hanging down.",
+   "The table block is 4 kg and the one hanging is 1 kg.",
+   "The table has no friction.",
+   "Now take the friction coefficient as 0.2.",
+   "Change mu to 0.3."]},
+  {"ref": "m1_two_blocks_stick", "lines": [
+   "Suppose we stack two blocks on the floor.",
+   "The upper block is 2 kg and the lower one is 3 kg.",
+   "We push the lower block with 10 newtons."]}
+ ]
+}

@@ -386,7 +386,10 @@ class App:
         except ValueError:  # no key for any of them
             router = None
         if router is not None:
+            from copilot.diagram.extract import Extractor
             ctl.director = StageDirector(router)
+            ctl.extractor = Extractor(router)  # M3: diagram lines the fast path left partly unread
+            await router.ping(self._http)
         print(f"[INIT]  stage: fast path + {' -> '.join(e.name for e in router.entries) if router else 'no LLM'}"
               f"; ladder {'MiniLM + ' if embedder is not None else ''}icons", flush=True)
 

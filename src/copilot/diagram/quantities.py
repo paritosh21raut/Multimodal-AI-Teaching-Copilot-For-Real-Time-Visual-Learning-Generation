@@ -24,7 +24,9 @@ NUM = _NUM.replace("(?P<num>", "(?:")  # a bare number (each pattern names its o
 
 BODIES = ("block", "mass")
 GROUNDS = ("floor", "incline")
-_FRICTIONLESS = re.compile(r"\b(?:frictionless|smooth)\b", re.IGNORECASE)
+_FRICTIONLESS = re.compile(r"\b(?:frictionless|smooth|(?:no|zero|without)\s+friction)\b", re.IGNORECASE)  # M3: "no friction"
+_HEDGE = re.compile(r"\b(?:not|cannot|can't|don't|doesn't|isn't|aren't|never|assume\w*|if|unless|but|rough|top)\b",
+                    re.IGNORECASE)
 _NOT = re.compile(r"\b(?:not|never|isn't|aren't|no\s+longer)\s+(?:a\s+|an\s+|very\s+|so\s+)?$", re.IGNORECASE)
 # after a μ's number: more of a spoken number ("one hundred", "2 point 5") or a unit ("5 N" is a force, not a μ)
 _NOT_MU_END = re.compile(r"\s*(?:point\b|hundred|thousand|and\s+(?:a\s+)?(?:half|\w+ty|one|two|three|four|five|six|"
@@ -32,8 +34,8 @@ _NOT_MU_END = re.compile(r"\s*(?:point\b|hundred|thousand|and\s+(?:a\s+)?(?:half
                          r"N\b|kg|kilo|grams?\b|g\b|degree|°|met(?:re|er)|m\b|percent|%)", re.IGNORECASE)
 _MU = re.compile(rf"\b(?:(?P<kind>static|kinetic|sliding|limiting)\s+)?(?:coefficient\s+of\s+)?(?:(?:static|kinetic|"
                  rf"sliding|limiting)\s+)?friction(?:al)?\s*(?:coefficient\s*)?(?:(?:[\w']+\s+){{0,8}}?(?:is|of|=|"
-                 rf"equals|as|be|to)\s+)?(?P<num>{NUM})(?!\s*(?:kg|kilo|newton|N\b|degree|°|metre|meter|m\b))|\b(?:mu|μ)(?:\s*(?P<k2>s|k))?"
-                 rf"\s*(?:is|=|of|equals)?\s*(?P<num2>{NUM})", re.IGNORECASE)
+                 rf"equals|as|be|to)\s+)?(?P<num>{NUM})(?!\s*(?:kg|kilo|newton|N\b|degree|°|metre|meter|m\b))|\b(?:mu|μ)(?:\s*(?P<k2>static|kinetic|sliding|s|k)\b)?"
+                 rf"\s*(?:is|=|of|equals|equal\s+to|as|be|to)?\s*(?P<num2>{NUM})", re.IGNORECASE)  # M3: "mu static is 0.5"
 _K = re.compile(rf"(?P<num>{NUM})\s*(?P<u>(?:kilo\s?)?newtons?\s+per\s+(?:centi)?met(?:re|er)s?|k?N\s*/\s*c?m)\b",
                 re.IGNORECASE)
 # test40: Whisper writes "100 newtons per metre" as "100Nm"; after "spring constant" that unit can only be N/m
@@ -121,6 +123,8 @@ def found(text: str) -> list[Said]:
         sym = "mu_s" if k in ("static", "limiting", "s") else "mu_k" if k in ("kinetic", "sliding", "k") else "mu"
         put(Said(sym, v[-1], m.group(0).strip(), m.start(), m.end()))
     for m in _FRICTIONLESS.finditer(text):
+        if " " in m.group(0) and _HEDGE.search(clause(text, m.start(), m.end())):
+            continue  # review: "we cannot assume zero friction", "no friction on its top but the floor is rough"
         if not _NOT.search(text[max(0, m.start() - 20):m.start()]):  # "the floor is not smooth": no μ = 0
             put(Said("mu", 0.0, m.group(0), m.start(), m.end()))
     for h in heard(text):
@@ -211,7 +215,10 @@ def _named(g: Graph, text: str) -> list[tuple[int, str]]:
         if len([b for b in bodies(g) if g.parts[b].kind == p.kind]) == 1 and not p.label:
             words.add(p.kind)
         for w in [w for w in words if w]:
-            for m in re.finditer(rf"\b{re.escape(w)}s?\b", text, re.IGNORECASE):
+            # M3: a one-letter label ("block A") only after its noun, in capitals: "A 50 newton force" names no block
+            L = re.escape(p.label)  # review: "... and B is 3 kg" (after "and" / a comma) names B too
+            rx = rf"\b(?i:block|box|mass|body)\s+{L}\b|(?<=\band\s){L}\b|(?<=,\s){L}\b" if len(w) == 1 else rf"(?i:\b{re.escape(w)}s?\b)"
+            for m in re.finditer(rx, text):
                 if len([b for b in bodies(g) if (g.parts[b].label or "").lower() == w or g.parts[b].kind == w]) == 1 \
                         and not any(abs(m.start() - s) < 12 for s in spans):
                     hits.append((m.start(), p.id))
@@ -271,6 +278,9 @@ def _target(g: Graph, s: Said, text: str, lo: int, hi: int, names: list[tuple[in
     near = [(p, b) for p, b in names if lo <= p < hi]
     after = [b for p, b in near if p >= s.end]
     before = [b for p, b in near if p < s.start]
+    nxt = next((p for p, b in near if p >= s.end), None)
+    if s.sym == "m" and nxt is not None and re.fullmatch(r"\s*(?:(?!and\b|or\b|but\b)[a-z]+\s+)?", text[s.end:nxt]):
+        return after[0]  # M3: "a 4 kg block ... to a 1 kg mass": each value on the noun right after it
     # "push the box with 5 N" (the noun before), "50 N on the bottom block" (the noun after, with on / to / of)
     if after and re.match(r"^\W*(?:\w+\s+){0,2}?(?:on|to|of|at)\b", text[s.end:hi], re.IGNORECASE):
         return after[0]
@@ -304,6 +314,16 @@ def _contact(g: Graph, text: str, lo: int, hi: int) -> Optional[str]:
         c = [b for b in contacts if g.parts[under(g, b)].kind in GROUNDS]
         return c[0] if len(c) == 1 else None
     names = [b for p, b in _named(g, win)]
+    bt = re.search(r"\b(?i:between)\s+(?:(?i:the\s+)?(?i:block|box|mass)\s+)?(\w+)\s+and\s+(?:(?i:the\s+)?(?i:block|box|mass)\s+)?"
+                   r"(\w+)", win)
+    if bt:  # "between A and B": the bare labels name the two bodies
+        lab = {g.parts[b].label: b for b in bodies(g) if g.parts[b].label}
+        if bt.group(1) in lab and bt.group(2) in lab:
+            names = [lab[bt.group(1)], lab[bt.group(2)]]
+    if bt and len(set(names)) == 2:  # "between A and B": their contact, kept on
+        x, y = sorted(set(names))                                       # the upper one (M3 review)
+        top = x if under(g, x) == y else y if under(g, y) == x else None
+        return top if top in contacts else None
     if len(set(names)) == 1 and names[0] in contacts:
         return names[0]
     return contacts[0] if len(contacts) == 1 else None

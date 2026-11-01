@@ -79,6 +79,9 @@ _ANGLE = re.compile(r"(?:(?:an?\s+)?angle\s+(?:of\s+)?)?(\d+(?:\.\d+)?|[a-z]+(?:
                     re.IGNORECASE)
 _NAMES = re.compile(r"^\s*,?\s*(?:(?:called|named|labelled|labeled|of)\s+)?([A-Z][0-9]{0,2}(?:\s*(?:,|and|&)\s*"
                     r"[A-Z][0-9]{0,2})*)\b(?![a-z])")
+_MASS_OF = re.compile(r"\s+of\s+(?:about\s+)?(?:\d|(?:one|two|three|four|five|six|seven|eight|nine|ten|twenty|fifty|"
+                      r"hundred|half)\b)", re.IGNORECASE)
+_ROPES = {"rope", "ropes", "string", "strings", "thread", "cord"}  # M3: drawn as the rope over the pulley, no box
 _UNKNOWN = re.compile(r"\b(?:a|an|the)\s+([a-z]{4,})\b", re.IGNORECASE)
 _STOP = {"time", "moment", "second", "minute", "example", "case", "situation", "scenario", "question", "answer",
          "lecture", "class", "topic", "concept", "idea", "diagram", "picture", "system", "model", "very", "little",
@@ -216,7 +219,8 @@ def unknown_nouns(text: str, known: list[Mention]) -> list[tuple[int, str]]:
         w = m.group(1).lower()
         if not _NEXT_TO.search(text[max(0, m.start() - 20):m.start(1)]):
             continue
-        if any(s <= m.start(1) < e for s, e in spans) or w in _STOP or w in index() or w.rstrip("s") in index():
+        if any(s <= m.start(1) < e for s, e in spans) or w in _STOP or w in _ROPES or w in index() \
+                or w.rstrip("s") in index():
             continue
         if P.words().get(w) or P.chemicals().get(w) or P.element(w):
             continue
@@ -308,6 +312,10 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
                 d.old.append(old)
             d.kinds.append("liquid")
             continue
+        if m.kind == "mass" and m.n == 1 and not m.names and [p for p in g.parts.values() if p.kind in ("block", "mass")] \
+                and _MASS_OF.match(text[m.end:]) and not _CUEW.search(text) \
+                and re.search(r"\b(?:has|have|having|with|its|of)\s+(?:a\s+|the\s+)?$", text[:m.start], re.IGNORECASE):
+            continue  # M3: "it has a mass of 10 kg" on an open body is its mass (a value), not a new part
         d.kinds.append(m.kind)
         more = bool(_ANOTHER.search(text[max(0, m.start - 30):m.start]))
         d.more = d.more or (more and bool(g.of(m.kind)))
@@ -406,7 +414,10 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
     # 4. relations between neighbouring things
     things = [m for m in ms if m.ids and m.kind not in ("system",)]
     for a, b in zip(things, things[1:]):
-        between = _gap(_QUANT.sub(" ", text[a.end:b.start], count=1))  # "a block of 10 kg on the floor": on
+        gap = text[a.end:b.start]
+        if a.names and (nm := _NAMES.match(gap)):  # M3: "block A on block B on the floor": the label is no gap
+            gap = gap[nm.end():]
+        between = _gap(_QUANT.sub(" ", gap, count=1))  # "a block of 10 kg on the floor": on
         if a.kind == "chem" or b.kind == "chem":
             continue
         rel = None
@@ -591,7 +602,7 @@ def _givens(text: str, ms: list[Mention], ops: list[dict], g: Graph) -> None:
 
 
 _STACK = re.compile(r"\bone\s+(?:on\s+top\s+of|above|over|upon)\s+(?:the\s+other|another)\b|\bon\s+top\s+of\s+"
-                    r"(?:each\s+other|one\s+another)\b|\bstacked\b|\bplaced\s+on\s+(?:each\s+other|one\s+another)\b",
+                    r"(?:each\s+other|one\s+another)\b|\bstack(?:ed|s)?\b|\bplaced\s+on\s+(?:each\s+other|one\s+another)\b",
                     re.IGNORECASE)
 _QUANT = re.compile(r"^\s*,?\s*(?:of|with\s+(?:a\s+)?mass\s+of|weighing|of\s+mass)\s+[\w.]+(?:\s+point\s+\w+)?\s*"
                     r"(?:kg|kilograms?|kilos?|grams?|g)\b\s*,?", re.IGNORECASE)
@@ -629,6 +640,8 @@ def _mechanics(text: str, things: list[Mention], ops: list[dict], g: Graph) -> N
     rest = [i for m in things if m.kind in ("block", "mass") for i in m.ids if i not in on_table]
     table = next((m.ids[0] for m in things if m.kind == "floor" and m.ids), None)
     if on_table and table and not placed(pid) and pid not in g.rels:
+        for o in placed(table):  # M3: "a table tied with a string over a pulley": the block is tied, not the table
+            ops.remove(o)
         ops.append({"op": "place", "a": pid, "rel": "at_edge", "b": table})
         ops.append({"op": "wire", "a": on_table[0], "b": pid})
         for i in rest[:1]:
@@ -671,7 +684,7 @@ def title_for(text: str, ms: list[Mention]) -> str:
     a = things[0]
     if a.kind == "atom":
         return f"{a.attr['element'].capitalize()} atom" if a.attr.get("element") else "Atom"
-    w = a.word if a.n == 1 else f"{_num(a.n)} {a.word}{'' if a.word.endswith('s') else 's'}"
+    w = a.word if a.n == 1 else f"{_num(a.n)} {_plural(a.word)}"
     if a.names:
         w += " " + " and ".join(a.names) if len(a.names) <= 2 else " " + ", ".join(a.names)
     grouped = _PARALLEL.search(text) or _SERIES.search(text)
@@ -681,7 +694,7 @@ def title_for(text: str, ms: list[Mention]) -> str:
         b = things[1]
         between = _gap(text[a.end:b.start])
         if _ON.match(between):
-            w += f" on {_a(b.word)}"
+            w += f" on {b.word} {b.names[0]}" if b.names else f" on {_a(b.word)}"  # M3: "Block A on block B"
         elif _HANG.search(text):
             w += f" with {_some(b)}"
         elif re.search(r"\bwith\b", between):
@@ -705,7 +718,14 @@ def _gap(s: str) -> str:
 
 
 def _some(m: Mention) -> str:
-    return _a(m.word) if m.n == 1 else f"{_num(m.n)} {m.word}{'' if m.word.endswith('s') else 's'}"
+    return _a(m.word) if m.n == 1 else f"{_num(m.n)} {_plural(m.word)}"
+
+
+def _plural(w: str) -> str:
+    """"mass" -> "masses" (M3: the title said "Two mass"), "box" -> "boxes", "blocks" stays."""
+    if re.search(r"(?:ss|x|ch|sh)$", w):
+        return w + "es"
+    return w if w.endswith("s") else w + "s"
 
 
 def _a(w: str) -> str:

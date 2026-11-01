@@ -1,0 +1,31 @@
+[    1.4] Fix your upgrade, which you want to run, incline at 30 degrees.
+[   15.6] Picture a crate scratching on a ramp in blind attached to the plane.
+[   28.8] Picture a crate stretching on a ramp in blind action.
+[   44.1] picture a crate, resting, on a ramp, inclined as of 80 degrees.
+[   58.2] Let the crate has a mass of 5 kg. them.
+[   68.1] Let the friction coefficient be 0.3.
+[   76.9] It will hold it up against the motion.
+[   82.6] Imagine a block A on block B on the floor.
+[   98.5] I don't know.
+[  124.5] A, B, floor.
+[  132.7] Block A, A2P, then block B.
+[  141.8] Block B on block, A, B, floor.
+[  146.0] Block A is 2 dB and block B is 3 dB.
+[  155.5] Block A is 2 kg, block B is 3 kg.
+[  173.8] Block 50N, floor. Block B.
+[  185.0] Protection coefficient where A touches B, it's 0.4.
+[  199.4] There is no friction with that node.
+[  218.9] You are adding two masses connected by a spin over a pulley.
+[  229.6] The marks are two convenient locations.
+[  239.5] The mass are 2 kg and 3 kg.
+[  254.3] If I do Thank you.
+[  261.4] If I did two match-ups connected by a string over a pulley.
+[  287.7] Imagine two nazets directed by a screen over a pulley.
+[  295.6] Imagine two markers connected over a train.
+[  300.4] V2P2D.
+[  307.7] Imagine a block on a table tied with a spring that goes over a pulley to a mark hanging down.
+[  325.3] Imagine a block on a table tied with little string that goes over a pulley to a mask on its ground.
+[  341.6] table block is 2.4kg and the one-handed is 1kg.
+[  355.6] This is all the basic problems we have.
+[  364.1] Newton's law are the basis of mechanics.
+[  368.4] Any other questions?

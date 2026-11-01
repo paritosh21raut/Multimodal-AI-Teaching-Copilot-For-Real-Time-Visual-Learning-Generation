@@ -1,0 +1,217 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (7.6 s)
+[INIT]  live speech model distil-small.en ready (2.1 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.4 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+09:40:09 WARNING copilot.llm.router: LLM key GROQ_API_KEY_3 answered 401 to the start ping: not used this session
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#3 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_6         openai/gpt-oss-120b           102k of 200k tokens IN USE
+        GROQ_API_KEY_1         openai/gpt-oss-120b           189k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~4.2 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~4.2 h
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 236 lecture minutes
+
+[READY] session 20261101-093953-31c4
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+09:40:10 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    0.9s] Picture a crate resting on a ramp inclined at 30 degrees. (454 ms)
+09:40:19 INFO    copilot.scene.detector: [SCENE] cue 'Picture a crate resting on a ramp inclined at 30 degrees.'
+09:40:19 INFO    copilot.presentation.simulations: [SIM] stage mode on: Crate on a ramp on its own slide (cue)
+09:40:19 INFO    copilot.presentation.stage: [STAGE] diagram open: Crate on a ramp (cue)
+09:40:19 INFO    copilot.presentation.stage: [STAGE] diagram f7c89e44a1a7: 5 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] add    'Crate on a ramp' [simulation] v1 (1 items)
+  [SLIDE] update 'Crate on a ramp' [simulation] v2 (1 items)
+09:40:19 INFO    copilot.simulation.detector: [SIM] cue incline ('Picture a') {'angle': '30 degrees'}
+09:40:22 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Physics, Inclined Plane)
+  [UNDERSTAND] Physics > Inclined Plane (new_topic) acts=explanation hint=concept lines=1 via groq_main#6 1942 ms
+               Introduced a crate on a 30° inclined ramp
+09:40:22 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   10.2s] The crate has a mass of 5 kg. (447 ms)
+09:40:27 INFO    copilot.scene.detector: [SCENE] edit 'The crate has a mass of 5 kg.'
+09:40:27 INFO    copilot.presentation.stage: [STAGE] diagram 30ccd379121c: 1 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] update 'Crate on a ramp' [simulation] v3 (1 items)
+09:40:27 INFO    copilot.simulation.detector: [SIM] values - {'mass': '5 kg'}
+  [UNDERSTAND] Physics > Inclined Plane (same_concept) acts=other hint=key_points lines=1 via groq_main#6 2170 ms
+               The crate’s mass is 5 kg.
+09:40:29 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   15.7s] Let the friction coefficient be 0.3. (470 ms)
+09:40:33 INFO    copilot.scene.detector: [SCENE] edit 'Let the friction coefficient be 0.3.'
+09:40:33 INFO    copilot.presentation.stage: [STAGE] diagram 58b75af744ec: 1 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] update 'Crate on a ramp' [simulation] v4 (1 items)
+09:40:33 INFO    copilot.simulation.detector: [SIM] values - {'mu': 'friction coefficient be 0.3'}
+  [UNDERSTAND] Physics > Inclined Plane (same_concept) acts=other hint=key_points lines=1 via groq_main#6 1459 ms
+               The friction coefficient for the inclined plane is 0.3.
+09:40:34 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   23.1s] Friction always opposes the motion. (506 ms)
+09:40:39 INFO    copilot.scene.detector: [SCENE] edit 'Friction always opposes the motion.'
+09:40:39 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'Friction always opposes the motion.'
+  [UNDERSTAND] Physics > Inclined Plane (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 1299 ms
+               Friction always acts opposite to the direction of motion.
+09:40:42 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [   27.7s] Imagine block A on block B on the floor. (553 ms)
+09:40:45 INFO    copilot.scene.detector: [SCENE] cue 'Imagine block A on block B on the floor.'
+09:40:45 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another stage was started): recap 1 slide(s) (1 kept, 3 dropped as parameter talk)
+09:40:45 INFO    copilot.presentation.simulations: [SIM] stage mode on: Block A on block B on its own slide (cue)
+09:40:45 INFO    copilot.presentation.stage: [STAGE] diagram open: Block A on block B (cue)
+09:40:45 INFO    copilot.presentation.stage: [STAGE] diagram 49145b3f9643: 5 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] update 'Crate on a ramp' [simulation] v5 (1 items)
+  [SLIDE] add    'Recap: Crate on a ramp' [key_points] v1 (1 items)
+  [SLIDE] add    'Block A on block B' [simulation] v1 (1 items)
+  [SLIDE] update 'Block A on block B' [simulation] v2 (1 items)
+09:40:45 INFO    copilot.simulation.detector: [SIM] setup block_on_surface {}
+09:40:47 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: Physics, Inclined Plane, Blocks on Surfaces)
+  [UNDERSTAND] Physics > Blocks on Surfaces (sibling_concept) acts=explanation hint=concept lines=1 via groq_main#6 2224 ms
+               Teacher introduced a scenario with block A on block B on the floor
+09:40:47 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   34.4s] Block A is 2kg and block B is 3kg. (468 ms)
+09:40:51 INFO    copilot.scene.detector: [SCENE] edit 'Block A is 2kg and block B is 3kg.'
+09:40:51 INFO    copilot.presentation.stage: [STAGE] diagram 9c2b6405e554: 2 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] update 'Block A on block B' [simulation] v3 (1 items)
+09:40:51 INFO    copilot.simulation.detector: [SIM] values - {'mass': '2kg', 'mass#1': '3kg'}
+  [UNDERSTAND] Physics > Blocks on Surfaces (elaboration) acts=other hint=key_points lines=1 via groq_main#1 1890 ms
+               Provided masses of block A (2 kg) and block B (3 kg).
+09:40:53 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+09:40:58 INFO    copilot.stt.engine: STT: outro hallucination cut: 'A 50N force pulls block B. Thank you.' -> 'A 50N force pulls block B.'
+  [   40.6s] A 50N force pulls block B. (1133 ms)
+09:40:58 INFO    copilot.scene.detector: [SCENE] edit 'A 50N force pulls block B.'
+09:40:58 INFO    copilot.presentation.stage: [STAGE] diagram f88cb04a185e: 1 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] update 'Block A on block B' [simulation] v4 (1 items)
+09:40:58 INFO    copilot.simulation.detector: [SIM] score block_on_surface {'force': '50N'}
+  [UNDERSTAND] Physics > Blocks on Surfaces (same_concept) acts=explanation hint=key_points lines=1 via groq_main#1 1700 ms
+               Teacher stated a 50 N force pulls block B.
+09:40:59 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   47.3s] The friction coefficient where 8H is B is 0.4. (467 ms)
+09:41:05 INFO    copilot.scene.detector: [SCENE] edit 'The friction coefficient where 8H is B is 0.4.'
+09:41:05 INFO    copilot.presentation.stage: [SIM] value unattached: mu 'friction coefficient where 8H is B is 0.4' in 'The friction coefficient where 8H is B is 0.4.'
+09:41:05 INFO    copilot.presentation.stage: [SIM] llm asked for b29822c4d80c (value with no part): 'The friction coefficient where 8H is B is 0.4.'
+09:41:05 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'The friction coefficient where 8H is B is 0.4.'
+09:41:05 INFO    copilot.simulation.detector: [SIM] values - {'inductance': '8H'}
+09:41:07 INFO    copilot.presentation.stage: [SIM] llm b29822c4d80c: 1 op(s) replace the draft, 0 dropped, 1176 tokens (1176 counted), 1.92 s
+  [SLIDE] update 'Block A on block B' [simulation] v5 (1 items)
+09:41:08 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Blocks on Surfaces' -> same_concept
+  [UNDERSTAND] Physics > Blocks on Surfaces (same_concept) acts=other hint=key_points lines=1 via groq_main#6 2909 ms
+               Friction coefficient for block B is 0.4.
+  [HEARD] 'where 8H is B' -> 'for block B' corrected on the slide (0.5)
+09:41:08 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [   58.2s] There is no friction with the floor. (423 ms)
+09:41:14 INFO    copilot.scene.detector: [SCENE] edit 'There is no friction with the floor.'
+09:41:14 INFO    copilot.presentation.stage: [STAGE] diagram f4c871f53466: 1 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] update 'Block A on block B' [simulation] v6 (1 items)
+09:41:14 INFO    copilot.simulation.detector: [SIM] values - {'mu': 'no friction'}
+  [UNDERSTAND] Physics > Blocks on Surfaces (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 2128 ms
+               Teacher noted that the floor provides no friction.
+09:41:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [   64.3s] Imagine two masses connected by a string over a pulley. (525 ms)
+09:41:22 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two masses connected by a string over a pulley.'
+09:41:22 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another stage was started): recap none (0 kept, 6 dropped as parameter talk)
+09:41:22 INFO    copilot.presentation.simulations: [SIM] stage mode on: Two masses and pulley on its own slide (cue)
+09:41:22 INFO    copilot.presentation.stage: [STAGE] diagram open: Two masses and pulley (cue)
+09:41:22 INFO    copilot.presentation.stage: [STAGE] diagram fcc5cfb40fde: 7 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] update 'Block A on block B' [simulation] v7 (1 items)
+  [SLIDE] add    'Two masses and pulley' [simulation] v1 (1 items)
+  [SLIDE] update 'Two masses and pulley' [simulation] v2 (1 items)
+09:41:22 INFO    copilot.simulation.detector: [SIM] values - {}
+09:41:24 INFO    copilot: [STT] vocabulary prompt: 34 terms (newest: Inclined Plane, Blocks on Surfaces, Pulley System)
+  [UNDERSTAND] Physics > Pulley System (sibling_concept) acts=explanation hint=concept lines=1 via groq_main#6 1894 ms
+               Introduced a pulley scenario with two masses connected by a string
+09:41:24 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   73.5s] The masses are 2kg and 3kg. (414 ms)
+09:41:30 INFO    copilot.scene.detector: [SCENE] edit 'The masses are 2kg and 3kg.'
+09:41:30 INFO    copilot.presentation.stage: [SIM] value unattached: m '2kg' in 'The masses are 2kg and 3kg.'
+09:41:30 INFO    copilot.presentation.stage: [SIM] value unattached: m '3kg' in 'The masses are 2kg and 3kg.'
+09:41:30 INFO    copilot.presentation.stage: [SIM] llm asked for 5337eeb09930 (value with no part): 'The masses are 2kg and 3kg.'
+09:41:30 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'The masses are 2kg and 3kg.'
+09:41:30 INFO    copilot.simulation.detector: [SIM] values - {'mass': '2kg', 'mass#1': '3kg'}
+09:41:31 INFO    copilot.presentation.stage: [SIM] llm 5337eeb09930: 2 op(s) replace the draft, 0 dropped, 1137 tokens (1137 counted), 1.83 s
+  [SLIDE] update 'Two masses and pulley' [simulation] v3 (1 items)
+  [UNDERSTAND] Physics > Pulley System (same_concept) acts=explanation hint=concept lines=1 via groq_main#1 2321 ms
+               Stated the two masses in the pulley system are 2 kg and 3 kg.
+09:41:33 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [   80.7s] Imagine two masses connected by a string over a pulley. (479 ms)
+09:41:38 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two masses connected by a string over a pulley.'
+09:41:38 INFO    copilot.presentation.stage: [STAGE] diagram f9ef28a14fcd: 4 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] update 'Two masses and pulley' [simulation] v4 (1 items)
+09:41:38 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Pulley System (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 2554 ms
+               Teacher introduced a pulley scenario with two masses connected by a string.
+09:41:40 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   92.9s] Imagine a block on a table tied with a string that goes over a pulley to a mass hanging down. (536 ms)
+09:41:53 INFO    copilot.scene.detector: [SCENE] cue 'Imagine a block on a table tied with a string that goes over a pulley to a mass '
+09:41:53 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another stage was started): recap 1 slide(s) (1 kept, 1 dropped as parameter talk)
+09:41:53 INFO    copilot.presentation.simulations: [SIM] stage mode on: Block on a table on its own slide (cue)
+09:41:53 INFO    copilot.presentation.stage: [STAGE] diagram open: Block on a table (cue)
+09:41:53 INFO    copilot.presentation.stage: [STAGE] diagram abf9e346d524: 8 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] update 'Two masses and pulley' [simulation] v5 (1 items)
+  [SLIDE] add    'Recap: Two masses and pulley' [key_points] v1 (1 items)
+  [SLIDE] add    'Block on a table' [simulation] v1 (1 items)
+  [SLIDE] update 'Block on a table' [simulation] v2 (1 items)
+09:41:53 INFO    copilot.simulation.detector: [SIM] cue block_on_surface ('Imagine a') {}
+  [UNDERSTAND] Physics > Pulley System (same_concept) acts=explanation hint=concept lines=1 via groq_main#6 5090 ms
+               Introduced a block‑table‑pulley‑hanging‑mass scenario
+09:41:58 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [  104.9s] The table dock is 4kg and the one-hand gig is 1kg. (525 ms)
+09:42:03 INFO    copilot.scene.detector: [SCENE] edit 'The table dock is 4kg and the one-hand gig is 1kg.'
+09:42:03 INFO    copilot.presentation.stage: [SIM] value unattached: m '4kg' in 'The table dock is 4kg and the one-hand gig is 1kg.'
+09:42:03 INFO    copilot.presentation.stage: [SIM] value unattached: m '1kg' in 'The table dock is 4kg and the one-hand gig is 1kg.'
+09:42:03 INFO    copilot.presentation.stage: [SIM] llm asked for 2fd276644b4d (value with no part): 'The table dock is 4kg and the one-hand gig is 1kg.'
+09:42:03 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'The table dock is 4kg and the one-hand gig is 1kg.'
+09:42:03 INFO    copilot.simulation.detector: [SIM] values - {'mass': '4kg', 'mass#1': '1kg'}
+09:42:04 INFO    copilot.presentation.stage: [SIM] llm 2fd276644b4d: 2 op(s) replace the draft, 0 dropped, 1276 tokens (1276 counted), 1.08 s
+  [SLIDE] update 'Block on a table' [simulation] v3 (1 items)
+09:42:04 INFO    copilot.understanding.interpreter: relation sub_concept with unchanged subtopic 'Pulley System' -> same_concept
+  [UNDERSTAND] Physics > Pulley System (same_concept) acts=other hint=key_points lines=1 via groq_main#1 1672 ms
+               Introduced a 4 kg table block and a 1 kg hanging mass in the pulley system.
+09:42:04 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [  114.8s] Now take the friction coefficient as 0.2. (415 ms)
+09:42:11 INFO    copilot.scene.detector: [SCENE] edit 'Now take the friction coefficient as 0.2.'
+09:42:11 INFO    copilot.presentation.stage: [STAGE] diagram b05127d2685f: 1 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] update 'Block on a table' [simulation] v4 (1 items)
+09:42:11 INFO    copilot.simulation.detector: [SIM] values - {'mu': 'friction coefficient as 0.2'}
+  [  121.5s] Newton's law or the basics of mechanics. (443 ms)
+09:42:18 INFO    copilot.scene.detector: [SCENE] edit "Newton's law or the basics of mechanics."
+09:42:18 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in "Newton's law or the basics of mechanics."
+  [UNDERSTAND] Physics > Pulley System (elaboration) acts=explanation hint=key_points lines=1 via groq_main#6 6359 ms
+               Teacher set the friction coefficient to 0.2 for the pulley scenario.
+09:42:18 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+09:42:20 INFO    copilot: [STT] vocabulary prompt: 35 terms (newest: Blocks on Surfaces, Pulley System, Newton's Law)
+  [UNDERSTAND] Physics > Newton's Law (sibling_concept) acts=definition hint=definition lines=1 via groq_main#1 1852 ms
+               Teacher introduced Newton's law as the basics of mechanics.
+09:42:20 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+[END]   finishing lecture understanding (0 buffered lines) ...
+09:42:29 INFO    copilot.presentation.simulations: [SIM] simulation mode off (the lecture ended): recap 1 slide(s) (1 kept, 4 dropped as parameter talk)
+  [SLIDE] add    'Recap: Block on a table' [members] v1 (1 items)
+[ENDED] session 20261101-093953-31c4: 16 segments, 141 words, state v37, 290 events logged
+        CommandReceived=4, ConceptSignal=16, ConcernRaised=1, DeckState=15, InterpretRequested=16, InterpretationReady=16, LifecycleChanged=5, LiveCue=15, ModeChanged=1, RepresentationIntent=30, SimulationModeChanged=8, SimulationSettingChanged=1, SlideContextChanged=1, SlidePatch=24, StateChanged=37, TranscriptFinal=16, TranscriptPartial=64, UtteranceClassified=16, VocabularyChanged=4
+        stt: 16 published, 0 dropped, latency p50=469 ms p95=1133 ms max=1133 ms
+        understanding: 16 interpretations (16 by LLM, 0 fallbacks, 0 repaired), max 9 calls/min, prompt tokens max=1964 avg=1919, latency p50=2128 ms max=6359 ms
+        presentation: 7 slides; planner ops {'diagram_start': 4}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/7
+          1. [simulation] Crate on a ramp  (v5, ['stage'])
+          2. [key_points] Recap: Crate on a ramp  (v1, ['points'])
+          3. [simulation] Block A on block B  (v7, ['stage'])
+          4. [simulation] Two masses and pulley  (v5, ['stage'])
+          5. [key_points] Recap: Two masses and pulley  (v1, ['points'])
+          6. [simulation] Block on a table  (v4, ['stage'])
+          7. [members] Recap: Block on a table  (v1, ['definition'])
+        providers: {'groq_main#6': 10, 'groq_main#1': 6}; triggers: {'pause': 16}; outline: ["Physics > Inclined Plane, Blocks on Surfaces, Pulley System, Newton's Law"]; concerns: 1
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261101-093953-31c4\session.sqlite

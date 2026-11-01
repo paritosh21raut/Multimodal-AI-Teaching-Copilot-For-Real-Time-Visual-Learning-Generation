@@ -1,0 +1,10 @@
+[    5.8] Imagine a block A on block B on the floor.
+[   11.5] Block A is 2kg and block B is 3kg.
+[   18.3] A 50N force pulls block B.
+[   23.6] The friction coefficient where A touches B is 0.4.
+[   33.9] There is no friction with the floor. You
+[   46.2] Imagine two masses connected by a string over a pulley.
+[   54.3] The masses are 2kg and 3kg.
+[   61.6] imaging two masses connected by a string over a pulley.
+[   80.2] Imagine two masses connected by a string over a pulley.
+[   94.4] Imagine two masses connected by a string over a pulley.

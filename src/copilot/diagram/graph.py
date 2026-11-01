@@ -115,7 +115,8 @@ class DiagramLog:
     def delta(self, raws: list[dict], line_id: str, src: str = "fast", t_ms: int = 0, text: str = "") -> Any:
         """Check one line's ops against the current graph and log every op with its outcome."""
         from copilot.diagram.validate import check_delta
-        d = check_delta(raws, self.fold(), self.recent(), text, max_ops=None if src == "fast" else O.MAX_OPS)
+        g = self.fold(skip_fast_of=line_id if src == "llm" else None)  # M3: the answer stands for the whole line
+        d = check_delta(raws, g, self.recent(), text, max_ops=None if src == "fast" else O.MAX_OPS)
         for raw, why in d.rejected:
             self.events.append(Event(len(self.events) + 1, t_ms, src, line_id, raw, False, why))
         for op in d.ok:
@@ -127,12 +128,34 @@ class DiagramLog:
         self.events.append(Event(len(self.events) + 1, t_ms, "teacher", line_id, {"op": "undo", "line": line_id}, True))
 
     def last_line(self) -> Optional[str]:
-        return next((e.line_id for e in reversed(self.events)
-                     if e.ok and e.src != "teacher" and e.line_id not in self.undone), None)
+        """The newest line (in speech order: a late LLM answer for an older line is not "the last line") that drew."""
+        drew = {e.line_id for e in self.events if e.ok and e.src != "teacher" and e.line_id not in self.undone}
+        return next((i for i, _ in reversed(self.lines) if i in drew), None)
 
-    def fold(self) -> Graph:
-        g = Graph()
+    def later_refs(self, line_id: str) -> set[str]:
+        """M3 review: the ids the lines said after `line_id` use (a late answer must keep them: a value of l2 on the
+        block l1 drew stays on a part that exists)."""
+        order = [i for i, _ in self.lines]
+        after = set(order[order.index(line_id) + 1:]) if line_id in order else set()
+        out: set[str] = set()
         for e in self.events:
-            if e.ok and e.line_id not in self.undone and not isinstance(e.op, dict):
+            if e.ok and e.line_id in after and e.line_id not in self.undone and not isinstance(e.op, dict):
+                for k in ("a", "b", "on", "target", "src"):
+                    v = getattr(e.op, k, None)
+                    if isinstance(v, str):
+                        out.add(v.split(".")[0])
+                out.update(getattr(e.op, "items", None) or [])
+        return out
+
+    def superseded(self) -> set[str]:
+        """M3: the lines an LLM answer replaced (their fast events stay in the log, the fold skips them)."""
+        return {e.line_id for e in self.events if e.ok and e.src == "llm"}
+
+    def fold(self, skip_fast_of: Optional[str] = None) -> Graph:
+        g = Graph()
+        skip = self.superseded() | ({skip_fast_of} if skip_fast_of else set())
+        for e in self.events:
+            if e.ok and e.line_id not in self.undone and not isinstance(e.op, dict) \
+                    and not (e.src == "fast" and e.line_id in skip):
                 apply(g, e.op, e.line_id, e.seq)
         return g

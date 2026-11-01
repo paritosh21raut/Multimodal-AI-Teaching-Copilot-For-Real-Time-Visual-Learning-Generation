@@ -30,13 +30,16 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Optional
 
 from copilot.core.events import RepresentationIntent, SimulationNotice, StageWords
+from copilot.diagram import extract as dextract
 from copilot.diagram import fastpath as dfast
+from copilot.diagram import ops as dops
 from copilot.diagram import mech as dmech
 from copilot.diagram import parts as dparts
 from copilot.diagram import patch as dpatch
 from copilot.diagram.graph import DiagramLog
 from copilot.diagram.route import route as diagram_route
 from copilot.diagram.solvers import run as drun
+from copilot.diagram.validate import check_delta
 from copilot.presentation.spec import SlideSpec, StageBlock
 from copilot.scene import pictures as pics
 from copilot.scene import safety
@@ -96,6 +99,8 @@ class _Open:
     fbd: str = ""                       # F-019 M2: the free-body view ("" off, "all", a body id)
     dtitle: str = ""                    # the diagram's title (from its first line)
     cues: list[tuple[float, frozenset[str]]] = field(default_factory=list)  # M0: (lecture time, words) of its cues
+    dqueue: deque = field(default_factory=deque)  # M3: diagram lines for the LLM (line id, text, heard_at, draft ops)
+    dtask: Optional[asyncio.Task] = None
 
     def drawn(self) -> bool:
         """Something is on the slide (stage entities or diagram parts)."""
@@ -106,6 +111,7 @@ class _Open:
 class StageController:
     e: "PresentationEngine"
     director: Any = None                 # stage.director_llm.StageDirector (the app sets it), None: fast path only
+    extractor: Any = None                # M3: diagram.extract.Extractor (the app sets it), None: diagram fast path only
     open: Optional[_Open] = None
     imagine: bool = False
     stats: StageStats = field(default_factory=StageStats)
@@ -331,6 +337,11 @@ class StageController:
             if self.imagine and diagram_route(ev.text) is None and _drawable(fastpath.draft(ev.text)) \
                     and not dfast.draft(ev.text, o.dlog.fold()).ops:
                 return False  # Imagine Mode: "a dog runs in" is a scene (the stage opens its own slide)
+            dd = dfast.draft(ev.text, o.dlog.fold())
+            if _recount(dd, o.dlog.fold().parts) and not any(op.get("op") == "qty" for op in dd.ops):
+                self._heard()  # test46: the cue said again as "imaging two masses ..." (no cue) drew two more masses
+                log.info("[STAGE] diagram repeat (its things are drawn): %r", ev.text[:60])
+                return True
             await self._diagram_line(o, ev)
             return True
         if not dia:
@@ -444,6 +455,15 @@ class StageController:
             log.info("[SIM] value unattached: %s %r in %r", sym, q, ev.text[:60])
         if not o.dtitle and d.title:
             o.dtitle = d.title
+        why = dextract.needs_llm(ev.text, d, cue=ev.strength == "cue") if self.extractor is not None else ""
+        if why:  # M3: the fast path left part of the line unread: the LLM reads the whole line (its draft stays meanwhile)
+            log.info("[SIM] llm asked for %s (%s): %r", line_id, why, ev.text[:60])
+            o.dqueue.append((line_id, ev.text, heard, d.ops))
+            while len(o.dqueue) > QUEUE_MAX:
+                old = o.dqueue.popleft()
+                log.info("[SIM] llm queue full: %r keeps its draft", old[1][:50])
+            if o.dtask is None or o.dtask.done():
+                o.dtask = asyncio.create_task(self._ddrain(o), name="diagram:extract")
         if not d.ops:
             log.info("[STAGE] diagram: nothing new in %r", ev.text[:60])
             return
@@ -456,8 +476,59 @@ class StageController:
         o.nouns = diagram_nouns(g)  # test38: Whisper heard "pentagon" as "Zagon", "outside" as
         await self._words(o)                        # "inside": primed with the diagram's own words
         self.stats.draft_s.append(time.perf_counter() - heard)
-        log.info("[STAGE] diagram %s: %d op(s), %d refused (fast path, 0 tokens; the LLM delta comes in K5)",
-                 line_id, len(res.ok), len(res.rejected))
+        log.info("[STAGE] diagram %s: %d op(s), %d refused (fast path, 0 tokens)", line_id, len(res.ok),
+                 len(res.rejected))
+
+    async def _ddrain(self, o: _Open) -> None:
+        """M3: one extraction call per queued line, in order; an answer the validator takes whole replaces the line's
+        fast draft; a refused op, a failed call, a closed diagram or an undone line: the draft stays."""
+        while o.dqueue and self._live() is o:
+            line_id, text, heard, draft = o.dqueue.popleft()
+            before = [t for i, t in o.dlog.lines if i != line_id][-2:]
+            try:
+                res = await self.extractor.delta(o.dlog.fold(skip_fast_of=line_id), before, text, draft)
+            except asyncio.CancelledError:
+                raise
+            except Exception as err:  # every model failed: the draft stays (no fake fallback)
+                self.stats.failed += 1
+                log.warning("[SIM] llm call failed for %s (the draft stays): %s", line_id, err)
+                continue
+            self.stats.calls += 1
+            self.stats.tokens += res.tokens
+            self.stats.counted += res.counted
+            try:
+                await self._dland(o, res, line_id, text, heard)
+            except Exception:  # a layout / commit fault: logged, the next lines still go
+                log.exception("[SIM] llm answer for %s could not be drawn", line_id)
+
+    async def _dland(self, o: _Open, res: Any, line_id: str, text: str, heard: float) -> None:
+        async with self.e._lock:
+            if self._live() is not o or o.mode != "diagram" or o.frozen or line_id in o.dlog.undone:
+                log.info("[SIM] llm answer for %s dropped (the diagram moved on)", line_id)
+                return
+            g = o.dlog.fold(skip_fast_of=line_id)
+            raws, dropped = dextract.clean(res.ops, text, g)
+            chk = check_delta(raws, g, o.dlog.recent(), text, max_ops=dops.MAX_OPS)
+            refused = dropped + list(chk.rejected)
+            lost = dextract.lost_ids(o.dlog, line_id, g, raws)
+            if lost:  # review: a late answer must keep the parts the lines said since then stand on
+                refused.append(({"lost": lost}, "later lines use these parts"))
+            for raw, why in refused:
+                log.info("[SIM] llm refused %s: %s", raw, why)
+            if not chk.ok or chk.rejected or lost:  # all or nothing: half an answer never mixes with half a draft
+                log.info("[SIM] llm %s: answer not taken (%d ok, %d refused), the draft stays, %d tokens, %.2f s",
+                         line_id, len(chk.ok), len(refused), res.tokens, time.perf_counter() - heard)
+                return
+            o.dlog.delta(raws, line_id, "llm", t_ms=int(self.e.now() * 1000), text=text)
+            g = o.dlog.fold()
+            o.dtitle = shapes_title(g) or o.dtitle
+            await self._publish_diagram(o)
+            o.nouns = diagram_nouns(g)
+            await self._words(o)
+            self.stats.full_s.append(time.perf_counter() - heard)
+            log.info("[SIM] llm %s: %d op(s) replace the draft, %d dropped, %d tokens (%d in, %d out, %d counted), "
+                     "%.2f s", line_id, len(chk.ok), len(dropped), res.tokens, res.prompt_tokens,
+                     res.tokens - res.prompt_tokens, res.counted, time.perf_counter() - heard)
 
     async def _publish_diagram(self, o: _Open) -> None:
         spec, b = self._block(o.slide_id)
@@ -492,6 +563,7 @@ class StageController:
         lines = [(i, t) for i, t in (o.dlog.lines if o.mode == "diagram" else o.log.lines)
                  if i not in undone and i != "teacher"]
         self._close_task()
+        o.dqueue.clear()  # M3 review: lines from before the switch are not sent to the LLM again
         o.queue.clear()
         o.mode = to
         o.log, o.dlog, o.patch, o.dpatch = EventLog(), DiagramLog(), None, None
@@ -591,6 +663,8 @@ class StageController:
         o = self.open
         if o is not None and o.task is not None and not o.task.done():
             o.task.cancel()
+        if o is not None and o.dtask is not None and not o.dtask.done():
+            o.dtask.cancel()
 
     async def imagine_mode(self, on: bool) -> None:
         e = self.e
@@ -808,7 +882,10 @@ def _recount(d: dfast.Draft, parts: dict) -> bool:
         return kind, attr.get("chem"), attr.get("element"), attr.get("name")
     said = Counter(sig(o["kind"], o.get("attr") or {}) for o in d.ops if o.get("op") == "part" and o.get("id") in d.new)
     said.update(sig(parts[i].kind, parts[i].attr) for i in d.old if i in parts)  # "on the floor": the floor drawn
-    have = Counter(sig(p.kind, p.attr) for p in parts.values())
+    # test45: a pulley's implied support is never said ("two masses ... over a pulley" again drew two more masses)
+    said -= Counter(sig(o["kind"], o.get("attr") or {}) for o in d.ops if o.get("op") == "part"
+                    and o.get("id") in d.new and (o.get("attr") or {}).get("implied"))
+    have = Counter(sig(p.kind, p.attr) for p in parts.values() if not p.attr.get("implied"))
     return said == have  # the same picture said again (test36's "imagine a square" after C1–C3 is the next one)
 
 

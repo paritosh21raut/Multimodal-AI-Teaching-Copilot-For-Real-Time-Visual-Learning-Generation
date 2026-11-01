@@ -1,0 +1,16 @@
+[    0.9] Picture a crate resting on a ramp inclined at 30 degrees.
+[   10.2] The crate has a mass of 5 kg.
+[   15.7] Let the friction coefficient be 0.3.
+[   23.1] Friction always opposes the motion.
+[   27.7] Imagine block A on block B on the floor.
+[   34.4] Block A is 2kg and block B is 3kg.
+[   40.6] A 50N force pulls block B.
+[   47.3] The friction coefficient where 8H is B is 0.4.
+[   58.2] There is no friction with the floor.
+[   64.3] Imagine two masses connected by a string over a pulley.
+[   73.5] The masses are 2kg and 3kg.
+[   80.7] Imagine two masses connected by a string over a pulley.
+[   92.9] Imagine a block on a table tied with a string that goes over a pulley to a mass hanging down.
+[  104.9] The table dock is 4kg and the one-hand gig is 1kg.
+[  114.8] Now take the friction coefficient as 0.2.
+[  121.5] Newton's law or the basics of mechanics.

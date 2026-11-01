@@ -5,12 +5,11 @@ _Last updated 2026-11-01. History in `docs/history/` (not read by default)._
 ## Now
 - **2026-10-31 re-plan (ADR-0014, after live test36):** V2 = **F-019 Live Concept Simulator**
   (`docs/v2/F-019-concept-simulator.md`, roadmap `docs/v2/V2-ROADMAP.md`): K1 composed diagrams + values said
-  later + one solver per domain (no template per scene). Order Concept Simulator → Story → Canvas; people stage parked.
+  later + one solver per domain. Order Concept Simulator → Story → Canvas; people stage parked.
 - **Work method: the loop** (`docs/v2/LOOP.md`). User words: `next` (build the card below) · `test done`
   (evaluate the newest `verify_results/testN`) · `fix` · `ok` (close, next card in a new session).
-- **Next card: M3** (`docs/v2/M2-M5-outline.md` §M3: LLM scene extraction, Groq bounded; phase A writes
-  `docs/v2/M3-*.md` from the outline + the open issues below). M2 closed (test42–43).
-- Loop state: **M3 not started.**
+- **Current card: M4** (live mechanics lecture run, `docs/v2/M2-M5-outline.md` §M4; write `docs/v2/M4-*.md` first).
+- Loop state: **M3 closed** (verified live test45–47). Next: `next` → M4 phase A.
 
 ## Done and verified
 | Part | Status |
@@ -23,17 +22,18 @@ _Last updated 2026-11-01. History in `docs/history/` (not read by default)._
 | F-019 M0 trust + continuity (numbers guard, recap scope, repeats, continue / inside, mishears) | verified live test37–39; 1982 pass |
 | F-019 M1 values + contact solver (qty, solvers/contact, arrows, panel, motion) | verified live test40–41 (2 fix rounds); 2019 pass |
 | F-019 M2 look + motion (free body, pair forces, labels, morph, recap) | verified live test42–43 (1 fix round); 2048 pass |
-| F-019 M3–M5 | planned |
+| F-019 M3 LLM extraction (extract.py, supersede, key ping, fast-path fixes) | verified live test45–47 (2 fix rounds); 2069 pass |
+| F-019 M4 (next), M5 | planned |
 
 ## Open issues
-- To M3: free wording (LLM); lettered blocks ("block A on block B on the floor") not solved (fast path); a recap line said after the
-  last scene; rope systems beyond Atwood / table "not computed"; inside/outside chip; closed-diagram label. From M0: Whisper merges "is outside" into "inside" (test38/39); a closed
-  diagram's label (C3) should go back to it; F-015 cube + ball inside; people-scene errors (parked).
-- K1: no current dots (circuits later), focus colour; diagram LLM delta → M3.
-- Groq: two keys answered 401 in test35; delta ~1.5k tokens/call; understanding ~105k tokens / 25 min (test36).
-- Lines said just before a cue can land in the recap (F-014 `split_early`).
+- To M4 (from M3): Atwood W arrow off the slide (test47); recap restating the cue; "a 4 kg block pulls a 1 kg mass"
+  value on the wrong part; Diagram→Scene→Diagram loses LLM fixes; quote-near-noun check; "half a kilogram"; a line
+  said after the last scene becomes its recap; stack scene view (top W through the bottom block, two N on one line).
+- Older: rope systems beyond Atwood / table "not computed"; inside/outside chip; a closed diagram's label (C3);
+  Whisper merges "is outside" into "inside" (test38/39); F-015 cube + ball inside; people scenes (parked).
+- K1: no current dots (circuits later), focus colour. Lines said just before a cue can land in the recap (`split_early`).
+- Groq: diagram LLM ~1.1k tokens/call (M3); understanding ~1.9k prompt/line, ~105k tokens / 25 min (test36).
 
 ## User actions pending
-- Replace dead Groq keys in .env; check the network before live runs.
-- Start a new session and type `next` (M3).
-- To M4: scene view of a stack (top W runs through the bottom block; two N on one line).
+- Replace dead Groq key GROQ_API_KEY_3 (401 at the 2026-11-01 ping); check the network first.
+- Type `next` in a new session (M4).

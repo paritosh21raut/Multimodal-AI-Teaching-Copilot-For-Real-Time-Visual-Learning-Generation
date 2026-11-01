@@ -119,6 +119,34 @@ class LLMRouter:
         self.usage.save()
         log.warning("LLM %s now uses %s%s", entry.family, entry.env, f" ({before} is spent)" if before else "")
 
+    async def ping(self, client: httpx.AsyncClient, timeout_s: float = 4.0) -> list[str]:
+        """F-019 M3: one 0-token `GET /models` per key at start; a 401 marks every entry of that key dead for the
+        session (it is never tried in a lecture). No network: nothing is marked. Returns the dead keys' .env names."""
+        seen: dict[tuple[str, str], str] = {}
+        todo = list(dict.fromkeys((e.provider.cfg.base_url, e.provider._key) for e in self.entries
+                                  if getattr(e.provider, "_key", None)))
+
+        async def one(base: str, key: str) -> None:  # all keys at once (no network: one timeout, not one per key)
+            try:
+                r = await client.get(base.rstrip("/") + "/models", headers={"Authorization": f"Bearer {key}"},
+                                     timeout=timeout_s)
+                # only a 401 is the key itself; a 403 can be a proxy / region block (review): not marked
+                seen[(base, key)] = "401 at start" if r.status_code == 401 else ""
+            except httpx.HTTPError:
+                seen[(base, key)] = ""
+
+        await asyncio.gather(*(one(b, k) for b, k in todo))
+        dead = []
+        for e in self.entries:
+            why = seen.get((e.provider.cfg.base_url, getattr(e.provider, "_key", None) or ""), "")
+            if why:
+                e.dead = why
+                if e.env not in dead:
+                    dead.append(e.env)
+        for env in dead:
+            log.warning("LLM key %s answered 401 to the start ping: not used this session", env or "?")
+        return dead
+
     def quota(self) -> list[dict]:
         """Per entry: daily tokens used/limit, spent or not, and which key each model uses now (terminal view)."""
         out = []

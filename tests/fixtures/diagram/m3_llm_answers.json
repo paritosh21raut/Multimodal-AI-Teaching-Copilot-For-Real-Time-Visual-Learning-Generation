@@ -1,0 +1,7 @@
+{
+ "Mu static is 0.5 while mu kinetic is 0.4.": "{\"op\":\"qty\",\"on\":\"block\",\"sym\":\"mu_s\",\"v\":0.5,\"u\":\"\",\"q\":\"Mu static is 0.5\"}\n{\"op\":\"qty\",\"on\":\"block\",\"sym\":\"mu_k\",\"v\":0.4,\"u\":\"\",\"q\":\"mu kinetic is 0.4\"}",
+ "Between A and B the friction coefficient is 0.4.": "{\"op\":\"qty\",\"on\":\"a\",\"sym\":\"mu\",\"v\":0.4,\"u\":\"\",\"q\":\"0.4\"}",
+ "The masses are 2 kg and 3 kg.": "{\"op\":\"qty\",\"on\":\"mass\",\"sym\":\"m\",\"v\":2,\"u\":\"kg\",\"q\":\"2 kg\"}\n{\"op\":\"qty\",\"on\":\"mass2\",\"sym\":\"m\",\"v\":3,\"u\":\"kg\",\"q\":\"3 kg\"}",
+ "The table block is 4 kg and the one hanging is 1 kg.": "{\"op\":\"qty\",\"on\":\"block\",\"sym\":\"m\",\"v\":4,\"u\":\"kg\",\"q\":\"4 kg\"}\n{\"op\":\"qty\",\"on\":\"mass\",\"sym\":\"m\",\"v\":1,\"u\":\"kg\",\"q\":\"1 kg\"}",
+ "Change mu to 0.3.": "{\"op\":\"qty\",\"on\":\"block\",\"sym\":\"mu\",\"v\":0.3,\"u\":\"\",\"q\":\"Change mu to 0.3\"}"
+}

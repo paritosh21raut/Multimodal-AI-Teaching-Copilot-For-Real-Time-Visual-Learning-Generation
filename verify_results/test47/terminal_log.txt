@@ -1,0 +1,77 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (5.1 s)
+[INIT]  live speech model distil-small.en ready (1.5 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#3 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+10:00:09 WARNING copilot.llm.router: LLM key GROQ_API_KEY_3 answered 401 to the start ping: not used this session
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#3 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#3 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_6         openai/gpt-oss-120b            62k of 200k tokens IN USE
+        GROQ_API_KEY_1         openai/gpt-oss-120b           173k of 200k tokens ok
+        GROQ_API_KEY_2         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_3         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~3.9 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~3.9 h
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_3         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 229 lecture minutes
+
+[READY] session 20261101-095955-4569
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+10:00:09 INFO    copilot.visuals.service: CLIP ready in 0.5 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    1.0s] Imagine two masses connected by a string over a pulley. (448 ms)
+10:00:23 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two masses connected by a string over a pulley.'
+10:00:23 INFO    copilot.presentation.simulations: [SIM] stage mode on: Two masses and pulley on its own slide (cue)
+10:00:23 INFO    copilot.presentation.stage: [STAGE] diagram open: Two masses and pulley (cue)
+10:00:23 INFO    copilot.presentation.stage: [STAGE] diagram 732fd18f168b: 7 op(s), 0 refused (fast path, 0 tokens)
+  [SLIDE] add    'Two masses and pulley' [simulation] v1 (1 items)
+  [SLIDE] update 'Two masses and pulley' [simulation] v2 (1 items)
+10:00:23 INFO    copilot.simulation.detector: [SIM] values - {}
+  [    6.9s] The masses are 2kg and 3kg. (411 ms)
+10:00:28 INFO    copilot.scene.detector: [SCENE] edit 'The masses are 2kg and 3kg.'
+10:00:28 INFO    copilot.presentation.stage: [SIM] value unattached: m '2kg' in 'The masses are 2kg and 3kg.'
+10:00:28 INFO    copilot.presentation.stage: [SIM] value unattached: m '3kg' in 'The masses are 2kg and 3kg.'
+10:00:28 INFO    copilot.presentation.stage: [SIM] llm asked for 767e6e998df9 (value with no part): 'The masses are 2kg and 3kg.'
+10:00:28 INFO    copilot.presentation.stage: [STAGE] diagram: nothing new in 'The masses are 2kg and 3kg.'
+10:00:28 INFO    copilot.simulation.detector: [SIM] values - {'mass': '2kg', 'mass#1': '3kg'}
+10:00:28 INFO    copilot.presentation.stage: [SIM] llm 767e6e998df9: 2 op(s) replace the draft, 0 dropped, 1129 tokens (1055 in, 74 out, 1129 counted), 0.69 s
+  [SLIDE] update 'Two masses and pulley' [simulation] v3 (1 items)
+10:00:30 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Physics, Pulley System)
+  [UNDERSTAND] Physics > Pulley System (new_topic) acts=explanation hint=concept lines=2 via groq_main#6 1524 ms
+               Introduced a simple pulley system with a 2 kg and a 3 kg mass.
+10:00:30 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   28.4s] Imagine two masses connected by a string over a pulley. (453 ms)
+10:00:50 INFO    copilot.scene.detector: [SCENE] cue 'Imagine two masses connected by a string over a pulley.'
+10:00:50 INFO    copilot.presentation.stage: [STAGE] diagram repeat (its things are drawn): 'Imagine two masses connected by a string over a pulley.'
+10:00:50 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Physics > Pulley System (elaboration) acts=explanation hint=concept lines=1 via groq_main#6 1978 ms
+               Teacher describes two masses connected by a string over a pulley
+10:00:52 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+[END]   finishing lecture understanding (0 buffered lines) ...
+10:01:05 INFO    copilot.presentation.simulations: [SIM] simulation mode off (the lecture ended): recap 1 slide(s) (1 kept, 2 dropped as parameter talk)
+  [SLIDE] add    'Recap: Two masses and pulley' [key_points] v1 (1 items)
+[ENDED] session 20261101-095955-4569: 3 segments, 26 words, state v10, 66 events logged
+        CommandReceived=4, ConceptSignal=3, DeckState=4, InterpretRequested=2, InterpretationReady=2, LifecycleChanged=5, LiveCue=3, ModeChanged=1, RepresentationIntent=6, SimulationModeChanged=2, SimulationSettingChanged=1, SlideContextChanged=1, SlidePatch=4, StateChanged=10, TranscriptFinal=3, TranscriptPartial=11, UtteranceClassified=3, VocabularyChanged=1
+        stt: 3 published, 0 dropped, latency p50=448 ms p95=453 ms max=453 ms
+        understanding: 2 interpretations (2 by LLM, 0 fallbacks, 0 repaired), max 2 calls/min, prompt tokens max=1863 avg=1845, latency p50=1978 ms max=1978 ms
+        presentation: 2 slides; planner ops {'diagram_start': 1}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/2
+          1. [simulation] Two masses and pulley  (v3, ['stage'])
+          2. [key_points] Recap: Two masses and pulley  (v1, ['points'])
+        providers: {'groq_main#6': 2}; triggers: {'pause': 2}; outline: ['Physics > Pulley System']; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261101-095955-4569\session.sqlite
