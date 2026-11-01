@@ -103,21 +103,48 @@ def only_picture(text: str, picture: set[str]) -> bool:
     return not odd or bool(_WHERE.search(text)) and len(odd) <= 1 and len(fold) > len(odd)
 
 
+def _stem(w: str) -> str:
+    for end in ("es", "ed", "s"):
+        if w.endswith(end) and not w.endswith("ss") and len(w) - len(end) >= 3:
+            return w[:-len(end)]
+    return w
+
+
+# review: "The floor pushes the block up" says what acts (a point), not where things are
+_ACTION = re.compile(r"\b(?:push|pull(?!ey)|act|hold|slid|slide|accelerat|mov|support|balanc|exert|press|fall|fell|rise|"
+                     r"rose|stretch|compress|weigh|speed|stop|keep|lift|drag|tension|reaction)\w*", re.IGNORECASE)
+
+
+def restates(text: str, cues: Iterable[str]) -> bool:
+    """M4 (test47: "Two masses are linked by a string over a pulley"): the bullet says the scene's cue line again in
+    other words: at most one of its own words is not in the cue, at least two are, and it states no rule."""
+    if _RULE.search(text) or _ACTION.search(text):
+        return False
+    words = {_stem(w) for w in re.findall(r"[a-z][a-z']+", text.lower()) if w not in _PLACING and len(w) > 2}
+    for cue in cues:
+        said = {_stem(w) for w in re.findall(r"[a-z][a-z']+", cue.lower())}
+        if len(words & said) >= 2 and len(words - said) <= 1:
+            return True
+    return False
+
+
 def _key(text: str) -> str:
     return " ".join(re.sub(r"[^\w\s]", " ", text.lower()).split())
 
 
-def recap_pieces(pieces: Iterable[Piece], foreign: Iterable[str] = (), picture: Iterable[str] = ()
-                 ) -> tuple[list[Piece], int]:
+def recap_pieces(pieces: Iterable[Piece], foreign: Iterable[str] = (), picture: Iterable[str] = (),
+                 cues: Iterable[str] = ()) -> tuple[list[Piece], int]:
     """(the pieces worth keeping, how many items were dropped as parameter talk). foreign: the things of the scenes
     before this one (F-019 M0): a bullet naming one belongs to no recap of this scene. picture: the words of what the
     scene's diagram draws: a bullet that only says what is drawn ("Square is inside circle C3") is no teaching point
     (test37)."""
     other = [re.compile(rf"\b{re.escape(w)}(?:e?s)?\b", re.IGNORECASE) for w in foreign if w]
     drawn = set(picture)
+    cues = tuple(cues)
 
     def junk(text: str) -> bool:
-        return chatter(text) or any(r.search(text) for r in other) or bool(drawn) and only_picture(text, drawn)
+        return chatter(text) or any(r.search(text) for r in other) or bool(drawn) and only_picture(text, drawn) \
+            or restates(text, cues)
 
     kept: list[Piece] = []
     seen: set[str] = set()

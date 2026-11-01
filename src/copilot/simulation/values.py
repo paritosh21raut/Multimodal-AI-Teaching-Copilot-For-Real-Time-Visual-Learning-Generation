@@ -267,6 +267,9 @@ def _clean(text: str) -> str:
     return " ".join(text.replace("’", "'").split())
 
 
+_FRAC_KG = re.compile(r"\b(half|quarter)\s+(?:of\s+)?an?\s+(?:kilograms?|kilos?|kg)\b", re.IGNORECASE)
+
+
 def heard(text: str) -> list[Heard]:
     """Every value the line clearly states, in the order said (a kind may come more than once: "10 and 20 ohms")."""
     t = _clean(text)
@@ -318,6 +321,8 @@ def heard(text: str) -> list[Heard]:
                 put(Heard(kind, v + 273.15 if c else v, m.group(0), start=m.start()), m.span())
                 continue
             put(Heard(kind, v * _factor(kind, unit), m.group(0), start=m.start()), m.span())
+    for m in _FRAC_KG.finditer(t):  # M4: "half a kilogram", "a quarter of a kilo"
+        put(Heard("mass", 0.5 if m.group(1).lower() == "half" else 0.25, m.group(0), start=m.start()), m.span())
     for m in _MU.finditer(t):
         v = spoken_number(m.group("num"))
         if v is not None:

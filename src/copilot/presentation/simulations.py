@@ -80,6 +80,7 @@ class SimMode:
     imagine: bool = False              # F-016 Imagine Mode: only the teacher's End (or Back to slides) ends it
     lines: int = 0                     # F-017: teacher lines the stage heard (a one-line stage makes no recap)
     picture: frozenset = frozenset()   # M0: the words of what its diagram draws (a bullet only of these: no recap)
+    cues: tuple = ()                   # M4: its diagram's cue lines (a bullet restating one: no recap)
 
 
 @dataclass
@@ -461,7 +462,8 @@ class SimulationController:
         # F-019 M0 (test36: one recap of 12 scenes): each scene recaps only its own lines, titled by it; a stage of
         # one line makes no recap (test34: "Recap: Girl" with one bullet)
         kept, dropped = recap_pieces(m.collected if m.kind != "stage" or m.lines > 1 else [],
-                                     foreign=_things(self.past[-8:]) - _things(m.names), picture=m.picture)
+                                     foreign=_things(self.past[-8:]) - _things(m.names), picture=m.picture,
+                                     cues=m.cues)
         self.past = (self.past + m.names[-1:])[-8:]
         ids: list[str] = []
         name = m.names[-1] if m.names else "Simulation"

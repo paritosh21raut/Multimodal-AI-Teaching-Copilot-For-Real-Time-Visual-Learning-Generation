@@ -33,7 +33,7 @@ COUNT = {"a": 1, "an": 1, "one": 1, "single": 1, "two": 2, "three": 3, "four": 4
 _DEF = ("the", "this", "that", "its", "same")
 _HANG = re.compile(r"\b(?:hang\w*|hung|suspended|attached|tied)\b", re.IGNORECASE)
 _ON = re.compile(r"^\s*(?:(?:which|that)\s+(?:is|are)\s+)?(?:(?:is|are|was|were)\s+)?(?:(?:lying|resting|placed|kept|"
-                 r"sitting|sits|rests|lies|put|stacked)\s+)?(?:on|on top of|upon|over|above)(?:\s+(?:plane|flat|smooth|rough))?\s*$",
+                 r"sitting|sits|rests|lies|put|stacked)\s+)?(?:on|on top of|upon|over|above)(?:\s+(?:plane|flat|smooth|rough|horizontal|level|frictionless))*\s*$",
                  re.IGNORECASE)
 _IN = re.compile(r"^\s*(?:(?:is|are|was|were)\s+)?(?:(?:placed|kept|put|drawn)\s+)?(?:in|inside|into|within)\s*$",
                  re.IGNORECASE)
@@ -90,7 +90,7 @@ _STOP = {"time", "moment", "second", "minute", "example", "case", "situation", "
          "object", "body", "bunch", "couple", "lot", "few", "bit", "kind", "type", "sort", "glass", "reaction",
          "precipitate", "stiffness", "force", "energy", "process", "result", "change", "product", "first", "second",
          "third", "fourth", "fifth", "sixth", "next", "last", "whole", "half", "quarter", "speed", "velocity",
-         "temperature", "pressure", "level", "colour", "color", "rate", "mixture", "effect", "reason", "experiment"}
+         "temperature", "pressure", "level", "rough", "smooth", "horizontal", "frictionless", "colour", "color", "rate", "mixture", "effect", "reason", "experiment"}
 _CUEW = re.compile(r"\b(?:imagine|picture|consider|suppose|visuali[sz]e|think of|draw|sketch)\b", re.IGNORECASE)
 _NEXT_TO = re.compile(r"\b(?:next to|beside|near|and|with|on|in|inside|above|below|under|behind)\s+(?:a|an|the)\s+$",
                       re.IGNORECASE)
@@ -321,7 +321,9 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
         d.more = d.more or (more and bool(g.of(m.kind)))
         same = [p for p in g.of(m.kind) if (m.names and p.label in m.names) or (not m.names and m.attr.get("name")
                 and p.attr.get("name") == m.attr["name"])]
-        if not same and not m.names and m.n == 1 and not more:  # the same cue said again (Whisper repeats)
+        # review (M4): "a 3 kg block is placed on top of the block": a new block when the line names its kind twice
+        twin = _fresh(text, m) and sum(1 for x in ms if x.kind == m.kind and x.n == 1) > 1
+        if not same and not m.names and m.n == 1 and not more and not twin:  # the same cue said again (Whisper repeats)
             # "a box" = the box; "an atom (of)" = the atom with no other element said (shapes are drawn many times)
             same = [p for p in g.of(m.kind) if p.label_src == "said" and p.label.lower() == m.word
                     or not p.label and _row(m.kind).get("domain") != "shape"
@@ -338,8 +340,8 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
                 # "three circles C1, C2 and C3" with C1 and C2 open: the count includes them, only C3 is added
                 m.ids += [add(m.kind, nm, "said", **m.attr) for nm in m.names if nm not in have]
             continue
-        olds = g.of(m.kind)
-        loose = [p for p in olds if p.id not in g.rels and _row(m.kind).get("domain") == "shape"]
+        olds = [p for p in g.of(m.kind) if p.id not in d.old]  # M4: "a block on top of a block": two, not one twice
+        loose =[p for p in olds if p.id not in g.rels and _row(m.kind).get("domain") == "shape"]
         if loose and not m.names and m.n == 1 and not more:  # test37: "a pentagon ... inside C1" said again and
             olds = loose                                       # again: the one not placed yet, not a 2nd and 3rd
         if olds and not m.names and m.n == 1 and not more and (m.definite or not _fresh(text, m) or olds is loose):
@@ -471,7 +473,8 @@ def draft(text: str, g: Optional[Graph] = None) -> Draft:
                             o.setdefault("attr", {})["state"] = "closed" if st.group(1).lower() in ("closed", "close", "on") else "open"
     _circuit(text, ms, ops, ids, g)
     _givens(text, ms, ops, g)
-    _quantities(text, ops, g, d)
+    _quantities(text, ops, g, d, [(m.start, m.ids[0]) for m in ms if len(m.ids) == 1 and m.ids[0] in d.new
+                                  and m.kind in ("block", "mass")])
     d.ops = ops
     d.title = title_for(text, ms)
     return d
@@ -539,7 +542,7 @@ def _head(word: str) -> str:
 def _fresh(text: str, m: Mention) -> bool:
     """A cue naming a thing anew ("imagine a beaker") rather than the one there ("in the beaker")."""
     head = text[max(0, m.start - 30):m.start].lower()
-    return bool(re.search(r"\b(?:a|an|another|new|second)\s+(?:\w+\s+)?$", head))
+    return bool(re.search(r"\b(?:a|an|another|new|second)\s+(?:[\w.]+\s+){0,2}$", head))  # M4: "a 2 kg block"
 
 
 def _hang(a: Mention, b: Mention, between: str) -> Optional[tuple[str, Mention, Mention]]:
@@ -604,7 +607,7 @@ def _givens(text: str, ms: list[Mention], ops: list[dict], g: Graph) -> None:
 _STACK = re.compile(r"\bone\s+(?:on\s+top\s+of|above|over|upon)\s+(?:the\s+other|another)\b|\bon\s+top\s+of\s+"
                     r"(?:each\s+other|one\s+another)\b|\bstack(?:ed|s)?\b|\bplaced\s+on\s+(?:each\s+other|one\s+another)\b",
                     re.IGNORECASE)
-_QUANT = re.compile(r"^\s*,?\s*(?:of|with\s+(?:a\s+)?mass\s+of|weighing|of\s+mass)\s+[\w.]+(?:\s+point\s+\w+)?\s*"
+_QUANT = re.compile(r"^\s*,?\s*(?:of|with\s+(?:a\s+)?mass\s+of|weighing|of\s+mass)\s+(?:(?:half|quarter)\s+(?:of\s+)?an?|[\w.]+(?:\s+point\s+\w+)?)\s*"
                     r"(?:kg|kilograms?|kilos?|grams?|g)\b\s*,?", re.IGNORECASE)
 _ROPE = re.compile(r"\b(?:rope|string|thread|cord)s?\b|\bconnected\b|\btied\b|\bover\s+(?:a|the)\s+pulley\b",
                    re.IGNORECASE)
@@ -653,7 +656,8 @@ def _mechanics(text: str, things: list[Mention], ops: list[dict], g: Graph) -> N
             ops.append({"op": "place", "a": i, "rel": "hang_from", "b": pid})
 
 
-def _quantities(text: str, ops: list[dict], g: Graph, d: Draft) -> None:
+def _quantities(text: str, ops: list[dict], g: Graph, d: Draft,
+                spans: Optional[list[tuple[int, str]]] = None) -> None:
     """The line's quantities on the parts (the open diagram's and this line's): `qty` ops, or unattached."""
     from copilot.diagram import ops as O
     from copilot.diagram.graph import apply
@@ -664,7 +668,7 @@ def _quantities(text: str, ops: list[dict], g: Graph, d: Draft) -> None:
             apply(work, O.parse(raw), "", 0)
         except Exception:  # noqa: BLE001 - the validator reports a bad op; the quantities only need the good ones
             continue
-    q, d.unattached = attach(text, work)
+    q, d.unattached = attach(text, work, spans)
     ops += q
 
 

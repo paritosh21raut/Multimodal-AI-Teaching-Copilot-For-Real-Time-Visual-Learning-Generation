@@ -1,0 +1,64 @@
+{
+ "id": "m4_stack",
+ "title": "M4 lecture 3: a 2 kg block on top of a 4 kg block (one line), smooth floor, μ 0.3 between; 12 N sticks, 30 N slips",
+ "about": "12 N: a = 12/6 = 2 together, f top = 4 < 0.3·19.6 = 5.88; 30 N: top a = 0.3 g = 2.94, bottom a = (30 − 5.88)/4 = 6.03",
+ "lines": [
+  {
+   "say": "Next, imagine a 2 kg block placed on top of a 4 kg block on a smooth floor.",
+   "expect": {
+    "qty": {
+     "block:m": 2.0,
+     "block2:m": 4.0,
+     "block2:mu": 0.0
+    },
+    "rels": {
+     "block": [
+      "on",
+      "block2"
+     ],
+     "block2": [
+      "on",
+      "floor"
+     ]
+    }
+   }
+  },
+  {
+   "say": "The friction coefficient between the two blocks is 0.3.",
+   "expect": {
+    "qty": {
+     "block:mu": 0.3
+    }
+   }
+  },
+  {
+   "say": "A force of 12 newtons pulls the lower block.",
+   "expect": {
+    "qty": {
+     "block2:F": 12.0
+    },
+    "values": {
+     "block:a": 2.0,
+     "block2:a": 2.0,
+     "block:f": 4.0
+    }
+   }
+  },
+  {
+   "say": "Now increase the force to 30 newtons.",
+   "expect": {
+    "qty": {
+     "block2:F": 30.0
+    },
+    "values": {
+     "block:a": 2.94,
+     "block2:a": 6.03
+    },
+    "motions": {
+     "block": "slides",
+     "block2": "slides"
+    }
+   }
+  }
+ ]
+}

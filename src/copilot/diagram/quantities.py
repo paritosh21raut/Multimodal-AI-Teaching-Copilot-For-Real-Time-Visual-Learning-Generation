@@ -36,6 +36,10 @@ _MU = re.compile(rf"\b(?:(?P<kind>static|kinetic|sliding|limiting)\s+)?(?:coeffi
                  rf"sliding|limiting)\s+)?friction(?:al)?\s*(?:coefficient\s*)?(?:(?:[\w']+\s+){{0,8}}?(?:is|of|=|"
                  rf"equals|as|be|to)\s+)?(?P<num>{NUM})(?!\s*(?:kg|kilo|newton|N\b|degree|°|metre|meter|m\b))|\b(?:mu|μ)(?:\s*(?P<k2>static|kinetic|sliding|s|k)\b)?"
                  rf"\s*(?:is|=|of|equals|equal\s+to|as|be|to)?\s*(?P<num2>{NUM})", re.IGNORECASE)  # M3: "mu static is 0.5"
+# M4: "the coefficients of static and kinetic friction are 0.4 and 0.3": the two numbers in the said order
+_MU_PAIR = re.compile(rf"\b(?P<k1>static|kinetic)\s+and\s+(?:the\s+)?(?P<k2>static|kinetic)\s+(?:friction\s*)?"
+                      rf"(?:coefficients?\s+)?(?:(?:of\s+)?friction\s+)?(?:are|is|=|as|be|of)\s+(?P<a>{NUM})\s+and\s+"
+                      rf"(?P<b>{NUM})", re.IGNORECASE)
 _K = re.compile(rf"(?P<num>{NUM})\s*(?P<u>(?:kilo\s?)?newtons?\s+per\s+(?:centi)?met(?:re|er)s?|k?N\s*/\s*c?m)\b",
                 re.IGNORECASE)
 # test40: Whisper writes "100 newtons per metre" as "100Nm"; after "spring constant" that unit can only be N/m
@@ -113,6 +117,13 @@ def found(text: str) -> list[Said]:
         v = si_values(m.group(0), "k")
         if v:
             put(Said("k", v[0], m.group(0).strip(), m.start(), m.end()))
+    for m in _MU_PAIR.finditer(text):
+        if m.group("k1").lower() == m.group("k2").lower():
+            continue
+        for k, grp in ((m.group("k1"), "a"), (m.group("k2"), "b")):
+            v = spoken_number(m.group(grp))
+            if v is not None:
+                put(Said("mu_s" if k.lower() == "static" else "mu_k", v, m.group(grp), m.start(grp), m.end(grp)))
     for m in _MU.finditer(text):
         v = si_values(m.group(0), "mu")
         if not v or _NOT_MU_END.match(text, m.end()):
@@ -225,12 +236,15 @@ def _named(g: Graph, text: str) -> list[tuple[int, str]]:
     return sorted(hits)
 
 
-def attach(text: str, g: Graph) -> tuple[list[dict], list[tuple[str, str]]]:
-    """The line's quantities as `qty` ops on g's parts (g already holds this line's parts) + the unattached ones."""
+def attach(text: str, g: Graph, spans: Optional[list[tuple[int, str]]] = None) -> tuple[list[dict], list[tuple[str, str]]]:
+    """The line's quantities as `qty` ops on g's parts (g already holds this line's parts) + the unattached ones.
+    `spans`: (position, id) of the bodies this line adds (M4: "a 2 kg block on top of a 4 kg block" names each one,
+    though the word "block" alone names neither)."""
     said = found(text)
     ops: list[dict] = []
     lost: list[tuple[str, str]] = []
     names = _named(g, text)
+    names = sorted(names + [(p, b) for p, b in spans or () if not any(abs(p - q) < 12 for q, _ in names)])
     prons = [m.start() for m in _PRON.finditer(text)]
     for i, s in enumerate(said):
         lo = said[i - 1].end if i else 0
@@ -293,6 +307,10 @@ def _target(g: Graph, s: Said, text: str, lo: int, hi: int, names: list[tuple[in
     bs = bodies(g)
     if any(lo <= p < hi for p in prons):
         return bs[0] if len(bs) == 1 else None
+    pushed = [b for b in bs if (b, "F") in g.qty]
+    if s.sym == "F" and len(bs) > 1 and len(pushed) == 1 and not re.search(  # review: "acts on the 4 kg block"
+            r"\b(?:block|box|mass|body|another|second|other|also|new)\b", text, re.IGNORECASE):
+        return pushed[0]  # M4: "now increase the force to 30 newtons": the one push there, said again
     return bs[0] if len(bs) == 1 else None
 
 

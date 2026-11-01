@@ -1,0 +1,57 @@
+{
+ "id": "m4_floor",
+ "title": "M4 lecture 2: a 5 kg box on a rough floor, μs 0.4 / μk 0.3 in one line; 15 N sticks, 30 N slides",
+ "about": "μs N = 19.6 > 15: f = 15, a = 0; 30 N: f = μk N = 14.7, a = (30 − 14.7)/5 = 3.06",
+ "lines": [
+  {
+   "say": "Now consider a 5 kg box on a rough horizontal floor.",
+   "expect": {
+    "qty": {
+     "box:m": 5.0
+    },
+    "rels": {
+     "box": [
+      "on",
+      "floor"
+     ]
+    }
+   }
+  },
+  {
+   "say": "The coefficients of static and kinetic friction are 0.4 and 0.3.",
+   "expect": {
+    "qty": {
+     "box:mu_s": 0.4,
+     "box:mu_k": 0.3
+    }
+   }
+  },
+  {
+   "say": "We push it with a force of 15 newtons.",
+   "expect": {
+    "qty": {
+     "box:F": 15.0
+    },
+    "values": {
+     "box:f": 15.0,
+     "box:a": 0.0
+    }
+   }
+  },
+  {
+   "say": "Now we push it with 30 newtons instead.",
+   "expect": {
+    "qty": {
+     "box:F": 30.0
+    },
+    "values": {
+     "box:f": 14.7,
+     "box:a": 3.06
+    },
+    "motions": {
+     "box": "slides"
+    }
+   }
+  }
+ ]
+}

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import math
 import textwrap
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 from copilot.diagram.graph import Graph
 from copilot.diagram.layout import AREA, VIEW, Layout
@@ -35,7 +35,7 @@ def build(g: Graph, L: Layout, res: Optional[Results], fbd: str = "") -> dict[st
     if res is None:
         return {"forces": [], "panel": None, "notes": [], "tracks": [], "simulated": False}
     forces = _arrows(L, res, PANEL_W if res.values else 0.0)
-    tracks = _tracks(L, res)
+    tracks = _tracks(L, res, forces)
     notes = [ln for n in res.notes for ln in textwrap.wrap(n, NOTE_CHARS)]
     out = {"forces": forces, "panel": _fit(_panel(g, res), notes), "notes": notes, "tracks": tracks,
            "marks": _marks(L, res, forces), "simulated": True}
@@ -142,6 +142,12 @@ def _arrows(L: Layout, res: Results, panel: float) -> list[dict[str, Any]]:
             x, y = x + ux * 6, y + uy * 6
         if f.kind in ("weight", "normal") and L.nodes[f.on].rot == 0 and abs(ux) < 1e-6:
             x += -16 if f.kind == "weight" else 16  # on a floor W and N would share one line through the body
+            up, down = _stacked(L, res, f.on)
+            if f.kind == "normal" and up is not None:  # M4: past the body on top, not through it (nor on its N line)
+                me = L.nodes[f.on].box()
+                x = min(up.box()[2] + 14, me[2] - 8)
+            if f.kind == "weight" and down is not None:  # M4: the top body's W stops at the body it rests on
+                ln = max(44.0, min(ln, down.box()[1] - 6 - y))
         ln = min(ln, _room(x, y, ux, uy, area))  # the tip stays on the slide and off the panel
         x2, y2 = x + ux * ln, y + uy * ln
         # a vertical arrow's label beside its tip (up: left, down: right, so W and N / T read apart); a level one's
@@ -163,6 +169,23 @@ def _arrows(L: Layout, res: Results, panel: float) -> list[dict[str, Any]]:
     bodies = [L.nodes[b].box() for b in {f.on for f in res.forces} if b in L.nodes]
     _unclash(out, bodies, area)
     return out
+
+
+def _stacked(L: Layout, res: Results, on: str) -> tuple[Any, Any]:
+    """(the body resting on this one, the body this one rests on), from the drawn boxes (level bodies only)."""
+    me = L.nodes[on].box()
+    up = down = None
+    for b in {f.on for f in res.forces} - {on}:
+        n = L.nodes.get(b)
+        if n is None or n.rot != 0:
+            continue
+        x0, y0, x1, y1 = n.box()
+        if x0 < me[2] and x1 > me[0]:
+            if abs(y1 - me[1]) < 3:
+                up = n
+            elif abs(y0 - me[3]) < 3:
+                down = n
+    return up, down
 
 
 def _on_body(L: Layout, res: Results, on: str, lx: float, ly: float, w: float) -> bool:
@@ -329,14 +352,14 @@ def _panel(g: Graph, res: Results) -> dict[str, Any]:
             "foot": f"{g_row.text()} (constant)" if g_row else ""}
 
 
-def _tracks(L: Layout, res: Results) -> list[dict[str, Any]]:
+def _tracks(L: Layout, res: Results, forces: Sequence[dict[str, Any]] = ()) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     moving = [m for m in res.motions if m.state == "slides" and m.a and m.on in L.nodes]
     if moving:
         a_max = max(m.a for m in moving)
         top = REACH
         for m in moving:  # every body stays on the slide (and a hanging one below its pulley) for the whole run
-            top = min(top, _space(L, m.on, m.ang) * a_max / m.a)
+            top = min(top, min(_space(L, m.on, m.ang), _carried(L, m.on, m.ang, forces)) * a_max / m.a)
         T = min(4.0, max(1.0, math.sqrt(2 * top / (a_max * 100.0))))  # 100 units / m, kept between 1 s and 4 s
         for m in moving:
             reach = top * m.a / a_max
@@ -362,6 +385,25 @@ def _space(L: Layout, on: str, ang: float) -> float:
         if w.get("body") == on and w.get("end") == 1 and uy < 0:
             room = min(room, (w["pts"][1][1] - w["pts"][0][1] - 20) / -uy)
     return max(10.0, room)
+
+
+def _carried(L: Layout, on: str, ang: float, forces: Sequence[dict[str, Any]]) -> float:
+    """M4 (sheet: the 6 kg Atwood side ran its W arrow off the slide, the 4 kg side's T label into the ceiling): how
+    far a body moving up or down can go with the arrows it carries (tips and labels) between the bottom of what it
+    hangs from and the slide's bottom. A level motion is not limited here."""
+    uy = math.sin(math.radians(ang))
+    if abs(uy) < 0.5:
+        return math.inf
+    mine = [a for a in forces if a["on"] == on]
+    if not mine:
+        return math.inf
+    if uy > 0:
+        low = max(max(a["y2"], a["ly"] + 8) for a in mine)
+        return max(10.0, (VIEW[1] - 10 - low) / uy)
+    hung = [n.box()[3] for n in L.nodes.values() if n.kind in ("support", "pulley")]
+    ceiling = min(hung) + 10 if hung else AREA[1]
+    high = min(min(a["y2"], a["ly"] - 30) for a in mine)
+    return max(10.0, (high - ceiling) / -uy)
 
 
 def _ropes(L: Layout, body: str) -> list[dict[str, Any]]:

@@ -13,7 +13,7 @@ speaks it → Claude evaluates `verify_results/testN` → fix → next card; the
 | M1 | `M1-contact-mechanics.md` | `qty` op (values said later attach), solver framework, contact-mechanics solver (incline, stacked blocks, push, friction regimes, pulley, spring), force arrows + values panel + motion | sheet + live test | **done (test40–41)** |
 | M2 | `M2-M5-outline.md` §M2 | look + motion polish, free-body toggle, value-change morph | sheet + live test | done (test42–43) |
 | M3 | §M3 | Groq scene extraction (closed vocabulary, validated), paraphrase set | ≥ 90 % paraphrase replay + live test | done (test45–47) |
-| M4 | §M4 | 10-min live mechanics lecture, latency budget | live run all must-pass yes | **next** |
+| M4 | §M4 | 10-min live mechanics lecture, latency budget | live run all must-pass yes | done (test48) |
 | M5 | §M5 | motion solver: projectile, free fall, relative velocity (rain–umbrella, cars, river), circular | sheet + live test | **next** |
 | later | — | circuits (old K2, MNA), optics, fields, atoms / chemistry (old K3–K4) | one card each | — |
 | V3 / Canvas | `docs/v3/V3-story-outline.md` | story, then imagination canvas (people via relation table + attach points, old E3c) | — | after M5+ |

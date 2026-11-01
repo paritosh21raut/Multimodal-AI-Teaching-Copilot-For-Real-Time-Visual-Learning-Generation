@@ -1,0 +1,23 @@
+{
+ "id": "m4_atwood",
+ "title": "M4 lecture 4: Atwood 4 kg and 6 kg",
+ "about": "a = g(6 − 4)/10 = 1.96; T = 2·4·6·g/10 = 47.04",
+ "lines": [
+  {
+   "say": "Imagine two masses connected by a string over a pulley."
+  },
+  {
+   "say": "One mass is 4 kg and the other is 6 kg.",
+   "expect": {
+    "qty": {
+     "mass:m": 4.0,
+     "mass2:m": 6.0
+    },
+    "values": {
+     ":a": 1.9600000000000002,
+     ":T": 47.040000000000006
+    }
+   }
+  }
+ ]
+}

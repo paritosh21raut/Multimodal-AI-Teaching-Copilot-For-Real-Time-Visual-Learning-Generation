@@ -1,0 +1,23 @@
+[    0.5] Today we study friction and pulleys.
+[    3.1] Let us start.
+[    4.4] Imagine a block on an inclined plane at 37 degrees.
+[   10.5] The block has a mass of 10 kilograms.
+[   17.9] First, assume the inclined is smooth.
+[   24.3] Now the coefficient of friction is 0.5.
+[   32.0] Friction always opposes demotion.
+[   40.0] Now consider a 5kg box on a rough horizontal surface.
+[   50.0] The coefficient of static and kinetic friction are 0.4 and 0.3.
+[   58.2] We push it with a force of 15N. kids.
+[   64.0] Now we push it with the 30N instead.
+[   72.5] Next, imagine a 2kg block placed on top of a 4kg block on a smooth surface.
+[   83.8] The friction coefficient between the blocks is 0.3.
+[   89.7] The force of 12N pulls the lower block.
+[  101.4] Now increase the force to 30N. Once again,
+[  128.0] Imagine two masses connected by a string over a pulley.
+[  135.1] One mass is 4kg and the other is 6kg.
+[  142.4] Imagine a 4kg block on the table tied with string over a pulley to a 1kg hanging mass.
+[  164.5] The friction coefficient of the table is 0.1.
+[  171.4] Finally, imagine a mass hanging from a spring.
+[  177.7] Spring constant is 200Nm.
+[  185.7] Mass 2kg.
+[  192.1] Newton's law or the basics of mechanics. Thank you for joining us.

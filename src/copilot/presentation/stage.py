@@ -95,6 +95,7 @@ class _Open:
     retitle: bool = True                # a cue's stage takes its title from the scene (Imagine Mode keeps "Imagine")
     mode: str = "stage"                 # F-018: "diagram" draws concept lines as a diagram on this slide
     dlog: DiagramLog = field(default_factory=DiagramLog)
+    dllm: dict = field(default_factory=dict)  # M4: line id -> its accepted LLM ops, kept across a Scene switch
     dpatch: Optional[dict] = None
     fbd: str = ""                       # F-019 M2: the free-body view ("" off, "all", a body id)
     dtitle: str = ""                    # the diagram's title (from its first line)
@@ -476,8 +477,8 @@ class StageController:
         o.nouns = diagram_nouns(g)  # test38: Whisper heard "pentagon" as "Zagon", "outside" as
         await self._words(o)                        # "inside": primed with the diagram's own words
         self.stats.draft_s.append(time.perf_counter() - heard)
-        log.info("[STAGE] diagram %s: %d op(s), %d refused (fast path, 0 tokens)", line_id, len(res.ok),
-                 len(res.rejected))
+        log.info("[STAGE] diagram %s: %d op(s), %d refused (fast path, 0 tokens, %.2f s)", line_id, len(res.ok),
+                 len(res.rejected), self.stats.draft_s[-1])  # M4: the latency budget is read from this line
 
     async def _ddrain(self, o: _Open) -> None:
         """M3: one extraction call per queued line, in order; an answer the validator takes whole replaces the line's
@@ -543,6 +544,7 @@ class StageController:
         m = self.e._sims.mode
         if m is not None and m.kind == "stage" and m.block_id == o.block_id:  # M0: the recap leaves the picture out
             m.picture = picture_words(o.dlog.fold())
+            m.cues = tuple(t for i, t in o.dlog.lines if i not in o.dlog.undone and dfast._CUEW.search(t))
         try:
             patch = dpatch.build(o.dlog.fold(), rev=o.rev + 1, nogo=_title_nogo(spec.title) if b.full else None,
                                  fbd=o.fbd)
@@ -563,6 +565,14 @@ class StageController:
         lines = [(i, t) for i, t in (o.dlog.lines if o.mode == "diagram" else o.log.lines)
                  if i not in undone and i != "teacher"]
         self._close_task()
+        if o.mode == "diagram":  # M4: the LLM's fixes come back with the diagram (0 tokens, validated again)
+            kept: dict = {}
+            for e in o.dlog.events:
+                if e.ok and e.src == "llm":
+                    kept.setdefault(e.line_id, []).append(e.op.model_dump(exclude_none=True))
+            o.dllm.update(kept)
+        for i in undone:
+            o.dllm.pop(i, None)  # review: an undone line's fix never comes back
         o.dqueue.clear()  # M3 review: lines from before the switch are not sent to the LLM again
         o.queue.clear()
         o.mode = to
@@ -575,6 +585,13 @@ class StageController:
                 o.dtitle = o.dtitle or d.title
                 if d.ops:
                     o.dlog.delta(d.ops, line_id, "fast", t_ms, text=text)
+                if o.dllm.get(line_id):  # review: all or nothing, as when it first landed
+                    g = o.dlog.fold(skip_fast_of=line_id)
+                    chk = check_delta(o.dllm[line_id], g, o.dlog.recent(), text, max_ops=dops.MAX_OPS)
+                    if chk.ok and not chk.rejected and not dextract.lost_ids(o.dlog, line_id, g, o.dllm[line_id]):
+                        o.dlog.delta(o.dllm[line_id], line_id, "llm", t_ms, text=text)
+                    else:
+                        log.info("[SIM] llm fix of %s not replayed (the scene changed); the draft stays", line_id)
             else:
                 o.log.say(line_id, text)
                 d = fastpath.draft(text, o.log.fold())

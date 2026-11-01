@@ -1,0 +1,28 @@
+{
+ "id": "m4_table",
+ "title": "M4 lecture 5: a 4 kg block on a table, 1 kg hanging, μ 0.1 (one cue line)",
+ "about": "a = (1 − 0.1·4) g/5 = 1.176; T = 1(g − a) = 8.624",
+ "lines": [
+  {
+   "say": "Imagine a 4 kg block on a table tied with a string over a pulley to a 1 kg mass hanging down.",
+   "expect": {
+    "qty": {
+     "block:m": 4.0,
+     "mass:m": 1.0
+    }
+   }
+  },
+  {
+   "say": "The friction coefficient of the table is 0.1.",
+   "expect": {
+    "qty": {
+     "block:mu": 0.1
+    },
+    "values": {
+     ":a": 1.176,
+     ":T": 8.624
+    }
+   }
+  }
+ ]
+}

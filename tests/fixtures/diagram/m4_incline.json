@@ -1,0 +1,56 @@
+{
+ "id": "m4_incline",
+ "title": "M4 lecture 1: a 10 kg block on a 37° incline, smooth then μ = 0.5",
+ "about": "smooth: a = g sin37 = 5.90; μ 0.5: N = 98 cos37 = 78.3, f = 39.1, a = g(sin37 − 0.5 cos37) = 1.98",
+ "lines": [
+  {
+   "say": "Let us start. Imagine a block on an inclined plane at 37 degrees.",
+   "expect": {
+    "qty": {
+     "inclined_plane:theta": 37.0
+    }
+   }
+  },
+  {
+   "say": "The block has a mass of 10 kilograms.",
+   "expect": {
+    "qty": {
+     "block:m": 10.0
+    },
+    "values": {
+     "block:W": 98.0
+    }
+   }
+  },
+  {
+   "say": "First assume the incline is smooth.",
+   "expect": {
+    "qty": {
+     "block:mu": 0.0
+    },
+    "values": {
+     "block:a": 5.897787226890073
+    },
+    "motions": {
+     "block": "slides"
+    }
+   }
+  },
+  {
+   "say": "Now the coefficient of friction is 0.5.",
+   "expect": {
+    "qty": {
+     "block:mu": 0.5
+    },
+    "values": {
+     "block:N": 78.26627998463469,
+     "block:f": 39.133139992317346,
+     "block:a": 1.9844732276583383
+    },
+    "motions": {
+     "block": "slides"
+    }
+   }
+  }
+ ]
+}

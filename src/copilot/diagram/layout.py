@@ -21,6 +21,7 @@ from copilot.diagram import parts as P
 from copilot.diagram.graph import Graph
 
 VIEW = (1600, 1000)
+HUNG_ROOM = 110.0                     # below a hung body (before scaling): its weight arrow and label
 AREA = (60.0, 150.0, 1540.0, 965.0)   # x0, y0, x1, y1: the slide under the title
 GAP = 130.0                            # between free trees
 MAX_SCALE = 1.6
@@ -255,6 +256,7 @@ def _hang(a: Node, b: Node, i: int, L: Layout) -> None:
         top = ey + ROPE[1 if b.attr.get("edge") else i % 2]
         L.wires.append({"id": f"rope_{a.id}", "kind": "rope", "body": a.id, "end": 1, "pts": [[ex, ey], [ex, top]]})
         a.cx, a.cy = ex, top + a.h / 2
+        a.attr["hung"] = True
         return
     if b.kind == "support":
         ex, ey = b.anchor("end") if i == 0 else b.at(0.5 + (0.3 if i % 2 else -0.3), 1.0)
@@ -519,6 +521,8 @@ def tree_box(L: Layout, root: str) -> tuple[float, float, float, float]:
     for n in L.nodes.values():
         if n.tree == root:
             b = n.box()
+            if n.kind in ("block", "mass") and (n.attr.get("hung") or "hung_at" in n.attr):
+                b = (b[0], b[1], b[2], b[3] + HUNG_ROOM)  # M4 (test47): room under a hung body for its W arrow
             if n.kind == "planet" and n.attr.get("rings"):
                 b = (n.cx - n.w * 0.95, b[1], n.cx + n.w * 0.95, b[3])
             xs0.append(b[0]), ys0.append(b[1]), xs1.append(b[2]), ys1.append(b[3])

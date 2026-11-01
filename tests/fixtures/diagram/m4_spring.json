@@ -1,0 +1,33 @@
+{
+ "id": "m4_spring",
+ "title": "M4 lecture 6: a 2 kg mass on a 200 N/m spring",
+ "about": "x = mg/k = 0.098 m; T = 2π √(2/200) = 0.628 s",
+ "lines": [
+  {
+   "say": "Finally, imagine a mass hanging from a spring."
+  },
+  {
+   "say": "The spring constant is 200 newtons per metre.",
+   "expect": {
+    "qty": {
+     "spring:k": 200.0
+    }
+   }
+  },
+  {
+   "say": "The mass is 2 kg.",
+   "expect": {
+    "qty": {
+     "mass:m": 2.0
+    },
+    "values": {
+     "mass:x": 0.098,
+     "mass:T": 0.6283185307179586
+    },
+    "motions": {
+     "mass": "oscillates"
+    }
+   }
+  }
+ ]
+}
