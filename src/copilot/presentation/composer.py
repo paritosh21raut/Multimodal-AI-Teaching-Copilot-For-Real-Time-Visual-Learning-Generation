@@ -47,8 +47,8 @@ MEMBER_GAP_PX = 36          # member cards / concept columns (slide.css .def-pai
 ITEM_IMAGE_PX = 210         # F-013 S4: a concept card's picture + its gap (slide.css .def-img: 190 + 20)
 SIM_COLUMN_PX = 1100        # F-014: the simulation column (mirrors slide.js SIM_COLUMN, ~65 % of the body); the
                             # slide's other blocks stack in the rest (540 px), like the text beside an image
-MEDIA = ("image", "simulation", "scene", "stage")  # the visual column's blocks: never teacher text, never moved by split_to_fit
-STAGES = ("simulation", "scene", "stage")  # a live stage (F-014 simulation, F-015 scene, F-017 stage): the simulation layout
+MEDIA = ("image", "simulation", "scene", "stage", "story")  # the visual column's blocks: never teacher text, never moved by split_to_fit
+STAGES = ("simulation", "scene", "stage", "story")  # a live stage (F-014 simulation, F-015 scene, F-017 stage): the simulation layout
 LAYOUT_FOR = {"definition": "definition", "points": "key_points", "steps": "process_flow",
               "comparison": "comparison", "timeline": "timeline", "formula": "formula", "causes": "cause_effect",
               "example": "example", "facts": "facts", "groups": "groups", "tree": "hierarchy"}
@@ -56,7 +56,7 @@ BLOCK_LAYOUT = {"definition": "definition", "points": "key_points", "process": "
                 "comparison": "comparison", "timeline": "timeline", "formula": "formula",
                 "cause_effect": "cause_effect", "example": "example", "callout": "concept", "facts": "facts",
                 "groups": "groups", "hierarchy": "hierarchy", "image": "concept", "simulation": "simulation",
-                "scene": "simulation", "stage": "simulation"}
+                "scene": "simulation", "stage": "simulation", "story": "simulation"}
 LARGE = {"process", "comparison", "timeline", "cause_effect", "formula", "hierarchy"}
 FULL_WIDTH = LARGE | {"facts", "groups"}  # mirrors FULL_WIDTH_PRIMARY in slide.js: no aside next to these
 SECONDARY = ("example", "callout")

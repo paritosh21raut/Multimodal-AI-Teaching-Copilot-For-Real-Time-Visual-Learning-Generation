@@ -1,0 +1,236 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (7.2 s)
+[INIT]  live speech model distil-small.en ready (1.9 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  story: on
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_1         openai/gpt-oss-120b           118k of 200k tokens IN USE
+        GROQ_API_KEY_2         openai/gpt-oss-120b           196k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~1.2 h
+        GROQ_API_KEY_5         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~1.2 h
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~1.3 h
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 164 lecture minutes
+
+[READY] session 20261101-124209-9bcb
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+12:42:26 INFO    copilot.visuals.service: CLIP ready in 0.6 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    1.5s] Today we will see how some big ideas were discovered. (452 ms)
+12:42:40 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Big Ideas, Introduction)
+  [UNDERSTAND] Big Ideas > Introduction (new_topic) acts=transition hint=none lines=1 via groq_main#1 2454 ms
+               Teacher announced that today they will explore how some big ideas were discovered.
+12:42:40 INFO    copilot.presentation.engine: planner: noop Big Ideas > Introduction (nothing to display)
+  [    7.8s] In 1687, Newton published his laws of motion. (479 ms)
+12:42:45 INFO    copilot.story.detector: [STORY] setup 'In 1687, Newton published his laws of motion.'
+12:42:45 INFO    copilot.presentation.story: [STORY] suggested: 'In 1687, Newton published his laws of motion.'
+12:42:45 INFO    copilot.simulation.detector: [SIM] values - {}
+12:42:45 INFO    copilot.presentation.simulations: [SIM] values -: ignore (values, but no simulation is open)
+12:42:47 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: Big Ideas, Introduction, Newton's Laws)
+  [UNDERSTAND] Big Ideas > Newton's Laws (sibling_concept) acts=explanation hint=key_points lines=1 via groq_main#1 2061 ms
+               Teacher noted Newton published his laws of motion in 1687.
+12:42:47 INFO    copilot.presentation.engine: planner: new Big Ideas > Newton's Laws (first content slide)
+  [SLIDE] add    "Newton's Laws" [key_points] v1 (1 items)
+  [   17.5s] Let me tell you a story of Albert Einstein. (403 ms)
+12:42:52 INFO    copilot.story.detector: [STORY] cue 'Let me tell you a story of Albert Einstein.'
+12:42:52 INFO    copilot.presentation.simulations: [SIM] story mode on: Albert Einstein on its own slide (cue)
+12:42:52 INFO    copilot.presentation.story: [STORY] open: Albert Einstein (cue)
+12:42:52 INFO    copilot.presentation.story: [STORY] scene 1: 'Albert Einstein.' (when '', where '', query 'Albert Einstein')
+  [SLIDE] add    'Albert Einstein' [simulation] v1 (1 items)
+  [SLIDE] update 'Albert Einstein' [simulation] v2 (1 items)
+  [SLIDE] update 'Albert Einstein' [simulation] v3 (1 items)
+12:42:54 INFO    copilot: [STT] vocabulary prompt: 34 terms (newest: Introduction, Newton's Laws, Einstein)
+  [UNDERSTAND] Big Ideas > Einstein (sibling_concept) acts=explanation hint=narrative lines=1 via groq_main#1 1879 ms
+               Teacher introduced a story about Albert Einstein.
+12:42:54 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+  [   22.6s] In 1905, (318 ms)
+12:42:56 INFO    copilot.story.detector: [STORY] edit 'In 1905,'
+12:42:56 INFO    copilot.presentation.story: [STORY] scene 2: 'In 1905,' (when '1905', where '', query 'Albert Einstein')
+  [SLIDE] update 'Albert Einstein' [simulation] v4 (1 items)
+12:42:56 INFO    copilot.simulation.detector: [SIM] values - {}
+12:42:57 INFO    copilot.visuals.finder: image search 'Albert Einstein': 8 slow download(s) dropped
+12:42:57 INFO    copilot.presentation.story: [STORY] image 'Albert Einstein': none (downloads failed)
+  [IMAGE] 'Albert Einstein' -> none (downloads failed) (4.5 s)
+  [SLIDE] update 'Albert Einstein' [simulation] v5 (1 items)
+  [   24.7s] A young clerk in Bern wrote four famous papers. (421 ms)
+12:43:01 INFO    copilot.story.detector: [STORY] edit 'A young clerk in Bern wrote four famous papers.'
+12:43:01 INFO    copilot.presentation.story: [STORY] scene 3: 'A young clerk in Bern wrote four famous papers.' (when '', where 'Bern', query 'Bern')
+  [SLIDE] update 'Albert Einstein' [simulation] v6 (1 items)
+12:43:01 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Albert Einstein' [simulation] v7 (1 items)
+12:43:02 INFO    copilot.visuals.finder: image search 'Albert Einstein' (photo): 8 candidate(s), 1 accepted (0 labelled), 5.66 s {'search_s': 2.17, 'download_s': 1.8, 'clip_s': 0.21, 'full_s': 1.47, 'total_s': 5.66}
+12:43:02 INFO    copilot.presentation.story: [STORY] image for 'Albert Einstein' in 5.7 s (wikipedia · Public domain · Oren Jack Turner)
+  [IMAGE] 'Albert Einstein' -> File:Albert Einstein Head cleaned.jpg (5.7 s)
+  [SLIDE] update 'Albert Einstein' [simulation] v8 (1 items)
+  [UNDERSTAND] Big Ideas > Einstein (same_concept) acts=explanation hint=key_points lines=2 via groq_main#1 1927 ms
+               Introduced Einstein's 1905 papers written in Bern
+12:43:03 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+  [SLIDE] update 'Albert Einstein' [simulation] v9 (1 items)
+12:43:10 INFO    copilot.visuals.finder: image search 'Bern': 1 slow download(s) dropped
+12:43:10 INFO    copilot.visuals.finder: image search 'Bern' (photo): 8 candidate(s), 1 accepted (0 labelled), 7.71 s {'search_s': 2.21, 'download_s': 2.16, 'clip_s': 0.2, 'full_s': 3.13, 'total_s': 7.71}
+12:43:10 INFO    copilot.presentation.story: [STORY] image for 'Bern' in 7.7 s (commons · CC BY-SA 3.0 · Daniel Kraft)
+  [IMAGE] 'Bern' -> File:Bern Altstadt von Rosengarten 20211007.jpg (7.7 s)
+  [SLIDE] update 'Albert Einstein' [simulation] v10 (1 items)
+  [   37.0s] He works 6 days a week at the patent's office. (440 ms)
+12:43:14 INFO    copilot.story.detector: [STORY] edit "He works 6 days a week at the patent's office."
+  [SLIDE] update 'Albert Einstein' [simulation] v11 (1 items)
+12:43:14 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Big Ideas > Einstein (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 1711 ms
+               Einstein worked six days a week at the patent office.
+12:43:16 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [   46.3s] Years later, Einstein moved to Berlin. (399 ms)
+12:43:21 INFO    copilot.story.detector: [STORY] edit 'Years later, Einstein moved to Berlin.'
+12:43:21 INFO    copilot.presentation.story: [STORY] scene 4: 'Years later, Einstein moved to Berlin.' (when 'years later', where 'Berlin', query 'Berlin')
+  [SLIDE] update 'Albert Einstein' [simulation] v12 (1 items)
+12:43:26 INFO    copilot.visuals.finder: image search 'Berlin': 8 slow download(s) dropped
+12:43:26 INFO    copilot.presentation.story: [STORY] image 'Berlin': none (downloads failed)
+  [IMAGE] 'Berlin' -> none (downloads failed) (4.5 s)
+  [UNDERSTAND] Big Ideas > Einstein (same_concept) acts=explanation hint=concept lines=1 via groq_main#1 4137 ms
+               Einstein later moved to Berlin.
+12:43:26 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (4 so far)
+  [   58.3s] Then a student asked Einstein what is time. (428 ms)
+12:43:34 INFO    copilot.story.detector: [STORY] edit 'Then a student asked Einstein what is time.'
+12:43:34 INFO    copilot.presentation.story: [STORY] a student ask: 'What is time.'
+  [SLIDE] update 'Albert Einstein' [simulation] v13 (1 items)
+  [UNDERSTAND] Big Ideas > Einstein (same_concept) acts=question hint=none lines=1 via groq_main#2 1787 ms
+               A student asked Einstein what time is.
+12:43:36 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (4 so far)
+  [   66.0s] Einstein replied, time is what the clock measures. (400 ms)
+12:43:42 INFO    copilot.story.detector: [STORY] edit 'Einstein replied, time is what the clock measures.'
+12:43:42 INFO    copilot.presentation.story: [STORY] Albert Einstein reply: 'Time is what the clock measures.'
+  [SLIDE] update 'Albert Einstein' [simulation] v14 (1 items)
+12:43:44 INFO    copilot: [STT] vocabulary prompt: 35 terms (newest: Newton's Laws, Einstein, time)
+  [UNDERSTAND] Big Ideas > Einstein (elaboration) acts=definition hint=definition lines=1 via groq_main#1 1977 ms
+               Einstein defines time as what the clock measures.
+12:43:44 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (5 so far)
+  [   73.6s] And that's the end of the story. (383 ms)
+12:43:48 INFO    copilot.story.detector: [STORY] end "And that's the end of the story."
+12:43:48 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "And that's the end of the story."): recap 1 slide(s) (5 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Albert Einstein' [key_points] v1 (5 items)
+  [SLIDE] update 'Albert Einstein' [simulation] v15 (1 items)
+  [UNDERSTAND] Big Ideas > Einstein (same_concept) acts=transition hint=none lines=1 via groq_main#2 1643 ms
+               Teacher concluded the Einstein story
+12:43:50 INFO    copilot.presentation.engine: planner: noop Big Ideas > Einstein (nothing to display)
+  [   79.2s] And what's the end of the story? (433 ms)
+  [SLIDE] update 'Recap: Albert Einstein' [key_points] v2 (6 items)
+  [   81.9s] Let us follow a drop of water through the water cycle. (515 ms)
+12:43:57 INFO    copilot.story.detector: [STORY] cue 'Let us follow a drop of water through the water cycle.'
+12:43:57 INFO    copilot.presentation.simulations: [SIM] story mode on: A drop of water on its own slide (cue)
+12:43:57 INFO    copilot.presentation.story: [STORY] open: A drop of water (cue)
+12:43:57 INFO    copilot.presentation.story: [STORY] scene 1: 'Let us follow a drop of water through the water cy' (when '', where '', query 'drop of water')
+  [SLIDE] update 'Recap: Albert Einstein' [key_points] v3 (5 items)
+  [SLIDE] add    'A drop of water' [simulation] v1 (1 items)
+  [SLIDE] update 'A drop of water' [simulation] v2 (1 items)
+  [SLIDE] update 'A drop of water' [simulation] v3 (1 items)
+  [SLIDE] update 'A drop of water' [simulation] v4 (1 items)
+  [UNDERSTAND] Big Ideas > Einstein (elaboration) acts=question hint=none lines=1 via groq_main#1 2341 ms
+               Teacher asks what the ending of Einstein's story is
+12:44:00 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+12:44:02 INFO    copilot: [STT] vocabulary prompt: 36 terms (newest: Einstein, time, Water Cycle)
+  [UNDERSTAND] Big Ideas > Water Cycle (new_topic) acts=transition hint=process_flow lines=1 via groq_main#2 1229 ms
+               Teacher introduced the water cycle by following a drop of water.
+12:44:02 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+12:44:04 INFO    copilot.visuals.finder: image search 'drop of water' (photo): 8 candidate(s), 3 accepted (0 labelled), 6.96 s {'search_s': 2.81, 'download_s': 1.45, 'clip_s': 0.21, 'full_s': 2.45, 'total_s': 6.96}
+12:44:04 INFO    copilot.presentation.story: [STORY] image for 'drop of water' in 7.0 s (wikipedia · CC BY-SA 3.0 · Roger McLassus)
+  [IMAGE] 'drop of water' -> File:2006-02-13 Drop-impact.jpg (7.0 s)
+  [SLIDE] update 'A drop of water' [simulation] v5 (1 items)
+  [   91.5s] The water drops in the ocean. (384 ms)
+12:44:06 INFO    copilot.story.detector: [STORY] edit 'The water drops in the ocean.'
+12:44:06 INFO    copilot.presentation.story: [STORY] scene 2: 'The water drops in the ocean.' (when '', where 'the ocean', query 'ocean')
+  [SLIDE] update 'A drop of water' [simulation] v6 (1 items)
+12:44:06 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Big Ideas > Water Cycle (elaboration) acts=explanation hint=process_flow lines=1 via groq_main#2 1592 ms
+               Water drops collect in the ocean as part of the water cycle
+12:44:08 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+12:44:14 INFO    copilot.visuals.finder: image search 'ocean': 1 slow download(s) dropped
+12:44:14 INFO    copilot.visuals.finder: image search 'ocean' (photo): 8 candidate(s), 2 accepted (0 labelled), 7.72 s {'search_s': 2.4, 'download_s': 1.6, 'clip_s': 0.2, 'full_s': 3.5, 'total_s': 7.72}
+12:44:14 INFO    copilot.presentation.story: [STORY] image for 'ocean' in 7.7 s (wikipedia · Public domain · ABI imagery from NOAA's GOES-18 satellite)
+  [IMAGE] 'ocean' -> File:Pacific Ocean as viewed from GOES-18 on September 23, 2023.jpg (7.7 s)
+  [SLIDE] update 'A drop of water' [simulation] v7 (1 items)
+  [  100.3s] Then the sun hits it and it rises into the sky. (468 ms)
+12:44:17 INFO    copilot.story.detector: [STORY] edit 'Then the sun hits it and it rises into the sky.'
+12:44:17 INFO    copilot.presentation.story: [STORY] scene 3: 'Then the sun hits it and it rises into the sky.' (when '', where 'the sky', query 'sky')
+  [SLIDE] update 'A drop of water' [simulation] v8 (1 items)
+12:44:17 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Big Ideas > Water Cycle (same_concept) acts=process hint=process_flow lines=1 via groq_main#1 2168 ms
+               The sun heats water, making it rise into the sky as part of the water cycle.
+12:44:20 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+12:44:22 INFO    copilot.visuals.finder: image search 'sky': 8 slow download(s) dropped
+12:44:22 INFO    copilot.presentation.story: [STORY] image 'sky': none (downloads failed)
+  [IMAGE] 'sky' -> none (downloads failed) (4.5 s)
+  [  115.6s] The drop starts in the ocean. (510 ms)
+12:44:30 INFO    copilot.story.detector: [STORY] edit 'The drop starts in the ocean.'
+12:44:30 INFO    copilot.presentation.story: [STORY] scene 4: 'The drop starts in the ocean.' (when '', where 'the ocean', query 'ocean')
+  [SLIDE] update 'A drop of water' [simulation] v9 (1 items)
+12:44:30 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Big Ideas > Water Cycle (same_concept) acts=explanation hint=concept lines=1 via groq_main#1 2087 ms
+               The water drop’s journey begins in the ocean.
+12:44:32 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [  126.1s] Once upon a time, Ravi met Asha at the park. (492 ms)
+12:44:42 INFO    copilot.story.detector: [STORY] cue 'Once upon a time, Ravi met Asha at the park.'
+12:44:42 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another story was started): recap 1 slide(s) (3 kept, 0 dropped as parameter talk)
+12:44:42 INFO    copilot.presentation.simulations: [SIM] story mode on: Ravi and Asha on its own slide (cue)
+12:44:42 INFO    copilot.presentation.story: [STORY] open: Ravi and Asha (cue)
+12:44:42 INFO    copilot.presentation.story: [STORY] scene 1: 'Once upon a time, Ravi met Asha at the park.' (when '', where 'the park', query 'park')
+  [SLIDE] add    'Recap: A drop of water' [key_points] v1 (3 items)
+  [SLIDE] update 'A drop of water' [simulation] v10 (1 items)
+  [SLIDE] add    'Ravi and Asha' [simulation] v1 (1 items)
+  [SLIDE] update 'Ravi and Asha' [simulation] v2 (1 items)
+  [SLIDE] update 'Ravi and Asha' [simulation] v3 (1 items)
+  [UNDERSTAND] Big Ideas > Water Cycle (digression) acts=- hint=none lines=1 via groq_main#2 1336 ms
+               Teacher told a brief story about Ravi meeting Asha at the park.
+12:44:43 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+12:44:49 INFO    copilot.visuals.finder: image search 'park' (photo): 8 candidate(s), 3 accepted (0 labelled), 7.52 s {'search_s': 2.61, 'download_s': 1.81, 'clip_s': 0.18, 'full_s': 2.88, 'total_s': 7.52}
+12:44:49 INFO    copilot.presentation.story: [STORY] image for 'park' in 7.5 s (wikipedia · CC BY-SA 4.0 · File:Halleyparknovember.jpg : Celco85 derivative work: Georgfotoart)
+  [IMAGE] 'park' -> File:Halleyparknovember b (cropped).jpg (7.5 s)
+  [SLIDE] update 'Ravi and Asha' [simulation] v4 (1 items)
+  [  144.9s] Ravi said, I love playing football. (466 ms)
+12:45:00 INFO    copilot.story.detector: [STORY] edit 'Ravi said, I love playing football.'
+12:45:00 INFO    copilot.presentation.story: [STORY] Ravi say: 'I love playing football.'
+  [SLIDE] update 'Ravi and Asha' [simulation] v5 (1 items)
+12:45:00 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Big Ideas > Water Cycle (digression) acts=other hint=none lines=1 via groq_main#1 2546 ms
+               Ravi says he loves playing football
+12:45:03 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [  149.5s] Harsha said, me too. (413 ms)
+12:45:04 INFO    copilot.story.detector: [STORY] edit 'Harsha said, me too.'
+12:45:04 INFO    copilot.presentation.story: [STORY] Harsha say: 'Me too.'
+  [SLIDE] update 'Ravi and Asha' [simulation] v6 (1 items)
+  [  154.3s] Okay, let's get back to the slides. (431 ms)
+12:45:09 INFO    copilot.simulation.detector: [SIM] end - ('get back to the slides') {}
+12:45:09 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Okay, let's get back to the slides."): recap none (0 kept, 0 dropped as parameter talk)
+  [SLIDE] update 'Ravi and Asha' [simulation] v7 (1 items)
+  [UNDERSTAND] Big Ideas > Water Cycle (same_concept) acts=- hint=none lines=2 via groq_main#1 2026 ms
+               No new content added
+12:45:12 INFO    copilot.presentation.engine: planner: noop Big Ideas > Water Cycle (nothing to display)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261101-124209-9bcb: 19 segments, 145 words, state v46, 341 events logged
+        CommandReceived=4, ConceptSignal=19, DeckState=13, ImageReady=8, ImageRequested=8, InterpretRequested=17, InterpretationReady=17, LifecycleChanged=5, LiveCue=18, ModeChanged=1, RepresentationIntent=25, SimulationModeChanged=6, SimulationSettingChanged=1, SimulationSuggestion=2, SlideContextChanged=6, SlidePatch=37, StateChanged=46, TranscriptFinal=19, TranscriptPartial=65, UtteranceClassified=19, VocabularyChanged=5
+        stt: 19 published, 0 dropped, latency p50=431 ms p95=515 ms max=515 ms
+        understanding: 17 interpretations (17 by LLM, 0 fallbacks, 0 repaired), max 8 calls/min, prompt tokens max=2027 avg=1940, latency p50=1977 ms max=4137 ms
+        presentation: 6 slides; planner ops {'noop': 3, 'new': 1, 'story_start': 3}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 8, 'found': 5, 'none': 3}; slides with an image 0/6
+          1. [key_points] Newton's Laws  (v1, ['points'])
+          2. [simulation] Albert Einstein  (v15, ['story'])
+          3. [key_points] Recap: Albert Einstein  (v3, ['points', 'definition'])
+          4. [simulation] A drop of water  (v10, ['story'])
+          5. [key_points] Recap: A drop of water  (v1, ['points', 'process'])
+          6. [simulation] Ravi and Asha  (v7, ['story'])
+        providers: {'groq_main#1': 12, 'groq_main#2': 5}; triggers: {'pause': 16, 'boundary': 1}; outline: ["Big Ideas > Introduction, Newton's Laws, Einstein, Water Cycle"]; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261101-124209-9bcb\session.sqlite

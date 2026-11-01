@@ -88,6 +88,7 @@ _Built as "V2" (groups A–D); renamed 2026-10-17 when Concept Simulation became
 ## V3 — Story Scenes mode
 - Reuses the F-015 SceneSpec (`docs/v3/V3-story-outline.md`). Narrative detection → a storyboard of scenes (retrieved and optionally locally generated stills),
   procedural camera motion, captions, timeline. See ADR-0006.
+- Cards ST1–ST5 (`docs/v3/ST1-story-core.md`). **ST1 story core + speech bubbles: done**, verified live test51–52. Next: ST2 continuity.
 
 ## V4 — Multilingual
 - Hindi, Marathi, and mixed-language input (multilingual Whisper / Indic models); selectable output language (LLM or IndicTrans2).

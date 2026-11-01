@@ -387,6 +387,9 @@ class SimulationController:
             await self.end(f"another {kind} was started", back=False)
         self.ended = None
         await self._clear_suggestion()
+        story = getattr(e, "_story", None)
+        if story is not None:  # V3: a story chip from before does not outlive the next visual (its Show would end it)
+            await story._clear_suggestion()
         while e._pending:  # slides waiting for the dwell time go first: the simulation comes after them
             await e._add_to_deck(e._pending.pop(0))
         if e._prov:

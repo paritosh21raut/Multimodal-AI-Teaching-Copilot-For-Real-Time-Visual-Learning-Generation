@@ -1,0 +1,14 @@
+[    0.7] Let me tell you the story of Albert Einstein.
+[   13.4] In 1905,
+[   15.4] A young clerk in Bern wrote four famous papers.
+[   32.3] He worked 6 days a week at the patent office.
+[   41.1] Years later, Einstein moved to Berlin.
+[   65.0] And that's the end of the story.
+[   72.2] Let us follow a drop of water through a water cycle.
+[   79.7] The water drop starts in the ocean.
+[   89.1] Then the sun hits it and it rises into the sky.
+[  102.6] Once again the drop is back in the ocean.
+[  125.3] Once upon a time, Ravi met Asha at the park.
+[  134.2] Asha said, do you like football?
+[  140.0] Ravi said, yes, I love it.
+[  147.1] Okay, let's get back to the slides.

@@ -1,0 +1,24 @@
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>story dev</title><link rel="icon" href="data:,">
+<link rel="stylesheet" href="/web/shared/tokens.css" />
+<link rel="stylesheet" href="/web/shared/slide.css" />
+<style>html,body{margin:0;background:var(--stage-bg, var(--bg));color:var(--ink);font-family:var(--font-text)}
+#host{width:1920px;height:1080px;position:relative;overflow:hidden}
+#host > .slide{position:absolute;inset:0;width:1920px;height:1080px}</style>
+</head><body><div id="host"></div>
+<script type="module">
+// Dev page for the story view (not used by the app): tests/e2e/test_story_browser.py renders a slide with a story
+// block through window.storyDev.show(spec, theme) (the slide renderer, as the display draws it).
+import { html, render } from '../vendor/htm-preact-standalone.mjs';
+import { Slide } from '../shared/slide.js';
+const host = document.getElementById('host');
+window.storyDev = {
+  show(spec, theme = 'light', fresh = true) {
+    document.documentElement.dataset.theme = theme;
+    if (fresh) render(null, host);
+    render(html`<${Slide} spec=${spec} />`, host);
+    return host.querySelectorAll('[data-scene]').length;
+  },
+};
+document.title = 'ready';
+</script></body></html>

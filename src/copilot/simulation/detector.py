@@ -226,6 +226,7 @@ class SimulationDetector:
         self.bus = bus
         self._text: OrderedDict[str, str] = OrderedDict()
         self._meta: set[str] = set()
+        self.story_cues = False  # V3: the story detector runs (a story cue is not a template cue)
         self._recent: deque[str] = deque(maxlen=SHOW_CUE_LOOKBACK)
         self.intents = 0
 
@@ -263,6 +264,9 @@ class SimulationDetector:
         assert isinstance(event, ConceptSignal)
         text = self._text.get(event.segment_id)
         if text is None or event.segment_id in self._meta:
+            return
+        from copilot.story.detector import story_cue
+        if self.story_cues and story_cue(text):  # V3: "follow a drop of water through the water cycle": a story
             return
         d = detect(text, tuple(self._recent), meta="meta:" + event.segment_id in self._meta)
         self._recent.append(text)

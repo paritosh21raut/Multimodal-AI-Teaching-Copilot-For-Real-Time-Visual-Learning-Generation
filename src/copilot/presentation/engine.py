@@ -60,6 +60,7 @@ from copilot.core.memory import is_child_facet, same_subject, same_title, short_
 from copilot.presentation.planner import Decision, Frame, Signal, Working, decide
 from copilot.presentation.scenes import SceneController
 from copilot.presentation.stage import StageController
+from copilot.presentation.story import StoryController
 from copilot.presentation.simulations import SimulationController
 from copilot.core.interpretation import VisualHint
 from copilot.presentation.spec import DefinitionBlock, ImageBlock, ItemImage, SlideSpec
@@ -100,6 +101,7 @@ class PresentationSettings:
     templates_auto: bool = True  # F-015: a spoken cue starts a template (config: off; the teacher's pick still works)
     scenes: bool = True          # F-015: live scenes from spoken cues (an LLM call each; follows `simulations`)
     stage: bool = True           # F-017: motion / picture cues and Imagine Mode draw on the explainer stage (false: C1 canvas)
+    story: bool = True           # V3 ST1: story cues open a live storyboard (0 tokens; follows `simulations`)
 
     @classmethod
     def from_config(cls, config: Config) -> "PresentationSettings":
@@ -340,6 +342,7 @@ class PresentationEngine:
         self._sims = SimulationController(self)  # F-014 Concept Simulation (owns the one visual mode)
         self._scenes = SceneController(self)     # F-015 Live Scene Engine (runs in that mode)
         self._stage = StageController(self)      # F-017 explainer stage (motion / picture cues, Imagine Mode)
+        self._story = StoryController(self)      # V3 ST1 story scenes (runs in that mode)
 
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
@@ -405,7 +408,9 @@ class PresentationEngine:
                     await self._stage.on_command(event.command.kind, event.command.args)
                 elif event.command.kind.startswith(("sim_", "scene_")) and event.command.kind != "sim_full":
                     kind, args = event.command.kind, event.command.args
-                    if kind != "sim_end" and self._stage.owns(kind, args):  # F-017: a stage's slide
+                    if kind != "sim_end" and self._story.owns(kind, args):  # V3: a story's slide / chip
+                        await self._story.on_command(kind, args)
+                    elif kind != "sim_end" and self._stage.owns(kind, args):  # F-017: a stage's slide
                         await self._stage.on_command(kind, args)
                     elif kind != "sim_end" and self._scenes.owns(kind, args):  # F-015: a scene's slide / chip
                         await self._scenes.on_command(kind, args)
@@ -413,7 +418,9 @@ class PresentationEngine:
                         await self._sims.on_command(kind, args)
             elif isinstance(event, RepresentationIntent):
                 await self._sims.on_intent(event)
-                if self._stage.wants(event):  # F-017: motion / picture cues, the open stage, Imagine Mode
+                if event.visual_kind == "story":  # V3 ST1
+                    await self._story.on_intent(event)
+                elif self._stage.wants(event):  # F-017: motion / picture cues, the open stage, Imagine Mode
                     await self._stage.on_intent(event)
                 else:
                     await self._scenes.on_intent(event)
@@ -423,7 +430,8 @@ class PresentationEngine:
                     self._said.popitem(last=False)
                 return
             elif isinstance(event, ImageReady):
-                await self._on_image_ready(event)
+                if not await self._story.on_image(event):  # V3: a story scene's picture
+                    await self._on_image_ready(event)
             elif isinstance(event, SlideOverflow):
                 meta = self._meta.get(event.slide_id)
                 spec = self._spec(event.slide_id)
@@ -453,6 +461,7 @@ class PresentationEngine:
                     await self._sims.tick()
                     await self._scenes.tick()
                     await self._stage.tick()
+                    await self._story.tick()
             except asyncio.CancelledError:
                 raise
             except Exception:

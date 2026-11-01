@@ -480,6 +480,23 @@ function SimBar({ spec, b, send, running }) {
 // F-015: the bar of a live scene: the same playback controls; Values lists what the scene holds (read only in L1:
 // each value with where it came from, a default marked "not said": drawn, never printed); no template picker.
 const SRC_WORD = { said: "said", teacher: "yours", computed: "computed" };
+// V3 ST1: a story's slide: the scene shown (Prev / Next), full screen, remove, Back to slides
+function StoryBar({ spec, b, send, running }) {
+  const story = b.story || { scenes: [] };
+  const n = (story.scenes || []).length;
+  const cmd = (kind, args = {}) => () => send(kind, { slide_id: spec.id, ...args });
+  return html`<div class="image-bar sim-bar story-bar">
+    <button class="icon sim-prev" disabled=${story.shown <= 0} onClick=${cmd("sim_prev")} title="The scene before">${svg(ICON.prev)}</button>
+    <span class="sim-step">Scene ${n ? story.shown + 1 : 0} / ${n}</span>
+    <button class="icon sim-next" disabled=${story.shown >= n - 1} onClick=${cmd("sim_next")} title="The next scene">${svg(ICON.next)}</button>
+    <span class="sep"></span>
+    <button class="icon" onClick=${cmd("sim_full", { on: true })} title="Full screen on the display">${svg(ICON.full)}</button>
+    <button class="icon" onClick=${cmd("sim_remove")} title="Take the story off">${svg(ICON.remove)}</button>
+    ${running && html`<span class="sep"></span><button class="sim-end" onClick=${() => send("sim_end")}
+      title="End the story: slides resume, first a recap of what you taught">${svg(ICON.back)}Back to slides</button>`}
+  </div>`;
+}
+
 function SceneBar({ spec, b, send, running }) {
   const scene = b.scene;
   const cmd = (kind, args = {}) => () => send(kind, { slide_id: spec.id, ...args });
@@ -773,7 +790,7 @@ function SimSettingPill({ setting, send }) {
 function SuggestChip({ suggestion, send }) {
   if (!suggestion) return null;
   return html`<div class="sim-chip" role="status" title=${suggestion.text}>
-    ${svg(ICON.sim)}<span>${suggestion.template === "scene" ? html`Draw the <b>${suggestion.name}</b> scene?` : html`Show the <b>${suggestion.name}</b> simulation?`}</span>
+    ${svg(ICON.sim)}<span>${suggestion.template === "scene" ? html`Draw the <b>${suggestion.name}</b> scene?` : suggestion.template === "story" ? html`Tell it as a story: <b>${suggestion.name}</b>?` : html`Show the <b>${suggestion.name}</b> simulation?`}</span>
     <button class="primary" onClick=${() => send("sim_accept", { id: suggestion.id })}>Show</button>
     <button class="icon" onClick=${() => send("sim_dismiss", { id: suggestion.id })} aria-label="Not now" title="Not now">${svg(ICON.remove)}</button>
   </div>`;
@@ -900,7 +917,7 @@ function Preview({ spec, deck, lifecycle, slides, choices, status, send, notice,
     ${zoomed && html`<button class="back" onClick=${() => send("unzoom_image")} title="Back to the slide (Esc)">
       ${svg(ICON.back)}<span>Back to slide</span><kbd>Esc</kbd></button>`}
     ${spec && spec.layout !== "title" && !zoomed && !simFull && !drag && !onScreen && (sim
-      ? html`<${sim.type === "stage" ? StageBar : sim.type === "scene" ? SceneBar : SimBar} spec=${spec} b=${sim} send=${send} running=${!!(deck && deck.sim_mode === spec.id)} />`
+      ? html`<${sim.type === "story" ? StoryBar : sim.type === "stage" ? StageBar : sim.type === "scene" ? SceneBar : SimBar} spec=${spec} b=${sim} send=${send} running=${!!(deck && deck.sim_mode === spec.id)} />`
       : html`<${ImageBar} spec=${spec} image=${image} choices=${choices} status=${status} send=${send} onNotice=${onNotice} />`)}
     <${NotesOnScreen} shown=${notesShown} send=${send} />
     ${before && html`<${StartCard} lifecycle=${lifecycle} materials=${materials} notes=${notes} mode=${mode} simSetting=${simSetting} send=${send} />`}

@@ -1,0 +1,210 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (10.3 s)
+[INIT]  live speech model distil-small.en ready (2.1 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.4 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  story: on
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_1         openai/gpt-oss-120b            92k of 200k tokens IN USE
+        GROQ_API_KEY_2         openai/gpt-oss-120b           185k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b           180k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b            42k of 200k tokens ok
+        GROQ_API_KEY_6         openai/gpt-oss-120b            11k of 200k tokens ok
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 189 lecture minutes
+
+[READY] session 20261101-171714-b740
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+17:17:34 INFO    copilot.visuals.service: CLIP ready in 0.6 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    0.7s] Let me tell you the story of Albert Einstein. (496 ms)
+17:17:54 INFO    copilot.story.detector: [STORY] cue 'Let me tell you the story of Albert Einstein.'
+17:17:54 INFO    copilot.presentation.simulations: [SIM] story mode on: Albert Einstein on its own slide (cue)
+17:17:54 INFO    copilot.presentation.story: [STORY] open: Albert Einstein (cue)
+17:17:54 INFO    copilot.presentation.story: [STORY] scene 1: 'Albert Einstein.' (when '', where '', query 'Albert Einstein')
+  [SLIDE] add    'Albert Einstein' [simulation] v1 (1 items)
+  [SLIDE] update 'Albert Einstein' [simulation] v2 (1 items)
+  [SLIDE] update 'Albert Einstein' [simulation] v3 (1 items)
+17:17:54 INFO    copilot.presentation.story: [STORY] image for 'Albert Einstein' in 0.3 s (wikipedia · Public domain · Oren Jack Turner)
+  [IMAGE] 'Albert Einstein' -> File:Albert Einstein Head cleaned.jpg (0.3 s, cached)
+  [SLIDE] update 'Albert Einstein' [simulation] v4 (1 items)
+17:17:56 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Albert Einstein, Biography)
+  [UNDERSTAND] Albert Einstein > Biography (new_topic) acts=transition hint=narrative lines=1 via groq_main#1 1493 ms
+               Teacher introduces the story of Albert Einstein.
+17:17:56 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [   13.4s] In 1905, (344 ms)
+17:18:05 INFO    copilot.story.detector: [STORY] edit 'In 1905,'
+17:18:05 INFO    copilot.simulation.detector: [SIM] values - {}
+  [   15.4s] A young clerk in Bern wrote four famous papers. (446 ms)
+17:18:09 INFO    copilot.story.detector: [STORY] edit 'A young clerk in Bern wrote four famous papers.'
+17:18:09 INFO    copilot.presentation.story: [STORY] scene 2: 'In 1905, a young clerk in Bern wrote four famous p' (when '1905', where 'Bern', query 'Bern')
+  [SLIDE] update 'Albert Einstein' [simulation] v5 (1 items)
+17:18:09 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Albert Einstein > Biography (elaboration) acts=explanation hint=key_points lines=2 via groq_main#1 1743 ms
+               Einstein, then a clerk in Bern, published four famous papers in 1905.
+17:18:11 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+17:18:15 INFO    copilot.visuals.finder: image search 'Bern' (photo): 8 candidate(s), 2 accepted (0 labelled), 5.66 s {'search_s': 1.84, 'download_s': 1.59, 'clip_s': 0.21, 'full_s': 2.0, 'total_s': 5.66}
+17:18:15 INFO    copilot.presentation.story: [STORY] image for 'Bern' in 5.7 s (commons · CC BY-SA 3.0 · Daniel Kraft)
+  [IMAGE] 'Bern' -> File:Bern Altstadt von Rosengarten 20211007.jpg (5.7 s)
+  [SLIDE] update 'Albert Einstein' [simulation] v6 (1 items)
+  [   32.3s] He worked 6 days a week at the patent office. (448 ms)
+17:18:26 INFO    copilot.story.detector: [STORY] edit 'He worked 6 days a week at the patent office.'
+17:18:26 INFO    copilot.presentation.story: [STORY] scene 3: 'He worked 6 days a week at the patent office.' (when '', where 'the patent office', query 'patent office')
+  [SLIDE] update 'Albert Einstein' [simulation] v7 (1 items)
+17:18:26 INFO    copilot.simulation.detector: [SIM] values - {}
+  [SLIDE] update 'Albert Einstein' [simulation] v8 (1 items)
+  [UNDERSTAND] Albert Einstein > Biography (elaboration) acts=other hint=key_points lines=1 via groq_main#1 1146 ms
+               Einstein worked six days a week at the patent office.
+17:18:27 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+17:18:31 INFO    copilot.visuals.finder: image search 'patent office' (photo): 8 candidate(s), 1 accepted (0 labelled), 5.30 s {'search_s': 2.05, 'download_s': 1.65, 'clip_s': 0.19, 'full_s': 1.4, 'total_s': 5.3}
+17:18:31 INFO    copilot.presentation.story: [STORY] image for 'patent office' in 5.3 s (wikipedia · CC BY-SA 4.0 · ReubenGBrewer)
+  [IMAGE] 'patent office' -> File:14 12 31 US Patent Office Sign Alexandria VA 01.jpg (5.3 s)
+  [SLIDE] update 'Albert Einstein' [simulation] v9 (1 items)
+  [   41.1s] Years later, Einstein moved to Berlin. (410 ms)
+17:18:34 INFO    copilot.story.detector: [STORY] edit 'Years later, Einstein moved to Berlin.'
+17:18:34 INFO    copilot.presentation.story: [STORY] scene 4: 'Years later, Einstein moved to Berlin.' (when 'years later', where 'Berlin', query 'Berlin')
+  [SLIDE] update 'Albert Einstein' [simulation] v10 (1 items)
+  [UNDERSTAND] Albert Einstein > Biography (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 1687 ms
+               Einstein later relocated to Berlin.
+17:18:36 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+17:18:39 INFO    copilot.visuals.finder: image search 'Berlin': 4 slow download(s) dropped
+17:18:42 INFO    copilot.visuals.finder: image search 'Berlin' (photo): 4 candidate(s), 3 accepted (0 labelled), 7.68 s {'search_s': 3.54, 'download_s': 0.97, 'clip_s': 0.12, 'full_s': 3.01, 'total_s': 7.68}
+17:18:42 INFO    copilot.presentation.story: [STORY] image for 'Berlin' in 7.7 s (wikipedia · CC BY-SA 4.0 · File:Museumsinsel Berlin Juli 2021 1 (cropped).jpg : Kasa Fue derivative work: Georgfotoart)
+  [IMAGE] 'Berlin' -> File:Museumsinsel Berlin Juli 2021 1 (cropped) b.jpg (7.7 s)
+  [SLIDE] update 'Albert Einstein' [simulation] v11 (1 items)
+  [   65.0s] And that's the end of the story. (396 ms)
+17:18:57 INFO    copilot.story.detector: [STORY] end "And that's the end of the story."
+17:18:57 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "And that's the end of the story."): recap 1 slide(s) (3 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Albert Einstein' [key_points] v1 (3 items)
+  [SLIDE] update 'Albert Einstein' [simulation] v12 (1 items)
+  [UNDERSTAND] Albert Einstein > Biography (same_concept) acts=- hint=none lines=1 via groq_main#1 1554 ms
+               Teacher concluded the biography story
+17:18:59 INFO    copilot.presentation.engine: planner: noop Albert Einstein > Biography (nothing to display)
+  [   72.2s] Let us follow a drop of water through a water cycle. (468 ms)
+17:19:05 INFO    copilot.story.detector: [STORY] cue 'Let us follow a drop of water through a water cycle.'
+17:19:05 INFO    copilot.presentation.simulations: [SIM] story mode on: A drop of water on its own slide (cue)
+17:19:05 INFO    copilot.presentation.story: [STORY] open: A drop of water (cue)
+17:19:05 INFO    copilot.presentation.story: [STORY] scene 1: 'Let us follow a drop of water through a water cycl' (when '', where '', query 'drop of water')
+  [SLIDE] add    'A drop of water' [simulation] v1 (1 items)
+  [SLIDE] update 'A drop of water' [simulation] v2 (1 items)
+  [SLIDE] update 'A drop of water' [simulation] v3 (1 items)
+17:19:05 INFO    copilot.presentation.story: [STORY] image for 'drop of water' in 0.0 s (wikipedia · CC BY-SA 3.0 · Roger McLassus)
+  [IMAGE] 'drop of water' -> File:2006-02-13 Drop-impact.jpg (0.0 s, cached)
+  [SLIDE] update 'A drop of water' [simulation] v4 (1 items)
+17:19:08 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+17:19:13 INFO    copilot: [STT] vocabulary prompt: 34 terms (newest: Biography, Water Cycle, Overview)
+  [UNDERSTAND] Water Cycle > Overview (new_topic) acts=transition hint=none lines=1 via groq_main#2 7021 ms
+               Teacher introduces the water cycle concept
+17:19:13 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [   79.7s] The water drop starts in the ocean. (396 ms)
+17:19:13 INFO    copilot.story.detector: [STORY] edit 'The water drop starts in the ocean.'
+17:19:13 INFO    copilot.presentation.story: [STORY] scene 2: 'The water drop starts in the ocean.' (when '', where 'the ocean', query 'ocean')
+  [SLIDE] update 'A drop of water' [simulation] v5 (1 items)
+17:19:13 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Water Cycle > Overview (elaboration) acts=explanation hint=concept lines=1 via groq_main#2 3919 ms
+               The water drop starts in the ocean, beginning the water cycle.
+17:19:17 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (1 so far)
+17:19:21 INFO    copilot.visuals.finder: image search 'ocean' timed out after 8.0 s: no image
+17:19:21 INFO    copilot.presentation.story: [STORY] image 'ocean': none (timeout)
+  [IMAGE] 'ocean' -> none (timeout) (8.0 s)
+  [   89.1s] Then the sun hits it and it rises into the sky. (476 ms)
+17:19:23 INFO    copilot.story.detector: [STORY] edit 'Then the sun hits it and it rises into the sky.'
+17:19:23 INFO    copilot.presentation.story: [STORY] scene 3: 'Then the sun hits it and it rises into the sky.' (when '', where 'the sky', query 'sky')
+  [SLIDE] update 'A drop of water' [simulation] v6 (1 items)
+17:19:23 INFO    copilot.simulation.detector: [SIM] values - {}
+17:19:26 WARNING copilot.llm.router: llm groq_main#2 failed: connect failed: ConnectTimeout
+17:19:26 INFO    copilot.visuals.finder: image search 'ocean': 1 slow download(s) dropped
+17:19:26 INFO    copilot.presentation.story: [STORY] image 'ocean': none (downloads failed)
+  [IMAGE] 'ocean' -> none (downloads failed) (5.5 s)
+  [UNDERSTAND] Water Cycle > Overview (elaboration) acts=process hint=process_flow lines=1 via groq_main#4 7063 ms
+               Sun heats water causing it to rise as vapor, continuing the water cycle.
+17:19:30 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (2 so far)
+17:19:32 INFO    copilot.visuals.finder: image source failed: ConnectTimeout('')
+17:19:33 INFO    copilot.visuals.finder: image search 'sky': 8 slow download(s) dropped
+17:19:33 INFO    copilot.presentation.story: [STORY] image 'sky': none (downloads failed)
+  [IMAGE] 'sky' -> none (downloads failed) (6.4 s)
+  [  102.6s] Once again the drop is back in the ocean. (406 ms)
+17:19:35 INFO    copilot.story.detector: [STORY] edit 'Once again the drop is back in the ocean.'
+17:19:35 INFO    copilot.presentation.story: [STORY] 'the ocean' again: scene 2 shows again
+  [SLIDE] update 'A drop of water' [simulation] v7 (1 items)
+17:19:35 INFO    copilot.simulation.detector: [SIM] values - {}
+17:19:38 INFO    copilot.visuals.finder: image download failed pg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail: 
+17:19:39 INFO    copilot.visuals.finder: image download failed PG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail: 
+17:19:41 INFO    copilot.visuals.finder: image search 'sky': 6 slow download(s) dropped
+17:19:41 INFO    copilot.presentation.story: [STORY] image 'sky': none (downloads failed)
+  [IMAGE] 'sky' -> none (downloads failed) (7.8 s)
+  [UNDERSTAND] Water Cycle > Overview (same_concept) acts=explanation hint=none lines=1 via groq_main#4 4925 ms
+               The drop returns to the ocean, completing the water cycle.
+17:19:41 INFO    copilot.presentation.simulations: [SIM] simulation mode: 1 piece(s) collected for the recap (3 so far)
+  [SLIDE] update 'A drop of water' [simulation] v8 (1 items)
+  [SLIDE] update 'A drop of water' [simulation] v9 (1 items)
+  [SLIDE] update 'A drop of water' [simulation] v10 (1 items)
+  [SLIDE] update 'A drop of water' [simulation] v11 (1 items)
+  [SLIDE] update 'A drop of water' [simulation] v12 (1 items)
+  [  125.3s] Once upon a time, Ravi met Asha at the park. (397 ms)
+17:20:00 INFO    copilot.story.detector: [STORY] cue 'Once upon a time, Ravi met Asha at the park.'
+17:20:00 INFO    copilot.presentation.simulations: [SIM] simulation mode off (another story was started): recap 1 slide(s) (3 kept, 0 dropped as parameter talk)
+17:20:00 INFO    copilot.presentation.simulations: [SIM] story mode on: Ravi and Asha on its own slide (cue)
+17:20:00 INFO    copilot.presentation.story: [STORY] open: Ravi and Asha (cue)
+17:20:00 INFO    copilot.presentation.story: [STORY] scene 1: 'Once upon a time, Ravi met Asha at the park.' (when '', where 'the park', query 'park')
+  [SLIDE] add    'Recap: A drop of water' [key_points] v1 (3 items)
+  [SLIDE] update 'A drop of water' [simulation] v13 (1 items)
+  [SLIDE] add    'Ravi and Asha' [simulation] v1 (1 items)
+  [SLIDE] update 'Ravi and Asha' [simulation] v2 (1 items)
+17:20:00 INFO    copilot.presentation.story: [STORY] image for 'park' in 0.1 s (wikipedia · CC BY-SA 4.0 · File:Halleyparknovember.jpg : Celco85 derivative work: Georgfotoart)
+  [IMAGE] 'park' -> File:Halleyparknovember b (cropped).jpg (0.1 s, cached)
+  [SLIDE] update 'Ravi and Asha' [simulation] v3 (1 items)
+  [UNDERSTAND] Water Cycle > Overview (digression) acts=- hint=none lines=1 via groq_main#4 1440 ms
+               Teacher told a short unrelated story about Ravi and Asha
+17:20:01 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [  134.2s] Asha said, do you like football? (395 ms)
+17:20:07 INFO    copilot.story.detector: [STORY] edit 'Asha said, do you like football?'
+17:20:07 INFO    copilot.presentation.story: [STORY] Asha say: 'Do you like football?'
+  [SLIDE] update 'Ravi and Asha' [simulation] v4 (1 items)
+  [UNDERSTAND] Water Cycle > Overview (digression) acts=question hint=none lines=1 via groq_main#4 2100 ms
+               Teacher asked a student if they like football
+17:20:09 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [  140.0s] Ravi said, yes, I love it. (422 ms)
+17:20:12 INFO    copilot.story.detector: [STORY] edit 'Ravi said, yes, I love it.'
+17:20:12 INFO    copilot.presentation.story: [STORY] Ravi say: 'Yes, I love it.'
+  [SLIDE] update 'Ravi and Asha' [simulation] v5 (1 items)
+17:20:12 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Water Cycle > Overview (digression) acts=- hint=none lines=1 via groq_main#1 1190 ms
+               Student expressed love for football
+17:20:14 INFO    copilot.presentation.simulations: [SIM] simulation mode: 0 piece(s) collected for the recap (0 so far)
+  [  147.1s] Okay, let's get back to the slides. (449 ms)
+17:20:19 INFO    copilot.simulation.detector: [SIM] end - ('get back to the slides') {}
+17:20:19 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "Okay, let's get back to the slides."): recap none (0 kept, 0 dropped as parameter talk)
+  [SLIDE] update 'Ravi and Asha' [simulation] v6 (1 items)
+  [UNDERSTAND] Water Cycle > Overview (same_concept) acts=- hint=none lines=1 via groq_main#1 1876 ms
+               Teacher returns to the water cycle slide
+17:20:22 INFO    copilot.presentation.engine: planner: noop Water Cycle > Overview (nothing to display)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261101-171714-b740: 14 segments, 110 words, state v34, 298 events logged
+        CommandReceived=19, ConceptSignal=14, DeckState=23, ImageReady=10, ImageRequested=10, InterpretRequested=13, InterpretationReady=13, LLMCallFailed=2, LifecycleChanged=5, LiveCue=14, ModeChanged=1, RepresentationIntent=21, SimulationModeChanged=6, SimulationSettingChanged=1, SlideContextChanged=3, SlidePatch=33, StateChanged=34, TranscriptFinal=14, TranscriptPartial=46, UtteranceClassified=14, VocabularyChanged=2
+        stt: 14 published, 0 dropped, latency p50=422 ms p95=496 ms max=496 ms
+        understanding: 13 interpretations (13 by LLM, 0 fallbacks, 0 repaired), max 6 calls/min, prompt tokens max=2018 avg=1923, latency p50=1743 ms max=7063 ms
+        presentation: 5 slides; planner ops {'story_start': 3, 'noop': 2, 'teacher_story_sim_prev': 2, 'teacher_story_sim_next': 2}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 10, 'found': 6, 'none': 4}; slides with an image 0/5
+          1. [simulation] Albert Einstein  (v12, ['story'])
+          2. [key_points] Recap: Albert Einstein  (v1, ['points', 'facts'])
+          3. [simulation] A drop of water  (v13, ['story'])
+          4. [key_points] Recap: A drop of water  (v1, ['points', 'process'])
+          5. [simulation] Ravi and Asha  (v6, ['story'])
+        providers: {'groq_main#1': 7, 'groq_main#2': 2, 'groq_main#4': 4}; triggers: {'pause': 13}; outline: ['Albert Einstein > Biography', 'Water Cycle > Overview']; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261101-171714-b740\session.sqlite

@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from copilot.core.events import new_id
 from copilot.scene.spec import SceneSpec
 from copilot.simulation.registry import SimulationSpec
+from copilot.story.spec import StoryboardSpec
 
 Layout = Literal[
     "title", "concept", "definition", "key_points", "process_flow", "comparison", "timeline",
@@ -253,11 +254,20 @@ class StageBlock(_Model):
     mode: Literal["stage", "diagram"] = "stage"   # F-018: what the block shows (the teacher's Diagram | Scene switch)
 
 
+class StoryBlock(_Model):
+    """A live storyboard (V3 ST1, docs/v3/ST1-story-core.md): the whole slide, played by web/story/. Not teacher
+    text. Its id stays the same while the story grows. still: the story ended, its last shown scene is a figure."""
+    type: Literal["story"] = "story"
+    id: str = Field(default_factory=new_id)
+    story: StoryboardSpec = Field(default_factory=StoryboardSpec)
+    still: bool = False
+
+
 Block = Annotated[
     Union[
         DefinitionBlock, PointsBlock, ProcessBlock, ComparisonBlock, TimelineBlock, HierarchyBlock,
         CauseEffectBlock, FormulaBlock, ExampleBlock, CalloutBlock, ImageBlock, FactsBlock, GroupsBlock,
-        SimulationBlock, SceneBlock, StageBlock,
+        SimulationBlock, SceneBlock, StageBlock, StoryBlock,
     ],
     Field(discriminator="type"),
 ]

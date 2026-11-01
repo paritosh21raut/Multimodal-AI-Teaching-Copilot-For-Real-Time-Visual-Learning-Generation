@@ -141,6 +141,8 @@ class SceneDetector:
         self._unsure: dict[str, list[str]] = {}  # F-017 E3: segment id -> words Whisper was unsure of
         self.open_world: Optional[str] = None  # the open scene's world (None: no scene open)
         self._cued: str = ""                    # the world of the last cue published (the scene it opens)
+        self.story = False                      # V3: a story is open
+        self.story_cues = False                 # V3: the story detector runs (a story cue is not a scene cue)
         self.intents = 0
 
     def attach(self) -> None:
@@ -167,11 +169,16 @@ class SceneDetector:
             # a scene opened by its cue, or by the teacher (Imagine Mode, no cue): a canvas
             # F-017: the explainer stage is a canvas for the detector (every content line is an edit candidate)
             self.open_world = (self._cued or "canvas") if event.on and event.template in ("scene", "stage") else None
+            self.story = event.on and event.template == "story"
             self._cued = ""
             return
         assert isinstance(event, UtteranceClassified)
         text = self._text.get(event.segment_id, "")
         if event.kind != "content" or event.maybe_meta or not text or end_cue(text):
+            return
+        from copilot.story.detector import story_cue
+        # V3: the story owns its lines; "imagine you are a red blood cell" is a story cue (in Imagine Mode: the stage's)
+        if self.story or self.story_cues and self.open_world != "canvas" and story_cue(text):
             return
         world = cue(text)
         # none open, another world's noun (a new scene), or a canvas / diagram cue (the controller: an edit when it

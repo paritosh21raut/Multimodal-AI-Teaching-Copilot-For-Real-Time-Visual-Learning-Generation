@@ -355,6 +355,19 @@ class App:
                 print(f"[INIT]  scenes: {'on' if self._router is not None else 'off (no LLM configured)'}", flush=True)
             if settings.scenes and settings.stage:  # F-017 E3: the explainer stage (fast path + one call per line)
                 await self._init_stage(embedder, on_failure, usage)
+            if settings.story:  # V3 ST1: "let me tell you the story of ..." -> a live storyboard (0 tokens)
+                from copilot.scene.pictures import Emoji
+                from copilot.story.detector import StoryDetector
+
+                self.story_detector = StoryDetector(self.bus)
+                self.story_detector.attach()
+                self.sim_detector.story_cues = True  # a story cue opens the story, not a template / scene
+                if getattr(self, "scene_detector", None) is not None:
+                    self.scene_detector.story_cues = True
+                st = self.presentation._story
+                st.emoji = self.presentation._scenes.emoji if settings.scenes else Emoji(embedder)
+                st.pics_dir = PROJECT_ROOT / "data" / "assets" / "pictures"
+                print("[INIT]  story: on", flush=True)
             self._init_images()
 
     async def _init_stage(self, embedder: Any, on_failure: Any, usage: Any) -> None:

@@ -36,8 +36,8 @@ CAPTION_MATCH_MIN = 0.62
 
 def queue_key(req: ImageRequested) -> str:
     """One queued request per slide (a newer one replaces it), except the pictures of a slide's items (F-013 S4:
-    each planet of a concept-column slide), which wait side by side."""
-    return f"{req.slide_id}|{req.reason}" if req.reason.startswith("item:") else req.slide_id
+    each planet of a concept-column slide) and of a story's scenes (V3), which wait side by side."""
+    return f"{req.slide_id}|{req.reason}" if req.reason.startswith(("item:", "story:")) else req.slide_id
 
 
 def caption_matches(caption: str, query: str) -> bool:

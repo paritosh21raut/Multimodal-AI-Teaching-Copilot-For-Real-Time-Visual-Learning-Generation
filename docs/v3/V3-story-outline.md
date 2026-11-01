@@ -13,5 +13,6 @@
 **Paper 3 claim (draft):** turning live narration into a time-aligned storyboard, with entities kept consistent
 across scenes and captions only from what was said.
 
-**Not decided yet:** how scenes are timed (a pause or a sentence boundary), and whether the story owns its own slide or
-shares simulation mode. Decide when V3 starts.
+**Decided (2026-11-01, `ST1-story-core.md`):** scenes cut at a time / place / sequence marker or a new character
+(max 3 lines, ≥ 6 s each); the story is its own slide in the shared visual mode (recap at the end); dialogue lines
+become speech bubbles at the speaker. Cards ST1–ST5 in the ST1 card.
