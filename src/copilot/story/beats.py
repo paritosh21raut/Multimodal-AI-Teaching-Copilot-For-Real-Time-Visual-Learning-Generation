@@ -24,17 +24,21 @@ _VERB_KIND = {"said": "say", "says": "say", "say": "say", "told": "say", "tells"
               "replied": "reply", "replies": "reply", "answered": "reply", "answers": "reply", "responded": "reply",
               "shouted": "shout", "shouts": "shout", "yelled": "shout", "yells": "shout", "exclaimed": "shout",
               "cried": "shout", "screamed": "shout", "called": "shout",
-              "whispered": "whisper", "whispers": "whisper", "murmured": "whisper"}
+              "whispered": "whisper", "whispers": "whisper", "murmured": "whisper",
+              # test55: "The girl was shouting. It is in the garden." (Whisper put a full stop for the comma)
+              "saying": "say", "telling": "say", "asking": "ask", "replying": "reply", "answering": "reply",
+              "shouting": "shout", "yelling": "shout", "whispering": "whisper"}
+_PROGRESSIVE = frozenset(v for v in _VERB_KIND if v.endswith("ing"))
 _VERBS = "|".join(sorted(_VERB_KIND, key=len, reverse=True))
-_ADDRESS = {"asked", "asks", "told", "tells", "answered", "answers", "wondered", "called"}  # "asked Asha, ..."
+_ADDRESS = {"asked", "asks", "told", "tells", "answered", "answers", "wondered", "called", "asking", "telling"}  # "asked Asha, ..."
 _AUX = r"(?!(?:is|was|are|were|be|been|being|has|had|have|will|would|can|could|should|may|might|must)\b)"
-_SPEAKER = (r"(?:(?i:the|his|her|their|my|our|a|an)\s+(?:" + _AUX + r"[a-z]+\s+)?" + _AUX + r"[a-z]+(?=\s+(?:then\s+|also\s+)?(?:" + _VERBS
+_SPEAKER = (r"(?:(?i:the|his|her|their|my|our|a|an)\s+(?:" + _AUX + r"[a-z]+\s+)?" + _AUX + r"[a-z]+(?=\s+(?:then\s+|also\s+)?(?:(?:was|is|were|kept)\s+)?(?:" + _VERBS
             + r")\b)|[A-Z][a-z]*(?:\s+[A-Z][a-z]+)?|he|she|they)")
 _TARGET = r"(?:[A-Z][a-z]+|him|her|them|me|us|(?:the|his|her|their)\s+[a-z]+)"
 _LEAD = r"^\W*(?:(?i:and|then|so|now|but|one day|later|suddenly|finally|next|after that)\W+)*"
 _QUOTES = "\"“”‘’'"
 _SAY_FIRST = re.compile(
-    _LEAD + rf"(?P<who>{_SPEAKER})\s+(?:then\s+|also\s+|quickly\s+|softly\s+|loudly\s+)?(?P<verb>{_VERBS})\b"
+    _LEAD + rf"(?P<who>{_SPEAKER})\s+(?:then\s+|also\s+|quickly\s+|softly\s+|loudly\s+)?(?:(?:was|is|were|kept)\s+)?(?P<verb>{_VERBS})\b"
     rf"(?:\s+(?:to\s+(?P<to>{_TARGET})|(?P<obj>{_TARGET})(?=\s*[,:\"“]|\s+(?:do|did|are|is|can|will|what|why|how|where|when|who|if)\b)))?"
     r"\s*(?P<rest>.*)$", re.DOTALL)
 _SAY_AFTER = re.compile(
@@ -85,7 +89,10 @@ def speech(text: str) -> Optional[Speech]:
     rest_c = _clean_words(rest)
     if not rest_c:
         return Speech(who=who, kind=_VERB_KIND[verb], to=to) if re.search(r"[,:]\s*$|^\W*$", rest) else None
-    comma = bool(re.match(r"^\W*[,:]", rest))
+    comma = bool(re.match(r"^\W*[,:]", rest) or verb in _PROGRESSIVE and re.match(r"^\s*[.;]", rest))
+    if verb in _PROGRESSIVE and not comma and not quoted:
+        return None  # "Perry was saying this metal glows": the words' start is not marked (the LLM reads it)
+    rest_c = _clean_words(rest.lstrip(" .;")) if verb in _PROGRESSIVE else rest_c
     if not quoted and not comma and verb not in _ADDRESS:
         return None  # "the teacher said we should start": indirect speech is narration
     if not quoted and (not comma and _NOT_WORDS.match(rest_c) or verb in ("told", "tells", "explained", "explains")
@@ -108,7 +115,8 @@ _TIME = re.compile(
     r"\b(?:(?:many|a few|some|two|three|four|five|six|seven|eight|nine|ten|twenty|\d+)\s+(?:years?|days?|weeks?|months?|hours?|minutes?|seconds?)\s+later"
     r"|(?:years?|days?|weeks?|months?) later|the next (?:day|morning|night|week|month|year|summer|winter)"
     r"|one (?:day|morning|evening|night|summer|winter|afternoon)|that (?:night|evening|morning|day|afternoon)"
-    r"|long ago|later that (?:day|night|year)|soon after(?:wards)?|after (?:a while|some time|many years))\b",
+    r"|long ago|later that (?:day|night|year)|soon after(?:wards)?|after (?:a while|some time|many years)"
+    r"|that (?:winter|summer|spring|autumn|year)|(?:a|one) (?:decade|century) later|decades later|centuries later)\b",
     re.IGNORECASE)
 _SEQ = re.compile(r"^\W*(?:(?:and|so|now|okay|ok)\W+)*(?:then|next|later|after that|afterwards|soon|finally|"
                   r"eventually|meanwhile|suddenly|at last|in the end)\b", re.IGNORECASE)
@@ -142,6 +150,11 @@ september october november december first finally meanwhile suddenly soon eventu
 mr mrs ms dr sir lord god oh hey hello hi""".split())
 
 
+_THING_TAIL = frozenset("""prize award medal law laws theory war revolution company institute institution society
+academy museum university college school river mountain mountains ocean sea lake kingdom empire day bridge church
+temple tower palace street road station hospital library prize prizes cup games treaty act party""".split())
+
+
 @dataclass
 class Beat:
     when: str = ""
@@ -157,7 +170,8 @@ class Beat:
         return bool(self.marker or self.when or self.where)
 
 
-_FILLER = re.compile(r"^\W*(?:(?:okay|ok|so|now|alright|all right|right|well|and)\W+)+", re.IGNORECASE)
+_FILLER = re.compile(r"^\W*(?:(?:okay|ok|so|now|alright|all right|right|well|and|yeah|yes|yep|hmm|um|uh)\W+)+",
+                     re.IGNORECASE)  # test56: "Yeah." alone made a scene
 _PREAMBLE = re.compile(r"^\W*(?:let me tell you|here(?:'s| is)|i(?:'ll| will) tell you|this is|let me narrate)\s+"
                        r"(?:a|the|one|this)?\s*(?:little\s+|short\s+|true\s+|famous\s+)?(?:story|tale)\b"
                        r"(?:\s+(?:of|about)\b)?\W*", re.IGNORECASE)
@@ -183,6 +197,10 @@ def _names(text: str, places: set[str]) -> list[str]:
             continue
         n = " ".join(ws)
         if n in places or any(n in p.split() for p in places) or len(n) < 2:
+            continue
+        if len(ws) == 1 and n.endswith("ing") and not text[:m.start()].strip(" \"'“"):
+            continue  # test55: "Seeing these metal glues ..." : a verb that starts the line is no name
+        if ws[-1].lower() in _THING_TAIL:  # ST2: "the Nobel Prize", "the Royal Society" are no people
             continue
         if n not in out:
             out.append(n)
@@ -241,3 +259,41 @@ _PICTURE_ALIAS = {"drop of water": "droplet", "water drop": "droplet", "raindrop
                   "physicist": "scientist", "chemist": "scientist", "inventor": "scientist",
                   "mathematician": "scientist", "astronomer": "scientist", "biologist": "scientist",
                   "professor": "teacher", "child": "child", "kid": "child", "lady": "woman", "gentleman": "man"}
+
+
+# ---- continuity (ST2) -----------------------------------------------------------------------------------------
+_SHE = frozenset({"woman", "girl", "lady", "queen", "princess", "mother", "sister", "daughter", "grandmother", "wife",
+                  "aunt", "niece", "mom", "mum", "empress", "nun", "actress", "waitress", "goddess"})
+_HE = frozenset({"man", "boy", "gentleman", "king", "prince", "father", "brother", "son", "grandfather", "husband",
+                 "uncle", "nephew", "dad", "emperor", "monk", "knight", "actor", "waiter", "god"})
+_PRONOUN_LINE = re.compile(r"\b(he|she|they|him|her|them|his|their)\b", re.IGNORECASE)
+_PRONOUN_CASE = {"he": "he", "him": "he", "his": "he", "she": "she", "her": "she", "they": "they", "them": "they",
+                 "their": "they"}
+
+
+def gender_of(phrase: str) -> str:
+    """"he" / "she" from a said noun ("a young woman", "his sister", "the mother of Ravi"), "" = not said. Never from a
+    name ("Billie Jean King")."""
+    h = head_noun(phrase)
+    if not h or h not in _SHE | _HE:
+        return ""
+    ws = re.findall(r"[A-Za-z]+", phrase)
+    if any(w.lower() == h and w[:1].isupper() and (k > 0 or len(ws) == 1) for k, w in enumerate(ws)):
+        return ""  # a capitalised "King" is part of a name
+    return "she" if h in _SHE else "he"
+
+
+def pronoun(text: str) -> str:
+    """The first person pronoun of a narrative line: "he" / "she" / "they" ("" = none). "his" / "her" count."""
+    m = _PRONOUN_LINE.search(text)
+    return _PRONOUN_CASE[m.group(1).lower()] if m else ""
+
+
+_SUBJECT = re.compile(r"(?:^|[,.;:]\s*|\b(?:then|and|so|later|soon|when)\s+)(he|she)\b", re.IGNORECASE)
+
+
+def subject(text: str) -> str:
+    """"he" / "she" as the subject of a line that also names someone ("In 1895, she met Pierre"); "his" / "her" /
+    "him" are not ("Pierre met her" names its subject)."""
+    m = _SUBJECT.search(text)
+    return m.group(1).lower() if m else ""

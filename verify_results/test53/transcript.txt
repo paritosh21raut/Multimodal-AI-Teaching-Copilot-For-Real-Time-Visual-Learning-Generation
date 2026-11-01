@@ -1,0 +1,19 @@
+[    0.3] The action always acts against the motion.
+[   13.2] Let me tell you the story of Marie Curie.
+[   18.6] In 1891, Mary moved to Paris.
+[   45.2] She studied physics at the university.
+[   58.7] In 1895, she met Pierre Curie in the lab.
+[   69.3] We have said, let us work together.
+[   72.5] She replied, Yes, let us find new elements.
+[   83.9] Years later, they found radium.
+[   90.9] Years later, they found radium.
+[   97.2] In 1903, they found they won the Nobel Prize in Stockhol.
+[  109.6] That's the end of this tutorial.
+[  117.9] That's the end of the story.
+[  124.3] Energy can change from one form to another.
+[  130.6] Once upon a time, a farmer, a boy, and a girl lived in a village.
+[  146.7] The farmer adds the boy. Where is the cow?
+[  153.3] The farmer asks the boy, where is the cow?
+[  161.9] He said, I don't know.
+[  167.0] The girl shouted, it's in the garden.
+[  173.5] Let's get back to the slides.

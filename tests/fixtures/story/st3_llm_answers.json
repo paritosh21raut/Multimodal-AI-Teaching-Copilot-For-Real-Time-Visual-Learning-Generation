@@ -1,0 +1,19 @@
+{
+ "We have said, let us work together.": "{\"type\": \"speech\", \"who\": \"Pierre Curie\", \"to\": \"\", \"kind\": \"say\", \"words\": \"let us work together\"}",
+ "Pierre has said, we should start tonight.": "{\"type\": \"speech\", \"who\": \"Pierre Curie\", \"to\": \"\", \"kind\": \"say\", \"words\": \"we should start tonight\"}",
+ "Pierre was saying, this metal glows in the dark.": "{\"type\": \"speech\", \"who\": \"Pierre Curie\", \"to\": \"\", \"kind\": \"say\", \"words\": \"this metal glows in the dark.\"}",
+ "She was asking him, are you tired?": "{\"type\": \"speech\", \"who\": \"Marie Curie\", \"to\": \"Pierre Curie\", \"kind\": \"ask\", \"words\": \"are you tired?\"}",
+ "And he shouted back at her, I found it!": "{\"type\": \"speech\", \"who\": \"Pierre Curie\", \"to\": \"Marie Curie\", \"kind\": \"shout\", \"words\": \"I found it!\"}",
+ "Mary was telling Pierre, we need more samples.": "{\"type\": \"speech\", \"who\": \"Mary\", \"to\": \"Pierre\", \"kind\": \"say\", \"words\": \"we need more samples.\"}",
+ "A decade after that, Marie taught at the Sorbonne.": "{\"type\": \"narration\", \"when\": \"A decade after that\", \"where\": \"Sorbonne\", \"people\": [\"Marie\"], \"new_scene\": true}",
+ "When she was twenty four, Marie left Poland.": "{\"type\": \"narration\", \"when\": \"When she was twenty four\", \"where\": \"\", \"people\": [\"Marie\", \"Poland\"], \"new_scene\": true}",
+ "That winter, they worked day and night in a cold shed.": "{\"type\": \"narration\", \"when\": \"That winter\", \"where\": \"in a cold shed\", \"people\": [], \"new_scene\": false}",
+ "Okay, everyone, can you see the picture at the back?": "{\"type\": \"aside\"}",
+ "The girl was shouting, it is in the garden!": "{\"type\": \"narration\", \"when\": \"\", \"where\": \"the garden\", \"people\": [\"the girl\"], \"new_scene\": false}",
+ "Then the farmer told everyone, let us look in the garden.": "{\"type\": \"speech\", \"who\": \"the farmer\", \"to\": \"everyone\", \"kind\": \"say\", \"words\": \"let us look in the garden.\"}",
+ "The boy was whispering, I am scared of the dark.": "{\"type\": \"narration\", \"when\": \"\", \"where\": \"\", \"people\": [\"the boy\"], \"new_scene\": false}",
+ "And the boy says to them that he does not know.": "{\"type\": \"narration\", \"when\": \"\", \"where\": \"\", \"people\": [\"the boy\"], \"new_scene\": false}",
+ "Then the cow wandered into a muddy ditch.": "{\"type\": \"narration\", \"when\": \"\", \"where\": \"\", \"people\": [], \"new_scene\": false}",
+ "The girl climbed up onto the haystack.": "{\"type\": \"narration\", \"when\": \"\", \"where\": \"\", \"people\": [\"the girl\"], \"new_scene\": false}",
+ "Sorry, let me move this to the next page.": "{\"type\": \"narration\", \"when\": \"\", \"where\": \"\", \"people\": [\"Sorry\"], \"new_scene\": false}"
+}

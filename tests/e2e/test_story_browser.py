@@ -132,3 +132,67 @@ def _sheet(shots, theme):
         sheet.paste(im, ((i % cols) * 960, (i // cols) * 540))
     out = Path(os.environ.get("SHEET_DIR", ROOT / "verify_results")) / f"st1_sheet_{theme}.png"
     sheet.save(out)
+
+
+# ---- ST2: two looks, "she", carried year, timeline + route, a talk of three -------------------------------------
+ST2_LINES = [
+    "Let me tell you the story of Albert Einstein.",
+    "In 1905, a young clerk in Bern wrote four papers.",
+    "He worked six days a week.",
+    "In 1915, Einstein moved to Berlin.",
+    "Then he gave a talk.",
+    "Once upon a time, a king, a queen and a young boy lived in a palace.",
+    "The king asked the queen, where is the gold?",
+    "She replied, the boy has it.",
+    "The boy shouted, I found it!",
+]
+
+
+async def _build2():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    eng._story.fetch_pictures = False
+    eng._story.pics_dir = ROOT / "data" / "assets" / "pictures"
+    frames = []
+    for i, line in enumerate(ST2_LINES):
+        clock.t += 7.0
+        await talk.say(line)
+        await eng._story.tick()
+        if i in (4, 8):
+            frames.append(deck.live.model_dump(mode="json"))
+    return frames
+
+
+@pytest.fixture(scope="module")
+def frames2():
+    from concurrent.futures import ThreadPoolExecutor
+
+    with ThreadPoolExecutor(1) as ex:
+        built = ex.submit(lambda: asyncio.run(_build2())).result()
+    return [_local(f) for f in built]
+
+
+@pytest.mark.parametrize("theme", ["light", "dark"])
+def test_st2_continuity_frames(page, frames2, theme):
+    shots = []
+    page.errors.clear()
+    for k, spec in enumerate(frames2):
+        page.evaluate("([s, th]) => window.storyDev.show(s, th)", [spec, theme])
+        page.wait_for_timeout(1600)
+        if k == 0:  # "Then he gave a talk": the year carried (dimmed), a timeline of 1905 · 1915, a route Bern → Berlin
+            assert page.evaluate("document.querySelector('.story-chip.when.carried').textContent") == "1915"
+            assert page.evaluate("[...document.querySelectorAll('.tl-year em')].map(e => e.textContent)") == ["1905", "1915"]
+            assert page.evaluate("document.querySelectorAll('.route-stop').length") == 2
+        if k == 1:  # a talk of three: three bubbles, stacked apart, three different looks
+            assert page.evaluate("document.querySelectorAll('.story-bubble').length") == 3
+            looks = page.evaluate("[...document.querySelectorAll('.story-person')].map(e => e.className.match(/look-[0-9]/)[0])")
+            assert len(set(looks)) == len(looks) == 3
+            boxes = page.evaluate("[...document.querySelectorAll('.story-bubble')].map(e => { const r = e.getBoundingClientRect();"
+                                  " return [r.left, r.top, r.right, r.bottom]; })")
+            for a in range(3):
+                for b in range(a + 1, 3):
+                    p, q = boxes[a], boxes[b]
+                    assert p[2] <= q[0] or q[2] <= p[0] or p[3] <= q[1] or q[3] <= p[1], (p, q)  # no overlap
+        shots.append(page.screenshot())
+    assert not page.errors, page.errors
+    if os.environ.get("SHEET"):
+        _sheet(shots, theme + "_st2")

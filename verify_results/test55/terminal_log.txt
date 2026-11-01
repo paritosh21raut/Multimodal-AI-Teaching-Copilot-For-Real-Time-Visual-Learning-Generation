@@ -1,0 +1,255 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (6.5 s)
+[INIT]  live speech model distil-small.en ready (1.6 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.3 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  story: on
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_1         openai/gpt-oss-120b            57k of 200k tokens IN USE
+        GROQ_API_KEY_2         openai/gpt-oss-120b           163k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b           182k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b            31k of 200k tokens ok
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~3 min
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              198k of 200k tokens IN USE
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 179 lecture minutes
+
+[READY] session 20261101-191711-9cd1
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+19:17:27 INFO    copilot.visuals.service: CLIP ready in 0.6 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    1.0s] Friction always acts against the motion. (448 ms)
+19:18:51 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Physics, Friction)
+  [UNDERSTAND] Physics > Friction (new_topic) acts=explanation hint=concept lines=1 via groq_main#1 1497 ms
+               Friction always opposes motion
+19:18:51 INFO    copilot.presentation.engine: planner: new Physics > Friction (first content slide)
+  [SLIDE] add    'Friction' [key_points] v1 (1 items)
+19:18:51 INFO    copilot.presentation.engine: image search 'friction diagram' (diagram) for 'Friction'
+19:18:54 INFO    copilot.visuals.webpages: web pages for 'friction diagram': 3 page(s), 6 named picture(s)
+  [    8.7s] Let me tell you the story of Marie Curie. (399 ms)
+19:18:55 INFO    copilot.story.detector: [STORY] cue 'Let me tell you the story of Marie Curie.'
+19:18:55 INFO    copilot.presentation.simulations: [SIM] story mode on: Marie Curie on its own slide (cue)
+19:18:55 INFO    copilot.presentation.story: [STORY] open: Marie Curie (cue)
+19:18:55 INFO    copilot.presentation.story: [STORY] scene 1: 'Marie Curie.' (when '', where '', query 'Marie Curie')
+  [SLIDE] add    'Marie Curie' [simulation] v1 (1 items)
+  [SLIDE] update 'Marie Curie' [simulation] v2 (1 items)
+  [SLIDE] update 'Marie Curie' [simulation] v3 (1 items)
+19:18:57 INFO    copilot.visuals.finder: image search 'friction diagram' (diagram, labels preferred): 7 candidate(s), 3 accepted (0 labelled), 5.90 s {'search_s': 3.53, 'download_s': 1.15, 'clip_s': 0.2, 'full_s': 1.0, 'total_s': 5.9}
+  [IMAGE] 'friction diagram' -> File:Friction diagram kinetic.svg (5.9 s)
+19:18:57 INFO    copilot.presentation.engine: image 'friction diagram' on 'Friction': File:Friction diagram kinetic.svg
+  [SLIDE] update 'Friction' [key_points] v2 (2 items)
+19:18:57 INFO    copilot.presentation.story: [STORY] image for 'Marie Curie' in 0.0 s (wikipedia · Public domain · Henri Manuel)
+  [IMAGE] 'Marie Curie' -> File:Marie Curie c. 1920s.jpg (0.0 s, cached)
+  [SLIDE] update 'Marie Curie' [simulation] v4 (1 items)
+19:18:57 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: Physics, Friction, Marie Curie)
+  [UNDERSTAND] Physics > Marie Curie (sibling_concept) acts=other hint=none lines=1 via groq_main#1 1381 ms
+               Teacher introduces a story about Marie Curie
+19:18:57 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [   16.3s] In 1891, Marie moved to Paris. (416 ms)
+19:19:04 INFO    copilot.story.detector: [STORY] edit 'In 1891, Marie moved to Paris.'
+19:19:04 INFO    copilot.presentation.story: [STORY] scene 2: 'In 1891, Marie moved to Paris.' (when '1891', where 'Paris', query 'Paris')
+  [SLIDE] update 'Marie Curie' [simulation] v5 (1 items)
+19:19:04 INFO    copilot.simulation.detector: [SIM] values - {}
+19:19:04 INFO    copilot.presentation.story: [STORY] image for 'Paris' in 0.1 s (wikipedia · CC BY-SA 2.0 · Yann Caradec from Paris, France)
+  [IMAGE] 'Paris' -> File:La Tour Eiffel vue de la Tour Saint-Jacques, Paris août 2014 (2).jpg (0.1 s, cached)
+  [SLIDE] update 'Marie Curie' [simulation] v6 (1 items)
+  [UNDERSTAND] Physics > Marie Curie (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 1510 ms
+               Marie Curie moved to Paris in 1891.
+19:19:06 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   22.5s] In 1895, she met Pierre Curie in the lab. (399 ms)
+19:19:10 INFO    copilot.story.detector: [STORY] edit 'In 1895, she met Pierre Curie in the lab.'
+19:19:10 INFO    copilot.presentation.story: [STORY] 'Marie Curie' is 'she' (said)
+19:19:10 INFO    copilot.presentation.story: [STORY] scene 3: 'In 1895, she met Pierre Curie in the lab.' (when '1895', where 'the lab', query 'lab')
+  [SLIDE] update 'Marie Curie' [simulation] v7 (1 items)
+19:19:10 INFO    copilot.simulation.detector: [SIM] values - {}
+19:19:10 INFO    copilot.presentation.story: [STORY] image for 'lab' in 0.0 s (commons · Public domain · Harriet Jane Moore)
+  [IMAGE] 'lab' -> File:M Faraday Lab H Moore.jpg (0.0 s, cached)
+  [SLIDE] update 'Marie Curie' [simulation] v8 (1 items)
+  [UNDERSTAND] Physics > Marie Curie (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 895 ms
+               Marie Curie met Pierre Curie in 1895 in the lab.
+19:19:11 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   30.9s] The video was (330 ms)
+19:19:16 INFO    copilot.story.detector: [STORY] edit 'The video was'
+  [SLIDE] update 'Marie Curie' [simulation] v9 (1 items)
+  [   32.2s] Seeing these metal glues in the dark. (382 ms)
+19:19:19 INFO    copilot.story.detector: [STORY] edit 'Seeing these metal glues in the dark.'
+19:19:19 INFO    copilot.presentation.story: [STORY] scene 4: 'Seeing these metal glues in the dark.' (when '', where '', query 'Seeing')
+  [SLIDE] update 'Marie Curie' [simulation] v10 (1 items)
+19:19:21 WARNING copilot.understanding.interpreter: model left out 1 spoken sentence(s); shown as said: ['Seeing these metal glues in the dark']
+  [UNDERSTAND] Physics > Marie Curie (same_concept) acts=explanation hint=none lines=2 via groq_main#1 1124 ms
+               Teacher started a video showing metal glues in the dark.
+19:19:21 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+19:19:24 INFO    copilot.visuals.finder: image search 'Seeing': 2 slow download(s) dropped
+19:19:24 INFO    copilot.presentation.story: [STORY] image 'Seeing': none (downloads failed)
+  [IMAGE] 'Seeing' -> none (downloads failed) (4.5 s)
+19:19:27 INFO    copilot.visuals.finder: image search 'Seeing' (photo): 2 candidate(s), 0 accepted (0 labelled), 3.22 s {'search_s': 1.48, 'download_s': 1.63, 'clip_s': 0.1, 'full_s': 0.0, 'total_s': 3.22}
+19:19:27 INFO    copilot.presentation.story: [STORY] image 'Seeing': none (no relevant image)
+  [IMAGE] 'Seeing' -> none (no relevant image) (3.2 s)
+  [   42.8s] Perry was saying this metal glows in the dark. (525 ms)
+19:19:30 INFO    copilot.story.detector: [STORY] edit 'Perry was saying this metal glows in the dark.'
+19:19:30 INFO    copilot.presentation.story: [STORY] llm asked (speech unread): 'Perry was saying this metal glows in the dark.'
+19:19:31 INFO    copilot.presentation.story: [STORY] llm answer taken: {'type': 'speech', 'who': 'Pierre Curie', 'to': '', 'kind': 'say', 'words': 'this metal glows in the dark'}, 863 tokens, 0.38 s
+19:19:31 INFO    copilot.presentation.story: [STORY] Pierre Curie say: 'This metal glows in the dark'
+  [SLIDE] update 'Marie Curie' [simulation] v11 (1 items)
+19:19:35 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Marie Curie' -> same_concept
+  [UNDERSTAND] Physics > Marie Curie (same_concept) acts=explanation hint=example lines=1 via groq_main#1 1346 ms
+               Teacher notes a metal that glows in the dark during the video
+19:19:35 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   50.9s] She was asking him, are you tired? (394 ms)
+19:19:38 INFO    copilot.story.detector: [STORY] edit 'She was asking him, are you tired?'
+19:19:38 INFO    copilot.presentation.story: [STORY] llm asked (speech unread): 'She was asking him, are you tired?'
+19:19:39 INFO    copilot.presentation.story: [STORY] llm answer taken: {'type': 'speech', 'who': 'Marie Curie', 'to': 'Pierre Curie', 'kind': 'ask', 'words': 'are you tired'}, 837 tokens, 0.31 s
+19:19:39 INFO    copilot.presentation.story: [STORY] Marie Curie ask: 'Are you tired'
+  [SLIDE] update 'Marie Curie' [simulation] v12 (1 items)
+  [UNDERSTAND] Physics > Marie Curie (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1213 ms
+               Marie Curie asks Pierre if he is tired
+19:19:40 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   60.8s] That winter, they worked day and night in the cold shed. (411 ms)
+19:19:49 INFO    copilot.story.detector: [STORY] edit 'That winter, they worked day and night in the cold shed.'
+19:19:49 INFO    copilot.presentation.story: [STORY] llm asked (time unread): 'That winter, they worked day and night in the cold shed.'
+19:19:50 INFO    copilot.presentation.story: [STORY] llm refused None: no answer (the fast reading stays), 1015 tokens, 1.16 s
+  [SLIDE] update 'Marie Curie' [simulation] v13 (1 items)
+  [UNDERSTAND] Physics > Marie Curie (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 1214 ms
+               Marie Curie and Pierre Curie labored continuously through winter in a cold shed.
+19:19:51 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   70.7s] That winter, they worked day and night in the cold shed. (587 ms)
+19:19:59 INFO    copilot.story.detector: [STORY] edit 'That winter, they worked day and night in the cold shed.'
+19:19:59 INFO    copilot.presentation.story: [STORY] repeat: 'That winter, they worked day and night in the cold shed.' changes nothing
+  [UNDERSTAND] Physics > Marie Curie (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 1033 ms
+               Teacher added that Marie and Pierre Curie worked day and night in a cold shed during winter.
+19:20:00 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   78.5s] Okay everyone, can you see the picture at the back? (1171 ms)
+  [   86.0s] A decade later that Mary thought... (387 ms)
+19:20:13 INFO    copilot.story.detector: [STORY] edit 'A decade later that Mary thought...'
+19:20:13 INFO    copilot.presentation.story: [STORY] llm asked (time unread): 'A decade later that Mary thought...'
+19:20:14 INFO    copilot.presentation.story: [STORY] llm answer taken: {'type': 'narration', 'when': 'A decade later', 'where': '', 'people': ['Mary'], 'new_scene': True}, 872 tokens, 0.83 s
+19:20:14 INFO    copilot.presentation.story: [STORY] 'Mary' read as 'Marie Curie' (a name like it)
+19:20:14 INFO    copilot.presentation.story: [STORY] scene 5: 'A decade later that Mary thought...' (when 'a decade later', where '', query 'Mary')
+  [SLIDE] update 'Marie Curie' [simulation] v14 (1 items)
+  [   88.8s] Right. (306 ms)
+19:20:14 INFO    copilot.story.detector: [STORY] edit 'Right.'
+  [   90.0s] Sorbonne. (338 ms)
+19:20:16 INFO    copilot.story.detector: [STORY] edit 'Sorbonne.'
+19:20:16 INFO    copilot.presentation.story: [STORY] scene 6: 'Sorbonne.' (when '', where '', query 'Sorbonne')
+  [SLIDE] update 'Marie Curie' [simulation] v15 (1 items)
+  [UNDERSTAND] Physics > Marie Curie (same_concept) acts=- hint=none lines=1 via groq_main#1 1216 ms
+               Teacher begins a new anecdote about a decade later.
+  [HEARD] 'Mary' -> 'Marie' corrected on the slide (0.5)
+19:20:17 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+19:20:18 INFO    copilot.visuals.finder: image search 'Mary' (photo): 4 candidate(s), 1 accepted (0 labelled), 3.91 s {'search_s': 1.82, 'download_s': 0.79, 'clip_s': 0.13, 'full_s': 1.17, 'total_s': 3.91}
+19:20:18 INFO    copilot.presentation.story: [STORY] image for 'Mary' in 3.9 s (wikipedia · CC BY-SA 4.0 · Asia)
+  [IMAGE] 'Mary' -> File:Madonna Advocata.png (3.9 s)
+  [SLIDE] update 'Marie Curie' [simulation] v16 (1 items)
+  [SLIDE] update 'Marie Curie' [simulation] v17 (1 items)
+19:20:22 INFO    copilot.visuals.finder: image search 'Sorbonne' (photo): 8 candidate(s), 1 accepted (0 labelled), 3.85 s {'search_s': 1.41, 'download_s': 1.06, 'clip_s': 0.22, 'full_s': 1.15, 'total_s': 3.85}
+19:20:22 INFO    copilot.presentation.story: [STORY] image for 'Sorbonne' in 3.9 s (commons · CC BY 4.0 · Ismael zniber)
+  [IMAGE] 'Sorbonne' -> File:Cour de la Sorbonne.jpg (3.9 s)
+  [SLIDE] update 'Marie Curie' [simulation] v18 (1 items)
+  [   97.7s] That's the end of the story. (379 ms)
+19:20:24 INFO    copilot.story.detector: [STORY] end "That's the end of the story."
+19:20:24 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "That's the end of the story."): recap 1 slide(s) (5 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Marie Curie' [key_points] v1 (5 items)
+  [SLIDE] update 'Marie Curie' [simulation] v19 (1 items)
+  [UNDERSTAND] Physics > Marie Curie (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 5331 ms
+               Added that Marie Curie studied at the Sorbonne.
+19:20:25 INFO    copilot.presentation.simulations: [SIM] 1 late piece(s) of the story: dropped (its recap is its said captions)
+19:20:25 INFO    copilot.presentation.engine: planner: noop Physics > Marie Curie (nothing to display)
+  [UNDERSTAND] Physics > Marie Curie (same_concept) acts=transition hint=none lines=1 via groq_main#2 935 ms
+               Teacher concluded the Marie Curie anecdote
+19:20:26 INFO    copilot.presentation.engine: planner: noop Physics > Marie Curie (nothing to display)
+  [  101.8s] Once upon a time, a farmer, a boy, and the girl lived in a village. (458 ms)
+19:20:31 INFO    copilot.story.detector: [STORY] cue 'Once upon a time, a farmer, a boy, and the girl lived in a village.'
+19:20:31 INFO    copilot.presentation.simulations: [SIM] story mode on: Story on its own slide (cue)
+19:20:31 INFO    copilot.presentation.story: [STORY] open: Story (cue)
+19:20:31 INFO    copilot.presentation.story: [STORY] scene 1: 'Once upon a time, a farmer, a boy, and the girl li' (when '', where 'a village', query 'village')
+  [SLIDE] add    'Story' [simulation] v1 (1 items)
+  [SLIDE] update 'Story' [simulation] v2 (1 items)
+  [UNDERSTAND] Physics > Marie Curie (digression) acts=- hint=none lines=1 via groq_main#2 1236 ms
+               Introduced a new anecdote about a farmer, a boy, and a girl living in a village.
+19:20:32 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+19:20:36 INFO    copilot.visuals.finder: image search 'village' (photo): 8 candidate(s), 3 accepted (0 labelled), 5.23 s {'search_s': 2.1, 'download_s': 1.2, 'clip_s': 0.23, 'full_s': 1.65, 'total_s': 5.23}
+19:20:36 INFO    copilot.presentation.story: [STORY] image for 'village' in 5.2 s (wikipedia · CC BY-SA 3.0 · -jkb-)
+  [IMAGE] 'village' -> File:Castle and brewery in Kolín 2.jpg (5.2 s)
+  [SLIDE] update 'Story' [simulation] v3 (1 items)
+  [  108.8s] The girl was shouting. It is in the garden. (461 ms)
+19:20:36 INFO    copilot.story.detector: [STORY] edit 'The girl was shouting. It is in the garden.'
+19:20:36 INFO    copilot.presentation.story: [STORY] llm asked (speech unread): 'The girl was shouting. It is in the garden.'
+19:20:37 INFO    copilot.presentation.story: [STORY] llm answer taken: {'type': 'narration', 'when': '', 'where': 'the garden', 'people': ['The girl'], 'new_scene': False}, 937 tokens, 0.88 s
+19:20:37 INFO    copilot.presentation.story: [STORY] scene 2: 'The girl was shouting. It is in the garden.' (when '', where 'the garden', query 'garden')
+  [SLIDE] update 'Story' [simulation] v4 (1 items)
+  [SLIDE] update 'Story' [simulation] v5 (1 items)
+19:20:38 INFO    copilot: [STT] vocabulary prompt: 34 terms (newest: Friction, Marie Curie, Farmer Anecdote)
+  [UNDERSTAND] Physics > Farmer Anecdote (sibling_concept) acts=other hint=key_points lines=1 via groq_main#2 1851 ms
+               The teacher described a girl shouting in the garden as part of a new village anecdote.
+19:20:38 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+19:20:42 INFO    copilot.visuals.finder: image search 'garden' (photo): 8 candidate(s), 3 accepted (0 labelled), 4.58 s {'search_s': 2.06, 'download_s': 0.99, 'clip_s': 0.2, 'full_s': 1.29, 'total_s': 4.58}
+19:20:42 INFO    copilot.presentation.story: [STORY] image for 'garden' in 4.6 s (wikipedia · CC BY-SA 3.0 · Spedona ( Spedona ))
+  [IMAGE] 'garden' -> File:Bagatelle roseraie classique01.jpg (4.6 s)
+  [SLIDE] update 'Story' [simulation] v6 (1 items)
+  [  120.5s] The girl was shouting. It is in the garden. (416 ms)
+19:20:48 INFO    copilot.story.detector: [STORY] edit 'The girl was shouting. It is in the garden.'
+19:20:48 INFO    copilot.presentation.story: [STORY] repeat: 'The girl was shouting. It is in the garden.' changes nothing
+19:20:50 WARNING copilot.llm.router: llm groq_main#1 failed: connect failed: ConnectTimeout
+19:20:52 WARNING copilot.llm.router: llm groq_main#2 failed: connect failed: ConnectTimeout
+19:20:54 WARNING copilot.llm.router: llm groq_main#4 failed: connect failed: ConnectTimeout
+  [  127.8s] The farmer told her, let us look in the garden. (449 ms)
+19:20:55 INFO    copilot.story.detector: [STORY] edit 'The farmer told her, let us look in the garden.'
+19:20:55 INFO    copilot.presentation.story: [STORY] a farmer say: 'Let us look in the garden.'
+  [SLIDE] update 'Story' [simulation] v7 (1 items)
+19:20:56 WARNING copilot.llm.router: llm groq_main#5 failed: connect failed: ConnectTimeout
+19:20:58 WARNING copilot.llm.router: llm groq_main#6 failed: connect failed: ConnectTimeout
+19:21:00 WARNING copilot.llm.router: llm groq_alt#2 failed: connect failed: ConnectTimeout
+  [  134.2s] Back to the slides. (476 ms)
+19:21:00 INFO    copilot.simulation.detector: [SIM] end - ('Back to the slides') {}
+19:21:00 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard 'Back to the slides.'): recap 1 slide(s) (2 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Story' [key_points] v1 (2 items)
+  [SLIDE] update 'Story' [simulation] v8 (1 items)
+19:21:02 WARNING copilot.llm.router: llm groq_alt#4 failed: connect failed: ConnectTimeout
+19:21:03 WARNING copilot.llm.router: llm groq_alt#5 failed: connect failed: ConnectTimeout
+19:21:03 WARNING copilot.understanding.interpreter: interpretation fallback: llm: deadline exceeded; groq_main#1: Unavailable; groq_main#2: Unavailable; groq_main#4: Unavailable; groq_main#5: Unavailable; groq_main#6: Unavailable; groq_alt#2: Unavailable; groq_alt#4: Unavailable; groq_alt#5: Unavailable; groq_alt#6: deadline
+19:21:03 INFO    copilot.understanding.interpreter: fallback: short remark not shown: 'It is in the garden'
+  [UNDERSTAND] Physics > Farmer Anecdote (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: deadline exceeded; groq_main#1: Unavailable; groq_main#2: Unavailable; groq 15006 ms
+19:21:03 INFO    copilot.presentation.simulations: [SIM] 1 late piece(s) of the story: dropped (its recap is its said captions)
+19:21:03 INFO    copilot.presentation.engine: planner: noop Physics > Farmer Anecdote (nothing to display)
+19:21:05 WARNING copilot.llm.router: llm groq_alt#6 failed: connect failed: ConnectTimeout
+[END]   finishing lecture understanding (1 buffered lines) ...
+19:21:07 WARNING copilot.llm.router: llm groq_alt#1 failed: connect failed: ConnectTimeout
+19:21:07 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#1: skipped (cooldown 47s); groq_main#2: skipped (cooldown 49s); groq_main#4: skipped (cooldown 51s); groq_main#5: skipped (cooldown 53s); groq_main#6: skipped (cooldown 55s); groq_alt#2: skipped (cooldown 57s); groq_alt#4: skipped (cooldown 59s); groq_alt#5: skipped (cooldown 60s); groq_alt#6: Unavailable; groq_alt#1: Unavailable
+19:21:07 INFO    copilot.understanding.interpreter: fallback: announced 'in the garden' not confirmed by the unit's lines; topic unchanged
+  [UNDERSTAND] Physics > Farmer Anecdote (same_concept) acts=- hint=key_points lines=1 via FALLBACK llm: groq_main#1: skipped (cooldown 47s); groq_main#2: skipped (cooldown 49s); g 4012 ms
+19:21:07 INFO    copilot.presentation.engine: planner: noop Physics > Farmer Anecdote (nothing to display)
+19:21:07 WARNING copilot.understanding.interpreter: interpretation fallback: llm: groq_main#1: skipped (cooldown 43s); groq_main#2: skipped (cooldown 45s); groq_main#4: skipped (cooldown 47s); groq_main#5: skipped (cooldown 49s); groq_main#6: skipped (cooldown 51s); groq_alt#2: skipped (cooldown 53s); groq_alt#4: skipped (cooldown 55s); groq_alt#5: skipped (cooldown 56s); groq_alt#6: skipped (cooldown 58s); groq_alt#1: skipped (cooldown 60s)
+  [UNDERSTAND] Physics > Farmer Anecdote (same_concept) acts=explanation hint=key_points lines=1 via FALLBACK llm: groq_main#1: skipped (cooldown 43s); groq_main#2: skipped (cooldown 45s); g 1 ms
+19:21:07 INFO    copilot.presentation.engine: planner: continue Physics > Farmer Anecdote (new facet)
+19:21:07 INFO    copilot.presentation.engine: slide 'Farmer Anecdote' waits for the min dwell time
+19:21:07 INFO    copilot.presentation.engine: image hint 'Farmer Anecdote diagram' for 'Farmer Anecdote' from its sibling subtopic
+19:21:07 INFO    copilot.presentation.engine: image search 'Farmer Anecdote diagram' (diagram) for 'Farmer Anecdote'
+  [SLIDE] add    'Farmer Anecdote' [key_points] v1 (1 items)
+[ENDED] session 20261101-191711-9cd1: 20 segments, 149 words, state v47, 340 events logged
+        CommandReceived=4, ConceptSignal=18, ConcernRaised=1, DeckState=10, ImageChoices=1, ImageReady=10, ImageRequested=11, InterpretRequested=17, InterpretationReady=17, LLMCallFailed=10, LifecycleChanged=5, LiveCue=16, ModeChanged=1, RepresentationIntent=20, SimulationModeChanged=4, SimulationSettingChanged=1, SlideContextChanged=6, SlidePatch=32, StateChanged=47, TranscriptFinal=20, TranscriptPartial=66, UtteranceClassified=20, VocabularyChanged=3
+        stt: 20 published, 0 dropped, latency p50=416 ms p95=1171 ms max=1171 ms
+        understanding: 17 interpretations (14 by LLM, 3 fallbacks, 0 repaired), max 8 calls/min, prompt tokens max=2022 avg=1927, latency p50=1235 ms max=15006 ms
+        presentation: 6 slides; planner ops {'new': 1, 'story_start': 2, 'noop': 4, 'continue': 1}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 11, 'found': 8, 'none': 2}; slides with an image 1/6
+          1. [key_points] Friction  (v2, ['points', 'image'])
+          2. [simulation] Marie Curie  (v19, ['story'])
+          3. [key_points] Recap: Marie Curie  (v1, ['points'])
+          4. [simulation] Story  (v8, ['story'])
+          5. [key_points] Recap: Story  (v1, ['points'])
+          6. [key_points] Farmer Anecdote  (v1, ['points'])
+        providers: {'groq_main#1': 9, 'groq_main#2': 5}; triggers: {'pause': 15, 'boundary': 2}; outline: ['Physics > Friction, Marie Curie, Farmer Anecdote']; concerns: 1
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261101-191711-9cd1\session.sqlite

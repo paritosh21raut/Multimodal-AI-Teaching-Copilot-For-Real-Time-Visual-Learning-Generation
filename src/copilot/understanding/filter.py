@@ -28,6 +28,8 @@ _PATTERNS: dict[str, list[str]] = {
         r"\b(on|at) the (screen|board|projector)\b", r"\bnext slide\b",
         r"\bcan (you|everyone|everybody)( all)? (see|hear)( (this|me|it))?\b", r"\bis (this|it) visible\b",
         r"\bas you can see( here)?\b",
+        # test55: "Back to the slides." became a bullet of the next slide (the understanding fallback): mode control
+        r"\b(?:let'?s )?(?:get |go |come )?back to (?:the )?(?:slides?|notes|lecture|theory)\b",
     ],
     "question_to_class": [
         r"\bany (questions?|doubts?)\b", r"\b(do|did) you (all )?understand\b", r"\bis (that|this|it) clear\b",

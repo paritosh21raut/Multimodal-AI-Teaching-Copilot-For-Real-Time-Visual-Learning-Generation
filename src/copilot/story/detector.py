@@ -68,8 +68,12 @@ def cue(text: str) -> str:
     return ""
 
 
-def ends(text: str) -> bool:
-    return bool(_END.search(text))
+_END_OPEN = re.compile(r"\bthat(?:'s| is| was) the end of (?:the|our|this|my|today's)\s+\w+", re.IGNORECASE)
+
+
+def ends(text: str, open_: bool = False) -> bool:
+    """The story's end. open_ (a story is open): "that's the end of this tutorial" too (test53: STT for "story")."""
+    return bool(_END.search(text) or open_ and _END_OPEN.search(text))
 
 
 class StoryDetector:
@@ -106,7 +110,7 @@ class StoryDetector:
         if not text or end_cue(text):  # "back to the slides": simulation.detector ends the mode
             return
         if self.open:
-            if ends(text):
+            if ends(text, open_=True):
                 await self._publish(event.segment_id, text, "end")
             elif event.kind == "content" and cue(text) == "strong" and _NEW.search(text):  # the next story or this one
                 await self._publish(event.segment_id, text, "cue")

@@ -1,0 +1,7 @@
+[    0.5] Let me tell you the story of Marie Curie.
+[    7.8] In 1891, Marie moved to Paris.
+[   19.3] She studied physics at the university.
+[   34.3] In 1895, she met Perry Curie in the lab.
+[   62.5] Perry said, let us work together.
+[   67.9] She replied, Yes, let us find a new element.
+[   76.0] That's the end of the story.

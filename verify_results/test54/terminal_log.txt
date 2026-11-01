@@ -1,0 +1,120 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (14.3 s)
+[INIT]  live speech model distil-small.en ready (2.7 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.8 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  story: on
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_1         openai/gpt-oss-120b            72k of 200k tokens IN USE
+        GROQ_API_KEY_2         openai/gpt-oss-120b           163k of 200k tokens ok
+        GROQ_API_KEY_4         openai/gpt-oss-120b           171k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b            31k of 200k tokens ok
+        GROQ_API_KEY_6         openai/gpt-oss-120b             0k of 200k tokens SPENT, free again in ~31 min
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              198k of 200k tokens IN USE
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 179 lecture minutes
+
+[READY] session 20261101-184841-9ac9
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+18:49:08 INFO    copilot.visuals.service: CLIP ready in 0.9 s (CPU)
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    0.5s] Let me tell you the story of Marie Curie. (653 ms)
+18:49:16 INFO    copilot.story.detector: [STORY] cue 'Let me tell you the story of Marie Curie.'
+18:49:16 INFO    copilot.presentation.simulations: [SIM] story mode on: Marie Curie on its own slide (cue)
+18:49:16 INFO    copilot.presentation.story: [STORY] open: Marie Curie (cue)
+18:49:16 INFO    copilot.presentation.story: [STORY] scene 1: 'Marie Curie.' (when '', where '', query 'Marie Curie')
+  [SLIDE] add    'Marie Curie' [simulation] v1 (1 items)
+  [SLIDE] update 'Marie Curie' [simulation] v2 (1 items)
+  [SLIDE] update 'Marie Curie' [simulation] v3 (1 items)
+18:49:18 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Marie Curie, Biography)
+  [UNDERSTAND] Marie Curie > Biography (new_topic) acts=transition hint=none lines=1 via groq_main#1 1482 ms
+               Teacher introduced the story of Marie Curie
+18:49:18 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+18:49:20 INFO    copilot.visuals.finder: image search 'Marie Curie' (photo): 8 candidate(s), 1 accepted (0 labelled), 4.65 s {'search_s': 2.28, 'download_s': 1.25, 'clip_s': 0.41, 'full_s': 0.67, 'total_s': 4.65}
+18:49:20 INFO    copilot.presentation.story: [STORY] image for 'Marie Curie' in 4.7 s (wikipedia · Public domain · Henri Manuel)
+  [IMAGE] 'Marie Curie' -> File:Marie Curie c. 1920s.jpg (4.7 s)
+  [SLIDE] update 'Marie Curie' [simulation] v4 (1 items)
+  [    7.8s] In 1891, Marie moved to Paris. (557 ms)
+18:49:23 INFO    copilot.story.detector: [STORY] edit 'In 1891, Marie moved to Paris.'
+18:49:23 INFO    copilot.presentation.story: [STORY] scene 2: 'In 1891, Marie moved to Paris.' (when '1891', where 'Paris', query 'Paris')
+  [SLIDE] update 'Marie Curie' [simulation] v5 (1 items)
+18:49:23 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Marie Curie > Biography (elaboration) acts=other hint=key_points lines=1 via groq_main#1 1503 ms
+               In 1891 Marie Curie moved to Paris.
+18:49:25 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+18:49:28 INFO    copilot.visuals.finder: image search 'Paris' (photo): 8 candidate(s), 2 accepted (0 labelled), 4.96 s {'search_s': 2.46, 'download_s': 1.11, 'clip_s': 0.35, 'full_s': 0.97, 'total_s': 4.96}
+18:49:28 INFO    copilot.presentation.story: [STORY] image for 'Paris' in 5.0 s (wikipedia · CC BY-SA 2.0 · Yann Caradec from Paris, France)
+  [IMAGE] 'Paris' -> File:La Tour Eiffel vue de la Tour Saint-Jacques, Paris août 2014 (2).jpg (5.0 s)
+  [SLIDE] update 'Marie Curie' [simulation] v6 (1 items)
+  [   19.3s] She studied physics at the university. (535 ms)
+18:49:34 INFO    copilot.story.detector: [STORY] edit 'She studied physics at the university.'
+18:49:34 INFO    copilot.presentation.story: [STORY] 'Marie Curie' is 'she' (said)
+18:49:34 INFO    copilot.presentation.story: [STORY] scene 3: 'She studied physics at the university.' (when '', where 'the university', query 'university')
+  [SLIDE] update 'Marie Curie' [simulation] v7 (1 items)
+  [UNDERSTAND] Marie Curie > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#1 1313 ms
+               She studied physics at the university.
+18:49:35 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+18:49:40 INFO    copilot.visuals.finder: image search 'university' (photo): 8 candidate(s), 3 accepted (0 labelled), 6.50 s {'search_s': 2.47, 'download_s': 1.41, 'clip_s': 0.33, 'full_s': 2.23, 'total_s': 6.5}
+18:49:40 INFO    copilot.presentation.story: [STORY] image for 'university' in 6.5 s (wikipedia · CC0 · ScanianDragon)
+  [IMAGE] 'university' -> File:Uppsala University 2023.jpg (6.5 s)
+  [SLIDE] update 'Marie Curie' [simulation] v8 (1 items)
+  [   34.3s] In 1895, she met Perry Curie in the lab. (602 ms)
+18:49:51 INFO    copilot.story.detector: [STORY] edit 'In 1895, she met Perry Curie in the lab.'
+18:49:51 INFO    copilot.presentation.story: [STORY] scene 4: 'In 1895, she met Perry Curie in the lab.' (when '1895', where 'the lab', query 'lab')
+  [SLIDE] update 'Marie Curie' [simulation] v9 (1 items)
+18:49:51 INFO    copilot.simulation.detector: [SIM] values - {}
+  [UNDERSTAND] Marie Curie > Biography (elaboration) acts=explanation hint=key_points lines=1 via groq_main#1 1732 ms
+               Marie Curie met Pierre Curie in 1895
+  [CONCERN] (factual) she met Perry Curie -> she met Pierre Curie (0.9, correct it on the slide)
+18:49:53 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+18:49:55 INFO    copilot.visuals.finder: image search 'lab' (photo): 4 candidate(s), 3 accepted (0 labelled), 4.77 s {'search_s': 1.63, 'download_s': 0.78, 'clip_s': 0.26, 'full_s': 2.02, 'total_s': 4.77}
+18:49:55 INFO    copilot.presentation.story: [STORY] image for 'lab' in 4.8 s (commons · Public domain · Harriet Jane Moore)
+  [IMAGE] 'lab' -> File:M Faraday Lab H Moore.jpg (4.8 s)
+  [SLIDE] update 'Marie Curie' [simulation] v10 (1 items)
+  [   62.5s] Perry said, let us work together. (557 ms)
+18:50:17 INFO    copilot.story.detector: [STORY] edit 'Perry said, let us work together.'
+18:50:17 INFO    copilot.presentation.story: [STORY] Perry Curie say: 'Let us work together.'
+  [SLIDE] update 'Marie Curie' [simulation] v11 (1 items)
+  [UNDERSTAND] Marie Curie > Biography (digression) acts=- hint=none lines=1 via groq_main#1 1366 ms
+               Teacher quoted Perry encouraging collaboration.
+18:50:19 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [   67.9s] She replied, Yes, let us find a new element. (649 ms)
+18:50:24 INFO    copilot.story.detector: [STORY] edit 'She replied, Yes, let us find a new element.'
+18:50:24 INFO    copilot.presentation.story: [STORY] Marie Curie reply: 'Yes, let us find a new element.'
+  [SLIDE] update 'Marie Curie' [simulation] v12 (1 items)
+  [UNDERSTAND] Marie Curie > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#1 1372 ms
+               Added Marie Curie's quoted desire to discover a new element.
+18:50:25 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   76.0s] That's the end of the story. (512 ms)
+18:50:30 INFO    copilot.story.detector: [STORY] end "That's the end of the story."
+18:50:30 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "That's the end of the story."): recap 1 slide(s) (3 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Marie Curie' [key_points] v1 (3 items)
+  [SLIDE] update 'Marie Curie' [simulation] v13 (1 items)
+  [UNDERSTAND] Marie Curie > Biography (same_concept) acts=recap hint=none lines=1 via groq_main#1 957 ms
+               Teacher concluded Marie Curie's biography.
+18:50:31 INFO    copilot.presentation.engine: planner: noop Marie Curie > Biography (nothing to display)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261101-184841-9ac9: 7 segments, 51 words, state v20, 139 events logged
+        CommandReceived=5, ConceptSignal=7, ConcernRaised=1, ConcernResolved=1, DeckState=4, ImageReady=4, ImageRequested=4, InterpretRequested=7, InterpretationReady=7, LifecycleChanged=5, LiveCue=7, ModeChanged=1, RepresentationIntent=9, SimulationModeChanged=2, SimulationSettingChanged=1, SlideContextChanged=1, SlidePatch=14, StateChanged=20, TranscriptFinal=7, TranscriptPartial=24, UtteranceClassified=7, VocabularyChanged=1
+        stt: 7 published, 0 dropped, latency p50=557 ms p95=653 ms max=653 ms
+        understanding: 7 interpretations (7 by LLM, 0 fallbacks, 0 repaired), max 5 calls/min, prompt tokens max=1953 avg=1876, latency p50=1372 ms max=1732 ms
+        presentation: 2 slides; planner ops {'story_start': 1, 'noop': 1}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 4, 'found': 4, 'none': 0}; slides with an image 0/2
+          1. [simulation] Marie Curie  (v13, ['story'])
+          2. [key_points] Recap: Marie Curie  (v1, ['points'])
+        providers: {'groq_main#1': 7}; triggers: {'pause': 7}; outline: ['Marie Curie > Biography']; concerns: 1
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261101-184841-9ac9\session.sqlite

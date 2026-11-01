@@ -81,6 +81,7 @@ class SimMode:
     lines: int = 0                     # F-017: teacher lines the stage heard (a one-line stage makes no recap)
     picture: frozenset = frozenset()   # M0: the words of what its diagram draws (a bullet only of these: no recap)
     cues: tuple = ()                   # M4: its diagram's cue lines (a bullet restating one: no recap)
+    own_recap: Optional[list] = None   # V3 ST2: the story's recap (its said captions): the model's pieces not used
 
 
 @dataclass
@@ -93,6 +94,7 @@ class Ended:
     name: str
     slide_id: str
     recap_last: Optional[str]
+    own: bool = False                  # ST2: a story (its recap is its captions): late pieces are dropped
 
 
 @dataclass
@@ -449,6 +451,9 @@ class SimulationController:
         return early, later
 
     def collect(self, pieces: list[Piece]) -> None:
+        if self.mode is not None and self.mode.own_recap is not None:
+            log.info("[SIM] %d piece(s) not collected: the story recaps its said captions", len(pieces))
+            return
         if self.mode is not None:
             self.mode.collected.extend(pieces)
             log.info("[SIM] simulation mode: %d piece(s) collected for the recap (%d so far)", len(pieces),
@@ -457,6 +462,8 @@ class SimulationController:
     async def end(self, reason: str, back: bool = True) -> list[str]:
         """Slides resume: the recap first (if anything worth keeping was said). Returns the recap slide ids. back:
         with nothing to recap, the slide before comes back (False when a new slide / scene / topic follows at once)."""
+        if self.mode is not None and self.mode.kind == "story":
+            await self.e._story.flush()  # ST3: lines still waiting for their LLM reading land first (the recap)
         m, self.mode = self.mode, None
         if m is None:
             return []
@@ -464,9 +471,12 @@ class SimulationController:
         await e.deck.set_sim_mode(None)
         # F-019 M0 (test36: one recap of 12 scenes): each scene recaps only its own lines, titled by it; a stage of
         # one line makes no recap (test34: "Recap: Girl" with one bullet)
-        kept, dropped = recap_pieces(m.collected if m.kind != "stage" or m.lines > 1 else [],
-                                     foreign=_things(self.past[-8:]) - _things(m.names), picture=m.picture,
-                                     cues=m.cues)
+        if m.own_recap is not None:  # ST2: a story recaps its said captions as they are (review: "2 km" kept)
+            kept, dropped = list(m.own_recap), 0
+        else:
+            kept, dropped = recap_pieces(m.collected if m.kind != "stage" or m.lines > 1 else [],
+                                         foreign=_things(self.past[-8:]) - _things(m.names), picture=m.picture,
+                                         cues=m.cues)
         self.past = (self.past + m.names[-1:])[-8:]
         ids: list[str] = []
         name = m.names[-1] if m.names else "Simulation"
@@ -483,7 +493,7 @@ class SimulationController:
             e._working_id = m.before_id if e._spec(m.before_id) is not None else None
             if back and e._working_id is not None:  # nothing to recap: the slide before comes back (test32)
                 await e.deck.show(e._working_id)
-        self.ended = Ended(m.start_seq, e._seg_n + 1, m.frame, name, m.slide_id, last)
+        self.ended = Ended(m.start_seq, e._seg_n + 1, m.frame, name, m.slide_id, last, own=m.own_recap is not None)
         items = sum(max(1, len(p.texts) + len(p.pairs)) for p in kept)
         await e.bus.publish(SimulationModeChanged(on=False, slide_id=m.slide_id, template=m.template, reason=reason,
                                                   recap_ids=ids, kept=items, dropped=dropped))
@@ -503,6 +513,9 @@ class SimulationController:
             (late if seqs and x.start_seq <= max(seqs) < x.end_seq else rest).append(p)
         if not late:
             return pieces
+        if x.own:
+            log.info("[SIM] %d late piece(s) of the story: dropped (its recap is its said captions)", len(late))
+            return rest
         kept, dropped = recap_pieces(late)
         if kept:
             e = self.e

@@ -3,6 +3,7 @@ found pictures; the display (web/story/player.js) draws it, the camera motion is
 
     cast     the people / things of the story (a said name or noun, its picture), kept for the whole story
     scenes   one per story beat: its caption (said words, shortened), its picture, who stands in it, its bubbles
+    look     ST2: each cast member's own colour and figure; gender only from said words
     shown    the scene on screen (a newer scene waits for the dwell time; the teacher's Prev / Next moves it)
 """
 from __future__ import annotations
@@ -27,6 +28,8 @@ class CastMember(_Model):
     name: str                 # as said: "Ravi", "a young clerk", "a drop of water"
     noun: str = ""            # its picture's noun ("clerk", "person", "droplet")
     picture: str = ""         # /scene-pic/<slug>.png ("" = its initial in a circle)
+    gender: Literal["", "he", "she"] = ""   # ST2: only from said words (a noun, a pronoun with one person meant)
+    look: int = 0             # ST2: its colour (0..5, in cast order): two people never look the same
 
 
 class Bubble(_Model):

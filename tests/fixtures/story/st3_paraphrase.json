@@ -1,0 +1,30 @@
+{
+  "note": "V3 ST3: story lines the fast path leaves partly unread (STT garbles, free wordings). Each item runs on a fresh story (its ctx lines first). want: bubble [speaker, words part] | scene {when, where} | narration (the line in a scene, no bubble) | aside (the line nowhere).",
+  "ctx": {
+    "curie": ["Let me tell you the story of Marie Curie.", "In 1891, Marie moved to Paris.",
+              "She studied physics at the university.", "In 1895, she met Pierre Curie in the lab."],
+    "farm": ["Once upon a time, a farmer, a boy and a girl lived in a village."]
+  },
+  "items": [
+    {"ctx": "curie", "line": "We have said, let us work together.", "want": {"bubble": ["Pierre Curie", "work together"]}},
+    {"ctx": "curie", "line": "Pierre has said, we should start tonight.", "want": {"bubble": ["Pierre Curie", "start tonight"]}},
+    {"ctx": "curie", "line": "Pierre was saying, this metal glows in the dark.", "want": {"bubble": ["Pierre Curie", "glows in the dark"]}},
+    {"ctx": "curie", "line": "She was asking him, are you tired?", "want": {"bubble": ["Marie Curie", "are you tired"]}},
+    {"ctx": "curie", "line": "And he shouted back at her, I found it!", "want": {"bubble": ["Pierre Curie", "I found it"]}},
+    {"ctx": "curie", "line": "Mary was telling Pierre, we need more samples.", "want": {"bubble": ["Marie Curie", "need more samples"]}},
+    {"ctx": "curie", "line": "A decade after that, Marie taught at the Sorbonne.", "want": {"scene": {"when": "a decade after that"}}},
+    {"ctx": "curie", "line": "When she was twenty four, Marie left Poland.", "want": {"scene": {"when": "when she was twenty four"}}},
+    {"ctx": "curie", "line": "That winter, they worked day and night in a cold shed.", "want": {"scene": {"when": "that winter", "where": "a cold shed"}}},
+    {"ctx": "curie", "line": "Okay, everyone, can you see the picture at the back?", "want": {"aside": true}},
+    {"ctx": "farm", "line": "The farmer adds the boy. Where is the cow?", "want": {"bubble": ["farmer", "Where is the cow"]}},
+    {"ctx": "farm", "line": "The girl was shouting, it is in the garden!", "want": {"bubble": ["girl", "in the garden"]}},
+    {"ctx": "farm", "line": "Then the farmer told everyone, let us look in the garden.", "want": {"bubble": ["farmer", "look in the garden"]}},
+    {"ctx": "farm", "line": "The boy was whispering, I am scared of the dark.", "want": {"bubble": ["boy", "scared of the dark"]}},
+    {"ctx": "farm", "line": "And the boy says to them that he does not know.", "want": {"narration": true}},
+    {"ctx": "farm", "line": "Then the cow wandered into a muddy ditch.", "want": {"scene": {"where": "a muddy ditch"}}},
+    {"ctx": "farm", "line": "The girl climbed up onto the haystack.", "want": {"scene": {"where": "the haystack"}}},
+    {"ctx": "farm", "line": "Early the next season, the farmer planted wheat in the dry field.", "want": {"narration": true}},
+    {"ctx": "farm", "line": "Sorry, let me move this to the next page.", "want": {"aside": true}},
+    {"ctx": "farm", "line": "The farmer answers, we will find her by sunset.", "want": {"bubble": ["farmer", "find her by sunset"]}}
+  ]
+}

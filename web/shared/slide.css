@@ -1126,6 +1126,39 @@ rect.sc-body.r-second, circle.sc-body.r-second { fill: var(--scene-second); stro
 .strip-dot.on { background: var(--accent); transform: scale(1.5); box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85); }
 .strip-dot em { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 15px;
   font-style: normal; color: #fff; white-space: nowrap; }
+/* ST2: each cast member's own colour (ring, name tag, bubble edge); carried chips; timeline; route; stacked talk */
+.story-person.look-0, .story-bubble.look-0 { --look: #2f7de1; }
+.story-person.look-1, .story-bubble.look-1 { --look: #e0503c; }
+.story-person.look-2, .story-bubble.look-2 { --look: #1e9e6a; }
+.story-person.look-3, .story-bubble.look-3 { --look: #9b5de5; }
+.story-person.look-4, .story-bubble.look-4 { --look: #e69a17; }
+.story-person.look-5, .story-bubble.look-5 { --look: #d43f8d; }
+.story-person .story-face { border-color: var(--look, var(--surface)); }
+.story-person .story-name { background: var(--look, rgba(0, 0, 0, 0.55)); }
+.story-person.talking .story-face { border-color: var(--look, var(--accent)); }
+.story-person.talking::before { border-color: var(--look, var(--accent)); }
+.story-bubble .bubble-who { color: var(--look, var(--accent)); }
+.story-bubble[class*="look-"]:not(.kind-shout):not(.kind-whisper):not(.kind-ask) { border-color: var(--look); }
+.story-bubble.stacked { max-width: 520px; }
+.story-bubble.stacked .bubble-text { font-size: 32px; display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden; }
+.story-chip.carried { opacity: 0.6; box-shadow: none; }
+.story-timeline { position: absolute; top: 152px; right: 60px; width: 640px; height: 56px; z-index: 3; }
+.story-timeline .tl-line { position: absolute; left: 0; right: 0; top: 14px; height: 4px; border-radius: 2px;
+  background: rgba(255, 255, 255, 0.7); }
+.tl-year { position: absolute; top: 0; transform: translateX(-50%); text-align: center; }
+.tl-year i { display: block; width: 18px; height: 18px; margin: 7px auto 0; border-radius: 50%;
+  background: var(--surface); border: 3px solid var(--accent-2); box-sizing: border-box; }
+.tl-year em { display: block; margin-top: 4px; font-size: 20px; font-style: normal; font-weight: 600; color: #fff;
+  background: rgba(0, 0, 0, 0.5); padding: 1px 10px; border-radius: 999px; white-space: nowrap; }
+.tl-year.on i { background: var(--accent-2); transform: scale(1.4); transition: transform 400ms; }
+.story-route { position: absolute; top: 96px; right: 40px; display: flex; align-items: center; gap: 10px;
+  z-index: 3; max-width: 1000px; flex-wrap: nowrap; overflow: hidden; justify-content: flex-end; }
+.route-stop, .route-arrow { flex: 0 0 auto; }
+.route-stop { font-size: 22px; font-weight: 600; padding: 4px 14px; border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45); color: #fff; }
+.route-stop.on { background: var(--surface); color: var(--accent); box-shadow: var(--shadow); }
+.route-arrow { font-size: 24px; color: #fff; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7); }
 .story-stage.still *, .story-stage.still .story-img { animation: none !important; transition: none !important; }
 .story-stage.still .story-person.talking::before { display: none; }
 @keyframes story-in { from { opacity: 0; } to { opacity: 1; } }

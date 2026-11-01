@@ -1,0 +1,14 @@
+{
+  "name": "test56",
+  "source": "mic",
+  "note": "ST3 retest",
+  "session_id": "20261101-195929-20dd",
+  "date": "2026-11-01 20:02",
+  "title": "",
+  "minutes": 1.5,
+  "utterances": 12,
+  "slides": 4,
+  "theme": "light",
+  "simulated": false,
+  "copilot_args": []
+}

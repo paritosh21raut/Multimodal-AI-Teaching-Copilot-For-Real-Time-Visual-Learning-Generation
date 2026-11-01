@@ -8,6 +8,7 @@ from copilot.scene.detector import SceneDetector
 from copilot.simulation.detector import SimulationDetector
 from copilot.story import beats
 from copilot.story.detector import StoryDetector, cue, ends
+from copilot.presentation.content import Piece
 from copilot.presentation.story import DWELL_S, protagonist, title_of
 from tests.unit.test_presentation_engine import act, make, ready, send
 from tests.unit.test_simulation import Lines
@@ -344,3 +345,152 @@ async def test51_a_failed_download_is_tried_once_more():
         await send(bus, ImageReady(request_id=r.request_id, slide_id=r.slide_id, query="Berlin",
                                    reason="downloads failed"))
     assert len([x for x in asked if x.query == "Berlin"]) == 2 and req is not None
+
+
+# ---- ST2 continuity ---------------------------------------------------------------------------------------------
+def test_gender_and_pronouns_come_only_from_said_words():
+    assert beats.gender_of("a young woman") == "she" and beats.gender_of("his brother") == "he"
+    assert beats.gender_of("The boy") == "he" and beats.gender_of("Ravi") == "" and beats.gender_of("a clerk") == ""
+    assert beats.pronoun("Then she moved to Delhi.") == "she" and beats.pronoun("They walked home.") == "they"
+    assert beats.pronoun("The drop rises.") == ""
+
+
+async def test_two_named_people_get_two_looks_and_she_brings_her_figure():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    await talk.say("Once upon a time, Ravi met Asha at the park.")
+    s = story_on(deck)
+    ravi, asha = s.cast
+    assert ravi.look != asha.look and eng._story.open.member_emoji[ravi.id] != eng._story.open.member_emoji[asha.id]
+    assert (ravi.gender, asha.gender) == ("", "")              # no gender from a name
+    await talk.say("Ravi said, I love football.")
+    await talk.say("She replied, me too.")                      # the one not speaking, unsaid gender: learned
+    s = story_on(deck)
+    assert s.member(s.scenes[-1].bubbles[-1].speaker).name == "Asha" and s.member(asha.id).gender == "she"
+    assert eng._story.open.member_emoji[asha.id] == "woman"
+    clock.t += DWELL_S + 1
+    await talk.say("The next day, she went to the market.")    # her figure only, not Ravi
+    s = story_on(deck)
+    assert s.scenes[-1].cast == [asha.id] and s.scenes[-1].where == "the market"
+
+
+async def test_he_with_two_people_of_unsaid_gender_picks_the_latest_and_learns_nothing():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    await talk.say("Once upon a time, Ravi met Kabir at the park.")
+    clock.t += DWELL_S + 1
+    await talk.say("Then he went to the library.")
+    s = story_on(deck)
+    assert len(s.scenes[-1].cast) == 1 and all(not c.gender for c in s.cast)
+
+
+async def test_a_said_noun_gives_the_gender_and_a_talk_of_three_resolves_replies():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    await talk.say("Once upon a time, a king, a queen and a young boy lived in a palace.")
+    s = story_on(deck)
+    assert [c.gender for c in s.cast] == ["he", "she", "he"]
+    await talk.say("The king asked the queen, where is the gold?")
+    await talk.say("She replied, the boy has it.")             # the addressee answers
+    await talk.say("The boy shouted, I found it!")
+    s = story_on(deck)
+    sc = s.scenes[s.shown]
+    assert [s.member(b.speaker).name for b in sc.bubbles] == ["a king", "a queen", "a young boy"]
+
+
+async def test_the_story_recap_is_its_said_captions_only():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    await talk.say("Let me tell you the story of Albert Einstein.")
+    await talk.say("In 1905, a young clerk in Bern wrote four papers.")
+    clock.t += DWELL_S + 1
+    await talk.say("Years later, Einstein moved to Berlin.")
+    mode = eng._sims.mode
+    assert mode.own_recap and mode.own_recap[0].texts[-2:] == (
+        "In 1905, a young clerk in Bern wrote four papers.", "Years later, Einstein moved to Berlin.")
+    eng._sims.collect([Piece(kind="points", texts=("Einstein completed the cycle of science",))])  # a paraphrase
+    await talk.say("And that's the end of the story.")
+    recap = next(s for s in deck.slides if s.title.startswith("Recap"))
+    text = str(recap.model_dump())
+    assert "four papers" in text and "Berlin" in text and "completed the cycle" not in text
+
+
+async def test_a_shared_surname_is_two_people_and_she_with_a_name_keeps_her_in_the_scene():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    await talk.say("Let me tell you the story of Marie Curie.")
+    await talk.say("She studied physics at the university.")
+    clock.t += DWELL_S + 1
+    await talk.say("In 1895, she met Pierre Curie in the lab.")
+    s = story_on(deck)
+    assert [c.name for c in s.cast] == ["Marie Curie", "Pierre Curie"]
+    assert [s.member(c).name for c in s.scenes[-1].cast] == ["Marie Curie", "Pierre Curie"]
+    clock.t += DWELL_S + 1
+    await talk.say("In 1903, they won the Nobel Prize in Stockholm.")   # a capitalised thing is no person
+    s = story_on(deck)
+    assert len(s.cast) == 2 and len(s.scenes[-1].cast) == 2
+
+
+# ---- ST2 review fixes -------------------------------------------------------------------------------------------
+def test_gender_never_from_a_name_word():
+    assert beats.gender_of("Billie Jean King") == "" and beats.gender_of("the mother of Ravi") == "she"
+
+
+async def test_a_possessive_her_teaches_no_gender_and_faces_stay_unique():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    await talk.say("Let me tell you the story of Albert Einstein.")
+    await talk.say("Her dream was to study physics.")
+    assert story_on(deck).cast[0].gender == ""
+    await talk.say("Once upon a time, Ravi met Asha at the park.")
+    await talk.say("Asha said, hello there.")
+    await talk.say("He replied, good morning.")
+    clock.t += DWELL_S + 1
+    await talk.say("Then Kabir came to the park.")
+    figs = list(eng._story.open.member_emoji.values())
+    assert len(figs) == len(set(figs)) == 3
+
+
+async def test_she_replied_with_only_men_in_the_talk_makes_no_bubble():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    await talk.say("Once upon a time, a king and a young boy lived in a palace.")
+    await talk.say("The king said, where is the gold?")
+    await talk.say("She replied, I do not know.")
+    s = story_on(deck)
+    assert [s.member(b.speaker).name for b in s.scenes[-1].bubbles] == ["a king"]
+
+
+async def test_the_story_recap_keeps_every_said_caption_even_with_a_value():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    await talk.say("Once upon a time, a drop of water lived in the ocean.")
+    clock.t += DWELL_S + 1
+    await talk.say("Then the drop rose 2 km into the sky.")
+    clock.t += DWELL_S + 1
+    await talk.say("Then it fell as rain on a mountain.")
+    await talk.say("And that's the end of the story.")
+    text = str(next(s for s in deck.slides if s.title.startswith("Recap")).model_dump())
+    assert "lived in the ocean" in text and "2 km" in text and "mountain" in text
+
+
+# ---- test53 fixes (the test's own STT words) --------------------------------------------------------------------
+async def test53_misheard_mary_is_marie_she_replies_and_the_recap_keeps_every_line():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    for line in ["Let me tell you the story of Marie Curie.", "In 1891, Mary moved to Paris.",
+                 "She studied physics at the university.", "In 1895, she met Pierre Curie in the lab.",
+                 "We have said, let us work together.", "She replied, Yes, let us find new elements.",
+                 "In 1903, they found they won the Nobel Prize in Stockhol."]:
+        clock.t += 8
+        await talk.say(line)
+    s = story_on(deck)
+    assert [c.name for c in s.cast] == ["Marie Curie", "Pierre Curie"]
+    assert s.cast[0].gender == "she"
+    reply = next(b for sc in s.scenes for b in sc.bubbles if b.text.startswith("Yes"))
+    assert s.member(reply.speaker).name == "Marie Curie"
+    await talk.say("That's the end of this tutorial.")          # STT for "the story": ends it, no caption
+    assert eng._sims.mode is None
+    text = str(next(x for x in deck.slides if x.title.startswith("Recap")).model_dump())
+    assert "she met Pierre Curie" in text and "Nobel Prize" in text and "end of" not in text
+
+
+async def test53_she_with_two_unknowns_is_the_hero():
+    bus, deck, eng, clock, talk, asked = await story_lecture()
+    await talk.say("Let me tell you the story of Marie Curie.")
+    await talk.say("In 1895, she met Pierre Curie in the lab.")
+    await talk.say("Pierre said, let us work together.")
+    await talk.say("She replied, yes.")
+    s = story_on(deck)
+    assert s.member(s.scenes[-1].bubbles[-1].speaker).name == "Marie Curie"

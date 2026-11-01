@@ -402,6 +402,8 @@ class App:
             from copilot.diagram.extract import Extractor
             ctl.director = StageDirector(router)
             ctl.extractor = Extractor(router)  # M3: diagram lines the fast path left partly unread
+            from copilot.story.extract import StoryExtractor
+            self.presentation._story.extractor = StoryExtractor(router)  # ST3: story lines the fast path left unread
             await router.ping(self._http)
         print(f"[INIT]  stage: fast path + {' -> '.join(e.name for e in router.entries) if router else 'no LLM'}"
               f"; ladder {'MiniLM + ' if embedder is not None else ''}icons", flush=True)
