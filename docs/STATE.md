@@ -4,11 +4,9 @@ _Last updated 2026-11-02. History in `docs/history/`._
 
 ## Now
 - V2 = **F-019 Live Concept Simulator** (ADR-0014, `docs/v2/V2-ROADMAP.md`); order Simulator → Story → Canvas.
-- **Work method: the loop** (`docs/v2/LOOP.md`). User words: `next` (build the card below) · `test done`
-  (evaluate the newest `verify_results/testN`) · `fix` · `ok` (close, next card in a new session).
-- Story display dropped → **ADR-0015** live story animation.
-- **Current card: P1c live wiring + re-record** (`next` writes the card: re-record ~180k tokens,
-  test split, live wiring).
+- **Work method: the loop** (`docs/v2/LOOP.md`): `next` · `test done` · `fix` · `ok`.
+- **Current card: P1c part 2 — re-record + test split** (`docs/v3/P1c-live-wiring.md` Part 2): `next` states
+  the tokens (dev+val ~170k, test ~165k, two days / keys) and runs on the user's go.
 
 ## Done and verified
 | Part | Status |
@@ -26,16 +24,18 @@ _Last updated 2026-11-02. History in `docs/history/`._
 | F-019 M5 motion + relative velocity (kinematics solver, kin layout, 6 parts) | verified live test49–50 (1 fix round); 2147 pass |
 | V3 ST1–ST3 story language (detector, beats, cast, pronouns, bubbles, Groq beats) | verified live test51–56; display dropped (ADR-0015) |
 | V3 P0 animation proof (relations 17/20, compiler, stick rig, A–F, look round 1) | verified (user look ok) |
-| V3 P1a bench + op / affordance registry | done: oracle 33 %, 20b 23 % events (177k tokens) |
+| V3 P1a bench + op / affordance registry | done: oracle 33 %, 20b 23 % events |
 | V3 P1b actions batch 1 + 8 props + said parts | verified (1 fix round): oracle 55.4 %, 20b 38.8 %; 2304 pass |
+| V3 P1c part 1 live wiring (STT → scene LLM → compiler → canvas) | verified live test58–59 (1 fix round): p50 1.1–1.4 s; 2320 pass |
 
 ## Open issues
 - M4/M5 leftovers: label crowding (rain, circling stone, floor); ball on incline K1 only; "start with a block" opens nothing.
 - P1b: cart handle always +x; the boy walks through the cart.
+- P1c: "the basket" refused when the model writes "a basket" (article); a horse rides through people on its way.
 - Older: ropes beyond Atwood; inside/outside chip. K1: no current dots, focus colour; pre-cue lines can land in the recap.
 - ST2: no map overlay; STT-garbled lines reach the recap as said; `test_sim_pipeline` flaky (timing).
-- ST3: re-record `tools/record_st3.py` (final prompt, ~13k tokens) = ST4 step 0; old answers now replay 18/20.
-- Groq: llama-3.1-8b 404. Per call: scene delta ~1.4k, diagram ~1.1k, story ~0.9k, understanding ~1.9k.
+- ST3: re-record `tools/record_st3.py` (~13k tokens) = ST4 step 0.
+- Groq per call: scene delta ~1.4k, diagram ~1.1k, story ~0.9k, understanding ~1.9k.
 
 ## User actions pending
 - Replace dead Groq key GROQ_API_KEY_3 (401 at the 2026-11-01 ping). Check the network first.

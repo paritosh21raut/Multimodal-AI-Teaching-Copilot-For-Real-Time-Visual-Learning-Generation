@@ -209,6 +209,10 @@ class Compiler:
             self._sync_held(at)
             checks[-1]["fallback"] = fallback[-1]["why"] if len(fallback) > n0 else ""
         _style_hit_reacts(timeline)
+        said = [e for e in timeline if e["op"] == "speak"]
+        if said and not any(e.get("actor") == said[-1]["actor"] and e.get("t0", 0) >= said[-1]["t1"]
+                            for e in timeline if e["op"] != "speak"):
+            said[-1]["hold"] = True   # P1c: the shot's last words stay on the end frame, unless the speaker moves on
         end = max([t] + [e.get("t1", e.get("t0", 0)) for e in timeline]) + 0.8
         self._sync_held(at)
         for k, v in at.items():
@@ -304,6 +308,16 @@ class Compiler:
             if any(ev.op == "change_posture" and ev.actor == i for ev in world.events):
                 p.posture = "stand"          # it stands first, then the line's change plays
             p = self._relate(world, i, p, at)
+            if p.x < 0 and not p.carrier and e.kind == "person" and self.at and self._walks_in(world, i):
+                # test58 ("There he met his sister, Mina."): a new person with no motion of her own comes in from the
+                # nearer edge to a talking distance from the one the line pairs her with (else the middle)
+                near = next((at[ev.actor].x for ev in world.events if ev.target == i and ev.actor in at), STAGE_W / 2)
+                side = -1 if near < STAGE_W / 2 else 1
+                x1 = self._free_x(near + side * 1.4, i, world, at)
+                p.x, p.facing = (-0.9 if side < 0 else STAGE_W + 0.9), -side
+                at[i] = p
+                moves[i] = (x1, "")
+                continue
             if p.x < 0 and not p.carrier:    # no relation placed it: the nearest free spot to the middle
                 p.x = self._free_x(STAGE_W / 2, i, world, at)
                 free.add(i)
@@ -336,14 +350,27 @@ class Compiler:
                 b.facing = 1 if a.x > b.x else -1
         return moves
 
-    def _free_x(self, near: float, me: str, world: W.World, at: dict[str, Place]) -> float:
-        """The spot nearest `near` where no one else stands (people 0.8 m apart, a horse its length)."""
-        half = {"horse": assets()["horse"]["length"] / 2}
+    def _walks_in(self, world: W.World, i: str) -> bool:
+        """No event of the line moves or places person i (only "none" / speech / a look / a feeling)."""
+        return not any(ev.actor == i and ev.op not in ("none", "speak", "react", "look_at") for ev in world.events) \
+            and not any(r.a == i for r in world.relations if r.rel not in ("hold",))
+
+    def _free_x(self, near: float, me: str, world: W.World, at: dict[str, Place], toward: int = 0) -> float:
+        """The spot nearest `near` where no one else stands (people 0.8 m apart, a horse its length) and no tree
+        trunk is (test58: Mina stood inside the trunk)."""
+        A = assets()
+        half = {"horse": A["horse"]["length"] / 2}
+        mine = half.get(asset_for(world.entities[me]), 0.4) if me in world.entities else 0.4
         others = [(o.x, half.get(asset_for(world.entities[k]), 0.4)) for k, o in at.items()
-                  if k != me and not o.carrier and o.x >= 0 and world.entities[k].kind in ("person", "animal")]
+                  if k != me and not o.carrier and not o.holder and o.x >= 0 and o.y < 0.05
+                  and world.entities[k].kind in ("person", "animal")]
+        others += [(o.x, A["tree"]["trunk"]["w"] / 2) for k, o in at.items()
+                   if k != me and asset_for(world.entities[k]) == "tree"]
         for step in range(0, 30):
             x = near + (step + 1) // 2 * 0.9 * (1 if step % 2 else -1) if step else near
-            if 0.6 <= x <= STAGE_W - 0.6 and all(abs(x - ox) >= 0.4 + h for ox, h in others):
+            if toward:                                   # only on one side (an arrival goes on, never back)
+                x = near + toward * step * 0.45
+            if 0.6 <= x <= STAGE_W - 0.6 and all(abs(x - ox) >= mine + h for ox, h in others):
                 return x
         return near
 
@@ -489,6 +516,8 @@ class Compiler:
             x1 = self._arrive_x(ev.target, at[mover], asset_for(ents[mover]), world, at)
             side = -1 if at[mover].x < at[ev.target].x else 1
             x1 += side * 0.85 * queue                    # the k-th to arrive stops behind the others (arrival side)
+            if asset_for(ents[mover]) == "horse":        # test58: the horse parked on the people under the tree
+                x1 = self._free_x(x1, mover, world, at, toward=-side)
             p.tree = ""
             return self._walk(mover, x1, world, at, t, out)
         if ev.op == "fall":
@@ -531,7 +560,10 @@ class Compiler:
         who = next((r.a for r in world.relations if r.rel == "hold" and r.b == i and r.a in at
                     and asset_for(ents[r.a]) == "person"), "")
         ev = next((e for e in world.events if e.obj == i or e.target == i), None)
-        if ev is not None and ev.op in ("put", "give", "throw") and ev.actor in at \
+        if ev is not None and ev.op == "put" and ev.target == i and ev.obj != i and ev.actor in at and not who:
+            h = at[ev.actor]             # test58: put INTO a new basket: the basket stands on the ground before him
+            return Place(self._free_x(h.x + h.facing * 0.9, i, world, at), _rest_y(ents[i]))
+        if ev is not None and ev.op in ("put", "give", "throw") and ev.obj == i and ev.actor in at \
                 and asset_for(ents[ev.actor]) == "person":
             who = ev.actor               # put / given / thrown, never said picked up: it was in that hand
         if not who:

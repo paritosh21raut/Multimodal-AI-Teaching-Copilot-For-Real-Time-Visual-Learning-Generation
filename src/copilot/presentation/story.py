@@ -11,6 +11,11 @@ lock; the engine stays the only writer of the deck. 0 tokens.
                                          slides" is simulation.detector's)
     teacher commands                  -> sim_prev / sim_next {slide_id} (the scene shown), sim_remove, the chip
 
+P1c (docs/v3/P1c-live-wiring.md): with a scene reader (`anim`), every story line also joins one ordered queue: one
+scene call per line -> world -> compiler -> the shot the canvas plays (story/live.py). The ST3 extractor and the image
+searches are off then; the fast path still builds the cast, captions and the recap (0 tokens). A refused line keeps the
+last shot (never a made-up motion).
+
 ST3: a line the fast path leaves partly unread (story.extract.needs_llm) waits for one Groq reading (validated whole,
 else the fast reading); the lines after it queue behind it, so the speech order is kept.
 
@@ -39,6 +44,7 @@ from copilot.scene import safety
 from copilot.story import beats
 from copilot.story import extract as sx
 from copilot.story.detector import ends as story_ends
+from copilot.story.live import Shot, StoryAnim
 from copilot.story.spec import CAMERAS, Bubble, CastMember, StoryboardSpec, StoryScene
 
 if TYPE_CHECKING:
@@ -90,6 +96,13 @@ class _Open:
     n: int = 0
     dtask: Optional[asyncio.Task] = None                      # ST3: the queue's drain (one LLM call at a time)
     recent: list[str] = field(default_factory=list)           # ST3: the last lines heard (the prompt's "Before")
+    anim: Optional[StoryAnim] = None                          # P1c: the world + compiler of this story
+    aq: deque = field(default_factory=deque)                  # P1c: (line, heard at) in said order
+    atask: Optional[asyncio.Task] = None
+    afrag: str = ""                                           # "In 1905," / "Ravi said," : joins the next line
+    asent: set[str] = field(default_factory=set)              # lines animated / read as no change (a repeat: no call)
+    aflight: set[str] = field(default_factory=set)            # lines queued or in the call (an STT double: no call)
+    ast: "StoryStats" = field(default_factory=lambda: StoryStats())  # this story's anim numbers (the summary)
 
 
 @dataclass
@@ -111,6 +124,11 @@ class StoryStats:
     llm_taken: int = 0
     llm_refused: int = 0
     llm_failed: int = 0
+    anim_lines: int = 0    # P1c: scene calls
+    anim_shots: int = 0
+    anim_refused: int = 0
+    anim_tokens: int = 0
+    anim_secs: list[float] = field(default_factory=list)   # heard -> shown, per shot
 
 
 @dataclass
@@ -126,6 +144,7 @@ class StoryController:
     asked: dict[str, tuple[str, str]] = field(default_factory=dict)  # image request id -> (slide id, scene id), kept
     #                                            after the story ends: a late answer is never the slide's own image
     extractor: object = None                     # ST3: story.extract.StoryExtractor (the app sets it); None: fast only
+    anim: object = None                          # P1c: a scene reader (scene_llm.SceneReader); None: the picture board
 
     # ---- lookup ---------------------------------------------------------------------------------------------
     def _live(self) -> Optional[_Open]:
@@ -163,7 +182,7 @@ class StoryController:
         o = self._live()
         if ev.strength == "end":
             if o is not None:
-                await self.e._sims.end(f"heard {ev.text[:60]!r}")
+                await self.e._sims.end(f"heard {ev.text[:60]!r}", segs=tuple(ev.segment_ids))
             return
         if ev.strength == "cue" and o is not None and self._another(o, ev.text):
             o = None  # "Once upon a time ..." while a story is open: the next story (the last one keeps its figure)
@@ -198,7 +217,7 @@ class StoryController:
     async def start(self, text: str, *, origin: str, cue_segment: str = "") -> None:
         e = self.e
         title = title_of(text)
-        block = StoryBlock(story=StoryboardSpec(title=title))
+        block = StoryBlock(story=StoryboardSpec(title=title, anim=self.anim is not None))
         old = self.open
         mode = await e._sims.begin("story", "story", block.id, title, origin, cue_segment)
         if old is not None:  # another story began: the last one keeps its last scene as a figure
@@ -220,7 +239,9 @@ class StoryController:
 
     # ---- lines ----------------------------------------------------------------------------------------------
     async def line(self, o: _Open, text: str) -> None:
-        why = self._gate(o, text) if self.extractor is not None else ""
+        if self.anim is not None:
+            self._anim_line(o, text)  # before the fast path: a repeat is judged against the lines before it
+        why = self._gate(o, text) if self.extractor is not None and self.anim is None else ""
         if not why and not o.queue:
             await self._line(o, text)
             o.recent = (o.recent + [text])[-2:]
@@ -299,6 +320,88 @@ class StoryController:
         log.info("[STORY] llm answer taken: %s, %d tokens, %.2f s", ans, res.tokens, time.perf_counter() - t0)
         return ans
 
+    # ---- P1c: the live animation ---------------------------------------------------------------------------
+    def _anim_line(self, o: _Open, text: str) -> None:
+        sp = beats.speech(text)
+        if sp is not None and o.afrag and beats.speech(o.afrag) is not None:
+            log.info("[STORY] anim: %r had no words, dropped", o.afrag[:60])  # "Ravi said," then "Sita said, ..."
+            o.afrag = ""
+        if _FRAGMENT.fullmatch(text) or (sp is not None and not sp.words):
+            o.afrag = (o.afrag + " " + text.strip()).strip()  # "Ravi said," / "In 1905,": read with the next line
+            return
+        if o.afrag:
+            text, o.afrag = f"{o.afrag} {text.strip()}", ""
+        b = beats.beat(text)
+        if _class_talk(text, b):
+            log.info("[STORY] anim: aside %r, no call", text[:60])
+            return
+        key = _norm(text)
+        if key in o.asent or key in o.aflight:  # review: a refused / failed line may be said again and is read again
+            log.info("[STORY] anim: repeat %r, no call", text[:60])
+            return
+        o.aflight.add(key)
+        if o.anim is None:
+            o.anim = StoryAnim(self.anim)
+        o.aq.append((text, time.perf_counter()))
+        if o.atask is None or o.atask.done():
+            o.atask = asyncio.create_task(self._anim_drain(o), name="story:anim")
+
+    def _anim_summary(self, o: _Open) -> None:
+        st = o.ast
+        if not st.anim_lines:
+            return
+        xs = sorted(st.anim_secs) or [0.0]
+        log.info("[STORY] anim summary: %d lines, %d shots, %d refused, %d tokens, heard->shown p50 %.2f s p90 %.2f s",
+                 st.anim_lines, st.anim_shots, st.anim_refused, st.anim_tokens, xs[len(xs) // 2],
+                 xs[min(len(xs) - 1, int(len(xs) * 0.9))])
+
+    async def _anim_drain(self, o: _Open) -> None:
+        assert o.anim is not None
+        while o.aq:
+            text, heard = o.aq[0]
+            genders = {c.name: c.gender for c in self._story(o).cast}
+            try:
+                shot = await o.anim.read(text, genders)
+            except asyncio.CancelledError:
+                raise
+            except Exception as err:  # one fault never blocks the later lines; the last shot stays
+                log.exception("[STORY] anim failed for %r", text[:60])
+                shot = Shot(why=f"error {type(err).__name__}")
+            async with self.e._lock:
+                # review: the story ended while this line was read ("The end." right after it): its shot still lands
+                # on the (still) story slide; the lines said before the end are read too, nothing new joins
+                o.aq.popleft()
+                o.aflight.discard(_norm(text))
+                for st in (self.stats, o.ast):
+                    st.anim_lines += 1
+                    st.anim_tokens += shot.tokens
+                if self._block(o.slide_id)[1] is None:
+                    continue  # the slide is gone (nothing was ever drawn on it)
+                story = self._story(o)
+                if shot.same:
+                    o.asent.add(_norm(text))
+                    log.info("[STORY] anim: %r changes nothing (the shot stays), %d tokens", text[:60], shot.tokens)
+                    continue
+                if shot.spec is None:
+                    for st in (self.stats, o.ast):
+                        st.anim_refused += 1
+                    log.info("[STORY] anim refused %r: %s (the last shot stays), %d tokens, %.2f s", text[:60],
+                             shot.why, shot.tokens, shot.secs)
+                    await self._put(o, story.model_copy(update={"unread": text[:200]}))
+                    continue
+                await self._put(o, story.model_copy(update={"shot": shot.spec, "unread": ""}))
+                o.asent.add(_norm(text))
+                secs = time.perf_counter() - heard
+                for st in (self.stats, o.ast):
+                    st.anim_shots += 1
+                    st.anim_secs.append(secs)
+                fb = len(shot.spec.get("fallback", []))
+                log.info("[STORY] anim n=%d heard->shown %.2f s (call+compile %.2f s, %d tokens, %d events%s): %r",
+                         shot.spec["n"], secs, shot.secs, shot.tokens, len(shot.spec.get("events", [])),
+                         f", {fb} fallback" if fb else "", text[:60])
+        if self.open is not o:
+            self._anim_summary(o)
+
     async def flush(self) -> None:
         """ST3: the story ends: its queued lines land on the fast path first (the recap keeps every line)."""
         o = self._live()
@@ -314,8 +417,8 @@ class StoryController:
     async def settle(self) -> None:
         """Tests and replays: wait until every queued line has landed."""
         o = self.open
-        while o is not None and o.dtask is not None and not o.dtask.done():
-            await asyncio.gather(o.dtask, return_exceptions=True)
+        while o is not None and any(t is not None and not t.done() for t in (o.dtask, o.atask)):
+            await asyncio.gather(*[t for t in (o.dtask, o.atask) if t is not None], return_exceptions=True)
 
     async def _line(self, o: _Open, text: str, ans: Optional[dict] = None) -> None:
         story = self._story(o)
@@ -341,7 +444,7 @@ class StoryController:
             joined = first.lower() if first.lower() in ("a", "an", "the", "his", "her", "their") else first
             text, o.fragment = f"{o.fragment} {joined} {rest}".strip(), ""
         b = beats.beat(text)
-        if ans is None and beats.aside(text) and not (b.when or b.where or b.names or b.people):
+        if ans is None and _class_talk(text, b):
             log.info("[STORY] aside: %r is not a story line", text[:60])
             return
         if ans is not None and ans["type"] == "narration":
@@ -613,7 +716,7 @@ class StoryController:
         if q and q.lower() in o.images:  # the same place again: the same picture, no search
             url, alt, credit = o.images[q.lower()]
             return scene.model_copy(update={"image": url, "image_alt": alt, "credit": credit})
-        if q and self.images:
+        if q and self.images and self.anim is None:  # P1c: the canvas draws the story, no picture search
             rid = uuid.uuid4().hex[:12]
             o.requests[rid] = scene.id
             self.asked[rid] = (o.slide_id, scene.id)
@@ -745,6 +848,15 @@ class StoryController:
     async def _retire(self, o: _Open) -> None:
         if self.open is o:
             self.open = None
+        if o.afrag and o.anim is not None:  # review: "Ravi said," left at the end is still read
+            text, o.afrag = o.afrag, ""
+            o.aq.append((text, time.perf_counter()))
+            o.aflight.add(_norm(text))
+        if o.aq and (o.atask is None or o.atask.done()):
+            o.atask = asyncio.create_task(self._anim_drain(o), name="story:anim")
+        if o.atask is None or o.atask.done():
+            self._anim_summary(o)
+        # review: the anim drain is not cancelled: the lines said before the end finish on the still slide
         for t in o.tasks + ([o.dtask] if o.dtask is not None else []):
             if not t.done():
                 t.cancel()
@@ -849,6 +961,14 @@ def _with(b: beats.Beat, ans: dict) -> beats.Beat:
     if ans["new_scene"] and not b.cuts:
         b.marker = "then"
     return b
+
+
+def _class_talk(text: str, b: beats.Beat) -> bool:
+    """Class talk with no story word in it (a said time, place, name or person). The line's first word is not a name
+    ("Can anyone see the screen?" read "Can" as one: test58)."""
+    first = text.lstrip(" \"'“”").split(" ", 1)[0].strip(",.?!")
+    names = [n for n in b.names if n != first]
+    return beats.aside(text) and not (b.when or b.where or names or b.people)
 
 
 def _bare(where: str) -> str:

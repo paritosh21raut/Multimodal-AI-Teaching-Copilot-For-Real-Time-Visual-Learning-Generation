@@ -7,7 +7,10 @@
 // (a relative time like "years later" ends the old year); >= 2 said years: a timeline; >= 2 said places: a route;
 // a talk of 3+ speakers shows its last 3 bubbles, stacked (2 lines each; the timeline / route step aside).
 // still (the story ended / an export): the last frame, no motion. prefers-reduced-motion: no camera, no typing.
+// P1c: a story with `anim` plays its newest shot (story/compile.py) on the canvas player (anim/engine.js) instead:
+// each new shot from t = 0, still = its end frame; a line that could not be drawn shows dimmed over the last shot.
 import { html, useEffect, useRef, useState } from "../vendor/htm-preact-standalone.mjs";
+import { Player, loadAssets } from "./anim/engine.js";
 
 const W = 1920;
 const TYPE_MS = 32;          // a bubble's words type out at this pace
@@ -135,8 +138,49 @@ function SpeechBubble({ bub, x, who, look, older, raised, level, stacked, still 
   </div>`;
 }
 
+let assetsP = null;
+const animAssets = () => (assetsP ||= loadAssets(new URL("./anim/assets/", import.meta.url).href));
+const pageTheme = () => (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+
+function AnimView({ story, still, onClick }) {
+  const ref = useRef(null);
+  const shot = story.shot;
+  useEffect(() => {
+    const cv = ref.current;
+    if (!shot || !cv) return undefined;
+    let raf = 0, alive = true, pl = null, t = 0;
+    const draw = () => { pl.theme(pageTheme()); pl.frame(t); };
+    const obs = new MutationObserver(() => pl && draw());  // the theme switched: redraw this moment
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    animAssets().then((A) => {
+      if (!alive) return;
+      pl = new Player(cv, A);
+      pl.load(shot);
+      cv.__anim = pl;  // tests / probes
+      const end = shot.duration;
+      if (still || reducedMotion()) { t = end; draw(); cv.dataset.done = "1"; return; }
+      const t0 = performance.now();
+      const tick = (now) => {
+        if (!alive) return;
+        t = Math.min((now - t0) / 1000, end);
+        draw();
+        if (t < end) raf = requestAnimationFrame(tick); else cv.dataset.done = "1";
+      };
+      raf = requestAnimationFrame(tick);
+    });
+    return () => { alive = false; cancelAnimationFrame(raf); obs.disconnect(); };
+  }, [shot && shot.n, still]);
+  return html`<div class=${`sim-stage story-stage story-anim${still ? " still" : ""}`} onClick=${onClick}
+      data-shot=${shot ? shot.n : 0}>
+    ${shot ? html`<canvas key=${shot.n} ref=${ref} width="1920" height="1080" class="story-canvas"></canvas>`
+      : html`<div class="story-wait">${story.title || "Story"}</div>`}
+    ${story.unread && html`<div class="story-unread" key=${story.unread}>${story.unread}</div>`}
+  </div>`;
+}
+
 export function StoryView({ b, onClick }) {
   const story = b.story || {};
+  if (story.anim) return html`<${AnimView} story=${story} still=${!!b.still} onClick=${onClick} />`;  // P1c
   const scenes = story.scenes || [];
   const still = !!b.still;
   const i = Math.max(0, Math.min(scenes.length - 1, story.shown || 0));

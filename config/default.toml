@@ -31,6 +31,7 @@ title_slide = true         # title slide at LIVE when an expected topic is given
 simulations = "auto"       # F-014: auto (a spoken cue shows one) | suggest (a /control chip) | off; the teacher's switch wins (data/preferences.json)
 templates_auto = false     # F-015 (2026-10-22): the 21 templates start only when the teacher picks one in /control
 scenes = true              # F-015: "imagine a square..." draws a live scene (one LLM call per cue / edit; follows `simulations`)
+story_display = "anim"     # V3 P1c: anim (live stick animation, one scene call per story line, ~1.4k tokens) | board (ST1-ST3 pictures, 0-1 calls)
 stage = true               # F-017: motion / picture cues and Imagine Mode draw on the explainer stage; geometry / plot cues stay F-015 scenes (false: the C1 canvas)
 
 [images]

@@ -95,8 +95,8 @@ export class Player {
         case 'fall': st.hanging = false; st.holder = null; st.tween = null; st.pos = this.fallAt(ev, t); st.x = st.pos[0];
           if (t < ev.t1) st.falling = true; break;
         case 'speak':
-          if (t <= ev.t1) {
-            st.talk = t - ev.t0;
+          if (t <= ev.t1 || ev.hold) {   // P1c: the shot's last words stay on its end frame
+            st.talk = Math.min(t, ev.t1) - ev.t0;
             const n = Math.floor(ev.text.length * clamp((t - ev.t0 - 0.3) / Math.max(0.05, ev.type_s), 0, 1));
             bubbles.push({ actor: ev.actor, to: ev.to, text: ev.text.slice(0, n), full: ev.text });
             st.talkOpen = n < ev.text.length ? 0.5 + 0.5 * Math.sin((t - ev.t0) * 22) : 0;

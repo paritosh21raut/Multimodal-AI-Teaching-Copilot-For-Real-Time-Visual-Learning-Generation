@@ -95,6 +95,7 @@ class Ended:
     slide_id: str
     recap_last: Optional[str]
     own: bool = False                  # ST2: a story (its recap is its captions): late pieces are dropped
+    segs: frozenset = frozenset()      # P1c (test58): the end line's own segments (its reading lands seconds later)
 
 
 @dataclass
@@ -459,7 +460,7 @@ class SimulationController:
             log.info("[SIM] simulation mode: %d piece(s) collected for the recap (%d so far)", len(pieces),
                      len(self.mode.collected))
 
-    async def end(self, reason: str, back: bool = True) -> list[str]:
+    async def end(self, reason: str, back: bool = True, segs: tuple = ()) -> list[str]:
         """Slides resume: the recap first (if anything worth keeping was said). Returns the recap slide ids. back:
         with nothing to recap, the slide before comes back (False when a new slide / scene / topic follows at once)."""
         if self.mode is not None and self.mode.kind == "story":
@@ -493,7 +494,8 @@ class SimulationController:
             e._working_id = m.before_id if e._spec(m.before_id) is not None else None
             if back and e._working_id is not None:  # nothing to recap: the slide before comes back (test32)
                 await e.deck.show(e._working_id)
-        self.ended = Ended(m.start_seq, e._seg_n + 1, m.frame, name, m.slide_id, last, own=m.own_recap is not None)
+        self.ended = Ended(m.start_seq, e._seg_n + 1, m.frame, name, m.slide_id, last, own=m.own_recap is not None,
+                           segs=frozenset(segs))
         items = sum(max(1, len(p.texts) + len(p.pairs)) for p in kept)
         await e.bus.publish(SimulationModeChanged(on=False, slide_id=m.slide_id, template=m.template, reason=reason,
                                                   recap_ids=ids, kept=items, dropped=dropped))
@@ -509,8 +511,10 @@ class SimulationController:
             return pieces
         late, rest = [], []
         for p in pieces:
-            seqs = [self.e._seg_order.get(ev.segment_ids[i - 1], -1) for i in p.lines if 0 < i <= len(ev.segment_ids)]
-            (late if seqs and x.start_seq <= max(seqs) < x.end_seq else rest).append(p)
+            ids = [ev.segment_ids[i - 1] for i in p.lines if 0 < i <= len(ev.segment_ids)]
+            seqs = [self.e._seg_order.get(s, -1) for s in ids]
+            mine = bool(ids) and set(ids) <= x.segs           # the end line itself ("that's the end of the story")
+            (late if mine or seqs and x.start_seq <= max(seqs) < x.end_seq else rest).append(p)
         if not late:
             return pieces
         if x.own:

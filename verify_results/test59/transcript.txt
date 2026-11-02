@@ -1,0 +1,18 @@
+[    1.6] Let me tell you the story of Ravi.
+[    6.9] Ravi was sitting under an apple tree.
+[   16.3] There he met his sister Mina.
+[   26.0] Ravi picked up a stone.
+[   36.2] Ravi put the stone in the basket.
+[   53.5] Ravi climbed the apple tree.
+[   63.0] An old man rode his horse to the village.
+[   76.5] Can anyone see the screen?
+[   80.0] And that's the end of the story.
+[   92.5] Let me tell you the story of Ravi.
+[   97.2] Ravi was sitting under an apple tree.
+[  103.6] There he met his sister, Meena.
+[  112.2] Ravi picked up a stone.
+[  119.8] Ravi put the stone in a basket.
+[  131.5] Ravi climbed the apple tree.
+[  141.2] An old man rode his horse to the village.
+[  151.9] Can anyone see the screen?
+[  156.8] And that's the end of the story.

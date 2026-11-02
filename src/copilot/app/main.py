@@ -404,6 +404,9 @@ class App:
             ctl.extractor = Extractor(router)  # M3: diagram lines the fast path left partly unread
             from copilot.story.extract import StoryExtractor
             self.presentation._story.extractor = StoryExtractor(router)  # ST3: story lines the fast path left unread
+            if self.presentation.s.story_display == "anim":
+                from copilot.story.scene_llm import SceneReader
+                self.presentation._story.anim = SceneReader(router)  # P1c: every story line animates (ADR-0015)
             await router.ping(self._http)
         print(f"[INIT]  stage: fast path + {' -> '.join(e.name for e in router.entries) if router else 'no LLM'}"
               f"; ladder {'MiniLM + ' if embedder is not None else ''}icons", flush=True)

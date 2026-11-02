@@ -102,6 +102,7 @@ class PresentationSettings:
     scenes: bool = True          # F-015: live scenes from spoken cues (an LLM call each; follows `simulations`)
     stage: bool = True           # F-017: motion / picture cues and Imagine Mode draw on the explainer stage (false: C1 canvas)
     story: bool = True           # V3 ST1: story cues open a live storyboard (0 tokens; follows `simulations`)
+    story_display: str = "anim"  # V3 P1c: anim (the live stick animation, a scene call per line) | board (ST1-ST3 pictures)
 
     @classmethod
     def from_config(cls, config: Config) -> "PresentationSettings":

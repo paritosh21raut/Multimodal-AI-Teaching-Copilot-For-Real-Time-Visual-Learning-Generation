@@ -22,6 +22,7 @@ from copilot.core.events import (
     InterpretationReady,
     InterpretRequested,
     Lifecycle,
+    SimulationModeChanged,
     LifecycleChanged,
     LiveCue,
     TranscriptFinal,
@@ -101,6 +102,7 @@ class UnderstandingStats:
     repaired: int = 0
     sent_segments: int = 0
     excluded_segments: int = 0
+    story_segments: int = 0   # V3 P1c (test58): said while a story was open: not interpreted (its recap = its captions)
     paused_segments: int = 0  # said while the teacher had paused the lecture: not interpreted
     max_calls_per_minute: int = 0
     max_prompt_tokens: int = 0
@@ -156,13 +158,15 @@ class UnderstandingService:
         self._last_voice: Optional[float] = None  # wall time of the latest AudioLevel(voice=True)
         self._embed_warned = False
         self._paused = False  # the teacher paused the lecture (a break): new speech is not interpreted
+        self._story = False   # V3 P1c: a story is open: its lines are not interpreted (test58: 47 calls, ~100k tokens)
         self._live_last: Optional[dict] = None  # the last LiveCue sent (F-013 S1b): only changes are published
         self._tasks: list[asyncio.Task] = []
 
     # ---- wiring -------------------------------------------------------------------------------
     def attach(self) -> None:
         self.bus.subscribe("understanding", self._on_event,
-                           [TranscriptFinal, TranscriptPartial, AudioLevel, UtteranceDropped, LifecycleChanged])
+                           [TranscriptFinal, TranscriptPartial, AudioLevel, UtteranceDropped, LifecycleChanged,
+                            SimulationModeChanged])
         self._tasks = [
             asyncio.create_task(self._worker(), name="understanding:worker"),
             asyncio.create_task(self._ticker(), name="understanding:ticker"),
@@ -216,6 +220,9 @@ class UnderstandingService:
             # during it never reaches the buffer, so no slide is made from it. Resume continues normally.
             self._paused = event.state == Lifecycle.PAUSED
             return
+        if isinstance(event, SimulationModeChanged):
+            self._story = event.on and event.template == "story"
+            return
         if isinstance(event, AudioLevel):
             if event.voice:
                 self._last_voice = self.clock()
@@ -267,6 +274,10 @@ class UnderstandingService:
             log.info("[CUE] figure %r", figure_query(fig))
         if announce:
             log.info("[CUE] %s %r", "compare" if compare else topic.rule if topic else "", announce)
+        if self._story and not announce:  # the story draws and recaps its own lines; an announced topic still counts
+            self.stats.story_segments += 1
+            log.info("story open: not interpreted: %s", seg.text[:80])
+            return
         self.buffer.add(
             BufferedLine(seg.id, seg.text, seg.start, seg.end, c.maybe_meta, c.kind == "question_to_class"),
             boundary=sig.boundary or bool(announce), announce=bool(announce),

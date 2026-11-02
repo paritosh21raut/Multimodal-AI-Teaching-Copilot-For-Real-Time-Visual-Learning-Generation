@@ -113,7 +113,7 @@ _ASIDE = re.compile(
     r"^\W*(?:(?:okay|ok|so|now|right|alright|sorry)\W+)*(?:(?:everyone|class|students|children)\s*[,!?]"
     r"|let me (?:move|go|turn|switch|change|scroll)\b"
     r"|(?:look|see)\s+(?:at\s+)?(?:the|this)\s+(?:picture|slide|screen|board|image)"
-    r"|look (?:here|carefully)|listen (?:carefully|to me)|write (?:this|it) down|can (?:you|everyone) (?:all )?see)",
+    r"|look (?:here|carefully)|listen (?:carefully|to me)|write (?:this|it) down|can (?:you|everyone|anyone|everybody|anybody) (?:all )?see|is everyone (?:with me|following))",
     re.IGNORECASE)
 
 

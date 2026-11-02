@@ -1,0 +1,508 @@
+> python -m copilot 
+[INIT]  loading speech model medium.en on cuda ...
+[INIT]  speech model ready (14.8 s)
+[INIT]  live speech model distil-small.en ready (2.6 s)
+[INIT]  loading concept embedder (MiniLM ONNX, CPU) ...
+[INIT]  concept embedder ready (0.5 s)
+[INIT]  LLM providers: groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6 -> groq_alt#1 -> groq_alt#2 -> groq_alt#4 -> groq_alt#5 -> groq_alt#6
+[INIT]  scenes: on
+[INIT]  stage: fast path + groq_stage#1 -> groq_stage#2 -> groq_stage#4 -> groq_stage#5 -> groq_stage#6 -> groq_main#1 -> groq_main#2 -> groq_main#4 -> groq_main#5 -> groq_main#6; ladder MiniLM + icons
+[INIT]  story: on
+[INIT]  images: Wikipedia/Commons + CLIP (CPU), loading in the background
+[INIT]  scene photos: fill (u2netp cutouts, CPU)
+[MODE]  standard: each pause goes to the LLM (pause 1.2 s, calls >= 4 s apart)  (switch in /control)
+
+[QUOTA] AI models, free tokens left today (rolling 24 h, counted by this app + Groq's replies):
+        GROQ_API_KEY_2         openai/gpt-oss-120b           168k of 200k tokens IN USE
+        GROQ_API_KEY_4         openai/gpt-oss-120b           184k of 200k tokens ok
+        GROQ_API_KEY_5         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_6         openai/gpt-oss-120b           200k of 200k tokens unused
+        GROQ_API_KEY_1         openai/gpt-oss-120b           173k of 200k tokens ok
+        GROQ_API_KEY_2         qwen/qwen3.8-27b              200k of 200k tokens IN USE
+        GROQ_API_KEY_4         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_5         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_6         qwen/qwen3.8-27b              200k of 200k tokens unused
+        GROQ_API_KEY_1         qwen/qwen3.8-27b              200k of 200k tokens unused
+        enough for about 241 lecture minutes
+
+[READY] session 20261102-192125-6292
+        classroom display: http://localhost:8765/display   (projector, full screen: F11)
+        teacher control:   http://localhost:8765/control
+        Press Enter (or Start in the control view) to begin; q + Enter to quit.
+19:21:55 INFO    copilot.visuals.service: CLIP ready in 2.4 s (CPU)
+[OPEN]  http://localhost:8765/control
+[OPEN]  http://localhost:8765/display
+[LIVE]  lecture started. Type q + Enter to end.
+[INIT]  speech: 30 terms from your study material (photoelectric, ESP32, ESP32-WROOM-32, thermodynamics, Nucleo, Espressif ...)
+  [    0.4s] Let me tell you the story of Rabi. (647 ms)
+19:22:19 INFO    copilot.story.detector: [STORY] cue 'Let me tell you the story of Rabi.'
+19:22:19 INFO    copilot.presentation.simulations: [SIM] story mode on: Rabi on its own slide (cue)
+19:22:19 INFO    copilot.presentation.story: [STORY] open: Rabi (cue)
+19:22:19 INFO    copilot.presentation.story: [STORY] scene 1: 'Rabi.' (when '', where '', query 'Rabi')
+  [SLIDE] add    'Rabi' [simulation] v1 (1 items)
+  [SLIDE] update 'Rabi' [simulation] v2 (1 items)
+  [SLIDE] update 'Rabi' [simulation] v3 (1 items)
+19:22:22 INFO    copilot: [STT] vocabulary prompt: 32 terms (newest: VDD3P3, Rabi, Biography)
+  [UNDERSTAND] Rabi > Biography (new_topic) acts=- hint=none lines=1 via groq_main#2 1691 ms
+               Introduced the story of Rabi
+19:22:22 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+19:22:22 INFO    copilot.presentation.story: [STORY] anim n=1 heard->shown 3.30 s (call+compile 3.30 s, 1320 tokens, 0 events): 'Let me tell you the story of Rabi.'
+  [SLIDE] update 'Rabi' [simulation] v4 (1 items)
+  [    4.5s] Ravi was sitting under an apple tree. (592 ms)
+19:22:24 INFO    copilot.story.detector: [STORY] edit 'Ravi was sitting under an apple tree.'
+19:22:24 INFO    copilot.presentation.story: [STORY] 'Ravi' read as 'Rabi' (a name like it)
+  [SLIDE] update 'Rabi' [simulation] v5 (1 items)
+19:22:25 INFO    copilot.presentation.story: [STORY] anim n=2 heard->shown 1.32 s (call+compile 1.32 s, 1455 tokens, 3 events): 'Ravi was sitting under an apple tree.'
+  [SLIDE] update 'Rabi' [simulation] v6 (1 items)
+  [UNDERSTAND] Rabi > Biography (digression) acts=- hint=none lines=1 via groq_main#2 1130 ms
+               Teacher told a story about Ravi sitting under an apple tree.
+19:22:25 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [   14.5s] An apple fell on his head. (509 ms)
+19:22:33 INFO    copilot.story.detector: [STORY] edit 'An apple fell on his head.'
+  [SLIDE] update 'Rabi' [simulation] v7 (1 items)
+19:22:34 INFO    copilot.presentation.story: [STORY] anim n=3 heard->shown 1.19 s (call+compile 1.19 s, 1413 tokens, 3 events): 'An apple fell on his head.'
+  [SLIDE] update 'Rabi' [simulation] v8 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1239 ms
+               Teacher said an apple fell on his head.
+19:22:35 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   26.1s] Ravi picked up the apple and walked to the village. (616 ms)
+19:22:46 INFO    copilot.story.detector: [STORY] edit 'Ravi picked up the apple and walked to the village.'
+19:22:46 INFO    copilot.presentation.story: [STORY] 'Ravi' read as 'Rabi' (a name like it)
+19:22:46 INFO    copilot.presentation.story: [STORY] scene 2: 'Ravi picked up the apple and walked to the village' (when '', where 'the village', query 'village')
+  [SLIDE] update 'Rabi' [simulation] v9 (1 items)
+19:22:47 INFO    copilot.presentation.story: [STORY] anim n=4 heard->shown 1.27 s (call+compile 1.25 s, 1618 tokens, 5 events): 'Ravi picked up the apple and walked to the village.'
+  [SLIDE] update 'Rabi' [simulation] v10 (1 items)
+  [UNDERSTAND] Rabi > Biography (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 1365 ms
+               Ravi picks up the apple and goes to the village.
+19:22:48 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   46.8s] There you met his sister, Mina. (571 ms)
+19:23:06 INFO    copilot.story.detector: [STORY] edit 'There you met his sister, Mina.'
+19:23:06 INFO    copilot.presentation.story: [STORY] scene 3: 'There you met his sister, Mina.' (when '', where '', query 'Mina')
+  [SLIDE] update 'Rabi' [simulation] v11 (1 items)
+19:23:07 INFO    copilot.presentation.story: [STORY] anim n=5 heard->shown 1.53 s (call+compile 1.52 s, 1363 tokens, 0 events): 'There you met his sister, Mina.'
+  [SLIDE] update 'Rabi' [simulation] v12 (1 items)
+19:23:09 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Biography' -> same_concept
+19:23:09 INFO    copilot: [STT] vocabulary prompt: 33 terms (newest: Rabi, Biography, Mina)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=definition hint=concept lines=1 via groq_main#2 2818 ms
+               Introduced Rabi's sister Mina.
+19:23:09 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   58.0s] Probably give the apple to me now. (562 ms)
+19:23:16 INFO    copilot.story.detector: [STORY] edit 'Probably give the apple to me now.'
+19:23:16 INFO    copilot.presentation.story: [STORY] scene 4: 'Probably give the apple to me now.' (when '', where '', query 'Probably')
+  [SLIDE] update 'Rabi' [simulation] v13 (1 items)
+19:23:19 INFO    copilot.presentation.story: [STORY] anim n=6 heard->shown 2.11 s (call+compile 2.11 s, 1781 tokens, 2 events): 'Probably give the apple to me now.'
+  [SLIDE] update 'Rabi' [simulation] v14 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 2182 ms
+               Teacher added that Rabi asks for the apple
+19:23:19 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   70.3s] Then Mina said, thank you brother. (556 ms)
+19:23:30 INFO    copilot.story.detector: [STORY] edit 'Then Mina said, thank you brother.'
+19:23:30 INFO    copilot.presentation.story: [STORY] Mina say: 'Thank you brother.'
+  [SLIDE] update 'Rabi' [simulation] v15 (1 items)
+19:23:32 INFO    copilot.presentation.story: [STORY] anim n=7 heard->shown 1.31 s (call+compile 1.30 s, 1520 tokens, 1 events): 'Then Mina said, thank you brother.'
+  [SLIDE] update 'Rabi' [simulation] v16 (1 items)
+  [UNDERSTAND] Rabi > Biography (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 1331 ms
+               Mina thanks her brother
+19:23:32 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   81.6s] Then Mina threw the apple to Ravi. (704 ms)
+19:23:40 INFO    copilot.story.detector: [STORY] edit 'Then Mina threw the apple to Ravi.'
+19:23:40 INFO    copilot.presentation.story: [STORY] scene 5: 'Then Mina threw the apple to Ravi.' (when '', where 'Ravi', query 'Ravi')
+  [SLIDE] update 'Rabi' [simulation] v17 (1 items)
+19:23:42 INFO    copilot.presentation.story: [STORY] anim n=8 heard->shown 1.24 s (call+compile 1.23 s, 1593 tokens, 6 events): 'Then Mina threw the apple to Ravi.'
+  [SLIDE] update 'Rabi' [simulation] v18 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1285 ms
+               Mina throws the apple back to Ravi
+19:23:43 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [   92.1s] Ravi put the apple in a basket. (535 ms)
+19:23:51 INFO    copilot.story.detector: [STORY] edit 'Ravi put the apple in a basket.'
+19:23:51 INFO    copilot.presentation.story: [STORY] 'Ravi' read as 'Rabi' (a name like it)
+  [SLIDE] update 'Rabi' [simulation] v19 (1 items)
+19:23:52 INFO    copilot.presentation.story: [STORY] anim n=9 heard->shown 1.42 s (call+compile 1.42 s, 1533 tokens, 1 events): 'Ravi put the apple in a basket.'
+  [SLIDE] update 'Rabi' [simulation] v20 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 2467 ms
+               Ravi places the apple in a basket.
+19:23:54 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  101.2s] Okay class, look at the board. (545 ms)
+  [  113.0s] Ravi, climb the apple tree. (531 ms)
+19:24:11 INFO    copilot.story.detector: [STORY] edit 'Ravi, climb the apple tree.'
+19:24:11 INFO    copilot.presentation.story: [STORY] 'Ravi' read as 'Rabi' (a name like it)
+  [SLIDE] update 'Rabi' [simulation] v21 (1 items)
+19:24:13 INFO    copilot.presentation.story: [STORY] anim n=10 heard->shown 1.20 s (call+compile 1.19 s, 1551 tokens, 2 events): 'Ravi, climb the apple tree.'
+  [SLIDE] update 'Rabi' [simulation] v22 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1407 ms
+               Teacher tells Ravi to climb the apple tree.
+19:24:15 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  124.1s] Then he jumped off the tree. (521 ms)
+19:24:23 INFO    copilot.story.detector: [STORY] edit 'Then he jumped off the tree.'
+19:24:23 INFO    copilot.presentation.story: [STORY] scene 6: 'Then he jumped off the tree.' (when '', where '', query 'Rabi')
+  [SLIDE] update 'Rabi' [simulation] v23 (1 items)
+19:24:24 INFO    copilot.presentation.story: [STORY] anim n=11 heard->shown 1.77 s (call+compile 1.77 s, 1559 tokens, 2 events): 'Then he jumped off the tree.'
+  [SLIDE] update 'Rabi' [simulation] v24 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=concept lines=1 via groq_main#2 4677 ms
+               Ravi jumps off the tree after climbing it.
+19:24:27 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  132.5s] An old man rode his horse to the village. (568 ms)
+19:24:32 INFO    copilot.story.detector: [STORY] edit 'An old man rode his horse to the village.'
+19:24:32 INFO    copilot.presentation.story: [STORY] scene 7: 'An old man rode his horse to the village.' (when '', where 'the village', query 'village')
+  [SLIDE] update 'Rabi' [simulation] v25 (1 items)
+19:24:34 INFO    copilot.presentation.story: [STORY] anim n=12 heard->shown 1.57 s (call+compile 1.57 s, 1821 tokens, 0 events): 'An old man rode his horse to the village.'
+  [SLIDE] update 'Rabi' [simulation] v26 (1 items)
+  [UNDERSTAND] Rabi > Biography (elaboration) acts=explanation hint=concept lines=1 via groq_main#4 1444 ms
+               Added detail of an old man arriving in the village on horseback.
+19:24:34 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  144.6s] Can anyone see the screen? (542 ms)
+19:24:44 INFO    copilot.story.detector: [STORY] edit 'Can anyone see the screen?'
+19:24:44 INFO    copilot.presentation.story: [STORY] scene 8: 'Can anyone see the screen?' (when '', where '', query 'Can')
+  [SLIDE] update 'Rabi' [simulation] v27 (1 items)
+19:24:45 INFO    copilot.presentation.story: [STORY] anim n=13 heard->shown 1.53 s (call+compile 1.53 s, 1841 tokens, 0 events): 'Can anyone see the screen?'
+  [SLIDE] update 'Rabi' [simulation] v28 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=question hint=none lines=1 via groq_main#2 1039 ms
+               Teacher asked a question to the class
+19:24:51 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [  153.7s] Then he jumped off the tree. (528 ms)
+19:24:52 INFO    copilot.story.detector: [STORY] edit 'Then he jumped off the tree.'
+19:24:52 INFO    copilot.presentation.story: [STORY] anim: repeat 'Then he jumped off the tree.', no call
+19:24:52 INFO    copilot.presentation.story: [STORY] repeat: 'Then he jumped off the tree.' changes nothing
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1867 ms
+               Ravi jumps off the tree after climbing it.
+19:24:55 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  160.4s] Mina picked up a stone and pushed a card. (705 ms)
+19:25:01 INFO    copilot.story.detector: [STORY] edit 'Mina picked up a stone and pushed a card.'
+  [SLIDE] update 'Rabi' [simulation] v29 (1 items)
+19:25:02 INFO    copilot.presentation.story: [STORY] anim n=14 heard->shown 1.08 s (call+compile 1.08 s, 1607 tokens, 7 events): 'Mina picked up a stone and pushed a card.'
+  [SLIDE] update 'Rabi' [simulation] v30 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1565 ms
+               Mina picks up a stone and pushes a card.
+19:25:03 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  179.2s] And that is the end of the story. (570 ms)
+19:25:18 INFO    copilot.story.detector: [STORY] end 'And that is the end of the story.'
+19:25:18 INFO    copilot.presentation.engine: slide 'Recap: Rabi' waits for the min dwell time
+19:25:18 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard 'And that is the end of the story.'): recap 2 slide(s) (12 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Rabi' [key_points] v1 (8 items)
+19:25:18 INFO    copilot.presentation.story: [STORY] anim summary: 14 lines, 14 shots, 0 refused, 21975 tokens, heard->shown p50 1.42 s p90 2.11 s
+  [SLIDE] update 'Rabi' [simulation] v31 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1970 ms
+               Teacher concluded the story about Rabi and Mina.
+19:25:20 INFO    copilot.presentation.engine: planner: new Rabi > Biography (new topic confirmed (boundary cue/shift))
+19:25:20 INFO    copilot.presentation.engine: slide 'Biography' waits for the min dwell time
+  [SLIDE] add    'Recap: Rabi' [key_points] v1 (4 items)
+  [  187.8s] Let me tell you the story of Rabi. (531 ms)
+19:25:27 INFO    copilot.story.detector: [STORY] cue 'Let me tell you the story of Rabi.'
+19:25:27 INFO    copilot.presentation.simulations: [SIM] story mode on: Rabi on its own slide (cue)
+19:25:27 INFO    copilot.presentation.story: [STORY] open: Rabi (cue)
+19:25:27 INFO    copilot.presentation.story: [STORY] scene 1: 'Rabi.' (when '', where '', query 'Rabi')
+  [SLIDE] add    'Biography' [key_points] v1 (1 items)
+  [SLIDE] add    'Rabi' [simulation] v1 (1 items)
+  [SLIDE] update 'Rabi' [simulation] v2 (1 items)
+  [SLIDE] update 'Rabi' [simulation] v3 (1 items)
+19:25:28 INFO    copilot.presentation.story: [STORY] anim n=1 heard->shown 0.87 s (call+compile 0.87 s, 1324 tokens, 0 events): 'Let me tell you the story of Rabi.'
+  [SLIDE] update 'Rabi' [simulation] v4 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=- hint=none lines=1 via groq_main#4 1366 ms
+               Teacher introduces the story of Rabi.
+19:25:28 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [  193.8s] Rabi. (425 ms)
+19:25:31 INFO    copilot.story.detector: [STORY] edit 'Rabi.'
+  [SLIDE] update 'Rabi' [simulation] v5 (1 items)
+19:25:32 INFO    copilot.presentation.story: [STORY] anim: 'Rabi.' changes nothing (the shot stays), 1464 tokens
+  [  196.9s] Rabi. (415 ms)
+19:25:34 INFO    copilot.story.detector: [STORY] edit 'Rabi.'
+19:25:34 INFO    copilot.presentation.story: [STORY] anim: repeat 'Rabi.', no call
+19:25:34 INFO    copilot.presentation.story: [STORY] repeat: 'Rabi.' changes nothing
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=- hint=none lines=2 via groq_main#2 1012 ms
+               No new information added
+19:25:38 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [  202.1s] Ravi was sitting under an apple tree. (538 ms)
+19:25:41 INFO    copilot.story.detector: [STORY] edit 'Ravi was sitting under an apple tree.'
+19:25:41 INFO    copilot.presentation.story: [STORY] 'Ravi' read as 'Rabi' (a name like it)
+  [SLIDE] update 'Rabi' [simulation] v6 (1 items)
+19:25:42 INFO    copilot.presentation.story: [STORY] anim n=2 heard->shown 0.69 s (call+compile 0.69 s, 1371 tokens, 2 events): 'Ravi was sitting under an apple tree.'
+  [SLIDE] update 'Rabi' [simulation] v7 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=other hint=key_points lines=1 via groq_main#4 2034 ms
+               Ravi was sitting under an apple tree.
+19:25:43 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  215.7s] An apple fell on his head. (494 ms)
+19:25:54 INFO    copilot.story.detector: [STORY] edit 'An apple fell on his head.'
+19:25:54 INFO    copilot.presentation.story: [STORY] scene 2: 'An apple fell on his head.' (when '', where '', query 'Rabi')
+  [SLIDE] update 'Rabi' [simulation] v8 (1 items)
+19:25:55 INFO    copilot.presentation.story: [STORY] anim n=3 heard->shown 1.08 s (call+compile 1.08 s, 1427 tokens, 2 events): 'An apple fell on his head.'
+  [SLIDE] update 'Rabi' [simulation] v9 (1 items)
+  [UNDERSTAND] Rabi > Biography (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 1539 ms
+               Added detail that an apple fell on Rabi's head while under the tree.
+19:25:56 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  224.4s] Ravi picked up the apple and walked to the village. (630 ms)
+19:26:04 INFO    copilot.story.detector: [STORY] edit 'Ravi picked up the apple and walked to the village.'
+19:26:04 INFO    copilot.presentation.story: [STORY] 'Ravi' read as 'Rabi' (a name like it)
+19:26:04 INFO    copilot.presentation.story: [STORY] scene 3: 'Ravi picked up the apple and walked to the village' (when '', where 'the village', query 'village')
+  [SLIDE] update 'Rabi' [simulation] v10 (1 items)
+  [UNDERSTAND] Rabi > Biography (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1544 ms
+               Ravi picks up the apple and walks to the village.
+19:26:06 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+19:26:06 INFO    copilot.presentation.story: [STORY] anim n=4 heard->shown 1.99 s (call+compile 1.99 s, 1617 tokens, 5 events): 'Ravi picked up the apple and walked to the village.'
+  [SLIDE] update 'Rabi' [simulation] v11 (1 items)
+  [  243.6s] There he met his sister, Mina. (564 ms)
+19:26:23 INFO    copilot.story.detector: [STORY] edit 'There he met his sister, Mina.'
+19:26:23 INFO    copilot.presentation.story: [STORY] scene 4: 'There he met his sister, Mina.' (when '', where '', query 'Mina')
+  [SLIDE] update 'Rabi' [simulation] v12 (1 items)
+19:26:24 INFO    copilot.story.compile: [STORY] fallback {'op': 'none', 'actor': 'e4', 'verb': 'met', 'why': 'no motion for this op in P0'}
+19:26:24 INFO    copilot.presentation.story: [STORY] anim n=5 heard->shown 1.40 s (call+compile 1.39 s, 1569 tokens, 0 events, 1 fallback): 'There he met his sister, Mina.'
+  [SLIDE] update 'Rabi' [simulation] v13 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1534 ms
+               Rabi meets his sister Mina
+19:26:24 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  252.4s] Ravi, give the apple to me na. (594 ms)
+19:26:31 INFO    copilot.story.detector: [STORY] edit 'Ravi, give the apple to me na.'
+19:26:31 INFO    copilot.presentation.story: [STORY] 'Ravi' read as 'Rabi' (a name like it)
+  [SLIDE] update 'Rabi' [simulation] v14 (1 items)
+19:26:31 INFO    copilot.simulation.detector: [SIM] values - {}
+19:26:33 INFO    copilot.presentation.story: [STORY] anim n=6 heard->shown 1.35 s (call+compile 1.35 s, 1612 tokens, 3 events): 'Ravi, give the apple to me na.'
+  [SLIDE] update 'Rabi' [simulation] v15 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1558 ms
+               Teacher asks Ravi to hand over the apple to the teacher
+19:26:33 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  263.8s] Mina said, Thank you brother. (637 ms)
+19:26:43 INFO    copilot.story.detector: [STORY] edit 'Mina said, Thank you brother.'
+19:26:43 INFO    copilot.presentation.story: [STORY] Mina say: 'Thank you brother.'
+  [SLIDE] update 'Rabi' [simulation] v16 (1 items)
+19:26:44 INFO    copilot.presentation.story: [STORY] anim n=7 heard->shown 1.56 s (call+compile 1.56 s, 1472 tokens, 2 events): 'Mina said, Thank you brother.'
+  [SLIDE] update 'Rabi' [simulation] v17 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1420 ms
+               Mina says thank you to her brother
+19:26:46 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  272.6s] Then Mina threw the apple to Ravi. (585 ms)
+19:26:52 INFO    copilot.story.detector: [STORY] edit 'Then Mina threw the apple to Ravi.'
+19:26:52 INFO    copilot.presentation.story: [STORY] scene 5: 'Then Mina threw the apple to Ravi.' (when '', where 'Ravi', query 'Ravi')
+  [SLIDE] update 'Rabi' [simulation] v18 (1 items)
+19:26:53 INFO    copilot.presentation.story: [STORY] anim n=8 heard->shown 1.58 s (call+compile 1.58 s, 1741 tokens, 6 events): 'Then Mina threw the apple to Ravi.'
+  [SLIDE] update 'Rabi' [simulation] v19 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1473 ms
+               Mina throws the apple back to Ravi
+19:26:53 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  282.6s] Ravi put the apple in a basket. (593 ms)
+19:27:02 INFO    copilot.story.detector: [STORY] edit 'Ravi put the apple in a basket.'
+19:27:02 INFO    copilot.presentation.story: [STORY] 'Ravi' read as 'Rabi' (a name like it)
+  [SLIDE] update 'Rabi' [simulation] v20 (1 items)
+19:27:03 INFO    copilot.presentation.story: [STORY] anim n=9 heard->shown 1.47 s (call+compile 1.47 s, 1560 tokens, 1 events): 'Ravi put the apple in a basket.'
+  [SLIDE] update 'Rabi' [simulation] v21 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 2036 ms
+               Ravi placed the apple in a basket.
+19:27:04 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  293.6s] Okay class, look at the board. (537 ms)
+  [  298.5s] Ravi climbed the apple tree. (559 ms)
+19:27:17 INFO    copilot.story.detector: [STORY] edit 'Ravi climbed the apple tree.'
+19:27:17 INFO    copilot.presentation.story: [STORY] 'Ravi' read as 'Rabi' (a name like it)
+  [SLIDE] update 'Rabi' [simulation] v22 (1 items)
+19:27:19 INFO    copilot.presentation.story: [STORY] anim n=10 heard->shown 1.45 s (call+compile 1.45 s, 1623 tokens, 2 events): 'Ravi climbed the apple tree.'
+  [SLIDE] update 'Rabi' [simulation] v23 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 3050 ms
+               Ravi climbs the apple tree
+19:27:22 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  307.3s] Then he jumped off the tree. (557 ms)
+19:27:26 INFO    copilot.story.detector: [STORY] edit 'Then he jumped off the tree.'
+19:27:26 INFO    copilot.presentation.story: [STORY] scene 6: 'Then he jumped off the tree.' (when '', where '', query 'Rabi')
+  [SLIDE] update 'Rabi' [simulation] v24 (1 items)
+19:27:27 INFO    copilot.presentation.story: [STORY] anim n=11 heard->shown 1.39 s (call+compile 1.38 s, 1562 tokens, 2 events): 'Then he jumped off the tree.'
+  [SLIDE] update 'Rabi' [simulation] v25 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1661 ms
+               Rabi jumps off the tree after climbing it.
+19:27:27 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  316.4s] An old man rode his horse to the village. (573 ms)
+19:27:36 INFO    copilot.story.detector: [STORY] edit 'An old man rode his horse to the village.'
+19:27:36 INFO    copilot.presentation.story: [STORY] scene 7: 'An old man rode his horse to the village.' (when '', where 'the village', query 'village')
+  [SLIDE] update 'Rabi' [simulation] v26 (1 items)
+19:27:38 INFO    copilot.presentation.story: [STORY] anim n=12 heard->shown 1.44 s (call+compile 1.44 s, 1669 tokens, 2 events): 'An old man rode his horse to the village.'
+  [SLIDE] update 'Rabi' [simulation] v27 (1 items)
+19:27:38 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Biography' -> same_concept
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=concept lines=1 via groq_main#2 1628 ms
+               The teacher added that an old man rode his horse to the village.
+19:27:38 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  329.2s] Can everyone see the screen? (522 ms)
+  [  335.2s] Then he jumped off the tree. (537 ms)
+19:27:54 INFO    copilot.story.detector: [STORY] edit 'Then he jumped off the tree.'
+19:27:54 INFO    copilot.presentation.story: [STORY] anim: repeat 'Then he jumped off the tree.', no call
+19:27:54 INFO    copilot.presentation.story: [STORY] repeat: 'Then he jumped off the tree.' changes nothing
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 1232 ms
+               Rabi jumps off the tree after climbing it.
+19:27:55 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  341.4s] Mina picked up a stone and pushed a cart. (581 ms)
+19:28:02 INFO    copilot.story.detector: [STORY] edit 'Mina picked up a stone and pushed a cart.'
+  [SLIDE] update 'Rabi' [simulation] v28 (1 items)
+19:28:02 INFO    copilot.simulation.detector: [SIM] setup block_on_surface {}
+19:28:03 WARNING copilot.llm.router: llm groq_stage#1 failed: 400 json_validate_failed
+  [UNDERSTAND] Rabi > Biography (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1512 ms
+               Mina picks up a stone and pushes a cart
+19:28:04 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+19:28:04 INFO    copilot.presentation.story: [STORY] anim n=13 heard->shown 2.23 s (call+compile 2.23 s, 1657 tokens, 7 events): 'Mina picked up a stone and pushed a cart.'
+  [SLIDE] update 'Rabi' [simulation] v29 (1 items)
+  [  357.9s] And this is the end of the story. (648 ms)
+19:28:16 INFO    copilot.story.detector: [STORY] end 'And this is the end of the story.'
+19:28:16 INFO    copilot.presentation.engine: slide 'Recap: Rabi' waits for the min dwell time
+19:28:16 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard 'And this is the end of the story.'): recap 2 slide(s) (11 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Rabi' [key_points] v1 (8 items)
+19:28:17 INFO    copilot.presentation.story: [STORY] anim summary: 14 lines, 13 shots, 0 refused, 21668 tokens, heard->shown p50 1.44 s p90 1.99 s
+  [SLIDE] update 'Rabi' [simulation] v30 (1 items)
+  [UNDERSTAND] Rabi > Biography (same_concept) acts=recap hint=key_points lines=1 via groq_main#2 1429 ms
+               Teacher signals the story’s conclusion.
+19:28:18 INFO    copilot.presentation.engine: planner: continue Rabi > Biography (new facet)
+19:28:18 INFO    copilot.presentation.engine: slide 'Biography' waits for the min dwell time
+  [SLIDE] add    'Recap: Rabi' [key_points] v1 (3 items)
+  [  369.6s] And this is the end of the story. (549 ms)
+  [  373.0s] Let me tell you the story of Ravi. (539 ms)
+19:28:32 INFO    copilot.story.detector: [STORY] cue 'Let me tell you the story of Ravi.'
+19:28:32 INFO    copilot.presentation.simulations: [SIM] story mode on: Ravi on its own slide (cue)
+19:28:32 INFO    copilot.presentation.story: [STORY] open: Ravi (cue)
+19:28:32 INFO    copilot.presentation.story: [STORY] scene 1: 'Ravi.' (when '', where '', query 'Ravi')
+  [SLIDE] add    'Biography' [key_points] v1 (1 items)
+  [SLIDE] add    'Ravi' [simulation] v1 (1 items)
+  [SLIDE] update 'Ravi' [simulation] v2 (1 items)
+  [SLIDE] update 'Ravi' [simulation] v3 (1 items)
+19:28:33 INFO    copilot.presentation.story: [STORY] anim n=1 heard->shown 0.81 s (call+compile 0.81 s, 1398 tokens, 0 events): 'Let me tell you the story of Ravi.'
+  [SLIDE] update 'Ravi' [simulation] v4 (1 items)
+19:28:35 INFO    copilot: [STT] vocabulary prompt: 34 terms (newest: Biography, Mina, Ravi)
+  [UNDERSTAND] Rabi > Ravi (sibling_concept) acts=transition,transition hint=none lines=2 via groq_main#2 3044 ms
+               Teacher ends the Rabi story and announces a new story about Ravi.
+19:28:35 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [  380.3s] Ravi was sitting under an apple tree. (612 ms)
+19:28:40 INFO    copilot.story.detector: [STORY] edit 'Ravi was sitting under an apple tree.'
+  [SLIDE] update 'Ravi' [simulation] v5 (1 items)
+19:28:41 INFO    copilot.presentation.story: [STORY] anim n=2 heard->shown 0.73 s (call+compile 0.73 s, 1378 tokens, 2 events): 'Ravi was sitting under an apple tree.'
+  [SLIDE] update 'Ravi' [simulation] v6 (1 items)
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=explanation hint=concept lines=1 via groq_main#2 3811 ms
+               Ravi is described sitting under an apple tree.
+19:28:44 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  387.8s] An apple fell on his head. (562 ms)
+19:28:46 INFO    copilot.story.detector: [STORY] edit 'An apple fell on his head.'
+  [SLIDE] update 'Ravi' [simulation] v7 (1 items)
+19:28:47 INFO    copilot.presentation.story: [STORY] anim n=3 heard->shown 0.86 s (call+compile 0.85 s, 1418 tokens, 2 events): 'An apple fell on his head.'
+  [SLIDE] update 'Ravi' [simulation] v8 (1 items)
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1462 ms
+               An apple fell on his head.
+19:28:48 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  395.5s] Ravi picked up the apple and walked to the village. (657 ms)
+19:28:56 INFO    copilot.story.detector: [STORY] edit 'Ravi picked up the apple and walked to the village.'
+19:28:56 INFO    copilot.presentation.story: [STORY] scene 2: 'Ravi picked up the apple and walked to the village' (when '', where 'the village', query 'village')
+  [SLIDE] update 'Ravi' [simulation] v9 (1 items)
+19:28:57 INFO    copilot.presentation.story: [STORY] anim n=4 heard->shown 1.10 s (call+compile 1.10 s, 1560 tokens, 6 events): 'Ravi picked up the apple and walked to the village.'
+  [SLIDE] update 'Ravi' [simulation] v10 (1 items)
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 5125 ms
+               Ravi picks up the apple and walks to the village
+19:29:01 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  406.7s] There he met his sister, Mina. (562 ms)
+19:29:06 INFO    copilot.story.detector: [STORY] edit 'There he met his sister, Mina.'
+19:29:06 INFO    copilot.presentation.story: [STORY] scene 3: 'There he met his sister, Mina.' (when '', where '', query 'Mina')
+  [SLIDE] update 'Ravi' [simulation] v11 (1 items)
+  [UNDERSTAND] Rabi > Ravi (elaboration) acts=explanation hint=key_points lines=1 via groq_main#4 1114 ms
+               Ravi meets his sister Mina in the story
+19:29:07 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+19:29:08 INFO    copilot.story.compile: [STORY] fallback {'op': 'none', 'actor': 'e1', 'verb': 'met', 'why': 'no motion for this op in P0'}
+19:29:08 INFO    copilot.presentation.story: [STORY] anim n=5 heard->shown 1.64 s (call+compile 1.64 s, 1564 tokens, 0 events, 1 fallback): 'There he met his sister, Mina.'
+  [SLIDE] update 'Ravi' [simulation] v12 (1 items)
+  [  415.5s] Ravi gave the apple to Mina. (588 ms)
+19:29:14 INFO    copilot.story.detector: [STORY] edit 'Ravi gave the apple to Mina.'
+19:29:14 INFO    copilot.presentation.story: [STORY] scene 4: 'Ravi gave the apple to Mina.' (when '', where 'Mina', query 'Mina')
+  [SLIDE] update 'Ravi' [simulation] v13 (1 items)
+19:29:16 INFO    copilot.presentation.story: [STORY] anim n=6 heard->shown 1.45 s (call+compile 1.45 s, 1518 tokens, 2 events): 'Ravi gave the apple to Mina.'
+  [SLIDE] update 'Ravi' [simulation] v14 (1 items)
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 3654 ms
+               Ravi gave the apple to Mina.
+19:29:18 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  423.2s] Mina said, Thank you brother. (557 ms)
+19:29:22 INFO    copilot.story.detector: [STORY] edit 'Mina said, Thank you brother.'
+19:29:22 INFO    copilot.presentation.story: [STORY] Mina say: 'Thank you brother.'
+  [SLIDE] update 'Ravi' [simulation] v15 (1 items)
+19:29:23 INFO    copilot.presentation.story: [STORY] anim n=7 heard->shown 1.14 s (call+compile 1.14 s, 1479 tokens, 1 events): 'Mina said, Thank you brother.'
+  [SLIDE] update 'Ravi' [simulation] v16 (1 items)
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1246 ms
+               Mina thanks Ravi for the apple
+19:29:25 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  430.4s] Then Mina threw the apple to Ravi. (622 ms)
+19:29:29 INFO    copilot.story.detector: [STORY] edit 'Then Mina threw the apple to Ravi.'
+19:29:29 INFO    copilot.presentation.story: [STORY] scene 5: 'Then Mina threw the apple to Ravi.' (when '', where 'Ravi', query 'Ravi')
+  [SLIDE] update 'Ravi' [simulation] v17 (1 items)
+19:29:31 INFO    copilot.presentation.story: [STORY] anim n=8 heard->shown 1.34 s (call+compile 1.33 s, 1413 tokens, 5 events): 'Then Mina threw the apple to Ravi.'
+  [SLIDE] update 'Ravi' [simulation] v18 (1 items)
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 4768 ms
+               Mina throws the apple back to Ravi
+19:29:34 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  439.4s] Ravi, put the apple in a basket. (606 ms)
+19:29:39 INFO    copilot.story.detector: [STORY] edit 'Ravi, put the apple in a basket.'
+  [SLIDE] update 'Ravi' [simulation] v19 (1 items)
+19:29:39 INFO    copilot.presentation.story: [STORY] anim n=9 heard->shown 0.82 s (call+compile 0.82 s, 1470 tokens, 1 events): 'Ravi, put the apple in a basket.'
+  [SLIDE] update 'Ravi' [simulation] v20 (1 items)
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=other hint=key_points lines=1 via groq_main#4 1635 ms
+               Ravi puts the apple in a basket.
+19:29:41 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [  448.2s] Okay class, look at the board. (625 ms)
+  [  452.0s] Ravi climbed the apple tree. (541 ms)
+19:29:50 INFO    copilot.story.detector: [STORY] edit 'Ravi climbed the apple tree.'
+  [SLIDE] update 'Ravi' [simulation] v21 (1 items)
+19:29:52 INFO    copilot.presentation.story: [STORY] anim n=10 heard->shown 1.11 s (call+compile 1.11 s, 1575 tokens, 2 events): 'Ravi climbed the apple tree.'
+  [SLIDE] update 'Ravi' [simulation] v22 (1 items)
+  [UNDERSTAND] Rabi > Ravi (elaboration) acts=explanation hint=key_points lines=1 via groq_main#2 1274 ms
+               Ravi climbs the apple tree
+19:29:54 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  460.3s] Then he jumped off the tree. (551 ms)
+19:29:59 INFO    copilot.story.detector: [STORY] edit 'Then he jumped off the tree.'
+19:29:59 INFO    copilot.presentation.story: [STORY] scene 6: 'Then he jumped off the tree.' (when '', where '', query 'Ravi')
+  [SLIDE] update 'Ravi' [simulation] v23 (1 items)
+19:29:59 INFO    copilot.presentation.story: [STORY] anim n=11 heard->shown 0.50 s (call+compile 0.50 s, 1512 tokens, 2 events): 'Then he jumped off the tree.'
+  [SLIDE] update 'Ravi' [simulation] v24 (1 items)
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=explanation hint=key_points lines=1 via groq_main#4 1532 ms
+               Ravi jumps off the apple tree
+19:30:00 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  466.8s] An old man rode his horse to the village. (638 ms)
+19:30:07 INFO    copilot.story.detector: [STORY] edit 'An old man rode his horse to the village.'
+19:30:07 INFO    copilot.presentation.story: [STORY] scene 7: 'An old man rode his horse to the village.' (when '', where 'the village', query 'village')
+  [SLIDE] update 'Ravi' [simulation] v25 (1 items)
+19:30:09 INFO    copilot.presentation.story: [STORY] anim n=12 heard->shown 2.08 s (call+compile 2.08 s, 1619 tokens, 2 events): 'An old man rode his horse to the village.'
+  [SLIDE] update 'Ravi' [simulation] v26 (1 items)
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=explanation hint=narrative lines=1 via groq_main#2 4212 ms
+               An old man arrives in the village on horseback, continuing Ravi's story.
+19:30:11 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  477.8s] Can everyone see the screen? (534 ms)
+  [  482.9s] Then he jumped off the tree. (540 ms)
+19:30:21 INFO    copilot.story.detector: [STORY] edit 'Then he jumped off the tree.'
+19:30:21 INFO    copilot.presentation.story: [STORY] anim: repeat 'Then he jumped off the tree.', no call
+19:30:21 INFO    copilot.presentation.story: [STORY] repeat: 'Then he jumped off the tree.' changes nothing
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=other hint=key_points lines=1 via groq_main#4 4316 ms
+               Ravi jumps off the tree
+19:30:26 INFO    copilot.presentation.simulations: [SIM] 0 piece(s) not collected: the story recaps its said captions
+  [  488.9s] Mina picked up a stone and pushed a card. (626 ms)
+19:30:29 INFO    copilot.story.detector: [STORY] edit 'Mina picked up a stone and pushed a card.'
+  [SLIDE] update 'Ravi' [simulation] v27 (1 items)
+19:30:31 INFO    copilot.presentation.story: [STORY] anim n=13 heard->shown 1.95 s (call+compile 1.95 s, 1658 tokens, 7 events): 'Mina picked up a stone and pushed a card.'
+  [SLIDE] update 'Ravi' [simulation] v28 (1 items)
+19:30:32 INFO    copilot.understanding.interpreter: relation sibling_concept with unchanged subtopic 'Ravi' -> same_concept
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=explanation hint=key_points lines=1 via groq_main#2 2501 ms
+               Mina picks up a stone and pushes a card
+19:30:32 INFO    copilot.presentation.simulations: [SIM] 1 piece(s) not collected: the story recaps its said captions
+  [  502.6s] And that's the end of the story. (584 ms)
+19:30:41 INFO    copilot.story.detector: [STORY] end "And that's the end of the story."
+19:30:41 INFO    copilot.presentation.engine: slide 'Recap: Ravi' waits for the min dwell time
+19:30:41 INFO    copilot.presentation.simulations: [SIM] simulation mode off (heard "And that's the end of the story."): recap 2 slide(s) (11 kept, 0 dropped as parameter talk)
+  [SLIDE] add    'Recap: Ravi' [key_points] v1 (8 items)
+19:30:41 INFO    copilot.presentation.story: [STORY] anim summary: 13 lines, 13 shots, 0 refused, 19562 tokens, heard->shown p50 1.11 s p90 1.95 s
+  [SLIDE] update 'Ravi' [simulation] v29 (1 items)
+  [UNDERSTAND] Rabi > Ravi (same_concept) acts=transition hint=none lines=1 via groq_main#2 3376 ms
+               Teacher concluded the story about Ravi
+19:30:45 INFO    copilot.presentation.engine: planner: noop Rabi > Ravi (nothing to display)
+  [SLIDE] add    'Recap: Ravi' [key_points] v1 (3 items)
+[END]   finishing lecture understanding (0 buffered lines) ...
+[ENDED] session 20261102-192125-6292: 54 segments, 360 words, state v112, 749 events logged
+        CommandReceived=6, ConceptSignal=49, DeckState=19, InterpretRequested=47, InterpretationReady=47, LLMCallFailed=1, LifecycleChanged=5, LiveCue=42, ModeChanged=1, RepresentationIntent=50, SimulationModeChanged=6, SimulationSettingChanged=1, SlideContextChanged=7, SlidePatch=98, StateChanged=112, TranscriptFinal=54, TranscriptPartial=147, UtteranceClassified=54, VocabularyChanged=3
+        stt: 54 published, 0 dropped, latency p50=562 ms p95=657 ms max=705 ms
+        understanding: 47 interpretations (47 by LLM, 0 fallbacks, 0 repaired), max 8 calls/min, prompt tokens max=2002 avg=1933, latency p50=1558 ms max=5125 ms
+        presentation: 11 slides; planner ops {'story_start': 3, 'new': 1, 'continue': 1, 'noop': 1}; revisions 0, corrections shown 0, shown as said 0
+        images: {'requests': 0, 'found': 0, 'none': 0}; slides with an image 0/11
+          1. [simulation] Rabi  (v31, ['story'])
+          2. [key_points] Recap: Rabi [part 1]  (v1, ['points'])
+          3. [key_points] Recap: Rabi [part 2]  (v1, ['points'])
+          4. [key_points] Biography  (v1, ['points'])
+          5. [simulation] Rabi  (v30, ['story'])
+          6. [key_points] Recap: Rabi [part 1]  (v1, ['points'])
+          7. [key_points] Recap: Rabi [part 2]  (v1, ['points'])
+          8. [key_points] Biography  (v1, ['points'])
+          9. [simulation] Ravi  (v29, ['story'])
+          10. [key_points] Recap: Ravi [part 1]  (v1, ['points'])
+          11. [key_points] Recap: Ravi [part 2]  (v1, ['points'])
+        providers: {'groq_main#2': 33, 'groq_main#4': 14}; triggers: {'pause': 47}; outline: ['Rabi > Biography, Ravi']; concerns: 0
+        log: C:\Users\parit\Desktop\Multimodal AI Teaching Copilot for Real-Time Visual Learning Generation\data\sessions\20261102-192125-6292\session.sqlite

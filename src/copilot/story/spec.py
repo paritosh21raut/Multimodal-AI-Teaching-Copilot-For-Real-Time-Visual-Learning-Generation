@@ -5,10 +5,12 @@ found pictures; the display (web/story/player.js) draws it, the camera motion is
     scenes   one per story beat: its caption (said words, shortened), its picture, who stands in it, its bubbles
     look     ST2: each cast member's own colour and figure; gender only from said words
     shown    the scene on screen (a newer scene waits for the dwell time; the teacher's Prev / Next moves it)
+    shot     P1c: the newest compiled animation (story/compile.py, numbered by "n"); the display plays it on the
+             canvas instead of the pictures. unread: the last line that could not be drawn (the shot stays; why: the log)
 """
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -62,6 +64,9 @@ class StoryboardSpec(_Model):
     scenes: list[StoryScene] = Field(default_factory=list)
     shown: int = 0
     version: int = 0
+    anim: bool = False        # P1c: the canvas animation view (from the start, before the first shot lands)
+    shot: Optional[dict[str, Any]] = None
+    unread: str = ""
 
     def member(self, cid: str) -> CastMember | None:
         return next((c for c in self.cast if c.id == cid), None)

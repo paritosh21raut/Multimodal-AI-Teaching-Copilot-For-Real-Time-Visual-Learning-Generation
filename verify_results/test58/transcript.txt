@@ -1,0 +1,54 @@
+[    0.4] Let me tell you the story of Rabi.
+[    4.5] Ravi was sitting under an apple tree.
+[   14.5] An apple fell on his head.
+[   26.1] Ravi picked up the apple and walked to the village.
+[   46.8] There you met his sister, Mina.
+[   58.0] Probably give the apple to me now.
+[   70.3] Then Mina said, thank you brother.
+[   81.6] Then Mina threw the apple to Ravi.
+[   92.1] Ravi put the apple in a basket.
+[  101.2] Okay class, look at the board.
+[  113.0] Ravi, climb the apple tree.
+[  124.1] Then he jumped off the tree.
+[  132.5] An old man rode his horse to the village.
+[  144.6] Can anyone see the screen?
+[  153.7] Then he jumped off the tree.
+[  160.4] Mina picked up a stone and pushed a card.
+[  179.2] And that is the end of the story.
+[  187.8] Let me tell you the story of Rabi.
+[  193.8] Rabi.
+[  196.9] Rabi.
+[  202.1] Ravi was sitting under an apple tree.
+[  215.7] An apple fell on his head.
+[  224.4] Ravi picked up the apple and walked to the village.
+[  243.6] There he met his sister, Mina.
+[  252.4] Ravi, give the apple to me na.
+[  263.8] Mina said, Thank you brother.
+[  272.6] Then Mina threw the apple to Ravi.
+[  282.6] Ravi put the apple in a basket.
+[  293.6] Okay class, look at the board.
+[  298.5] Ravi climbed the apple tree.
+[  307.3] Then he jumped off the tree.
+[  316.4] An old man rode his horse to the village.
+[  329.2] Can everyone see the screen?
+[  335.2] Then he jumped off the tree.
+[  341.4] Mina picked up a stone and pushed a cart.
+[  357.9] And this is the end of the story.
+[  369.6] And this is the end of the story.
+[  373.0] Let me tell you the story of Ravi.
+[  380.3] Ravi was sitting under an apple tree.
+[  387.8] An apple fell on his head.
+[  395.5] Ravi picked up the apple and walked to the village.
+[  406.7] There he met his sister, Mina.
+[  415.5] Ravi gave the apple to Mina.
+[  423.2] Mina said, Thank you brother.
+[  430.4] Then Mina threw the apple to Ravi.
+[  439.4] Ravi, put the apple in a basket.
+[  448.2] Okay class, look at the board.
+[  452.0] Ravi climbed the apple tree.
+[  460.3] Then he jumped off the tree.
+[  466.8] An old man rode his horse to the village.
+[  477.8] Can everyone see the screen?
+[  482.9] Then he jumped off the tree.
+[  488.9] Mina picked up a stone and pushed a card.
+[  502.6] And that's the end of the story.
