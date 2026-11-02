@@ -1,0 +1,1 @@
+{"_doc": "A pot / bucket / jar. Metres; x = centre, y = the bottom (held: centred on the hand). Drawn by props.js thing().", "width": 0.34, "height": 0.38, "affordances": {"holdable": {"target": "centre", "actor": "hand"}, "container": {"target": "inside", "actor": "hand"}}}

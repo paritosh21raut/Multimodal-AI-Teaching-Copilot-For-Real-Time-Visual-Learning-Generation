@@ -1,0 +1,1 @@
+{"_doc": "A ball (round). Metres; x = centre, y = the bottom (held: centred on the hand). Drawn by props.js thing().", "width": 0.22, "height": 0.22, "affordances": {"holdable": {"target": "centre", "actor": "hand"}}}

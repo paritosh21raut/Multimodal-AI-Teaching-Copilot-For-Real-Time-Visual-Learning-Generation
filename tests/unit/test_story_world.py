@@ -46,7 +46,7 @@ def test_refused_whole_unknown_id_op_relation_or_unsaid_words():
         ({**A2, "events": [{"op": "teleport", "actor": "e3"}]}, "op"),
         ({**A2, "relations": [{"a": "e3", "rel": "inside_of", "b": "e1"}]}, "rel"),
         ({**A2, "new": [{"id": "e3", "kind": "prop", "name": "a banana"}]}, "not said"),
-        ({**A2, "new": [{"id": "e2", "kind": "prop", "name": "An apple"}]}, "taken"),
+        ({**A2, "new": [{"id": "e2", "kind": "prop", "name": "An apple"}]}, "unknown"),   # P1b: the taken id is renumbered; e3 is still unknown
         ({**A2, "events": [{"op": "react", "actor": "e1", "value": "bored"}]}, "value"),
         ({"rev": 1}, "empty"),
     ]:

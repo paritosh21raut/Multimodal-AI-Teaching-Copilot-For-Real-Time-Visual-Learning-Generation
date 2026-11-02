@@ -1,0 +1,1 @@
+{"_doc": "A small (toy / paper) boat. Metres; x = centre, y = the bottom (held: centred on the hand). Drawn by props.js thing().", "width": 0.9, "height": 0.34, "affordances": {"holdable": {"target": "centre", "actor": "hand"}, "floats": {"target": "hull", "actor": ""}}}

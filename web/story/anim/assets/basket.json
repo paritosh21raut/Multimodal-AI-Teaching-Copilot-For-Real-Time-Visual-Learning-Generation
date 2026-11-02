@@ -1,0 +1,1 @@
+{"_doc": "A basket with a handle. Metres; x = centre, y = the bottom (held: centred on the hand). Drawn by props.js thing().", "width": 0.46, "height": 0.34, "affordances": {"holdable": {"target": "centre", "actor": "hand"}, "container": {"target": "inside", "actor": "hand"}}}

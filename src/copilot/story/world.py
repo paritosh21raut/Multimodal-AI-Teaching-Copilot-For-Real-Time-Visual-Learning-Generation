@@ -23,11 +23,15 @@ SPATIAL = ("on", "under", "in", "next_to", "above", "behind", "in_front", "betwe
 ATTACH = ("hold", "ride", "sit_on")  # attachments live in the relation list too: "in" is both
 RELATIONS = SPATIAL + ATTACH
 OPS = ("enter", "exit", "move_to", "follow_path", "change_posture", "attach", "detach", "fall", "throw", "look_at",
-       "point_at", "speak", "react", "work", "none")
+       "point_at", "speak", "react", "work", "put", "give", "jump", "climb", "push", "none")
+PUT = ("on", "in", "under", "next_to")    # put: where the thing goes (P1b)
+JUMP = ("", "onto", "off")                # jump: in place, onto the target, off / out of it
+PUSH = ("push", "pull")
 KNOWN = ("newton", "einstein", "curie", "napoleon", "gandhi", "galileo", "darwin", "tesla", "edison", "archimedes",
          "shakespeare", "columbus")
 PARTS = ("head", "hand", "back", "feet", "ground")
-_TARGET_OPS = ("move_to", "fall", "throw", "look_at", "point_at", "speak", "work", "attach", "enter", "exit")
+_TARGET_OPS = ("move_to", "fall", "throw", "look_at", "point_at", "speak", "work", "attach", "enter", "exit", "put",
+               "give", "jump", "climb", "push")
 _LOCATING = ("on", "under", "in", "next_to", "above", "behind", "in_front", "between", "sit_on", "ride")
 
 
@@ -139,12 +143,16 @@ class World:
         elif ev.op in ("move_to", "exit", "enter", "follow_path"):
             self._drop(lambda x: x.a == ev.actor and x.rel in _LOCATING + ("towards", "away_from"))
         elif ev.op == "detach":
-            self._drop(lambda x: x.a == ev.actor and (x.rel in ATTACH if not ev.target  # review: not his room
+            riding = any(x.a == ev.actor and x.rel == "ride" for x in self.relations)
+            mine = ("ride",) if riding else ATTACH               # review: "he got off" keeps the lamp in his hand
+            self._drop(lambda x: x.a == ev.actor and (x.rel in mine if not ev.target  # review: not his room
                                                       else x.rel in ATTACH + ("in", "on") and x.b == ev.target))
         elif ev.op == "fall":  # it leaves where it hung / was held; it lands on the target
             self._drop(lambda x: (x.a == ev.actor and x.rel in _LOCATING) or (x.rel == "hold" and x.b == ev.actor))
         elif ev.op == "throw" and ev.obj:
             self._drop(lambda x: x.rel == "hold" and x.b == ev.obj)
+            if ev.target in self.entities and self.entities[ev.target].kind == "person":   # thrown to: caught
+                self.relations.append(Relation(ev.target, "hold", ev.obj))
         elif ev.op == "attach" and ev.target:
             rel = {"hold": "hold", "ride": "ride", "sit_on": "sit_on", "in": "in"}[ev.value]
             a_, b_ = (ev.actor, ev.target)
@@ -154,20 +162,39 @@ class World:
                 self.relations.append(r)
             if rel in ("ride", "sit_on"):
                 a.posture = "sit"
+        elif ev.op == "put" and ev.obj:     # the thing leaves the hand: on / in the target, or down on the ground
+            self._drop(lambda x: (x.rel == "hold" and x.b == ev.obj) or (x.a == ev.obj and x.rel in _LOCATING))
+            if ev.target:
+                self.relations.append(Relation(ev.obj, ev.value or "on", ev.target))
+        elif ev.op == "give" and ev.obj and ev.target:    # the hold moves to the one given to
+            self._drop(lambda x: x.rel == "hold" and x.b == ev.obj)
+            self.relations.append(Relation(ev.target, "hold", ev.obj))
+        elif ev.op == "climb" and ev.target:
+            self._drop(lambda x: x.a == ev.actor and x.rel in _LOCATING)
+            self.relations.append(Relation(ev.actor, "on", ev.target))
+        elif ev.op == "jump" and ev.target and ev.value == "onto":
+            self._drop(lambda x: x.a == ev.actor and x.rel in _LOCATING)
+            self.relations.append(Relation(ev.actor, "on", ev.target))
+        elif ev.op == "jump" and ev.value == "off":       # off / out of the target (or whatever it was on / in)
+            self._drop(lambda x: x.a == ev.actor and x.rel in _LOCATING and (not ev.target or x.b == ev.target))
 
 
 # ---- validate ------------------------------------------------------------------------------------------------------
-def validate(ans: Any, world: World, line: str) -> tuple[Optional[Delta], str]:
+def validate(ans: Any, world: World, line: str, rev: Optional[int] = None) -> tuple[Optional[Delta], str]:
     """The model's JSON -> a Delta, whole or not at all (reason on refusal). Ids exist (or are new), ops / relations /
-    postures / modes / feelings closed, names and spoken words are spans of THIS line, a known person said."""
+    postures / modes / feelings closed, names and spoken words are spans of THIS line, a known person said.
+    rev = the revision the call was made against, stamped by the caller (P1b: a model's echoed rev is ignored; it was
+    15 of 21 refusals in P1a). None = the answer's own rev (old callers)."""
     if not isinstance(ans, dict):
         return None, "not an object"
-    rev = ans.get("rev", world.rev)
+    if rev is None:
+        rev = ans.get("rev", world.rev)
     if type(rev) is not int:
         return None, "rev"
     for k in ("new", "events", "relations", "end"):
         if not isinstance(ans.get(k) or [], list):
             return None, f"{k}: not a list"
+    ans = _renumber(ans, world)
     new: list[Entity] = []
     ids = set(world.entities)
     for raw in ans.get("new") or []:
@@ -214,6 +241,47 @@ def validate(ans: Any, world: World, line: str) -> tuple[Optional[Delta], str]:
     return Delta(rev, new, events, rels[0], rels[1]), ""
 
 
+_FILLER = {"a", "an", "the", "of", "his", "her", "their", "its", "some", "one", "two", "big", "small", "little", "old",
+           "young", "this", "that", "these", "those"}
+_OTHER = {"other", "another", "second", "new", "third", "next"}
+_DEFINITE = {"the", "this", "that", "these", "those"}   # not his / her: "his horse" often brings it in
+
+
+def _renumber(ans: dict, world: World) -> dict:
+    """P1b: the ids of "new" are the answer's own labels (P1a: a taken id was 9 of 15 refusals).
+    - a definite name ("the grapes", "that pot") whose noun names exactly one thing of the world IS that thing: the
+      entry is dropped and its references go to that id (an indefinite "a pot" stays a new thing)
+    - any other entry on a taken id gets the next free id
+    Every reference to a changed id in this answer follows."""
+    new = [x for x in ans.get("new") or [] if isinstance(x, dict)]
+    if not new or not world.entities:
+        return ans
+    keep, remap = [], {}
+    taken = {str(v) for k in ("events", "relations", "end") for it in ans.get(k) or [] if isinstance(it, dict)
+             for f, v in it.items() if f in ("actor", "target", "obj", "a", "b", "c")}   # never a label it uses
+    taken |= {str(x.get("id", "")) for x in new}
+    for x in new:
+        eid = str(x.get("id", ""))
+        name = words(str(x.get("name", "")))
+        noun = (words(str(x.get("noun", ""))) or name[-1:] or [""])[-1]
+        same = [e.id for e in world.entities.values() if noun and noun == e.noun]
+        bare = [w for w in name if w not in _DEFINITE and w not in _FILLER] == [noun]   # "the boy", not "the other boy"
+        if name and name[0] in _DEFINITE and bare and not set(name) & _OTHER and len(same) == 1:
+            remap[eid] = same[0]
+            continue
+        if eid in world.entities:
+            remap[eid] = world.next_id(taken | set(remap.values()))
+            x = {**x, "id": remap[eid]}
+        keep.append(x)
+    if not remap:
+        return ans
+    sub = lambda v: remap.get(v, v) if isinstance(v, str) else v
+    fix = lambda items: [{k: sub(v) if k in ("actor", "target", "obj", "a", "b", "c") else v for k, v in it.items()}
+                         if isinstance(it, dict) else it for it in items or []]
+    return {**ans, "new": keep + [x for x in ans.get("new") or [] if not isinstance(x, dict)],
+            "events": fix(ans.get("events")), "relations": fix(ans.get("relations")), "end": fix(ans.get("end"))}
+
+
 _HE_NOUNS = {"man", "boy", "king", "father", "brother", "husband", "grandpa", "son", "uncle", "prince", "knight"}
 _SHE_NOUNS = {"woman", "girl", "queen", "mother", "sister", "wife", "grandma", "daughter", "aunt", "princess"}
 
@@ -241,17 +309,24 @@ def _event(raw: Any, ids: set[str], line: str) -> tuple[Optional[Event], str]:
     verb = str(raw.get("verb", "") or "")
     if verb and not said(verb, line):
         verb = ""
-    allowed = {"change_posture": POSTURES, "attach": MODES, "react": FEELINGS}.get(op)
+    allowed = {"change_posture": POSTURES, "attach": MODES, "react": FEELINGS, "put": PUT + ("",), "jump": JUMP,
+               "push": PUSH + ("",)}.get(op)
     if allowed is not None and value not in allowed:
         return None, f"{op}: value {value!r}"
     if op == "fall" and value and value not in PARTS:
         return None, f"fall: part {value!r}"
     if op == "speak" and value and not said(value, line):
         return None, "speak: words not said"
-    if op in ("attach", "throw", "look_at", "point_at") and not (target or obj):
+    if op in ("attach", "throw", "look_at", "point_at", "climb", "push") and not (target or obj):
         return None, f"{op}: no target"
-    if op == "attach" and not target:
+    if op in ("put", "give") and not obj:
+        return None, f"{op}: no obj"
+    if op in ("attach", "climb", "push") and not target:
         target = obj
+    if op == "put" and not value:
+        value = "on"
+    if op == "push" and not value:
+        value = "push"
     return Event(op, actor, target, obj, value, verb), ""
 
 

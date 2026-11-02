@@ -45,6 +45,14 @@ function target(P, posture, f, ctx) {
     case 'crouch':
       return { pelvis: [f * P.pelvis_dx.crouch, pv], lean: P.lean.crouch, feet: [[f * 0.1, 0.02], [-f * 0.1, 0.02]],
         hands: [[f * 0.35, 0.25], [f * 0.3, 0.22]], kneeFwd: 1 };
+    case 'reach_down':   // bent at the hips and knees to set a thing down on the ground / pick it up
+      return { pelvis: [-f * 0.12, pv], lean: P.lean.reach_down, feet: [[f * 0.12, 0.02], [-f * 0.12, 0.02]],
+        hands: [[f * 0.5, 0.12], [f * 0.45, 0.16]], kneeFwd: 1 };
+    case 'climb': {   // P1b: facing the trunk / wall, hands up on it, one foot higher (the phase swaps them)
+      const a = ctx.climbPh ?? 0, up = 0.5 + 0.5 * Math.sin(a);
+      return { pelvis: [-f * 0.05, pv], lean: P.lean.climb, feet: [[f * 0.12, 0.02 + 0.3 * up], [f * 0.12, 0.32 - 0.3 * up]],
+        hands: [[f * 0.22, 1.5 + 0.25 * (1 - up)], [f * 0.22, 1.75 - 0.25 * (1 - up)]], kneeFwd: 1 };
+    }
     default: {
       const s = sh(0, pv);
       return { pelvis: [0, pv], lean: 0, feet: [[-f * 0.06, 0.02], [f * 0.08, 0.02]],
@@ -66,7 +74,7 @@ function blend(a, b, k) {
 export function pose(P, s) {
   const f = s.f;
   const ctx = { seat: s.seat ? [s.seat[0] - s.x, s.seat[1]] : null,
-    reins: s.reins ? [s.reins[0] - s.x, s.reins[1]] : null };
+    reins: s.reins ? [s.reins[0] - s.x, s.reins[1]] : null, climbPh: s.climbPh };
   let T = blend(target(P, s.from, f, ctx), target(P, s.to, f, ctx), ease(s.k));
   if (s.seatK != null && s.seatK < 1) {   // mounting: the pelvis rides an arc from standing beside to the saddle
     const a = target(P, 'stand', f, {}), b = target(P, 'sit', f, ctx), k = ease(s.seatK);
@@ -107,6 +115,31 @@ export function pose(P, s) {
     hands[1] = [rSh[0] + f * (0.32 + 0.06 * g), rSh[1] - 0.18 + 0.12 * g];
   }
   if (s.point) hands[1] = [rSh[0] + f * 0.55, rSh[1] + 0.05];
+  // P1b hand ops: a held thing sits at the carry anchor off the pelvis (person.json "carry", compile.py hand_at);
+  // hand 0 = the right (near) hand, 1 = the left
+  const carry = (k) => [px + f * P.carry[k][0], py + P.carry[k][1]];
+  if (s.hold) s.hold.forEach((on, k) => { if (on) hands[1 - k] = carry(k); });
+  if (s.raise) {
+    const k = s.raise.k, up = k < 0.25 ? ease(k / 0.25) : k > 0.8 ? 1 - ease((k - 0.8) / 0.2) : 1, i = 1 - s.raise.hand;
+    hands[i] = lerp2(hands[i], [(i ? rSh : lSh)[0] + f * 0.12, head[1] + 0.32], up);
+  }
+  if (s.reach) hands[1] = lerp2(hands[1], [rSh[0] + f * P.reach_out[0], rSh[1] - 0.12], ease(s.reach));
+  if (s.push) hands = [[lSh[0] + f * 0.48, lSh[1] - 0.12], [rSh[0] + f * 0.5, rSh[1] - 0.08]];
+  if (s.throwArm != null) {   // overarm: wind up behind the head, whip to the release point (person.json), follow through
+    const { k, rel } = s.throwArm, back = [rSh[0] - f * 0.3, rSh[1] + 0.3], out = [rSh[0] + f * P.release[0], rSh[1] + P.release[1]];
+    const w = rel - 0.2;
+    hands[1] = k < w ? lerp2(hands[1], back, ease(k / w)) : k < rel ? lerp2(back, out, (k - w) / 0.2)
+      : lerp2(out, [rSh[0] + f * 0.4, rSh[1] - 0.35], ease((k - rel) / (1 - rel)));
+    hands[0] = lerp2(hands[0], [lSh[0] + f * 0.35, lSh[1] + 0.05], Math.sin(Math.PI * Math.min(k / rel, 1)));   // the aim arm
+  }
+  if (s.ready) {   // both hands up and out to catch, at the point Python aims the throw at (person.json "catch")
+    const c = [rSh[0] + f * P.catch[0], rSh[1] + P.catch[1]], u = ease(Math.min(1, s.ready * 3));
+    hands = [lerp2(hands[0], [c[0] - f * 0.06, c[1] - 0.04], u), lerp2(hands[1], c, u)];
+  }
+  if (s.handTo) {   // setting a thing down: the hand carries it to the spot (absolute, before the lift shift)
+    const i = 1 - s.handTo.hand, p = [s.handTo.p[0], s.handTo.p[1] - (s.lift || 0)];
+    hands[i] = lerp2(hands[i], p, ease(s.handTo.k));
+  }
   if (s.react) {
     const k = s.react.k;
     const up = k < 0.45 ? ease(k / 0.15) : 1 - ease((k - 0.45) / 0.2);
@@ -131,6 +164,7 @@ export function pose(P, s) {
     for (const n of JOINTS) J[n] = [o[0] + (J[n][0] - o[0]) * k, o[1] + (J[n][1] - o[1]) * k];
     J.r *= k;
   }
+  if (s.lift) for (const n of JOINTS) J[n] = [J[n][0], J[n][1] + s.lift];   // feet above the ground: a jump, a branch
   return J;
 }
 

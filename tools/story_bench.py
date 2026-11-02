@@ -212,7 +212,7 @@ def score_story(story: dict, answers: Optional[list[dict]] = None) -> Tally:
             ans = parse(rec.get("text", ""))
             if rec.get("s") is not None:
                 t.lat.append(rec["s"])
-        delta, why = W.validate(ans, world, ln["text"]) if ans is not None else (None, "no JSON")
+        delta, why = W.validate(ans, world, ln["text"], rev=world.rev) if ans is not None else (None, "no JSON")
         before = list(world.relations)
         applied = delta is not None and world.apply(delta)
         if not applied:
@@ -422,7 +422,7 @@ async def record(stories: list[dict]) -> None:
                 await asyncio.sleep(2.0)             # pace the calls (~1.5k tokens each)
                 recs.append({"text": res.text, "tokens": res.tokens, "s": round(res.total_s, 2) if res.text else None})
                 tokens += res.tokens
-                d, _ = W.validate(res.answer, world, ln["text"]) if res.answer is not None else (None, "")
+                d, _ = W.validate(res.answer, world, ln["text"], rev=world.rev) if res.answer is not None else (None, "")
                 if d is not None:
                     world.apply(d)
                 before.append(ln["text"])

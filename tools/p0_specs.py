@@ -78,9 +78,43 @@ def look_demo() -> list[dict]:
     return out
 
 
+# P1b motions (docs/v3/P1b-semantic-actions.md): HAND-WRITTEN deltas on one world, one scene per line (G..M):
+# pick up + carry, put + climb, jump off, give, throw, pick up + push, drop + walk off.
+E = W.Entity
+P1B_DEMO = [
+    ("Ravi picked up an apple and walked to the tree.", W.Delta(0, new=[
+        E("e1", "person", "Ravi", "Ravi"), E("e2", "prop", "an apple", "apple"), E("e3", "prop", "the tree", "tree")],
+        events=[W.Event("attach", "e1", "e2", value="hold", verb="picked"), W.Event("move_to", "e1", "e3", verb="walked")],
+        relations=[W.Relation("e1", "hold", "e2")])),
+    ("He put the apple under the tree, climbed it and sat on a branch.", W.Delta(1, events=[
+        W.Event("put", "e1", "e3", "e2", "under", "put"), W.Event("climb", "e1", "e3", verb="climbed")])),
+    ("Then he jumped off the tree.", W.Delta(2, events=[W.Event("jump", "e1", "e3", value="off", verb="jumped")])),
+    ("Meena came, and Ravi gave her the apple.", W.Delta(3, new=[E("e4", "person", "Meena", "Meena")], events=[
+        W.Event("give", "e1", "e4", "e2", verb="gave")])),
+    ("Meena threw the apple to the boy.", W.Delta(4, new=[E("e5", "person", "the boy", "boy", gender="he")], events=[
+        W.Event("throw", "e4", "e5", "e2", verb="threw")])),
+    ("The boy picked up a stone and pushed a cart.", W.Delta(5, new=[
+        E("e6", "prop", "a stone", "stone"), E("e7", "prop", "a cart", "cart")], events=[
+        W.Event("attach", "e5", "e6", value="hold", verb="picked"), W.Event("push", "e5", "e7", value="push", verb="pushed")],
+        relations=[W.Relation("e5", "hold", "e6")])),
+    ("He dropped the stone and walked away.", W.Delta(6, events=[
+        W.Event("detach", "e5", "e6", verb="dropped"), W.Event("exit", "e5", verb="walked")])),
+]
+
+
+def p1b_demo() -> list[dict]:
+    world, comp, out = W.World(), Compiler(), []
+    for line, delta in P1B_DEMO:
+        assert world.apply(delta), line
+        out.append(comp.compile(world, line))
+    return out
+
+
 def main() -> None:
     specs = asyncio.run(build())
     specs["E"], specs["F"] = look_demo()
+    for letter, spec in zip("GHIJKLM", p1b_demo()):
+        specs[letter] = spec
     OUT.write_text(json.dumps(specs, indent=1), encoding="utf-8")
     for k, s in specs.items():
         print(k, f"{s['duration']:.1f}s", [e["op"] for e in s["events"]], "fallback:", s["fallback"],

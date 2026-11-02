@@ -1,0 +1,1 @@
+{"_doc": "A hand cart: a bed on two wheels (pushed, not held). Metres; x = centre, y = the bottom (held: centred on the hand). Drawn by props.js thing().", "width": 1.4, "height": 0.85, "wheel_r": 0.24, "affordances": {"pushable": {"target": "back", "actor": "hands"}, "container": {"target": "bed", "actor": "hand"}}}

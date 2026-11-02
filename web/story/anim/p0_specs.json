@@ -22,7 +22,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": "e2"
+     "tree": "e2",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 7.725,
@@ -32,7 +37,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": "e2"
+     "tree": "e2",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": true,
@@ -44,7 +54,8 @@
      "scale": 1.0,
      "stoop": 0.0
     },
-    "label": "Newton"
+    "label": "Newton",
+    "parts": []
    },
    {
     "id": "e2",
@@ -60,7 +71,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 7.0,
@@ -70,8 +86,14 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
+    "parts": [],
     "fruit": "apple",
     "hidden": []
    }
@@ -123,7 +145,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": "e2"
+     "tree": "e2",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 7.725,
@@ -133,7 +160,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": "e2"
+     "tree": "e2",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": true,
@@ -145,7 +177,8 @@
      "scale": 1.0,
      "stoop": 0.0
     },
-    "label": "Newton"
+    "label": "Newton",
+    "parts": []
    },
    {
     "id": "e2",
@@ -161,7 +194,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 7.0,
@@ -171,8 +209,14 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
+    "parts": [],
     "fruit": "apple",
     "hidden": [
      2
@@ -192,7 +236,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": 2,
-     "tree": "e2"
+     "tree": "e2",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 8.501916284523748,
@@ -202,8 +251,14 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
-    }
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
    }
   ],
   "events": [
@@ -291,7 +346,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 7.6,
@@ -301,7 +361,12 @@
      "carrier": "e2",
      "anchor": "saddle",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": true,
@@ -313,7 +378,8 @@
      "scale": 0.74,
      "stoop": 0.0
     },
-    "label": ""
+    "label": "",
+    "parts": []
    },
    {
     "id": "e2",
@@ -329,7 +395,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 7.6,
@@ -339,8 +410,14 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
-    }
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
    },
    {
     "id": "e3",
@@ -356,7 +433,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 11.0,
@@ -366,8 +448,14 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
-    }
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
    }
   ],
   "events": [
@@ -446,7 +534,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 7.0,
@@ -456,7 +549,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": true,
@@ -468,7 +566,8 @@
      "scale": 1.0,
      "stoop": 0.0
     },
-    "label": "Einstein"
+    "label": "Einstein",
+    "parts": []
    },
    {
     "id": "e2",
@@ -484,7 +583,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 8.4,
@@ -494,7 +598,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": true,
@@ -506,7 +615,8 @@
      "scale": 1.0,
      "stoop": 0.0
     },
-    "label": ""
+    "label": "",
+    "parts": []
    }
   ],
   "events": [
@@ -567,7 +677,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 8.5,
@@ -577,7 +692,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": true,
@@ -589,7 +709,8 @@
      "scale": 1.0,
      "stoop": 0.0
     },
-    "label": "Geeta"
+    "label": "Geeta",
+    "parts": []
    },
    {
     "id": "e2",
@@ -605,7 +726,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 7.65,
@@ -615,7 +741,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": true,
@@ -627,7 +758,8 @@
      "scale": 1.0,
      "stoop": 0.0
     },
-    "label": "Arun"
+    "label": "Arun",
+    "parts": []
    },
    {
     "id": "e3",
@@ -643,7 +775,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 6.8,
@@ -653,7 +790,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": false,
@@ -665,7 +807,8 @@
      "scale": 0.74,
      "stoop": 0.0
     },
-    "label": ""
+    "label": "",
+    "parts": []
    },
    {
     "id": "e4",
@@ -681,7 +824,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 5.95,
@@ -691,7 +839,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": false,
@@ -703,7 +856,8 @@
      "scale": 0.74,
      "stoop": 0.0
     },
-    "label": ""
+    "label": "",
+    "parts": []
    },
    {
     "id": "e5",
@@ -719,7 +873,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 11.0,
@@ -729,8 +888,14 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
-    }
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
    }
   ],
   "events": [
@@ -844,7 +1009,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 8.5,
@@ -854,7 +1024,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": true,
@@ -866,7 +1041,8 @@
      "scale": 1.0,
      "stoop": 0.0
     },
-    "label": "Geeta"
+    "label": "Geeta",
+    "parts": []
    },
    {
     "id": "e2",
@@ -882,7 +1058,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 7.65,
@@ -892,7 +1073,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": true,
@@ -904,7 +1090,8 @@
      "scale": 1.0,
      "stoop": 0.0
     },
-    "label": "Arun"
+    "label": "Arun",
+    "parts": []
    },
    {
     "id": "e3",
@@ -920,7 +1107,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 6.8,
@@ -930,7 +1122,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": false,
@@ -942,7 +1139,8 @@
      "scale": 0.74,
      "stoop": 0.0
     },
-    "label": ""
+    "label": "",
+    "parts": []
    },
    {
     "id": "e4",
@@ -958,7 +1156,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 5.95,
@@ -968,7 +1171,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "look": {
      "main": false,
@@ -980,7 +1188,8 @@
      "scale": 0.74,
      "stoop": 0.0
     },
-    "label": ""
+    "label": "",
+    "parts": []
    },
    {
     "id": "e5",
@@ -996,7 +1205,12 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
     },
     "end": {
      "x": 11.0,
@@ -1006,8 +1220,14 @@
      "carrier": "",
      "anchor": "",
      "fruit": -1,
-     "tree": ""
-    }
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
    }
   ],
   "events": [
@@ -1038,5 +1258,2022 @@
    }
   ],
   "duration": 3.98
+ },
+ "G": {
+  "rev": 1,
+  "line": "Ravi picked up an apple and walked to the tree.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Ravi",
+    "known": "",
+    "start": {
+     "x": 1.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 8.1,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Ravi",
+    "parts": []
+   },
+   {
+    "id": "e2",
+    "kind": "prop",
+    "asset": "apple",
+    "name": "an apple",
+    "known": "",
+    "start": {
+     "x": 7.38,
+     "y": 0.06,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 8.4,
+     "y": 0.98,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "e1",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
+   },
+   {
+    "id": "e3",
+    "kind": "prop",
+    "asset": "tree",
+    "name": "the tree",
+    "known": "",
+    "start": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": [],
+    "fruit": "",
+    "hidden": []
+   }
+  ],
+  "events": [
+   {
+    "op": "move",
+    "actor": "e1",
+    "from": 1.0,
+    "to": 7.0,
+    "t0": 0.3,
+    "t1": 4.915384615384615,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": 1,
+    "carries": []
+   },
+   {
+    "op": "posture",
+    "actor": "e1",
+    "from": "stand",
+    "to": "reach_down",
+    "t0": 4.915384615384615,
+    "t1": 5.415384615384615
+   },
+   {
+    "op": "grip",
+    "actor": "e2",
+    "by": "e1",
+    "hand": 0,
+    "from": [
+     7.38,
+     0.06
+    ],
+    "t0": 5.415384615384615,
+    "t1": 6.075384615384615,
+    "facing": {
+     "e1": 1
+    }
+   },
+   {
+    "op": "posture",
+    "actor": "e1",
+    "from": "reach_down",
+    "to": "stand",
+    "t0": 6.075384615384615,
+    "t1": 6.575384615384615
+   },
+   {
+    "op": "move",
+    "actor": "e1",
+    "from": 7.0,
+    "to": 8.1,
+    "t0": 6.575384615384615,
+    "t1": 7.421538461538461,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": 1,
+    "carries": []
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "checks": [
+   {
+    "op": "attach",
+    "actor": "e1",
+    "target": "e2",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   },
+   {
+    "op": "move_to",
+    "actor": "e1",
+    "target": "e3",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
+  "duration": 8.222
+ },
+ "H": {
+  "rev": 2,
+  "line": "He put the apple under the tree, climbed it and sat on a branch.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Ravi",
+    "known": "",
+    "start": {
+     "x": 8.1,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 10.15,
+     "y": 2.19,
+     "posture": "sit",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": "e3"
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Ravi",
+    "parts": []
+   },
+   {
+    "id": "e2",
+    "kind": "prop",
+    "asset": "apple",
+    "name": "an apple",
+    "known": "",
+    "start": {
+     "x": 8.4,
+     "y": 0.98,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "e1",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 10.225,
+     "y": 0.06,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
+   },
+   {
+    "id": "e3",
+    "kind": "prop",
+    "asset": "tree",
+    "name": "the tree",
+    "known": "",
+    "start": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": [
+     "branch"
+    ],
+    "fruit": "",
+    "hidden": []
+   }
+  ],
+  "events": [
+   {
+    "op": "move",
+    "actor": "e1",
+    "from": 8.1,
+    "to": 9.844999999999999,
+    "t0": 0.3,
+    "t1": 1.6423076923076918,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": 1,
+    "carries": []
+   },
+   {
+    "op": "posture",
+    "actor": "e1",
+    "from": "stand",
+    "to": "reach_down",
+    "t0": 1.6423076923076918,
+    "t1": 2.142307692307692
+   },
+   {
+    "op": "place",
+    "actor": "e2",
+    "by": "e1",
+    "hand": 0,
+    "to": [
+     10.225,
+     0.06
+    ],
+    "t0": 2.142307692307692,
+    "t1": 3.0423076923076917,
+    "facing": {
+     "e1": 1
+    }
+   },
+   {
+    "op": "posture",
+    "actor": "e1",
+    "from": "reach_down",
+    "to": "stand",
+    "t0": 3.0423076923076917,
+    "t1": 3.5423076923076917
+   },
+   {
+    "op": "move",
+    "actor": "e1",
+    "from": 9.844999999999999,
+    "to": 10.495,
+    "t0": 3.5423076923076917,
+    "t1": 4.042307692307692,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": 1,
+    "carries": []
+   },
+   {
+    "op": "climb",
+    "actor": "e1",
+    "from": [
+     10.495,
+     0.0
+    ],
+    "to": [
+     10.15,
+     2.19
+    ],
+    "end": "sit",
+    "t0": 4.042307692307692,
+    "t1": 7.770879120879121,
+    "facing": 1
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "checks": [
+   {
+    "op": "put",
+    "actor": "e1",
+    "target": "e3",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   },
+   {
+    "op": "climb",
+    "actor": "e1",
+    "target": "e3",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
+  "duration": 8.571
+ },
+ "I": {
+  "rev": 3,
+  "line": "Then he jumped off the tree.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Ravi",
+    "known": "",
+    "start": {
+     "x": 10.15,
+     "y": 2.19,
+     "posture": "sit",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": "e3"
+    },
+    "end": {
+     "x": 9.25,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Ravi",
+    "parts": []
+   },
+   {
+    "id": "e2",
+    "kind": "prop",
+    "asset": "apple",
+    "name": "an apple",
+    "known": "",
+    "start": {
+     "x": 10.225,
+     "y": 0.06,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 10.225,
+     "y": 0.06,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
+   },
+   {
+    "id": "e3",
+    "kind": "prop",
+    "asset": "tree",
+    "name": "the tree",
+    "known": "",
+    "start": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": [
+     "branch"
+    ],
+    "fruit": "",
+    "hidden": []
+   }
+  ],
+  "events": [
+   {
+    "op": "posture",
+    "actor": "e1",
+    "from": "sit",
+    "to": "stand",
+    "t0": 0.3,
+    "t1": 0.8999999999999999
+   },
+   {
+    "op": "jump",
+    "actor": "e1",
+    "from": [
+     10.15,
+     2.19
+    ],
+    "to": [
+     9.25,
+     0.0
+    ],
+    "v0": 2.9714,
+    "t0": 0.8999999999999999,
+    "t_up": 1.2,
+    "t_land": 2.2365,
+    "t1": 2.5365,
+    "facing": -1
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "checks": [
+   {
+    "op": "jump",
+    "actor": "e1",
+    "target": "e3",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
+  "duration": 3.337
+ },
+ "J": {
+  "rev": 4,
+  "line": "Meena came, and Ravi gave her the apple.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Ravi",
+    "known": "",
+    "start": {
+     "x": 9.25,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 7.9,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Ravi",
+    "parts": []
+   },
+   {
+    "id": "e2",
+    "kind": "prop",
+    "asset": "apple",
+    "name": "an apple",
+    "known": "",
+    "start": {
+     "x": 10.225,
+     "y": 0.06,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 7.3,
+     "y": 0.98,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "e4",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
+   },
+   {
+    "id": "e3",
+    "kind": "prop",
+    "asset": "tree",
+    "name": "the tree",
+    "known": "",
+    "start": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": [
+     "branch"
+    ],
+    "fruit": "",
+    "hidden": []
+   },
+   {
+    "id": "e4",
+    "kind": "person",
+    "asset": "person",
+    "name": "Meena",
+    "known": "",
+    "start": {
+     "x": 7.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 7.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#d1495b",
+     "hair": "side",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Meena",
+    "parts": []
+   }
+  ],
+  "events": [
+   {
+    "op": "move",
+    "actor": "e1",
+    "from": 9.25,
+    "to": 9.844999999999999,
+    "t0": 0.3,
+    "t1": 0.7576923076923068,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": 1,
+    "carries": []
+   },
+   {
+    "op": "posture",
+    "actor": "e1",
+    "from": "stand",
+    "to": "reach_down",
+    "t0": 0.7576923076923068,
+    "t1": 1.2576923076923068
+   },
+   {
+    "op": "grip",
+    "actor": "e2",
+    "by": "e1",
+    "hand": 0,
+    "from": [
+     10.225,
+     0.06
+    ],
+    "t0": 1.2576923076923068,
+    "t1": 1.917692307692307,
+    "facing": {
+     "e1": 1
+    }
+   },
+   {
+    "op": "posture",
+    "actor": "e1",
+    "from": "reach_down",
+    "to": "stand",
+    "t0": 1.917692307692307,
+    "t1": 2.417692307692307
+   },
+   {
+    "op": "move",
+    "actor": "e1",
+    "from": 9.844999999999999,
+    "to": 7.9,
+    "t0": 2.417692307692307,
+    "t1": 3.913846153846152,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": -1,
+    "carries": []
+   },
+   {
+    "op": "handover",
+    "actor": "e2",
+    "by": "e1",
+    "to": "e4",
+    "hand": 0,
+    "to_hand": 0,
+    "t0": 3.913846153846152,
+    "t1": 5.113846153846152,
+    "facing": {
+     "e1": -1,
+     "e4": 1
+    }
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "checks": [
+   {
+    "op": "give",
+    "actor": "e1",
+    "target": "e4",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
+  "duration": 5.914
+ },
+ "K": {
+  "rev": 5,
+  "line": "Meena threw the apple to the boy.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Ravi",
+    "known": "",
+    "start": {
+     "x": 7.9,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 7.9,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Ravi",
+    "parts": []
+   },
+   {
+    "id": "e2",
+    "kind": "prop",
+    "asset": "apple",
+    "name": "an apple",
+    "known": "",
+    "start": {
+     "x": 7.3,
+     "y": 0.98,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "e4",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 4.222,
+     "y": 0.7252000000000001,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "e5",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
+   },
+   {
+    "id": "e3",
+    "kind": "prop",
+    "asset": "tree",
+    "name": "the tree",
+    "known": "",
+    "start": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": [
+     "branch"
+    ],
+    "fruit": "",
+    "hidden": []
+   },
+   {
+    "id": "e4",
+    "kind": "person",
+    "asset": "person",
+    "name": "Meena",
+    "known": "",
+    "start": {
+     "x": 7.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 6.7,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#d1495b",
+     "hair": "side",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Meena",
+    "parts": []
+   },
+   {
+    "id": "e5",
+    "kind": "person",
+    "asset": "person",
+    "name": "the boy",
+    "known": "",
+    "start": {
+     "x": 4.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 4.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2a9d8f",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 0.74,
+     "stoop": 0.0
+    },
+    "label": "",
+    "parts": []
+   }
+  ],
+  "events": [
+   {
+    "op": "move",
+    "actor": "e4",
+    "from": 7.0,
+    "to": 6.7,
+    "t0": 0.3,
+    "t1": 0.9750000000000001,
+    "gait": "walk",
+    "speed": 0.4444444444444444,
+    "facing": -1,
+    "carries": []
+   },
+   {
+    "op": "throw_arm",
+    "actor": "e4",
+    "t0": 0.3,
+    "t1": 1.2,
+    "release": 0.75,
+    "facing": {
+     "e4": -1,
+     "e5": 1
+    }
+   },
+   {
+    "op": "ready",
+    "actor": "e5",
+    "t0": 0.675,
+    "t1": 1.8108
+   },
+   {
+    "op": "fall",
+    "actor": "e2",
+    "from": [
+     6.175,
+     1.5200000000000002
+    ],
+    "v": [
+     -3.176066299154254,
+     2.2239055645216235
+    ],
+    "shake": 0.0,
+    "t0": 0.9750000000000001,
+    "t1": 1.5608,
+    "contact": {
+     "t": 1.5608,
+     "at": [
+      4.314500000000001,
+      1.1396000000000002
+     ],
+     "on": "e5",
+     "part": "hands",
+     "caught": true
+    },
+    "r": 0.06,
+    "rest": [
+     4.314500000000001,
+     1.1396000000000002
+    ]
+   },
+   {
+    "op": "grip",
+    "actor": "e2",
+    "by": "e5",
+    "hand": 0,
+    "from": [
+     4.314500000000001,
+     1.1396000000000002
+    ],
+    "t0": 1.5608,
+    "t1": 1.8608
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "checks": [
+   {
+    "op": "throw",
+    "actor": "e4",
+    "target": "e5",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
+  "duration": 2.761
+ },
+ "L": {
+  "rev": 6,
+  "line": "The boy picked up a stone and pushed a cart.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Ravi",
+    "known": "",
+    "start": {
+     "x": 7.9,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 7.9,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Ravi",
+    "parts": []
+   },
+   {
+    "id": "e2",
+    "kind": "prop",
+    "asset": "apple",
+    "name": "an apple",
+    "known": "",
+    "start": {
+     "x": 4.222,
+     "y": 0.7252000000000001,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "e5",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 9.122,
+     "y": 0.7252000000000001,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "e5",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
+   },
+   {
+    "id": "e3",
+    "kind": "prop",
+    "asset": "tree",
+    "name": "the tree",
+    "known": "",
+    "start": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": [
+     "branch"
+    ],
+    "fruit": "",
+    "hidden": []
+   },
+   {
+    "id": "e4",
+    "kind": "person",
+    "asset": "person",
+    "name": "Meena",
+    "known": "",
+    "start": {
+     "x": 6.7,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 6.7,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#d1495b",
+     "hair": "side",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Meena",
+    "parts": []
+   },
+   {
+    "id": "e5",
+    "kind": "person",
+    "asset": "person",
+    "name": "the boy",
+    "known": "",
+    "start": {
+     "x": 4.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 8.9,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2a9d8f",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 0.74,
+     "stoop": 0.0
+    },
+    "label": "",
+    "parts": []
+   },
+   {
+    "id": "e6",
+    "kind": "prop",
+    "asset": "stone",
+    "name": "a stone",
+    "known": "",
+    "start": {
+     "x": 4.38,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 9.062800000000001,
+     "y": 0.7030000000000001,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "e5",
+     "hand": 1,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
+   },
+   {
+    "id": "e7",
+    "kind": "prop",
+    "asset": "cart",
+    "name": "a cart",
+    "known": "",
+    "start": {
+     "x": 8.8,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 10.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
+   }
+  ],
+  "events": [
+   {
+    "op": "posture",
+    "actor": "e5",
+    "from": "stand",
+    "to": "reach_down",
+    "t0": 0.3,
+    "t1": 0.8
+   },
+   {
+    "op": "grip",
+    "actor": "e6",
+    "by": "e5",
+    "hand": 1,
+    "from": [
+     4.38,
+     0.0
+    ],
+    "t0": 0.8,
+    "t1": 1.46,
+    "facing": {
+     "e5": 1
+    }
+   },
+   {
+    "op": "posture",
+    "actor": "e5",
+    "from": "reach_down",
+    "to": "stand",
+    "t0": 1.46,
+    "t1": 1.96
+   },
+   {
+    "op": "move",
+    "actor": "e5",
+    "from": 4.0,
+    "to": 7.700000000000001,
+    "t0": 1.96,
+    "t1": 4.806153846153847,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": 1,
+    "carries": []
+   },
+   {
+    "op": "push",
+    "actor": "e5",
+    "value": "push",
+    "t0": 4.806153846153847,
+    "t1": 6.206153846153846,
+    "facing": {
+     "e5": 1
+    }
+   },
+   {
+    "op": "slide",
+    "actor": "e7",
+    "from": 8.8,
+    "to": 10.0,
+    "t0": 4.806153846153847,
+    "t1": 6.206153846153846
+   },
+   {
+    "op": "move",
+    "actor": "e5",
+    "from": 7.700000000000001,
+    "to": 8.9,
+    "t0": 4.806153846153847,
+    "t1": 6.206153846153846,
+    "gait": "walk",
+    "speed": 0.8571428571428567,
+    "facing": 1,
+    "carries": []
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "checks": [
+   {
+    "op": "attach",
+    "actor": "e5",
+    "target": "e6",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   },
+   {
+    "op": "push",
+    "actor": "e5",
+    "target": "e7",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
+  "duration": 7.006
+ },
+ "M": {
+  "rev": 7,
+  "line": "He dropped the stone and walked away.",
+  "g": 9.81,
+  "stage": {
+   "w": 14.0,
+   "sky": "day"
+  },
+  "entities": [
+   {
+    "id": "e1",
+    "kind": "person",
+    "asset": "person",
+    "name": "Ravi",
+    "known": "",
+    "start": {
+     "x": 7.9,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 7.9,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2c6fb5",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Ravi",
+    "parts": []
+   },
+   {
+    "id": "e2",
+    "kind": "prop",
+    "asset": "apple",
+    "name": "an apple",
+    "known": "",
+    "start": {
+     "x": 9.122,
+     "y": 0.7252000000000001,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "e5",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 15.122,
+     "y": 0.7252000000000001,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "e5",
+     "hand": 0,
+     "gone": true,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
+   },
+   {
+    "id": "e3",
+    "kind": "prop",
+    "asset": "tree",
+    "name": "the tree",
+    "known": "",
+    "start": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 11.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": [
+     "branch"
+    ],
+    "fruit": "",
+    "hidden": []
+   },
+   {
+    "id": "e4",
+    "kind": "person",
+    "asset": "person",
+    "name": "Meena",
+    "known": "",
+    "start": {
+     "x": 6.7,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 6.7,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": -1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#d1495b",
+     "hair": "side",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 1.0,
+     "stoop": 0.0
+    },
+    "label": "Meena",
+    "parts": []
+   },
+   {
+    "id": "e5",
+    "kind": "person",
+    "asset": "person",
+    "name": "the boy",
+    "known": "",
+    "start": {
+     "x": 8.9,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 14.9,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": true,
+     "comeback": false,
+     "on": ""
+    },
+    "look": {
+     "main": true,
+     "shirt": "#2a9d8f",
+     "hair": "short",
+     "hair_col": "dark",
+     "dress": false,
+     "acc": "",
+     "scale": 0.74,
+     "stoop": 0.0
+    },
+    "label": "",
+    "parts": []
+   },
+   {
+    "id": "e6",
+    "kind": "prop",
+    "asset": "stone",
+    "name": "a stone",
+    "known": "",
+    "start": {
+     "x": 9.062800000000001,
+     "y": 0.7030000000000001,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "e5",
+     "hand": 1,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 9.062800000000001,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
+   },
+   {
+    "id": "e7",
+    "kind": "prop",
+    "asset": "cart",
+    "name": "a cart",
+    "known": "",
+    "start": {
+     "x": 10.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "end": {
+     "x": 10.0,
+     "y": 0.0,
+     "posture": "stand",
+     "facing": 1,
+     "carrier": "",
+     "anchor": "",
+     "fruit": -1,
+     "tree": "",
+     "holder": "",
+     "hand": 0,
+     "gone": false,
+     "comeback": false,
+     "on": ""
+    },
+    "parts": []
+   }
+  ],
+  "events": [
+   {
+    "op": "fall",
+    "actor": "e6",
+    "from": [
+     9.062800000000001,
+     0.7030000000000001
+    ],
+    "v": [
+     0.0,
+     0.0
+    ],
+    "shake": 0.0,
+    "t0": 0.3,
+    "t1": 0.6786,
+    "contact": {
+     "t": 0.6786,
+     "at": [
+      9.062800000000001,
+      0.0
+     ],
+     "on": "ground",
+     "part": "ground"
+    },
+    "r": 0.0,
+    "rest": [
+     9.062800000000001,
+     0.0
+    ]
+   },
+   {
+    "op": "move",
+    "actor": "e5",
+    "from": 8.9,
+    "to": 14.9,
+    "t0": 1.1,
+    "t1": 5.715384615384615,
+    "gait": "walk",
+    "speed": 1.3,
+    "facing": 1,
+    "carries": [],
+    "exit": true
+   }
+  ],
+  "fallback": [],
+  "skipped": [],
+  "checks": [
+   {
+    "op": "detach",
+    "actor": "e5",
+    "target": "e6",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   },
+   {
+    "op": "exit",
+    "actor": "e5",
+    "target": "",
+    "class": "executable",
+    "why": "",
+    "fallback": ""
+   }
+  ],
+  "duration": 6.515
  }
 }

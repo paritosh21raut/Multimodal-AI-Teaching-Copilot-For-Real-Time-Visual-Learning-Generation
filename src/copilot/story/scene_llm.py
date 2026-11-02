@@ -4,7 +4,8 @@ relations) against the world it is shown; world.validate() takes the answer whol
     prompt   PREFIX first, never changed per call (Groq caches a byte-identical prefix); then the world summary (ids,
              relations, revision), the last two lines and the line. Never the transcript (RULES). The example in the
              prefix is not one of the P0 test sentences (tests/fixtures/story/p0_relations.json).
-    output   one JSON object (JSON mode): {"rev", "new", "events", "relations", "end"}
+    output   one JSON object (JSON mode): {"new", "events", "relations", "end"}; the revision it was made against is
+             stamped by the caller (P1b: the model's echoed rev was 15 of 21 refusals)
 """
 from __future__ import annotations
 
@@ -22,8 +23,7 @@ TIMEOUT_S = 5.0
 
 PREFIX = f"""You turn one line of a story a teacher tells into a change of the story's world, for a live animation.
 The line comes from speech-to-text. Answer with ONE JSON object and nothing else:
-{{"rev": <the world's rev>,
- "new": [{{"id": "eN", "kind": "<kind>", "name": "<the line's own words for it>", "noun": "<its head noun>",
+{{"new": [{{"id": "eN", "kind": "<kind>", "name": "<the line's own words for it>", "noun": "<its head noun>",
           "known": "<famous person or empty>", "gender": "he|she|", "posture": "<posture>"}}],
  "events": [{{"op": "<op>", "actor": "<id>", "target": "<id or empty>", "obj": "<id or empty>",
              "value": "<see ops>", "verb": "<the line's verb>"}}],
@@ -37,7 +37,10 @@ ops: enter, exit, move_to (target = where), follow_path, change_posture (value =
   target = the thing), detach (target = what is let go / got off), fall (target = what it lands on, value = body part
   {"|".join(W.PARTS)} if it hits a person), throw (obj = the thing, target = whom / where), look_at, point_at,
   speak (target = listener, value = the spoken words exactly as in the line), react (value = {"|".join(W.FEELINGS)}),
-  work (target = what is worked on), none (a verb none of these fits: the actor just stays)
+  work (target = what is worked on), put (obj = the thing, target = where, value = {"|".join(W.PUT)}; put down: no
+  target), give (obj = the thing, target = who gets it), jump (value = |onto|off, target = what it jumps onto / out
+  of), climb (target = what is climbed), push (target = the thing, value = {"|".join(W.PUSH)}),
+  none (a verb none of these fits: the actor just stays)
 relation: {", ".join(W.RELATIONS)}   (a rel b: "a is under b"; hold = a holds b; ride = a rides b; sit_on = a sits on b)
 known: {", ".join(W.KNOWN)} (only when the line says the name)
 
@@ -52,7 +55,7 @@ Rules:
 - Places the line names (village, kitchen, forest) are kind place.
 
 Example (world rev 0, empty) line "The girl carried a basket to the river.":
-{{"rev": 0, "new": [{{"id": "e1", "kind": "person", "name": "The girl", "noun": "girl", "known": "", "gender": "she",
+{{"new": [{{"id": "e1", "kind": "person", "name": "The girl", "noun": "girl", "known": "", "gender": "she",
 "posture": "stand"}}, {{"id": "e2", "kind": "prop", "name": "a basket", "noun": "basket", "known": "", "gender": "",
 "posture": "stand"}}, {{"id": "e3", "kind": "place", "name": "the river", "noun": "river", "known": "", "gender": "",
 "posture": "stand"}}], "events": [{{"op": "attach", "actor": "e1", "target": "e2", "obj": "", "value": "hold",
@@ -128,7 +131,7 @@ async def step(reader: Any, world: W.World, before: list[str], line: str) -> tup
     res = await reader.read(messages(world, before, line), line)
     if res.answer is None:
         return res, "no JSON"
-    delta, why = W.validate(res.answer, world, line)
+    delta, why = W.validate(res.answer, world, line, rev=rev)
     if delta is None:
         return res, why
     if world.rev != rev or not world.apply(delta):

@@ -46,7 +46,7 @@ def test_classify_four_ways():
     assert cls(W.Event("attach", "e1", "e2", value="ride"), w) == "executable"
     assert cls(W.Event("attach", "e1", "e3", value="ride"), w) == "invalid"          # ride a tree
     assert cls(W.Event("attach", "e1", "e4", value="sit_on"), w) == "missing_asset"  # no bench drawn
-    assert cls(W.Event("attach", "e1", "e5", value="hold"), w) == "unsupported"      # understood, no motion yet
+    assert cls(W.Event("attach", "e1", "e4", value="in"), w) == "unsupported"        # understood, no motion yet (P1b: hold has one)
     assert cls(W.Event("work", "e1", "e3"), w) == "unsupported"
     assert cls(W.Event("speak", "e1", "e2"), w) == "executable"
     assert cls(W.Event("change_posture", "e3", value="sit"), w) == "invalid"         # a tree sits
@@ -121,7 +121,7 @@ def test_scorer_tags_a_pronoun_entity_and_a_wrong_target():
                   "village": {"kind": "place", "name": "the village"}},
          "lines": [{"text": "The boy saw his horse.", "ev": [{"act": "look", "by": "boy", "to": "horse"}]},
                    {"text": "He walked to the village.", "ev": [{"act": "walk", "by": "boy", "to": "village"}]},
-                   {"text": "He jumped.", "ev": [{"act": "jump", "by": "boy"}]}]}
+                   {"text": "He nodded.", "ev": [{"act": "nod", "by": "boy"}]}]}
     import json
     a0 = {"rev": 0, "new": [{"id": "e1", "kind": "person", "name": "The boy"},
                             {"id": "e2", "kind": "animal", "name": "his horse"}],

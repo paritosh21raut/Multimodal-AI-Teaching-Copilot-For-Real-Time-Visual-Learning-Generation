@@ -156,10 +156,76 @@ export function village(ctx, M, C, A, x) {
   ctx.restore();
 }
 
-export function box(ctx, M, C, x, y, label) {
+// Tree limbs (user round 1: "no branch to sit on"): one each side from the trunk, drawn over the leaves.
+export function branches(ctx, M, C, A, x) {
+  const b = A.tree.branch;
+  ctx.save(); ctx.lineCap = 'round';
+  for (const sd of [-1, 1]) {
+    const p0 = [x + sd * b.from[0], b.from[1]], p1 = [x + sd * b.to[0], b.to[1]];
+    ctx.strokeStyle = C.ink; ctx.lineWidth = M.s * (b.w + 0.04);
+    ctx.beginPath(); path(ctx, M, [p0, p1]); ctx.stroke();
+    ctx.strokeStyle = C.bark; ctx.lineWidth = M.s * b.w;
+    ctx.beginPath(); path(ctx, M, [p0, p1]); ctx.stroke();
+    ctx.strokeStyle = C.leaf; ctx.lineWidth = M.s * 0.05;   // a leaf tuft at the tip
+    const [tx, ty] = M(p1); ctx.fillStyle = C.leaf; ctx.beginPath(); ctx.arc(tx, ty, M.s * 0.16, 0, 7); ctx.fill();
+    ctx.strokeStyle = C.leafLine; ctx.lineWidth = M.s * 0.015; ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// The first drawn props (P1b round 1, pulled from P2 Tier-1): line art from the sidecars' width / height. at = the
+// bottom centre on the ground, or the centre when held (held = true). roll = metres moved (a cart's wheels turn).
+export const PROPS = ['stone', 'ball', 'stick', 'basket', 'pot', 'boat', 'book', 'cart'];
+const PROP_COL = { stone: '#9aa0a6', ball: '#e2574c', stick: '#9a6b43', basket: '#d9a65b', pot: '#c46d3b',
+  boat: '#f2efe6', book: '#3f6fb5', cart: '#b07a45' };
+export function thing(ctx, M, C, A, name, at, held, roll = 0) {
+  const a = A[name], w = a.width, h = a.height, x = at[0], y = held ? at[1] - h / 2 : at[1];
+  ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.fillStyle = PROP_COL[name]; ctx.strokeStyle = C.ink; ctx.lineWidth = M.s * 0.022;
+  const poly = (pts) => { ctx.beginPath(); path(ctx, M, pts); ctx.closePath(); ctx.fill(); ctx.stroke(); };
+  const ell = (cx, cy, rx, ry) => { const [px, py] = M([cx, cy]); ctx.beginPath(); ctx.ellipse(px, py, rx * M.s, ry * M.s, 0, 0, 7); ctx.fill(); ctx.stroke(); };
+  switch (name) {
+    case 'stone': ell(x, y + h / 2, w / 2, h / 2); break;
+    case 'ball': ell(x, y + h / 2, w / 2, h / 2);
+      ctx.beginPath(); path(ctx, M, [[x - w / 2, y + h / 2], [x + w / 2, y + h / 2]]); ctx.stroke(); break;
+    case 'stick': poly([[x - w / 2, y], [x + w / 2, y], [x + w / 2, y + h], [x - w / 2, y + h]]); break;
+    case 'basket':
+      poly([[x - w / 2, y + h * 0.7], [x - w * 0.38, y], [x + w * 0.38, y], [x + w / 2, y + h * 0.7]]);
+      { const [cx, cy] = M([x, y + h * 0.7]); ctx.beginPath(); ctx.ellipse(cx, cy, w * 0.42 * M.s, h * 0.75 * M.s, 0, Math.PI, 2 * Math.PI); ctx.stroke(); }
+      for (const f of [0.35, 0.55]) { ctx.beginPath(); path(ctx, M, [[x - w * 0.44, y + h * f], [x + w * 0.44, y + h * f]]); ctx.stroke(); }
+      break;
+    case 'pot':
+      poly([[x - w * 0.32, y + h], [x - w / 2, y + h * 0.55], [x - w * 0.36, y], [x + w * 0.36, y], [x + w / 2, y + h * 0.55], [x + w * 0.32, y + h]]);
+      break;
+    case 'boat':
+      poly([[x - w / 2, y + h * 0.55], [x - w * 0.3, y], [x + w * 0.3, y], [x + w / 2, y + h * 0.55]]);
+      ctx.fillStyle = C.bubble; poly([[x, y + h * 0.55], [x, y + h * 1.6], [x + w * 0.3, y + h * 0.6]]); break;
+    case 'book':
+      poly([[x - w / 2, y], [x + w / 2, y], [x + w / 2, y + h], [x - w / 2, y + h]]);
+      ctx.strokeStyle = C.bubble; ctx.beginPath(); path(ctx, M, [[x - w * 0.3, y + 0.03], [x - w * 0.3, y + h - 0.03]]); ctx.stroke(); break;
+    case 'cart': {
+      const r = a.wheel_r;
+      poly([[x - w / 2, y + h], [x - w * 0.45, y + r * 1.1], [x + w * 0.45, y + r * 1.1], [x + w / 2, y + h]]);
+      ctx.beginPath(); path(ctx, M, [[x + w / 2, y + h * 0.9], [x + w / 2 + 0.35, y + h * 0.75]]); ctx.stroke();   // handle
+      for (const wx of [x - w * 0.28, x + w * 0.28]) {
+        ctx.fillStyle = PROP_COL.cart; ell(wx, y + r, r, r);
+        const ang = -roll / r;
+        for (let i = 0; i < 3; i++) {
+          const q = ang + (i * Math.PI) / 3;
+          ctx.beginPath(); path(ctx, M, [[wx - Math.cos(q) * r, y + r - Math.sin(q) * r], [wx + Math.cos(q) * r, y + r + Math.sin(q) * r]]); ctx.stroke();
+        }
+      }
+      break;
+    }
+    default: break;
+  }
+  ctx.restore();
+}
+
+export function box(ctx, M, C, x, y, label, k = 1) {   // k = 0.5: a held / small thing
   const [px, py] = M([x, y]);
-  ctx.save(); ctx.font = `600 ${Math.round(M.s * 0.2)}px Segoe UI, sans-serif`;
-  const w = Math.max(M.s * 0.7, ctx.measureText(label).width + M.s * 0.3), h = M.s * 0.45;
+  ctx.save(); ctx.font = `600 ${Math.round(M.s * 0.2 * Math.max(k, 0.7))}px Segoe UI, sans-serif`;
+  const w = Math.max(M.s * 0.7 * k, ctx.measureText(label).width + M.s * 0.3 * k), h = M.s * 0.45 * k;
   ctx.fillStyle = C.boxFill; ctx.strokeStyle = C.ink; ctx.lineWidth = M.s * 0.02;
   ctx.beginPath(); ctx.roundRect(px - w / 2, py - h, w, h, 10); ctx.fill(); ctx.stroke();
   ctx.fillStyle = C.ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';

@@ -1,0 +1,1 @@
+{"_doc": "A stone / rock / pebble (hand-sized). Metres; x = centre, y = the bottom (held: centred on the hand). Drawn by props.js thing().", "width": 0.26, "height": 0.18, "affordances": {"holdable": {"target": "centre", "actor": "hand"}}}
