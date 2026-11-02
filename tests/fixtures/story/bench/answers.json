@@ -2,591 +2,1165 @@
  "gpt-oss-20b": {
   "m01": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"animal\",\"name\":\"a hungry fox\",\"noun\":\"fox\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a vineyard\",\"noun\":\"vineyard\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1329,
-    "s": 0.78
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"animal\",\"name\":\"a hungry fox\",\"noun\":\"fox\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a vineyard\",\"noun\":\"vineyard\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1390,
+    "s": 1.02
    },
    {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e3\",\"kind\":\"prop\",\"name\":\"a bunch of ripe grapes\",\"noun\":\"grapes\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"a high branch\",\"noun\":\"branch\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"look_at\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"saw\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"under\",\"b\":\"e4\"}],\"end\":[]}",
-    "tokens": 1655,
-    "s": 1.0
+    "text": "{\"new\":[{\"id\":\"e3\",\"kind\":\"prop\",\"name\":\"a bunch of ripe grapes\",\"noun\":\"grapes\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"a high branch\",\"noun\":\"branch\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"look_at\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"e3\",\"value\":\"\",\"verb\":\"saw\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"on\",\"b\":\"e4\"}],\"end\":[]}",
+    "tokens": 1580,
+    "s": 2.03
    },
    {
-    "text": "{\"rev\":1,\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"jumped\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1403,
-    "s": 0.81
+    "text": "{\"new\":[],\"events\":[{\"op\":\"jump\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"jumped\"}],\"relations\":[],\"end\":[] }",
+    "tokens": 1455,
+    "s": 0.94
    },
    {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"the ground\",\"noun\":\"ground\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"fall\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"feet\",\"verb\":\"fell\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"on\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1434,
-    "s": 0.92
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"place\",\"name\":\"the ground\",\"noun\":\"ground\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"fall\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"feet\",\"verb\":\"fell\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"on\",\"b\":\"e5\"}],\"end\":[]}",
+    "tokens": 1550,
+    "s": 1.05
    },
    {
-    "text": "{\"rev\":3,\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"stepped\"},{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"jumped\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e2\"},{\"a\":\"e1\",\"rel\":\"on\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1468,
-    "s": 0.81
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"stepped\"},{\"op\":\"jump\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"jumped\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1671,
+    "s": 1.19
    },
    {
-    "text": "{\"rev\":4,\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"the grapes\",\"noun\":\"grapes\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"reach\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1557,
-    "s": 1.11
+    "text": "{\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"reach\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"on\",\"b\":\"e4\"}],\"end\":[]}",
+    "tokens": 1541,
+    "s": 0.75
    },
    {
-    "text": "{\"rev\":5,\"new\":[{\"id\":\"e5\",\"kind\":\"place\",\"name\":\"the branch\",\"noun\":\"branch\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"under\",\"b\":\"e5\"}],\"end\":[]}",
-    "tokens": 1476,
-    "s": 0.86
+    "text": "{\"new\":[],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"under\",\"b\":\"e4\"}],\"end\":[]}",
+    "tokens": 1416,
+    "s": 0.76
    },
    {
-    "text": "{\"rev\":6,\"new\":[],\"events\":[{\"op\":\"look_at\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"looked\"},{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"those grapes are sour anyway\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1422,
-    "s": 1.66
+    "text": "{\"new\":[],\"events\":[{\"op\":\"look_at\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"looked\"},{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"those grapes are sour anyway\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1491,
+    "s": 0.89
    },
    {
-    "text": "{\"rev\":8,\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"away_from\",\"b\":\"e5\"}],\"end\":[]}",
-    "tokens": 1598,
-    "s": 0.98
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1595,
+    "s": 4.5
    }
   ],
   "m02": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"An old potter\",\"noun\":\"potter\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a small village\",\"noun\":\"village\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"a well\",\"noun\":\"well\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e1\",\"rel\":\"in\",\"b\":\"e2\"},{\"a\":\"e2\",\"rel\":\"next_to\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1490,
-    "s": 0.92
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"An old potter\",\"noun\":\"potter\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a small village\",\"noun\":\"village\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"a well\",\"noun\":\"well\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e1\",\"rel\":\"in\",\"b\":\"e2\"},{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e3\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1576,
+    "s": 3.17
    },
    {
-    "text": "{\"rev\":1,\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"two pots\",\"noun\":\"pots\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"carried\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e4\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1452,
-    "s": 0.91
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"two pots\",\"noun\":\"pots\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"two pots\",\"noun\":\"pots\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"carried\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"carried\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e4\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e3\"},{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e5\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1566,
+    "s": 1.98
    },
    {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"a pot\",\"noun\":\"pot\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e5\"}],\"end\":[]}",
-    "tokens": 1424,
-    "s": 0.75
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"One pot\",\"noun\":\"pot\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[],\"end\":[]}",
+    "tokens": 1394,
+    "s": 1.12
    },
    {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"water\",\"noun\":\"water\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e6\",\"kind\":\"place\",\"name\":\"home\",\"noun\":\"home\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"work\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"e5\",\"value\":\"water\",\"verb\":\"filled\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e6\"}],\"end\":[]}",
-    "tokens": 1673,
-    "s": 1.02
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"water\",\"noun\":\"water\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"home\",\"noun\":\"home\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"work\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"e7\",\"value\":\"\",\"verb\":\"filled\"},{\"op\":\"work\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"e7\",\"value\":\"\",\"verb\":\"filled\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}]}",
+    "tokens": 1822,
+    "s": 2.47
    },
    {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"the cracked pot\",\"noun\":\"pot\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"the path\",\"noun\":\"path\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e5\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"dripped\"},{\"op\":\"move_to\",\"actor\":\"e7\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"dripped\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"under\",\"b\":\"e8\"},{\"a\":\"e7\",\"rel\":\"under\",\"b\":\"e8\"}],\"end\":[]}",
-    "tokens": 1709,
-    "s": 1.11
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"place\",\"name\":\"path\",\"noun\":\"path\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e7\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"\",\"verb\":\"dripped\"}],\"relations\":[{\"a\":\"e7\",\"rel\":\"on\",\"b\":\"e9\"},{\"a\":\"e6\",\"rel\":\"on\",\"b\":\"e9\"}],\"end\":[]}",
+    "tokens": 1831,
+    "s": 1.52
    },
    {
-    "text": "{\"rev\":5,\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e7\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"I am sorry, I am broken.\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1464,
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e6\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"The cracked pot said to the potter, I am sorry, I am broken.\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1485,
+    "s": 1.36
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e10\",\"kind\":\"prop\",\"name\":\"flowers\",\"noun\":\"flowers\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"point_at\",\"actor\":\"e1\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"\",\"verb\":\"pointed\"}],\"relations\":[{\"a\":\"e10\",\"rel\":\"next_to\",\"b\":\"e9\"}],\"end\":[]}",
+    "tokens": 1570,
     "s": 0.81
    },
    {
-    "text": "{\"rev\":4,\"new\":[{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"flowers\",\"noun\":\"flowers\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"smiled\"},{\"op\":\"point_at\",\"actor\":\"e1\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"\",\"verb\":\"pointed\"}],\"relations\":[{\"a\":\"e9\",\"rel\":\"next_to\",\"b\":\"e8\"}],\"end\":[]}",
-    "tokens": 1665,
-    "s": 1.0
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"Those flowers grew because of your water, he said.\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1580,
+    "s": 0.77
    },
    {
-    "text": "{\"rev\":5,\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"Those flowers grew because of your water, he said.\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1498,
-    "s": 0.64
-   },
-   {
-    "text": "{\"rev\":7,\"new\":[{\"id\":\"e10\",\"kind\":\"prop\",\"name\":\"The pot\",\"noun\":\"pot\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"react\",\"actor\":\"e10\",\"target\":\"\",\"obj\":\"\",\"value\":\"happy\",\"verb\":\"felt\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1717,
-    "s": 1.14
+    "text": "{\"new\":[],\"events\":[{\"op\":\"react\",\"actor\":\"e6\",\"target\":\"\",\"obj\":\"\",\"value\":\"happy\",\"verb\":\"felt\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1684,
+    "s": 1.11
    }
   ],
   "m03": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"animal\",\"name\":\"A big lion\",\"noun\":\"lion\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"lie\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a shady tree\",\"noun\":\"tree\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e1\",\"rel\":\"under\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1361,
-    "s": 0.77
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"animal\",\"name\":\"A big lion\",\"noun\":\"lion\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"lie\"},{\"id\":\"e2\",\"kind\":\"prop\",\"name\":\"a shady tree\",\"noun\":\"tree\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e1\",\"rel\":\"under\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1452,
+    "s": 1.19
    },
    {
-    "text": "{\"rev\":1,\"new\":[{\"id\":\"e3\",\"kind\":\"animal\",\"name\":\"a little mouse\",\"noun\":\"mouse\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"his back\",\"noun\":\"back\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1443,
-    "s": 0.69
+    "text": "{\"new\":[{\"id\":\"e3\",\"kind\":\"animal\",\"name\":\"a little mouse\",\"noun\":\"mouse\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"under\",\"b\":\"e1\"}],\"end\":[]}",
+    "tokens": 1648,
+    "s": 1.39
    },
    {
-    "text": "{\"rev\":2,\"new\":[],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"stand\",\"verb\":\"woke up\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"caught\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1434,
-    "s": 0.75
+    "text": "{\"new\":[],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"stand\",\"verb\":\"woke up\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"caught\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1548,
+    "s": 1.31
    },
    {
-    "text": "{\"rev\":3,\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e3\",\"target\":\"\",\"obj\":\"\",\"value\":\"please let me go and one day I will help you\",\"verb\":\"cried\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"under\",\"b\":\"e2\"},{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1555,
-    "s": 0.97
-   },
-   {
-    "text": "{\"rev\":4,\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"laughed\"},{\"op\":\"detach\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"let\"}],\"relations\":[],\"end\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e3\"}]}",
-    "tokens": 1493,
-    "s": 0.86
-   },
-   {
-    "text": "{\"rev\":5,\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"a strong rope\",\"noun\":\"rope\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e6\",\"kind\":\"agent\",\"name\":\"hunters\",\"noun\":\"hunters\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e6\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"tied\"},{\"op\":\"attach\",\"actor\":\"e6\",\"target\":\"e1\",\"obj\":\"e5\",\"value\":\"hold\",\"verb\":\"tied\"},{\"op\":\"attach\",\"actor\":\"e6\",\"target\":\"e2\",\"obj\":\"e5\",\"value\":\"hold\",\"verb\":\"tied\"}]}",
-    "tokens": 1724,
-    "s": 1.17
-   },
-   {
-    "text": "{\"rev\":6,\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"roared for help\",\"verb\":\"roared\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1561,
-    "s": 0.88
-   },
-   {
-    "text": "{\"rev\":8,\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"under\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1725,
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e3\",\"target\":\"\",\"obj\":\"\",\"value\":\"please let me go and one day I will help you\",\"verb\":\"cried\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1554,
     "s": 3.62
    },
    {
-    "text": "{\"rev\":7,\"new\":[],\"events\":[{\"op\":\"work\",\"actor\":\"e3\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"chewed\",\"verb\":\"chewed\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1605,
-    "s": 1.05
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"The lion laughed and let the mouse go.\",\"verb\":\"laughed\"},{\"op\":\"detach\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"go\",\"verb\":\"let\"}],\"relations\":[],\"end\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e3\"},{\"a\":\"e3\",\"rel\":\"under\",\"b\":\"e1\"}]}",
+    "tokens": 1539,
+    "s": 2.36
    },
    {
-    "text": "{\"rev\":9,\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"thank\",\"verb\":\"thanked\"}],\"relations\":[],\"end\":[{\"a\":\"e6\",\"rel\":\"hold\",\"b\":\"e1\"}]}",
-    "tokens": 1750,
-    "s": 2.97
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"a strong rope\",\"noun\":\"rope\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e4\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"tied\"},{\"op\":\"attach\",\"actor\":\"e4\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"tied\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"hold\",\"b\":\"e1\"},{\"a\":\"e4\",\"rel\":\"hold\",\"b\":\"e2\"},{\"a\":\"e1\",\"rel\":\"under\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1654,
+    "s": 2.16
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"for help\",\"verb\":\"roared\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1411,
+    "s": 0.45
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e3\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"The mouse heard him and ran to the tree.\",\"verb\":\"heard\"},{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"towards\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1474,
+    "s": 1.08
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"detach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"chewed\"}],\"relations\":[],\"end\":[{\"a\":\"e4\",\"rel\":\"hold\",\"b\":\"e1\"},{\"a\":\"e4\",\"rel\":\"hold\",\"b\":\"e2\"}]}",
+    "tokens": 1626,
+    "s": 0.81
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"he thanked the little mouse.\",\"verb\":\"thanked\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1746,
+    "s": 5.06
    }
   ],
   "m04": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Meera\",\"noun\":\"girl\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"animal\",\"name\":\"goats\",\"noun\":\"goats\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"hill\",\"noun\":\"hill\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e2\",\"rel\":\"on\",\"b\":\"e3\"},{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1366,
-    "s": 0.83
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Meera\",\"noun\":\"girl\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"animal\",\"name\":\"goats\",\"noun\":\"goats\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"hill\",\"noun\":\"hill\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"kept\"},{\"op\":\"none\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"kept\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"on\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1578,
+    "s": 1.17
    },
    {
-    "text": "{\"rev\":1,\"new\":[{\"id\":\"e4\",\"kind\":\"animal\",\"name\":\"one small goat\",\"noun\":\"goat\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[],\"end\":[{\"a\":\"e2\",\"rel\":\"on\",\"b\":\"e3\"}]}",
-    "tokens": 1430,
-    "s": 1.55
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"animal\",\"name\":\"one small goat\",\"noun\":\"goat\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\", \"obj\":\"\", \"value\":\"\", \"verb\":\"counted\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"on\",\"b\":\"e3\"}],\"end\":[{\"a\":\"e4\",\"rel\":\"on\",\"b\":\"e3\"}]}",
+    "tokens": 1644,
+    "s": 2.89
    },
    {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"her stick\",\"noun\":\"stick\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e6\",\"kind\":\"place\",\"name\":\"the river\",\"noun\":\"river\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"picked\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e5\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e6\"}],\"end\":[]}",
-    "tokens": 1434,
-    "s": 1.88
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"her stick\",\"noun\":\"stick\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e6\",\"kind\":\"place\",\"name\":\"the river\",\"noun\":\"river\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"picked\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e5\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e6\"}],\"end\":[] }",
+    "tokens": 1526,
+    "s": 1.59
    },
    {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"big rock\",\"noun\":\"rock\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e8\",\"kind\":\"prop\",\"name\":\"a faint cry\",\"noun\":\"cry\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"heard\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"behind\",\"b\":\"e7\"}],\"end\":[]}",
-    "tokens": 1660,
-    "s": 1.02
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"a big rock\",\"noun\":\"rock\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"heard\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"behind\",\"b\":\"e7\"}],\"end\":[]}",
+    "tokens": 1632,
+    "s": 0.97
    },
    {
-    "text": "{\"rev\":4,\"new\":[],\"events\":[],\"relations\":[{\"a\":\"e4\",\"rel\":\"behind\",\"b\":\"e7\"}],\"end\":[]}",
-    "tokens": 1532,
-    "s": 2.28
+    "text": "{\"new\":[],\"events\":[],\"relations\":[{\"a\":\"e4\",\"rel\":\"behind\",\"b\":\"e7\"}],\"end\":[]}",
+    "tokens": 1539,
+    "s": 0.89
    },
    {
-    "text": "{\"rev\":5,\"new\":[],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"kneel\",\"verb\":\"knelt\"},{\"op\":\"move_to\",\"actor\":\"e4\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"pulled\"}],\"relations\":[],\"end\":[{\"a\":\"e4\",\"rel\":\"behind\",\"b\":\"e7\"}]}",
-    "tokens": 1649,
-    "s": 2.38
+    "text": "{\"new\":[],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"kneel\",\"verb\":\"knelt\"},{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"pulled\"}],\"relations\":[],\"end\":[{\"a\":\"e4\",\"rel\":\"behind\",\"b\":\"e7\"}]}",
+    "tokens": 1764,
+    "s": 2.7
    },
    {
-    "text": "{\"rev\":7,\"new\":[],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"carried\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e4\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1732,
-    "s": 0.88
+    "text": "{\"new\":[],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"carried\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e4\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1792,
+    "s": 1.33
    },
    {
-    "text": "{\"rev\":6,\"new\":[{\"id\":\"e9\",\"kind\":\"animal\",\"name\":\"other goats\",\"noun\":\"goats\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e9\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"}],\"relations\":[{\"a\":\"e9\",\"rel\":\"towards\",\"b\":\"e1\"}],\"end\":[]}",
-    "tokens": 1558,
-    "s": 0.8
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"animal\",\"name\":\"other goats\",\"noun\":\"goats\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e8\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"}],\"relations\":[{\"a\":\"e8\",\"rel\":\"towards\",\"b\":\"e1\"}],\"end\":[]}",
+    "tokens": 1738,
+    "s": 1.59
    },
    {
-    "text": "{\"rev\":7,\"new\":[{\"id\":\"e10\",\"kind\":\"place\",\"name\":\"grass\",\"noun\":\"grass\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"detach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"put\"},{\"op\":\"fall\",\"actor\":\"e4\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"feet\",\"verb\":\"put\"},{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"sit_on\",\"b\":\"e10\"},{\"a\":\"e4\",\"rel\":\"on\",\"b\":\"e10\"}],\"end\":[]}",
-    "tokens": 1714,
-    "s": 1.19
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"place\",\"name\":\"grass\",\"noun\":\"grass\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"detach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"put\"},{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"sit_on\",\"verb\":\"sat\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"under\",\"b\":\"e9\"},{\"a\":\"e1\",\"rel\":\"sit_on\",\"b\":\"e9\"}],\"end\":[]}",
+    "tokens": 1680,
+    "s": 1.66
    },
    {
-    "text": "{\"rev\":9,\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\", \"obj\":\"\", \"value\":\"nobody gets left behind\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1447,
-    "s": 0.62
+    "text": "{\"new\":[],\"events\":[{\"op\":\"react\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"happy\",\"verb\":\"smiled\"},{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"nobody gets left behind\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1600,
+    "s": 0.81
    }
   ],
   "h01": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Gandhi\",\"noun\":\"Gandhi\",\"known\":\"gandhi\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"the sea\",\"noun\":\"sea\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walk\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1467,
-    "s": 0.78
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Gandhi\",\"noun\":\"Gandhi\",\"known\":\"gandhi\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"the sea\",\"noun\":\"sea\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walk\"}],\"relations\":[],\"end\":[] }",
+    "tokens": 1442,
+    "s": 0.53
    },
    {
-    "text": "{\"rev\":1,\"new\":[{\"id\":\"e4\",\"kind\":\"place\",\"name\":\"his ashram\",\"noun\":\"ashram\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"a walking stick\",\"noun\":\"walking stick\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"left\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"in\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e2\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e4\"}],\"end\":[]}",
-    "tokens": 1589,
-    "s": 0.67
+    "text": "{\"new\":[{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"his ashram\",\"noun\":\"ashram\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"a walking stick\",\"noun\":\"stick\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"left\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"left\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e4\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1757,
+    "s": 2.06
    },
    {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e6\",\"kind\":\"group\",\"name\":\"Many people\",\"noun\":\"people\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"follow_path\",\"actor\":\"e6\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"\",\"verb\":\"followed\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1486,
-    "s": 0.81
-   },
-   {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"village\",\"noun\":\"village\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"town\",\"noun\":\"town\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e6\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"},{\"op\":\"move_to\",\"actor\":\"e6\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"towards\",\"b\":\"e7\"},{\"a\":\"e6\",\"rel\":\"towards\",\"b\":\"e8\"}],\"end\":[]}",
-    "tokens": 1620,
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"group\",\"name\":\"Many people\",\"noun\":\"people\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e6\",\"kind\":\"place\",\"name\":\"the long road\",\"noun\":\"road\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"follow_path\",\"actor\":\"e5\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"\",\"verb\":\"followed\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"on\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1648,
     "s": 1.03
    },
    {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"the beach\",\"noun\":\"beach\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"Dandi\",\"noun\":\"Dandi\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"reached\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e7\"},{\"a\":\"e7\",\"rel\":\"in\",\"b\":\"e8\"}],\"end\":[]}",
-    "tokens": 1678,
-    "s": 1.16
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"a village\",\"noun\":\"village\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"a town\",\"noun\":\"town\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e5\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"},{\"op\":\"move_to\",\"actor\":\"e5\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"on\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1740,
+    "s": 1.24
    },
    {
-    "text": "{\"rev\":4,\"new\":[{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"handful of salty mud\",\"noun\":\"handful\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"kneel\",\"verb\":\"bent down\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"picked up\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e9\"}],\"end\":[]}",
-    "tokens": 1553,
-    "s": 0.92
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"reached\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e7\"}],\"end\":[]}",
+    "tokens": 1448,
+    "s": 1.02
    },
    {
-    "text": "{\"rev\":5,\"new\":[{\"id\":\"e10\",\"kind\":\"place\",\"name\":\"empire\",\"noun\":\"empire\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"with this I shake the empire\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1611,
-    "s": 0.8
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"a handful of salty mud\",\"noun\":\"handful\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"kneel\",\"verb\":\"bent down\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"picked up\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e7\"}],\"end\":[]}",
+    "tokens": 1588,
+    "s": 1.66
    },
    {
-    "text": "{\"rev\":6,\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e6\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"cheered\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1463,
-    "s": 0.77
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"with this I shake the empire\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1563,
+    "s": 0.89
    },
    {
-    "text": "{\"rev\":7,\"new\":[{\"id\":\"e11\",\"kind\":\"group\",\"name\":\"Soon people all over India were making their own salt\",\"noun\":\"people\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e12\",\"kind\":\"prop\",\"name\":\"salt\",\"noun\":\"salt\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"work\",\"actor\":\"e11\",\"target\":\"e12\",\"obj\":\"\",\"value\":\"\",\"verb\":\"making\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1727,
-    "s": 0.98
+    "text": "{\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"cheered\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1464,
+    "s": 0.58
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"group\",\"name\":\"people\",\"noun\":\"people\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[],\"end\":[]}",
+    "tokens": 1488,
+    "s": 1.25
    }
   ],
   "h02": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"a young messenger\",\"noun\":\"messenger\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a village\",\"noun\":\"village\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"a stone fort\",\"noun\":\"stone fort\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e1\",\"rel\":\"in\",\"b\":\"e2\"},{\"a\":\"e2\",\"rel\":\"below\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1475,
-    "s": 0.58
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"a young messenger\",\"noun\":\"messenger\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a village\",\"noun\":\"village\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"a stone fort\",\"noun\":\"stone fort\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e1\",\"rel\":\"in\",\"b\":\"e2\"},{\"a\":\"e2\",\"rel\":\"under\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1542,
+    "s": 1.28
    },
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"he\",\"noun\":\"messenger\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a stone fort\",\"noun\":\"fort\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"a village\",\"noun\":\"village\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"torches\",\"noun\":\"torches\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e5\",\"kind\":\"place\",\"name\":\"the forest\",\"noun\":\"forest\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"look_at\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"saw\"},{\"op\":\"move_to\",\"actor\":\"e4\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"moving\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"in\",\"b\":\"e3\"},{\"a\":\"e3\",\"rel\":\"under\",\"b\":\"e2\"},{\"a\":\"e4\",\"rel\":\"in\",\"b\":\"e5\"}],\"end\":[]}",
-    "tokens": 1657,
-    "s": 1.09
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"torches\",\"noun\":\"torches\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e5\",\"kind\":\"place\",\"name\":\"forest\",\"noun\":\"forest\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"look_at\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"saw\"},{\"op\":\"move_to\",\"actor\":\"e4\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"moving\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"in\",\"b\":\"e5\"}],\"end\":[] }",
+    "tokens": 1727,
+    "s": 1.49
    },
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"group\",\"name\":\"enemy army\",\"noun\":\"army\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"the village\",\"noun\":\"village\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"coming\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1362,
-    "s": 0.84
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"group\",\"name\":\"enemy army\",\"noun\":\"army\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e6\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"coming\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"towards\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1459,
+    "s": 0.67
    },
    {
-    "text": "{\"rev\":1,\"new\":[{\"id\":\"e3\",\"kind\":\"person\",\"name\":\"The messenger\",\"noun\":\"messenger\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"animal\",\"name\":\"his horse\",\"noun\":\"horse\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e5\",\"kind\":\"place\",\"name\":\"the hill\",\"noun\":\"hill\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e3\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"ride\",\"verb\":\"jumped\"},{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"rode\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"ride\",\"b\":\"e4\"},{\"a\":\"e3\",\"rel\":\"towards\",\"b\":\"e5\"}],\"end\":[]}",
-    "tokens": 1663,
-    "s": 1.05
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"animal\",\"name\":\"his horse\",\"noun\":\"horse\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"the hill\",\"noun\":\"hill\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"jump\",\"actor\":\"e1\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"onto\",\"verb\":\"jumped\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"ride\",\"verb\":\"jumped\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"rode\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"ride\",\"b\":\"e7\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e8\"}],\"end\":[]}",
+    "tokens": 1766,
+    "s": 1.12
    },
    {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e6\",\"kind\":\"place\",\"name\":\"the gate of the fort\",\"noun\":\"gate\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"galloped\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1433,
-    "s": 0.91
-   },
-   {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e6\",\"kind\":\"group\",\"name\":\"guards\",\"noun\":\"guards\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"speak\",\"actor\":\"e3\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"the enemy is coming.\",\"verb\":\"shouted\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1712,
-    "s": 1.11
-   },
-   {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e6\",\"kind\":\"group\",\"name\":\"the guards\",\"noun\":\"guards\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"the big wooden gate\",\"noun\":\"gate\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e6\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"closed\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1551,
-    "s": 0.95
-   },
-   {
-    "text": "{\"rev\":4,\"new\":[{\"id\":\"e8\",\"kind\":\"group\",\"name\":\"The soldiers\",\"noun\":\"soldiers\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e9\",\"kind\":\"place\",\"name\":\"the walls\",\"noun\":\"walls\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e10\",\"kind\":\"prop\",\"name\":\"their bows\",\"noun\":\"bows\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e8\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"climbed\"},{\"op\":\"attach\",\"actor\":\"e8\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"sit_on\",\"verb\":\"climbed\"}],\"relations\":[{\"a\":\"e8\",\"rel\":\"hold\",\"b\":\"e10\"},{\"a\":\"e8\",\"rel\":\"on\",\"b\":\"e9\"}],\"end\":[]}",
-    "tokens": 1657,
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"the gate\",\"noun\":\"gate\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"galloped\"}],\"relations\":[{\"a\":\"e9\",\"rel\":\"in\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1658,
     "s": 1.0
    },
    {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"the fort\",\"noun\":\"fort\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"turned\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1627,
-    "s": 2.22
+    "text": "{\"new\":[{\"id\":\"e10\",\"kind\":\"group\",\"name\":\"the guards\",\"noun\":\"guards\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"He shouted to the guards, the enemy is coming.\",\"verb\":\"shouted\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1584,
+    "s": 0.95
    },
    {
-    "text": "{\"rev\":5,\"new\":[{\"id\":\"e9\",\"kind\":\"person\",\"name\":\"The king\",\"noun\":\"king\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e10\",\"kind\":\"prop\",\"name\":\"a gold medal\",\"noun\":\"medal\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e9\",\"target\":\"e3\",\"obj\":\"e10\",\"value\":\"hold\",\"verb\":\"gave\"}],\"relations\":[{\"a\":\"e9\",\"rel\":\"hold\",\"b\":\"e10\"}],\"end\":[]}",
-    "tokens": 1586,
-    "s": 0.92
+    "text": "{\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e10\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"\",\"verb\":\"closed\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1529,
+    "s": 1.61
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e11\",\"kind\":\"group\",\"name\":\"The soldiers\",\"noun\":\"soldiers\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e12\",\"kind\":\"prop\",\"name\":\"the walls\",\"noun\":\"walls\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e13\",\"kind\":\"prop\",\"name\":\"their bows\",\"noun\":\"bows\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"climb\",\"actor\":\"e11\",\"target\":\"e12\",\"obj\":\"\",\"value\":\"\",\"verb\":\"climbed\"},{\"op\":\"attach\",\"actor\":\"e11\",\"target\":\"e13\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"with\"}],\"relations\":[{\"a\":\"e11\",\"rel\":\"sit_on\",\"b\":\"e12\"},{\"a\":\"e11\",\"rel\":\"hold\",\"b\":\"e13\"}],\"end\":[]}",
+    "tokens": 1798,
+    "s": 1.09
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e6\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"turned back\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1608,
+    "s": 1.84
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e14\",\"kind\":\"person\",\"name\":\"The king\",\"noun\":\"king\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e15\",\"kind\":\"prop\",\"name\":\"a gold medal\",\"noun\":\"medal\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"give\",\"actor\":\"e14\",\"target\":\"e1\",\"obj\":\"e15\",\"value\":\"\",\"verb\":\"gave\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e15\"}],\"end\":[{\"a\":\"e14\",\"rel\":\"hold\",\"b\":\"e15\"}]}",
+    "tokens": 1743,
+    "s": 0.75
    }
   ],
   "h03": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Columbus\",\"noun\":\"Columbus\",\"known\":\"columbus\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"the deck\",\"noun\":\"deck\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"stand\",\"verb\":\"stood\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"on\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1526,
-    "s": 0.95
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Columbus\",\"noun\":\"Columbus\",\"known\":\"columbus\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"the deck of his ship\",\"noun\":\"deck\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e1\",\"rel\":\"on\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1493,
+    "s": 0.98
    },
    {
-    "text": "{\"rev\":1,\"new\":[{\"id\":\"e3\",\"kind\":\"prop\",\"name\":\"the ship\",\"noun\":\"ship\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"place\",\"name\":\"the wide ocean\",\"noun\":\"ocean\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"west\",\"verb\":\"sailed\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"on\",\"b\":\"e2\"},{\"a\":\"e3\",\"rel\":\"towards\",\"b\":\"e4\"}],\"end\":[]}",
-    "tokens": 1451,
-    "s": 1.03
+    "text": "{\"new\":[{\"id\":\"e3\",\"kind\":\"prop\",\"name\":\"the ship\",\"noun\":\"ship\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"place\",\"name\":\"the wide ocean\",\"noun\":\"ocean\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"sailed\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1662,
+    "s": 1.41
    },
    {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e5\",\"kind\":\"group\",\"name\":\"the sailors\",\"noun\":\"sailors\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"react\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"sad\",\"verb\":\"grew\"},{\"op\":\"react\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"scared\",\"verb\":\"grew\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1690,
-    "s": 1.81
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"person\",\"name\":\"the sailors\",\"noun\":\"sailors\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"react\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"sad\",\"verb\":\"grew\"},{\"op\":\"react\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"scared\",\"verb\":\"grew\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1752,
+    "s": 2.36
    },
    {
-    "text": "{\"rev\":3,\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e5\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"we must go back\",\"verb\":\"shouted\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1396,
-    "s": 0.47
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e5\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"we must go back\",\"verb\":\"shouted\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1784,
+    "s": 1.31
    },
    {
-    "text": "{\"rev\":4,\"new\":[],\"events\":[{\"op\":\"look_at\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"looked\"},{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"wait three more days\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1525,
-    "s": 0.58
+    "text": "{\"new\":[],\"events\":[{\"op\":\"look_at\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"looked\"},{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"wait three more days\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1507,
+    "s": 1.38
    },
    {
-    "text": "{\"rev\":5,\"new\":[{\"id\":\"e6\",\"kind\":\"person\",\"name\":\"a sailor\",\"noun\":\"sailor\",\"known\":\"\",\"gender\":\"he|she|\",\"posture\":\"stand\"},{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"the mast\",\"noun\":\"mast\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e6\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"climbed\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"on\",\"b\":\"e7\"}],\"end\":[]}",
-    "tokens": 1593,
-    "s": 1.03
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"the mast\",\"noun\":\"mast\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"climb\",\"actor\":\"e5\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"climbed\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1403,
+    "s": 0.84
    },
    {
-    "text": "{\"rev\":6,\"new\":[{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"the land ahead\",\"noun\":\"land\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"point_at\",\"actor\":\"e1\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"pointed\"},{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"land, land\",\"verb\":\"shouted\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1499,
-    "s": 0.78
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"the land ahead\",\"noun\":\"land\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"point_at\",\"actor\":\"e1\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"pointed\"},{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"land, land\",\"verb\":\"shouted\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1520,
+    "s": 0.64
    },
    {
-    "text": "{\"rev\":7,\"new\":[{\"id\":\"e9\",\"kind\":\"place\",\"name\":\"a green island\",\"noun\":\"island\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"\",\"verb\":\"reached\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"towards\",\"b\":\"e9\"}],\"end\":[]}",
-    "tokens": 1498,
-    "s": 0.78
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"a green island\",\"noun\":\"island\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"reached\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"on\",\"b\":\"e8\"}],\"end\":[]}",
+    "tokens": 1485,
+    "s": 0.59
    },
    {
-    "text": "{\"rev\":8,\"new\":[{\"id\":\"e10\",\"kind\":\"place\",\"name\":\"the beach\",\"noun\":\"beach\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e11\",\"kind\":\"prop\",\"name\":\"the sand\",\"noun\":\"sand\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"\",\"verb\":\"stepped\"},{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"kneel\",\"verb\":\"knelt\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"on\",\"b\":\"e10\"},{\"a\":\"e10\",\"rel\":\"on\",\"b\":\"e9\"},{\"a\":\"e11\",\"rel\":\"on\",\"b\":\"e10\"},{\"a\":\"e1\",\"rel\":\"on\",\"b\":\"e11\"}],\"end\":[]}",
-    "tokens": 1666,
-    "s": 1.88
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"place\",\"name\":\"the beach\",\"noun\":\"beach\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e10\",\"kind\":\"prop\",\"name\":\"the sand\",\"noun\":\"sand\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"\",\"verb\":\"stepped\"},{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"kneel\",\"verb\":\"knelt\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"sit_on\",\"verb\":\"knelt\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"sit_on\",\"b\":\"e10\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e9\"}],\"end\":[]}",
+    "tokens": 1664,
+    "s": 1.02
    }
   ],
   "h04": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"place\",\"name\":\"an old city\",\"noun\":\"city\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a great library\",\"noun\":\"library\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"prop\",\"name\":\"scrolls\",\"noun\":\"scrolls\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e2\",\"rel\":\"in\",\"b\":\"e1\"},{\"a\":\"e3\",\"rel\":\"in\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1466,
-    "s": 1.23
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"place\",\"name\":\"an old city\",\"noun\":\"city\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a great library\",\"noun\":\"library\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"prop\",\"name\":\"scrolls\",\"noun\":\"scrolls\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e2\",\"rel\":\"in\",\"b\":\"e1\"},{\"a\":\"e3\",\"rel\":\"in\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1577,
+    "s": 1.66
    },
    {
-    "text": "{\"rev\":1,\"new\":[{\"id\":\"e4\",\"kind\":\"person\",\"name\":\"A young scribe named Tara\",\"noun\":\"scribe\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"work\",\"actor\":\"e4\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"worked\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"in\",\"b\":\"e1\"},{\"a\":\"e4\",\"rel\":\"in\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1473,
-    "s": 0.86
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"person\",\"name\":\"A young scribe named Tara\",\"noun\":\"scribe\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"work\",\"actor\":\"e4\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"worked\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"in\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1437,
+    "s": 0.92
    },
    {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"smoke\",\"noun\":\"smoke\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e6\",\"kind\":\"place\",\"name\":\"roof\",\"noun\":\"roof\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e4\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"smelled\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"in\",\"b\":\"e6\"}],\"end\":[]}",
-    "tokens": 1669,
-    "s": 1.52
-   },
-   {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"shelves\",\"noun\":\"shelves\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e4\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"},{\"op\":\"attach\",\"actor\":\"e4\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"grabbed\"}],\"relations\":[{\"a\":\"e7\",\"rel\":\"in\",\"b\":\"e2\"},{\"a\":\"e4\",\"rel\":\"in\",\"b\":\"e7\"}],\"end\":[]}",
-    "tokens": 1514,
-    "s": 1.19
-   },
-   {
-    "text": "{\"rev\":4,\"new\":[{\"id\":\"e8\",\"kind\":\"prop\",\"name\":\"a big basket\",\"noun\":\"basket\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e4\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"in\",\"verb\":\"put\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"in\",\"b\":\"e8\"}],\"end\":[]}",
-    "tokens": 1696,
-    "s": 1.19
-   },
-   {
-    "text": "{\"rev\":5,\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e8\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"\",\"verb\":\"carried\"}],\"relations\":[{\"a\":\"e8\",\"rel\":\"in\",\"b\":\"e1\"}],\"end\":[{\"a\":\"e8\",\"rel\":\"in\",\"b\":\"e2\"}]}",
-    "tokens": 1654,
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"place\",\"name\":\"the roof\",\"noun\":\"roof\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e4\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"smelled\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"in\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1633,
     "s": 0.88
    },
    {
-    "text": "{\"rev\":6,\"new\":[{\"id\":\"e9\",\"kind\":\"person\",\"name\":\"people\",\"noun\":\"people\",\"known\":\"\",\"gender\":\"he|she|\",\"posture\":\"stand\"},{\"id\":\"e10\",\"kind\":\"prop\",\"name\":\"buckets of water\",\"noun\":\"buckets\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e11\",\"kind\":\"prop\",\"name\":\"flames\",\"noun\":\"flames\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e12\",\"kind\":\"place\",\"name\":\"outside\",\"noun\":\"outside\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"throw\",\"actor\":\"e9\",\"target\":\"e11\",\"obj\":\"e10\",\"value\":\"\",\"verb\":\"threw\"}],\"relations\":[{\"a\":\"e9\",\"rel\":\"in\",\"b\":\"e12\"},{\"a\":\"e11\",\"rel\":\"in\",\"b\":\"e12\"}],\"end\":[]}",
-    "tokens": 1722,
-    "s": 1.83
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"place\",\"name\":\"shelves\",\"noun\":\"shelves\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e4\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"},{\"op\":\"attach\",\"actor\":\"e4\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"grabbed\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"in\",\"b\":\"e2\"},{\"a\":\"e4\",\"rel\":\"hold\",\"b\":\"e3\"},{\"a\":\"e4\",\"rel\":\"towards\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1540,
+    "s": 0.78
    },
    {
-    "text": "{\"rev\":7,\"new\":[{\"id\":\"e13\",\"kind\":\"prop\",\"name\":\"half the library\",\"noun\":\"library\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e14\",\"kind\":\"prop\",\"name\":\"fire\",\"noun\":\"fire\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e15\",\"kind\":\"place\",\"name\":\"morning\",\"noun\":\"morning\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}]}",
-    "tokens": 1849,
-    "s": 1.23
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"a big basket\",\"noun\":\"basket\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"put\",\"actor\":\"e4\",\"target\":\"e7\",\"obj\":\"e3\",\"value\":\"in\",\"verb\":\"put\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"in\",\"b\":\"e7\"}],\"end\":[]}",
+    "tokens": 1544,
+    "s": 2.62
    },
    {
-    "text": "{\"rev\":8,\"new\":[{\"id\":\"e16\",\"kind\":\"person\",\"name\":\"The old librarian\",\"noun\":\"librarian\",\"known\":\"\",\"gender\":\"he|she|\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e16\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"hugged\"},{\"op\":\"react\",\"actor\":\"e16\",\"target\":\"\",\"obj\":\"\",\"value\":\"happy\",\"verb\":\"cried\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1713,
-    "s": 1.89
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"outside\",\"noun\":\"outside\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e4\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"}]}",
+    "tokens": 1846,
+    "s": 1.7
    },
    {
-    "text": "{\"rev\":10,\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e4\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"saved\"},{\"op\":\"none\",\"actor\":\"e3\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"read\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1821,
-    "s": 1.06
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"group\",\"name\":\"people\",\"noun\":\"people\",\"known\":\"\",\"gender\":\"he|she|\",\"posture\":\"stand\"}]}",
+    "tokens": 1842,
+    "s": 1.26
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"fire\",\"noun\":\"fire\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e10\",\"kind\":\"place\",\"name\":\"morning\",\"noun\":\"morning\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[],\"end\":[]}",
+    "tokens": 1688,
+    "s": 1.27
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e11\",\"kind\":\"person\",\"name\":\"The old librarian\",\"noun\":\"librarian\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e11\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"hugged\"},{\"op\":\"none\",\"actor\":\"e4\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"cried\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1570,
+    "s": 1.09
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e4\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"The scrolls she saved are still read today.\",\"verb\":\"speak\"},{\"op\":\"attach\",\"actor\":\"e4\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"saved\"},{\"op\":\"work\",\"actor\":\"e3\",\"target\":\"today\",\"obj\":\"\",\"value\":\"\",\"verb\":\"read\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1646,
+    "s": 1.09
    }
   ],
   "s01": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Galileo\",\"noun\":\"Galileo\",\"known\":\"galileo\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"prop\",\"name\":\"the stairs\",\"noun\":\"stairs\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"the leaning tower of Pisa\",\"noun\":\"tower\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"climbed\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"under\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1449,
-    "s": 1.0
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Galileo\",\"noun\":\"Galileo\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"prop\",\"name\":\"the stairs\",\"noun\":\"stairs\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"the leaning tower of Pisa\",\"noun\":\"tower\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"climb\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"climbed\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"under\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1582,
+    "s": 1.03
    },
    {
-    "text": "{\"rev\":1,\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"a heavy iron ball\",\"noun\":\"ball\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"a light wooden ball\",\"noun\":\"ball\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e4\"},{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e5\"}],\"end\":[]}",
-    "tokens": 1483,
-    "s": 1.11
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"a heavy iron ball\",\"noun\":\"ball\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"a light wooden ball\",\"noun\":\"ball\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1491,
+    "s": 0.83
    },
    {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e6\",\"kind\":\"person\",\"name\":\"Students\",\"noun\":\"Students\",\"known\":\"\",\"gender\":\"he|she|\",\"posture\":\"stand\"},{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"the ground below\",\"noun\":\"ground\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e6\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"waited\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"on\",\"b\":\"e7\"},{\"a\":\"e7\",\"rel\":\"under\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1603,
-    "s": 0.94
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"place\",\"name\":\"the ground below\",\"noun\":\"ground\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e7\",\"kind\":\"person\",\"name\":\"Students\",\"noun\":\"students\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e7\",\"rel\":\"on\",\"b\":\"e6\"},{\"a\":\"e6\",\"rel\":\"under\",\"b\":\"e3\"}],\"end\":[] }",
+    "tokens": 1750,
+    "s": 2.64
    },
    {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"edge\",\"noun\":\"edge\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"kneel\",\"verb\":\"leaned\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"under\",\"b\":\"e3\"},{\"a\":\"e1\",\"rel\":\"under\",\"b\":\"e6\"}],\"end\":[]}",
-    "tokens": 1676,
-    "s": 1.12
+    "text": "{\"new\":[],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"crouch\",\"verb\":\"leaned\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1621,
+    "s": 1.47
    },
    {
-    "text": "{\"rev\":3,\"new\":[],\"events\":[{\"op\":\"detach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"let go\"},{\"op\":\"detach\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"let go\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"under\",\"b\":\"e3\"},{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e4\"},{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e5\"},{\"a\":\"e6\",\"rel\":\"under\",\"b\":\"e3\"},{\"a\":\"e1\",\"rel\":\"under\",\"b\":\"e6\"}],\"end\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e4\"},{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e5\"}]}",
-    "tokens": 1523,
-    "s": 0.91
+    "text": "{\"new\":[],\"events\":[{\"op\":\"detach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"let go\"},{\"op\":\"detach\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"let go\"}],\"relations\":[],\"end\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e4\"},{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e5\"}]}",
+    "tokens": 1609,
+    "s": 0.89
    },
    {
-    "text": "{\"rev\":4,\"new\":[],\"events\":[{\"op\":\"fall\",\"actor\":\"e4\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"fell\"},{\"op\":\"fall\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"fell\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1495,
-    "s": 0.84
+    "text": "{\"new\":[],\"events\":[{\"op\":\"fall\",\"actor\":\"e4\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"head\",\"verb\":\"fell\"},{\"op\":\"fall\",\"actor\":\"e5\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"head\",\"verb\":\"fell\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1729,
+    "s": 1.44
    },
    {
-    "text": "{\"rev\":5,\"new\":[],\"events\":[{\"op\":\"fall\",\"actor\":\"e4\",\"target\":\"ground\",\"obj\":\"\",\"value\":\"ground\",\"verb\":\"hit\"},{\"op\":\"fall\",\"actor\":\"e5\",\"target\":\"ground\",\"obj\":\"\",\"value\":\"ground\",\"verb\":\"hit\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1531,
-    "s": 0.7
+    "text": "{\"new\":[],\"events\":[{\"op\":\"fall\",\"actor\":\"e4\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"feet\",\"verb\":\"hit\"},{\"op\":\"fall\",\"actor\":\"e5\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"feet\",\"verb\":\"hit\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"on\",\"b\":\"e6\"},{\"a\":\"e5\",\"rel\":\"on\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1589,
+    "s": 1.27
    },
    {
-    "text": "{\"rev\":5,\"new\":[{\"id\":\"e7\",\"kind\":\"group\",\"name\":\"The students\",\"noun\":\"students\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"react\",\"actor\":\"e7\",\"target\":\"\",\"obj\":\"\",\"value\":\"surprise\",\"verb\":\"looked\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1440,
-    "s": 0.78
+    "text": "{\"new\":[],\"events\":[{\"op\":\"react\",\"actor\":\"e7\",\"target\":\"\",\"obj\":\"\",\"value\":\"surprise\",\"verb\":\"looked\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1548,
+    "s": 0.66
    },
    {
-    "text": "{\"rev\":6,\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"Galileo shouted down, weight does not change how fast things fall.\",\"verb\":\"shouted\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1411,
-    "s": 0.7
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"Galileo shouted down, weight does not change how fast things fall.\",\"verb\":\"shouted\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1569,
+    "s": 0.8
    }
   ],
   "s02": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"prop\",\"name\":\"A little ice cube\",\"noun\":\"ice cube\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"prop\",\"name\":\"a plate\",\"noun\":\"plate\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"the kitchen table\",\"noun\":\"table\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e1\",\"rel\":\"on\",\"b\":\"e2\"},{\"a\":\"e2\",\"rel\":\"on\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1416,
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"prop\",\"name\":\"A little ice cube\",\"noun\":\"cube\",\"known\":\"\",\"gender\":\"\",\"posture\":\"sit\"},{\"id\":\"e2\",\"kind\":\"prop\",\"name\":\"a plate\",\"noun\":\"plate\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"the kitchen table\",\"noun\":\"table\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"on\",\"b\":\"e2\"},{\"a\":\"e2\",\"rel\":\"on\",\"b\":\"e3\"}],\"end\":[] }",
+    "tokens": 1495,
+    "s": 1.41
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"The sun\",\"noun\":\"sun\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}]}",
+    "tokens": 1773,
+    "s": 1.24
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"a small puddle of water\",\"noun\":\"puddle\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"melted\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"on\",\"b\":\"e2\"}],\"end\":[{\"a\":\"e1\",\"rel\":\"on\",\"b\":\"e2\"}]}",
+    "tokens": 1505,
+    "s": 0.56
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"person\",\"name\":\"A girl named Asha\",\"noun\":\"girl\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"look_at\",\"actor\":\"e6\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"looked\"},{\"op\":\"speak\",\"actor\":\"e6\",\"target\":\"\",\"obj\":\"\",\"value\":\"where did the ice go\",\"verb\":\"asked\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1455,
     "s": 0.95
    },
    {
-    "text": "{\"rev\":1,\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"The sun\",\"noun\":\"sun\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e4\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"shone\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"towards\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1484,
-    "s": 1.08
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"person\",\"name\":\"Her mother\",\"noun\":\"mother\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"stand\"},{\"id\":\"e8\",\"kind\":\"prop\",\"name\":\"vapour\",\"noun\":\"vapour\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"speak\",\"actor\":\"e7\",\"target\":\"\",\"obj\":\"\",\"value\":\"it turned into water, and soon it will turn into vapour\",\"verb\":\"said\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"under\",\"b\":\"e5\"}],\"end\":[]}",
+    "tokens": 1778,
+    "s": 2.08
    },
    {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"a small puddle of water\",\"noun\":\"puddle\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"melted\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"on\",\"b\":\"e2\"}],\"end\":[]}",
-    "tokens": 1565,
-    "s": 0.99
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"place\",\"name\":\"the warm windowsill\",\"noun\":\"windowsill\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"put\",\"actor\":\"e6\",\"target\":\"e9\",\"obj\":\"e2\",\"value\":\"on\",\"verb\":\"put\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"on\",\"b\":\"e9\"}],\"end\":[]}",
+    "tokens": 1620,
+    "s": 1.36
    },
    {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e6\",\"kind\":\"person\",\"name\":\"A girl named Asha\",\"noun\":\"girl\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"look_at\",\"actor\":\"e6\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"looked\"},{\"op\":\"speak\",\"actor\":\"e6\",\"target\":\"\",\"obj\":\"\",\"value\":\"where did the ice go\",\"verb\":\"asked\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1518,
-    "s": 0.86
+    "text": "{\"new\":[],\"events\":[],\"relations\":[],\"end\":[{\"a\":\"e5\",\"rel\":\"on\",\"b\":\"e2\"}]}",
+    "tokens": 1516,
+    "s": 1.09
    },
    {
-    "text": "{\"rev\":5,\"new\":[{\"id\":\"e7\",\"kind\":\"person\",\"name\":\"Her mother\",\"noun\":\"mother\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"speak\",\"actor\":\"e7\",\"target\":\"\",\"obj\":\"\",\"value\":\"it turned into water, and soon it will turn into vapour.\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1763,
-    "s": 2.66
-   },
-   {
-    "text": "{\"rev\":4,\"new\":[{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"the warm windowsill\",\"noun\":\"windowsill\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"put\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"on\",\"b\":\"e7\"}],\"end\":[]}",
-    "tokens": 1629,
-    "s": 0.59
-   },
-   {
-    "text": "{\"rev\":6,\"new\":[],\"events\":[],\"relations\":[],\"end\":[{\"a\":\"e5\",\"rel\":\"on\",\"b\":\"e2\"}]}",
-    "tokens": 1525,
-    "s": 0.83
-   },
-   {
-    "text": "{\"rev\":5,\"new\":[],\"events\":[{\"op\":\"point_at\",\"actor\":\"e6\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"pointed\"},{\"op\":\"react\",\"actor\":\"e6\",\"target\":\"\",\"obj\":\"\",\"value\":\"happy\",\"verb\":\"laughed\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1596,
-    "s": 1.24
+    "text": "{\"new\":[],\"events\":[{\"op\":\"point_at\",\"actor\":\"e6\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"pointed\"},{\"op\":\"react\",\"actor\":\"e6\",\"target\":\"\",\"obj\":\"\",\"value\":\"happy\",\"verb\":\"laughed\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1848,
+    "s": 1.16
    }
   ],
   "s03": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"King Hiero\",\"noun\":\"Hiero\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"person\",\"name\":\"Archimedes\",\"noun\":\"Archimedes\",\"known\":\"archimedes\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"prop\",\"name\":\"a golden crown\",\"noun\":\"crown\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"a puzzle\",\"noun\":\"puzzle\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"e2\",\"value\":\"hold\",\"verb\":\"gave\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"e2\",\"value\":\"hold\",\"verb\":\"gave\"}]}",
-    "tokens": 1653,
-    "s": 1.78
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"King Hiero\",\"noun\":\"Hiero\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"person\",\"name\":\"Archimedes\",\"noun\":\"Archimedes\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"prop\",\"name\":\"a golden crown\",\"noun\":\"crown\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"a puzzle\",\"noun\":\"puzzle\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"give\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"e3\",\"value\":\"gave\",\"verb\":\"gave\"},{\"op\":\"give\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"e4\",\"value\":\"gave\",\"verb\":\"gave\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1593,
+    "s": 1.45
    },
    {
-    "text": "{\"rev\":1,\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"is this crown made of pure gold.\",\"verb\":\"asked\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1381,
-    "s": 0.56
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"is this crown made of pure gold\",\"verb\":\"asked\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1458,
+    "s": 1.09
    },
    {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e5\",\"kind\":\"place\",\"name\":\"home\",\"noun\":\"home\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"detach\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"took\"},{\"op\":\"attach\",\"actor\":\"e2\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"took\"},{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"took\"},{\"op\":\"react\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"think\",\"verb\":\"thought\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"hold\",\"b\":\"e3\"},{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e5\"}],\"end\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e3\"}]}",
-    "tokens": 1567,
-    "s": 0.94
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"place\",\"name\":\"home\",\"noun\":\"home\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"took\"},{\"op\":\"react\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"think\",\"verb\":\"thought\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e5\"}],\"end\":[]}",
+    "tokens": 1568,
+    "s": 1.42
    },
    {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e6\",\"kind\":\"place\",\"name\":\"bath\",\"noun\":\"bath\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"stepped\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e6\"}],\"end\":[]}",
-    "tokens": 1547,
-    "s": 0.72
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"a bath\",\"noun\":\"bath\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"stepped\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"in\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1583,
+    "s": 0.95
    },
    {
-    "text": "{\"rev\":4,\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"water\",\"noun\":\"water\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e8\",\"kind\":\"prop\",\"name\":\"edge\",\"noun\":\"edge\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e7\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"spilled\"},{\"op\":\"none\",\"actor\":\"e7\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"rose\"}]}",
-    "tokens": 1751,
-    "s": 2.08
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"the water\",\"noun\":\"water\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e8\",\"kind\":\"prop\",\"name\":\"the edge\",\"noun\":\"edge\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e7\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"rose\"},{\"op\":\"move_to\",\"actor\":\"e7\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"spilled\"}],\"relations\":[{\"a\":\"e7\",\"rel\":\"above\",\"b\":\"e8\"}],\"end\":[] }",
+    "tokens": 1673,
+    "s": 2.05
    },
    {
-    "text": "{\"rev\":5,\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"jumped\"},{\"op\":\"speak\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"eureka\",\"verb\":\"shouted\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1685,
+    "text": "{\"new\":[],\"events\":[{\"op\":\"jump\",\"actor\":\"e2\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"off\",\"verb\":\"jumped\"},{\"op\":\"speak\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"eureka\",\"verb\":\"shouted\"}],\"relations\":[],\"end\":[{\"a\":\"e2\",\"rel\":\"in\",\"b\":\"e6\"}]}",
+    "tokens": 1585,
+    "s": 1.58
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"place\",\"name\":\"the streets\",\"noun\":\"streets\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e10\",\"kind\":\"place\",\"name\":\"the palace\",\"noun\":\"palace\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e10\"}],\"end\":[]}",
+    "tokens": 1635,
+    "s": 1.24
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e11\",\"kind\":\"prop\",\"name\":\"a bowl\",\"noun\":\"bowl\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"put\",\"actor\":\"e2\",\"target\":\"e11\",\"obj\":\"e3\",\"value\":\"in\",\"verb\":\"put\"},{\"op\":\"work\",\"actor\":\"e2\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"measured\"}],\"relations\":[{\"a\":\"e11\",\"rel\":\"in\",\"b\":\"e7\"},{\"a\":\"e3\",\"rel\":\"in\",\"b\":\"e11\"}],\"end\":[] }",
+    "tokens": 1760,
+    "s": 2.89
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"push\",\"actor\":\"e3\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"push\",\"verb\":\"pushed\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1502,
+    "s": 1.06
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e12\",\"kind\":\"person\",\"name\":\"goldsmith\",\"noun\":\"goldsmith\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"speak\",\"actor\":\"e2\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"that the goldsmith had cheated\",\"verb\":\"showed\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1555,
     "s": 1.03
-   },
-   {
-    "text": "{\"rev\":6,\"new\":[{\"id\":\"e9\",\"kind\":\"place\",\"name\":\"the palace\",\"noun\":\"palace\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1478,
-    "s": 0.66
-   },
-   {
-    "text": "{\"rev\":7,\"new\":[{\"id\":\"e10\",\"kind\":\"prop\",\"name\":\"a bowl\",\"noun\":\"bowl\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e3\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"put\"},{\"op\":\"work\",\"actor\":\"e3\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"measured\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1554,
-    "s": 0.52
-   },
-   {
-    "text": "{\"rev\":8,\"new\":[],\"events\":[{\"op\":\"throw\",\"actor\":\"e3\",\"target\":\"e7\",\"obj\":\"e7\",\"value\":\"\",\"verb\":\"pushed\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1554,
-    "s": 0.84
-   },
-   {
-    "text": "{\"rev\":9,\"new\":[{\"id\":\"e11\",\"kind\":\"person\",\"name\":\"goldsmith\",\"noun\":\"goldsmith\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"speak\",\"actor\":\"e2\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"that the goldsmith had cheated\",\"verb\":\"showed\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1579,
-    "s": 0.84
    }
   ],
   "s04": [
    {
-    "text": "{\"rev\":0,\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Leo\",\"noun\":\"Leo\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"sit\"},{\"id\":\"e2\",\"kind\":\"person\",\"name\":\"Mia\",\"noun\":\"Mia\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"sit\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"a pond\",\"noun\":\"pond\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"paper boats\",\"noun\":\"boats\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"},{\"op\":\"change_posture\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"next_to\",\"b\":\"e3\"},{\"a\":\"e2\",\"rel\":\"next_to\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1600,
-    "s": 1.08
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Leo\",\"noun\":\"Leo\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"person\",\"name\":\"Mia\",\"noun\":\"Mia\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"a pond\",\"noun\":\"pond\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"paper boats\",\"noun\":\"boats\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"},{\"op\":\"change_posture\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"next_to\",\"b\":\"e3\"},{\"a\":\"e2\",\"rel\":\"next_to\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1593,
+    "s": 1.12
    },
    {
-    "text": "{\"rev\":1,\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"his thin newspaper boat\",\"noun\":\"boat\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e5\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"in\",\"verb\":\"put\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"on\",\"b\":\"e3\"}],\"end\":[]}",
-    "tokens": 1571,
-    "s": 0.61
-   },
-   {
-    "text": "{\"rev\":2,\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"her thick cardboard boat\",\"noun\":\"boat\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e2\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"put\"},{\"op\":\"move_to\",\"actor\":\"e6\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"put\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"next_to\",\"b\":\"e5\"}],\"end\":[]}",
-    "tokens": 1678,
-    "s": 1.23
-   },
-   {
-    "text": "{\"rev\":3,\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"A light wind\",\"noun\":\"wind\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e7\",\"target\":\"e3\",\"obj\":\"e5\",\"value\":\"\",\"verb\":\"pushed\"},{\"op\":\"move_to\",\"actor\":\"e7\",\"target\":\"e3\",\"obj\":\"e6\",\"value\":\"\",\"verb\":\"pushed\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1674,
-    "s": 1.0
-   },
-   {
-    "text": "{\"rev\":4,\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"got soggy and began to sink\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1697,
-    "s": 1.38
-   },
-   {
-    "text": "{\"rev\":5,\"new\":[],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"kneel\",\"verb\":\"knelt\"},{\"op\":\"move_to\",\"actor\":\"e5\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"\",\"verb\":\"lifted\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"lifted\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"next_to\",\"b\":\"e3\"},{\"a\":\"e5\",\"rel\":\"hold\",\"b\":\"e1\"}],\"end\":[{\"a\":\"e5\",\"rel\":\"on\",\"b\":\"e3\"}]}",
-    "tokens": 1702,
-    "s": 0.86
-   },
-   {
-    "text": "{\"rev\":6,\"new\":[{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"far side\",\"noun\":\"side\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e6\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"kept floating\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1730,
-    "s": 1.14
-   },
-   {
-    "text": "{\"rev\":7,\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"},{\"op\":\"attach\",\"actor\":\"e2\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"catch\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1702,
-    "s": 1.03
-   },
-   {
-    "text": "{\"rev\":8,\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"thick card soaks up water more slowly\",\"verb\":\"said\"}],\"relations\":[],\"end\":[] }",
-    "tokens": 1490,
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"his thin newspaper boat\",\"noun\":\"boat\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"put\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"e5\",\"value\":\"on\",\"verb\":\"put\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"on\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1454,
     "s": 1.05
    },
    {
-    "text": "{\"rev\":9,\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"held up\"},{\"op\":\"none\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"nodded\"}],\"relations\":[],\"end\":[]}",
-    "tokens": 1754,
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"her thick cardboard boat\",\"noun\":\"boat\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"put\",\"actor\":\"e2\",\"target\":\"e5\",\"obj\":\"e6\",\"value\":\"next_to\",\"verb\":\"put\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"next_to\",\"b\":\"e5\"}],\"end\":[]}",
+    "tokens": 1629,
+    "s": 1.14
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"agent\",\"name\":\"A light wind\",\"noun\":\"wind\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"push\",\"actor\":\"e7\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"push\",\"verb\":\"pushed\"},{\"op\":\"push\",\"actor\":\"e7\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"push\",\"verb\":\"pushed\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1638,
+    "s": 2.22
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"got soggy and began to sink\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"under\",\"b\":\"e3\"}],\"end\":[{\"a\":\"e5\",\"rel\":\"on\",\"b\":\"e3\"}]}",
+    "tokens": 1651,
+    "s": 0.94
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"kneel\",\"verb\":\"knelt\"},{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"lifted\"},{\"op\":\"move_to\",\"actor\":\"e5\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"\",\"verb\":\"lifted\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e5\"}],\"end\":[{\"a\":\"e5\",\"rel\":\"under\",\"b\":\"e3\"}]}",
+    "tokens": 1716,
+    "s": 1.3
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"far side\",\"noun\":\"side\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e6\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"floating\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"towards\",\"b\":\"e8\"}],\"end\":[]}",
+    "tokens": 1716,
+    "s": 1.33
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"},{\"op\":\"attach\",\"actor\":\"e2\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"catch\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"hold\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1762,
+    "s": 2.55
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"thick card\",\"noun\":\"card\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"thick card soaks up water more slowly.\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1547,
+    "s": 1.08
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"react\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"think\",\"verb\":\"nodded\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1713,
+    "s": 2.78
+   }
+  ],
+  "m05": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"prop\",\"name\":\"a very hot day\",\"noun\":\"day\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"animal\",\"name\":\"a thirsty crow\",\"noun\":\"crow\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"the fields\",\"noun\":\"fields\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"flew\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"in_front\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1697,
+    "s": 1.2
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"a pot of water\",\"noun\":\"pot\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e5\",\"kind\":\"place\",\"name\":\"a tree\",\"noun\":\"tree\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e2\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"saw\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"under\",\"b\":\"e5\"}],\"end\":[]}",
+    "tokens": 1642,
+    "s": 0.83
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"flew\"},{\"op\":\"change_posture\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"sit_on\",\"b\":\"e4\"}],\"end\":[]}",
+    "tokens": 1568,
+    "s": 0.98
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"react\",\"actor\":\"e2\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"think\",\"verb\":\"was\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1541,
+    "s": 2.12
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"some small pebbles\",\"noun\":\"pebbles\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}]}",
+    "tokens": 1812,
+    "s": 1.58
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"attach\",\"actor\":\"e2\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"picked\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"hold\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1552,
+    "s": 1.03
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"detach\",\"actor\":\"e2\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"dropped\"},{\"op\":\"attach\",\"actor\":\"e6\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"dropped\"},{\"op\":\"move_to\",\"actor\":\"e6\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"dropped\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"under\",\"b\":\"e4\"}],\"end\":[{\"a\":\"e2\",\"rel\":\"hold\",\"b\":\"e6\"}]}",
+    "tokens": 1811,
+    "s": 1.7
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"throw\",\"actor\":\"e2\",\"target\":\"e4\",\"obj\":\"e6\",\"value\":\"\",\"verb\":\"dropped\"}],\"relations\":[],\"end\":[{\"a\":\"e6\",\"rel\":\"under\",\"b\":\"e4\"},{\"a\":\"e6\",\"rel\":\"hold\",\"b\":\"e4\"}]}",
+    "tokens": 1669,
+    "s": 2.19
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e4\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"rose\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1797,
+    "s": 1.16
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"drank\"},{\"op\":\"react\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"happy\",\"verb\":\"drank\"},{\"op\":\"none\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"flew\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1803,
+    "s": 1.78
+   }
+  ],
+  "m06": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"prop\",\"name\":\"It\",\"noun\":\"rain\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"school\",\"noun\":\"school\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ended\"},{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"was raining hard\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1534,
+    "s": 2.27
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e3\",\"kind\":\"person\",\"name\":\"A boy named Kabir\",\"noun\":\"boy\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"his big blue umbrella\",\"noun\":\"umbrella\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e3\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"opened\"},{\"op\":\"none\",\"actor\":\"e4\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"opened\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1392,
+    "s": 1.08
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"place\",\"name\":\"the gate\",\"noun\":\"gate\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e6\",\"kind\":\"person\",\"name\":\"an old man\",\"noun\":\"man\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"look_at\",\"actor\":\"e3\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"saw\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"under\",\"b\":\"e5\"}]}",
+    "tokens": 1785,
+    "s": 2.24
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"},{\"op\":\"attach\",\"actor\":\"e3\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"held\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"hold\",\"b\":\"e4\"}],\"end\":[]}",
+    "tokens": 1521,
+    "s": 1.75
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e6\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"thank you, young man\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1419,
+    "s": 0.53
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"the bus stop\",\"noun\":\"bus stop\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"},{\"op\":\"move_to\",\"actor\":\"e6\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"towards\",\"b\":\"e7\"},{\"a\":\"e6\",\"rel\":\"towards\",\"b\":\"e7\"}],\"end\":[]}",
+    "tokens": 1611,
+    "s": 1.83
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"prop\",\"name\":\"the bus\",\"noun\":\"bus\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e8\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"came\"},{\"op\":\"attach\",\"actor\":\"e6\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"ride\",\"verb\":\"climbed\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"ride\",\"b\":\"e8\"},{\"a\":\"e8\",\"rel\":\"towards\",\"b\":\"e7\"}],\"end\":[]}",
+    "tokens": 1710,
+    "s": 2.81
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"the window\",\"noun\":\"window\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"speak\",\"actor\":\"e6\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"goodbye\",\"verb\":\"waved\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"under\",\"b\":\"e9\"}],\"end\":[]}",
+    "tokens": 1692,
+    "s": 0.89
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e10\",\"kind\":\"prop\",\"name\":\"rain\",\"noun\":\"rain\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e11\",\"kind\":\"place\",\"name\":\"home\",\"noun\":\"home\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e3\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"smiled\"},{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e11\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"in\",\"b\":\"e10\"},{\"a\":\"e3\",\"rel\":\"towards\",\"b\":\"e11\"}],\"end\":[]}",
+    "tokens": 1854,
+    "s": 1.19
+   }
+  ],
+  "m07": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"animal\",\"name\":\"A proud hare\",\"noun\":\"hare\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"animal\",\"name\":\"a slow tortoise\",\"noun\":\"tortoise\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"laughed\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1558,
+    "s": 1.03
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"the big oak tree\",\"noun\":\"oak tree\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"speak\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"let us have a race to the big oak tree\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1468,
+    "s": 0.94
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1541,
+    "s": 0.98
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"place\",\"name\":\"a bush\",\"noun\":\"bush\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"lie\",\"verb\":\"lay down\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"under\",\"b\":\"e4\"}],\"end\":[]}",
+    "tokens": 1478,
+    "s": 0.91
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"place\",\"name\":\"the warm sun\",\"noun\":\"sun\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"fell asleep\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"in\",\"b\":\"e5\"}],\"end\":[]}",
+    "tokens": 1594,
+    "s": 1.08
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e1\"}],\"end\":[]}",
+    "tokens": 1645,
+    "s": 0.88
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"stand\",\"verb\":\"woke up\"},{\"op\":\"none\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1585,
+    "s": 0.91
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1648,
+    "s": 0.88
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"reached\"}],\"relations\":[],\"end\":[] }",
+    "tokens": 1550,
+    "s": 0.94
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"slow and steady wins the race.\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1463,
+    "s": 1.24
+   }
+  ],
+  "m08": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"A poor miller\",\"noun\":\"miller\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"prop\",\"name\":\"wheat\",\"noun\":\"wheat\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"his mill\",\"noun\":\"mill\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"place\",\"name\":\"the stream\",\"noun\":\"stream\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}]}",
+    "tokens": 1725,
+    "s": 1.36
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"person\",\"name\":\"A rich merchant\",\"noun\":\"merchant\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"a grey horse\",\"noun\":\"horse\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e5\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"ride\",\"verb\":\"rode\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"ride\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1475,
+    "s": 0.98
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"a sack of wheat\",\"noun\":\"sack\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"detach\",\"actor\":\"e5\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"got off\"},{\"op\":\"give\",\"actor\":\"e5\",\"target\":\"e1\",\"obj\":\"e7\",\"value\":\"\",\"verb\":\"gave\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"ride\",\"b\":\"e6\"}],\"end\":[{\"a\":\"e5\",\"rel\":\"ride\",\"b\":\"e6\"}]}",
+    "tokens": 1657,
+    "s": 1.28
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"prop\",\"name\":\"a gold coin\",\"noun\":\"coin\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[],\"end\":[]}",
+    "tokens": 1445,
+    "s": 1.11
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"attach\",\"actor\":\"e5\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"held\"},{\"op\":\"react\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"think\",\"verb\":\"thought\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"hold\",\"b\":\"e8\"}],\"end\":[]}",
+    "tokens": 1516,
+    "s": 0.89
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"ran\"},{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"sir, you dropped this\",\"verb\":\"called\"}],\"relations\":[],\"end\":[] }",
+    "tokens": 1514,
+    "s": 0.94
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"turned\"},{\"op\":\"look_at\",\"actor\":\"e5\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"looked\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1585,
+    "s": 1.34
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"you are an honest man, keep it as a reward\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1666,
+    "s": 1.05
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"kneel\",\"verb\":\"bowed\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1724,
+    "s": 0.89
+   }
+  ],
+  "h05": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Shivaji\",\"noun\":\"Shivaji\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a palace\",\"noun\":\"palace\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"Agra\",\"noun\":\"Agra\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e1\",\"rel\":\"in\",\"b\":\"e2\"},{\"a\":\"e2\",\"rel\":\"in\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1494,
+    "s": 1.02
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"group\",\"name\":\"Guards\",\"noun\":\"guards\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"door\",\"noun\":\"door\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e4\",\"rel\":\"away_from\",\"b\":\"e5\"},{\"a\":\"e5\",\"rel\":\"in\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1647,
+    "s": 0.97
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"baskets of sweets\",\"noun\":\"baskets\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e6\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"sent\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"away_from\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1756,
+    "s": 2.14
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"a basket\",\"noun\":\"basket\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e1\",\"rel\":\"in\",\"b\":\"e7\"},{\"a\":\"e7\",\"rel\":\"in\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1597,
+    "s": 0.86
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"person\",\"name\":\"porter1\",\"noun\":\"porter\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e8\",\"kind\":\"person\",\"name\":\"porter2\",\"noun\":\"porter\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e7\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"lifted\"},{\"op\":\"attach\",\"actor\":\"e8\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"lifted\"}],\"relations\":[{\"a\":\"e7\",\"rel\":\"hold\",\"b\":\"e6\"},{\"a\":\"e8\",\"rel\":\"hold\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1698,
+    "s": 1.03
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"group\",\"name\":\"They\",\"noun\":\"porters\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e7\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}]}",
+    "tokens": 1832,
+    "s": 1.28
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"animal\",\"name\":\"a horse\",\"noun\":\"horse\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"a tree\",\"noun\":\"tree\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e8\",\"rel\":\"under\",\"b\":\"e9\"},{\"a\":\"e8\",\"rel\":\"away_from\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1737,
+    "s": 2.03
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e10\",\"kind\":\"prop\",\"name\":\"a basket\",\"noun\":\"basket\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"climb\",\"actor\":\"e1\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"\",\"verb\":\"climbed\"},{\"op\":\"jump\",\"actor\":\"e1\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"onto\",\"verb\":\"jumped\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"sit_on\",\"b\":\"e8\"}],\"end\":[{\"a\":\"e1\",\"rel\":\"away_from\",\"b\":\"e10\"}]}",
+    "tokens": 1803,
+    "s": 1.34
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e10\",\"kind\":\"place\",\"name\":\"his home in the hills\",\"noun\":\"hills\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"ride\",\"verb\":\"rode\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"away fast\",\"verb\":\"rode\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"ride\",\"b\":\"e8\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e10\"}],\"end\":[]}",
+    "tokens": 1833,
+    "s": 1.31
+   }
+  ],
+  "h06": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"place\",\"name\":\"a wide river\",\"noun\":\"river\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"two villages\",\"noun\":\"villages\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"group\",\"name\":\"the people\",\"noun\":\"people\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"\"},{\"op\":\"none\",\"actor\":\"e3\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"between\",\"b\":\"e2\",\"c\":\"e3\"}],\"end\":[]}",
+    "tokens": 1649,
     "s": 1.09
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"person\",\"name\":\"An old carpenter named Ravi\",\"noun\":\"carpenter\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e5\",\"kind\":\"group\",\"name\":\"men of both villages\",\"noun\":\"men\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e4\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"gathered\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"under\",\"b\":\"e3\"},{\"a\":\"e5\",\"rel\":\"under\",\"b\":\"e3\"}]}",
+    "tokens": 1769,
+    "s": 1.88
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"tall bamboo\",\"noun\":\"bamboo\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"the forest\",\"noun\":\"forest\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"work\",\"actor\":\"e3\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"cut\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"in\",\"b\":\"e7\"},{\"a\":\"e6\",\"rel\":\"in\",\"b\":\"e7\"}],\"end\":[]}",
+    "tokens": 1696,
+    "s": 1.47
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"attach\",\"actor\":\"e5\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"},{\"op\":\"move_to\",\"actor\":\"e5\",\"target\":\"e1\",\"obj\":\"\",\"value\":\"\",\"verb\":\"carried\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"hold\",\"b\":\"e6\"},{\"a\":\"e5\",\"rel\":\"towards\",\"b\":\"e1\"}],\"end\":[]}",
+    "tokens": 1613,
+    "s": 1.8
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"prop\",\"name\":\"strong rope\",\"noun\":\"rope\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e4\",\"target\":\"e6\",\"obj\":\"e8\",\"value\":\"hold\",\"verb\":\"tied\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"hold\",\"b\":\"e8\"},{\"a\":\"e8\",\"rel\":\"hold\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1691,
+    "s": 0.97
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"the bridge\",\"noun\":\"bridge\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e9\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"grew\"}],\"relations\":[{\"a\":\"e9\",\"rel\":\"between\",\"b\":\"e1\",\"c\":\"e1\"}],\"end\":[]}",
+    "tokens": 1688,
+    "s": 0.77
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"the new bridge\",\"noun\":\"bridge\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e10\",\"kind\":\"person\",\"name\":\"a little girl\",\"noun\":\"girl\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e10\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e10\",\"rel\":\"towards\",\"b\":\"e9\"}],\"end\":[] }",
+    "tokens": 1706,
+    "s": 2.16
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e3\",\"target\":\"\", \"obj\":\"\", \"value\":\"clapped and cheered\",\"verb\":\"clapped\"},{\"op\":\"speak\",\"actor\":\"e3\",\"target\":\"\", \"obj\":\"\", \"value\":\"clapped and cheered\",\"verb\":\"cheered\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1600,
+    "s": 1.45
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e11\",\"kind\":\"prop\",\"name\":\"a rock\",\"noun\":\"rock\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e4\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"},{\"op\":\"attach\",\"actor\":\"e4\",\"target\":\"e11\",\"obj\":\"\",\"value\":\"sit_on\",\"verb\":\"sat\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"sit_on\",\"b\":\"e11\"}],\"end\":[]}",
+    "tokens": 1638,
+    "s": 1.14
+   }
+  ],
+  "h07": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Napoleon\",\"noun\":\"Napoleon\",\"known\":\"napoleon\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"group\",\"name\":\"his army\",\"noun\":\"army\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"the high Alps\",\"noun\":\"Alps\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"led\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1498,
+    "s": 1.33
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"Snow\",\"noun\":\"snow\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"narrow mountain path\",\"noun\":\"path\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[{\"a\":\"e4\",\"rel\":\"on\",\"b\":\"e5\"}],\"end\":[]}",
+    "tokens": 1512,
+    "s": 1.08
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"animal\",\"name\":\"a mule\",\"noun\":\"mule\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"ride\",\"verb\":\"rode\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"rode\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"ride\",\"b\":\"e6\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e5\"}],\"end\":[]}",
+    "tokens": 1630,
+    "s": 0.97
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"the heavy cannons\",\"noun\":\"cannons\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}]}",
+    "tokens": 1824,
+    "s": 1.66
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"person\",\"name\":\"A young guide\",\"noun\":\"guide\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e8\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e8\",\"rel\":\"in_front\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1710,
+    "s": 1.69
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"the ice\",\"noun\":\"ice\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"fall\",\"actor\":\"e8\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"head\",\"verb\":\"fell\"},{\"op\":\"change_posture\",\"actor\":\"e8\",\"target\":\"\",\"obj\":\"\",\"value\":\"lie\",\"verb\":\"fell\"}],\"relations\":[{\"a\":\"e8\",\"rel\":\"on\",\"b\":\"e9\"}],\"end\":[]}",
+    "tokens": 1539,
+    "s": 0.97
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"detach\",\"actor\":\"e1\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"got off\"},{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"helped\"}],\"relations\":[],\"end\":[{\"a\":\"e1\",\"rel\":\"ride\",\"b\":\"e6\"}]}",
+    "tokens": 1618,
+    "s": 1.2
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e10\",\"kind\":\"place\",\"name\":\"the pass\",\"noun\":\"pass\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"\",\"verb\":\"reached\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e10\"}],\"end\":[]}",
+    "tokens": 1597,
+    "s": 0.84
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e11\",\"kind\":\"place\",\"name\":\"Italy\",\"noun\":\"Italy\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"look_at\",\"actor\":\"e1\",\"target\":\"e11\",\"obj\":\"\",\"value\":\"\",\"verb\":\"looked\"},{\"op\":\"react\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"happy\",\"verb\":\"smiled\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1742,
+    "s": 1.2
+   }
+  ],
+  "h08": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"A merchant named Omar\",\"noun\":\"merchant\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"group\",\"name\":\"a caravan of camels\",\"noun\":\"caravan\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"the desert\",\"noun\":\"desert\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"led\"},{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"led\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e3\"},{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1549,
+    "s": 1.17
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"animal\",\"name\":\"the first camel\",\"noun\":\"camel\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"ride\",\"verb\":\"rode\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"ride\",\"b\":\"e4\"}],\"end\":[]}",
+    "tokens": 1410,
+    "s": 0.78
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"a strong wind\",\"noun\":\"wind\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"began\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1532,
+    "s": 0.94
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"group\",\"name\":\"the men\",\"noun\":\"men\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"change_posture\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"sit\",\"verb\":\"sat\"},{\"op\":\"none\",\"actor\":\"e6\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"covered\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1742,
+    "s": 1.94
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"the road\",\"noun\":\"road\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"react\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"think\",\"verb\":\"could not see\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1779,
+    "s": 3.67
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"a tall dune\",\"noun\":\"dune\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"climb\",\"actor\":\"e1\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"climbed\"},{\"op\":\"look_at\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"around\",\"verb\":\"looked\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e8\"},{\"a\":\"e1\",\"rel\":\"on\",\"b\":\"e8\"}],\"end\":[] }",
+    "tokens": 1680,
+    "s": 1.06
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"group\",\"name\":\"a line of palm trees\",\"noun\":\"line\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[],\"end\":[]}",
+    "tokens": 1467,
+    "s": 0.97
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"point_at\",\"actor\":\"e1\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"\",\"verb\":\"pointed\"},{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"water, there is water\",\"verb\":\"shouted\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1473,
+    "s": 0.8
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"place\",\"name\":\"the oasis\",\"noun\":\"oasis\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"},{\"op\":\"none\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"drank\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e9\"}],\"end\":[]}",
+    "tokens": 1667,
+    "s": 2.03
+   }
+  ],
+  "s05": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Alexander Fleming\",\"noun\":\"Fleming\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"place\",\"name\":\"a small messy laboratory\",\"noun\":\"laboratory\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"work\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"worked\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1483,
+    "s": 1.83
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e3\",\"kind\":\"prop\",\"name\":\"some dishes of germs\",\"noun\":\"dishes\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"the bench\",\"noun\":\"bench\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"put\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"e3\",\"value\":\"on\",\"verb\":\"left\"}],\"relations\":[{\"a\":\"e4\",\"rel\":\"in\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1546,
+    "s": 1.19
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"the door\",\"noun\":\"door\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"\",\"verb\":\"locked\"},{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"went\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"in\",\"b\":\"e2\"}],\"end\":[] }",
+    "tokens": 1787,
+    "s": 1.97
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"a dish of germs\",\"noun\":\"dish\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"picked up\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"on\",\"b\":\"e4\"}],\"end\":[]}",
+    "tokens": 1583,
+    "s": 1.05
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"A green mould\",\"noun\":\"mould\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e6\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"was growing\"}],\"relations\":[{\"a\":\"e6\",\"rel\":\"on\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1698,
+    "s": 1.75
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e3\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"died\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1632,
+    "s": 1.24
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"the light\",\"noun\":\"light\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"held\"},{\"op\":\"move_to\",\"actor\":\"e3\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"up\"},{\"op\":\"look_at\",\"actor\":\"e1\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"closely\",\"verb\":\"looked\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e3\"},{\"a\":\"e3\",\"rel\":\"towards\",\"b\":\"e7\"}],\"end\":[]}",
+    "tokens": 1755,
+    "s": 2.47
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"person\",\"name\":\"his assistant\",\"noun\":\"assistant\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"e8\",\"obj\":\"\",\"value\":\"look at this, that's funny\",\"verb\":\"called\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1625,
+    "s": 1.45
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"a microscope\",\"noun\":\"microscope\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e8\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"},{\"op\":\"look_at\",\"actor\":\"e8\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"through a microscope\",\"verb\":\"looked\"}],\"relations\":[{\"a\":\"e8\",\"rel\":\"towards\",\"b\":\"e9\"},{\"a\":\"e9\",\"rel\":\"in\",\"b\":\"e2\"}],\"end\":[]}",
+    "tokens": 1754,
+    "s": 1.67
+   }
+  ],
+  "s06": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"A boy named Sam\",\"noun\":\"boy\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"prop\",\"name\":\"a bean seed\",\"noun\":\"seed\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"prop\",\"name\":\"a pot\",\"noun\":\"pot\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"put\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"e2\",\"value\":\"in\",\"verb\":\"planted\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"in\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1502,
+    "s": 1.59
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"place\",\"name\":\"a dark cupboard\",\"noun\":\"cupboard\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"put\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"e3\",\"value\":\"in\",\"verb\":\"put\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"in\",\"b\":\"e4\"}],\"end\":[]}",
+    "tokens": 1472,
+    "s": 2.09
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"opened\"},{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"e2\",\"obj\":\"\",\"value\":\"\",\"verb\":\"watered\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1655,
+    "s": 1.09
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"a tiny green shoot\",\"noun\":\"shoot\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e6\",\"kind\":\"place\",\"name\":\"soil\",\"noun\":\"soil\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e5\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"came\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"in\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1669,
+    "s": 1.38
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"the hole\",\"noun\":\"hole\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e5\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"grew\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"towards\",\"b\":\"e7\"}],\"end\":[]}",
+    "tokens": 1570,
+    "s": 1.41
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"person\",\"name\":\"Sam's sister Nina\",\"noun\":\"Nina\",\"known\":\"\",\"gender\":\"she\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"look_at\",\"actor\":\"e8\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"looked\"},{\"op\":\"speak\",\"actor\":\"e8\",\"target\":\"\",\"obj\":\"\",\"value\":\"why is it growing sideways\",\"verb\":\"asked\"}],\"relations\":[],\"end\":[] }",
+    "tokens": 1660,
+    "s": 2.03
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"it is looking for the light\",\"verb\":\"said\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1453,
+    "s": 0.67
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e9\",\"kind\":\"place\",\"name\":\"the sunny window\",\"noun\":\"window\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"\",\"verb\":\"moved\"},{\"op\":\"move_to\",\"actor\":\"e8\",\"target\":\"e9\",\"obj\":\"\",\"value\":\"\",\"verb\":\"moved\"}],\"relations\":[{\"a\":\"e3\",\"rel\":\"towards\",\"b\":\"e9\"},{\"a\":\"e3\",\"rel\":\"in\",\"b\":\"e9\"}],\"end\":[]}",
+    "tokens": 1756,
+    "s": 2.19
+   },
+   {
+    "text": "{\"new\":[],\"events\":[],\"relations\":[],\"end\":[]}",
+    "tokens": 1552,
+    "s": 1.06
+   }
+  ],
+  "s07": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"person\",\"name\":\"Marie Curie\",\"noun\":\"Curie\",\"known\":\"curie\",\"gender\":\"she\",\"posture\":\"stand\"},{\"id\":\"e2\",\"kind\":\"person\",\"name\":\"Pierre\",\"noun\":\"Pierre\",\"known\":\"\",\"gender\":\"he\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"an old wooden shed\",\"noun\":\"shed\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"work\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"worked\"},{\"op\":\"work\",\"actor\":\"e2\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"worked\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1497,
+    "s": 1.41
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"prop\",\"name\":\"a huge pot of boiling rock\",\"noun\":\"pot\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"stirred\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1532,
+    "s": 1.83
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"heavy sacks of rock\",\"noun\":\"sacks\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e2\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"carried\"},{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"carried\"}],\"relations\":[{\"a\":\"e2\",\"rel\":\"hold\",\"b\":\"e5\"},{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1641,
+    "s": 1.45
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"prop\",\"name\":\"a new element\",\"noun\":\"element\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"had\"},{\"op\":\"attach\",\"actor\":\"e2\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"had\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e6\"},{\"a\":\"e2\",\"rel\":\"hold\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1747,
+    "s": 2.0
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"},{\"op\":\"move_to\",\"actor\":\"e2\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"walked\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e3\"},{\"a\":\"e2\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1600,
+    "s": 1.02
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"prop\",\"name\":\"the door\",\"noun\":\"door\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"opened\"},{\"op\":\"none\",\"actor\":\"e2\",\"target\":\"e7\",\"obj\":\"\",\"value\":\"\",\"verb\":\"opened\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1619,
+    "s": 0.89
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"prop\",\"name\":\"Small glass jars\",\"noun\":\"jars\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e9\",\"kind\":\"prop\",\"name\":\"shelves\",\"noun\":\"shelves\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"none\",\"actor\":\"e8\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"glowing\"}],\"relations\":[{\"a\":\"e8\",\"rel\":\"on\",\"b\":\"e9\"}],\"end\":[]}",
+    "tokens": 1612,
+    "s": 2.8
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e10\",\"kind\":\"prop\",\"name\":\"hand\",\"noun\":\"hand\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e10\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"held\"},{\"op\":\"none\",\"actor\":\"e1\",\"target\":\"\",\"obj\":\"\",\"value\":\"\",\"verb\":\"smiled\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"hold\",\"b\":\"e10\"}],\"end\":[]}",
+    "tokens": 1723,
+    "s": 2.72
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"speak\",\"actor\":\"e2\",\"target\":\"\",\"obj\":\"\",\"value\":\"it is beautiful\",\"verb\":\"whispered\"}],\"relations\":[],\"end\":[]}",
+    "tokens": 1542,
+    "s": 3.22
+   }
+  ],
+  "s08": [
+   {
+    "text": "{\"new\":[{\"id\":\"e1\",\"kind\":\"prop\",\"name\":\"A tiny drop of water\",\"noun\":\"drop\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[],\"relations\":[],\"end\":[]}",
+    "tokens": 1329,
+    "s": 0.73
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e2\",\"kind\":\"prop\",\"name\":\"The hot sun\",\"noun\":\"sun\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"},{\"id\":\"e3\",\"kind\":\"place\",\"name\":\"the sea\",\"noun\":\"sea\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"work\",\"actor\":\"e2\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"warmed\"}],\"relations\":[],\"end\":[] }",
+    "tokens": 1487,
+    "s": 2.64
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e4\",\"kind\":\"place\",\"name\":\"the sky\",\"noun\":\"sky\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e4\",\"obj\":\"\",\"value\":\"\",\"verb\":\"floated\"}]}",
+    "tokens": 1775,
+    "s": 1.51
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e5\",\"kind\":\"prop\",\"name\":\"a grey cloud\",\"noun\":\"cloud\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"attach\",\"actor\":\"e1\",\"target\":\"e5\",\"obj\":\"\",\"value\":\"hold\",\"verb\":\"joined\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"under\",\"b\":\"e5\"}],\"end\":[]}",
+    "tokens": 1649,
+    "s": 1.34
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e6\",\"kind\":\"place\",\"name\":\"the mountains\",\"noun\":\"mountains\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}],\"events\":[{\"op\":\"move_to\",\"actor\":\"e5\",\"target\":\"e6\",\"obj\":\"\",\"value\":\"\",\"verb\":\"drifted\"}],\"relations\":[{\"a\":\"e5\",\"rel\":\"above\",\"b\":\"e6\"}],\"end\":[]}",
+    "tokens": 1546,
+    "s": 1.14
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e7\",\"kind\":\"place\",\"name\":\"a hillside\",\"noun\":\"hillside\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}]}",
+    "tokens": 1821,
+    "s": 1.3
+   },
+   {
+    "text": "{\"new\":[{\"id\":\"e8\",\"kind\":\"place\",\"name\":\"a small stream\",\"noun\":\"stream\",\"known\":\"\",\"gender\":\"\",\"posture\":\"stand\"}]}",
+    "tokens": 1830,
+    "s": 1.2
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e8\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"carried\"}],\"relations\":[{\"a\":\"e8\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1494,
+    "s": 1.17
+   },
+   {
+    "text": "{\"new\":[],\"events\":[{\"op\":\"move_to\",\"actor\":\"e1\",\"target\":\"e3\",\"obj\":\"\",\"value\":\"\",\"verb\":\"began\"}],\"relations\":[{\"a\":\"e1\",\"rel\":\"in\",\"b\":\"e8\"},{\"a\":\"e1\",\"rel\":\"towards\",\"b\":\"e3\"}],\"end\":[]}",
+    "tokens": 1759,
+    "s": 1.39
    }
   ]
  }

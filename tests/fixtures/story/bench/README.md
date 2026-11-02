@@ -25,4 +25,4 @@ target / place (`to`), the thing acted with or on (`obj`), the feeling for `reac
 - `never: true` → no motion should show it (decide, hear, years passed); outside coverage, scored on honest
   fallback only, like UNKNOWN_ACTION events (no guessed gesture).
 
-`answers.json` (written by `--record`): `{model: {story id: [{"text", "tokens", "s"}]}}`, one per line.
+`answers.json` (written by `--record`, P1b prompt, 2026-11-02; `answers_p1a.json` = the P1a-prompt recording): `{model: {story id: [{"text", "tokens", "s"}]}}`, one per line.

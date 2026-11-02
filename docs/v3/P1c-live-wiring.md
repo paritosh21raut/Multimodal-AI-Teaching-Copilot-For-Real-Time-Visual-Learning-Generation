@@ -51,3 +51,8 @@ place; near names merge (Rabi/Ravi); "can anyone see"; the end line makes no sli
 (~100k tokens / run saved); answers logged for replay. Fixture `tests/fixtures/story/p1c_test58.py`. 2320 pass.
 test59: no extra slide, aside no call, understanding skipped, 7/7 drawn (try 2); p50 1.4 s. Leftover: "the basket"
 refused as "a basket" not said (article strictness).
+_Part 2, 2026-11-02, closed (one day, 5 keys): re-record with the P1b prompt; old answers kept as `answers_p1a.json`._
+dev+val **45.3 % events** (gate ≥ 45 ✓; was 38.8), relations 81.2, refusals **4** (gate ≤ 6 ✓), p50 1.19 s, 181k tokens.
+Test split (scored once, never tuned): **24.6 %** events, relations 50.9, refused 7, p50 1.2 s, 179k tokens; oracle
+ceiling 38.8 % (dev+val 55.4) → the gap is vocabulary: assets crow / tortoise / hare / mule / caravan / shed, actions
+grow / open / drink → P2. 0 lines lost (InvalidOutput retried on other keys).
